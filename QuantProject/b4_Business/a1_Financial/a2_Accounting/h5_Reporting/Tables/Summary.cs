@@ -57,52 +57,52 @@ namespace QuantProject.Business.Financial.Accounting.Reporting.Tables
     public double AnnualSystemPercentageReturn;
 		public double MaxEquityDrawDown
 		{
-			get { return (double)this.maxEquityDrawDown.rowValue; }
+			get { return Convert.ToDouble( this.maxEquityDrawDown.Value ); }
 		}
 		public double TotalNumberOfTrades
 		{
-			get { return (int)this.totalNumberOfTrades.rowValue; }
+			get { return (int)this.totalNumberOfTrades.Value; }
 		}
 		public int NumberWinningTrades
 		{
-			get { return (int)this.numberWinningTrades.rowValue; }
+			get { return (int)this.numberWinningTrades.Value; }
 		}
 		public double AverageTradePercentageReturn
 		{
-			get { return (double)this.averageTradePercentageReturn.rowValue; }
+			get { return Convert.ToDouble( this.averageTradePercentageReturn.Value ); }
 		}
 		public double LargestWinningTradePercentage
 		{
-			get { return (double)this.largestWinningTradePercentage.rowValue; }
+			get { return Convert.ToDouble( this.largestWinningTradePercentage.Value ); }
 		}
 		public double LargestLosingTradePercentage
 		{
-			get { return (double)this.largestLosingTradePercentage.rowValue; }
+			get { return Convert.ToDouble( this.largestLosingTradePercentage.Value ); }
 		}
 		public double NumberWinningLongTrades
 		{
-			get { return (int)this.numberWinningLongTrades.rowValue; }
+			get { return (int)this.numberWinningLongTrades.Value; }
 		}
 		public double AverageLongTradePercentageReturn
 		{
-			get { return (double)this.averageLongTradePercentageReturn.rowValue; }
+			get { return Convert.ToDouble( this.averageLongTradePercentageReturn.Value ); }
 		}
 		public double NumberWinningShortTrades
 		{
-			get { return (int)this.numberWinningShortTrades.rowValue; }
+			get { return (int)this.numberWinningShortTrades.Value; }
 		}
 		public double TotalNumberOfLongTrades
 		{
-			get { return (int)this.totalNumberOfLongTrades.rowValue; }
+			get { return (int)this.totalNumberOfLongTrades.Value; }
 		}
 		public double TotalNumberOfShortTrades
 		{
-			get { return (int)this.totalNumberOfShortTrades.rowValue; }
+			get { return (int)this.totalNumberOfShortTrades.Value; }
 		}
 
 		public double TotalCommissionAmount
 		{
-			get { return (double)this.totalCommissionAmount.rowValue; }
+			get { return Convert.ToDouble( this.totalCommissionAmount.Value ); }
 		}
 
 
@@ -188,6 +188,8 @@ namespace QuantProject.Business.Financial.Accounting.Reporting.Tables
     }
     private void getSummary()
     {
+			if ( this.accountReport.Equity.DataTable.Rows.Count == 0 )
+				throw new Exception( "A Summary computation has been requested, but the equity line is empty" );
       this.totalPnl =
         (double)this.accountReport.Equity.DataTable.Rows[ this.accountReport.Equity.DataTable.Rows.Count - 1 ][ "PnL" ];
       this.finalAccountValue =
