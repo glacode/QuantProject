@@ -82,7 +82,7 @@ namespace QuantProject.Scripts
 //        new ExtendedDateTime( endDateTime , BarComponent.Close ) );
 
       AccountReport accountReport = tester.Account.CreateReport( "MSFT" , 7 ,
-        new ExtendedDateTime( endDateTime , BarComponent.Close ) );
+        new ExtendedDateTime( endDateTime , BarComponent.Close ) , "MSFT" );
       ExcelManager.Add( accountReport );
       ExcelManager.ShowReport();
     }
