@@ -70,6 +70,10 @@ namespace QuantProject.Applications.Downloader.TickerSelectors
       this.comboBoxAvailableSelectionRules.Items.Add("Liquidity");
       this.comboBoxAvailableSelectionRules.Text = "Performance";
       this.comboBoxAvailableSelectionRules.Items.Add("Performance");
+      this.comboBoxAvailableSelectionRules.Text = "Volatility";
+      this.comboBoxAvailableSelectionRules.Items.Add("Volatility");
+      this.comboBoxAvailableSelectionRules.Text = "AverageCloseToClosePerformance";
+      this.comboBoxAvailableSelectionRules.Items.Add("AverageCloseToClosePerformance");
 
   	}
     public TickerSelectorForm(string groupID) : this()
@@ -344,6 +348,10 @@ namespace QuantProject.Applications.Downloader.TickerSelectors
         typeSelected = SelectionType.Liquidity;      
       else if (this.comboBoxAvailableSelectionRules.Text == "Performance")
         typeSelected = SelectionType.Performance;
+      else if (this.comboBoxAvailableSelectionRules.Text == "Volatility")
+        typeSelected = SelectionType.Volatility;
+      else if (this.comboBoxAvailableSelectionRules.Text == "AverageCloseToClosePerformance")
+        typeSelected = SelectionType.AverageCloseToClosePerformance;
       return typeSelected;  
     }    
 
