@@ -573,7 +573,11 @@ namespace QuantProject.Applications.Downloader.TickerSelectors
             this.dateTimePickerLastDate.Value, Int32.Parse(this.textBoxMaxNumOfReturnedTickers.Text),
             Double.Parse(this.textBoxMinPrice.Text),Double.Parse(this.textBoxMaxPrice.Text),
             Double.Parse(this.textBoxMinStdDev.Text), Double.Parse(this.textBoxMaxStdDev.Text));
-        
+        else
+        	returnValue = new SelectorByAverageRawOpenPrice(this.tableOfSelectedTickers, this.checkBoxASCMode.Checked, this.dateTimePickerFirstDate.Value,
+            this.dateTimePickerLastDate.Value, Int32.Parse(this.textBoxMaxNumOfReturnedTickers.Text),
+            Double.Parse(this.textBoxMinPrice.Text),Double.Parse(this.textBoxMaxPrice.Text),
+            Double.Parse(this.textBoxMinStdDev.Text), Double.Parse(this.textBoxMaxStdDev.Text));
       } 
       return returnValue;  
     }
