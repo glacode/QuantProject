@@ -45,18 +45,13 @@ namespace QuantProject.DataAccess
 	
 	public class DataBaseVersionManager
 	{
-		private OleDbDataAdapter oleDbDataAdapter;
-		private DataTable dataTable_version;
-		private string selectString;
-		private string updateString;
-		private int databaseVersion;
 		private OleDbConnection oleDbConnection;
 		delegate void updatingMethodHandler();
-		private SortedList updatingMethods;
+		private ArrayList updatingMethods;
 		
     #region "DataBaseVersionManager"
     /// <summary>
-    /// The method initialize a populate updatingMethods, a SortedList
+    /// The method initialize a populate updatingMethods, an ArrayList
     /// that contains all the delegates that encapsulate all methods
     /// whose function is to modify the structure of the database.
     /// The key in the sortedList is the new version number that signs 
@@ -64,12 +59,17 @@ namespace QuantProject.DataAccess
     /// </summary>
     private void initialize_updatingMethods()
     {
-      this.updatingMethods  = new SortedList();
-      //After adding a new private method to the class, write
-      //the following code, paying attention to the version number:
-      //this.updatingMethods.Add(yourVersionNumber,
-      //						new updatingMethodHandler(this.yourMethodName))
-      this.updatingMethods.Add( 2 , new updatingMethodHandler(this.updateToVersion2) );
+		this.updatingMethods  = new ArrayList();
+		// After adding a new private method to the class (e.g. dropConstraints o
+		// or similar) write similar code to the following:
+		this.updatingMethods.Add(new updatingMethodHandler(this.createDatabase));
+		this.updatingMethods.Add(new updatingMethodHandler(this.createTables));
+		this.updatingMethods.Add(new updatingMethodHandler(this.alterTablesAddPrimaryKeys));
+		this.updatingMethods.Add(new updatingMethodHandler(this.alterTablesAddForeignKeys));
+		this.updatingMethods.Add(new updatingMethodHandler(this.alterTablesAddIndexes));
+		this.updatingMethods.Add(new updatingMethodHandler(this.alterTablesAddColumns));
+		this.updatingMethods.Add(new updatingMethodHandler(this.dropTables));
+		
     }
 		public DataBaseVersionManager(OleDbConnection oleDbConnection)
 		{
@@ -77,13 +77,6 @@ namespace QuantProject.DataAccess
 			{
 				this.oleDbConnection = oleDbConnection;
 				this.oleDbConnection.Open();
-				this.selectString = "SELECT * FROM version";
-				this.updateString = "UPDATE version SET veId = ?";
-				this.oleDbDataAdapter = new OleDbDataAdapter(selectString, this.oleDbConnection);
-				this.oleDbDataAdapter.UpdateCommand = new OleDbCommand(this.updateString,this.oleDbConnection);
-				this.oleDbDataAdapter.UpdateCommand.Parameters.Add("@veId", OleDbType.Integer); 
-				this.oleDbDataAdapter.UpdateCommand.Parameters["@veId"].SourceColumn = "veId";
-				this.dataTable_version  = new DataTable();
 				this.initialize_updatingMethods();
 			}
 			catch(Exception ex)
@@ -95,53 +88,85 @@ namespace QuantProject.DataAccess
 		
     #endregion
 
+
     #region "updating methods"
-    private void updateToVersion2()
+	private void createDatabase()
+	{
+		//TODO code to create an empty DB if user doesn't select the QuantProject.mdb;
+	}
+	private void createTables()
     {
-      string command =
-        "create table validatedTickers " +
-        "( vtTicker TEXT(8) , vtStartDate DATETIME , vtEndDate DATETIME , vtDate DATETIME, " +
-        "CONSTRAINT myKey PRIMARY KEY ( vtTicker ) )";
-      OleDbCommand oleDbCommand = new OleDbCommand( command , this.oleDbConnection );
-      oleDbCommand.ExecuteNonQuery();
+		this.executeCommand("CREATE TABLE tickers (tiTicker TEXT(8))");
+		this.executeCommand("CREATE TABLE quotes (quTicker TEXT(8), quDate DATETIME, " +
+							"quOpen REAL, quHigh REAL, quLow REAL, quClose REAL, " +
+							"quVolume INTEGER, quAdjustedClose REAL, quAdjustedCloseToCloseRatio FLOAT)");
+		// table where to store the time period for which tickers' quotes have been validated
+		this.executeCommand("CREATE TABLE validatedTickers " +
+        "( vtTicker TEXT(8) , vtStartDate DATETIME , vtEndDate DATETIME , vtDate DATETIME)");
+		// table of groups where you can collect tickers.
+		// Groups are used to simplify operations like:
+		// validating, updating data from the web, testing strategies
+		this.executeCommand("CREATE TABLE tickerGroups " +
+			"( tgId TEXT(8) , tgDescription(100), tgTgId TEXT(8))");
+		// where to store the relation between a ticker and a group
+		// NOTE that a group can be created inside another group and
+		// a ticker can belong to one or more groups 
+		this.executeCommand("CREATE TABLE tickers_tickerGroups " +
+			"( ttTgId TEXT(8) , ttTiId TEXT(8))");
     }
+
+	private void alterTablesAddPrimaryKeys()
+	{
+			this.executeCommand("ALTER TABLE tickers ADD CONSTRAINT PKtiTicker PRIMARY KEY (tiTicker)");
+			this.executeCommand("ALTER TABLE quotes ADD CONSTRAINT PKquTicker_quDate " +
+								"PRIMARY KEY (quTicker, quDate)");
+
+			this.executeCommand("ALTER TABLE validatedTickers ADD CONSTRAINT myKey PRIMARY KEY ( vtTicker )");
+			this.executeCommand("ALTER TABLE tickers_tickerGroups " + 
+								"ADD CONSTRAINT PKttTgId_ttTiId PRIMARY KEY ( ttTgId, ttTiId)");
+	}
+	private void alterTablesAddForeignKeys()
+	{
+		// add code here for adding foreign keys to existing tables;
+	}
+	private void alterTablesAddColumns()
+	{
+		//add code here for adding columns to existing tables;
+	}
+	private void alterTablesAddIndexes()
+	{
+		//add code here for adding indexes to existing tables;
+	}
+
+	private void dropTables()
+	{
+		this.executeCommand("DROP TABLE version");
+	}	
+	private void executeCommand(string commandToBeExecuted)
+	{
+		try
+		{		
+			OleDbCommand oleDbCommand = new OleDbCommand( commandToBeExecuted , this.oleDbConnection );
+			int checkCommandExecution = oleDbCommand.ExecuteNonQuery();
+		}
+		catch(Exception ex)
+		{
+			string notUsed = ex.ToString();// to avoid warning after compilation
+		}	
+	}
+	
     #endregion
 
+
     #region "UpdateDataBaseStructure"
-    private int getDataBaseVersionNumber()
-    {
-      this.dataTable_version.Clear();
-      this.oleDbDataAdapter.Fill(this.dataTable_version);
-      DataRow dataRow = this.dataTable_version.Rows[0];
-      return (int)dataRow["veId"];
-    }
-    private void setNewDataBaseVersionNumber(int newVersionNumber)
-    {
-      this.dataTable_version.Rows[0]["veId"] = newVersionNumber;
-      this.oleDbDataAdapter.Update(this.dataTable_version);
-      this.dataTable_version.AcceptChanges();
-    }
-    private void executeMethod(DictionaryEntry itemContainingMethod)
-    {
-      this.databaseVersion = this.getDataBaseVersionNumber();
-      int differenceBetweenNewVersionAndDataBaseVersion =
-        (int)itemContainingMethod.Key  - this.databaseVersion;
-      if(differenceBetweenNewVersionAndDataBaseVersion == 1)
-        //db's structure can be updated by the method contained in the item
-      {
-        updatingMethodHandler handler = (updatingMethodHandler)itemContainingMethod.Value;
-        handler();
-        //it calls the method that modifies the db structure
-        this.setNewDataBaseVersionNumber((int)itemContainingMethod.Key);
-      }
-    }
-		public void UpdateDataBaseStructure()
+   		public void UpdateDataBaseStructure()
 		{
 			try
 			{
-				foreach (DictionaryEntry method in this.updatingMethods)
+				foreach (Object method in this.updatingMethods)
 				{
-					this.executeMethod(method);
+					updatingMethodHandler handler = (updatingMethodHandler)method;
+					handler();
 				}
 				this.oleDbConnection.Close();
 			}
@@ -152,5 +177,6 @@ namespace QuantProject.DataAccess
 			}
 		}
     #endregion	
+	
 	}
 }
