@@ -83,7 +83,7 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
         this.account.AddCash(endOfDayTimingEventArgs.EndOfDayDateTime,
                               16000);
       
-      this.account.ExecuteActiveOrders();
+      //this.account.ExecuteActiveOrders();
     }
 		#endregion
 
@@ -169,7 +169,7 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
       Object sender , EndOfDayTimingEventArgs endOfDayTimingEventArgs )
     {
       this.setTickers(endOfDayTimingEventArgs.EndOfDayDateTime.DateTime);
-      this.account.ClearOrders();
+      //this.account.ClearOrders();
       oneHourAfterMarketCloseEventHandler_orderChosenTickers( ( IEndOfDayTimer ) sender );
     }
 		
