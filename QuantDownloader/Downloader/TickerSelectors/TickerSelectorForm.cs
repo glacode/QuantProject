@@ -56,6 +56,7 @@ namespace QuantProject.Applications.Downloader.TickerSelectors
     private System.Windows.Forms.ComboBox comboBoxAvailableSelectionRules;
     private System.Windows.Forms.TextBox textBoxMaxNumOfReturnedTickers;
     private System.Windows.Forms.Label label3;
+    private DataTable tableOfSelectedTickers;
 
 		public TickerSelectorForm()
 		{
@@ -70,8 +71,17 @@ namespace QuantProject.Applications.Downloader.TickerSelectors
   	}
     public TickerSelectorForm(string groupID) : this()
     {
+      this.Text = "Apply rule to all tickers of the selected group";
       this.textBoxGroupID.Text = groupID; 
     }
+    
+    public TickerSelectorForm(DataTable tableOfSelectedTickers) : this()
+    {
+      this.Text = "Apply rule to the selected tickers";
+      this.tableOfSelectedTickers = tableOfSelectedTickers;
+      this.textBoxGroupID.Enabled = false;
+    }
+
 		/// <summary>
 		/// clean up 
 		/// </summary>
@@ -316,7 +326,8 @@ namespace QuantProject.Applications.Downloader.TickerSelectors
 
     private void buttonSelectTickers_Click(object sender, System.EventArgs e)
     {
-        //TODO: complete code ...
+        //TODO: complete code finding a way to construct the right 
+        // selection rule on the base of what selected by the user
         SelectionRule rule = new SelectionRule(SelectionType.MostLiquid, this.textBoxGroupID.Text, 
                                             this.dateTimePickerFirstDate.Value,
                                             this.dateTimePickerLastDate.Value,
@@ -325,7 +336,7 @@ namespace QuantProject.Applications.Downloader.TickerSelectors
         if(this.textBoxGroupID.Text != "")
           selector= new TickerSelector(rule);
         else
-          selector= new TickerSelector(QuantProject.Data.DataTables.TickerDataTable.Clipboard,rule);
+          selector= new TickerSelector(this.tableOfSelectedTickers,rule);
         this.dataGrid1.DataSource = selector.GetTableOfSelectedTickers();
         this.dataGrid1.Refresh();
                         
