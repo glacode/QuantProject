@@ -559,7 +559,9 @@ namespace QuantProject.Applications.Downloader
         {
           string notUsed = exception.ToString();
           numTrials++;
-          //if(numTrials==6)
+          if(numTrials==5)
+            FaultyTickers.AddOrUpdate(this.p_quTicker, DateTime.Now.Date);
+            // to add faulty tickers to database table
             //throw new Exception("It has not been possible to set streams from Yahoo: \n\n" +
             //                    "Check the connection to the internet or the following url: \n\n" +
             //                    url,exception);
