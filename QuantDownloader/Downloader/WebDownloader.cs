@@ -9,13 +9,15 @@ using System.Net;
 using System.IO;
 using System.Threading;
 using QuantProject.DataAccess;
+using QuantProject.DataAccess.Tables;
+using QuantProject.Applications.Downloader.TickerSelectors;
 
 namespace QuantProject.Applications.Downloader
 {
 	/// <summary>
 	/// Summary description for Form1.
 	/// </summary>
-	public class WebDownloader : System.Windows.Forms.Form
+	public class WebDownloader : System.Windows.Forms.Form, ITickerSelector 
 	{
     public OleDbConnection OleDbConnection1 = ConnectionProvider.OleDbConnection;
     private System.Windows.Forms.Button button1;
@@ -42,6 +44,7 @@ namespace QuantProject.Applications.Downloader
     private System.Windows.Forms.RadioButton radioButtonAllAvailableUntilNowSinceStartingDate;
     internal System.Windows.Forms.CheckBox checkBoxIsDicotomicSearchActivated;
     private System.Windows.Forms.RadioButton radioButtonDownloadBeforeMinAndAfterMax;
+    private System.Windows.Forms.RadioButton radioButtonDownloadOnlyAfterMax;
 		/// <summary>
 		/// Required designer variable.
 		/// </summary>
@@ -101,10 +104,11 @@ namespace QuantProject.Applications.Downloader
     /// </summary>
     private void commonInitialization()
     {
-      this.radioButtonAllAvailableUntilNow.Checked = true;
-      this.dateTimePickerStartingDate.Value = new DateTime(1980,1,1);
+      this.dateTimePickerStartingDate.Value = QuantProject.ADT.ConstantsProvider.InitialDateTimeForDownload;
       //this.dateTimePickerStartingDate.Refresh();
-      this.radioButtonOverWriteNo.Checked = true;
+      this.radioButtonAllAvailableUntilNow.Checked = true;
+      this.radioButtonDownloadOnlyAfterMax.Checked = true;
+      this.dataGrid1.ContextMenu = new TickerViewerMenu(this);
     }
 
 
@@ -133,6 +137,7 @@ namespace QuantProject.Applications.Downloader
       this.groupBoxWebDownloaderOptions = new System.Windows.Forms.GroupBox();
       this.checkBoxIsDicotomicSearchActivated = new System.Windows.Forms.CheckBox();
       this.groupBoxUpdateDatabaseOptions = new System.Windows.Forms.GroupBox();
+      this.radioButtonDownloadOnlyAfterMax = new System.Windows.Forms.RadioButton();
       this.radioButtonDownloadBeforeMinAndAfterMax = new System.Windows.Forms.RadioButton();
       this.radioButtonOverWriteNo = new System.Windows.Forms.RadioButton();
       this.radioButtonOverWriteYes = new System.Windows.Forms.RadioButton();
@@ -143,7 +148,7 @@ namespace QuantProject.Applications.Downloader
       // 
       // button1
       // 
-      this.button1.Location = new System.Drawing.Point(88, 320);
+      this.button1.Location = new System.Drawing.Point(88, 352);
       this.button1.Name = "button1";
       this.button1.Size = new System.Drawing.Size(112, 32);
       this.button1.TabIndex = 0;
@@ -154,9 +159,9 @@ namespace QuantProject.Applications.Downloader
       // 
       this.dataGrid1.DataMember = "";
       this.dataGrid1.HeaderForeColor = System.Drawing.SystemColors.ControlText;
-      this.dataGrid1.Location = new System.Drawing.Point(304, 8);
+      this.dataGrid1.Location = new System.Drawing.Point(328, 8);
       this.dataGrid1.Name = "dataGrid1";
-      this.dataGrid1.Size = new System.Drawing.Size(272, 432);
+      this.dataGrid1.Size = new System.Drawing.Size(304, 456);
       this.dataGrid1.TabIndex = 1;
       // 
       // oleDbDataAdapter1
@@ -238,7 +243,7 @@ namespace QuantProject.Applications.Downloader
       // 
       // buttonDownloadQuotesOfSelectedTickers
       // 
-      this.buttonDownloadQuotesOfSelectedTickers.Location = new System.Drawing.Point(88, 360);
+      this.buttonDownloadQuotesOfSelectedTickers.Location = new System.Drawing.Point(88, 392);
       this.buttonDownloadQuotesOfSelectedTickers.Name = "buttonDownloadQuotesOfSelectedTickers";
       this.buttonDownloadQuotesOfSelectedTickers.Size = new System.Drawing.Size(112, 32);
       this.buttonDownloadQuotesOfSelectedTickers.TabIndex = 2;
@@ -247,7 +252,7 @@ namespace QuantProject.Applications.Downloader
       // 
       // labelNumberOfTickersToDownload
       // 
-      this.labelNumberOfTickersToDownload.Location = new System.Drawing.Point(152, 408);
+      this.labelNumberOfTickersToDownload.Location = new System.Drawing.Point(152, 440);
       this.labelNumberOfTickersToDownload.Name = "labelNumberOfTickersToDownload";
       this.labelNumberOfTickersToDownload.Size = new System.Drawing.Size(48, 24);
       this.labelNumberOfTickersToDownload.TabIndex = 4;
@@ -255,7 +260,7 @@ namespace QuantProject.Applications.Downloader
       // 
       // labelTickersLeft
       // 
-      this.labelTickersLeft.Location = new System.Drawing.Point(8, 408);
+      this.labelTickersLeft.Location = new System.Drawing.Point(8, 440);
       this.labelTickersLeft.Name = "labelTickersLeft";
       this.labelTickersLeft.Size = new System.Drawing.Size(136, 24);
       this.labelTickersLeft.TabIndex = 5;
@@ -291,7 +296,7 @@ namespace QuantProject.Applications.Downloader
       this.radioButtonAllAvailableUntilNowSinceStartingDate.Name = "radioButtonAllAvailableUntilNowSinceStartingDate";
       this.radioButtonAllAvailableUntilNowSinceStartingDate.Size = new System.Drawing.Size(272, 24);
       this.radioButtonAllAvailableUntilNowSinceStartingDate.TabIndex = 12;
-      this.radioButtonAllAvailableUntilNowSinceStartingDate.Text = "Change starting date";
+      this.radioButtonAllAvailableUntilNowSinceStartingDate.Text = "All available quotes until now, changing starting date";
       // 
       // groupBoxWebDownloaderOptions
       // 
@@ -300,7 +305,7 @@ namespace QuantProject.Applications.Downloader
                                                                                                this.radioButtonAllAvailableUntilNow});
       this.groupBoxWebDownloaderOptions.Location = new System.Drawing.Point(8, 8);
       this.groupBoxWebDownloaderOptions.Name = "groupBoxWebDownloaderOptions";
-      this.groupBoxWebDownloaderOptions.Size = new System.Drawing.Size(288, 88);
+      this.groupBoxWebDownloaderOptions.Size = new System.Drawing.Size(312, 88);
       this.groupBoxWebDownloaderOptions.TabIndex = 13;
       this.groupBoxWebDownloaderOptions.TabStop = false;
       this.groupBoxWebDownloaderOptions.Text = "Web Downloader options (source: Yahoo)";
@@ -309,7 +314,7 @@ namespace QuantProject.Applications.Downloader
       // 
       this.checkBoxIsDicotomicSearchActivated.Checked = true;
       this.checkBoxIsDicotomicSearchActivated.CheckState = System.Windows.Forms.CheckState.Checked;
-      this.checkBoxIsDicotomicSearchActivated.Location = new System.Drawing.Point(16, 288);
+      this.checkBoxIsDicotomicSearchActivated.Location = new System.Drawing.Point(16, 320);
       this.checkBoxIsDicotomicSearchActivated.Name = "checkBoxIsDicotomicSearchActivated";
       this.checkBoxIsDicotomicSearchActivated.Size = new System.Drawing.Size(272, 24);
       this.checkBoxIsDicotomicSearchActivated.TabIndex = 13;
@@ -318,46 +323,55 @@ namespace QuantProject.Applications.Downloader
       // groupBoxUpdateDatabaseOptions
       // 
       this.groupBoxUpdateDatabaseOptions.Controls.AddRange(new System.Windows.Forms.Control[] {
+                                                                                                this.radioButtonDownloadOnlyAfterMax,
                                                                                                 this.radioButtonDownloadBeforeMinAndAfterMax,
                                                                                                 this.radioButtonOverWriteNo,
                                                                                                 this.radioButtonOverWriteYes});
       this.groupBoxUpdateDatabaseOptions.Location = new System.Drawing.Point(8, 136);
       this.groupBoxUpdateDatabaseOptions.Name = "groupBoxUpdateDatabaseOptions";
-      this.groupBoxUpdateDatabaseOptions.Size = new System.Drawing.Size(288, 144);
+      this.groupBoxUpdateDatabaseOptions.Size = new System.Drawing.Size(312, 176);
       this.groupBoxUpdateDatabaseOptions.TabIndex = 14;
       this.groupBoxUpdateDatabaseOptions.TabStop = false;
       this.groupBoxUpdateDatabaseOptions.Text = "Update Database options";
       // 
+      // radioButtonDownloadOnlyAfterMax
+      // 
+      this.radioButtonDownloadOnlyAfterMax.Checked = true;
+      this.radioButtonDownloadOnlyAfterMax.Location = new System.Drawing.Point(16, 24);
+      this.radioButtonDownloadOnlyAfterMax.Name = "radioButtonDownloadOnlyAfterMax";
+      this.radioButtonDownloadOnlyAfterMax.Size = new System.Drawing.Size(288, 24);
+      this.radioButtonDownloadOnlyAfterMax.TabIndex = 3;
+      this.radioButtonDownloadOnlyAfterMax.TabStop = true;
+      this.radioButtonDownloadOnlyAfterMax.Text = "Download only quotes after last quote (fastest)";
+      // 
       // radioButtonDownloadBeforeMinAndAfterMax
       // 
-      this.radioButtonDownloadBeforeMinAndAfterMax.Enabled = false;
-      this.radioButtonDownloadBeforeMinAndAfterMax.Location = new System.Drawing.Point(16, 24);
+      this.radioButtonDownloadBeforeMinAndAfterMax.Location = new System.Drawing.Point(16, 56);
       this.radioButtonDownloadBeforeMinAndAfterMax.Name = "radioButtonDownloadBeforeMinAndAfterMax";
-      this.radioButtonDownloadBeforeMinAndAfterMax.Size = new System.Drawing.Size(248, 32);
+      this.radioButtonDownloadBeforeMinAndAfterMax.Size = new System.Drawing.Size(288, 32);
       this.radioButtonDownloadBeforeMinAndAfterMax.TabIndex = 2;
-      this.radioButtonDownloadBeforeMinAndAfterMax.Text = "Download only quotes that come before first quote or after last quote in database" +
-        "";
+      this.radioButtonDownloadBeforeMinAndAfterMax.Text = "Download only quotes before first quote and after last quote";
       // 
       // radioButtonOverWriteNo
       // 
-      this.radioButtonOverWriteNo.Location = new System.Drawing.Point(16, 64);
+      this.radioButtonOverWriteNo.Location = new System.Drawing.Point(16, 96);
       this.radioButtonOverWriteNo.Name = "radioButtonOverWriteNo";
-      this.radioButtonOverWriteNo.Size = new System.Drawing.Size(248, 32);
+      this.radioButtonOverWriteNo.Size = new System.Drawing.Size(288, 32);
       this.radioButtonOverWriteNo.TabIndex = 1;
       this.radioButtonOverWriteNo.Text = "Download all quotes, adding to database only the missing ones";
       // 
       // radioButtonOverWriteYes
       // 
-      this.radioButtonOverWriteYes.Location = new System.Drawing.Point(16, 104);
+      this.radioButtonOverWriteYes.Location = new System.Drawing.Point(16, 136);
       this.radioButtonOverWriteYes.Name = "radioButtonOverWriteYes";
-      this.radioButtonOverWriteYes.Size = new System.Drawing.Size(248, 32);
+      this.radioButtonOverWriteYes.Size = new System.Drawing.Size(288, 32);
       this.radioButtonOverWriteYes.TabIndex = 0;
       this.radioButtonOverWriteYes.Text = "Download all quotes, overwriting the existing ones in database";
       // 
       // WebDownloader
       // 
       this.AutoScaleBaseSize = new System.Drawing.Size(5, 13);
-      this.ClientSize = new System.Drawing.Size(584, 446);
+      this.ClientSize = new System.Drawing.Size(664, 470);
       this.Controls.AddRange(new System.Windows.Forms.Control[] {
                                                                   this.groupBoxUpdateDatabaseOptions,
                                                                   this.groupBoxWebDownloaderOptions,
@@ -497,8 +511,38 @@ namespace QuantProject.Applications.Downloader
     */
     #endregion
 	  
+    #region ITickerSelector's implementation
+    public TickerDataTable GetTableOfSelectedTickers()
+    {
+      DataTable dataTableOfDataGrid1 = (DataTable)this.dataGrid1.DataSource;
+      TickerDataTable tableOfSelectedTickers = new TickerDataTable();
+      int indexOfRow = 0;
+      while(indexOfRow != dataTableOfDataGrid1.Rows.Count)
+      {
+        if(this.dataGrid1.IsSelected(indexOfRow))
+        {
+          DataRow dataRow = tableOfSelectedTickers.NewRow(); 
+          dataRow[0] = (string)dataTableOfDataGrid1.Rows[indexOfRow][0];
+          tableOfSelectedTickers.Rows.Add(dataRow);
+        }
+        indexOfRow++;
+      }
+      return tableOfSelectedTickers;
+    }
 
-  	
+    public void SelectAllTickers()
+    {
+      DataTable dataTableOfDataGrid1 = (DataTable)this.dataGrid1.DataSource;
+      int indexOfRow = 0;
+      while(indexOfRow != dataTableOfDataGrid1.Rows.Count)
+      {
+        this.dataGrid1.Select(indexOfRow);
+        indexOfRow++;
+      }
+    }    
+    #endregion
+
+
     private void downloadQuotes_withTickerDataSet_create_dsTickerCurrentlyDownloaded( DataTable dt )
     {
       if (!this.DsTickerCurrentlyDownloaded.Tables.Contains( "Tickers" ))
@@ -507,6 +551,7 @@ namespace QuantProject.Applications.Downloader
         this.DsTickerCurrentlyDownloaded.Tables[ "Tickers" ].Columns.Add( 
           new DataColumn( dt.Columns[ "tiTicker" ].ColumnName , dt.Columns[ "tiTicker" ].DataType ) );
         this.DsTickerCurrentlyDownloaded.Tables[ "Tickers" ].Columns.Add( "currentState" , System.Type.GetType( "System.String" ) );
+        this.DsTickerCurrentlyDownloaded.Tables[ "Tickers" ].Columns.Add( "adjustedClose" , System.Type.GetType( "System.String" ) );
         this.dataGrid1.DataSource = this.DsTickerCurrentlyDownloaded.Tables[ "Tickers" ];
       }
     }
@@ -531,6 +576,7 @@ namespace QuantProject.Applications.Downloader
           qd.DownloadTicker();
         }
       Cursor.Current = Cursors.Default;
+      
         //newThread.Join();
         //qd.downloadTicker();
       }
@@ -565,7 +611,8 @@ namespace QuantProject.Applications.Downloader
 		  try
 		  {
 			  Cursor.Current = Cursors.WaitCursor;
-			  this.OleDbConnection1.Open();
+			  if (this.OleDbConnection1.State != ConnectionState.Open)
+            this.OleDbConnection1.Open();
 			  oleDbCommand1.Connection = this.OleDbConnection1;
 			  //this.oleDbCommand1.ExecuteNonQuery();
 			  // NOTE that the execution of the previous line
@@ -590,12 +637,14 @@ namespace QuantProject.Applications.Downloader
     {
 	    this.openDbAndSetOleDbCommand();
 	    this.downloadQuotesOfAllTickers();
+      this.button1.Enabled = false;
     }
 
     private void buttonDownloadQuotesOfSelectedTickers_Click(object sender, System.EventArgs e)
     {
 	    this.openDbAndSetOleDbCommand();
 	    this.downloadQuotesOfSelectedTickers();
+      this.buttonDownloadQuotesOfSelectedTickers.Enabled = false;
     }
 
     private void radioButtonAllAvailableUntilNow_CheckedChanged(object sender, System.EventArgs e)
@@ -607,6 +656,23 @@ namespace QuantProject.Applications.Downloader
       else
       {
         this.dateTimePickerStartingDate.Enabled = true;
+      }
+    }
+
+    public bool IsUpdateOptionSelected
+    {
+      get
+      {
+        return (this.radioButtonDownloadBeforeMinAndAfterMax.Checked || 
+                this.radioButtonDownloadOnlyAfterMax.Checked);
+      }
+    }
+
+    public bool IsOnlyAfterLastQuoteSelected
+    {
+      get
+      {
+        return this.radioButtonDownloadOnlyAfterMax.Checked;
       }
     }
   }

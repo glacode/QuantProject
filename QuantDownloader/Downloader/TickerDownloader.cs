@@ -3,6 +3,8 @@ using System.Data;
 using System.IO;
 using System.Net;
 using System.Windows.Forms;
+using QuantProject.DataAccess.Tables;
+using QuantProject.ADT;
 
 namespace QuantProject.Applications.Downloader
 {
@@ -16,12 +18,14 @@ namespace QuantProject.Applications.Downloader
     private DataRow p_currentDataTickerRow;
     private string p_quTicker;
     private int p_numRows;
+    private DateTime INITIAL_DATE = ConstantsProvider.InitialDateTimeForDownload;
     private DateTime startDate;
     private DateTime endDate = DateTime.Today;
     private int endDay = DateTime.Now.Day;
     private int endMonth = DateTime.Now.Month;
     private int endYear = DateTime.Now.Year;
-    private DateTime INITIAL_DATE = new DateTime(1980, 1, 1); 
+    private int numberOfQuotesInDatabase;
+    
     public TickerDownloader( WebDownloader myForm, DataRow currentDataTickerRow, string quTicker , int numRows )
     {
       this.startDate = this.INITIAL_DATE;
@@ -53,7 +57,16 @@ namespace QuantProject.Applications.Downloader
         p_myForm.dataGrid1.Refresh();
       }
     }
-
+    
+    private void updateCurrentStatusAdjustedClose(string stateOfAdjustedCloseValue )
+    {
+      lock( p_myForm.DsTickerCurrentlyDownloaded.Tables[ "Tickers" ] )
+      {
+        DataRow[] myRows = p_myForm.DsTickerCurrentlyDownloaded.Tables[ "Tickers" ].Select( "tiTicker='" + p_quTicker + "'" );
+        myRows[ 0 ][ "adjustedClose" ] = stateOfAdjustedCloseValue;
+        p_myForm.dataGrid1.Refresh();
+      }
+    }
     private void addTickerToFaultyTickers()
     {
       System.Data.OleDb.OleDbCommand odc = new System.Data.OleDb.OleDbCommand();
@@ -87,7 +100,7 @@ namespace QuantProject.Applications.Downloader
           HttpWebRequest Req = (HttpWebRequest)WebRequest.Create("http:" + "//table.finance.yahoo.com/table.csv?a=" 
             + a + "&b=" + b + "&c=" + c +"&d=" + d + "&e=" + e + "&f=" + f + "&s=" + p_quTicker + "&y=0&g=d&ignore=.csv");
           Req.Method = "GET";
-          Req.Timeout = 25000;
+          Req.Timeout = ConstantsProvider.TimeOutValue;
           HttpWebResponse hwr = (HttpWebResponse)Req.GetResponse();
           Stream strm = hwr.GetResponseStream();
           StreamReader sr = new StreamReader(strm);
@@ -97,9 +110,9 @@ namespace QuantProject.Applications.Downloader
           dataBaseImporter.ImportTicker( p_quTicker );
           sr.Close();
           strm.Close();
-          hwr.Close();
+          //hwr.Close();
           
-		  updateCurrentStatus( d + "/" + e + "/" + f );
+		      updateCurrentStatus( d + "/" + e + "/" + f );
           numTrials = 6 ;
         }
         catch (Exception exception)
@@ -137,6 +150,7 @@ namespace QuantProject.Applications.Downloader
       DataRow newRow = p_myForm.DsTickerCurrentlyDownloaded.Tables[ "Tickers" ].NewRow();
       newRow[ "tiTicker" ] = p_quTicker;
       newRow[ "currentState" ] = "Searching ...";
+      newRow[ "adjustedClose"] = "...";
       try
       {
         p_myForm.DsTickerCurrentlyDownloaded.Tables[ "Tickers" ].Rows.Add( newRow );
@@ -150,32 +164,110 @@ namespace QuantProject.Applications.Downloader
       p_myForm.dataGrid1.Refresh();
     }
 
+    private void resetStartDateIfNecessary()
+    {
+      if(this.p_myForm.checkBoxIsDicotomicSearchActivated.Checked  == true) 
+        this.startDate = firstAvailableDateOnYahoo(this.INITIAL_DATE, this.endDate);
+    }
+
+    private void downloadTickerBeforeFirstQuote()
+    {
+      this.endDate = Quotes.GetStartDate(this.p_quTicker);
+      this.resetStartDateIfNecessary();
+      this.setTimeFrameAndImportTickerForEachTimeFrame(200);
+    }
+    
+    private bool getResponseForRepeatedChecks(int numberOfRepeatedChecks)
+    {
+      bool response = false;
+      Quotes tickerQuotes = new Quotes(this.p_quTicker);
+      for(int i = 1; i< this.numberOfQuotesInDatabase; i += this.numberOfQuotesInDatabase/numberOfRepeatedChecks)
+      {
+        DateTime dateToCheck = tickerQuotes.GetPrecedingDate(this.startDate, i);
+        response = 
+              Quotes.IsAdjustedCloseChanged(this.p_quTicker, dateToCheck,
+                                            this.adjustedCloseFromSource(dateToCheck));
+      }
+      return response;
+    }
+    
+    private void checkForNewAdjustedValueFromSource()
+    {
+      try
+      {
+        if(this.getResponseForRepeatedChecks(ConstantsProvider.NumberOfCheckToPerformOnAdjustedValues))
+        {
+          this.updateCurrentStatusAdjustedClose("Changed!");
+        }
+        else
+        {
+          this.updateCurrentStatusAdjustedClose("OK");
+        }
+      }
+      catch(Exception ex)
+      {
+        MessageBox.Show(ex.ToString());
+      }
+    }
+    
+    
+    
+    private void downloadTickerAfterLastQuote()
+    {
+      this.startDate = Quotes.GetEndDate(this.p_quTicker);
+      this.endDate = DateTime.Today;
+      this.checkForNewAdjustedValueFromSource();
+      this.setTimeFrameAndImportTickerForEachTimeFrame(200);
+
+    }
+    
+    private float adjustedCloseFromSource(DateTime adjustedCloseDate)
+    {
+      string Line;
+      string[] LineIn = null;
+      StreamReader streamReader = this.getStreamReaderFromSource(adjustedCloseDate, 0);
+      Line = streamReader.ReadLine();
+      Line = streamReader.ReadLine();
+      if ( Line != null && ! Line.StartsWith("<"))
+      {
+        LineIn=Line.Split(',');
+      }
+      return Single.Parse(LineIn[6]);
+    }
     public void DownloadTicker()
     {
       // update grid in webdownloader form
 	    addTickerTo_gridDataSet();
-      /* if(tickerIsInDatabase && p_myForm.UpdateFlagYes)
+      this.numberOfQuotesInDatabase = Quotes.GetNumberOfQuotes(this.p_quTicker);
+      if(this.numberOfQuotesInDatabase>0 && p_myForm.IsUpdateOptionSelected)
+      // there are some ticker's quotes in the database and
+      // the user has chosen to download new quotes (only after last quote
+      // or both before first quote and after last quote)
       {
-        // try to import ticker before the first quote
-        
-        // try to import ticker after the last quote
+        if(this.p_myForm.IsOnlyAfterLastQuoteSelected)
+        {
+          this.downloadTickerAfterLastQuote();
+        }
+        else
+        {
+          this.downloadTickerBeforeFirstQuote();
+          this.downloadTickerAfterLastQuote();
+        }
       }
       else
-      // tickers'quotes are downloaded for the first time
-      {*/
-        if(this.p_myForm.checkBoxIsDicotomicSearchActivated.Checked  == true) 
-          this.startDate = firstAvailableDateOnYahoo(this.INITIAL_DATE, this.endDate);
-          setTimeFrameAndImportTickerForEachTimeFrame(200);
-
-      //}
-
+      // ticker's quotes are downloaded for the first time or
+      // the user has chosen to download all quotes
+      {
+        this.resetStartDateIfNecessary();
+        setTimeFrameAndImportTickerForEachTimeFrame(200);
+      }
       //Monitor.Pulse( p_myForm.dsTickerCurrentlyDownloaded.Tables[ "Tickers" ] );
+
     }
     public void DownloadTicker(DateTime startingDate)
     {
       this.INITIAL_DATE = startingDate;
       this.DownloadTicker();
-      
     }
 
 
@@ -202,6 +294,43 @@ namespace QuantProject.Applications.Downloader
 
     }
     
+    private StreamReader getStreamReaderFromSource( DateTime initialDateOfTheTimeWindow,
+                                                    int daysOfTheTimeWindow )
+    {
+      int a = initialDateOfTheTimeWindow.Month - 1;
+      int b = initialDateOfTheTimeWindow.Day;
+      int c = initialDateOfTheTimeWindow.Year;
+      DateTime endDateOfTheTimeWindow = initialDateOfTheTimeWindow.AddDays(daysOfTheTimeWindow);
+      int d = endDateOfTheTimeWindow.Month - 1;
+      int e = endDateOfTheTimeWindow.Day;
+      int f = endDateOfTheTimeWindow.Year;
+      HttpWebRequest Req;
+      HttpWebResponse hwr;
+      Stream strm;
+      StreamReader sr = null;
+      int numTrials = 1;
+      while(numTrials < 5)
+      {
+        try
+        {
+          Req = (HttpWebRequest)WebRequest.Create("http:" + "//table.finance.yahoo.com/table.csv?a=" 
+            + a + "&b=" + b + "&c=" + c +"&d=" + d + "&e=" + e + "&f=" + f + "&s=" + p_quTicker + "&y=0&g=d&ignore=.csv");
+          Req.Method = "GET";
+          Req.Timeout = ConstantsProvider.TimeOutValue;
+          hwr = (HttpWebResponse)Req.GetResponse();
+          strm = hwr.GetResponseStream();
+          sr = new StreamReader(strm);
+          numTrials = 6;
+          
+        }
+        catch (Exception exception)
+        {
+          string notUsed = exception.ToString();
+          numTrials++;
+        }
+      }
+      return sr;
+    }
 
     private bool getResponseForTimeWindow( DateTime initialDateOfTheTimeWindow,
                                             int daysOfTheTimeWindow )
@@ -226,19 +355,19 @@ namespace QuantProject.Applications.Downloader
           Req = (HttpWebRequest)WebRequest.Create("http:" + "//table.finance.yahoo.com/table.csv?a=" 
             + a + "&b=" + b + "&c=" + c +"&d=" + d + "&e=" + e + "&f=" + f + "&s=" + p_quTicker + "&y=0&g=d&ignore=.csv");
           Req.Method = "GET";
-          Req.Timeout = 20000;
+          Req.Timeout = ConstantsProvider.TimeOutValue;
           hwr = (HttpWebResponse)Req.GetResponse();
           strm = hwr.GetResponseStream();
           sr = new StreamReader(strm);
           response = this.isAtLeastOneDateAvailable(sr, daysOfTheTimeWindow );
           sr.Close();
           strm.Close();
-          hwr.Close();
+          //hwr.Close();
           numTrials = 6;
         }
         catch (Exception exception)
         {
-          MessageBox.Show( exception.ToString() + "\n\n for: " + initialDateOfTheTimeWindow.ToString());
+          string notUsed = exception.ToString();
           numTrials++;
         }
       }
@@ -283,7 +412,6 @@ namespace QuantProject.Applications.Downloader
           return firstAvailableDateOnYahoo(middleDate, endingDate);
         }
       }
-
     }
   }
 }
