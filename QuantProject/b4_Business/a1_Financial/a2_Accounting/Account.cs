@@ -48,19 +48,20 @@ namespace QuantProject.Business.Financial.Accounting
   /// </summary>
   /// 
 
-  [Serializable]
-  public class Account : Keyed , IComparable
-  {
-    private double cashAmount;
-    private AccountStrategy accountStrategy;
+	[Serializable]
+	public class Account : Keyed , IComparable
+	{
+		private double cashAmount;
+		private AccountStrategy accountStrategy;
 		private IEndOfDayTimer endOfDayTimer;
 		private IDataStreamer dataStreamer;
 		private IOrderExecutor orderExecutor;
+		private ICommissionManager commissionManager;
 		private ArrayList activeOrders;
 		private AccountReport accountReport;
 
-    public Portfolio Portfolio = new Portfolio();
-    //public AccountReport accountReport;
+		public Portfolio Portfolio = new Portfolio();
+		//public AccountReport accountReport;
 
 		public double CashAmount
 		{
@@ -86,37 +87,51 @@ namespace QuantProject.Business.Financial.Accounting
 		}
 
 		public AccountStrategy AccountStrategy
-    {
-      get { return accountStrategy; }
-      set { accountStrategy = value; }
-    }
+		{
+			get { return accountStrategy; }
+			set { accountStrategy = value; }
+		}
 
-    public TransactionHistory Transactions = new TransactionHistory();
+		public TransactionHistory Transactions = new TransactionHistory();
 
-    public Account( string accountName ) : base ( accountName )
-    {
-      this.initialize();
-    }
+		public Account( string accountName ) : base ( accountName )
+		{
+			this.initialize();
+		}
 
-    private void initialize()
-    {
-      cashAmount = 0;
+		private void initialize()
+		{
+			cashAmount = 0;
 			this.activeOrders = new ArrayList();
-      accountStrategy = new AccountStrategy( this );
-    }
+			accountStrategy = new AccountStrategy( this );
+		}
 
-    public Account() : base ( "account" )
-    {
-      this.initialize();
-    }
-		public Account( string accountName , IEndOfDayTimer endOfDayTimer ,
-			IDataStreamer dataStreamer , IOrderExecutor orderExecutor ) : base( accountName )
+		public Account() : base ( "account" )
+		{
+			this.initialize();
+		}
+		private void initialize( IEndOfDayTimer endOfDayTimer ,	IDataStreamer dataStreamer ,
+			IOrderExecutor orderExecutor )
 		{
 			this.endOfDayTimer = endOfDayTimer;
 			this.dataStreamer = dataStreamer;
 			this.orderExecutor = orderExecutor;
 			this.orderExecutor.OrderFilled += new OrderFilledEventHandler(
 				this.orderFilledEventHandler );
+		}
+		public Account( string accountName , IEndOfDayTimer endOfDayTimer ,
+			IDataStreamer dataStreamer , IOrderExecutor orderExecutor ) : base( accountName )
+		{
+			this.initialize( endOfDayTimer , dataStreamer , orderExecutor );
+			this.initialize();
+		}
+
+		public Account( string accountName , IEndOfDayTimer endOfDayTimer ,
+			IDataStreamer dataStreamer , IOrderExecutor orderExecutor ,
+			ICommissionManager commissionManager ) : base( accountName )
+		{
+			this.initialize( endOfDayTimer , dataStreamer , orderExecutor );
+			this.commissionManager = commissionManager;
 			this.initialize();
 		}
 
@@ -147,29 +162,29 @@ namespace QuantProject.Business.Financial.Accounting
 				returnValue = 1;
 			return returnValue;
 		}
-    public void Clear()
-    {
-      this.cashAmount = 0;
-      this.Transactions.Clear();
-      this.Portfolio.Clear();
-    }
-    public void AddCash( EndOfDayDateTime endOfDayDateTime , double moneyAmount )
-    {
-      try
-      {
-        EndOfDayTransaction timedTransaction =
-          new EndOfDayTransaction( TransactionType.AddCash , moneyAmount ,
+		public void Clear()
+		{
+			this.cashAmount = 0;
+			this.Transactions.Clear();
+			this.Portfolio.Clear();
+		}
+		public void AddCash( EndOfDayDateTime endOfDayDateTime , double moneyAmount )
+		{
+			try
+			{
+				EndOfDayTransaction timedTransaction =
+					new EndOfDayTransaction( TransactionType.AddCash , moneyAmount ,
 					endOfDayDateTime.Copy() );
-        this.Add( timedTransaction );
-        //Transactions.MultiAdd( extendedDateTime.DateTime , timedTransaction );
-        //cashAmount = cashAmount + moneyAmount;
-      }
-      catch (Exception exception)
-      {
+				this.Add( timedTransaction );
+				//Transactions.MultiAdd( extendedDateTime.DateTime , timedTransaction );
+				//cashAmount = cashAmount + moneyAmount;
+			}
+			catch (Exception exception)
+			{
 				exception = exception;  // to avoid warning message
-        /// TO DO!!!
-      }
-    }
+				/// TO DO!!!
+			}
+		}
 
 		public void AddCash( double moneyAmount )
 		{
@@ -191,36 +206,40 @@ namespace QuantProject.Business.Financial.Accounting
 		}
 
 
-    private void updateCash( Transaction transaction )
-    {
-      cashAmount += transaction.CashFlow() - transaction.Commission.Value;
-    }
+		private void updateCash( Transaction transaction )
+		{
+			cashAmount += transaction.CashFlow();
+			if ( transaction.Commission != null )
+				cashAmount -= transaction.Commission.Value;
+		}
 
 		protected virtual Commission getCommission( Transaction transaction )
 		{
 			return new Commission( transaction );
 		}
-    public void Add( EndOfDayTransaction transaction )
-    {
-			transaction.Commission = this.getCommission( transaction );
-      this.Transactions.Add( transaction );
-      this.updateCash( transaction );
-      this.Portfolio.Update( transaction );
-      //this.accountReport.AddRecord( this );
-    }
-//		public void Add( Transaction transaction )
-//		{
-//			this.Transactions.Add( transaction );
-//			this.updateCash( transaction );
-//			this.Portfolio.Update( transaction );
-//			//this.accountReport.AddRecord( this );
-//		}
-//
+		public void Add( EndOfDayTransaction transaction )
+		{
+			if ( this.commissionManager != null )
+				// an ICommissionManager has been passed to the constructor
+				transaction.Commission = this.commissionManager.GetCommission( transaction );
+			this.Transactions.Add( transaction );
+			this.updateCash( transaction );
+			this.Portfolio.Update( transaction );
+			//this.accountReport.AddRecord( this );
+		}
+		//		public void Add( Transaction transaction )
+		//		{
+		//			this.Transactions.Add( transaction );
+		//			this.updateCash( transaction );
+		//			this.Portfolio.Update( transaction );
+		//			//this.accountReport.AddRecord( this );
+		//		}
+		//
 
-//		public double GetMarketValue( EndOfDayDateTime endOfDayDateTime )
-//		{
-//			return this.CashAmount + this.Portfolio.GetMarketValue( endOfDayDateTime );
-//		}
+		//		public double GetMarketValue( EndOfDayDateTime endOfDayDateTime )
+		//		{
+		//			return this.CashAmount + this.Portfolio.GetMarketValue( endOfDayDateTime );
+		//		}
 		public double GetMarketValue( string ticker )
 		{
 			return this.dataStreamer.GetCurrentBid( ticker );
@@ -234,43 +253,43 @@ namespace QuantProject.Business.Financial.Accounting
 			return this.cashAmount +
 				this.Portfolio.GetMarketValue( this.dataStreamer );
 		}
-//		public double GetProfitNetLoss( EndOfDayDateTime endOfDayDateTime )
-//    {
-//      return GetMarketValue( endOfDayDateTime ) +
-//        this.Transactions.TotalWithdrawn -
-//        this.Transactions.TotalAddedCash;
-//    }
-//    public History GetProfitNetLossHistory( EndOfDayDateTime finalDateTime )
-//    {
-//      History history = new History();
-//      Account account = new Account( "ToGetProfitNetLossHistory" );
-//      foreach ( ArrayList arrayList in this.Transactions.Values )
-//        foreach ( EndOfDayTransaction transaction in arrayList )
-//        {
-//          account.Add( transaction );
-//          history.MultiAdd( transaction.EndOfDayDateTime.DateTime ,
-//            account.GetProfitNetLoss( transaction.EndOfDayDateTime ) );
-//        }
-//      history.MultiAdd( finalDateTime.DateTime ,
-//        account.GetProfitNetLoss( finalDateTime ) );
-//      return history;
-//    }
-//
-    public string ToString( DateTime dateTime )
-    {
-      return
-        "\nCashAmount : " + this.CashAmount +
-        "\nPortfolioContent : " + this.Portfolio.ToString() +
-        "\nPortfolioMarketValue : " + this.Portfolio.GetMarketValue(
-          this.dataStreamer );
-    }
+		//		public double GetProfitNetLoss( EndOfDayDateTime endOfDayDateTime )
+		//    {
+		//      return GetMarketValue( endOfDayDateTime ) +
+		//        this.Transactions.TotalWithdrawn -
+		//        this.Transactions.TotalAddedCash;
+		//    }
+		//    public History GetProfitNetLossHistory( EndOfDayDateTime finalDateTime )
+		//    {
+		//      History history = new History();
+		//      Account account = new Account( "ToGetProfitNetLossHistory" );
+		//      foreach ( ArrayList arrayList in this.Transactions.Values )
+		//        foreach ( EndOfDayTransaction transaction in arrayList )
+		//        {
+		//          account.Add( transaction );
+		//          history.MultiAdd( transaction.EndOfDayDateTime.DateTime ,
+		//            account.GetProfitNetLoss( transaction.EndOfDayDateTime ) );
+		//        }
+		//      history.MultiAdd( finalDateTime.DateTime ,
+		//        account.GetProfitNetLoss( finalDateTime ) );
+		//      return history;
+		//    }
+		//
+		public string ToString( DateTime dateTime )
+		{
+			return
+				"\nCashAmount : " + this.CashAmount +
+				"\nPortfolioContent : " + this.Portfolio.ToString() +
+				"\nPortfolioMarketValue : " + this.Portfolio.GetMarketValue(
+				this.dataStreamer );
+		}
 
-//		public AccountReport CreateReport( string reportName ,
-//			int numDaysForInterval , EndOfDayDateTime endDateTime )
-//		{
-//			AccountReport accountReport = new AccountReport( this );
-//			return accountReport.Create( reportName , numDaysForInterval , endDateTime );
-//		}
+		//		public AccountReport CreateReport( string reportName ,
+		//			int numDaysForInterval , EndOfDayDateTime endDateTime )
+		//		{
+		//			AccountReport accountReport = new AccountReport( this );
+		//			return accountReport.Create( reportName , numDaysForInterval , endDateTime );
+		//		}
 		public AccountReport CreateReport( string reportName ,
 			int numDaysForInterval , EndOfDayDateTime endDateTime , string buyAndHoldTicker ,
 			IHistoricalQuoteProvider historicalQuoteProvider)
