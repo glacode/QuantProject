@@ -70,9 +70,18 @@ namespace QuantProject.Business.Financial.Accounting
 
     public Account( string accountName ) : base ( accountName )
     {
+      this.initialize();
+    }
+
+    private void initialize()
+    {
       cashAmount = 0;
       accountStrategy = new AccountStrategy( this );
-//      accountReport = new AccountReport( this );
+    }
+
+    public Account() : base ( "account" )
+    {
+      this.initialize();
     }
 
     public void Clear()
