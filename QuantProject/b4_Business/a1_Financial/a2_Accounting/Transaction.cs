@@ -22,6 +22,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 using System;
 using QuantProject.Business.Financial.Instruments;
+using QuantProject.Business.Financial.Accounting.Commissions;
 
 namespace QuantProject.Business.Financial.Accounting
 {
@@ -36,6 +37,7 @@ namespace QuantProject.Business.Financial.Accounting
     private Instrument instrument;
     private long quantity; 
     private double instrumentPrice;
+		private Commission commission;
 
     public TransactionType Type
     {
@@ -69,7 +71,19 @@ namespace QuantProject.Business.Financial.Accounting
       }
     }
 
-    public double InstrumentPrice
+		public Commission Commission
+		{
+			get
+			{
+				return this.commission;
+			}
+			set
+			{
+				this.commission = value;
+			}
+		}
+
+		public double InstrumentPrice
     {
       get { return instrumentPrice; }
     }
