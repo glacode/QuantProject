@@ -385,9 +385,8 @@ namespace QuantProject.DataAccess.Tables
     #endregion
     
     /// <summary>
-    /// returns most liquid tickers with the given features
+    /// returns tickers ordered by a liquidity index
     /// </summary>
-
     public static DataTable GetTickersByLiquidity( bool orderInASCMode, string groupID,
                                                   DateTime firstQuoteDate,
                                                   DateTime lastQuoteDate,
@@ -411,6 +410,59 @@ namespace QuantProject.DataAccess.Tables
       return SqlExecutor.GetDataTable( sql );
     }
     
+
+    /// <summary>
+    /// Returns tickers ordered by a volatility index (stdDev of adjustedCloseToClose ratio)
+    /// </summary>
+    public static DataTable GetTickersByVolatility( bool orderInASCMode, string groupID,
+                                                    DateTime firstQuoteDate,
+                                                    DateTime lastQuoteDate,
+                                                    long maxNumOfReturnedTickers)
+    {
+      string sql = "SELECT TOP " + maxNumOfReturnedTickers + " tickers.tiTicker, tickers.tiCompanyName, " +
+        "StDev(quotes.quAdjustedCloseToCloseRatio) AS AdjCloseToCloseStandDev " +
+        "FROM quotes INNER JOIN (tickers INNER JOIN tickers_tickerGroups " +
+        "ON tickers.tiTicker = tickers_tickerGroups.ttTiId) " +
+        "ON quotes.quTicker = tickers_tickerGroups.ttTiId " +
+        "WHERE tickers_tickerGroups.ttTgId='" + groupID + "' " +
+        "AND quotes.quDate BETWEEN " +
+        SQLBuilder.GetDateConstant(firstQuoteDate) + " AND " +
+        SQLBuilder.GetDateConstant(lastQuoteDate) + 
+        "GROUP BY tickers.tiTicker, tickers.tiCompanyName " +
+        "ORDER BY StDev(quotes.quAdjustedCloseToCloseRatio)";
+      string sortDirection = " DESC";
+      if(orderInASCMode)
+        sortDirection = " ASC";
+      sql = sql + sortDirection;
+      return SqlExecutor.GetDataTable( sql );
+    }
+    
+    /// <summary>
+    /// Returns tickers ordered by average close to close performance 
+    /// </summary>
+    public static DataTable GetTickersByAverageCloseToClosePerformance( bool orderInASCMode, string groupID,
+                                                          DateTime firstQuoteDate,
+                                                          DateTime lastQuoteDate,
+                                                          long maxNumOfReturnedTickers)
+    {
+      string sql = "SELECT TOP " + maxNumOfReturnedTickers + " tickers.tiTicker, tickers.tiCompanyName, " +
+        "Avg(quotes.quAdjustedCloseToCloseRatio) AS AverageCloseToClosePerformance " +
+        "FROM quotes INNER JOIN (tickers INNER JOIN tickers_tickerGroups " +
+        "ON tickers.tiTicker = tickers_tickerGroups.ttTiId) " +
+        "ON quotes.quTicker = tickers_tickerGroups.ttTiId " +
+        "WHERE tickers_tickerGroups.ttTgId='" + groupID + "' " +
+        "AND quotes.quDate BETWEEN " +
+        SQLBuilder.GetDateConstant(firstQuoteDate) + " AND " +
+        SQLBuilder.GetDateConstant(lastQuoteDate) + 
+        "GROUP BY tickers.tiTicker, tickers.tiCompanyName " +
+        "ORDER BY Avg(quotes.quAdjustedCloseToCloseRatio)";
+      string sortDirection = " DESC";
+      if(orderInASCMode)
+        sortDirection = " ASC";
+      sql = sql + sortDirection;
+      return SqlExecutor.GetDataTable( sql );
+    }
+
     /// <summary>
     /// returns the average traded value for the given ticker in the specified interval
     /// </summary>
@@ -433,6 +485,55 @@ namespace QuantProject.DataAccess.Tables
       else
         return (double)dt.Rows[0]["AverageTradedValue"];
      }
+
+
+    /// <summary>
+    /// returns the average close to close performance value for the given ticker in the specified interval
+    /// </summary>
+    public static double GetAverageCloseToClosePerformance( string ticker,
+                                                            DateTime firstQuoteDate,
+                                                            DateTime lastQuoteDate)
+                                                
+    {
+      DataTable dt;
+      string sql = "SELECT quotes.quTicker, " +
+        "Avg([quAdjustedCloseToCloseRatio]) AS AverageCloseToClosePerformance " +
+        "FROM quotes WHERE quTicker ='" + 
+        ticker + "' " +
+        "AND quotes.quDate BETWEEN " + SQLBuilder.GetDateConstant(firstQuoteDate) + 
+        " AND " + SQLBuilder.GetDateConstant(lastQuoteDate) + 
+        " GROUP BY quotes.quTicker";
+      dt = SqlExecutor.GetDataTable( sql );
+      if(dt.Rows.Count==0)
+        return 0;
+      else
+        return (double)dt.Rows[0]["AverageCloseToClosePerformance"];
+    }
+
+    /// <summary>
+    /// returns the standard deviation of the adjusted close to close ratio
+    /// for the given ticker in the specified interval
+    /// </summary>
+    public static double GetAdjustedCloseToCloseStandardDeviation( string ticker,
+                                                                    DateTime firstQuoteDate,
+                                                                    DateTime lastQuoteDate)
+                                                
+    {
+      DataTable dt;
+      string sql = "SELECT quotes.quTicker, " +
+        "StDev(quotes.quAdjustedCloseToCloseRatio) AS AdjCloseToCloseStandDev " +
+        "FROM quotes WHERE quTicker ='" + 
+        ticker + "' " +
+        "AND quotes.quDate BETWEEN " + SQLBuilder.GetDateConstant(firstQuoteDate) + 
+        " AND " + SQLBuilder.GetDateConstant(lastQuoteDate) + 
+        " GROUP BY quotes.quTicker";
+      dt = SqlExecutor.GetDataTable( sql );
+      if(dt.Rows.Count==0)
+        return 0;
+      else
+        return (double)dt.Rows[0]["AdjCloseToCloseStandDev"];
+    }
+
 
 		#region GetHashValue
 		private string getHashValue_getQuoteString_getRowString_getSingleValueString( Object value )

@@ -25,13 +25,14 @@ using System;
 namespace QuantProject.Data.Selectors
 {
   /// <summary>
-  /// Enum for SelectionRule class
+  /// Enum for TickerSelector class
   /// </summary>
   public enum SelectionType
   {
     Liquidity,
-    Performance/*
-    Volatility,
+    Performance,
+    AverageCloseToClosePerformance,
+    Volatility/*
     StatisticalCorrelation*/
   }
 }

@@ -139,6 +139,10 @@ namespace QuantProject.Data.Selectors
           return this.getTickersByLiquidity();
         case SelectionType.Performance:
           return this.getTickersByPerformance();
+        case SelectionType.Volatility:
+          return this.getTickersByVolatility();
+        case SelectionType.AverageCloseToClosePerformance:
+          return this.getTickersByAverageCloseToClosePerformance();
         //this line should never be reached!
         default:
           return new DataTable();
@@ -178,6 +182,39 @@ namespace QuantProject.Data.Selectors
                                                         this.lastQuoteDate,
                                                         this.maxNumOfReturnedTickers);
       
+    }
+
+    private DataTable getTickersByAverageCloseToClosePerformance()
+    {
+      if(this.setOfTickersToBeSelected == null)
+        return QuantProject.DataAccess.Tables.Quotes.GetTickersByAverageCloseToClosePerformance(this.isOrderedInASCMode,
+                                                          this.groupID, this.firstQuoteDate,
+                                                          this.lastQuoteDate,
+                                                          this.maxNumOfReturnedTickers);
+      else
+        return QuantProject.Data.DataTables.Quotes.GetTickersByAverageCloseToClosePerformance(this.isOrderedInASCMode,
+                                                          this.setOfTickersToBeSelected,
+                                                          this.firstQuoteDate,
+                                                          this.lastQuoteDate,
+                                                          this.maxNumOfReturnedTickers);
+      
+    }
+
+    private DataTable getTickersByVolatility()
+    {
+      if(this.setOfTickersToBeSelected == null)
+        return QuantProject.DataAccess.Tables.Quotes.GetTickersByVolatility(this.isOrderedInASCMode,
+                                                                    this.groupID,
+                                                                    this.firstQuoteDate,
+                                                                    this.lastQuoteDate,
+                                                                    this.maxNumOfReturnedTickers);        
+
+      else
+        return QuantProject.Data.DataTables.Quotes.GetTickersByVolatility(this.isOrderedInASCMode,
+          this.setOfTickersToBeSelected, 
+          this.firstQuoteDate,
+          this.lastQuoteDate,
+          this.maxNumOfReturnedTickers);
     }
 
     public void SelectAllTickers()

@@ -48,6 +48,55 @@ namespace QuantProject.Data.DataTables
       return getMostLiquidTicker;
     }
 
+    /// <summary>
+    /// returns tickers ordered by volatility computed with Standard deviation of adjusted 
+    /// close to close ratio, within the given set of tickers
+    /// </summary>
+    public static DataTable GetTickersByVolatility( bool orderByASC,
+      DataTable setOfTickers,
+      DateTime firstQuoteDate,
+      DateTime lastQuoteDate,
+      long maxNumOfReturnedTickers)
+    {
+      if(!setOfTickers.Columns.Contains("AdjCloseToCloseStandDev"))
+        setOfTickers.Columns.Add("AdjCloseToCloseStandDev", System.Type.GetType("System.Double"));
+      foreach(DataRow row in setOfTickers.Rows)
+      {
+        row["AdjCloseToCloseStandDev"] = 
+          QuantProject.DataAccess.Tables.Quotes.GetAdjustedCloseToCloseStandardDeviation((string)row[0],
+          firstQuoteDate,
+          lastQuoteDate);
+      }
+      DataTable getTickersByVolatility = ExtendedDataTable.CopyAndSort(setOfTickers,"AdjCloseToCloseStandDev", orderByASC);
+      ExtendedDataTable.DeleteRows(getTickersByVolatility, maxNumOfReturnedTickers);
+      return getTickersByVolatility;
+    }
+
+    /// <summary>
+    /// returns tickers by average close to close performance within the given set of tickers
+    /// </summary>
+
+    public static DataTable GetTickersByAverageCloseToClosePerformance( bool orderByASC,
+      DataTable setOfTickers,
+      DateTime firstQuoteDate,
+      DateTime lastQuoteDate,
+      long maxNumOfReturnedTickers)
+    {
+      if(!setOfTickers.Columns.Contains("AverageCloseToClosePerformance"))
+        setOfTickers.Columns.Add("AverageCloseToClosePerformance", System.Type.GetType("System.Double"));
+      foreach(DataRow row in setOfTickers.Rows)
+      {
+        row["AverageCloseToClosePerformance"] = 
+          QuantProject.DataAccess.Tables.Quotes.GetAverageCloseToClosePerformance((string)row[0],
+          firstQuoteDate,
+          lastQuoteDate);
+      }
+      DataTable tableToReturn = ExtendedDataTable.CopyAndSort(setOfTickers,"AverageCloseToClosePerformance", orderByASC);
+      ExtendedDataTable.DeleteRows(tableToReturn, maxNumOfReturnedTickers);
+      return tableToReturn;
+    }
+
+
 		private History history;
 
 		/// <summary>
