@@ -43,7 +43,7 @@ namespace QuantProject.Presentation.Reporting.WindowsForm
     private System.Windows.Forms.TextBox reportName;
     private Report report;
     private System.Windows.Forms.Label label4;
-    private System.Windows.Forms.TextBox index;
+    private System.Windows.Forms.TextBox benchmark;
 
 		/// <summary>
 		/// Variabile di progettazione necessaria.
@@ -59,6 +59,7 @@ namespace QuantProject.Presentation.Reporting.WindowsForm
 
 			//
 			  this.report = report;
+        this.endingDate.Value = this.report.GetLastTradeDate();
 			//
 		}
 
@@ -92,7 +93,7 @@ namespace QuantProject.Presentation.Reporting.WindowsForm
       this.label2 = new System.Windows.Forms.Label();
       this.label3 = new System.Windows.Forms.Label();
       this.label4 = new System.Windows.Forms.Label();
-      this.index = new System.Windows.Forms.TextBox();
+      this.benchmark = new System.Windows.Forms.TextBox();
       ((System.ComponentModel.ISupportInitialize)(this.numDaysForEquityLine)).BeginInit();
       this.SuspendLayout();
       // 
@@ -167,15 +168,15 @@ namespace QuantProject.Presentation.Reporting.WindowsForm
       this.label4.Name = "label4";
       this.label4.Size = new System.Drawing.Size(96, 16);
       this.label4.TabIndex = 8;
-      this.label4.Text = "Index";
+      this.label4.Text = "Benchmark";
       // 
-      // index
+      // benchmark
       // 
-      this.index.Location = new System.Drawing.Point(106, 160);
-      this.index.Name = "index";
-      this.index.Size = new System.Drawing.Size(176, 20);
-      this.index.TabIndex = 7;
-      this.index.Text = "";
+      this.benchmark.Location = new System.Drawing.Point(106, 160);
+      this.benchmark.Name = "benchmark";
+      this.benchmark.Size = new System.Drawing.Size(176, 20);
+      this.benchmark.TabIndex = 7;
+      this.benchmark.Text = "";
       // 
       // ReportShower
       // 
@@ -183,7 +184,7 @@ namespace QuantProject.Presentation.Reporting.WindowsForm
       this.ClientSize = new System.Drawing.Size(292, 266);
       this.Controls.AddRange(new System.Windows.Forms.Control[] {
                                                                   this.label4,
-                                                                  this.index,
+                                                                  this.benchmark,
                                                                   this.label3,
                                                                   this.label2,
                                                                   this.label1,
@@ -201,12 +202,21 @@ namespace QuantProject.Presentation.Reporting.WindowsForm
 
     private void buttonShowReport_Click(object sender, System.EventArgs e)
     {
-      this.report.Clear();
-      this.report.Show(this.reportName.Text, (int)this.numDaysForEquityLine.Value,
-                        new EndOfDayDateTime(this.endingDate.Value,
-                                             EndOfDaySpecificTime.MarketClose),
-                      this.index.Text);
-                        
+      try
+      {
+        if(this.benchmark.Text == "")
+          throw new Exception("Benchmark symbol is requested!");
+        this.report.Clear();
+        this.report.Show(this.reportName.Text, (int)this.numDaysForEquityLine.Value,
+                          new EndOfDayDateTime(this.endingDate.Value,
+                                              EndOfDaySpecificTime.MarketClose),
+                        this.benchmark.Text);
+      }
+      
+      catch(Exception ex)
+      {
+        MessageBox.Show(ex.ToString());
+      }                  
     }
 	}
 }
