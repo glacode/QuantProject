@@ -112,7 +112,17 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "SimpleTesting\MSFTsimpleTest\RunMSFTsimpleTest_2.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "SimpleTesting\MSFTsimpleTest\TsMSFTsimpleTest.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "SimpleTesting\MSFTsimpleTest\TsMSFTsimpleTest_2.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
