@@ -4,7 +4,7 @@ using System.Collections;
 using System.ComponentModel;
 using System.Windows.Forms;
 
-namespace QuantDownloader
+namespace QuantProject.Applications.Downloader
 {
 	/// <summary>
 	/// Summary description for Principale.
@@ -19,13 +19,10 @@ namespace QuantDownloader
     private System.Windows.Forms.MenuItem menuItem5;
     private System.Windows.Forms.MenuItem menuItem6;
     private System.Windows.Forms.MenuItem menuItem7;
-    private System.Windows.Forms.MenuItem menuItem8;
-    private System.Windows.Forms.MenuItem menuItem10;
-    private System.Windows.Forms.MenuItem menuItem11;
-    private System.Windows.Forms.MenuItem menuItem12;
-    private System.Windows.Forms.MenuItem menuItem13;
-    private System.Windows.Forms.MenuItem menuItem14;
-    private System.Windows.Forms.MenuItem menuItem9;
+    private System.Windows.Forms.MenuItem menuImport;
+    private System.Windows.Forms.MenuItem subMenuFromTheWeb;
+    private System.Windows.Forms.MenuItem menuValidate;
+    private System.Windows.Forms.MenuItem subMenuValidateGo;
 		/// <summary>
 		/// Required designer variable.
 		/// </summary>
@@ -66,13 +63,10 @@ namespace QuantDownloader
 		private void InitializeComponent()
 		{
       this.mainMenu1 = new System.Windows.Forms.MainMenu();
-      this.menuItem8 = new System.Windows.Forms.MenuItem();
-      this.menuItem10 = new System.Windows.Forms.MenuItem();
-      this.menuItem9 = new System.Windows.Forms.MenuItem();
-      this.menuItem11 = new System.Windows.Forms.MenuItem();
-      this.menuItem12 = new System.Windows.Forms.MenuItem();
-      this.menuItem13 = new System.Windows.Forms.MenuItem();
-      this.menuItem14 = new System.Windows.Forms.MenuItem();
+      this.menuImport = new System.Windows.Forms.MenuItem();
+      this.subMenuFromTheWeb = new System.Windows.Forms.MenuItem();
+      this.menuValidate = new System.Windows.Forms.MenuItem();
+      this.subMenuValidateGo = new System.Windows.Forms.MenuItem();
       this.menuItem1 = new System.Windows.Forms.MenuItem();
       this.menuItem2 = new System.Windows.Forms.MenuItem();
       this.menuItem5 = new System.Windows.Forms.MenuItem();
@@ -84,55 +78,34 @@ namespace QuantDownloader
       // mainMenu1
       // 
       this.mainMenu1.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
-                                                                              this.menuItem8,
-                                                                              this.menuItem11,
-                                                                              this.menuItem13});
+                                                                              this.menuImport,
+                                                                              this.menuValidate});
       // 
-      // menuItem8
+      // menuImport
       // 
-      this.menuItem8.Index = 0;
-      this.menuItem8.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
-                                                                              this.menuItem10,
-                                                                              this.menuItem9});
-      this.menuItem8.Text = "Data";
+      this.menuImport.Index = 0;
+      this.menuImport.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
+                                                                               this.subMenuFromTheWeb});
+      this.menuImport.Text = "Import";
       // 
-      // menuItem10
+      // subMenuFromTheWeb
       // 
-      this.menuItem10.Index = 0;
-      this.menuItem10.Text = "Download";
-      this.menuItem10.Click += new System.EventHandler(this.menuItem10_Click);
+      this.subMenuFromTheWeb.Index = 0;
+      this.subMenuFromTheWeb.Text = "From the Web";
+      this.subMenuFromTheWeb.Click += new System.EventHandler(this.menuItem10_Click);
       // 
-      // menuItem9
+      // menuValidate
       // 
-      this.menuItem9.Index = 1;
-      this.menuItem9.Text = "Test";
-      this.menuItem9.Click += new System.EventHandler(this.menuItem9_Click);
+      this.menuValidate.Index = 1;
+      this.menuValidate.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
+                                                                                 this.subMenuValidateGo});
+      this.menuValidate.Text = "Validate";
       // 
-      // menuItem11
+      // subMenuValidateGo
       // 
-      this.menuItem11.Index = 1;
-      this.menuItem11.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
-                                                                               this.menuItem12});
-      this.menuItem11.Text = "BackTest";
-      // 
-      // menuItem12
-      // 
-      this.menuItem12.Index = 0;
-      this.menuItem12.Text = "Go";
-      this.menuItem12.Click += new System.EventHandler(this.menuItem12_Click);
-      // 
-      // menuItem13
-      // 
-      this.menuItem13.Index = 2;
-      this.menuItem13.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
-                                                                               this.menuItem14});
-      this.menuItem13.Text = "Trade";
-      // 
-      // menuItem14
-      // 
-      this.menuItem14.Index = 0;
-      this.menuItem14.Text = "Go";
-      this.menuItem14.Click += new System.EventHandler(this.menuItem14_Click);
+      this.subMenuValidateGo.Index = 0;
+      this.subMenuValidateGo.Text = "Go";
+      this.subMenuValidateGo.Click += new System.EventHandler(this.subMenuValidateGo_Click);
       // 
       // menuItem1
       // 
@@ -217,6 +190,13 @@ namespace QuantDownloader
     {
 //      BackTestForm form1 = new BackTestForm();
 //      form1.ShowDialog( this );
+    }
+
+    private void subMenuValidateGo_Click(object sender, System.EventArgs e)
+    {
+      QuantProject.Applications.Downloader.Validate validate =
+        new QuantProject.Applications.Downloader.Validate();
+      validate.ShowDialog();
     }
 
 	}
