@@ -318,10 +318,14 @@ namespace QuantProject.Applications.Downloader.TickerSelectors
     {
         //TODO: complete code ...
         SelectionRule rule = new SelectionRule(SelectionType.MostLiquid, this.textBoxGroupID.Text, 
-                                                this.dateTimePickerFirstDate.Value,
-                                                this.dateTimePickerLastDate.Value,
-                                                Int32.Parse(this.textBoxMaxNumOfReturnedTickers.Text));
-        TickerSelector selector = new TickerSelector(rule);
+                                            this.dateTimePickerFirstDate.Value,
+                                            this.dateTimePickerLastDate.Value,
+                                            Int32.Parse(this.textBoxMaxNumOfReturnedTickers.Text));
+        TickerSelector selector;
+        if(this.textBoxGroupID.Text != "")
+          selector= new TickerSelector(rule);
+        else
+          selector= new TickerSelector(QuantProject.Data.DataTables.TickerDataTable.Clipboard,rule);
         this.dataGrid1.DataSource = selector.GetTableOfSelectedTickers();
         this.dataGrid1.Refresh();
                         
