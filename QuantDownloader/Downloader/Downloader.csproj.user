@@ -1,7 +1,7 @@
 <VisualStudioProject>
     <CSHARP>
         <Build>
-            <Settings ReferencePath = "" >
+            <Settings ReferencePath = "c:\windows\assembly\gac\crystaldecisions.windows.forms\9.1.3300.0__692fbea5521e1304\;C:\Documents and Settings\Glauco\Desktop\QuantProject\lib\" >
                 <Config
                     Name = "Debug"
                     EnableASPDebugging = "false"

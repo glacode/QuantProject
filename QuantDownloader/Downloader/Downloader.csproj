@@ -92,6 +92,46 @@
                     Project = "{B8A01161-3698-4591-B1EF-90F5FC7D8DBA}"
                     Package = "{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}"
                 />
+                <Reference
+                    Name = "scpl"
+                    AssemblyName = "scpl"
+                    HintPath = "..\..\lib\scpl.dll"
+                />
+                <Reference
+                    Name = "b3_Data"
+                    Project = "{6AC0A2C1-B926-4921-A685-F5AA80E81C94}"
+                    Package = "{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}"
+                />
+                <Reference
+                    Name = "b4_Business"
+                    Project = "{6EE31501-376E-491B-869E-F06D5B7C9C30}"
+                    Package = "{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}"
+                />
+                <Reference
+                    Name = "b5_Presentation"
+                    Project = "{D3DC9EA6-3B06-4255-B19A-5FC5B66A1402}"
+                    Package = "{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}"
+                />
+                <Reference
+                    Name = "crystaldecisions.windows.forms"
+                    AssemblyName = "CrystalDecisions.Windows.Forms"
+                    HintPath = "..\..\..\..\..\..\windows\assembly\gac\crystaldecisions.windows.forms\9.1.3300.0__692fbea5521e1304\crystaldecisions.windows.forms.dll"
+                />
+                <Reference
+                    Name = "CrystalDecisions.Shared"
+                    AssemblyName = "CrystalDecisions.Shared"
+                    HintPath = "..\..\..\..\..\..\Program Files\Common Files\Crystal Decisions\1.0\Managed\CrystalDecisions.Shared.dll"
+                />
+                <Reference
+                    Name = "CrystalDecisions.ReportSource"
+                    AssemblyName = "CrystalDecisions.ReportSource"
+                    HintPath = "..\..\..\..\..\..\Program Files\Common Files\Crystal Decisions\1.0\Managed\CrystalDecisions.ReportSource.dll"
+                />
+                <Reference
+                    Name = "System.Web.Services"
+                    AssemblyName = "System.Web.Services"
+                    HintPath = "..\..\..\..\..\..\WINDOWS\Microsoft.NET\Framework\v1.0.3705\System.Web.Services.dll"
+                />
             </References>
         </Build>
         <Files>
@@ -135,6 +175,16 @@
                     BuildAction = "EmbeddedResource"
                 />
                 <File
+                    RelPath = "QuotesDataGrid.cs"
+                    SubType = "Component"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "QuotesDataGrid.resx"
+                    DependentUpon = "QuotesDataGrid.cs"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
                     RelPath = "TestDownloadedData.cs"
                     SubType = "Form"
                     BuildAction = "Compile"
@@ -160,9 +210,54 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "WebDownloader.resx"
+                    DependentUpon = "WebDownloader.cs"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "QuotesEditor\QuotesChart.cs"
+                    SubType = "UserControl"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "QuotesEditor\QuotesEditor.cs"
                     SubType = "Form"
                     BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "QuotesEditor\CloseToClose\CloseToCloseChart.cs"
+                    SubType = "UserControl"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "QuotesEditor\CloseToClose\CloseToCloseDataGrid.cs"
+                    SubType = "Component"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "QuotesEditor\CloseToClose\CloseToCloseUserControl.cs"
+                    SubType = "UserControl"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "QuotesEditor\CloseToClose\CloseToCloseUserControl.resx"
+                    DependentUpon = "CloseToCloseUserControl.cs"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "QuotesEditor\OHLC\OHLCdataGrid.cs"
+                    SubType = "Component"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "QuotesEditor\OHLC\OHLCuserControl.cs"
+                    SubType = "UserControl"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "QuotesEditor\OHLC\OHLCuserControl.resx"
+                    DependentUpon = "OHLCuserControl.cs"
+                    BuildAction = "EmbeddedResource"
                 />
                 <File
                     RelPath = "Validate\IValidator.cs"
@@ -175,11 +270,6 @@
                     BuildAction = "Compile"
                 />
                 <File
-                    RelPath = "Validate\QuotesToBeValidated.resx"
-                    DependentUpon = "QuotesToBeValidated.cs"
-                    BuildAction = "EmbeddedResource"
-                />
-                <File
                     RelPath = "Validate\SospiciousDataRowEventArgs.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
@@ -188,11 +278,6 @@
                     RelPath = "Validate\ValidateDataGrid.cs"
                     SubType = "Component"
                     BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Validate\ValidateDataGrid.resx"
-                    DependentUpon = "ValidateDataGrid.cs"
-                    BuildAction = "EmbeddedResource"
                 />
                 <File
                     RelPath = "Validate\ValidateDataTable.cs"
@@ -213,6 +298,11 @@
                     RelPath = "Validate\ValidateForm.resx"
                     DependentUpon = "ValidateForm.cs"
                     BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "Validate\ValidationWarnings.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
                 />
                 <File
                     RelPath = "Validate\Validators\CloseToCloseValidator.cs"

@@ -5,6 +5,12 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "b2_DataAccess", "..\QuantPr
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "b1_ADT", "..\QuantProject\b1_ADT\b1_ADT.csproj", "{B8A01161-3698-4591-B1EF-90F5FC7D8DBA}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "b3_Data", "..\QuantProject\b3_Data\b3_Data.csproj", "{6AC0A2C1-B926-4921-A685-F5AA80E81C94}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "b5_Presentation", "..\QuantProject\b5_Presentation\b5_Presentation.csproj", "{D3DC9EA6-3B06-4255-B19A-5FC5B66A1402}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "b4_Business", "..\QuantProject\b4_Business\b4_Business.csproj", "{6EE31501-376E-491B-869E-F06D5B7C9C30}"
+EndProject
 Global
 	GlobalSection(SolutionConfiguration) = preSolution
 		ConfigName.0 = Debug
@@ -27,6 +33,18 @@ Global
 		{B8A01161-3698-4591-B1EF-90F5FC7D8DBA}.Debug.Build.0 = Debug|.NET
 		{B8A01161-3698-4591-B1EF-90F5FC7D8DBA}.Release.ActiveCfg = Release|.NET
 		{B8A01161-3698-4591-B1EF-90F5FC7D8DBA}.Release.Build.0 = Release|.NET
+		{6AC0A2C1-B926-4921-A685-F5AA80E81C94}.Debug.ActiveCfg = Debug|.NET
+		{6AC0A2C1-B926-4921-A685-F5AA80E81C94}.Debug.Build.0 = Debug|.NET
+		{6AC0A2C1-B926-4921-A685-F5AA80E81C94}.Release.ActiveCfg = Release|.NET
+		{6AC0A2C1-B926-4921-A685-F5AA80E81C94}.Release.Build.0 = Release|.NET
+		{D3DC9EA6-3B06-4255-B19A-5FC5B66A1402}.Debug.ActiveCfg = Debug|.NET
+		{D3DC9EA6-3B06-4255-B19A-5FC5B66A1402}.Debug.Build.0 = Debug|.NET
+		{D3DC9EA6-3B06-4255-B19A-5FC5B66A1402}.Release.ActiveCfg = Release|.NET
+		{D3DC9EA6-3B06-4255-B19A-5FC5B66A1402}.Release.Build.0 = Release|.NET
+		{6EE31501-376E-491B-869E-F06D5B7C9C30}.Debug.ActiveCfg = Debug|.NET
+		{6EE31501-376E-491B-869E-F06D5B7C9C30}.Debug.Build.0 = Debug|.NET
+		{6EE31501-376E-491B-869E-F06D5B7C9C30}.Release.ActiveCfg = Release|.NET
+		{6EE31501-376E-491B-869E-F06D5B7C9C30}.Release.Build.0 = Release|.NET
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 	EndGlobalSection
