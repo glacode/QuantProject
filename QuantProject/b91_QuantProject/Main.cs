@@ -27,7 +27,14 @@ using System.ComponentModel;
 using System.Windows.Forms;
 using QuantProject.Scripts;
 using QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios;
+//using QuantProject.ADT.Optimizing.Genetic;
+
+using QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios;
+
 using QuantProject.Scripts.WalkForwardTesting.WalkForwardOneRank;
+using QuantProject.Scripts.CallingReportsForRunnedScripts;
+
+
 
 namespace QuantProject.Principale
 {
@@ -47,10 +54,13 @@ namespace QuantProject.Principale
     private System.Windows.Forms.MenuItem menuItem8;
     private System.Windows.Forms.MenuItem menuItem10;
     private System.Windows.Forms.MenuItem menuItem11;
-    private System.Windows.Forms.MenuItem menuItem12;
     private System.Windows.Forms.MenuItem menuItem13;
     private System.Windows.Forms.MenuItem menuItem14;
     private System.Windows.Forms.MenuItem menuItem9;
+    private System.Windows.Forms.MenuItem menuItemRun;
+    private System.Windows.Forms.MenuItem menuItemSavedTests;
+    private System.Windows.Forms.MenuItem menuItemAccountViewer;
+    private System.Windows.Forms.MenuItem menuItemShowReportFromAccount;
 		/// <summary>
 		/// Required designer variable.
 		/// </summary>
@@ -95,7 +105,9 @@ namespace QuantProject.Principale
       this.menuItem10 = new System.Windows.Forms.MenuItem();
       this.menuItem9 = new System.Windows.Forms.MenuItem();
       this.menuItem11 = new System.Windows.Forms.MenuItem();
-      this.menuItem12 = new System.Windows.Forms.MenuItem();
+      this.menuItemRun = new System.Windows.Forms.MenuItem();
+      this.menuItemSavedTests = new System.Windows.Forms.MenuItem();
+      this.menuItemAccountViewer = new System.Windows.Forms.MenuItem();
       this.menuItem13 = new System.Windows.Forms.MenuItem();
       this.menuItem14 = new System.Windows.Forms.MenuItem();
       this.menuItem1 = new System.Windows.Forms.MenuItem();
@@ -105,6 +117,7 @@ namespace QuantProject.Principale
       this.menuItem4 = new System.Windows.Forms.MenuItem();
       this.menuItem6 = new System.Windows.Forms.MenuItem();
       this.menuItem7 = new System.Windows.Forms.MenuItem();
+      this.menuItemShowReportFromAccount = new System.Windows.Forms.MenuItem();
       // 
       // mainMenu1
       // 
@@ -137,14 +150,29 @@ namespace QuantProject.Principale
       // 
       this.menuItem11.Index = 1;
       this.menuItem11.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
-                                                                               this.menuItem12});
+                                                                               this.menuItemRun,
+                                                                               this.menuItemSavedTests});
       this.menuItem11.Text = "BackTest";
       // 
-      // menuItem12
+      // menuItemRun
       // 
-      this.menuItem12.Index = 0;
-      this.menuItem12.Text = "Go";
-      this.menuItem12.Click += new System.EventHandler(this.menuItem12_Click);
+      this.menuItemRun.Index = 0;
+      this.menuItemRun.Text = "Run";
+      this.menuItemRun.Click += new System.EventHandler(this.menuItemRun_Click);
+      // 
+      // menuItemSavedTests
+      // 
+      this.menuItemSavedTests.Index = 1;
+      this.menuItemSavedTests.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
+                                                                                       this.menuItemAccountViewer,
+                                                                                       this.menuItemShowReportFromAccount});
+      this.menuItemSavedTests.Text = "Saved Tests";
+      // 
+      // menuItemAccountViewer
+      // 
+      this.menuItemAccountViewer.Index = 0;
+      this.menuItemAccountViewer.Text = "Account viewer";
+      this.menuItemAccountViewer.Click += new System.EventHandler(this.menuItemAccountViewer_Click);
       // 
       // menuItem13
       // 
@@ -194,13 +222,19 @@ namespace QuantProject.Principale
       this.menuItem7.Index = -1;
       this.menuItem7.Text = "";
       // 
+      // menuItemShowReportFromAccount
+      // 
+      this.menuItemShowReportFromAccount.Index = 1;
+      this.menuItemShowReportFromAccount.Text = "Show report from account";
+      this.menuItemShowReportFromAccount.Click += new System.EventHandler(this.menuItemShowReportFromAccount_Click);
+      // 
       // Principale
       // 
       this.AutoScaleBaseSize = new System.Drawing.Size(5, 13);
       this.ClientSize = new System.Drawing.Size(292, 273);
       this.Menu = this.mainMenu1;
       this.Name = "Principale";
-      this.Text = "Principale";
+      this.Text = "Main";
 
     }
 		#endregion
@@ -209,10 +243,6 @@ namespace QuantProject.Principale
     {
       TestDownloadedData testDownloadedData = new TestDownloadedData();
       testDownloadedData.ShowDialog();
-    }
-
-    private void menuItem12_Click(object sender, System.EventArgs e)
-    {
     }
 
     private void menuItem10_Click(object sender, System.EventArgs e)
@@ -225,23 +255,73 @@ namespace QuantProject.Principale
     {
       //try
       {
-//        new RunMSFTsimpleTest().Run();
+        //new RunMSFTsimpleTest().Run();
 //		new RunMSFTsimpleTest_2().Run();
 				//new RunOneRankWithExcelReport().Run();
-//				new RunOneRankWithWindowsReport().Run();
+
+				//new RunOneRankWithWindowsReport().Run();
+        //new RunBestTwoIndipendent().Run();
+        //Principale.geneticOptimizerTest();
+        //new RunEfficientCTOPorfolio().Run();
+        //new RunEfficientCTCPorfolio().Run();
+				//new RunEfficientPorfolio().Run();
+        Application.Run(new Principale());
+      //  new RunMSFTwalkForward().Run();
+
+	//		new RunOneRankWithWindowsReport().Run();
 				//new RunMSFTwalkForward().Run();
+
         //new RunMultiTestOneRank().Run();
+
+				//new RunWalkForwardOneRank().Run();
+
 				//new RunEfficientCTOPorfolio().Run();
-				new RunWalkForwardOneRank().Run();
+				//new RunWalkForwardOneRank().Run();
+
       } 
       //catch ( Exception ex )
       {
         //MessageBox.Show( ex.ToString() ) ;
       }
     }
-
+    /*
+    private static void geneticOptimizerTest()
+    {
+      IGenomeManager genomeManagerTest = new GenomeManagerTest(5,1,10);     
+      GeneticOptimizer GO = new GeneticOptimizer(genomeManagerTest);
+      GO.KeepOnRunningUntilConvergenceIsReached = true;
+      GO.Run(true);
+      System.Console.WriteLine("\n\nThe best solution found is: " + (string)GO.BestGenome.Meaning +
+                                " with {0} generations", GO.GenerationCounter);
+    }
+    */
     private void menuItem14_Click(object sender, System.EventArgs e)
     {
+    }
+
+    private void menuItemRun_Click(object sender, System.EventArgs e)
+    {
+      try
+      {//call here your scripts
+	//new RunWalkForwardOneRank().Run();			
+        new RunEfficientCTCPorfolio().Run();
+      }
+      catch ( Exception ex )
+      {
+        string notUsed = ex.ToString();
+        //in this way qP shouldn't stop if running a single script fails ...
+      }
+    }
+
+    private void menuItemAccountViewer_Click(object sender, System.EventArgs e)
+    {
+      AccountViewer accountViewer = new AccountViewer();
+      accountViewer.Show();
+    }
+
+    private void menuItemShowReportFromAccount_Click(object sender, System.EventArgs e)
+    {
+      ShowReportFromFile.ShowReportFromSerializedAccount("C:\\CtcPortfolio.qP");
     }
 
 	}
