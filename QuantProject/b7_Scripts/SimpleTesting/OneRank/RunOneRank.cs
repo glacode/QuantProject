@@ -24,6 +24,7 @@ using System;
 
 using QuantProject.Business.DataProviders;
 using QuantProject.Business.Financial.Accounting;
+using QuantProject.Business.Financial.Accounting.Commissions;
 using QuantProject.Business.Financial.Ordering;
 using QuantProject.Business.Scripting;
 using QuantProject.Business.Timing;
@@ -55,7 +56,8 @@ namespace QuantProject.Scripts.SimpleTesting
 				new HistoricalEndOfDayDataStreamer( historicalEndOfDayTimer ,
 				this.historicalQuoteProvider ) ,
 				new HistoricalEndOfDayOrderExecutor( historicalEndOfDayTimer ,
-				this.historicalQuoteProvider ) );
+				this.historicalQuoteProvider ) ,
+				new IBCommissionManager() );
 			OneRank oneRank = new OneRank( account ,
 				this.endDateTime );
 			Report report = new Report( this.account , this.historicalQuoteProvider );
