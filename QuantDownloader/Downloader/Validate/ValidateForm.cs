@@ -15,7 +15,7 @@ namespace QuantProject.Applications.Downloader.Validate
     private System.Windows.Forms.Label labelTickerIsLike;
     private System.Windows.Forms.Button buttonGo;
     private System.Data.OleDb.OleDbDataAdapter oleDbDataAdapter1;
-    private ValidateDataTable validateDataTable;
+    private ValidateDataTable validateDataTable = new ValidateDataTable();
 	  private DataTable tableOfTickersToBeValidated;
     private System.Data.OleDb.OleDbCommand oleDbSelectCommand1;
     private System.Data.OleDb.OleDbCommand oleDbInsertCommand1;
