@@ -264,6 +264,7 @@ namespace QuantProject.Business.Financial.Accounting.Reporting
           roundTrade[ "%chg" ] =
             ((double)roundTrade[ "ExitPrice" ] - (double)roundTrade[ "EntryPrice" ])/
             ((double)roundTrade[ "EntryPrice" ])*100;
+          roundTrade[ "%Profit" ] = roundTrade[ "%chg" ];
           roundTrade[ "#bars" ] =
             ((TimeSpan)((DateTime)roundTrade[ "ExitDate" ] - (DateTime)roundTrade[ "EntryDate" ])).Days;
           roundTrade[ "ProfitPerBar" ] = (double)roundTrade[ "%chg" ] / (int)roundTrade[ "#bars" ];
@@ -281,6 +282,7 @@ namespace QuantProject.Business.Financial.Accounting.Reporting
           roundTrade[ "ExitPrice" ] = dataRow[ "Price" ];
           roundTrade[ "%chg" ] =
             ((double)roundTrade[ "ExitPrice" ] - (double)roundTrade[ "EntryPrice" ])/100;
+          roundTrade[ "%Profit" ] = - ((double)roundTrade[ "%chg" ]);
           roundTrade[ "#bars" ] =
             ((TimeSpan)((DateTime)roundTrade[ "ExitDate" ] - (DateTime)roundTrade[ "EntryDate" ])).Days;
           roundTrade[ "ProfitPerBar" ] = (double)roundTrade[ "%chg" ] / (int)roundTrade[ "#bars" ];
@@ -370,9 +372,23 @@ namespace QuantProject.Business.Financial.Accounting.Reporting
     {
       double totalROA = this.totalPnl / ( this.finalAccountValue - this.totalPnl );
       summary[ "Information" ] = "Annual system % return";
-      summary[ "Value" ] = ( Math.Pow( 1 + totalROA ,
-        1.0 / ( (double)this.intervalDays/365.0 ) ) ) - 1;
-//        r = [(1+T)^(1/n)]-1
+      summary[ "Value" ] = ( ( Math.Pow( 1 + totalROA ,
+        1.0 / ( (double)this.intervalDays/365.0 ) ) ) - 1 ) * 100;
+      //        r = [(1+T)^(1/n)]-1
+    }
+    private void getSummaryTable_setRow_TotalNumberOfTrades( DataRow summary )
+    {
+      double totalROA = this.totalPnl / ( this.finalAccountValue - this.totalPnl );
+      summary[ "Information" ] = "Total # of trades";
+      DataRow[] DataRows = this.roundTrades.DataTable.Select( "(ExitPrice is not null)" );
+      summary[ "Value" ] = DataRows.Length;
+    }
+    private void getSummaryTable_setRow_NumberWinningTrades( DataRow summary )
+    {
+      double totalROA = this.totalPnl / ( this.finalAccountValue - this.totalPnl );
+      summary[ "Information" ] = "Number winning trades";
+      DataRow[] DataRows = this.roundTrades.DataTable.Select( "([%Profit] > 0)" );
+      summary[ "Value" ] = DataRows.Length;
     }
     private void getSummary_setRow( DataTable summaryDataTable ,
       getSummaryTable_setRow getSummaryTable_setRow_object )
@@ -389,6 +405,10 @@ namespace QuantProject.Business.Financial.Accounting.Reporting
         new getSummaryTable_setRow( getSummaryTable_setRow_ReturnOnAccount ) );
       getSummary_setRow( summaryDataTable ,
         new getSummaryTable_setRow( getSummaryTable_setRow_AnnualSystemPercentageReturn ) );
+      getSummary_setRow( summaryDataTable ,
+        new getSummaryTable_setRow( getSummaryTable_setRow_TotalNumberOfTrades ) );
+      getSummary_setRow( summaryDataTable ,
+        new getSummaryTable_setRow( getSummaryTable_setRow_NumberWinningTrades ) );
     }
     #endregion
     private DataTable getSummaryDataTable()
@@ -407,9 +427,9 @@ namespace QuantProject.Business.Financial.Accounting.Reporting
       this.intervalDays =
         ((TimeSpan)((DateTime)this.equity.DataTable.Rows[ this.equity.DataTable.Rows.Count - 1 ][ "Date" ] -
         (DateTime)this.equity.DataTable.Rows[ 0 ][ "Date" ])).Days;
-      DataTable equityDataTable = getSummaryDataTable();
+      DataTable summaryDataTable = getSummaryDataTable();
       return new ReportTable( reportName + " - Summary" ,
-        equityDataTable );
+        summaryDataTable );
     }
 
     #endregion
