@@ -25,6 +25,7 @@ namespace QuantProject.Applications.Downloader
 			set
 			{
 				this.suspiciousDateTime = value;
+				this.SetHistories();
 				this.Invalidate();
 			}
 		}
@@ -40,6 +41,12 @@ namespace QuantProject.Applications.Downloader
 			//
 			// TODO: Add constructor logic here
 			//
+		}
+
+		public void SetHistories()
+		{
+			this.Clear();
+			this.addHistories();
 		}
 
 		protected void add( History history , Color color )
@@ -69,8 +76,8 @@ namespace QuantProject.Applications.Downloader
 		protected override void OnPaint(System.Windows.Forms.PaintEventArgs e)
 		{
 			Console.WriteLine( "VisualValidationChart.OnPaint()" );
-			this.Clear();
-			this.addHistories();
+//			this.Clear();
+//			this.addHistories();
 //			this.history = DataProvider.GetCloseHistory( ((QuotesEditor)this.FindForm()).Ticker );
 //			this.onPaint_setTimeInterval();
 //			this.Add( history , Color.Red , this.startDateTime , this.endDateTime );
