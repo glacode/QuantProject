@@ -2,6 +2,7 @@
 *.dll
 *.exe
 *.projdata
+*.csproj
 *.resources
 *.resx
 *.projdata1
