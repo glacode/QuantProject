@@ -65,6 +65,39 @@ namespace QuantProject.ADT.Statistics
 		{
 			return	System.Math.Sqrt(BasicFunctions.Variance(data));
 		}
+
+    static public double PearsonCorrelationCoefficient( double[] firstDataVariable,
+                                                        double[] secondDataVariable ) 
+    {
+      BasicFunctions.checkLengthOfDataVariables(firstDataVariable, secondDataVariable);
+      double simpleAvgOfProduct = BasicFunctions.SimpleAverageOfProduct(firstDataVariable, secondDataVariable);
+      double productOfSimpleAvgs = BasicFunctions.SimpleAverage(firstDataVariable) * 
+                                          BasicFunctions.SimpleAverage(secondDataVariable);
+      double stdDevOfFirst = BasicFunctions.StdDev(firstDataVariable);
+      double stdDevOfSecond = BasicFunctions.StdDev(secondDataVariable);
+      
+      return	(simpleAvgOfProduct - productOfSimpleAvgs)/(stdDevOfFirst*stdDevOfSecond);
+    }
+
+    static public double SimpleAverageOfProduct( double[] firstDataVariable,
+                                                  double[] secondDataVariable ) 
+    {
+      BasicFunctions.checkLengthOfDataVariables(firstDataVariable, secondDataVariable);
+      double[] productDataVariable = new double[firstDataVariable.Length];
+      
+      for( int i = 0; i < firstDataVariable.Length ; i ++ ) 
+      {
+        productDataVariable[i]= firstDataVariable[i]*secondDataVariable[i];
+      }
+
+      return	BasicFunctions.SimpleAverage(productDataVariable);
+    }
+    static private void checkLengthOfDataVariables(double[] firstDataVariable,
+                                                    double[] secondDataVariable)
+    {
+      if(firstDataVariable.Length !=secondDataVariable.Length)
+        throw new Exception("The two variables haven't the same length!");
+    }
 	}	
 }		
 
