@@ -12,6 +12,7 @@ namespace QuantProject.DataAccess.Tables
 	public class Quotes
 	{
 		private DataTable quotes;
+     
 
 		/// <summary>
 		/// Gets the ticker whose quotes are contained into the Quotes object
@@ -34,7 +35,8 @@ namespace QuantProject.DataAccess.Tables
 		public static DateTime GetStartDate( string ticker )
 		{
 			DataTable dataTable = SqlExecutor.GetDataTable(
-				"select * from quotes where quTicker='" + ticker + "'" );
+				"select * from quotes where quTicker='" + ticker + "' " +
+				"order by quDate");
 			return (DateTime)(dataTable.Rows[ 0 ][ "quDate" ]);
 		}
 		/// <summary>
@@ -45,9 +47,88 @@ namespace QuantProject.DataAccess.Tables
 		public static DateTime GetEndDate( string ticker )
 		{
 			DataTable dataTable = SqlExecutor.GetDataTable(
-				"select * from quotes where quTicker='" + ticker + "'" );
-			return (DateTime)(dataTable.Rows[ 0 ][ "quDate" ]);
+				"select * from quotes where quTicker='" + ticker + "' " +
+				"order by quDate DESC");
+			return (DateTime)(dataTable.Rows[0][ "quDate" ]);
 		}
+    /// <summary>
+    /// Returns the number of quotes for the given ticker
+    /// </summary>
+    /// <param name="ticker">ticker for which the number of quotes has to be returned</param>
+    /// <returns></returns>
+    public static int GetNumberOfQuotes( string ticker )
+    {
+      DataTable dataTable = SqlExecutor.GetDataTable(
+        "select * from quotes where quTicker='" + ticker + "'" );
+      return dataTable.Rows.Count;
+    }
+
+    /// <summary>
+    /// It provides deletion of the quote from the table "quotes" for
+    /// the given ticker for a specified date
+    /// </summary>
+    public static void Delete( string ticker, DateTime dateOfTheQuoteToBeDeleted )
+    {
+      try
+      {
+      SqlExecutor.ExecuteNonQuery("DELETE * FROM quotes " +
+                                  "WHERE quTicker ='" +
+                                  ticker + "' AND quDate =" +
+                                  SQLBuilder.GetDateConstant(dateOfTheQuoteToBeDeleted));
+      }
+      catch(Exception ex)
+      {
+        string notUsed = ex.ToString();
+      }
+    }
+
+    /// <summary>
+    /// It provides addition of the given quote's values into table "quotes" 
+    /// </summary>
+    public static void Add( string ticker, DateTime date, double open, 
+                            double high, double low, double close,
+                            double volume, double adjustedClose)
+    {
+      try
+      {
+      SqlExecutor.ExecuteNonQuery("INSERT INTO quotes(quTicker, quDate, quOpen, " +
+                                  "quHigh, quLow, quClose, quVolume, quAdjustedClose) " +
+                                  "VALUES('" + ticker + "', " + SQLBuilder.GetDateConstant(date) + ", " +
+                                  open + ", " + high + ", " + low + ", " + close + ", " +
+                                  volume + ", " + adjustedClose + ")");
+      }
+      catch(Exception ex)
+      {
+        string notUsed = ex.ToString();
+      }
+    }             
+
+    public static bool IsAdjustedCloseChanged(string ticker, DateTime dateToCheck,
+                                              float currentAdjustedValueFromSource)
+    {
+      bool isAdjustedCloseChanged = false;
+      try
+      {
+        float adjustedCloseInDatabase;
+        double absoluteRelativeDifference;
+          DataTable tableOfSingleRow = 
+                    SqlExecutor.GetDataTable("SELECT * FROM quotes WHERE quTicker='" +
+                                              ticker + "' AND quDate=" + 
+                                              SQLBuilder.GetDateConstant(dateToCheck));
+          adjustedCloseInDatabase = (float)(tableOfSingleRow.Rows[0]["quAdjustedClose"]);
+          absoluteRelativeDifference = 
+                            Math.Abs((currentAdjustedValueFromSource - adjustedCloseInDatabase)/currentAdjustedValueFromSource);
+          if(absoluteRelativeDifference>ConstantsProvider.MaxRelativeDifferenceForAdjustedValues)
+              isAdjustedCloseChanged = true;
+        return isAdjustedCloseChanged;
+      }
+      catch(Exception ex)
+      {
+        string notUsed = ex.ToString();
+        return isAdjustedCloseChanged;
+      }
+    }             
+
 		#region GetHashValue
 		private string getHashValue_getQuoteString_getRowString_getSingleValueString( Object value )
 		{

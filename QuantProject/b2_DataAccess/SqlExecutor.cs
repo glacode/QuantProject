@@ -24,9 +24,12 @@ namespace QuantProject.DataAccess
 		}
 		public static void ExecuteNonQuery( string SqlNonQuery )
 		{
-			OleDbCommand oleDbCommand = new OleDbCommand( SqlNonQuery ,
+				if(ConnectionProvider.OleDbConnection.State != ConnectionState.Open)
+          ConnectionProvider.OleDbConnection.Open();
+        OleDbCommand oleDbCommand = new OleDbCommand( SqlNonQuery ,
 				ConnectionProvider.OleDbConnection );
-			oleDbCommand.ExecuteNonQuery();
+
+      oleDbCommand.ExecuteNonQuery();
 		}
 	}
 }
