@@ -3,6 +3,7 @@ using System.Drawing;
 using System.Collections;
 using System.ComponentModel;
 using System.Windows.Forms;
+using QuantProject.Applications.Downloader.TickerSelectors;
 
 namespace QuantProject.Applications.Downloader
 {

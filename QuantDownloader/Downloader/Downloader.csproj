@@ -165,16 +165,6 @@
                     BuildAction = "None"
                 />
                 <File
-                    RelPath = "GroupEditor.cs"
-                    SubType = "Form"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "GroupEditor.resx"
-                    DependentUpon = "GroupEditor.cs"
-                    BuildAction = "EmbeddedResource"
-                />
-                <File
                     RelPath = "Main.cs"
                     SubType = "Form"
                     BuildAction = "Compile"
@@ -203,26 +193,6 @@
                     RelPath = "TickerDownloader.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "TickerGroupsViewer.cs"
-                    SubType = "Form"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "TickerGroupsViewer.resx"
-                    DependentUpon = "TickerGroupsViewer.cs"
-                    BuildAction = "EmbeddedResource"
-                />
-                <File
-                    RelPath = "TickerViewer.cs"
-                    SubType = "Form"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "TickerViewer.resx"
-                    DependentUpon = "TickerViewer.cs"
-                    BuildAction = "EmbeddedResource"
                 />
                 <File
                     RelPath = "WebDownloader.cs"
@@ -348,6 +318,51 @@
                     RelPath = "QuotesEditor\RangeToRange\RangeToRangeTabPage.cs"
                     SubType = "Component"
                     BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "TickerSelectors\GroupEditor.cs"
+                    SubType = "Form"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "TickerSelectors\ITickerReceiver.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "TickerSelectors\ITickerSelector.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "TickerSelectors\TickerGroupsListViewMenu.cs"
+                    SubType = "Component"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "TickerSelectors\TickerGroupsListViewMenu.resx"
+                    DependentUpon = "TickerGroupsListViewMenu.cs"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "TickerSelectors\TickerGroupsViewer.cs"
+                    SubType = "Form"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "TickerSelectors\TickerViewer.cs"
+                    SubType = "Form"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "TickerSelectors\TickerViewerMenu.cs"
+                    SubType = "Component"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "TickerSelectors\TickerViewerMenu.resx"
+                    DependentUpon = "TickerViewerMenu.cs"
+                    BuildAction = "EmbeddedResource"
                 />
                 <File
                     RelPath = "Validate\IValidator.cs"
