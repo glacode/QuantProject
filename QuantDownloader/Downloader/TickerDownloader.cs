@@ -320,7 +320,8 @@ namespace QuantProject.Applications.Downloader
     private bool getResponseForRepeatedChecks(int numberOfRepeatedChecks)
     {
       bool response = false;
-      Quotes tickerQuotes = new Quotes(this.p_quTicker);
+      QuantProject.Data.DataTables.Quotes tickerQuotes =
+				new QuantProject.Data.DataTables.Quotes(this.p_quTicker);
       for(int i = 1; i< this.numberOfQuotesInDatabase; i += this.numberOfQuotesInDatabase/numberOfRepeatedChecks)
       {
         DateTime dateToCheck = tickerQuotes.GetPrecedingDate(this.startDate, i);

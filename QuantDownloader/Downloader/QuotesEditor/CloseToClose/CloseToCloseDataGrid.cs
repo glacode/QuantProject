@@ -23,7 +23,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 using System;
 using System.Data;
 using System.Windows.Forms;
-using QuantProject.DataAccess.Tables;
+using QuantProject.Data.DataTables;
 using QuantProject.Business.Validation;
 
 namespace QuantProject.Applications.Downloader
