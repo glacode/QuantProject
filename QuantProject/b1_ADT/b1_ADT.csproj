@@ -111,11 +111,6 @@
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
-		<File
-                    RelPath = "Statistics\BasicFunctions.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
                 <File
                     RelPath = "Optimizing\Optimizable.cs"
                     SubType = "Code"
@@ -128,6 +123,16 @@
                 />
                 <File
                     RelPath = "Optimizing\Parameters.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Statistics\BasicFunctions.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Statistics\Function.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
