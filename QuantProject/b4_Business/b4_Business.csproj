@@ -121,6 +121,22 @@
                     Project = "{8CF7C0D8-A8CB-43DC-B406-77DE62729487}"
                     Package = "{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}"
                 />
+                <Reference
+                    Name = "stdole"
+                    Guid = "{00020430-0000-0000-C000-000000000046}"
+                    VersionMajor = "2"
+                    VersionMinor = "0"
+                    Lcid = "0"
+                    WrapperTool = "primary"
+                />
+                <Reference
+                    Name = "Microsoft.Office.Core"
+                    Guid = "{2DF8D04C-5BFA-101B-BDE5-00AA0044DE52}"
+                    VersionMajor = "2"
+                    VersionMinor = "3"
+                    Lcid = "0"
+                    WrapperTool = "primary"
+                />
             </References>
         </Build>
         <Files>
