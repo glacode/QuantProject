@@ -22,6 +22,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 using System;
 using System.Data.OleDb;
+using QuantProject.DataAccess;
 
 namespace QuantProject.DataAccess
 {
@@ -55,7 +56,9 @@ namespace QuantProject.DataAccess
             @";Jet OLEDB:Registry Path="""";Jet OLEDB:Database Password="""";Jet OLEDB:Engine Type=5;Jet OLEDB:Database Locking Mode=1;Jet OLEDB:Global Partial Bulk Ops=2;Jet OLEDB:Global Bulk Transactions=1;Jet OLEDB:New Database Password="""";Jet OLEDB:Create System Database=False;Jet OLEDB:Encrypt Database=False;Jet OLEDB:Don't Copy Locale on Compact=False;Jet OLEDB:Compact Without Replica Repair=False;Jet OLEDB:SFP=False";
           oleDbConnection = new OleDbConnection( connectionString );
         }
-        return oleDbConnection;
+        DataBaseVersionManager dataBaseVersionManager = new DataBaseVersionManager(oleDbConnection);
+		dataBaseVersionManager.UpdateDataBaseStructure();
+		return oleDbConnection;
       }
     }
 	}
