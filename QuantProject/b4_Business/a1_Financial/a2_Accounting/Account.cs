@@ -169,22 +169,11 @@ namespace QuantProject.Business.Financial.Accounting
 			this.AddCash( this.endOfDayTimer.GetCurrentTime() ,
 				moneyAmount );
 		}
-    public void ClearOrders()
-    {
-      this.activeOrders.Clear(); 
-    }
+
 		public void AddOrder( Order order )
 		{
-			this.activeOrders.Add(order); 
-      //this.orderExecutor.Execute( order );
+			this.orderExecutor.Execute( order );
 		}
-    public void ExecuteActiveOrders()
-    {
-      foreach(object order in this.activeOrders)
-      {
-        this.orderExecutor.Execute( (Order)order );
-      }
-    }
 		public bool Contains( Instrument instrument )
 		{
 			return Portfolio.Contains( instrument );
