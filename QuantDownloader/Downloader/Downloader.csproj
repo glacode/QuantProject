@@ -130,7 +130,7 @@
                 <Reference
                     Name = "scpl"
                     AssemblyName = "scpl"
-                    HintPath = "bin\Debug\scpl.dll"
+                    HintPath = "..\..\lib\scpl.dll"
                 />
             </References>
         </Build>
@@ -302,6 +302,11 @@
                     RelPath = "TickerSelectors\TickerViewer.cs"
                     SubType = "Form"
                     BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "TickerSelectors\TickerViewer.resx"
+                    DependentUpon = "TickerViewer.cs"
+                    BuildAction = "EmbeddedResource"
                 />
                 <File
                     RelPath = "TickerSelectors\TickerViewerMenu.cs"

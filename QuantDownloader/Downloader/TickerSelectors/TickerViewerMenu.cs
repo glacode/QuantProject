@@ -133,12 +133,24 @@ namespace QuantProject.Applications.Downloader.TickerSelectors
       ITickerSelector iTickerSelector = (ITickerSelector)this.parentForm;
       DataTable tableOfSelectedTickers = iTickerSelector.GetTableOfSelectedTickers();
       string currentTicker;
+      //user confirmation
+      if(tableOfSelectedTickers.Rows.Count > 5)
+      { 
+        if(DialogResult.No == MessageBox.Show( "This operation may be very long: \n" + 
+                                            "Do you want to continue?", "Confirmation",
+                                            MessageBoxButtons.YesNo))
+        { 
+          Cursor.Current = Cursors.Default;
+          return;
+        }
+      }
+      //ok
       foreach(DataRow row in tableOfSelectedTickers.Rows)
       {
         currentTicker = (string)row[Tickers.Ticker];
         QuantProject.DataAccess.Tables.Quotes.ComputeAndCommitCloseToCloseRatios(currentTicker);
       }
-      Cursor.Current = Cursors.WaitCursor; 
+      Cursor.Current = Cursors.Default; 
 
 
     }

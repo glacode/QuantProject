@@ -27,6 +27,7 @@ using System.ComponentModel;
 using System.Windows.Forms;
 using System.Data;
 using System.Data.OleDb;
+using QuantProject.DataAccess;
 using QuantProject.DataAccess.Tables;
 using QuantProject.Data.DataTables;
 using QuantProject.Data.Selectors;
@@ -60,14 +61,16 @@ namespace QuantProject.Applications.Downloader.TickerSelectors
     private System.Windows.Forms.ComboBox comboBoxFirstOperator;
     private System.Windows.Forms.ComboBox comboBoxSecondOperator;
 		private DataTable tableTickers;
-
+    private bool skipRowChangedEvent;// event must be launched only by
+                                     // user's changes
 		public TickerViewer()
 		{
 			InitializeComponent();
       this.dataGrid1.ContextMenu = new TickerViewerMenu(this);
       this.tableTickers = new DataTable("tickers");
-			this.dataGrid1.DataSource = this.tableTickers;
+      this.dataGrid1.DataSource = this.tableTickers;
 			this.setStyle_dataGrid1();
+      this.AcceptButton = this.buttonFindTickers;
   	}
 
 		/// <summary>
@@ -157,11 +160,11 @@ namespace QuantProject.Applications.Downloader.TickerSelectors
       // 
       // buttonFindTickers
       // 
-      this.buttonFindTickers.Location = new System.Drawing.Point(136, 256);
+      this.buttonFindTickers.Location = new System.Drawing.Point(152, 232);
       this.buttonFindTickers.Name = "buttonFindTickers";
       this.buttonFindTickers.Size = new System.Drawing.Size(104, 24);
-      this.buttonFindTickers.TabIndex = 3;
-      this.buttonFindTickers.Text = "Find Tickers";
+      this.buttonFindTickers.TabIndex = 0;
+      this.buttonFindTickers.Text = "&Find Tickers";
       this.buttonFindTickers.Click += new System.EventHandler(this.buttonFindTickers_Click);
       // 
       // label3
@@ -195,7 +198,7 @@ namespace QuantProject.Applications.Downloader.TickerSelectors
       this.panel2.ForeColor = System.Drawing.SystemColors.ControlText;
       this.panel2.Location = new System.Drawing.Point(432, 0);
       this.panel2.Name = "panel2";
-      this.panel2.Size = new System.Drawing.Size(392, 478);
+      this.panel2.Size = new System.Drawing.Size(400, 478);
       this.panel2.TabIndex = 7;
       // 
       // groupBoxDateQuoteFilter
@@ -212,7 +215,7 @@ namespace QuantProject.Applications.Downloader.TickerSelectors
                                                                                           this.radioButtonAnyTicker});
       this.groupBoxDateQuoteFilter.Location = new System.Drawing.Point(8, 80);
       this.groupBoxDateQuoteFilter.Name = "groupBoxDateQuoteFilter";
-      this.groupBoxDateQuoteFilter.Size = new System.Drawing.Size(376, 160);
+      this.groupBoxDateQuoteFilter.Size = new System.Drawing.Size(384, 136);
       this.groupBoxDateQuoteFilter.TabIndex = 14;
       this.groupBoxDateQuoteFilter.TabStop = false;
       this.groupBoxDateQuoteFilter.Text = "Quote filter";
@@ -315,7 +318,7 @@ namespace QuantProject.Applications.Downloader.TickerSelectors
       // TickerViewer
       // 
       this.AutoScaleBaseSize = new System.Drawing.Size(5, 13);
-      this.ClientSize = new System.Drawing.Size(824, 478);
+      this.ClientSize = new System.Drawing.Size(832, 478);
       this.Controls.AddRange(new System.Windows.Forms.Control[] {
                                                                   this.splitter1,
                                                                   this.panel2,
@@ -389,6 +392,16 @@ namespace QuantProject.Applications.Downloader.TickerSelectors
         {
           this.tableTickers = Tickers.GetTableOfFilteredTickers(this.textBoxStringToFind.Text,
                                                                 this.textBoxStringToFindInName.Text);
+          
+          this.tableTickers.Columns[Tickers.CompanyName].AllowDBNull = false;
+          this.tableTickers.Columns[Tickers.CompanyName].DefaultValue = "-";
+          this.tableTickers.Columns[Tickers.Ticker].AllowDBNull = false;
+          this.tableTickers.Columns[Tickers.Ticker].DefaultValue = "tickerSymbol";
+
+          this.tableTickers.RowChanged += new DataRowChangeEventHandler(this.row_Changed);
+          this.tableTickers.RowDeleted += new DataRowChangeEventHandler(this.row_Deleted);
+          this.dataGrid1.DataSource = this.tableTickers;
+          this.dataGrid1.ReadOnly = false;
         }
         else
         //all tickers with first date quote and last date quote within a specified interval
@@ -399,12 +412,9 @@ namespace QuantProject.Applications.Downloader.TickerSelectors
                                                                 this.dateTimePickerFirstDate.Value,
                                                                 this.comboBoxSecondOperator.Text,
                                                                 this.dateTimePickerLastDate.Value);
+          this.dataGrid1.DataSource = this.tableTickers;
+          this.dataGrid1.ReadOnly = true;
         }        
-        // these two lines in order to avoid "strange" exceptions ...
-        this.dataGrid1.DataSource = null;
-        this.dataGrid1.DataSource = this.tableTickers;
-        // 
-        this.dataGrid1.Refresh();
       }
 			catch(Exception ex)
 			{
@@ -468,8 +478,71 @@ namespace QuantProject.Applications.Downloader.TickerSelectors
         this.comboBoxSecondOperator.Enabled = false;
       }
     }
+        
+    private void row_Changed( object sender, DataRowChangeEventArgs e )
+    {
+      this.rowModified_Manager(e);
+    }
+    
+    private void row_Deleted( object sender, DataRowChangeEventArgs e )
+    {
+      this.rowModified_Manager(e);
+    }
+    
+    private void rowModified_Manager(DataRowChangeEventArgs rowChangeEventArgs)
+    {
+      if(this.skipRowChangedEvent)
+        return;
+      DialogResult userAnswer = MessageBox.Show( "Do you want to commit these changes permanently to the database?",
+        "Confirmation for permanent commit",
+        MessageBoxButtons.YesNo);
 
-		
+      if(userAnswer == DialogResult.Yes)
+      {
+        this.saveChangesToCurrentRow(rowChangeEventArgs);
+      }
+      else
+      {
+        this.skipRowChangedEvent = true;
+        this.tableTickers.RejectChanges();
+        this.skipRowChangedEvent = false;
+      }
+    }
+    
+    private void saveChangesToCurrentRow(DataRowChangeEventArgs rowChangeEventArgs)
+    {
+      try
+      {
+        if(rowChangeEventArgs.Action == DataRowAction.Add)
+        {
+          string sqlInsertString = 
+              "INSERT INTO tickers(tiTicker, tiCompanyName) VALUES('" +
+              (string)rowChangeEventArgs.Row["tiTicker"] + "', '" +
+              (string)rowChangeEventArgs.Row["tiCompanyName"] + "')";
+          SqlExecutor.ExecuteNonQuery(sqlInsertString);
+          this.skipRowChangedEvent = true;
+        }
+        else
+        {
+          DataTable changedData = this.tableTickers.GetChanges();
+          this.skipRowChangedEvent = true;
+          OleDbSingleTableAdapter adapter = new OleDbSingleTableAdapter();
+          adapter.SetAdapter("tickers");
+          adapter.OleDbDataAdapter.Update(changedData);
+          this.tableTickers.AcceptChanges();
+        }
+       }
+      catch(Exception ex)
+      {
+        MessageBox.Show(ex.ToString());
+        this.tableTickers.RejectChanges();
+      }
+      finally
+      {
+        this.skipRowChangedEvent = false;
+      }
+    }
+
 
 	}
 }

@@ -299,10 +299,10 @@ namespace QuantProject.Applications.Downloader.TickerSelectors
       this.menuItemAddNewGroup = new System.Windows.Forms.MenuItem();
       this.menuItemRemoveGroup = new System.Windows.Forms.MenuItem();
       this.menuItemRenameGroup = new System.Windows.Forms.MenuItem();
+      this.menuItemTickerSelector = new System.Windows.Forms.MenuItem();
       this.imageListGroupsAndTickers = new System.Windows.Forms.ImageList(this.components);
       this.splitter1 = new System.Windows.Forms.Splitter();
       this.listViewGroupsAndTickers = new System.Windows.Forms.ListView();
-      this.menuItemTickerSelector = new System.Windows.Forms.MenuItem();
       this.SuspendLayout();
       // 
       // treeViewGroups
@@ -342,6 +342,12 @@ namespace QuantProject.Applications.Downloader.TickerSelectors
       this.menuItemRenameGroup.Text = "&Modify";
       this.menuItemRenameGroup.Click += new System.EventHandler(this.menuItemRenameGroup_Click);
       // 
+      // menuItemTickerSelector
+      // 
+      this.menuItemTickerSelector.Index = 3;
+      this.menuItemTickerSelector.Text = "&Ticker Selector";
+      this.menuItemTickerSelector.Click += new System.EventHandler(this.menuItemTickerSelector_Click);
+      // 
       // imageListGroupsAndTickers
       // 
       this.imageListGroupsAndTickers.ColorDepth = System.Windows.Forms.ColorDepth.Depth8Bit;
@@ -360,6 +366,7 @@ namespace QuantProject.Applications.Downloader.TickerSelectors
       // listViewGroupsAndTickers
       // 
       this.listViewGroupsAndTickers.Activation = System.Windows.Forms.ItemActivation.TwoClick;
+      this.listViewGroupsAndTickers.AllowDrop = true;
       this.listViewGroupsAndTickers.Dock = System.Windows.Forms.DockStyle.Fill;
       this.listViewGroupsAndTickers.Location = new System.Drawing.Point(123, 0);
       this.listViewGroupsAndTickers.Name = "listViewGroupsAndTickers";
@@ -368,12 +375,10 @@ namespace QuantProject.Applications.Downloader.TickerSelectors
       this.listViewGroupsAndTickers.TabIndex = 2;
       this.listViewGroupsAndTickers.View = System.Windows.Forms.View.Details;
       this.listViewGroupsAndTickers.ItemActivate += new System.EventHandler(this.listViewGroupsAndTickers_ItemActivate);
-      // 
-      // menuItemTickerSelector
-      // 
-      this.menuItemTickerSelector.Index = 3;
-      this.menuItemTickerSelector.Text = "&Ticker Selector";
-      this.menuItemTickerSelector.Click += new System.EventHandler(this.menuItemTickerSelector_Click);
+      this.listViewGroupsAndTickers.DragDrop += new System.Windows.Forms.DragEventHandler(this.listViewGroupsAndTickers_DragDrop);
+      this.listViewGroupsAndTickers.DragEnter += new System.Windows.Forms.DragEventHandler(this.listViewGroupsAndTickers_DragEnter);
+      this.listViewGroupsAndTickers.ItemDrag += new System.Windows.Forms.ItemDragEventHandler(this.listViewGroupsAndTickers_ItemDrag);
+      this.listViewGroupsAndTickers.DragLeave += new System.EventHandler(this.listViewGroupsAndTickers_DragLeave);
       // 
       // TickerGroupsViewer
       // 
@@ -503,9 +508,10 @@ namespace QuantProject.Applications.Downloader.TickerSelectors
 		{
 			this.selectedGroupID = (string)this.treeViewGroups.SelectedNode.Tag;
 			this.selectedGroupDescription = this.treeViewGroups.SelectedNode.Text;
-			this.updateListView(this.treeViewGroups.SelectedNode);
-			
+			this.Text = "Ticker-Groups Viewer " + this.treeViewGroups.SelectedNode.FullPath;
+      this.updateListView(this.treeViewGroups.SelectedNode);
 		}
+
 
 		#region Update List View
 
@@ -856,6 +862,28 @@ namespace QuantProject.Applications.Downloader.TickerSelectors
       TickerSelectorForm tickerSelectorForm =
                             new TickerSelectorForm((string)this.treeViewGroups.SelectedNode.Tag);
       tickerSelectorForm.Show();
+    }
+
+    private void listViewGroupsAndTickers_ItemDrag(object sender, System.Windows.Forms.ItemDragEventArgs e)
+    {
+      DoDragDrop(this.listViewGroupsAndTickers.SelectedItems, DragDropEffects.Copy);
+    }
+
+    private void listViewGroupsAndTickers_DragDrop(object sender, System.Windows.Forms.DragEventArgs e)
+    {
+      //MessageBox.Show("Finished drag and drop");
+    }
+
+    private void listViewGroupsAndTickers_DragLeave(object sender, System.EventArgs e)
+    {
+      //DragAction
+
+      //MessageBox.Show("Try to leave data here");
+    }
+
+    private void listViewGroupsAndTickers_DragEnter(object sender, System.Windows.Forms.DragEventArgs e)
+    {
+      //MessageBox.Show("Drag here?");
     }
          
 

@@ -1,9 +1,11 @@
 using System;
+using System.Data;
 using System.Drawing;
 using System.Collections;
 using System.ComponentModel;
 using System.Windows.Forms;
 using QuantProject.Applications.Downloader.TickerSelectors;
+using QuantProject.Data.Selectors;
 
 namespace QuantProject.Applications.Downloader
 {
@@ -215,7 +217,24 @@ namespace QuantProject.Applications.Downloader
       //try
       {
         Application.Run(new Principale());  //togli il commento per riavere il downloader
-//        Application.Run(new QuotesEditor( "RYVYX" ));
+        /*TickerSelector mySelector1 = 
+            new TickerSelector(SelectionType.Liquidity, false, "NSDQ100", new DateTime(2003,1,1),
+                                new DateTime(2003,6,30), 15);
+        TickerSelector mySelector2 = 
+          new TickerSelector(SelectionType.AverageCloseToOpenPerformance, false, "NSDQ100", new DateTime(2003,1,1),
+                                new DateTime(2003,6,30), 15);
+        //System.Collections.Hashtable ht = ADT.ExtendedDataTable.GetCommonValues(mySelector1.GetTableOfSelectedTickers(),
+          //                                                            mySelector2.GetTableOfSelectedTickers(),
+            //                                                          0, 0);
+        
+        DataTable table = TickerSelector.GetTableOfCommonTickers(mySelector1.GetTableOfSelectedTickers(),
+                                                                 mySelector2.GetTableOfSelectedTickers());
+                                                                      
+        foreach(DataRow row in table.Rows)
+        {
+          Console.WriteLine((string)row[0]);
+        }*/
+        //        Application.Run(new QuotesEditor( "RYVYX" ));
 //        Application.Run(new TestScpl());
       } 
       //catch ( Exception ex )
