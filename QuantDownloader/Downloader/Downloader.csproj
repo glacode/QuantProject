@@ -246,7 +246,7 @@
                 />
                 <File
                     RelPath = "QuotesEditor\VisualValidationChart.cs"
-                    SubType = "Code"
+                    SubType = "UserControl"
                     BuildAction = "Compile"
                 />
                 <File
@@ -261,7 +261,7 @@
                 />
                 <File
                     RelPath = "QuotesEditor\CloseToClose\CloseToCloseChart.cs"
-                    SubType = "Code"
+                    SubType = "UserControl"
                     BuildAction = "Compile"
                 />
                 <File
@@ -296,7 +296,7 @@
                 />
                 <File
                     RelPath = "QuotesEditor\RangeToRange\RangeToRangeChart.cs"
-                    SubType = "Code"
+                    SubType = "UserControl"
                     BuildAction = "Compile"
                 />
                 <File
