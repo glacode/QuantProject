@@ -83,6 +83,16 @@ namespace QuantProject.Business.Timing
 		}
 
 		/// <summary>
+		/// true iif the ticker was exchanged at the given date time
+		/// </summary>
+		/// <param name="ticker"></param>
+		/// <returns></returns>
+		public bool IsExchanged( string ticker )
+		{
+			return HistoricalDataProvider.WasExchanged( ticker ,
+				this.endOfDayTimer.GetCurrentTime().GetNearestExtendedDateTime() );
+		}
+		/// <summary>
 		/// Add a ticker whose quotes are to be monitored
 		/// </summary>
 		/// <param name="ticker"></param>

@@ -146,6 +146,13 @@ namespace QuantProject.Data.DataProviders
 				( (History) ((Hashtable) cachedHistories[ instrumentKey ])[ extendedDateTime.BarComponent ]
 				).IndexOfKeyOrPrevious( extendedDateTime.DateTime ) ) );
 		}
+		public static bool WasExchanged( string instrumentKey , ExtendedDateTime extendedDateTime )
+		{
+			double marketValue = GetMarketValue( instrumentKey , extendedDateTime  ); // forces caching if needed
+			return ( (History) ((Hashtable)
+				cachedHistories[ instrumentKey ])[ extendedDateTime.BarComponent ] ).ContainsKey(
+				extendedDateTime.DateTime );
+		}
 
 		public static double GetMarketValue( string instrumentKey , DateTime dateTime ,
 			BarComponent barComponent )
