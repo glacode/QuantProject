@@ -15,8 +15,15 @@ namespace QuantProject.Business.Financial.Accounting.Reporting.SummaryRows
 		public NumberWinningLongTrades( Summary summary )
 		{
       this.rowDescription = "Number winning long trades";
-      DataRow[] DataRows = summary.AccountReport.RoundTrades.DataTable.Select( "((Trade='Long')and([%Profit] > 0))" );
-      this.rowValue = DataRows.Length;
+			try
+			{
+				DataRow[] DataRows = summary.AccountReport.RoundTrades.DataTable.Select( "((Trade='Long')and([%Profit] > 0))" );
+				this.rowValue = DataRows.Length;
+			}
+			catch (Exception ex)
+			{
+				ex = ex; // to avoid compilation warning;
+			}
     }
 	}
 }

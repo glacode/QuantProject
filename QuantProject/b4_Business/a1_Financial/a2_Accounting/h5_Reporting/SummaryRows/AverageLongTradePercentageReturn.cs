@@ -15,8 +15,16 @@ namespace QuantProject.Business.Financial.Accounting.Reporting.SummaryRows
 		public AverageLongTradePercentageReturn( Summary summary )
 		{
       this.rowDescription = "Average long trade % Return";
-      double avgReturn =
-        (double) summary.AccountReport.RoundTrades.DataTable.Compute( "avg([%Profit])" , "(Trade='Long')" );
+			double avgReturn = 0.0;
+			try
+			{
+				avgReturn =
+					(double) summary.AccountReport.RoundTrades.DataTable.Compute( "avg([%Profit])" , "(Trade='Long')" );
+			}
+			catch (Exception ex)
+			{
+				ex = ex; // to avoid compilation warning;
+			}
       this.rowValue = avgReturn;
     }
 	}

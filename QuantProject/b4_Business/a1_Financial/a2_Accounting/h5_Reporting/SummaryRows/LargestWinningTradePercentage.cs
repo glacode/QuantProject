@@ -15,8 +15,15 @@ namespace QuantProject.Business.Financial.Accounting.Reporting.SummaryRows
 		public LargestWinningTradePercentage( Summary summary )
 		{
       this.rowDescription = "Largest winning trade";
-      this.rowValue =
-        (double) summary.AccountReport.RoundTrades.DataTable.Compute( "max([%Profit])" , "([%Profit]>0)" );
+			try
+			{
+				this.rowValue =
+					(double) summary.AccountReport.RoundTrades.DataTable.Compute( "max([%Profit])" , "([%Profit]>0)" );
+			}
+			catch (Exception ex)
+			{
+				ex = ex; // to avoid compilation warning;
+			}
     }
 	}
 }

@@ -14,9 +14,16 @@ namespace QuantProject.Business.Financial.Accounting.Reporting.SummaryRows
 		{
       double totalROA = summary.TotalPnl / ( summary.FinalAccountValue - summary.TotalPnl );
       this.rowDescription = "Total # of trades";
-      DataRow[] DataRows =
-        summary.AccountReport.RoundTrades.DataTable.Select( "(ExitPrice is not null)" );
-      this.rowValue = DataRows.Length;
+			try
+			{
+				DataRow[] DataRows =
+					summary.AccountReport.RoundTrades.DataTable.Select( "(ExitPrice is not null)" );
+				this.rowValue = DataRows.Length;
+			}
+			catch (Exception ex)
+			{
+				ex = ex; // to avoid compilation warning;
+			}
     }
 	}
 }
