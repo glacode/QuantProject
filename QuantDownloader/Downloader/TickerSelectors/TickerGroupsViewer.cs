@@ -264,7 +264,7 @@ namespace QuantProject.Applications.Downloader.TickerSelectors
       {
         if(item.Tag is System.String )
         // the item contains in Tag property the ticker ID
-            Tickers_tickerGroups.Delete((string)item.Tag,
+            QuantProject.DataAccess.Tables.Tickers_tickerGroups.Delete((string)item.Tag,
                                        (string)this.treeViewGroups.SelectedNode.Tag);
         else
         // the item references to a node in the treeView :

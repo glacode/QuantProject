@@ -397,7 +397,7 @@ namespace QuantProject.Applications.Downloader
       if(rowsUpdated > 0)
         this.updateCurrentStatusDatabaseUpdated("YES");
       else
-        this.updateCurrentStatus("NOT FOUND");
+        this.updateCurrentStatus("Not found updatable quotes");
     }
 
     private void resetAndImportTicker()
@@ -406,8 +406,6 @@ namespace QuantProject.Applications.Downloader
       this.downloadedValuesFromSource = this.getTableOfDownloadedValues();
       this.commitDownloadedValuesToDatabase();
     }
-    
-    
 
     public void DownloadTicker()
     {
@@ -448,34 +446,7 @@ namespace QuantProject.Applications.Downloader
   
         // ticker's quotes are downloaded for the first time or
         // the user has chosen to download all quotes
-     
 
-      /*
-      
-      if(this.numberOfQuotesInDatabase>0 && p_myForm.IsUpdateOptionSelected)
-      // there are some ticker's quotes in the database and
-      // the user has chosen to download new quotes (only after last quote
-      // or both before first quote and after last quote)
-      {
-        if(this.p_myForm.IsOnlyAfterLastQuoteSelected)
-        {
-          this.downloadTickerAfterLastQuote();
-        }
-        else
-        {
-          this.downloadTickerBeforeFirstQuote();
-          this.downloadTickerAfterLastQuote();
-        }
-      }
-      else
-      // ticker's quotes are downloaded for the first time or
-      // the user has chosen to download all quotes
-      {
-        this.resetStartDateIfNecessary();
-        setTimeFrameAndImportTickerForEachTimeFrame(200);
-      }
-      
-      */
       
     }
     public void DownloadTicker(DateTime startingDate)

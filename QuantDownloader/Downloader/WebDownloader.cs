@@ -47,6 +47,9 @@ namespace QuantProject.Applications.Downloader
     internal System.Windows.Forms.CheckBox checkBoxIsDicotomicSearchActivated;
     private System.Windows.Forms.RadioButton radioButtonDownloadBeforeMinAndAfterMax;
     private System.Windows.Forms.RadioButton radioButtonDownloadOnlyAfterMax;
+    private System.Windows.Forms.Button buttonAbort;
+    private Thread downloadThread = null;
+
 		/// <summary>
 		/// Required designer variable.
 		/// </summary>
@@ -111,6 +114,7 @@ namespace QuantProject.Applications.Downloader
       this.radioButtonAllAvailableUntilNow.Checked = true;
       this.radioButtonDownloadOnlyAfterMax.Checked = true;
       this.dataGrid1.ContextMenu = new TickerViewerMenu(this);
+      //this.downloadThread = new Thread( new ThreadStart( this.downloadQuotes_createTickerDataSet));
     }
 
 
@@ -143,6 +147,7 @@ namespace QuantProject.Applications.Downloader
       this.radioButtonDownloadBeforeMinAndAfterMax = new System.Windows.Forms.RadioButton();
       this.radioButtonOverWriteNo = new System.Windows.Forms.RadioButton();
       this.radioButtonOverWriteYes = new System.Windows.Forms.RadioButton();
+      this.buttonAbort = new System.Windows.Forms.Button();
       ((System.ComponentModel.ISupportInitialize)(this.dataGrid1)).BeginInit();
       this.groupBoxWebDownloaderOptions.SuspendLayout();
       this.groupBoxUpdateDatabaseOptions.SuspendLayout();
@@ -372,11 +377,22 @@ namespace QuantProject.Applications.Downloader
       this.radioButtonOverWriteYes.TabIndex = 0;
       this.radioButtonOverWriteYes.Text = "Download all quotes, deleting all existing ones in database";
       // 
+      // buttonAbort
+      // 
+      this.buttonAbort.Enabled = false;
+      this.buttonAbort.Location = new System.Drawing.Point(216, 376);
+      this.buttonAbort.Name = "buttonAbort";
+      this.buttonAbort.TabIndex = 15;
+      this.buttonAbort.Text = "Abort";
+      this.buttonAbort.Visible = false;
+      this.buttonAbort.Click += new System.EventHandler(this.buttonAbort_Click);
+      // 
       // WebDownloader
       // 
       this.AutoScaleBaseSize = new System.Drawing.Size(5, 13);
       this.ClientSize = new System.Drawing.Size(840, 470);
       this.Controls.AddRange(new System.Windows.Forms.Control[] {
+                                                                  this.buttonAbort,
                                                                   this.groupBoxUpdateDatabaseOptions,
                                                                   this.groupBoxWebDownloaderOptions,
                                                                   this.labelStartingDateTime,
@@ -567,27 +583,28 @@ namespace QuantProject.Applications.Downloader
 
     private void downloadQuotes_withTickerDataSet( DataSet ds )
     {
-      downloadQuotes_withTickerDataSet_create_dsTickerCurrentlyDownloaded( ds.Tables[0] );
-      foreach (DataRow myRow in ds.Tables[0].Rows) 
-      {
-        //if (this.dsTickerCurrentlyDownloaded.Tables[ "Tickers" ].Rows.Count>5)
-        //  Monitor.Wait( this.dsTickerCurrentlyDownloaded.Tables[ "Tickers" ] );
-        TickerDownloader qd = new TickerDownloader( this , myRow , myRow["tiTicker"].ToString() , ds.Tables[0].Rows.Count );
-        //Thread newThread = new Thread( new ThreadStart( qd.downloadTicker));
-        //newThread.Start();
-        if(this.radioButtonAllAvailableUntilNowSinceStartingDate.Checked)
+      
+        downloadQuotes_withTickerDataSet_create_dsTickerCurrentlyDownloaded( ds.Tables[0] );
+        foreach (DataRow myRow in ds.Tables[0].Rows) 
         {
-          qd.DownloadTicker(this.dateTimePickerStartingDate.Value);
-        }
-        else
-        {
-          qd.DownloadTicker();
+          //if (this.dsTickerCurrentlyDownloaded.Tables[ "Tickers" ].Rows.Count>5)
+          //  Monitor.Wait( this.dsTickerCurrentlyDownloaded.Tables[ "Tickers" ] );
+          TickerDownloader qd = new TickerDownloader( this , myRow , myRow["tiTicker"].ToString() , ds.Tables[0].Rows.Count );
+          //Thread newThread = new Thread( new ThreadStart( qd.downloadTicker));
+          //newThread.Start();
+          if(this.radioButtonAllAvailableUntilNowSinceStartingDate.Checked)
+          {
+            qd.DownloadTicker(this.dateTimePickerStartingDate.Value);
+          }
+          else
+          {
+            qd.DownloadTicker();
+          }
+        
+          //newThread.Join();
+          //qd.downloadTicker();
         }
       
-        //newThread.Join();
-        //qd.downloadTicker();
-      }
-      //ImportQuotesCsv iqc = new ImportQuotesCsv();
     }
     
     private void downloadQuotes_createTickerDataSet( DataSet ds )
@@ -598,20 +615,47 @@ namespace QuantProject.Applications.Downloader
     
     private void downloadQuotesOfAllTickers()
     {
-      DataSet ds=new DataSet();
-      downloadQuotes_createTickerDataSet( ds );
-      downloadQuotes_withTickerDataSet( ds );
-      this.OleDbConnection1.Close();
+      try
+      {
+        DataSet ds=new DataSet();
+        downloadQuotes_createTickerDataSet( ds );
+        downloadQuotes_withTickerDataSet( ds );
+        this.OleDbConnection1.Close();
+      }
+      catch(Exception ex)
+      {
+        MessageBox.Show(ex.ToString());
+      }
+  		
+      finally
+      {
+        
+      }
+
     }
     
 
 	  private void downloadQuotesOfSelectedTickers()
 	  {
-		  DataSet ds=new DataSet();
-		  ds.Tables.Add(this.tableOfSelectedTickers);
-      downloadQuotes_withTickerDataSet( ds );
-		  this.OleDbConnection1.Close();
-	  }
+      try
+      {
+        DataSet ds=new DataSet();
+        ds.Tables.Add(this.tableOfSelectedTickers);
+        downloadQuotes_withTickerDataSet( ds );
+        this.OleDbConnection1.Close();
+      }
+      
+      catch(Exception ex)
+      {
+        MessageBox.Show(ex.ToString());
+      }
+  		
+      finally
+      {
+        
+      }
+    }  
+     
   	
 	  private void openDbAndSetOleDbCommand()
 	  {
@@ -640,21 +684,24 @@ namespace QuantProject.Applications.Downloader
 
     private void button1_Click(object sender, System.EventArgs e)
     {
-      //Cursor.Current = Cursors.WaitCursor;
-      this.openDbAndSetOleDbCommand();
-	    this.downloadQuotesOfAllTickers();
       this.button1.Enabled = false;
-      //Cursor.Current = Cursors.Default;
-
+      this.buttonAbort.Enabled = true;
+      this.openDbAndSetOleDbCommand();
+      //this.downloadThread = new Thread( new ThreadStart(this.downloadQuotesOfAllTickers));
+      //this.downloadThread.Start();
+	    this.downloadQuotesOfAllTickers();
+      this.buttonAbort.Enabled = false;
     }
 
     private void buttonDownloadQuotesOfSelectedTickers_Click(object sender, System.EventArgs e)
     {
-      //Cursor.Current = Cursors.WaitCursor;
-      this.openDbAndSetOleDbCommand();
-	    this.downloadQuotesOfSelectedTickers();
       this.buttonDownloadQuotesOfSelectedTickers.Enabled = false;
-      //Cursor.Current = Cursors.Default;
+      this.buttonAbort.Enabled = true;
+      this.openDbAndSetOleDbCommand();
+      //this.downloadThread = new Thread( new ThreadStart(this.downloadQuotesOfSelectedTickers));
+      //this.downloadThread.Start();
+	    this.downloadQuotesOfSelectedTickers();
+      this.buttonAbort.Enabled = false;
     }
 
     private void radioButtonAllAvailableUntilNow_CheckedChanged(object sender, System.EventArgs e)
@@ -675,6 +722,12 @@ namespace QuantProject.Applications.Downloader
       //QuantProject.DataAccess.Tables.Quotes.ComputeAndCommitCloseToCloseRatios("ACE.MI");
 
 
+    }
+
+    private void buttonAbort_Click(object sender, System.EventArgs e)
+    {
+      this.buttonAbort.Enabled = false; 
+      this.downloadThread.Abort(); 
     }
 
     public bool IsBeforeAndAfterSelected
