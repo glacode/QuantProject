@@ -1,6 +1,8 @@
 using System;
+using System.Collections;
 using System.Data;
 using System.Windows.Forms;
+
 
 
 namespace QuantProject.ADT
@@ -93,5 +95,71 @@ namespace QuantProject.ADT
       
     }
     
+    /// <summary>
+    /// Get an array of float corresponding to the ratio between columnA and columnB
+    /// </summary>
+    public static float[] GetArrayOfFloatFromRatioOfColumns(DataTable table,
+                                                            string columnAName, string columnBName)
+    {
+      int numRows = table.Rows.Count;
+      float[] arrayOfFloat = new float[numRows];
+      int index = 0;
+      try
+      {
+        for(; index!= numRows; index++)
+        {
+          arrayOfFloat[index] = (float) table.Rows[index][columnAName] / 
+                                (float) table.Rows[index][columnBName];
+        }
+
+      }
+      catch(Exception ex)
+      {
+        MessageBox.Show(ex.ToString());
+        index = numRows;
+      }
+      return arrayOfFloat;
+      
+    }
+    
+    /// <summary>
+	  /// It returns a hashtable containing the common values in two
+	  /// columns of two given Data tables (the two columns must contain unique values!)
+	  /// </summary>
+	  /// <param name="firstDataTable">The first table that contains the first column</param>
+	  /// <param name="secondDataTable">The second table that contains the second column</param>
+	  /// <param name="indexOfColumnOfFirstTable">The index of the first column in the first table</param>
+    /// <param name="indexOfColumnOfSecondTable">The index of the second column in the second table</param>
+    public static Hashtable GetCommonValues(DataTable firstDataTable, DataTable secondDataTable,
+                                           int indexOfColumnOfFirstTable,
+                                           int indexOfColumnOfSecondTable)
+    {
+      
+      Hashtable hashTable = new Hashtable();
+    
+      string columnNameTable1 = firstDataTable.Columns[indexOfColumnOfFirstTable].ColumnName;
+      string columnNameTable2 = firstDataTable.Columns[indexOfColumnOfSecondTable].ColumnName;
+      DataRow[] orderedRowsTable1 = firstDataTable.Select(columnNameTable1 + "!=' '", "DESC");
+      DataRow[] orderedRowsTable2 = secondDataTable.Select(columnNameTable2 + "!=' '", "DESC");
+      int j = 0;
+      for(int i=0; i != orderedRowsTable1.Length; i++)
+      {
+        for(; j != orderedRowsTable2.Length; j++)
+        {
+          int currentIndex = j;
+          object object1 = orderedRowsTable1[i][indexOfColumnOfFirstTable];
+          object object2 = orderedRowsTable2[i][indexOfColumnOfSecondTable];
+          if( object1 == object2 )
+          {
+            hashTable.Add(object1, object2);
+            j = currentIndex;
+          }
+        }
+      }
+      return hashTable;
+
+    }
+    
+
 	}
 }
