@@ -115,11 +115,6 @@
                     WrapperTool = "primary"
                 />
                 <Reference
-                    Name = "scpl"
-                    AssemblyName = "scpl"
-                    HintPath = "..\..\lib\scpl.dll"
-                />
-                <Reference
                     Name = "b4_Business"
                     Project = "{6EE31501-376E-491B-869E-F06D5B7C9C30}"
                     Package = "{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}"
@@ -128,6 +123,19 @@
                     Name = "b1_ADT"
                     Project = "{B8A01161-3698-4591-B1EF-90F5FC7D8DBA}"
                     Package = "{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}"
+                />
+                <Reference
+                    Name = "Microsoft.Office.Core"
+                    Guid = "{2DF8D04C-5BFA-101B-BDE5-00AA0044DE52}"
+                    VersionMajor = "2"
+                    VersionMinor = "3"
+                    Lcid = "0"
+                    WrapperTool = "primary"
+                />
+                <Reference
+                    Name = "scpl"
+                    AssemblyName = "scpl"
+                    HintPath = "..\b91_QuantProject\bin\Debug\scpl.dll"
                 />
             </References>
         </Build>
