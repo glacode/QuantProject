@@ -30,7 +30,8 @@ using QuantProject.Business.Financial.Instruments;
 using QuantProject.Business.Testing;
 using QuantProject.Business.Strategies;
 using QuantProject.Business.Scripting;
-using QuantProject.Presentation.MicrosoftExcel;
+using QuantProject.Presentation.Reporting.Console;
+using QuantProject.Presentation.Reporting.MicrosoftExcel;
 
 namespace QuantProject.Scripts
 {
@@ -73,7 +74,7 @@ namespace QuantProject.Scripts
 
       tester.Objective();
 
-      tester.Account.ReportToConsole( endDateTime );
+			ConsoleManager.Report( tester.Account , endDateTime );
 
       ((History)tester.Account.GetProfitNetLossHistory(
         new ExtendedDateTime( endDateTime , BarComponent.Close ) ) ).ReportToConsole();

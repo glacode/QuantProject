@@ -30,7 +30,7 @@ using QuantProject.Business.Financial.Instruments;
 using QuantProject.Business.Testing;
 using QuantProject.Business.Strategies;
 using QuantProject.Business.Scripting;
-using QuantProject.Presentation.MicrosoftExcel;
+using QuantProject.Presentation.Reporting.MicrosoftExcel;
 using QuantProject.Presentation.Reporting.WindowsForm;
 
 namespace QuantProject.Scripts

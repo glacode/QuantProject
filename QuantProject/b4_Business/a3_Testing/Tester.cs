@@ -33,7 +33,8 @@ using QuantProject.ADT.Histories;
 namespace QuantProject.Business.Testing
 {
 	/// <summary>
-	/// Summary description for Tester.
+	/// Used to test an account (with its account strategy), given a time window,
+	/// a trading system and a starting cash amount
 	/// </summary>
 	public class Tester : BackTester
 	{

@@ -29,7 +29,7 @@ using System.Threading;
 using QuantProject.Business.Financial.Accounting.Reporting;
 using Excel;
 
-namespace QuantProject.Presentation.MicrosoftExcel
+namespace QuantProject.Presentation.Reporting.MicrosoftExcel
 {
 	/// <summary>
 	/// Summary description for ExcelManager.

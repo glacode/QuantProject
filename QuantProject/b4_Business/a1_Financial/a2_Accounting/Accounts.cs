@@ -45,12 +45,6 @@ namespace QuantProject.Business.Financial.Accounting
       return ( ( Account ) this[ accountName ] );
     }
 
-    public void ReportToConsole( DateTime dateTime )
-    {
-      foreach (Account account in this.Values)
-        account.ReportToConsole( dateTime );
-    }
-
     public void Serialize( string filePathAndName )
     {
       foreach (Account account in this.Values)
