@@ -1,3 +1,25 @@
+/*
+QuantDownloader - Quantitative Finance Library
+
+TickerGroupsViewer.cs
+Copyright (C) 2003 
+Marco Milletti
+
+This program is free software; you can redistribute it and/or
+modify it under the terms of the GNU General Public License
+as published by the Free Software Foundation; either version 2
+of the License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program; if not, write to the Free Software
+Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+*/
+
 using System;
 using System.Drawing;
 using System.Collections;
@@ -32,7 +54,8 @@ namespace QuantProject.Applications.Downloader
 			InitializeComponent();
 			//
 			this.tickerGroupsViewer = tickerGroupsViewer;
-			this.Text = "Add new group";
+			this.Text = "Add new group inside: " + 
+												this.tickerGroupsViewer.SelectedGroupDescription;
 			this.buttonModify.Visible = false;
 			//
 		}
@@ -97,7 +120,7 @@ namespace QuantProject.Applications.Downloader
 			this.textBoxGroupID.Name = "textBoxGroupID";
 			this.textBoxGroupID.Size = new System.Drawing.Size(112, 20);
 			this.textBoxGroupID.TabIndex = 1;
-			this.textBoxGroupID.Text = "textBoxGroupID";
+			this.textBoxGroupID.Text = "GroupID";
 			// 
 			// labelGroupID
 			// 
@@ -120,7 +143,7 @@ namespace QuantProject.Applications.Downloader
 			this.textBoxGroupDescription.Name = "textBoxGroupDescription";
 			this.textBoxGroupDescription.Size = new System.Drawing.Size(252, 20);
 			this.textBoxGroupDescription.TabIndex = 3;
-			this.textBoxGroupDescription.Text = "textBoxGroupID";
+			this.textBoxGroupDescription.Text = "Group Description";
 			// 
 			// buttonModify
 			// 
@@ -150,14 +173,27 @@ namespace QuantProject.Applications.Downloader
 		}
 		#endregion
 
+		private bool FormIsNotComplete()
+		{
+			if(this.textBoxGroupID.Text == "" ||
+				this.textBoxGroupDescription.Text == "")
+			{
+				MessageBox.Show("Type both Group ID and Group Description!",
+								"Updating or Adding group not possible",
+								MessageBoxButtons.OK,
+								MessageBoxIcon.Error);
+				return true;
+			}
+			else
+			{
+				return false;
+			}
+		}
 		private void buttonOK_Click(object sender, System.EventArgs e)
 		{
-			if(this.textBoxGroupID == null ||
-				this.textBoxGroupDescription == null)
-			{
-				MessageBox.Show("Type Group ID and Group Description!");
+			if(this.FormIsNotComplete())
 				return;
-			}
+			
 			if(this.tickerGroupsViewer.SelectedGroupID == "")
 			// it is a group to be added under the root node
 			{
@@ -177,12 +213,8 @@ namespace QuantProject.Applications.Downloader
 
 		private void buttonModify_Click(object sender, System.EventArgs e)
 		{
-			if(this.textBoxGroupID == null ||
-				this.textBoxGroupDescription == null)
-			{
-				MessageBox.Show("Type Group ID and Group Description!");
+			if(this.FormIsNotComplete())
 				return;
-			}
 			
 			this.tickerGroupsViewer.ModifyGroup((string)this.selectedNodeInTickerGroupsViewer.Tag,
 												this.textBoxGroupDescription.Text,
