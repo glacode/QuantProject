@@ -73,13 +73,17 @@ namespace QuantProject.Business.Timing
 			this.currentTime = this.startDateTime;
 			while ( this.isActive )
 			{
-				if ( this.MarketOpen != null )
+				if ( ( this.MarketOpen != null ) && ( this.currentTime.EndOfDaySpecificTime ==
+					EndOfDaySpecificTime.MarketOpen ) )
 					this.MarketOpen( this , new EndOfDayTimingEventArgs( this.currentTime ) );
-				if ( this.FiveMinutesBeforeMarketClose != null )
+				if ( ( this.FiveMinutesBeforeMarketClose != null ) && ( this.currentTime.EndOfDaySpecificTime ==
+					EndOfDaySpecificTime.FiveMinutesBeforeMarketClose ) )
 					this.FiveMinutesBeforeMarketClose( this , new EndOfDayTimingEventArgs( this.currentTime ) );
-				if ( this.MarketClose != null )
+				if ( ( this.MarketClose != null ) && ( this.currentTime.EndOfDaySpecificTime ==
+					EndOfDaySpecificTime.MarketClose ) )
 					this.MarketClose( this , new EndOfDayTimingEventArgs( this.currentTime ) );
-				if ( this.OneHourAfterMarketClose != null )
+				if ( ( this.OneHourAfterMarketClose != null ) && ( this.currentTime.EndOfDaySpecificTime ==
+					EndOfDaySpecificTime.OneHourAfterMarketClose ) )
 					this.OneHourAfterMarketClose( this , new EndOfDayTimingEventArgs( this.currentTime ) );
 				this.currentTime.MoveNext();
 			}
