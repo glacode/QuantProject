@@ -147,12 +147,12 @@ namespace QuantProject.Business.Financial.Accounting
       this.Transactions.Clear();
       this.Portfolio.Clear();
     }
-    public void AddCash( ExtendedDateTime extendedDateTime , double moneyAmount )
+    public void AddCash( EndOfDayDateTime endOfDayDateTime , double moneyAmount )
     {
       try
       {
-        TimedTransaction timedTransaction =
-          new TimedTransaction( TransactionType.AddCash , moneyAmount , extendedDateTime );
+        EndOfDayTransaction timedTransaction =
+          new EndOfDayTransaction( TransactionType.AddCash , moneyAmount , endOfDayDateTime );
         this.Add( timedTransaction );
         //Transactions.MultiAdd( extendedDateTime.DateTime , timedTransaction );
         //cashAmount = cashAmount + moneyAmount;
@@ -166,7 +166,7 @@ namespace QuantProject.Business.Financial.Accounting
 
 		public void AddCash( double moneyAmount )
 		{
-			this.AddCash( this.endOfDayTimer.GetCurrentTime().GetNearestExtendedDateTime() ,
+			this.AddCash( this.endOfDayTimer.GetCurrentTime() ,
 				moneyAmount );
 		}
 
