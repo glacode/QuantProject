@@ -33,8 +33,16 @@ namespace QuantProject.Business.Financial.Accounting.Commissions
 		{
 			get
 			{
-				double returnValue = this.transaction.Quantity * 0.01;
-				return Math.Max( returnValue , 1.0 );
+				double returnValue;
+				if  ( ( this.transaction.Type == TransactionType.AddCash ) ||
+					( this.transaction.Type == TransactionType.Withdraw ) )
+					returnValue = 0;
+				else
+				{
+					returnValue = this.transaction.Quantity * 0.01;
+					returnValue = Math.Max( returnValue , 1.0 );
+				}
+				return returnValue;
 			}
 		}
 		public IBCommission( Transaction transaction ) : base( transaction )
