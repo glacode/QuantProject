@@ -70,7 +70,7 @@ namespace QuantProject.Business.Timing
 		public void Start()
 		{
 			this.isActive = true;
-			this.currentTime = this.startDateTime;
+			this.currentTime = this.startDateTime.Copy();
 			while ( this.isActive )
 			{
 				if ( ( this.MarketOpen != null ) && ( this.currentTime.EndOfDaySpecificTime ==
