@@ -28,6 +28,7 @@ using System.Reflection;
 using System.Runtime.InteropServices;
 using QuantProject.ADT;
 using QuantProject.ADT.Histories;
+using QuantProject.Business.DataProviders;
 using QuantProject.Business.Financial.Accounting.Transactions;
 using QuantProject.Business.Financial.Instruments;
 using QuantProject.Business.Timing;
@@ -40,6 +41,7 @@ namespace QuantProject.Business.Financial.Accounting.Reporting
 	public class AccountReport
 	{
     private Account account;
+		private IHistoricalQuoteProvider historicalQuoteProvider;
     private Account accountCopy = new Account( "AccountCopy" );
     private string reportName;
     private EndOfDayDateTime endDateTime;
@@ -59,11 +61,15 @@ namespace QuantProject.Business.Financial.Accounting.Reporting
     {
       get { return endDateTime; }
     }    
-    public string BuyAndHoldTicker
-    {
-      get { return buyAndHoldTicker; }
-    }
-//    public long NumDaysForInterval
+		public string BuyAndHoldTicker
+		{
+			get { return buyAndHoldTicker; }
+		}
+		public Account Account
+		{
+			get { return this.account; }
+		}
+		//    public long NumDaysForInterval
 //    {
 //      get { return numDaysForInterval; }
 //    }
@@ -99,9 +105,11 @@ namespace QuantProject.Business.Financial.Accounting.Reporting
     /// Add the last account record to the AccountReport
     /// </summary>
     /// <param name="account"></param>
-    public AccountReport( Account account )
+    public AccountReport( Account account ,
+			IHistoricalQuoteProvider historicalQuoteProvider )
     {
       this.account = account;
+			this.historicalQuoteProvider = historicalQuoteProvider;
     }
 
     #region "Create"
@@ -126,9 +134,10 @@ namespace QuantProject.Business.Financial.Accounting.Reporting
     {
       dataRow[ "AccountCash" ] = this.accountCopy.CashAmount;
       dataRow[ "PortfolioValue" ] = this.accountCopy.Portfolio.GetMarketValue(
-        endOfDayDateTime );
-      dataRow[ "AccountValue" ] = this.accountCopy.GetMarketValue( endOfDayDateTime );
-      dataRow[ "PnL" ] = this.accountCopy.GetMarketValue( endOfDayDateTime ) +
+        endOfDayDateTime , this.historicalQuoteProvider );
+      dataRow[ "AccountValue" ] = (double)dataRow[ "AccountCash" ] +
+				(double)dataRow[ "PortfolioValue" ];
+      dataRow[ "PnL" ] = (double)dataRow[ "AccountValue" ] +
         this.accountCopy.Transactions.TotalWithdrawn -
         this.accountCopy.Transactions.TotalAddedCash;
     }
@@ -221,7 +230,7 @@ namespace QuantProject.Business.Financial.Accounting.Reporting
       this.equity = new Tables.Equity( reportName , detailedDataTable );
       //this.equity = getEquity( reportName , detailedDataTable );
       //this.summary = getSummary( reportName );
-      this.summary = new Tables.Summary( this );
+      this.summary = new Tables.Summary( this , historicalQuoteProvider );
       return this;
     }
 
