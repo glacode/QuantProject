@@ -37,5 +37,7 @@ namespace QuantProject.Data.DataProviders
 	public interface IDataStreamer
 	{
     event NewQuoteEventHandler NewQuote;
-  }
+		double GetCurrentBid( string ticker );
+		double GetCurrentAsk( string ticker );
+	}
 }

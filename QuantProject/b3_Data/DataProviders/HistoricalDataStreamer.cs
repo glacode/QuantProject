@@ -24,6 +24,7 @@ using System.Collections;
 
 using QuantProject.ADT;
 
+
 namespace QuantProject.Data.DataProviders
 {
 	/// <summary>
@@ -67,6 +68,26 @@ namespace QuantProject.Data.DataProviders
 
 		public event NewQuoteEventHandler NewQuote;
 
+		/// <summary>
+		/// Returns the current bid for the given ticker
+		/// </summary>
+		/// <param name="ticker"></param>
+		/// <returns></returns>
+		public double GetCurrentBid( string ticker )
+		{
+			return HistoricalDataProvider.GetMarketValue( ticker ,
+				this.timer.CurrentDateTime );
+		}
+		/// <summary>
+		/// Returns the current ask for the given ticker
+		/// </summary>
+		/// <param name="ticker"></param>
+		/// <returns></returns>
+		public double GetCurrentAsk( string ticker )
+		{
+			return HistoricalDataProvider.GetMarketValue( ticker ,
+				this.timer.CurrentDateTime );
+		}
 		/// <summary>
 		/// Starts the time walking simulation
 		/// </summary>
