@@ -4,7 +4,7 @@ using System.IO;
 using System.Net;
 using System.Windows.Forms;
 
-namespace QuantDownloader
+namespace QuantProject.Applications.Downloader
 {
 	/// <summary>
 	/// Summary description for TickerDownloader.

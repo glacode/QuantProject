@@ -3,7 +3,7 @@ using System.Data;
 using System.Data.OleDb;
 using System.IO;
 
-namespace QuantDownloader
+namespace QuantProject.Applications.Downloader
 {
 	/// <summary>
 	/// Summary description for DataBaseImporter.
