@@ -116,6 +116,11 @@
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
+                <File
+                    RelPath = "CallingReportsForRunnedScripts\ShowReportFromFile.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
                 <Folder RelPath = "MultiTesting\MultiTestOneRank\" />
                 <File
                     RelPath = "SimpleTesting\MSFTsimpleTest\TsMSFTsimpleTest.cs"
