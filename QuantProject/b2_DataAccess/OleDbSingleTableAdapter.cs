@@ -54,7 +54,8 @@ namespace QuantProject.DataAccess
 		{
 			try
 			{
-				this.dataTable = new DataTable();
+				//this.dataTable = new DataTable();
+        //the member is already set by the constructor
 				this.oleDbDataAdapter =
 					new OleDbDataAdapter( selectStatement , ConnectionProvider.OleDbConnection );
 				OleDbCommandBuilder oleDbCommandBuilder = new OleDbCommandBuilder( oleDbDataAdapter );

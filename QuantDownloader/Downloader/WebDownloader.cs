@@ -638,21 +638,21 @@ namespace QuantProject.Applications.Downloader
 
     private void button1_Click(object sender, System.EventArgs e)
     {
-      Cursor.Current = Cursors.WaitCursor;
+      //Cursor.Current = Cursors.WaitCursor;
       this.openDbAndSetOleDbCommand();
 	    this.downloadQuotesOfAllTickers();
       this.button1.Enabled = false;
-      Cursor.Current = Cursors.Default;
+      //Cursor.Current = Cursors.Default;
 
     }
 
     private void buttonDownloadQuotesOfSelectedTickers_Click(object sender, System.EventArgs e)
     {
-      Cursor.Current = Cursors.WaitCursor;
+      //Cursor.Current = Cursors.WaitCursor;
       this.openDbAndSetOleDbCommand();
 	    this.downloadQuotesOfSelectedTickers();
       this.buttonDownloadQuotesOfSelectedTickers.Enabled = false;
-      Cursor.Current = Cursors.Default;
+      //Cursor.Current = Cursors.Default;
     }
 
     private void radioButtonAllAvailableUntilNow_CheckedChanged(object sender, System.EventArgs e)

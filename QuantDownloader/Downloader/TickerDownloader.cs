@@ -410,6 +410,7 @@ namespace QuantProject.Applications.Downloader
     public void DownloadTicker()
     {
       // update grid in webdownloader form
+      Cursor.Current = Cursors.WaitCursor; 
       addTickerTo_gridDataSet();
       this.numberOfQuotesInDatabase = Quotes.GetNumberOfQuotes(this.p_quTicker);
       if(this.numberOfQuotesInDatabase < 1)
@@ -441,6 +442,8 @@ namespace QuantProject.Applications.Downloader
       {
         this.resetAndImportTicker();
       }
+      Cursor.Current = Cursors.Default; 
+  
         // ticker's quotes are downloaded for the first time or
         // the user has chosen to download all quotes
      
