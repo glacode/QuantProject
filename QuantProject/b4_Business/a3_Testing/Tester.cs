@@ -26,6 +26,7 @@ using QuantProject.Business.Strategies;
 using QuantProject.ADT;
 using QuantProject.ADT.Histories;
 using QuantProject.ADT.Optimizing;
+using QuantProject.Business.Financial.Accounting.Transactions;
 using QuantProject.Business.Financial.Accounting;
 using QuantProject.Business.Financial.Ordering;
 using QuantProject.Business.Timing;
@@ -87,7 +88,7 @@ namespace QuantProject.Business.Testing
       Orders orders = this.Account.AccountStrategy.GetOrders( signal , dataStreamer );
       foreach (Order order in orders )
       {
-        TimedTransaction transaction = this.OrderManager.GetTransaction( order ,
+        EndOfDayTransaction transaction = this.OrderManager.GetTransaction( order ,
 					dataStreamer );
         this.Account.Add( transaction );
         //Debug.WriteLine( account.ToString( dateTime ) );

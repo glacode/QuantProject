@@ -65,10 +65,10 @@ namespace QuantProject.Business.Financial.Accounting.Transactions
       }
     }
 
-		public void Add( TimedTransaction transaction )
-		{
-			base.MultiAdd( transaction.ExtendedDateTime.DateTime , transaction );
-		}
+//		public void Add( TimedTransaction transaction )
+//		{
+//			base.MultiAdd( transaction.ExtendedDateTime.DateTime , transaction );
+//		}
 
 		public void Add( EndOfDayTransaction transaction )
 		{
