@@ -1,18 +1,32 @@
 Microsoft Visual Studio Solution File, Format Version 7.00
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Downloader", "Downloader\Downloader.csproj", "{3C81F5AB-71EB-4F1B-B4F1-55DCE7B7B1A4}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "b2_DataAccess", "..\QuantProject\b2_DataAccess\b2_DataAccess.csproj", "{8CF7C0D8-A8CB-43DC-B406-77DE62729487}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "b1_ADT", "..\QuantProject\b1_ADT\b1_ADT.csproj", "{B8A01161-3698-4591-B1EF-90F5FC7D8DBA}"
+EndProject
 Global
 	GlobalSection(SolutionConfiguration) = preSolution
 		ConfigName.0 = Debug
 		ConfigName.1 = Release
 	EndGlobalSection
 	GlobalSection(ProjectDependencies) = postSolution
+		{3C81F5AB-71EB-4F1B-B4F1-55DCE7B7B1A4}.0 = {8CF7C0D8-A8CB-43DC-B406-77DE62729487}
+		{8CF7C0D8-A8CB-43DC-B406-77DE62729487}.0 = {B8A01161-3698-4591-B1EF-90F5FC7D8DBA}
 	EndGlobalSection
 	GlobalSection(ProjectConfiguration) = postSolution
 		{3C81F5AB-71EB-4F1B-B4F1-55DCE7B7B1A4}.Debug.ActiveCfg = Debug|.NET
 		{3C81F5AB-71EB-4F1B-B4F1-55DCE7B7B1A4}.Debug.Build.0 = Debug|.NET
 		{3C81F5AB-71EB-4F1B-B4F1-55DCE7B7B1A4}.Release.ActiveCfg = Release|.NET
 		{3C81F5AB-71EB-4F1B-B4F1-55DCE7B7B1A4}.Release.Build.0 = Release|.NET
+		{8CF7C0D8-A8CB-43DC-B406-77DE62729487}.Debug.ActiveCfg = Debug|.NET
+		{8CF7C0D8-A8CB-43DC-B406-77DE62729487}.Debug.Build.0 = Debug|.NET
+		{8CF7C0D8-A8CB-43DC-B406-77DE62729487}.Release.ActiveCfg = Release|.NET
+		{8CF7C0D8-A8CB-43DC-B406-77DE62729487}.Release.Build.0 = Release|.NET
+		{B8A01161-3698-4591-B1EF-90F5FC7D8DBA}.Debug.ActiveCfg = Debug|.NET
+		{B8A01161-3698-4591-B1EF-90F5FC7D8DBA}.Debug.Build.0 = Debug|.NET
+		{B8A01161-3698-4591-B1EF-90F5FC7D8DBA}.Release.ActiveCfg = Release|.NET
+		{B8A01161-3698-4591-B1EF-90F5FC7D8DBA}.Release.Build.0 = Release|.NET
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 	EndGlobalSection

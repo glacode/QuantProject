@@ -8,6 +8,7 @@ using System.Data.OleDb;
 using System.Net;
 using System.IO;
 using System.Threading;
+using QuantProject.DataAccess;
 
 namespace QuantDownloader
 {
