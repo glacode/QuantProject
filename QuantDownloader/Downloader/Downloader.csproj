@@ -240,6 +240,11 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "QuotesEditor\QuotesChart.resx"
+                    DependentUpon = "QuotesChart.cs"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
                     RelPath = "QuotesEditor\QuotesEditor.cs"
                     SubType = "Form"
                     BuildAction = "Compile"
