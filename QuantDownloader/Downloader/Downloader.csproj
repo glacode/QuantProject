@@ -246,7 +246,7 @@
                 />
                 <File
                     RelPath = "QuotesEditor\VisualValidationChart.cs"
-                    SubType = "Code"
+                    SubType = "UserControl"
                     BuildAction = "Compile"
                 />
                 <File
@@ -261,7 +261,7 @@
                 />
                 <File
                     RelPath = "QuotesEditor\CloseToClose\CloseToCloseChart.cs"
-                    SubType = "Code"
+                    SubType = "UserControl"
                     BuildAction = "Compile"
                 />
                 <File
@@ -270,19 +270,9 @@
                     BuildAction = "Compile"
                 />
                 <File
-                    RelPath = "QuotesEditor\CloseToClose\CloseToCloseDataGrid.resx"
-                    DependentUpon = "CloseToCloseDataGrid.cs"
-                    BuildAction = "EmbeddedResource"
-                />
-                <File
                     RelPath = "QuotesEditor\CloseToClose\CloseToCloseTabPage.cs"
                     SubType = "Component"
                     BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "QuotesEditor\CloseToClose\CloseToCloseTabPage.resx"
-                    DependentUpon = "CloseToCloseTabPage.cs"
-                    BuildAction = "EmbeddedResource"
                 />
                 <File
                     RelPath = "QuotesEditor\OHLC\OHLCdataGrid.cs"
@@ -306,7 +296,7 @@
                 />
                 <File
                     RelPath = "QuotesEditor\RangeToRange\RangeToRangeChart.cs"
-                    SubType = "Code"
+                    SubType = "UserControl"
                     BuildAction = "Compile"
                 />
                 <File
