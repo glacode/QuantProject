@@ -49,7 +49,9 @@ namespace QuantProject.Business.Validation.Validators
     private void validate_currentTicker_withHistories_validateRow(
       DataRow quoteRow , double currentValue , double averageValue )
     {
-			if ( Math.Abs( currentValue / averageValue ) > ConstantsProvider.SuspiciousRatio &&
+			if (
+				( currentValue > 0.011 ) &&
+				( Math.Abs( currentValue / averageValue ) > ConstantsProvider.SuspiciousRatio ) &&
 				( this.closeToCloseVisuallyValidated.IndexOf( quoteRow[ "quDate" ] ) < 0 ) )
         // the current close to close value is suspiciously larger
         // than the average close to close ratio
@@ -87,7 +89,8 @@ namespace QuantProject.Business.Validation.Validators
       int nextTickerStartingRowIndex =
         validate_currentTicker_set_closeToClose( currentTicker , currentTickerStartingRowIndex ,
           closeToClose );
-      closeToCloseMovingAverage = closeToClose.GetSimpleMovingAverage( 20 );
+      closeToCloseMovingAverage =
+				closeToClose.GetSimpleMovingAverage( ConstantsProvider.DaysForMovingAverageForSuspiciousRatioValidation );
       validate_currentTicker_withHistories( closeToClose , closeToCloseMovingAverage ,
         currentTickerStartingRowIndex , nextTickerStartingRowIndex );
       return nextTickerStartingRowIndex;
