@@ -9,6 +9,7 @@ using QuantProject.ADT;
 using QuantProject.ADT.Histories;
 using QuantProject.Business.Validation;
 using QuantProject.Data;
+using QuantProject.Data.DataTables;
 
 namespace QuantProject.Applications.Downloader
 {
@@ -41,6 +42,17 @@ namespace QuantProject.Applications.Downloader
 		/// </summary>
 		private System.ComponentModel.Container components = null;
 
+		private void updateValidateDataTable_validateTicker()
+		{
+			if ( MessageBox.Show( this , "This ticker's quotes are ok, with respect to the current " +
+				"validation process. Do you want to sign current ticker's quotes as valid quotes?" ,
+				"Ticker's quotes validation" ,
+				MessageBoxButtons.YesNo ,
+				MessageBoxIcon.Question ,
+				MessageBoxDefaultButton.Button1 ) == DialogResult.Yes )
+				// the user asked to write the visual validation to the database
+				ValidatedTickers.Validate( this.validateDataTable.Quotes );  // TO DO: remove the beguinning ConstantsProvider.DaysForMovingAverageForSuspiciousRatioValidation rows
+		}
 		private void updateValidateDataTable()
 		{
 			if ( this.validateDataTable == null )
@@ -50,6 +62,9 @@ namespace QuantProject.Applications.Downloader
 			this.validateDataTable.Rows.Clear();
 //			this.validateDataTable.Clear();
 			this.validateDataTable.AddRows( this.textBoxTicker.Text );
+			if ( this.validateDataTable.Rows.Count == 0 )
+				// the ticker's quotes have been completely validated
+				updateValidateDataTable_validateTicker();
 		}
 
 		public ValidateDataTable ValidateDataTable
