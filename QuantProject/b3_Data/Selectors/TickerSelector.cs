@@ -40,6 +40,7 @@ namespace QuantProject.Data.Selectors
     private DataTable setOfTickersToBeSelected = null;
     private SelectionType typeOfSelection;
     private string groupID = "";
+    private string marketIndex = "";
     private DateTime firstQuoteDate = QuantProject.ADT.ConstantsProvider.InitialDateTimeForDownload;
     private DateTime lastQuoteDate = DateTime.Now;
     private long maxNumOfReturnedTickers = 0;
@@ -92,6 +93,15 @@ namespace QuantProject.Data.Selectors
       set{this.isOrderedInASCMode = value;}
     }
     
+    /// <summary>
+    /// It gets / sets the market index for the current ticker selector
+    /// </summary>
+    public string MarketIndex
+    {
+      get{return this.marketIndex;}
+      set{this.marketIndex = value;}
+    }
+
     #endregion
 
     public TickerSelector(DataTable setOfTickersToBeSelected, SelectionType typeOfSelection,
@@ -152,6 +162,8 @@ namespace QuantProject.Data.Selectors
             return this.getTickersByCloseToCloseLinearCorrelation();
           case SelectionType.CloseToOpenLinearCorrelation:
             return this.getTickersByCloseToOpenLinearCorrelation();
+          case SelectionType.QuotedInEachMarketDay:
+            return this.getTickersQuotedInEachMarketDay();
             //this line should never be reached!
           default:
             return new DataTable();
@@ -277,6 +289,22 @@ namespace QuantProject.Data.Selectors
         this.setOfTickersToBeSelected,
         this.firstQuoteDate,
         this.lastQuoteDate);
+    }
+
+    private DataTable getTickersQuotedInEachMarketDay()
+    {
+      if(this.marketIndex == "")
+         throw new Exception("You first need to set TickerSelection's property <<MarketIndex>>!");
+           
+      if(this.setOfTickersToBeSelected == null)
+        return QuantProject.Data.DataTables.TickerDataTable.GetTickersQuotedInEachMarketDay(
+          this.marketIndex, this.groupID, this.firstQuoteDate, this.lastQuoteDate,
+          this.maxNumOfReturnedTickers);        
+
+      else
+        return QuantProject.Data.DataTables.TickerDataTable.GetTickersQuotedInEachMarketDay(
+          this.marketIndex, this.setOfTickersToBeSelected, this.firstQuoteDate, this.lastQuoteDate,
+          this.maxNumOfReturnedTickers);
     }
 
     private void launchExceptionIfGroupIDIsNotEmpty()

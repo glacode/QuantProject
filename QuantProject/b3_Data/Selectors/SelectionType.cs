@@ -36,6 +36,7 @@ namespace QuantProject.Data.Selectors
     CloseToCloseVolatility,
     CloseToOpenVolatility,
     CloseToOpenLinearCorrelation,
-    CloseToCloseLinearCorrelation
+    CloseToCloseLinearCorrelation,
+    QuotedInEachMarketDay
   }
 }
