@@ -66,13 +66,12 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardOneRank
 			HistoricalEndOfDayTimer historicalEndOfDayTimer =
 				new HistoricalEndOfDayTimer(
 				new EndOfDayDateTime( dateTime.AddYears( -1 ).AddDays( -1 ) ,
-				EndOfDaySpecificTime.FiveMinutesBeforeMarketClose ) );
+				EndOfDaySpecificTime.MarketOpen ) );
 			ComparableAccount account = new ComparableAccount( ticker , historicalEndOfDayTimer ,
 				new HistoricalEndOfDayDataStreamer( historicalEndOfDayTimer ) ,
 				new HistoricalEndOfDayOrderExecutor( historicalEndOfDayTimer ) );
 			OneRank oneRank = new OneRank( account ,
 				dateTime.AddDays( this.numberDaysForPerformanceCalculation ) );
-			account.Key = ticker;
 			this.eligibleAccounts.Add( account );
 		}
 		private void setTickers_build( EligibleTickers eligibleTickers , DateTime dateTime )
@@ -98,8 +97,10 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardOneRank
 		/// <param name="dateTime"></param>
 		public void SetTickers( EligibleTickers eligibleTickers , DateTime dateTime )
 		{
+			this.calculatedTickers = 0;
 			this.NewProgress( this , new NewProgressEventArgs( 0 , 100 ) );
 			this.Clear();
+			this.eligibleAccounts.Clear();
 			this.setTickers_build( eligibleTickers , dateTime );
 			this.lastUpdate = dateTime;
 		}
