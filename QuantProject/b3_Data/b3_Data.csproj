@@ -136,6 +136,11 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "DataTables\Quotes.resx"
+                    DependentUpon = "Quotes.cs"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
                     RelPath = "DataTables\TickerDataTable.cs"
                     SubType = "Component"
                     BuildAction = "Compile"
@@ -144,6 +149,11 @@
                     RelPath = "DataTables\ValidatedTickers.cs"
                     SubType = "Component"
                     BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "DataTables\ValidatedTickers.resx"
+                    DependentUpon = "ValidatedTickers.cs"
+                    BuildAction = "EmbeddedResource"
                 />
                 <File
                     RelPath = "Selectors\ITickerReceiver.cs"
