@@ -123,6 +123,7 @@ namespace QuantProject.Business.Financial.Accounting
 			IDataStreamer dataStreamer , IOrderExecutor orderExecutor ) : base( accountName )
 		{
 			this.initialize( endOfDayTimer , dataStreamer , orderExecutor );
+			this.commissionManager = new ZeroCommissionManager();
 			this.initialize();
 		}
 
