@@ -28,6 +28,7 @@ using QuantProject.Business.Financial.Instruments;
 using QuantProject.Business.Financial.Ordering;
 using QuantProject.Business.Timing;
 using QuantProject.Data.DataProviders;
+using QuantProject.Scripts.SimpleTesting;
 
 namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardOneRank
 {
@@ -152,8 +153,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardOneRank
 				this.bestPerformingTickers.SetTickers( this.eligibleTickers ,
 					endOfDayTimingEventArgs.EndOfDayDateTime.DateTime );
 			}
-			this.chosenTickers.SetTickers( this.bestPerformingTickers );
-			oneHourAfterMarketCloseEventHandler_orderChosenTickers( ( IEndOfDayTimer ) sender );
+//			oneHourAfterMarketCloseEventHandler_orderChosenTickers( ( IEndOfDayTimer ) sender );
 		}
 		#endregion
 		#region FiveMinutesBeforeMarketCloseEventHandler
@@ -164,21 +164,24 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardOneRank
 		}
 		private void fiveMinutesBeforeMarketCloseEventHandler_closePositions()
 		{
+      ArrayList tickers = new ArrayList();
 			foreach ( string ticker in this.account.Portfolio.Keys )
+				tickers.Add( ticker );
+			foreach ( string ticker in tickers )
 				fiveMinutesBeforeMarketCloseEventHandler_closePosition( ticker );
 		}
 		private void fiveMinutesBeforeMarketCloseEventHandler_openPosition(
 			string ticker )
 		{
 			double maxPositionValue = this.account.CashAmount / this.numberOfTickersToBeChosen;
-			long sharesToBeBought = Convert.ToInt64(
-				Math.Floor( maxPositionValue /
-				this.account.DataStreamer.GetCurrentAsk( ticker ) ) );
+			long sharesToBeBought = OneRank.MaxBuyableShares( ticker ,
+				maxPositionValue , this.account.DataStreamer );
 			this.account.AddOrder( new Order( OrderType.MarketBuy ,
 				new Instrument( ticker ) , sharesToBeBought ) );
 		}
 		private void fiveMinutesBeforeMarketCloseEventHandler_openPositions()
 		{
+			this.chosenTickers.SetTickers( this.bestPerformingTickers , this.account );
 			foreach ( string ticker in this.chosenTickers.Keys )
 				this.fiveMinutesBeforeMarketCloseEventHandler_openPosition( ticker );
 		}
