@@ -247,11 +247,6 @@
                     BuildAction = "Compile"
                 />
                 <File
-                    RelPath = "WalkForwardTesting\WalkForwardOneRank\ProgressBarForm.resx"
-                    DependentUpon = "ProgressBarForm.cs"
-                    BuildAction = "EmbeddedResource"
-                />
-                <File
                     RelPath = "WalkForwardTesting\WalkForwardOneRank\RunWalkForwardOneRank.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
