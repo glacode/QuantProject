@@ -97,11 +97,6 @@
         <Files>
             <Include>
                 <File
-                    RelPath = "AdoNetTools.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
                     RelPath = "App.ico"
                     BuildAction = "Content"
                 />
@@ -153,6 +148,21 @@
                     RelPath = "WebDownloader.cs"
                     SubType = "Form"
                     BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "WebDownloader.resx"
+                    DependentUpon = "WebDownloader.cs"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "QuotesEditor\QuotesEditor.cs"
+                    SubType = "Form"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "QuotesEditor\QuotesEditor.resx"
+                    DependentUpon = "QuotesEditor.cs"
+                    BuildAction = "EmbeddedResource"
                 />
                 <File
                     RelPath = "Validate\IValidator.cs"
