@@ -131,7 +131,17 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "DataTables\Quotes.cs"
+                    SubType = "Component"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "DataTables\TickerDataTable.cs"
+                    SubType = "Component"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "DataTables\ValidatedTickers.cs"
                     SubType = "Component"
                     BuildAction = "Compile"
                 />
