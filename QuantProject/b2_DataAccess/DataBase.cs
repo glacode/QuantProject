@@ -46,35 +46,44 @@ namespace QuantProject.DataAccess
 		}
 
     /// <summary>
-    /// Returns the field name corresponding to the bar component
+    /// Returns the field name corresponding to the quote field
     /// </summary>
-    /// <param name="barComponent">Discriminates among Open, High, Low and Closure</param>
-    /// <returns>Field name corresponding to the bar component</returns>
-    private static string getFieldName( BarComponent barComponent )
+    /// <param name="quoteField">Discriminates among Open, High, Low and Closure</param>
+    /// <returns>Field name corresponding to the quote field</returns>
+    private static string getFieldName( QuoteField quoteField )
     {
       string fieldName = "";
-      switch ( barComponent )
+      switch ( quoteField )
       {
-        case BarComponent.Open:
+        case QuoteField.Open:
           fieldName = "quOpen";
           break;
-        case BarComponent.High:
+        case QuoteField.High:
           fieldName = "quHigh";
           break;
-        case BarComponent.Low:
+        case QuoteField.Low:
           fieldName = "quLow";
           break;
-        case BarComponent.Close:
-          fieldName = "quAdjustedClose";
-          break;
-        default:
+				case QuoteField.Close:
+					fieldName = "quClose";
+					break;
+				case QuoteField.AdjustedClose:
+					fieldName = "quAdjustedClose";
+					break;
+				case QuoteField.AdjustedCloseToCloseRatio:
+					fieldName = "quAdjustedCloseToCloseRatio";
+					break;
+				case QuoteField.Volume:
+					fieldName = "quVolume";
+					break;
+				default:
           break;
       }
       return fieldName;
     }
 
     #region "GetHistory"
-    private static History getHistory_try( string instrumentKey , BarComponent barComponent )
+    private static History getHistory_try( string instrumentKey , QuoteField quoteField )
     {
       History history = new History();
       string commandString =
@@ -82,22 +91,22 @@ namespace QuantProject.DataAccess
       OleDbDataAdapter oleDbDataAdapter = new OleDbDataAdapter( commandString , oleDbConnection );
       DataTable dataTable = new DataTable();
       oleDbDataAdapter.Fill( dataTable );
-      history.Import( dataTable , "quDate" , getFieldName( barComponent ) );
+      history.Import( dataTable , "quDate" , getFieldName( quoteField ) );
       return history;
     }
     /// <summary>
-    /// Returns the full history for the instrument and the specified bar component
+    /// Returns the full history for the instrument and the specified quote field
     /// </summary>
     /// <param name="instrumentKey">Identifier (ticker) for the instrument whose story
     /// has to be returned</param>
-    /// <param name="barComponent">Discriminates among Open, High, Low and Closure</param>
-    /// <returns>The history for the given instrument and bar component</returns>
-    public static History GetHistory( string instrumentKey , BarComponent barComponent )
+    /// <param name="quoteField">Discriminates among Open, High, Low and Closure</param>
+    /// <returns>The history for the given instrument and quote field</returns>
+    public static History GetHistory( string instrumentKey , QuoteField quoteField )
     {
       History history;
       try
       {
-        history = getHistory_try( instrumentKey , barComponent );
+        history = getHistory_try( instrumentKey , quoteField );
       }
       catch (Exception ex)
       {
@@ -108,52 +117,52 @@ namespace QuantProject.DataAccess
     }
     #endregion
 
-    #region "GetHistories"
-    private static Single getHistories_try_getValue( DataRow dataRow , DateTime dateTime ,
-      BarComponent barComponent )
-    {
-      Single returnValue;
-      if ( barComponent == BarComponent.Close )
-        returnValue = (Single)dataRow[ getFieldName( barComponent ) ];
-      else
-        returnValue = (Single)dataRow[ getFieldName( barComponent ) ] *
-          (Single)dataRow[ "quAdjustedClose" ] / (Single)dataRow[ "quClose" ];
-      return returnValue;
-    }
-    private static Hashtable getHistories_try( string instrumentKey , Hashtable barComponents , DateTime startDateTime , DateTime endDateTime )
-    {
-      Hashtable histories = new Hashtable();
-      foreach (BarComponent barComponent in barComponents.Keys)
-        histories.Add( barComponent , new History() );
-      string commandString =
-        "select * from quotes where quTicker='" + instrumentKey + "' and " +
-        "quDate>=" + SQLBuilder.GetDateConstant( startDateTime ) + " and " +
-        "quDate<=" + SQLBuilder.GetDateConstant( endDateTime );
-      OleDbDataAdapter oleDbDataAdapter = new OleDbDataAdapter( commandString , oleDbConnection );
-      DataSet dataSet = new DataSet();
-      oleDbDataAdapter.Fill( dataSet , "history" );
-      foreach ( DataRow dataRow in dataSet.Tables[ "history" ].Rows )
-        foreach ( BarComponent barComponent in barComponents.Keys )
-          ((History) histories[ barComponent ]).Add( (DateTime) dataRow[ "quDate" ] ,
-            getHistories_try_getValue( dataRow , (DateTime) dataRow[ "quDate" ] , barComponent ) );
+//    #region "GetHistories"
+//    private static Single getHistories_try_getValue( DataRow dataRow , DateTime dateTime ,
+//      QuoteField quoteField )
+//    {
+//      Single returnValue;
+//      if ( quoteField == QuoteField.cl )
+//        returnValue = (Single)dataRow[ getFieldName( quoteField ) ];
+//      else
+//        returnValue = (Single)dataRow[ getFieldName( quoteField ) ] *
+//          (Single)dataRow[ "quAdjustedClose" ] / (Single)dataRow[ "quClose" ];
+//      return returnValue;
+//    }
+//    private static Hashtable getHistories_try( string instrumentKey , Hashtable barComponents , DateTime startDateTime , DateTime endDateTime )
+//    {
+//      Hashtable histories = new Hashtable();
+//      foreach (BarComponent barComponent in barComponents.Keys)
+//        histories.Add( barComponent , new History() );
+//      string commandString =
+//        "select * from quotes where quTicker='" + instrumentKey + "' and " +
+//        "quDate>=" + SQLBuilder.GetDateConstant( startDateTime ) + " and " +
+//        "quDate<=" + SQLBuilder.GetDateConstant( endDateTime );
+//      OleDbDataAdapter oleDbDataAdapter = new OleDbDataAdapter( commandString , oleDbConnection );
+//      DataSet dataSet = new DataSet();
+//      oleDbDataAdapter.Fill( dataSet , "history" );
+//      foreach ( DataRow dataRow in dataSet.Tables[ "history" ].Rows )
+//        foreach ( BarComponent barComponent in barComponents.Keys )
 //          ((History) histories[ barComponent ]).Add( (DateTime) dataRow[ "quDate" ] ,
-//            dataRow[ getFieldName( barComponent ) ] );
-      return histories;
-    }
-    public static Hashtable GetHistories( string instrumentKey , Hashtable barComponents , DateTime startDateTime , DateTime endDateTime )
-    {
-      Hashtable histories;
-      try
-      {
-        histories = getHistories_try( instrumentKey , barComponents , startDateTime , endDateTime );
-      }
-      catch (Exception ex)
-      {
-        MessageBox.Show( ex.ToString() );
-        histories = null;
-      }
-      return histories;
-    }
-    #endregion
+//            getHistories_try_getValue( dataRow , (DateTime) dataRow[ "quDate" ] , barComponent ) );
+////          ((History) histories[ barComponent ]).Add( (DateTime) dataRow[ "quDate" ] ,
+////            dataRow[ getFieldName( barComponent ) ] );
+//      return histories;
+//    }
+//    public static Hashtable GetHistories( string instrumentKey , Hashtable barComponents , DateTime startDateTime , DateTime endDateTime )
+//    {
+//      Hashtable histories;
+//      try
+//      {
+//        histories = getHistories_try( instrumentKey , barComponents , startDateTime , endDateTime );
+//      }
+//      catch (Exception ex)
+//      {
+//        MessageBox.Show( ex.ToString() );
+//        histories = null;
+//      }
+//      return histories;
+//    }
+//    #endregion
   }
 }
