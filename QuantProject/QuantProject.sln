@@ -1,4 +1,6 @@
 Microsoft Visual Studio Solution File, Format Version 7.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "b91_QuantProject", "b91_QuantProject\b91_QuantProject.csproj", "{75FE4A9C-867E-48FE-8B49-964B318B4583}"
+EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "b1_ADT", "b1_ADT\b1_ADT.csproj", "{B8A01161-3698-4591-B1EF-90F5FC7D8DBA}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "b2_DataAccess", "b2_DataAccess\b2_DataAccess.csproj", "{8CF7C0D8-A8CB-43DC-B406-77DE62729487}"
@@ -11,8 +13,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "b5_Presentation", "b5_Prese
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "b7_Scripts", "b7_Scripts\b7_Scripts.csproj", "{451DB77D-D4C7-44D1-8047-2920D864A4CD}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "b91_QuantProject", "b91_QuantProject\b91_QuantProject.csproj", "{75FE4A9C-867E-48FE-8B49-964B318B4583}"
-EndProject
 Global
 	GlobalSection(SolutionConfiguration) = preSolution
 		ConfigName.0 = Debug
@@ -21,6 +21,10 @@ Global
 	GlobalSection(ProjectDependencies) = postSolution
 	EndGlobalSection
 	GlobalSection(ProjectConfiguration) = postSolution
+		{75FE4A9C-867E-48FE-8B49-964B318B4583}.Debug.ActiveCfg = Debug|.NET
+		{75FE4A9C-867E-48FE-8B49-964B318B4583}.Debug.Build.0 = Debug|.NET
+		{75FE4A9C-867E-48FE-8B49-964B318B4583}.Release.ActiveCfg = Release|.NET
+		{75FE4A9C-867E-48FE-8B49-964B318B4583}.Release.Build.0 = Release|.NET
 		{B8A01161-3698-4591-B1EF-90F5FC7D8DBA}.Debug.ActiveCfg = Debug|.NET
 		{B8A01161-3698-4591-B1EF-90F5FC7D8DBA}.Debug.Build.0 = Debug|.NET
 		{B8A01161-3698-4591-B1EF-90F5FC7D8DBA}.Release.ActiveCfg = Release|.NET
@@ -45,10 +49,6 @@ Global
 		{451DB77D-D4C7-44D1-8047-2920D864A4CD}.Debug.Build.0 = Debug|.NET
 		{451DB77D-D4C7-44D1-8047-2920D864A4CD}.Release.ActiveCfg = Release|.NET
 		{451DB77D-D4C7-44D1-8047-2920D864A4CD}.Release.Build.0 = Release|.NET
-		{75FE4A9C-867E-48FE-8B49-964B318B4583}.Debug.ActiveCfg = Debug|.NET
-		{75FE4A9C-867E-48FE-8B49-964B318B4583}.Debug.Build.0 = Debug|.NET
-		{75FE4A9C-867E-48FE-8B49-964B318B4583}.Release.ActiveCfg = Release|.NET
-		{75FE4A9C-867E-48FE-8B49-964B318B4583}.Release.Build.0 = Release|.NET
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 	EndGlobalSection
