@@ -24,11 +24,14 @@ using System;
 using System.Collections;
 using System.Data;
 using QuantProject.ADT;
+using QuantProject.Business.Financial.Accounting;
 using QuantProject.Business.Financial.Accounting.Reporting;
 using QuantProject.Business.Financial.Instruments;
+using QuantProject.Business.Financial.Ordering;
 using QuantProject.Business.Scripting;
 using QuantProject.Business.Strategies;
 using QuantProject.Business.Testing;
+using QuantProject.Business.Timing;
 using QuantProject.Data.DataProviders;
 using QuantProject.Presentation.Reporting.WindowsForm;
 
@@ -40,41 +43,103 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardOneRank
 	/// </summary>
 	public class RunWalkForwardOneRank : Script
 	{
-		private string startTicker;
     private ReportTable reportTable;
-    private ExtendedDateTime startDateTime;
-    private ExtendedDateTime endDateTime;
+    private EndOfDayDateTime startDateTime;
+    private EndOfDayDateTime endDateTime;
     private int numIntervalDays;
-		private HistoricalDataStreamer historicalDataStreamer;
-		private DataStreamerHandler dataStreamerHandler =
-			new DataStreamerHandler();
+
+    private ProgressBarForm progressBarForm;
+
+		private EndOfDayTimerHandler endOfDayTimerHandler;
+
+		private Account account;
+		
+		private IEndOfDayTimer endOfDayTimer;
 
 		public RunWalkForwardOneRank()
 		{
+			this.progressBarForm = new ProgressBarForm();
 			this.reportTable = new ReportTable( "Summary_Reports" );
-			this.startDateTime = new ExtendedDateTime(
-				new DateTime( 2002 , 1 , 1 ) , BarComponent.Open );
-			this.endDateTime = new ExtendedDateTime(
-				new DateTime( 2002 , 12 , 31 ) , BarComponent.Open );
+			this.startDateTime = new EndOfDayDateTime(
+				new DateTime( 2002 , 1 , 1 ) , EndOfDaySpecificTime.FiveMinutesBeforeMarketClose );
+			this.endDateTime = new EndOfDayDateTime(
+				new DateTime( 2002 , 12 , 31 ) , EndOfDaySpecificTime.OneHourAfterMarketClose );
       this.numIntervalDays = 7;
-			this.startTicker = "MSFT";
 		}
     #region Run
-		private void run_initializeHistoricalDataStreamer()
+		private void run_initializeEndOfDayTimer()
 		{
-			this.historicalDataStreamer = new HistoricalDataStreamer();
-			this.historicalDataStreamer.StartDateTime = this.startDateTime;
-			this.historicalDataStreamer.EndDateTime = this.endDateTime;
-			this.historicalDataStreamer.Add( this.startTicker );
+			this.endOfDayTimer =
+				new HistoricalEndOfDayTimer( this.startDateTime );
 		}
-    public override void Run()
-    {
+		private void run_initializeAccount()
+		{
+			this.account = new Account( "WalkForwardOneRank" , this.endOfDayTimer ,
+				new HistoricalEndOfDayDataStreamer( this.endOfDayTimer ) ,
+				new HistoricalEndOfDayOrderExecutor( this.endOfDayTimer ) );
+		}
+		private void run_initializeEndOfDayTimerHandler()
+		{
+			this.endOfDayTimerHandler = new EndOfDayTimerHandler( 50 , 20 , 5 , 360 , 30 ,
+				this.account );
+		}
+		private  void inSampleNewProgressEventHandler(
+			Object sender , NewProgressEventArgs eventArgs )
+		{
+			this.progressBarForm.ProgressBarInSample.Value = eventArgs.CurrentProgress;
+		}
+		private void run_initializeProgressHandlers()
+		{
+			this.endOfDayTimerHandler.InSampleNewProgress +=
+				new InSampleNewProgressEventHandler( this.inSampleNewProgressEventHandler );
+		}
+		#region oneHourAfterMarketCloseEventHandler
+		private void oneHourAfterMarketCloseEventHandler_handleProgessBarForm(
+			IEndOfDayTimer endOfDayTimer )
+		{
+			long elapsedDays = Convert.ToInt64( ((TimeSpan)( endOfDayTimer.GetCurrentTime().DateTime - 
+				this.startDateTime.DateTime )).TotalDays );
+			long totalDays = Convert.ToInt64( ((TimeSpan)( this.endDateTime.DateTime - 
+				this.startDateTime.DateTime )).TotalDays );
+			if ( Math.Floor( elapsedDays / totalDays * 100 ) >
+				Math.Floor( ( elapsedDays - 1 ) / totalDays * 100 ) )
+				// a new out of sample time percentage point has been elapsed
+				this.progressBarForm.ProgressBarOutOfSample.Value =
+					Convert.ToInt16( Math.Floor( elapsedDays / totalDays * 100 ) );
+		}
+		public void oneHourAfterMarketCloseEventHandler(
+			Object sender , EndOfDayTimingEventArgs endOfDayTimingEventArgs )
+		{
+			this.oneHourAfterMarketCloseEventHandler_handleProgessBarForm(
+				 ( IEndOfDayTimer )sender );
+			if ( ( ( IEndOfDayTimer )sender ).GetCurrentTime().DateTime >
+				this.endDateTime.DateTime )
+			{
+				// the simulation has reached the ending date
+				this.account.EndOfDayTimer.Stop();
+				this.progressBarForm.Close();
+			}
+		}
+		#endregion
+		public override void Run()
+		{
 			Report report;
-			run_initializeHistoricalDataStreamer();
-			this.historicalDataStreamer.NewQuote +=
-				new NewQuoteEventHandler( this.dataStreamerHandler.NewQuoteEventHandler );
-			this.historicalDataStreamer.GoSimulate();
-			report = new Report( this.dataStreamerHandler.Account );
+			run_initializeEndOfDayTimer();
+			run_initializeAccount();
+			run_initializeEndOfDayTimerHandler();
+			run_initializeProgressHandlers();
+			this.endOfDayTimer.OneHourAfterMarketClose +=
+				new OneHourAfterMarketCloseEventHandler(
+				this.endOfDayTimerHandler.OneHourAfterMarketCloseEventHandler );
+			this.endOfDayTimer.OneHourAfterMarketClose +=
+				new OneHourAfterMarketCloseEventHandler(
+				this.oneHourAfterMarketCloseEventHandler );
+			this.endOfDayTimer.FiveMinutesBeforeMarketClose +=
+				new FiveMinutesBeforeMarketCloseEventHandler(
+				this.endOfDayTimerHandler.FiveMinutesBeforeMarketCloseEventHandler );
+			this.progressBarForm.Show();
+			this.endOfDayTimer.Start();
+			report = new Report( this.account );
 			report.Show( "WFT One Rank" , this.numIntervalDays , this.startDateTime , "MSFT" );
 		}
     #endregion
