@@ -62,15 +62,15 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardOneRank
 		private void setTickers_build( BestPerformingTickers bestPerformingTickers ,
 			Account account )
 		{
-			int index = bestPerformingTickers.Count - 1;
+			int index = 0;
 			while ( ( this.Count < this.numberTickersToBeChosen ) &&
-				( index >= 0) )
+				( index <= ( bestPerformingTickers.Count - 1 ) ) )
 			{
 				string ticker = ((Account)bestPerformingTickers[ index ]).Key;
 				if ( account.DataStreamer.IsExchanged( ticker ) )
 					setTickers_build_handleTicker( ticker ,
 						account );
-				index--;
+				index++;
 			}
 		}
 		/// <summary>
