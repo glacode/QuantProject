@@ -49,7 +49,7 @@ namespace QuantProject.Business.Timing
 			if ( this.indexQuotes.Rows.Count == 0 )
 			{
 				string errorMessage = "IndexBasedEndOfDayTimer error: the given " +
-					"index has no quotes in the interval.";
+					"index (" + marketIndex + ") has no quotes in the interval.";
 				throw new Exception( errorMessage );
 			}
       this.StartDateTime = 
