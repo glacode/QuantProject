@@ -1,6 +1,5 @@
 using System;
 using System.Windows.Forms;
-using QuantProject.Applications.Downloader.Validate;
 using QuantProject.Business.Validation;
 
 namespace QuantProject.Applications.Downloader
@@ -35,7 +34,7 @@ namespace QuantProject.Applications.Downloader
     {
       base.OnEnter( e );
       this.validateDataTable.Rows.Clear();
-      this.validateDataTable.AddRows( this.ticker , this.suspiciousRatio );
+      this.validateDataTable.AddRows( ((QuotesEditor)this.FindForm()).Ticker );
     }
 	}
 }

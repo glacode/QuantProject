@@ -9,7 +9,6 @@ using QuantProject.ADT;
 using QuantProject.ADT.Histories;
 using QuantProject.Business.Validation;
 using QuantProject.Data;
-using QuantProject.Applications.Downloader.Validate;
 
 namespace QuantProject.Applications.Downloader
 {
@@ -50,8 +49,7 @@ namespace QuantProject.Applications.Downloader
 			}
 			this.validateDataTable.Rows.Clear();
 //			this.validateDataTable.Clear();
-			this.validateDataTable.AddRows( this.textBoxTicker.Text ,
-				ConstantsProvider.SuspiciousRatio );
+			this.validateDataTable.AddRows( this.textBoxTicker.Text );
 		}
 
 		public ValidateDataTable ValidateDataTable
@@ -77,6 +75,8 @@ namespace QuantProject.Applications.Downloader
 			//
 			InitializeComponent();
 
+			this.textBoxTicker.Text = ticker;
+
 			this.addQuotesChart();
 
 
@@ -86,7 +86,6 @@ namespace QuantProject.Applications.Downloader
 			this.validationTabPage.Controls.Add( this.validationTabControl );
 			this.tabControl1.Controls.Add( this.validationTabPage );
 
-			this.textBoxTicker.Text = ticker;
 		}
 
 		private void addQuotesChart()
@@ -210,7 +209,7 @@ namespace QuantProject.Applications.Downloader
 		private void tabPageValidation_Click(object sender, System.EventArgs e)
 		{
 			this.validateDataTable.Rows.Clear();
-			this.validateDataTable.AddRows( this.textBoxTicker.Text , ConstantsProvider.SuspiciousRatio );
+			this.validateDataTable.AddRows( this.textBoxTicker.Text );
 			//      this.openHighLowCloseUserControl.ValidateDataTable = this.validateDataTable;
 			//      this.closeToCloseUserControl.Ticker = this.textBoxTicker.Text;
 		}
@@ -241,7 +240,7 @@ namespace QuantProject.Applications.Downloader
 		private void tabPageValidation_Enter(object sender, System.EventArgs e)
 		{
 			this.validateDataTable.Rows.Clear();
-			this.validateDataTable.AddRows( this.textBoxTicker.Text , ConstantsProvider.SuspiciousRatio );
+			this.validateDataTable.AddRows( this.textBoxTicker.Text );
 			//      this.openHighLowCloseUserControl.ValidateDataTable = this.validateDataTable;
 			//      this.closeToCloseUserControl.Ticker = this.textBoxTicker.Text;
 		}

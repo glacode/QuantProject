@@ -20,7 +20,7 @@ namespace QuantProject.Applications.Downloader.Validate
     {
       this.validateDataTable = new ValidateDataTable();
       this.DataSource = validateDataTable;
-      validateDataTable.AddRows( tickerIsLike , Convert.ToDouble( suspiciousRatio ) );
+      validateDataTable.AddRows( tickerIsLike );
       return this.validateDataTable;
     }
     public ValidateDataTable Validate(DataTable dataTable, string suspiciousRatio )
@@ -30,7 +30,7 @@ namespace QuantProject.Applications.Downloader.Validate
 //      if ( this.TableStyles.Count == 0 )
 //        // styles have not been defined yet
 //        validate_setTableStyle();
-      validateDataTable.AddRows(Convert.ToDouble( suspiciousRatio ) );
+      validateDataTable.AddRows( "pippo" );
       return this.validateDataTable;
     }
 	
