@@ -39,6 +39,13 @@ namespace QuantProject.Scripts.SimpleTesting
 
 		private DateTime lastDateTime;
 
+
+		public static long MaxBuyableShares( string ticker , double cashAmount, IDataStreamer dataStreamer )
+		{
+			return Convert.ToInt64(
+				Math.Floor( cashAmount / dataStreamer.GetCurrentAsk( ticker ) ) );
+		}
+
 		private void marketOpenEventHandler(
 			Object sender , EndOfDayTimingEventArgs endOfDayTimingEventArgs )
 		{
@@ -53,7 +60,7 @@ namespace QuantProject.Scripts.SimpleTesting
 			double todayMarketValueAtClose = this.account.DataStreamer.GetCurrentBid(
 				this.account.Key );
 			EndOfDayDateTime yesterdayAtClose = new
-				EndOfDayDateTime( this.account.EndOfDayTimer.GetCurrentTime().DateTime.AddHours( - 1 ) ,
+				EndOfDayDateTime( this.account.EndOfDayTimer.GetCurrentTime().DateTime.AddDays( - 1 ) ,
 				EndOfDaySpecificTime.MarketClose );
 			double yesterdayMarketValueAtClose = HistoricalDataProvider.GetMarketValue(
 				this.account.Key ,
@@ -63,9 +70,8 @@ namespace QuantProject.Scripts.SimpleTesting
 			{
 				// today close is higher than yesterday close and no position
 				// is kept in portfolio, yet
-				sharesToBeBought = Convert.ToInt64(
-					Math.Floor( this.account.CashAmount /
-					this.account.DataStreamer.GetCurrentAsk( this.account.Key ) ) );
+				sharesToBeBought = MaxBuyableShares( this.account.Key ,
+					this.account.CashAmount , this.account.DataStreamer );
 				this.account.AddOrder( new Order( OrderType.MarketBuy ,
 					new Instrument( this.account.Key ) , sharesToBeBought ) );
 			}
