@@ -30,7 +30,8 @@ namespace QuantProject.Business.DataProviders
 	/// <summary>
 	/// Returns historical raw quotes
 	/// </summary>
-	public class HistoricalRawQuoteProvider : IHistoricalQuoteProvider
+	[Serializable]
+  public class HistoricalRawQuoteProvider : IHistoricalQuoteProvider
 	{
 		public HistoricalRawQuoteProvider()
 		{
