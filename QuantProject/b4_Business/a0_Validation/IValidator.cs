@@ -1,5 +1,6 @@
 using System;
 using System.Data;
+using QuantProject.Data.DataTables;
 
 namespace QuantProject.Business.Validation
 {
@@ -12,6 +13,6 @@ namespace QuantProject.Business.Validation
 	public interface IValidator
 	{
     event SuspiciousDataRowEventHandler SuspiciousDataRow;
-    void Validate( DataTable dataTable );
+    void Validate( Quotes quotes );
   }
 }
