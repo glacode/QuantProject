@@ -41,11 +41,11 @@ namespace QuantProject.Business.Financial.Ordering
 			//
 		}
 
-    public virtual double GetInstrumentPrice( Order order )
-    {
-      return HistoricalDataProvider.GetMarketValue( order.Instrument.Key ,
-				order.EndOfDayDateTime.GetNearestExtendedDateTime() );
-    }
+//    public virtual double GetInstrumentPrice( Order order )
+//    {
+//      return HistoricalDataProvider.GetMarketValue( order.Instrument.Key ,
+//				order.EndOfDayDateTime.GetNearestExtendedDateTime() );
+//    }
     #region "GetTransaction"
 
     private TransactionType getTransactionType( Order order )
@@ -74,22 +74,26 @@ namespace QuantProject.Business.Financial.Ordering
       }
     }
 
-    public TimedTransaction GetTransaction( Order order )
+    public TimedTransaction GetTransaction( Order order ,
+			IDataStreamer dataStreamer )
     {
-      double instrumentPrice = this.GetInstrumentPrice( order  );
+      double instrumentPrice = dataStreamer.GetCurrentBid(
+				order.Instrument.Key );
       TimedTransaction transaction = new TimedTransaction(
         getTransactionType( order ) , order.Instrument ,
-        order.Quantity , order.Instrument.GetMarketValue( order.EndOfDayDateTime ) ,
+        order.Quantity , instrumentPrice ,
         order.EndOfDayDateTime.GetNearestExtendedDateTime() );
       return transaction;
     }
     #endregion
 
-    public TransactionHistory GetTransactions( ArrayList orders )
+    public TransactionHistory GetTransactions( ArrayList orders ,
+			IDataStreamer dataStreamer )
     {
       TransactionHistory transactionHistory = new TransactionHistory();
       foreach (Order order in orders)
-        transactionHistory.Add( this.GetTransaction( order ) );
+        transactionHistory.Add( this.GetTransaction( order ,
+					dataStreamer ) );
       return transactionHistory;
     }
 	}
