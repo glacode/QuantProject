@@ -47,24 +47,32 @@ namespace QuantProject.Applications.Downloader
 		private System.Windows.Forms.ContextMenu contextMenuTickerViewer;
 		private System.Windows.Forms.MenuItem menuItemValidateCurrentRows;
 		private System.Windows.Forms.MenuItem menuItemDownloadCurrentRows;
-		private System.Windows.Forms.Panel panel1;
 		private System.Windows.Forms.TextBox textBoxStringToFindInName;
 		private System.Windows.Forms.Label label2;
 		private System.Windows.Forms.Label label3;
 		private System.Windows.Forms.Panel panel2;
-		private System.Windows.Forms.Splitter splitter1;
 		private System.Windows.Forms.MenuItem menuItemCopySelectedTickersToClipboard;
+    private System.Windows.Forms.Splitter splitter1;
+    private System.Windows.Forms.GroupBox groupBoxDateQuoteFilter;
+    private System.Windows.Forms.RadioButton radioButtonDateQuoteFilter;
+    private System.Windows.Forms.RadioButton radioButtonAnyTicker;
+    private System.Windows.Forms.DateTimePicker dateTimePickerFirstDate;
+    private System.Windows.Forms.DateTimePicker dateTimePickerLastDate;
+    private System.Windows.Forms.Label label6;
+    private System.Windows.Forms.Label label5;
+    private System.Windows.Forms.Label label7;
+    private System.Windows.Forms.ComboBox comboBoxFirstOperator;
+    private System.Windows.Forms.ComboBox comboBoxSecondOperator;
 		private DataTable tableTickers;
 
 		public TickerViewer()
 		{
 			InitializeComponent();
 			this.oleDbConnection = ConnectionProvider.OleDbConnection;
+      this.oleDbDataAdapter = new OleDbDataAdapter("", this.oleDbConnection);
 			this.tableTickers = new DataTable("tickers");
 			this.dataGrid1.DataSource = this.tableTickers;
 			this.setStyle_dataGrid1();
-			this.dataGrid1.Visible = false;
-			//the datagrid is still empty at this point
 		}
 
 		/// <summary>
@@ -88,169 +96,274 @@ namespace QuantProject.Applications.Downloader
 		/// </summary>
 		private void InitializeComponent()
 		{
-			this.components = new System.ComponentModel.Container();
-			this.textBoxStringToFind = new System.Windows.Forms.TextBox();
-			this.label1 = new System.Windows.Forms.Label();
-			this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
-			this.textBoxStringToFindInName = new System.Windows.Forms.TextBox();
-			this.dataGrid1 = new System.Windows.Forms.DataGrid();
-			this.contextMenuTickerViewer = new System.Windows.Forms.ContextMenu();
-			this.menuItemValidateCurrentRows = new System.Windows.Forms.MenuItem();
-			this.menuItemDownloadCurrentRows = new System.Windows.Forms.MenuItem();
-			this.buttonFindTickers = new System.Windows.Forms.Button();
-			this.panel1 = new System.Windows.Forms.Panel();
-			this.label3 = new System.Windows.Forms.Label();
-			this.label2 = new System.Windows.Forms.Label();
-			this.panel2 = new System.Windows.Forms.Panel();
-			this.splitter1 = new System.Windows.Forms.Splitter();
-			this.menuItemCopySelectedTickersToClipboard = new System.Windows.Forms.MenuItem();
-			((System.ComponentModel.ISupportInitialize)(this.dataGrid1)).BeginInit();
-			this.panel1.SuspendLayout();
-			this.panel2.SuspendLayout();
-			this.SuspendLayout();
-			// 
-			// textBoxStringToFind
-			// 
-			this.textBoxStringToFind.Location = new System.Drawing.Point(16, 32);
-			this.textBoxStringToFind.Name = "textBoxStringToFind";
-			this.textBoxStringToFind.Size = new System.Drawing.Size(136, 20);
-			this.textBoxStringToFind.TabIndex = 0;
-			this.textBoxStringToFind.Text = "%";
-			this.toolTip1.SetToolTip(this.textBoxStringToFind, "Type chars to filter tickers (you can use % and _ )  ");
-			// 
-			// label1
-			// 
-			this.label1.Location = new System.Drawing.Point(16, 8);
-			this.label1.Name = "label1";
-			this.label1.Size = new System.Drawing.Size(112, 16);
-			this.label1.TabIndex = 1;
-			this.label1.Text = "Find Ticker is like";
-			// 
-			// textBoxStringToFindInName
-			// 
-			this.textBoxStringToFindInName.AllowDrop = true;
-			this.textBoxStringToFindInName.Location = new System.Drawing.Point(16, 112);
-			this.textBoxStringToFindInName.Name = "textBoxStringToFindInName";
-			this.textBoxStringToFindInName.Size = new System.Drawing.Size(136, 20);
-			this.textBoxStringToFindInName.TabIndex = 4;
-			this.textBoxStringToFindInName.Text = "%";
-			this.toolTip1.SetToolTip(this.textBoxStringToFindInName, "Type chars to filter companies (you can use % and _ )  ");
-			// 
-			// dataGrid1
-			// 
-			this.dataGrid1.Anchor = (((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-				| System.Windows.Forms.AnchorStyles.Left) 
-				| System.Windows.Forms.AnchorStyles.Right);
-			this.dataGrid1.BorderStyle = System.Windows.Forms.BorderStyle.None;
-			this.dataGrid1.ContextMenu = this.contextMenuTickerViewer;
-			this.dataGrid1.DataMember = "";
-			this.dataGrid1.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((System.Byte)(0)));
-			this.dataGrid1.HeaderForeColor = System.Drawing.SystemColors.ControlText;
-			this.dataGrid1.Name = "dataGrid1";
-			this.dataGrid1.Size = new System.Drawing.Size(270, 478);
-			this.dataGrid1.TabIndex = 2;
-			// 
-			// contextMenuTickerViewer
-			// 
-			this.contextMenuTickerViewer.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
-																									this.menuItemValidateCurrentRows,
-																									this.menuItemDownloadCurrentRows,
-																									this.menuItemCopySelectedTickersToClipboard});
-			// 
-			// menuItemValidateCurrentRows
-			// 
-			this.menuItemValidateCurrentRows.Index = 0;
-			this.menuItemValidateCurrentRows.Text = "Validate selected tickers";
-			this.menuItemValidateCurrentRows.Click += new System.EventHandler(this.menuItemValidateCurrentRows_Click);
-			// 
-			// menuItemDownloadCurrentRows
-			// 
-			this.menuItemDownloadCurrentRows.Index = 1;
-			this.menuItemDownloadCurrentRows.Text = "Download quotes of selected tickers";
-			this.menuItemDownloadCurrentRows.Click += new System.EventHandler(this.menuItemDownloadCurrentRows_Click);
-			// 
-			// buttonFindTickers
-			// 
-			this.buttonFindTickers.Location = new System.Drawing.Point(56, 200);
-			this.buttonFindTickers.Name = "buttonFindTickers";
-			this.buttonFindTickers.Size = new System.Drawing.Size(64, 24);
-			this.buttonFindTickers.TabIndex = 3;
-			this.buttonFindTickers.Text = "Go";
-			this.buttonFindTickers.Click += new System.EventHandler(this.buttonFindTickers_Click);
-			// 
-			// panel1
-			// 
-			this.panel1.Controls.AddRange(new System.Windows.Forms.Control[] {
-																				 this.dataGrid1});
-			this.panel1.Dock = System.Windows.Forms.DockStyle.Left;
-			this.panel1.Name = "panel1";
-			this.panel1.Size = new System.Drawing.Size(288, 478);
-			this.panel1.TabIndex = 4;
-			// 
-			// label3
-			// 
-			this.label3.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((System.Byte)(0)));
-			this.label3.Location = new System.Drawing.Point(72, 64);
-			this.label3.Name = "label3";
-			this.label3.Size = new System.Drawing.Size(48, 16);
-			this.label3.TabIndex = 6;
-			this.label3.Text = "AND";
-			// 
-			// label2
-			// 
-			this.label2.Location = new System.Drawing.Point(16, 88);
-			this.label2.Name = "label2";
-			this.label2.Size = new System.Drawing.Size(136, 16);
-			this.label2.TabIndex = 5;
-			this.label2.Text = "Company Name is like";
-			// 
-			// panel2
-			// 
-			this.panel2.Controls.AddRange(new System.Windows.Forms.Control[] {
-																				 this.textBoxStringToFind,
-																				 this.buttonFindTickers,
-																				 this.textBoxStringToFindInName,
-																				 this.label2,
-																				 this.label3,
-																				 this.label1});
-			this.panel2.Dock = System.Windows.Forms.DockStyle.Fill;
-			this.panel2.Location = new System.Drawing.Point(288, 0);
-			this.panel2.Name = "panel2";
-			this.panel2.Size = new System.Drawing.Size(184, 478);
-			this.panel2.TabIndex = 7;
-			// 
-			// splitter1
-			// 
-			this.splitter1.BackColor = System.Drawing.SystemColors.Highlight;
-			this.splitter1.Location = new System.Drawing.Point(288, 0);
-			this.splitter1.Name = "splitter1";
-			this.splitter1.Size = new System.Drawing.Size(3, 478);
-			this.splitter1.TabIndex = 8;
-			this.splitter1.TabStop = false;
-			// 
-			// menuItemCopySelectedTickersToClipboard
-			// 
-			this.menuItemCopySelectedTickersToClipboard.Index = 2;
-			this.menuItemCopySelectedTickersToClipboard.Text = "Copy selected tickers to clipboard";
-			this.menuItemCopySelectedTickersToClipboard.Click += new System.EventHandler(this.menuItemCopySelectedTickersToClipboard_Click);
-			// 
-			// TickerViewer
-			// 
-			this.AutoScaleBaseSize = new System.Drawing.Size(5, 13);
-			this.ClientSize = new System.Drawing.Size(472, 478);
-			this.Controls.AddRange(new System.Windows.Forms.Control[] {
-																		  this.splitter1,
-																		  this.panel2,
-																		  this.panel1});
-			this.Name = "TickerViewer";
-			this.Text = "Ticker Viewer";
-			this.Closed += new System.EventHandler(this.TickerViewer_Closed);
-			((System.ComponentModel.ISupportInitialize)(this.dataGrid1)).EndInit();
-			this.panel1.ResumeLayout(false);
-			this.panel2.ResumeLayout(false);
-			this.ResumeLayout(false);
+      this.components = new System.ComponentModel.Container();
+      this.textBoxStringToFind = new System.Windows.Forms.TextBox();
+      this.label1 = new System.Windows.Forms.Label();
+      this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
+      this.textBoxStringToFindInName = new System.Windows.Forms.TextBox();
+      this.dataGrid1 = new System.Windows.Forms.DataGrid();
+      this.contextMenuTickerViewer = new System.Windows.Forms.ContextMenu();
+      this.menuItemValidateCurrentRows = new System.Windows.Forms.MenuItem();
+      this.menuItemDownloadCurrentRows = new System.Windows.Forms.MenuItem();
+      this.menuItemCopySelectedTickersToClipboard = new System.Windows.Forms.MenuItem();
+      this.buttonFindTickers = new System.Windows.Forms.Button();
+      this.label3 = new System.Windows.Forms.Label();
+      this.label2 = new System.Windows.Forms.Label();
+      this.panel2 = new System.Windows.Forms.Panel();
+      this.groupBoxDateQuoteFilter = new System.Windows.Forms.GroupBox();
+      this.label6 = new System.Windows.Forms.Label();
+      this.dateTimePickerLastDate = new System.Windows.Forms.DateTimePicker();
+      this.dateTimePickerFirstDate = new System.Windows.Forms.DateTimePicker();
+      this.radioButtonDateQuoteFilter = new System.Windows.Forms.RadioButton();
+      this.radioButtonAnyTicker = new System.Windows.Forms.RadioButton();
+      this.splitter1 = new System.Windows.Forms.Splitter();
+      this.label5 = new System.Windows.Forms.Label();
+      this.label7 = new System.Windows.Forms.Label();
+      this.comboBoxFirstOperator = new System.Windows.Forms.ComboBox();
+      this.comboBoxSecondOperator = new System.Windows.Forms.ComboBox();
+      ((System.ComponentModel.ISupportInitialize)(this.dataGrid1)).BeginInit();
+      this.panel2.SuspendLayout();
+      this.groupBoxDateQuoteFilter.SuspendLayout();
+      this.SuspendLayout();
+      // 
+      // textBoxStringToFind
+      // 
+      this.textBoxStringToFind.Location = new System.Drawing.Point(48, 40);
+      this.textBoxStringToFind.Name = "textBoxStringToFind";
+      this.textBoxStringToFind.Size = new System.Drawing.Size(88, 20);
+      this.textBoxStringToFind.TabIndex = 0;
+      this.textBoxStringToFind.Text = "%";
+      this.toolTip1.SetToolTip(this.textBoxStringToFind, "Type chars to filter tickers (you can use % and _ )  ");
+      // 
+      // label1
+      // 
+      this.label1.Location = new System.Drawing.Point(48, 16);
+      this.label1.Name = "label1";
+      this.label1.Size = new System.Drawing.Size(96, 16);
+      this.label1.TabIndex = 1;
+      this.label1.Text = "Ticker is like";
+      // 
+      // textBoxStringToFindInName
+      // 
+      this.textBoxStringToFindInName.AllowDrop = true;
+      this.textBoxStringToFindInName.Location = new System.Drawing.Point(216, 40);
+      this.textBoxStringToFindInName.Name = "textBoxStringToFindInName";
+      this.textBoxStringToFindInName.Size = new System.Drawing.Size(120, 20);
+      this.textBoxStringToFindInName.TabIndex = 4;
+      this.textBoxStringToFindInName.Text = "%";
+      this.toolTip1.SetToolTip(this.textBoxStringToFindInName, "Type chars to filter companies (you can use % and _ )  ");
+      // 
+      // dataGrid1
+      // 
+      this.dataGrid1.BorderStyle = System.Windows.Forms.BorderStyle.None;
+      this.dataGrid1.ContextMenu = this.contextMenuTickerViewer;
+      this.dataGrid1.DataMember = "";
+      this.dataGrid1.Dock = System.Windows.Forms.DockStyle.Left;
+      this.dataGrid1.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((System.Byte)(0)));
+      this.dataGrid1.HeaderForeColor = System.Drawing.SystemColors.ControlText;
+      this.dataGrid1.Name = "dataGrid1";
+      this.dataGrid1.Size = new System.Drawing.Size(432, 478);
+      this.dataGrid1.TabIndex = 2;
+      // 
+      // contextMenuTickerViewer
+      // 
+      this.contextMenuTickerViewer.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
+                                                                                            this.menuItemValidateCurrentRows,
+                                                                                            this.menuItemDownloadCurrentRows,
+                                                                                            this.menuItemCopySelectedTickersToClipboard});
+      // 
+      // menuItemValidateCurrentRows
+      // 
+      this.menuItemValidateCurrentRows.Index = 0;
+      this.menuItemValidateCurrentRows.Text = "Validate selected tickers";
+      this.menuItemValidateCurrentRows.Click += new System.EventHandler(this.menuItemValidateCurrentRows_Click);
+      // 
+      // menuItemDownloadCurrentRows
+      // 
+      this.menuItemDownloadCurrentRows.Index = 1;
+      this.menuItemDownloadCurrentRows.Text = "Download quotes of selected tickers";
+      this.menuItemDownloadCurrentRows.Click += new System.EventHandler(this.menuItemDownloadCurrentRows_Click);
+      // 
+      // menuItemCopySelectedTickersToClipboard
+      // 
+      this.menuItemCopySelectedTickersToClipboard.Index = 2;
+      this.menuItemCopySelectedTickersToClipboard.Text = "Copy selected tickers to clipboard";
+      this.menuItemCopySelectedTickersToClipboard.Click += new System.EventHandler(this.menuItemCopySelectedTickersToClipboard_Click);
+      // 
+      // buttonFindTickers
+      // 
+      this.buttonFindTickers.Location = new System.Drawing.Point(136, 256);
+      this.buttonFindTickers.Name = "buttonFindTickers";
+      this.buttonFindTickers.Size = new System.Drawing.Size(104, 24);
+      this.buttonFindTickers.TabIndex = 3;
+      this.buttonFindTickers.Text = "Find Tickers";
+      this.buttonFindTickers.Click += new System.EventHandler(this.buttonFindTickers_Click);
+      // 
+      // label3
+      // 
+      this.label3.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((System.Byte)(0)));
+      this.label3.Location = new System.Drawing.Point(160, 40);
+      this.label3.Name = "label3";
+      this.label3.Size = new System.Drawing.Size(32, 16);
+      this.label3.TabIndex = 6;
+      this.label3.Text = "AND";
+      // 
+      // label2
+      // 
+      this.label2.Location = new System.Drawing.Point(216, 16);
+      this.label2.Name = "label2";
+      this.label2.Size = new System.Drawing.Size(120, 16);
+      this.label2.TabIndex = 5;
+      this.label2.Text = "Company Name is like";
+      // 
+      // panel2
+      // 
+      this.panel2.Controls.AddRange(new System.Windows.Forms.Control[] {
+                                                                         this.groupBoxDateQuoteFilter,
+                                                                         this.textBoxStringToFind,
+                                                                         this.buttonFindTickers,
+                                                                         this.textBoxStringToFindInName,
+                                                                         this.label2,
+                                                                         this.label3,
+                                                                         this.label1});
+      this.panel2.Dock = System.Windows.Forms.DockStyle.Fill;
+      this.panel2.ForeColor = System.Drawing.SystemColors.ControlText;
+      this.panel2.Location = new System.Drawing.Point(432, 0);
+      this.panel2.Name = "panel2";
+      this.panel2.Size = new System.Drawing.Size(392, 478);
+      this.panel2.TabIndex = 7;
+      // 
+      // groupBoxDateQuoteFilter
+      // 
+      this.groupBoxDateQuoteFilter.Controls.AddRange(new System.Windows.Forms.Control[] {
+                                                                                          this.comboBoxSecondOperator,
+                                                                                          this.comboBoxFirstOperator,
+                                                                                          this.label7,
+                                                                                          this.label5,
+                                                                                          this.label6,
+                                                                                          this.dateTimePickerLastDate,
+                                                                                          this.dateTimePickerFirstDate,
+                                                                                          this.radioButtonDateQuoteFilter,
+                                                                                          this.radioButtonAnyTicker});
+      this.groupBoxDateQuoteFilter.Location = new System.Drawing.Point(8, 80);
+      this.groupBoxDateQuoteFilter.Name = "groupBoxDateQuoteFilter";
+      this.groupBoxDateQuoteFilter.Size = new System.Drawing.Size(376, 160);
+      this.groupBoxDateQuoteFilter.TabIndex = 14;
+      this.groupBoxDateQuoteFilter.TabStop = false;
+      this.groupBoxDateQuoteFilter.Text = "Quote filter";
+      // 
+      // label6
+      // 
+      this.label6.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((System.Byte)(0)));
+      this.label6.Location = new System.Drawing.Point(24, 96);
+      this.label6.Name = "label6";
+      this.label6.Size = new System.Drawing.Size(152, 16);
+      this.label6.TabIndex = 17;
+      this.label6.Text = "and last available quote is";
+      // 
+      // dateTimePickerLastDate
+      // 
+      this.dateTimePickerLastDate.Enabled = false;
+      this.dateTimePickerLastDate.Format = System.Windows.Forms.DateTimePickerFormat.Short;
+      this.dateTimePickerLastDate.Location = new System.Drawing.Point(288, 96);
+      this.dateTimePickerLastDate.Name = "dateTimePickerLastDate";
+      this.dateTimePickerLastDate.Size = new System.Drawing.Size(88, 20);
+      this.dateTimePickerLastDate.TabIndex = 15;
+      // 
+      // dateTimePickerFirstDate
+      // 
+      this.dateTimePickerFirstDate.Enabled = false;
+      this.dateTimePickerFirstDate.Format = System.Windows.Forms.DateTimePickerFormat.Short;
+      this.dateTimePickerFirstDate.Location = new System.Drawing.Point(288, 64);
+      this.dateTimePickerFirstDate.Name = "dateTimePickerFirstDate";
+      this.dateTimePickerFirstDate.Size = new System.Drawing.Size(88, 20);
+      this.dateTimePickerFirstDate.TabIndex = 13;
+      // 
+      // radioButtonDateQuoteFilter
+      // 
+      this.radioButtonDateQuoteFilter.Location = new System.Drawing.Point(8, 56);
+      this.radioButtonDateQuoteFilter.Name = "radioButtonDateQuoteFilter";
+      this.radioButtonDateQuoteFilter.Size = new System.Drawing.Size(184, 24);
+      this.radioButtonDateQuoteFilter.TabIndex = 12;
+      this.radioButtonDateQuoteFilter.Text = "Only tickers whose first quote is";
+      this.radioButtonDateQuoteFilter.CheckedChanged += new System.EventHandler(this.radioButtonDateQuoteFilter_CheckedChanged);
+      // 
+      // radioButtonAnyTicker
+      // 
+      this.radioButtonAnyTicker.Checked = true;
+      this.radioButtonAnyTicker.Location = new System.Drawing.Point(8, 24);
+      this.radioButtonAnyTicker.Name = "radioButtonAnyTicker";
+      this.radioButtonAnyTicker.Size = new System.Drawing.Size(248, 24);
+      this.radioButtonAnyTicker.TabIndex = 10;
+      this.radioButtonAnyTicker.TabStop = true;
+      this.radioButtonAnyTicker.Text = "Any ticker, with or without quotes";
+      // 
+      // splitter1
+      // 
+      this.splitter1.BackColor = System.Drawing.SystemColors.Highlight;
+      this.splitter1.Location = new System.Drawing.Point(432, 0);
+      this.splitter1.Name = "splitter1";
+      this.splitter1.Size = new System.Drawing.Size(3, 478);
+      this.splitter1.TabIndex = 8;
+      this.splitter1.TabStop = false;
+      // 
+      // label5
+      // 
+      this.label5.Location = new System.Drawing.Point(256, 64);
+      this.label5.Name = "label5";
+      this.label5.Size = new System.Drawing.Size(32, 16);
+      this.label5.TabIndex = 18;
+      this.label5.Text = "than";
+      // 
+      // label7
+      // 
+      this.label7.Location = new System.Drawing.Point(256, 96);
+      this.label7.Name = "label7";
+      this.label7.Size = new System.Drawing.Size(32, 16);
+      this.label7.TabIndex = 20;
+      this.label7.Text = "than";
+      // 
+      // comboBoxFirstOperator
+      // 
+      this.comboBoxFirstOperator.Enabled = false;
+      this.comboBoxFirstOperator.Items.AddRange(new object[] {
+                                                               "<=",
+                                                               ">="});
+      this.comboBoxFirstOperator.Location = new System.Drawing.Point(200, 64);
+      this.comboBoxFirstOperator.Name = "comboBoxFirstOperator";
+      this.comboBoxFirstOperator.Size = new System.Drawing.Size(48, 21);
+      this.comboBoxFirstOperator.TabIndex = 21;
+      this.comboBoxFirstOperator.Text = ">=";
+      // 
+      // comboBoxSecondOperator
+      // 
+      this.comboBoxSecondOperator.Enabled = false;
+      this.comboBoxSecondOperator.Items.AddRange(new object[] {
+                                                                "<=",
+                                                                ">="});
+      this.comboBoxSecondOperator.Location = new System.Drawing.Point(200, 96);
+      this.comboBoxSecondOperator.Name = "comboBoxSecondOperator";
+      this.comboBoxSecondOperator.Size = new System.Drawing.Size(48, 21);
+      this.comboBoxSecondOperator.TabIndex = 22;
+      this.comboBoxSecondOperator.Text = "<=";
+      // 
+      // TickerViewer
+      // 
+      this.AutoScaleBaseSize = new System.Drawing.Size(5, 13);
+      this.ClientSize = new System.Drawing.Size(824, 478);
+      this.Controls.AddRange(new System.Windows.Forms.Control[] {
+                                                                  this.splitter1,
+                                                                  this.panel2,
+                                                                  this.dataGrid1});
+      this.Name = "TickerViewer";
+      this.Text = "Ticker Viewer";
+      this.Closed += new System.EventHandler(this.TickerViewer_Closed);
+      ((System.ComponentModel.ISupportInitialize)(this.dataGrid1)).EndInit();
+      this.panel2.ResumeLayout(false);
+      this.groupBoxDateQuoteFilter.ResumeLayout(false);
+      this.ResumeLayout(false);
 
-		}
+    }
 		#endregion
 
 
@@ -259,12 +372,12 @@ namespace QuantProject.Applications.Downloader
 		private void setStyle_dataGrid1()
 		{
 			DataGridTableStyle dataGrid1TableStyle = new DataGridTableStyle();
-			//this.dataGrid1.Width = 300;
-			dataGrid1TableStyle.MappingName = "tickers";
+			dataGrid1TableStyle.MappingName = this.tableTickers.TableName;
 			dataGrid1TableStyle.ColumnHeadersVisible = true;
 			dataGrid1TableStyle.ReadOnly = true;
 			dataGrid1TableStyle.SelectionBackColor = Color.DimGray ;
-			DataGridTextBoxColumn columnStyle_tiTicker = new DataGridTextBoxColumn();
+			
+      DataGridTextBoxColumn columnStyle_tiTicker = new DataGridTextBoxColumn();
 			columnStyle_tiTicker.MappingName = "tiTicker";
 			columnStyle_tiTicker.HeaderText = "Ticker";
 			columnStyle_tiTicker.TextBox.Enabled = false;
@@ -276,9 +389,25 @@ namespace QuantProject.Applications.Downloader
 			columnStyle_tiCompanyName.TextBox.Enabled = false;
 			columnStyle_tiCompanyName.NullText = "";
 			columnStyle_tiCompanyName.Width = 150;
-			dataGrid1TableStyle.GridColumnStyles.Add(columnStyle_tiTicker);
+      DataGridTextBoxColumn columnStyle_FirstQuote = new DataGridTextBoxColumn();
+      columnStyle_FirstQuote.MappingName = "FirstQuote";
+      columnStyle_FirstQuote.HeaderText = "First Quote";
+      columnStyle_FirstQuote.TextBox.Enabled = false;
+      columnStyle_FirstQuote.NullText = "";
+      columnStyle_FirstQuote.Width = 80;
+      DataGridTextBoxColumn columnStyle_LastQuote = new DataGridTextBoxColumn();
+      columnStyle_LastQuote.MappingName = "LastQuote";
+      columnStyle_LastQuote.HeaderText = "Last Quote";
+      columnStyle_LastQuote.TextBox.Enabled = false;
+      columnStyle_LastQuote.NullText = "";
+      columnStyle_LastQuote.Width = 80;
+			
+      dataGrid1TableStyle.GridColumnStyles.Add(columnStyle_tiTicker);
 			dataGrid1TableStyle.GridColumnStyles.Add(columnStyle_tiCompanyName);
+      dataGrid1TableStyle.GridColumnStyles.Add(columnStyle_FirstQuote);
+      dataGrid1TableStyle.GridColumnStyles.Add(columnStyle_LastQuote);
 			this.dataGrid1.TableStyles.Add(dataGrid1TableStyle);
+      
 			
 		}
 		#endregion
@@ -288,6 +417,40 @@ namespace QuantProject.Applications.Downloader
 		{
 			this.oleDbConnection.Close();
 		}
+    
+    #region buildSqlSelectString
+    private string buildSqlSelectString(bool anyTicker, DateTime firstDate, DateTime lastDate)
+    {
+      string sqlSelectString = "";
+      if(anyTicker == true)
+      {
+        sqlSelectString = "SELECT tiTicker, tiCompanyName, Min(quotes.quDate) AS FirstQuote, Max(quotes.quDate) AS LastQuote " +
+                          "FROM quotes RIGHT JOIN tickers ON quotes.quTicker = tickers.tiTicker " +
+                          "WHERE tiTicker LIKE '" +
+                          this.textBoxStringToFind.Text + "' " +
+                          "AND tiCompanyName LIKE '" +
+                          this.textBoxStringToFindInName.Text + "' " + 
+                          "GROUP BY tickers.tiTicker, tickers.tiCompanyName";
+      }
+      else
+      {
+        if(firstDate.CompareTo(lastDate)>0)
+            throw new Exception("Last Date can't be previous of First date!");
+        sqlSelectString = "SELECT tiTicker, tiCompanyName, Min(quotes.quDate) AS FirstQuote, Max(quotes.quDate) AS LastQuote " +
+                          "FROM quotes INNER JOIN tickers ON quotes.quTicker = tickers.tiTicker " +
+                          "WHERE tiTicker LIKE '" +
+                          this.textBoxStringToFind.Text + "' " +
+                          "AND tiCompanyName LIKE '" +
+                          this.textBoxStringToFindInName.Text + "' " + 
+                          "GROUP BY tickers.tiTicker, tickers.tiCompanyName " +
+                          "HAVING Min(quotes.quDate)" + this.comboBoxFirstOperator.Text + 
+                          "#" + firstDate + "# " +
+                          "AND Max(quotes.quDate)" + this.comboBoxSecondOperator.Text + 
+                          "#" + lastDate + "#";
+      }
+      return sqlSelectString;
+    }
+#endregion
 
 		private void buttonFindTickers_Click(object sender, System.EventArgs e)
 		{
@@ -297,27 +460,20 @@ namespace QuantProject.Applications.Downloader
 				Cursor.Current = Cursors.WaitCursor;
 				if(this.oleDbConnection.State != ConnectionState.Open)
 					this.oleDbConnection.Open();
-				string criteria = "SELECT * FROM tickers WHERE tiTicker LIKE '" +
-									this.textBoxStringToFind.Text + "'" +
-									" AND tiCompanyName LIKE '" +
-									this.textBoxStringToFindInName.Text + "'";
-				oleDbDataAdapter  = new OleDbDataAdapter(criteria, this.oleDbConnection);
-				this.tableTickers.Clear();
+				string sqlSelectString = this.buildSqlSelectString(this.radioButtonAnyTicker.Checked,
+                                                            this.dateTimePickerFirstDate.Value ,
+                                                            this.dateTimePickerLastDate.Value);
+        this.tableTickers.Clear();
+        this.oleDbDataAdapter.SelectCommand.CommandText = sqlSelectString;
+        // these two lines in order to avoid "strange" exceptions ...
+        this.dataGrid1.DataSource = null;
+        this.dataGrid1.DataSource = this.tableTickers;
+        // 
 				oleDbDataAdapter.Fill(this.tableTickers);
-				this.dataGrid1.Refresh();
+
+        this.dataGrid1.Refresh();
 				
-				if (this.dataGrid1.Visible == false && 
-					this.tableTickers.Rows.Count != 0)
-				//there are some rows to show and the grid is not visible
-				{
-					this.dataGrid1.Visible = true; 
-				}
-				else if(this.tableTickers.Rows.Count == 0)
-				// there aren't rows to show
-				{
-                    this.dataGrid1.Visible = false; 
-				}
-			}
+      }
 			catch(Exception ex)
 			{
 				MessageBox.Show(ex.ToString());
@@ -379,7 +535,7 @@ namespace QuantProject.Applications.Downloader
 					MessageBoxButtons.OK, MessageBoxIcon.Error);
 				return;
 			}
-			WebDownloader webDownloader = new WebDownloader(this.GetTableOfSelectedTickers());
+			WebDownloader webDownloader = new WebDownloader(tableOfSelectedTickers);
 			webDownloader.Show();
 		}
 
@@ -392,6 +548,24 @@ namespace QuantProject.Applications.Downloader
 		{
 			Clipboard.SetDataObject(this.GetTableOfSelectedTickers());
 		}
+
+    private void radioButtonDateQuoteFilter_CheckedChanged(object sender, System.EventArgs e)
+    {
+      if(this.radioButtonDateQuoteFilter.Checked == true)
+      {
+        this.dateTimePickerFirstDate.Enabled = true;
+        this.dateTimePickerLastDate.Enabled = true;
+        this.comboBoxFirstOperator.Enabled = true;
+        this.comboBoxSecondOperator.Enabled = true;
+      }
+      else
+      {
+        this.dateTimePickerFirstDate.Enabled = false;
+        this.dateTimePickerLastDate.Enabled = false;
+        this.comboBoxFirstOperator.Enabled = false;
+        this.comboBoxSecondOperator.Enabled = false;
+      }
+    }
 
 		
 
