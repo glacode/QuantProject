@@ -23,6 +23,7 @@ namespace QuantProject.Applications.Downloader.Validate
       this.oleDbCommandBuilder = new OleDbCommandBuilder( oleDbDataAdapter );
       this.oleDbDataAdapter.UpdateCommand = this.oleDbCommandBuilder.GetUpdateCommand();
       this.oleDbDataAdapter.Fill( this );
+      this.TableName = "quotes";
     }
 
     /// <summary>
