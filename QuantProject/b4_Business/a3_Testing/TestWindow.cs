@@ -22,7 +22,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 using System;
 
-namespace QuantProject.Business.Financial.Testing
+namespace QuantProject.Business.Testing
 {
   /// <summary>
   /// Summary description for TestWindow.
