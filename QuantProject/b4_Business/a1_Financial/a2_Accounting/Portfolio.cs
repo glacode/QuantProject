@@ -25,6 +25,7 @@ using System.Collections;
 using System.Diagnostics;
 using QuantProject.ADT;
 using QuantProject.Business.Financial.Instruments;
+using QuantProject.Business.Timing;
 
 namespace QuantProject.Business.Financial.Accounting
 {
@@ -43,11 +44,21 @@ namespace QuantProject.Business.Financial.Accounting
       return ((Position)this[ instrument.Key ]);
     }
 
-    public bool Contains( Instrument instrument )
-    {
-      return base.ContainsKey( instrument ) || 
-        base.ContainsKey( instrument.Key );
-    }
+		public bool Contains( Instrument instrument )
+		{
+			return base.ContainsKey( instrument ) || 
+				base.ContainsKey( instrument.Key );
+		}
+		/// <summary>
+		/// True iff the instrument corresponding to ticker is already
+		/// into the portfolio
+		/// </summary>
+		/// <param name="ticker"></param>
+		/// <returns></returns>
+		public bool Contains( string ticker )
+		{
+			return this.ContainsKey( ticker );
+		}
 
     public bool IsLong( Instrument instrument )
     {
@@ -89,7 +100,7 @@ namespace QuantProject.Business.Financial.Accounting
     }
 
 
-    public bool Update( TimedTransaction transaction )
+    public bool Update( Transaction transaction )
     {
       bool errorArised = false;
       //Debug.WriteLine( transaction.ToString() );
@@ -112,15 +123,15 @@ namespace QuantProject.Business.Financial.Accounting
 
     #endregion
 
-    public double GetMarketValue( ExtendedDateTime extendedDateTime )
-    {
-      double totalValue = 0;
-      foreach (Position position in this.Values)
-        totalValue = position.Instrument.GetMarketValue( extendedDateTime ) * position.Quantity;
-      return totalValue;
-    }
+		public double GetMarketValue( EndOfDayDateTime endOfDayDateTime )
+		{
+			double totalValue = 0;
+			foreach (Position position in this.Values)
+				totalValue = position.Instrument.GetMarketValue( endOfDayDateTime ) * position.Quantity;
+			return totalValue;
+		}
 
-    public override string ToString()
+		public override string ToString()
     {
       string toString = "";
 
