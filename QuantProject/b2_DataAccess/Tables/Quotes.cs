@@ -481,6 +481,18 @@ namespace QuantProject.DataAccess.Tables
                     "quotes.quDate=" + SQLBuilder.GetDateConstant(date);
       SqlExecutor.ExecuteNonQuery (sql);
     }
+    
+    /// <summary>
+    /// Provides updating the database with a new adjusted close for
+    /// the given ticker at a specified date
+    /// </summary>
+    public static void UpdateAdjustedClose( string ticker, DateTime date, double adjustedClose )
+    {
+      string sql = "UPDATE quotes SET quotes.quAdjustedClose=" +
+        adjustedClose + " WHERE quotes.quTicker='" + ticker + "' AND " +
+        "quotes.quDate=" + SQLBuilder.GetDateConstant(date);
+      SqlExecutor.ExecuteNonQuery (sql);
+    }
 
     /* Now useless
     /// <summary>
