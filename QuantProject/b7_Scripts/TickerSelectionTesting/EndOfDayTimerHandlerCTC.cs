@@ -87,15 +87,13 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
     #region MarketOpenEventHandler
     private DataTable getSetOfTickersToBeOptimized(DateTime currentDate)
     {
-      TickerSelector mostLiquid = new TickerSelector(SelectionType.Liquidity,
-        false, this.tickerGroupID , currentDate.AddDays(-90), currentDate, this.numberOfEligibleTickers);
+      SelectorByLiquidity mostLiquid = new SelectorByLiquidity(this.tickerGroupID,false,
+                                      currentDate.AddDays(-90), currentDate, this.numberOfEligibleTickers);
       this.eligibleTickers = mostLiquid.GetTableOfSelectedTickers();
-      TickerSelector quotedInEachMarketDayFromMostLiquid = 
-        new TickerSelector( this.eligibleTickers,
-        SelectionType.QuotedInEachMarketDay, false, "",
-        currentDate.AddDays(-90),currentDate,
-        this.numberOfEligibleTickers);
-      quotedInEachMarketDayFromMostLiquid.MarketIndex = "^MIBTEL";
+      SelectorByQuotationAtEachMarketDay quotedInEachMarketDayFromMostLiquid = 
+        new SelectorByQuotationAtEachMarketDay(this.eligibleTickers,
+                                  false, currentDate.AddDays(-90),currentDate,
+                                  this.numberOfEligibleTickers, "^MIBTEL");
       return quotedInEachMarketDayFromMostLiquid.GetTableOfSelectedTickers();
     }
     

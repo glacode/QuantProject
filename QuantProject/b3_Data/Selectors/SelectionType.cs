@@ -25,7 +25,8 @@ using System;
 namespace QuantProject.Data.Selectors
 {
   /// <summary>
-  /// Enum for TickerSelector class
+  /// Enum used when selection takes place using visual interfaces
+  /// Eeach item stands for a specific object implementing ITickerSelector
   /// </summary>
   public enum SelectionType
   {
@@ -37,6 +38,6 @@ namespace QuantProject.Data.Selectors
     CloseToOpenVolatility,
     CloseToOpenLinearCorrelation,
     CloseToCloseLinearCorrelation,
-    QuotedInEachMarketDay
+    QuotedAtEachMarketDay
   }
 }

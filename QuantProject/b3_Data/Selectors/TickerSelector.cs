@@ -30,21 +30,16 @@ using QuantProject.Data.DataTables;
 namespace QuantProject.Data.Selectors
 {
   /// <summary>
-  /// Class for advanced selections on tickers
+  /// Base class for advanced selections on tickers
   /// </summary>
-  /// <remarks>
-  /// Selection depends on the parameters used in the construction of a new TickerSelector object
-  /// </remarks>
-  public class TickerSelector : ITickerSelector
+  public class TickerSelector 
   {
-    private DataTable setOfTickersToBeSelected = null;
-    private SelectionType typeOfSelection;
-    private string groupID = "";
-    private string marketIndex = "";
-    private DateTime firstQuoteDate = QuantProject.ADT.ConstantsProvider.InitialDateTimeForDownload;
-    private DateTime lastQuoteDate = DateTime.Now;
-    private long maxNumOfReturnedTickers = 0;
-    private bool isOrderedInASCMode; 
+    protected DataTable setOfTickersToBeSelected = null;
+    protected string groupID = "";
+    protected DateTime firstQuoteDate = QuantProject.ADT.ConstantsProvider.InitialDateTimeForDownload;
+    protected DateTime lastQuoteDate = DateTime.Now;
+    protected long maxNumOfReturnedTickers = 0;
+    protected bool isOrderedInASCMode; 
     
     #region properties
     /// <summary>
@@ -76,14 +71,7 @@ namespace QuantProject.Data.Selectors
     {
       get{return this.maxNumOfReturnedTickers;}
     }
-    /// <summary>
-    /// It gets the type of selection provided by the Ticker Selector
-    /// </summary>
-    public SelectionType TypeOfSelection
-    {
-      get{return this.typeOfSelection;}
-    }
-
+    
     /// <summary>
     /// It gets / sets the order type for the ticker selector
     /// </summary>
@@ -92,234 +80,42 @@ namespace QuantProject.Data.Selectors
       get{return this.isOrderedInASCMode;}
       set{this.isOrderedInASCMode = value;}
     }
-    
-    /// <summary>
-    /// It gets / sets the market index for the current ticker selector
-    /// </summary>
-    public string MarketIndex
-    {
-      get{return this.marketIndex;}
-      set{this.marketIndex = value;}
-    }
 
+    
     #endregion
 
-    public TickerSelector(DataTable setOfTickersToBeSelected, SelectionType typeOfSelection,
+    public TickerSelector(DataTable setOfTickersToBeSelected,
                           bool orderInASCmode,
-                          string groupID,
                           DateTime firstQuoteDate,
                           DateTime lastQuoteDate,
                           long maxNumOfReturnedTickers)
     {
       this.setOfTickersToBeSelected = setOfTickersToBeSelected;
-      this.commonInitialization(typeOfSelection, orderInASCmode, groupID, firstQuoteDate,lastQuoteDate,maxNumOfReturnedTickers);
+      this.commonInitialization(orderInASCmode, firstQuoteDate, 
+                                lastQuoteDate, maxNumOfReturnedTickers);
     }
     
-    public TickerSelector(SelectionType typeOfSelection,
+    public TickerSelector(string groupID,
                           bool orderInASCmode,
-                          string groupID,
                           DateTime firstQuoteDate,
                           DateTime lastQuoteDate,
                           long maxNumOfReturnedTickers)
     {
-      this.commonInitialization(typeOfSelection, orderInASCmode, groupID, firstQuoteDate,lastQuoteDate,maxNumOfReturnedTickers);
+      this.groupID = groupID;
+      this.commonInitialization(orderInASCmode, firstQuoteDate, 
+                                lastQuoteDate, maxNumOfReturnedTickers);
     }
     
-    private void commonInitialization(SelectionType typeOfSelection,
-                                      bool orderInASCmode,
-                                      string groupID,
+    private void commonInitialization(bool orderInASCmode,
                                       DateTime firstQuoteDate,
                                       DateTime lastQuoteDate,
                                       long maxNumOfReturnedTickers)
     {
-      this.typeOfSelection = typeOfSelection;
       this.isOrderedInASCMode = orderInASCmode;
-      this.groupID = groupID;
       this.firstQuoteDate = firstQuoteDate;
       this.lastQuoteDate = lastQuoteDate;
       this.maxNumOfReturnedTickers = maxNumOfReturnedTickers;
     }    
-  
-
-    //implementation of ITickerSelector
-    public DataTable GetTableOfSelectedTickers()
-    {
-        switch (this.typeOfSelection)
-        {
-          case SelectionType.Liquidity:
-            return this.getTickersByLiquidity();
-          case SelectionType.Performance:
-            return this.getTickersByPerformance();
-          case SelectionType.CloseToCloseVolatility:
-            return this.getTickersByCloseToCloseVolatility();
-          case SelectionType.CloseToOpenVolatility:
-            return this.getTickersByCloseToOpenVolatility();
-          case SelectionType.AverageCloseToClosePerformance:
-            return this.getTickersByAverageCloseToClosePerformance();
-          case SelectionType.AverageCloseToOpenPerformance:
-            return this.getTickersByAverageCloseToOpenPerformance();
-          case SelectionType.CloseToCloseLinearCorrelation:
-            return this.getTickersByCloseToCloseLinearCorrelation();
-          case SelectionType.CloseToOpenLinearCorrelation:
-            return this.getTickersByCloseToOpenLinearCorrelation();
-          case SelectionType.QuotedInEachMarketDay:
-            return this.getTickersQuotedInEachMarketDay();
-            //this line should never be reached!
-          default:
-            return new DataTable();
-        }
-      
-    }
-    
-    private DataTable getTickersByLiquidity()
-    {
-      if(this.setOfTickersToBeSelected == null)
-        return QuantProject.DataAccess.Tables.Quotes.GetTickersByLiquidity(this.isOrderedInASCMode,
-                                                                        this.groupID,
-                                                                        this.firstQuoteDate,
-                                                                        this.lastQuoteDate,
-                                                                        this.maxNumOfReturnedTickers);        
-
-      else
-        return QuantProject.Data.DataTables.Quotes.GetTickersByLiquidity(this.isOrderedInASCMode,
-                                                                        this.setOfTickersToBeSelected, 
-                                                                        this.firstQuoteDate,
-                                                                        this.lastQuoteDate,
-                                                                        this.maxNumOfReturnedTickers);
-    }
-    
-    private DataTable getTickersByPerformance()
-    {
-      if(this.setOfTickersToBeSelected == null)
-         return TickerDataTable.GetTickersByPerformance(this.isOrderedInASCMode,
-                                                        this.groupID, 
-                                                        this.firstQuoteDate,
-                                                        this.lastQuoteDate,
-                                                        this.maxNumOfReturnedTickers);
-      else
-        return TickerDataTable.GetTickersByPerformance(this.isOrderedInASCMode,
-                                                        this.setOfTickersToBeSelected,
-                                                        this.firstQuoteDate,
-                                                        this.lastQuoteDate,
-                                                        this.maxNumOfReturnedTickers);
-      
-    }
-
-    private DataTable getTickersByAverageCloseToClosePerformance()
-    {
-      if(this.setOfTickersToBeSelected == null)
-        return QuantProject.DataAccess.Tables.Quotes.GetTickersByAverageCloseToClosePerformance(this.isOrderedInASCMode,
-                                                          this.groupID, this.firstQuoteDate,
-                                                          this.lastQuoteDate,
-                                                          this.maxNumOfReturnedTickers);
-      else
-        return QuantProject.Data.DataTables.Quotes.GetTickersByAverageCloseToClosePerformance(this.isOrderedInASCMode,
-                                                          this.setOfTickersToBeSelected,
-                                                          this.firstQuoteDate,
-                                                          this.lastQuoteDate,
-                                                          this.maxNumOfReturnedTickers);
-      
-    }
-
-    private DataTable getTickersByAverageCloseToOpenPerformance()
-    {
-      if(this.setOfTickersToBeSelected == null)
-        return QuantProject.DataAccess.Tables.Quotes.GetTickersByAverageCloseToOpenPerformance(this.isOrderedInASCMode,
-          this.groupID, this.firstQuoteDate,
-          this.lastQuoteDate,
-          this.maxNumOfReturnedTickers);
-      else
-        return QuantProject.Data.DataTables.Quotes.GetTickersByAverageCloseToOpenPerformance(this.isOrderedInASCMode,
-          this.setOfTickersToBeSelected,
-          this.firstQuoteDate,
-          this.lastQuoteDate,
-          this.maxNumOfReturnedTickers);
-      
-    }
-
-    private DataTable getTickersByCloseToCloseVolatility()
-    {
-      if(this.setOfTickersToBeSelected == null)
-        return QuantProject.DataAccess.Tables.Quotes.GetTickersByCloseToCloseVolatility(this.isOrderedInASCMode,
-                                                                    this.groupID,
-                                                                    this.firstQuoteDate,
-                                                                    this.lastQuoteDate,
-                                                                    this.maxNumOfReturnedTickers);        
-
-      else
-        return QuantProject.Data.DataTables.Quotes.GetTickersByCloseToCloseVolatility(this.isOrderedInASCMode,
-          this.setOfTickersToBeSelected, 
-          this.firstQuoteDate,
-          this.lastQuoteDate,
-          this.maxNumOfReturnedTickers);
-    }
-
-    private DataTable getTickersByCloseToOpenVolatility()
-    {
-      if(this.setOfTickersToBeSelected == null)
-        return QuantProject.DataAccess.Tables.Quotes.GetTickersByCloseToOpenVolatility(this.isOrderedInASCMode,
-          this.groupID,
-          this.firstQuoteDate,
-          this.lastQuoteDate,
-          this.maxNumOfReturnedTickers);        
-
-      else
-        return QuantProject.Data.DataTables.Quotes.GetTickersByCloseToOpenVolatility(this.isOrderedInASCMode,
-          this.setOfTickersToBeSelected, 
-          this.firstQuoteDate,
-          this.lastQuoteDate,
-          this.maxNumOfReturnedTickers);
-    }
-
-    private DataTable getTickersByCloseToCloseLinearCorrelation()
-    {
-      this.launchExceptionIfGroupIDIsNotEmpty();
-      return QuantProject.Data.DataTables.Quotes.GetTickersByAdjCloseToClosePearsonCorrelationCoefficient(this.isOrderedInASCMode,
-                                                          this.setOfTickersToBeSelected,
-                                                          this.firstQuoteDate,
-                                                          this.lastQuoteDate);
-    }
-
-    private DataTable getTickersByCloseToOpenLinearCorrelation()
-    {
-      
-      this.launchExceptionIfGroupIDIsNotEmpty();
-      
-      return QuantProject.Data.DataTables.Quotes.GetTickersByCloseToOpenPearsonCorrelationCoefficient(this.isOrderedInASCMode,
-        this.setOfTickersToBeSelected,
-        this.firstQuoteDate,
-        this.lastQuoteDate);
-    }
-
-    private DataTable getTickersQuotedInEachMarketDay()
-    {
-      if(this.marketIndex == "")
-         throw new Exception("You first need to set TickerSelection's property <<MarketIndex>>!");
-           
-      if(this.setOfTickersToBeSelected == null)
-        return QuantProject.Data.DataTables.TickerDataTable.GetTickersQuotedInEachMarketDay(
-          this.marketIndex, this.groupID, this.firstQuoteDate, this.lastQuoteDate,
-          this.maxNumOfReturnedTickers);        
-
-      else
-        return QuantProject.Data.DataTables.TickerDataTable.GetTickersQuotedInEachMarketDay(
-          this.marketIndex, this.setOfTickersToBeSelected, this.firstQuoteDate, this.lastQuoteDate,
-          this.maxNumOfReturnedTickers);
-    }
-
-    private void launchExceptionIfGroupIDIsNotEmpty()
-    {
-      if(this.groupID!="")
-      {
-        throw new Exception("Not implemented: this type of selection works only with few tickers, at the moment");
-      }
-    }
-
-    public void SelectAllTickers()
-    {
-      ;
-    }
-    // end of implementation of ITickerSelector
     
     /// <summary>
 	  /// It returns a dataTable containing tickers selected by the user

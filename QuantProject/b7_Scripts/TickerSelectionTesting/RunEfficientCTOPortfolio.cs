@@ -35,6 +35,7 @@ using QuantProject.Business.Scripting;
 using QuantProject.Business.Strategies;
 using QuantProject.Business.Testing;
 using QuantProject.Business.Timing;
+using QuantProject.Business.Financial.Accounting.Commissions;
 using QuantProject.Data.DataProviders;
 using QuantProject.Data.Selectors; 
 using QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios;
@@ -97,9 +98,9 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
       this.populationSizeForGeneticOptimizer = populationSizeForGeneticOptimizer;
       this.reportTable = new ReportTable( "Summary_Reports" );
       this.startDateTime = new EndOfDayDateTime(
-        new DateTime( 2004 , 1 , 1 ) , EndOfDaySpecificTime.FiveMinutesBeforeMarketClose );
+        new DateTime( 2004 , 9 , 1 ) , EndOfDaySpecificTime.FiveMinutesBeforeMarketClose );
       this.endDateTime = new EndOfDayDateTime(
-        new DateTime( 2004 , 1 , 10 ) , EndOfDaySpecificTime.OneHourAfterMarketClose );
+        new DateTime( 2004 , 9 , 10 ) , EndOfDaySpecificTime.OneHourAfterMarketClose );
       //this.numIntervalDays = 3;
 		}
     #region Run
@@ -108,7 +109,8 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
     private void run_FindBestPortfolioForNextTrade()
     {
       //"STOCKMI"
-      TickerSelector mostLiquid = new TickerSelector(SelectionType.Liquidity,
+      /*
+       * SelectorByLiquidity mostLiquid = new TickerSelector(SelectionType.Liquidity,
                                                     false, "STOCKMI", firstDate, lastDate, 70);
       DataTable tickers = mostLiquid.GetTableOfSelectedTickers();
  	    IGenomeManager genManEfficientCTOPortfolio = 
@@ -122,6 +124,8 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
       //it has to be changed the decode implementation for this IGenomeManager
       System.Console.WriteLine("\n\nThe best solution found is: " + (string)GO.BestGenome.Meaning +
         " with {0} generations", GO.GenerationCounter);
+        */
+      ;
 		}
 
     private void run_initializeEndOfDayTimer()
@@ -135,7 +139,7 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
         new HistoricalEndOfDayDataStreamer( this.endOfDayTimer ,
 					this.historicalQuoteProvider ) ,
         new HistoricalEndOfDayOrderExecutor( this.endOfDayTimer ,
-					this.historicalQuoteProvider ) );
+					this.historicalQuoteProvider ));
      
     }
     private void run_initializeEndOfDayTimerHandler()

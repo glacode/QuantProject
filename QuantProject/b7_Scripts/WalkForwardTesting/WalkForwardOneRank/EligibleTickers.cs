@@ -46,18 +46,15 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardOneRank
 		#region SetTickers
 		private void setTickers_build( DateTime dateTime )
 		{
-			TickerSelector mostLiquid =
-				new TickerSelector( SelectionType.Liquidity , false , "Test" ,
-				dateTime.AddDays( - this.numDaysToComputeLiquidity ) , dateTime ,
-				this.numberEligibleTickersToBeChosen );
+			SelectorByLiquidity mostLiquid =
+				new SelectorByLiquidity("Test", false ,	dateTime.AddDays( - this.numDaysToComputeLiquidity ) , dateTime ,
+				                        this.numberEligibleTickersToBeChosen );
 			DataTable mostLiquidTickers =
 				mostLiquid.GetTableOfSelectedTickers();
-			TickerSelector quotedInEachMarketDayFromMostLiquid = 
-				new TickerSelector( mostLiquidTickers,
-				SelectionType.QuotedInEachMarketDay, false, "",
-				dateTime.AddDays( - this.numberDaysForPerformanceCalculation ) ,
-				dateTime, this.numberEligibleTickersToBeChosen);
-			quotedInEachMarketDayFromMostLiquid.MarketIndex = "^SPX";
+			SelectorByQuotationAtEachMarketDay quotedInEachMarketDayFromMostLiquid = 
+				new SelectorByQuotationAtEachMarketDay( mostLiquidTickers,
+				                           false,	dateTime.AddDays( - this.numberDaysForPerformanceCalculation ) ,
+				                           dateTime, this.numberEligibleTickersToBeChosen,"^SPX");
 			DataTable selectedTickers =
 				quotedInEachMarketDayFromMostLiquid.GetTableOfSelectedTickers();
 			foreach ( DataRow dataRow in selectedTickers.Rows )

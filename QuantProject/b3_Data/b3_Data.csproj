@@ -232,6 +232,51 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "Selectors\SelectorByAbsolutePerformance.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Selectors\SelectorByAverageCloseToClosePerformance.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Selectors\SelectorByAverageOpenToClosePerformance.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Selectors\SelectorByCloseToCloseLinearCorrelation.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Selectors\SelectorByCloseToCloseVolatility.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Selectors\SelectorByLiquidity.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Selectors\SelectorByOpenToCloseLinearCorrelation.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Selectors\SelectorByOpenToCloseVolatility.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Selectors\SelectorByQuotationAtEachMarketDay.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "Selectors\TickerSelector.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
