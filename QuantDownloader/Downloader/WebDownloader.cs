@@ -294,9 +294,9 @@ namespace QuantProject.Applications.Downloader
       // 
       // radioButtonAllAvailableUntilNowSinceStartingDate
       // 
-      this.radioButtonAllAvailableUntilNowSinceStartingDate.Location = new System.Drawing.Point(8, 56);
+      this.radioButtonAllAvailableUntilNowSinceStartingDate.Location = new System.Drawing.Point(8, 48);
       this.radioButtonAllAvailableUntilNowSinceStartingDate.Name = "radioButtonAllAvailableUntilNowSinceStartingDate";
-      this.radioButtonAllAvailableUntilNowSinceStartingDate.Size = new System.Drawing.Size(272, 24);
+      this.radioButtonAllAvailableUntilNowSinceStartingDate.Size = new System.Drawing.Size(272, 32);
       this.radioButtonAllAvailableUntilNowSinceStartingDate.TabIndex = 12;
       this.radioButtonAllAvailableUntilNowSinceStartingDate.Text = "All available quotes until now, changing starting date";
       // 
@@ -348,19 +348,21 @@ namespace QuantProject.Applications.Downloader
       // 
       // radioButtonDownloadBeforeMinAndAfterMax
       // 
+      this.radioButtonDownloadBeforeMinAndAfterMax.Enabled = false;
       this.radioButtonDownloadBeforeMinAndAfterMax.Location = new System.Drawing.Point(16, 56);
       this.radioButtonDownloadBeforeMinAndAfterMax.Name = "radioButtonDownloadBeforeMinAndAfterMax";
       this.radioButtonDownloadBeforeMinAndAfterMax.Size = new System.Drawing.Size(256, 32);
       this.radioButtonDownloadBeforeMinAndAfterMax.TabIndex = 2;
-      this.radioButtonDownloadBeforeMinAndAfterMax.Text = "Download only quotes before first quote and after last quote";
+      this.radioButtonDownloadBeforeMinAndAfterMax.Text = "Download only quotes before first quote and after last quote (TO BE TESTED)";
       // 
       // radioButtonOverWriteNo
       // 
+      this.radioButtonOverWriteNo.Enabled = false;
       this.radioButtonOverWriteNo.Location = new System.Drawing.Point(16, 96);
       this.radioButtonOverWriteNo.Name = "radioButtonOverWriteNo";
       this.radioButtonOverWriteNo.Size = new System.Drawing.Size(256, 32);
       this.radioButtonOverWriteNo.TabIndex = 1;
-      this.radioButtonOverWriteNo.Text = "Download all quotes, adding to database only the missing ones";
+      this.radioButtonOverWriteNo.Text = "Download all quotes, adding to database only the missing ones (TO BE TESTED)";
       // 
       // radioButtonOverWriteYes
       // 
@@ -563,7 +565,6 @@ namespace QuantProject.Applications.Downloader
 
     private void downloadQuotes_withTickerDataSet( DataSet ds )
     {
-      Cursor.Current = Cursors.WaitCursor;
       downloadQuotes_withTickerDataSet_create_dsTickerCurrentlyDownloaded( ds.Tables[0] );
       foreach (DataRow myRow in ds.Tables[0].Rows) 
       {
@@ -580,7 +581,6 @@ namespace QuantProject.Applications.Downloader
         {
           qd.DownloadTicker();
         }
-      Cursor.Current = Cursors.Default;
       
         //newThread.Join();
         //qd.downloadTicker();
