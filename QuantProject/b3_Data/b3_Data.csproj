@@ -157,11 +157,6 @@
                     BuildAction = "Compile"
                 />
                 <File
-                    RelPath = "DataProviders\HistoricalDataStreamer.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
                     RelPath = "DataProviders\IDataStreamer.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
