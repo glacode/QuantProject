@@ -497,8 +497,9 @@ namespace QuantProject.DataAccess.Tables
 			string sql =
 				"select * from quotes " +
 				"where " + Quotes.TickerFieldName + "='" + ticker + "' " +
-        "and " + Quotes.Date + ">=" + SQLBuilder.GetDateConstant( startDate ) +
-        "and " + Quotes.Date + "<=" + SQLBuilder.GetDateConstant( endDate );
+        "and " + Quotes.Date + ">=" + SQLBuilder.GetDateConstant( startDate ) + " " +
+        "and " + Quotes.Date + "<=" + SQLBuilder.GetDateConstant( endDate ) + " " +
+				"order by " + Quotes.Date;
 			SqlExecutor.SetDataTable( sql , dataTable );
 		}
 
