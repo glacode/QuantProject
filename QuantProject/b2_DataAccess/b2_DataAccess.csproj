@@ -137,6 +137,11 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "Tables\TickerGroups.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "Tables\Tickers.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
