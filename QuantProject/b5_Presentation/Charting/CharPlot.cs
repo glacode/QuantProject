@@ -59,20 +59,29 @@ namespace QuantProject.Presentation.Charting
       set { this.history = value; }
     }
 
-    public ChartPlot( History history )
-    {
-      this.history = history;
-      this.color = Color.Red;
-      this.startDateTime = (DateTime)this.history.GetKey( 0 );
-      this.endDateTime = (DateTime)this.history.GetKey( this.history.Count - 1 );
-    }
 
-    public ChartPlot( History history , Color color , DateTime startDateTime , DateTime endDateTime )
+		private void chartPlot( History history , Color color ,
+			DateTime startDateTime , DateTime endDateTime )
+		{
+			this.history = history;
+			this.color = color;
+			this.startDateTime = startDateTime;
+			this.endDateTime = endDateTime;
+		}
+		public ChartPlot( History history , Color color )
+		{
+			this.chartPlot( history , color ,
+				(DateTime)history.GetKey( 0 ) , (DateTime)history.GetKey( history.Count - 1 ) );
+		}
+
+//		public ChartPlot( History history )
+//		{
+//			ChartPlot( history , Color.Red );
+//		}
+
+		public ChartPlot( History history , Color color , DateTime startDateTime , DateTime endDateTime )
     {
-      this.history = history;
-      this.color = color;
-      this.startDateTime = startDateTime;
-      this.endDateTime = endDateTime;
+			this.chartPlot( history , color , startDateTime , endDateTime );
     }
   }
 }
