@@ -43,11 +43,6 @@ namespace QuantProject.Business.Financial.Accounting.Reporting.Tables
     }
     #region "getSummaryTable_setRows"
     private delegate void getSummaryTable_setRow( DataRow summary );
-    private void getSummaryTable_setRow_TotalNetProfit( DataRow summary )
-    {
-      summary[ "Information" ] = "Total net profit";
-      summary[ "Value" ] = this.totalPnl;
-    }
     private void getSummaryTable_setRow_ReturnOnAccount( DataRow summary )
     {
       summary[ "Information" ] = "Return on account";
@@ -159,8 +154,7 @@ namespace QuantProject.Business.Financial.Accounting.Reporting.Tables
     }
     private void getSummaryTable_setRows( DataTable summaryDataTable )
     {
-      getSummary_setRow( summaryDataTable ,
-        new getSummaryTable_setRow( getSummaryTable_setRow_TotalNetProfit ) );
+      getSummary_setRow( new TotalNetProfit( this ) , summaryDataTable );
       getSummary_setRow( summaryDataTable ,
         new getSummaryTable_setRow( getSummaryTable_setRow_ReturnOnAccount ) );
       getSummary_setRow( summaryDataTable ,
