@@ -1,6 +1,8 @@
 using System;
+using System.Collections;
 using System.Data;
 using QuantProject.ADT.Histories;
+using QuantProject.DataAccess.Tables;
 using QuantProject.Applications.Downloader.Validate;
 
 namespace QuantProject.Applications.Downloader.Validate.Validators
@@ -12,6 +14,8 @@ namespace QuantProject.Applications.Downloader.Validate.Validators
   {
     private DataTable dataTableToBeValidated;
     private double suspiciousRatio = 3;
+
+		private ArrayList rangeToRangeVisuallyValidated;
 
     public double SuspiciousRatio
     {
@@ -45,13 +49,6 @@ namespace QuantProject.Applications.Downloader.Validate.Validators
 					Convert.ToDouble( this.dataTableToBeValidated.Rows[ localCurrentRowIndex ][ "quLow" ] ) ) *
 					Convert.ToDouble( this.dataTableToBeValidated.Rows[ localCurrentRowIndex ][ "quAdjustedClose" ] ) /
 					Convert.ToDouble( this.dataTableToBeValidated.Rows[ localCurrentRowIndex ][ "quClose" ] );
-//				double previousRange =
-//					( Convert.ToDouble( this.dataTableToBeValidated.Rows[ localCurrentRowIndex - 1 ][ "quHigh" ] ) -
-//					Convert.ToDouble( this.dataTableToBeValidated.Rows[ localCurrentRowIndex - 1 ][ "quLow" ] ) ) *
-//					Convert.ToDouble( this.dataTableToBeValidated.Rows[ localCurrentRowIndex - 1 ][ "quAdjustedClose" ] ) /
-//					Convert.ToDouble( this.dataTableToBeValidated.Rows[ localCurrentRowIndex - 1 ][ "quClose" ] );
-//        rangeToRange.Add( this.dataTableToBeValidated.Rows[ localCurrentRowIndex ][ "quDate" ] ,
-//          currentRange - previousRange );
 				rangeToRange.Add( this.dataTableToBeValidated.Rows[ localCurrentRowIndex ][ "quDate" ] , currentRange );
         localCurrentRowIndex++;
       }
@@ -60,9 +57,11 @@ namespace QuantProject.Applications.Downloader.Validate.Validators
     private void validate_currentTicker_withHistories_validateRow(
       DataRow quoteRow , double currentValue , double averageValue )
     {
-      if ( Math.Abs( currentValue / averageValue ) > this.suspiciousRatio )
+      if ( ( Math.Abs( currentValue / averageValue ) > this.suspiciousRatio ) &&
+				( this.rangeToRangeVisuallyValidated.IndexOf( quoteRow[ "quDate" ] ) < 0 ) )
         // the current close to close value is suspiciously larger
         // than the average close to close ratio
+				// and it has not been visually validated yet
         this.SuspiciousDataRow( this , new SuspiciousDataRowEventArgs(
           quoteRow , ValidationWarning.SuspiciousRangeToRangeRatio ) );
     }
@@ -75,10 +74,6 @@ namespace QuantProject.Applications.Downloader.Validate.Validators
         if ( rangeToRangeMovingAverage.GetByIndex( i - currentTickerStartingRowIndex ) != null )
           try
           {
-//            validate_currentTicker_withHistories_validateRow(
-//              this.dataTableToBeValidated.Rows[ i ] ,
-//              (double)rangeToRange.GetByIndex( i - currentTickerStartingRowIndex ) ,
-//              (double)rangeToRangeMovingAverage.GetByIndex( i - currentTickerStartingRowIndex ) );
             validate_currentTicker_withHistories_validateRow(
               this.dataTableToBeValidated.Rows[ i ] ,
               Convert.ToDouble(rangeToRange.GetByIndex( i - currentTickerStartingRowIndex )) ,
@@ -91,6 +86,7 @@ namespace QuantProject.Applications.Downloader.Validate.Validators
     }
     private int validate_currentTicker( string currentTicker , int currentTickerStartingRowIndex )
     {
+			this.rangeToRangeVisuallyValidated = VisuallyValidatedQuotes.GetRangeToRangeValidated( currentTicker );
       History rangeToRange = new History();
       History rangeToRangeMovingAverage;
       int nextTickerStartingRowIndex =
