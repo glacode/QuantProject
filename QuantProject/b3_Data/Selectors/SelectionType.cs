@@ -29,9 +29,9 @@ namespace QuantProject.Data.Selectors
   /// </summary>
   public enum SelectionType
   {
-    MostLiquid/*,
+    MostLiquid,
+    BestPerformer/*
     LessVolatile,
-    BestPerformer,
     LessStatisticallyCorrelated*/
   }
 }
