@@ -1,0 +1,34 @@
+<Combine fileversion="1.0" name="QuantProject" description="">
+  <StartMode startupentry="b91_QuantProject" single="True">
+    <Execute entry="b1_ADT" type="None" />
+    <Execute entry="b4_Business" type="None" />
+    <Execute entry="b5_Presentation" type="None" />
+    <Execute entry="b91_QuantProject" type="None" />
+    <Execute entry="b7_Scripts" type="None" />
+  </StartMode>
+  <Entries>
+    <Entry filename=".\b1_ADT\ADT.prjx" />
+    <Entry filename=".\b2_DataAccess\DataAccess.prjx" />
+    <Entry filename=".\b3_Data\Data.prjx" />
+    <Entry filename=".\b4_Business\Business.prjx" />
+    <Entry filename=".\b5_Presentation\Presentation.prjx" />
+    <Entry filename=".\b91_QuantProject\QuantProject.prjx" />
+    <Entry filename=".\b7_Scripts\Scripts.prjx" />
+  </Entries>
+  <Configurations active="Debug">
+    <Configuration name="Release">
+      <Entry name="b1_ADT" configurationname="Debug" build="False" />
+      <Entry name="b4_Business" configurationname="Debug" build="False" />
+      <Entry name="b5_Presentation" configurationname="Debug" build="False" />
+      <Entry name="b91_QuantProject" configurationname="Debug" build="False" />
+      <Entry name="b7_Scripts" configurationname="Debug" build="False" />
+    </Configuration>
+    <Configuration name="Debug">
+      <Entry name="b1_ADT" configurationname="Debug" build="False" />
+      <Entry name="b4_Business" configurationname="Debug" build="False" />
+      <Entry name="b5_Presentation" configurationname="Debug" build="False" />
+      <Entry name="b91_QuantProject" configurationname="Debug" build="False" />
+      <Entry name="b7_Scripts" configurationname="Debug" build="False" />
+    </Configuration>
+  </Configurations>
+</Combine>

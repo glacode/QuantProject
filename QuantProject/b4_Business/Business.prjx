@@ -1,0 +1,113 @@
+<Project name="b4_Business" standardNamespace="Business" description="" newfilesearch="None" enableviewstate="True" version="1.1" projecttype="C#">
+  <Contents>
+    <File name=".\AssemblyInfo.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
+    <File name=".\a0_Validation\IValidator.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
+    <File name=".\a0_Validation\SospiciousDataRowEventArgs.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
+    <File name=".\a0_Validation\ValidateDataTable.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
+    <File name=".\a0_Validation\ValidationWarnings.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
+    <File name=".\a0_Validation\Validator.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
+    <File name=".\a0_Validation\Validators\CloseToCloseValidator.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
+    <File name=".\a0_Validation\Validators\MultiValidator.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
+    <File name=".\a0_Validation\Validators\OHLCvalidator.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
+    <File name=".\a0_Validation\Validators\RangeToRangeValidator.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
+    <File name=".\a05_Timing\EndOfDayDateTime.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
+    <File name=".\a05_Timing\EndOfDaySpecificTime.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
+    <File name=".\a05_Timing\EndOfDayTimingEventArgs.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
+    <File name=".\a05_Timing\HistoricalEndOfDayTimer.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
+    <File name=".\a05_Timing\IEndOfDayTimer.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
+    <File name=".\a05_Timing\IndexBasedEndOfDayTimer.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
+    <File name=".\a07_DataProviders\HistoricalAdjustedQuoteProvider.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
+    <File name=".\a07_DataProviders\HistoricalEndOfDayDataStreamer.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
+    <File name=".\a07_DataProviders\HistoricalRawQuoteProvider.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
+    <File name=".\a07_DataProviders\IHistoricalQuoteProvider.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
+    <File name=".\a1_Financial\a1_Instruments\Instrument.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
+    <File name=".\a1_Financial\a1_Instruments\Instruments.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
+    <File name=".\a1_Financial\a1_Instruments\QuoteCache.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
+    <File name=".\a1_Financial\a2_Accounting\Account.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
+    <File name=".\a1_Financial\a2_Accounting\AccountReportRecord.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
+    <File name=".\a1_Financial\a2_Accounting\Accounts.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
+    <File name=".\a1_Financial\a2_Accounting\Portfolio.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
+    <File name=".\a1_Financial\a2_Accounting\Position.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
+    <File name=".\a1_Financial\a2_Accounting\TimedTransaction.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
+    <File name=".\a1_Financial\a2_Accounting\Transaction.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
+    <File name=".\a1_Financial\a2_Accounting\TransactionType.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
+    <File name=".\a1_Financial\a2_Accounting\Commissions\Commission.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
+    <File name=".\a1_Financial\a2_Accounting\Commissions\IBCommission.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
+    <File name=".\a1_Financial\a2_Accounting\Commissions\IBCommissionManager.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
+    <File name=".\a1_Financial\a2_Accounting\Commissions\ICommissionManager.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
+    <File name=".\a1_Financial\a2_Accounting\Commissions\ZeroCommission.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
+    <File name=".\a1_Financial\a2_Accounting\Commissions\ZeroCommissionManager.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
+    <File name=".\a1_Financial\a2_Accounting\h5_Reporting\AccountReport.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
+    <File name=".\a1_Financial\a2_Accounting\h5_Reporting\ReportTable.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
+    <File name=".\a1_Financial\a2_Accounting\h5_Reporting\SummaryRows\AnnualSystemPercentageReturn.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
+    <File name=".\a1_Financial\a2_Accounting\h5_Reporting\SummaryRows\AverageLongTradePercentageReturn.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
+    <File name=".\a1_Financial\a2_Accounting\h5_Reporting\SummaryRows\AverageShortTradePercentageReturn.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
+    <File name=".\a1_Financial\a2_Accounting\h5_Reporting\SummaryRows\AverageTradePercentageReturn.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
+    <File name=".\a1_Financial\a2_Accounting\h5_Reporting\SummaryRows\BuyAndHoldPercentageReturn.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
+    <File name=".\a1_Financial\a2_Accounting\h5_Reporting\SummaryRows\LargestLosingTradePercentage.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
+    <File name=".\a1_Financial\a2_Accounting\h5_Reporting\SummaryRows\LargestWinningTradePercentage.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
+    <File name=".\a1_Financial\a2_Accounting\h5_Reporting\SummaryRows\MaxEquityDrawDown.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
+    <File name=".\a1_Financial\a2_Accounting\h5_Reporting\SummaryRows\NumberWinningLongTrades.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
+    <File name=".\a1_Financial\a2_Accounting\h5_Reporting\SummaryRows\NumberWinningShortTrades.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
+    <File name=".\a1_Financial\a2_Accounting\h5_Reporting\SummaryRows\NumberWinningTrades.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
+    <File name=".\a1_Financial\a2_Accounting\h5_Reporting\SummaryRows\ReturnOnAccount.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
+    <File name=".\a1_Financial\a2_Accounting\h5_Reporting\SummaryRows\SummaryRow.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
+    <File name=".\a1_Financial\a2_Accounting\h5_Reporting\SummaryRows\TotalCommissionAmount.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
+    <File name=".\a1_Financial\a2_Accounting\h5_Reporting\SummaryRows\TotalNetProfit.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
+    <File name=".\a1_Financial\a2_Accounting\h5_Reporting\SummaryRows\TotalNumberOfLongTrades.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
+    <File name=".\a1_Financial\a2_Accounting\h5_Reporting\SummaryRows\TotalNumberOfShortTrades.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
+    <File name=".\a1_Financial\a2_Accounting\h5_Reporting\SummaryRows\TotalNumberOfTrades.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
+    <File name=".\a1_Financial\a2_Accounting\h5_Reporting\Tables\Equity.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
+    <File name=".\a1_Financial\a2_Accounting\h5_Reporting\Tables\RoundTrades.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
+    <File name=".\a1_Financial\a2_Accounting\h5_Reporting\Tables\Summary.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
+    <File name=".\a1_Financial\a2_Accounting\h5_Reporting\Tables\Transactions.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
+    <File name=".\a1_Financial\a2_Accounting\Transactions\EndOfDayTransaction.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
+    <File name=".\a1_Financial\a2_Accounting\Transactions\TransactionHistory.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
+    <File name=".\a1_Financial\a3_Ordering\HistoricalEndOfDayOrderExecutor.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
+    <File name=".\a1_Financial\a3_Ordering\IOrderExecutor.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
+    <File name=".\a1_Financial\a3_Ordering\Order.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
+    <File name=".\a1_Financial\a3_Ordering\OrderFilledEventArgs.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
+    <File name=".\a1_Financial\a3_Ordering\OrderManager.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
+    <File name=".\a1_Financial\a3_Ordering\Orders.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
+    <File name=".\a1_Financial\a3_Ordering\OrderStatus.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
+    <File name=".\a1_Financial\a3_Ordering\OrderType.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
+    <File name=".\a2_Strategies\AccountStrategy.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
+    <File name=".\a2_Strategies\Signal.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
+    <File name=".\a2_Strategies\Signals.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
+    <File name=".\a2_Strategies\TradingSystem.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
+    <File name=".\a2_Strategies\TradingSystems.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
+    <File name=".\a3_Testing\BackTester.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
+    <File name=".\a3_Testing\Tester.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
+    <File name=".\a3_Testing\TestResults.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
+    <File name=".\a3_Testing\TestWindow.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
+    <File name=".\a3_Testing\TestWindows.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
+    <File name=".\a3_Testing\WalkForwardTester.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
+    <File name=".\a4_Scripting\Script.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
+  </Contents>
+  <References>
+    <Reference type="Project" refto="b1_ADT" localcopy="True" />
+    <Reference type="Project" refto="b2_DataAccess" localcopy="True" />
+    <Reference type="Project" refto="b3_Data" localcopy="True" />
+    <Reference type="Assembly" refto="..\..\Interop.VBIDE.dll" localcopy="True" />
+    <Reference type="Assembly" refto="..\..\Interop.Excel.dll" localcopy="True" />
+    <Reference type="Assembly" refto="..\..\Interop.Office.dll" localcopy="True" />
+  </References>
+  <DeploymentInformation target="" script="" strategy="File" />
+  <Configuration runwithwarnings="True" name="Debug">
+    <CodeGeneration runtime="MsNet" compiler="Csc" compilerversion="" warninglevel="4" nowarn="" includedebuginformation="True" optimize="False" unsafecodeallowed="False" generateoverflowchecks="True" mainclass="" target="Library" definesymbols="" generatexmldocumentation="False" win32Icon="" noconfig="False" nostdlib="False" />
+    <Execution commandlineparameters="" consolepause="True" />
+    <Output directory="..\bin\Debug" assembly="QuantProject.Business" executeScript="" executeBeforeBuild="" executeAfterBuild="" executeBeforeBuildArguments="" executeAfterBuildArguments="" />
+  </Configuration>
+  <Configurations active="Debug">
+    <Configuration runwithwarnings="True" name="Debug">
+      <CodeGeneration runtime="MsNet" compiler="Csc" compilerversion="" warninglevel="4" nowarn="" includedebuginformation="True" optimize="False" unsafecodeallowed="False" generateoverflowchecks="True" mainclass="" target="Library" definesymbols="" generatexmldocumentation="False" win32Icon="" noconfig="False" nostdlib="False" />
+      <Execution commandlineparameters="" consolepause="True" />
+      <Output directory="..\bin\Debug" assembly="QuantProject.Business" executeScript="" executeBeforeBuild="" executeAfterBuild="" executeBeforeBuildArguments="" executeAfterBuildArguments="" />
+    </Configuration>
+    <Configuration runwithwarnings="True" name="Release">
+      <CodeGeneration runtime="MsNet" compiler="Csc" compilerversion="" warninglevel="4" nowarn="" includedebuginformation="False" optimize="True" unsafecodeallowed="False" generateoverflowchecks="False" mainclass="" target="Library" definesymbols="" generatexmldocumentation="False" win32Icon="" noconfig="False" nostdlib="False" />
+      <Execution commandlineparameters="" consolepause="True" />
+      <Output directory="..\bin\Release" assembly="QuantProject.Business" executeScript="" executeBeforeBuild="" executeAfterBuild="" executeBeforeBuildArguments="" executeAfterBuildArguments="" />
+    </Configuration>
+  </Configurations>
+</Project>

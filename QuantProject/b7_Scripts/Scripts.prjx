@@ -1,0 +1,54 @@
+<Project name="b7_Scripts" standardNamespace="Scripts" description="" newfilesearch="None" enableviewstate="True" version="1.1" projecttype="C#">
+  <Contents>
+    <File name=".\AssemblyInfo.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
+    <File name=".\MyTradingSystem.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
+    <File name=".\CallingReportsForRunScripts\ShowReportFromFile.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
+    <File name=".\MultiTesting\MultiTestOneRank\" subtype="Code" buildaction="Nothing" dependson="" data="" />
+    <File name=".\SimpleTesting\MSFTsimpleTest\TsMSFTsimpleTest.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
+    <File name=".\SimpleTesting\MSFTSimpleTest_2\TsMSFTsimpleTest_2.cs" subtype="Code" buildaction="Nothing" dependson="" data="" />
+    <File name=".\SimpleTesting\OneRank\OneRank.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
+    <File name=".\SimpleTesting\OneRank\RunOneRank.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
+    <File name=".\SimpleTesting\ShortTest\EndOfDayTimerHandler.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
+    <File name=".\SimpleTesting\ShortTest\RunShortTest.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
+    <File name=".\TickerSelectionTesting\EndOfDayTimerHandlerCTC.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
+    <File name=".\TickerSelectionTesting\EndOfDayTimerHandlerCTO.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
+    <File name=".\TickerSelectionTesting\GenomeManagerForEfficientCTCPortfolio.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
+    <File name=".\TickerSelectionTesting\GenomeManagerForEfficientCTOPortfolio.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
+    <File name=".\TickerSelectionTesting\GenomeManagerForEfficientPortfolio.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
+    <File name=".\TickerSelectionTesting\RunEfficientCTCPortfolio.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
+    <File name=".\TickerSelectionTesting\RunEfficientCTOPortfolio.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
+    <File name=".\WalkForwardTesting\MSFTwalkForward\TsMSFTwalkForward.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
+    <File name=".\WalkForwardTesting\WalkForwardOneRank\BestPerformingTickers.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
+    <File name=".\WalkForwardTesting\WalkForwardOneRank\ChosenTickers.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
+    <File name=".\WalkForwardTesting\WalkForwardOneRank\ComparableAccount.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
+    <File name=".\WalkForwardTesting\WalkForwardOneRank\EligibleTickers.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
+    <File name=".\WalkForwardTesting\WalkForwardOneRank\EndOfDayTimerHandler.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
+    <File name=".\WalkForwardTesting\WalkForwardOneRank\ProgressBarForm.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
+    <File name=".\WalkForwardTesting\WalkForwardOneRank\RunWalkForwardOneRank.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
+  </Contents>
+  <References>
+    <Reference type="Project" refto="b1_ADT" localcopy="True" />
+    <Reference type="Project" refto="b2_DataAccess" localcopy="True" />
+    <Reference type="Project" refto="b3_Data" localcopy="True" />
+    <Reference type="Project" refto="b4_Business" localcopy="True" />
+    <Reference type="Project" refto="b5_Presentation" localcopy="True" />
+  </References>
+  <DeploymentInformation target="" script="" strategy="File" />
+  <Configuration runwithwarnings="True" name="Debug">
+    <CodeGeneration runtime="MsNet" compiler="Csc" compilerversion="Standard" warninglevel="4" nowarn="" includedebuginformation="True" optimize="False" unsafecodeallowed="False" generateoverflowchecks="True" mainclass="" target="Library" definesymbols="" generatexmldocumentation="False" win32Icon="" noconfig="False" nostdlib="False" />
+    <Execution commandlineparameters="" consolepause="True" />
+    <Output directory="..\bin\Debug" assembly="Scripts" executeScript="" executeBeforeBuild="" executeAfterBuild="" executeBeforeBuildArguments="" executeAfterBuildArguments="" />
+  </Configuration>
+  <Configurations active="Debug">
+    <Configuration runwithwarnings="True" name="Debug">
+      <CodeGeneration runtime="MsNet" compiler="Csc" compilerversion="Standard" warninglevel="4" nowarn="" includedebuginformation="True" optimize="False" unsafecodeallowed="False" generateoverflowchecks="True" mainclass="" target="Library" definesymbols="" generatexmldocumentation="False" win32Icon="" noconfig="False" nostdlib="False" />
+      <Execution commandlineparameters="" consolepause="True" />
+      <Output directory="..\bin\Debug" assembly="Scripts" executeScript="" executeBeforeBuild="" executeAfterBuild="" executeBeforeBuildArguments="" executeAfterBuildArguments="" />
+    </Configuration>
+    <Configuration runwithwarnings="True" name="Release">
+      <CodeGeneration runtime="MsNet" compiler="Csc" compilerversion="Standard" warninglevel="4" nowarn="" includedebuginformation="False" optimize="True" unsafecodeallowed="False" generateoverflowchecks="False" mainclass="" target="Library" definesymbols="" generatexmldocumentation="False" win32Icon="" noconfig="False" nostdlib="False" />
+      <Execution commandlineparameters="" consolepause="True" />
+      <Output directory="..\bin\Release" assembly="Scripts" executeScript="" executeBeforeBuild="" executeAfterBuild="" executeBeforeBuildArguments="" executeAfterBuildArguments="" />
+    </Configuration>
+  </Configurations>
+</Project>
