@@ -91,7 +91,7 @@ namespace QuantProject.DataAccess
     #region "updating methods"
 	private void createDatabase()
 	{
-		//TODO code to create an empty DB if user doesn't select the QuantProject.mdb;
+		//TODO: code to create an empty DB if user doesn't select the QuantProject.mdb;
 	}
 	private void createTables()
     {
@@ -168,8 +168,14 @@ namespace QuantProject.DataAccess
 	}
 	private void alterTablesAddColumns()
 	{
-		this.executeCommand("ALTER TABLE tickers " + 
+		// add code here for adding new columns to existing tables;
+
+    this.executeCommand("ALTER TABLE tickers " + 
 			"ADD COLUMN tiCompanyName TEXT(100)");
+    this.executeCommand("ALTER TABLE validatedTickers " +
+      "ADD COLUMN vtHashValue TEXT(50)");
+    this.executeCommand("ALTER TABLE validatedTickers " +
+      "ADD COLUMN vtEditDate DATETIME");
 	}
 	private void alterTablesAddIndexes()
 	{
