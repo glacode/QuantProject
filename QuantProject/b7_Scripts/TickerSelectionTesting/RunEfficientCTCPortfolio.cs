@@ -62,7 +62,9 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
     private ReportTable reportTable;
     private EndOfDayDateTime startDateTime;
     private EndOfDayDateTime endDateTime;
+
 //    private int numIntervalDays;// number of days for the equity line graph
+
 		private IHistoricalQuoteProvider historicalQuoteProvider =
 			new HistoricalAdjustedQuoteProvider();
 
@@ -80,10 +82,11 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
       //this.progressBarForm = new ProgressBarForm();
       this.reportTable = new ReportTable( "Summary_Reports" );
       this.startDateTime = new EndOfDayDateTime(
-        new DateTime( 2000 , 1 , 1 ) , EndOfDaySpecificTime.MarketOpen );
+        new DateTime( 2004 , 1 , 1 ) , EndOfDaySpecificTime.MarketOpen );
       this.endDateTime = new EndOfDayDateTime(
-        new DateTime( 2000 , 1 , 20 ) , EndOfDaySpecificTime.MarketClose );
-//      this.numIntervalDays = 3; //for report
+        new DateTime( 2004 , 3 , 31 ) , EndOfDaySpecificTime.MarketClose );
+      //this.numIntervalDays = 3; //for report
+
 		}
     #region Run
     

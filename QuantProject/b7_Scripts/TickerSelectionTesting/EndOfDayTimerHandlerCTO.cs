@@ -40,16 +40,18 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
   /// TwoMinutesBeforeMarketCloseEventHandler and OneHourAfterMarketCloseEventHandler
   /// These handlers contain the core strategy for the efficient close to open portfolio!
   /// </summary>
+  [Serializable]
   public class EndOfDayTimerHandlerCTO
   {
     private DataTable eligibleTickers;
     private string[] chosenTickers;
-    //private string[] lastChosenTickers;
+    private string[] lastChosenTickers;
     
     private string tickerGroupID;
     private int numberOfEligibleTickers;
     private int numberOfTickersToBeChosen;
     private int generationNumberForGeneticOptimizer;
+    private int populationSizeForGeneticOptimizer;
 		
     private Account account;
     private ArrayList orders;
@@ -66,16 +68,18 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
 		
     public EndOfDayTimerHandlerCTO(string tickerGroupID, int numberOfEligibleTickers, 
                                 int numberOfTickersToBeChosen, Account account,
-                                int generationNumberForGeneticOptimizer)
+                                int generationNumberForGeneticOptimizer,
+                                int populationSizeForGeneticOptimizer)
     {
       this.tickerGroupID = tickerGroupID;
       this.numberOfEligibleTickers = numberOfEligibleTickers;
       this.numberOfTickersToBeChosen = numberOfTickersToBeChosen;
       this.account = account;
       this.generationNumberForGeneticOptimizer = generationNumberForGeneticOptimizer;
+      this.populationSizeForGeneticOptimizer = populationSizeForGeneticOptimizer;
       this.orders = new ArrayList();
       this.chosenTickers = new string[numberOfTickersToBeChosen];
-      //this.lastChosenTickers = new string[numberOfTickersToBeChosen];
+      this.lastChosenTickers = new string[numberOfTickersToBeChosen];
     }
 		    
     #region MarketOpenEventHandler
@@ -93,10 +97,15 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
     
     private void marketOpenEventHandler_orderChosenTickers_addToOrderList()
     {
+      int idx = 0;
       foreach ( string ticker in this.chosenTickers )
       {
         if(ticker != null)
+        {  
           marketOpenEventHandler_orderChosenTickers_addToOrderList_forTicker( ticker );
+          this.lastChosenTickers[idx] = ticker;
+        }
+        idx++;
       }
     }
     
@@ -134,9 +143,9 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
     }
     private void marketCloseEventHandler_closePositions()
     {
-      if(this.chosenTickers != null)
+      if(this.lastChosenTickers != null)
       {
-        foreach( string ticker in this.chosenTickers)
+        foreach( string ticker in this.lastChosenTickers)
         {
           for(int i = 0; i<this.account.Portfolio.Keys.Count; i++)
           {
@@ -175,9 +184,9 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
     
     private void setTickers(DateTime currentDate)
     {
-      //this.lastChosenTickers = this.chosenTickers;
+      
       DataTable setOfTickersToBeOptimized = this.getSetOfTickersToBeOptimized(currentDate);
-      if(setOfTickersToBeOptimized.Rows.Count >= this.chosenTickers.Length)
+      if(setOfTickersToBeOptimized.Rows.Count > this.chosenTickers.Length*2)
         //the optimization process is possible only if the initial set of tickers is 
         //as large as the number of tickers to be chosen                     
       
@@ -188,6 +197,7 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
         GeneticOptimizer GO = new GeneticOptimizer(genManEfficientCTOPortfolio);
         //GO.KeepOnRunningUntilConvergenceIsReached = true;
         GO.GenerationNumber = this.generationNumberForGeneticOptimizer;
+        GO.PopulationSize = this.populationSizeForGeneticOptimizer;
         GO.Run(false);
         this.chosenTickers = (string[])GO.BestGenome.Meaning;
         //this.lastChosenTickers = this.chosenTickers;

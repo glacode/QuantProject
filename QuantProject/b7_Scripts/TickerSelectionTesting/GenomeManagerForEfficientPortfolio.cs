@@ -109,8 +109,8 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
       this.rateOfReturn = portfolioRateOfReturn;
       
       NormalDistribution normal = new NormalDistribution(portfolioRateOfReturn, Math.Sqrt(portfolioVariance));
-      //returnValue = normal.GetProbability(this.targetPerformance*0.5,this.targetPerformance*1.5);
-      returnValue = 1 - normal.GetProbability(this.targetPerformance);
+      returnValue = normal.GetProbability(this.targetPerformance*0.75,this.targetPerformance*1.25);
+      //returnValue = 1 - normal.GetProbability(this.targetPerformance);
       return returnValue;
     }
     
@@ -226,17 +226,9 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
     {
       Quotes tickerQuotes = new Quotes(ticker, this.firstQuoteDate, this.lastQuoteDate);
       float[] allAdjValues = ExtendedDataTable.GetArrayOfFloatFromColumn(tickerQuotes, "quAdjustedClose");
-      //float[] ratesOfReturns = new float[allAdjValues.Length/this.intervalLength + 1];
       float[] ratesOfReturns = new float[allAdjValues.Length];
       int i = 0; //index for ratesOfReturns array
-      /*
-      for(int idx = 0; idx + this.intervalLength < allAdjValues.Length; idx += this.intervalLength )
-      {
-        ratesOfReturns[i] = allAdjValues[idx+this.intervalLength]/
-                            allAdjValues[idx] - 1;
-        i++;
-      }
-      */
+      
       for(int idx = 0; idx < allAdjValues.Length; idx++)
       {
         ratesOfReturns[i] = allAdjValues[idx+1]/

@@ -25,6 +25,7 @@ using System.Collections;
 using System.Data;
 using QuantProject.ADT;
 using QuantProject.ADT.Optimizing.Genetic;
+using QuantProject.ADT.FileManaging;
 using QuantProject.Business.DataProviders;
 using QuantProject.Business.Financial.Accounting;
 using QuantProject.Business.Financial.Accounting.Reporting;
@@ -50,7 +51,8 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
 	/// - choose the most liquid tickers;
 	/// - choose the most efficient portfolio among these tickers
 	/// </summary>
-	public class RunEfficientCTOPorfolio : Script
+	[Serializable]
+  public class RunEfficientCTOPorfolio : Script
 	{
     //DateTime lastDate = DateTime.Now.Date;
 		//DateTime firstDate = DateTime.Now.Date.AddDays(-60);
@@ -58,11 +60,16 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
     DateTime lastDate = new DateTime(2004,11,25);
     DateTime firstDate = new DateTime(2004,9,25);
     //
-    
+    private string tickerGroupID;
+    private int numberOfEligibleTickers;
+    private int numberOfTickersToBeChosen;
+    private int generationNumberForGeneticOptimizer;
+    private int populationSizeForGeneticOptimizer;
+
     private ReportTable reportTable;
     private EndOfDayDateTime startDateTime;
     private EndOfDayDateTime endDateTime;
-    private int numIntervalDays;// number of days for the equity line graph
+    //private int numIntervalDays;// number of days for the equity line graph
 		private IHistoricalQuoteProvider historicalQuoteProvider =
 			new HistoricalRawQuoteProvider();
 
@@ -75,15 +82,22 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
 		
     private IEndOfDayTimer endOfDayTimer;
 		
-    public RunEfficientCTOPorfolio()
+    public RunEfficientCTOPorfolio(string tickerGroupID, int numberOfEligibleTickers, 
+                                    int numberOfTickersToBeChosen, int generationNumberForGeneticOptimizer,
+                                    int populationSizeForGeneticOptimizer)
 		{
       //this.progressBarForm = new ProgressBarForm();
+      this.tickerGroupID = tickerGroupID;
+      this.numberOfEligibleTickers = numberOfEligibleTickers;
+      this.numberOfTickersToBeChosen = numberOfTickersToBeChosen;
+      this.generationNumberForGeneticOptimizer = generationNumberForGeneticOptimizer;
+      this.populationSizeForGeneticOptimizer = populationSizeForGeneticOptimizer;
       this.reportTable = new ReportTable( "Summary_Reports" );
       this.startDateTime = new EndOfDayDateTime(
-        new DateTime( 2002 , 1 , 1 ) , EndOfDaySpecificTime.FiveMinutesBeforeMarketClose );
+        new DateTime( 1999 , 1 , 1 ) , EndOfDaySpecificTime.FiveMinutesBeforeMarketClose );
       this.endDateTime = new EndOfDayDateTime(
-        new DateTime( 2002 , 1 , 20 ) , EndOfDaySpecificTime.OneHourAfterMarketClose );
-      this.numIntervalDays = 2;
+        new DateTime( 2004 , 10 , 31 ) , EndOfDaySpecificTime.OneHourAfterMarketClose );
+      //this.numIntervalDays = 3;
 		}
     #region Run
     
@@ -123,7 +137,14 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
     }
     private void run_initializeEndOfDayTimerHandler()
     {
-      this.endOfDayTimerHandler = new EndOfDayTimerHandlerCTO("STOCKMI",70,5,this.account,10);
+      this.endOfDayTimerHandler = new EndOfDayTimerHandlerCTO(this.tickerGroupID,
+                                                              this.numberOfEligibleTickers,
+                                                              this.numberOfTickersToBeChosen,
+                                                              this.account,
+                                                              this.generationNumberForGeneticOptimizer, 
+                                                              this.populationSizeForGeneticOptimizer);
+        
+        
     }
     /*
     private  void inSampleNewProgressEventHandler(
@@ -171,14 +192,19 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
     
     private void checkDateForReport(Object sender , EndOfDayTimingEventArgs endOfDayTimingEventArgs)
     {
-      Report report;
+      //Report report;
 
       if(endOfDayTimingEventArgs.EndOfDayDateTime.DateTime>=this.endDateTime.DateTime )
       {
         this.endOfDayTimer.Stop();
-        report = new Report( this.account , this.historicalQuoteProvider );
-        report.Show("CTO_Portfolio" , this.numIntervalDays , this.endDateTime , "^MIBTEL" );
-
+        //report = new Report( this.account , this.historicalQuoteProvider );
+        //report.Show("CTO_Portfolio" , this.numIntervalDays , this.endDateTime , "^MIBTEL" );
+        ObjectArchiver.Archive(this.account,
+                               "C:\\Documents and Settings\\Marco\\Documenti\\ProgettiOpenSource\\Quant\\SavedAccounts\\OpenCloseScripts\\" +
+                               "From"+this.numberOfEligibleTickers + "Portfolio" +
+                                this.numberOfTickersToBeChosen + "GenNum" + 
+                                this.generationNumberForGeneticOptimizer +
+                                "PopSize" + this.populationSizeForGeneticOptimizer + ".qP");
 
       }
     }
