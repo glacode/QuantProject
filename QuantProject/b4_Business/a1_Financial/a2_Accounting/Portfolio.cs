@@ -129,7 +129,7 @@ namespace QuantProject.Business.Financial.Accounting
 		{
 			double totalValue = 0;
 			foreach (Position position in this.Values)
-				totalValue = position.Instrument.GetMarketValue( endOfDayDateTime ) * position.Quantity;
+				totalValue += position.Instrument.GetMarketValue( endOfDayDateTime ) * position.Quantity;
 			return totalValue;
 		}
 
