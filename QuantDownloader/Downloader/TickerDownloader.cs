@@ -218,14 +218,18 @@ namespace QuantProject.Applications.Downloader
           this.p_myForm.Refresh();
           this.setStreamsFromYahoo(currBeginDate, currEndDate);
           this.addCurrentStreamToTable();
-          this.updateCurrentStatus(currEndDate.ToShortDateString());
           if(this.streamReader!=null)
             this.streamReader.Close();
+          else
+            return;
+          this.updateCurrentStatus(currEndDate.ToShortDateString());
+
 		      //this.updateCurrentStatus( d + "/" + e + "/" + f );
         }
         catch (Exception exception)
         {
-          MessageBox.Show( exception.ToString() );
+          string notUsed = exception.ToString();
+          //MessageBox.Show( exception.ToString() );
           /*updateCurrentStatus( "Trial: " + numTrials );
           numTrials++;
           if (numTrials > 5)
@@ -279,7 +283,8 @@ namespace QuantProject.Applications.Downloader
       } 
       catch (Exception ex)
       {
-        MessageBox.Show( ex.ToString() );
+        string notUsed = ex.ToString();
+        //MessageBox.Show( ex.ToString() );
       }
       p_myForm.dataGrid1.Refresh();
     }
@@ -347,7 +352,8 @@ namespace QuantProject.Applications.Downloader
       }
       catch(Exception ex)
       {
-        MessageBox.Show(ex.ToString());
+        string notUsed = ex.ToString();
+        //MessageBox.Show(ex.ToString());
       }
     }
     
@@ -387,8 +393,11 @@ namespace QuantProject.Applications.Downloader
             Quotes.Delete(this.p_quTicker);
       QuantProject.DataAccess.Tables.Quotes.ComputeCloseToCloseValues(this.downloadedValuesFromSource);
       this.adapter.OleDbDataAdapter.ContinueUpdateOnError = true;
-      this.adapter.OleDbDataAdapter.Update(this.downloadedValuesFromSource);
-      this.updateCurrentStatusDatabaseUpdated("YES");
+      int rowsUpdated = this.adapter.OleDbDataAdapter.Update(this.downloadedValuesFromSource);
+      if(rowsUpdated > 0)
+        this.updateCurrentStatusDatabaseUpdated("YES");
+      else
+        this.updateCurrentStatus("NOT FOUND");
     }
 
     private void resetAndImportTicker()
@@ -557,10 +566,10 @@ namespace QuantProject.Applications.Downloader
       HttpWebRequest Req;
       HttpWebResponse hwr;
       string url;
-      //url = "http:" + "//ichart.yahoo.com/table.csv?a="
-      //      + a + "&b=" + b + "&c=" + c +"&d=" + d + "&e=" + e + "&f=" + f + "&s=" + p_quTicker + "&y=0&g=d&ignore=.csv";
-      url = "http:" + "//table.finance.yahoo.com/table.csv?a=" 
-      		+ a + "&b=" + b + "&c=" + c +"&d=" + d + "&e=" + e + "&f=" + f + "&s=" + p_quTicker + "&y=0&g=d&ignore=.csv";
+      url = "http:" + "//ichart.yahoo.com/table.csv?a="
+            + a + "&b=" + b + "&c=" + c +"&d=" + d + "&e=" + e + "&f=" + f + "&s=" + p_quTicker + "&y=0&g=d&ignore=.csv";
+      //url = "http:" + "//table.finance.yahoo.com/table.csv?a=" 
+      	//	+ a + "&b=" + b + "&c=" + c +"&d=" + d + "&e=" + e + "&f=" + f + "&s=" + p_quTicker + "&y=0&g=d&ignore=.csv";
       int numTrials = 1;
       while(numTrials < 5)
       {
