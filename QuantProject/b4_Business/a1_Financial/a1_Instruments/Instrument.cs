@@ -57,5 +57,12 @@ namespace QuantProject.Business.Financial.Instruments
       History history = DataProvider.GetOpenHistory( this.Key );
       return history.GetNextDay( dateTime );
     }
+//millo
+	public DateTime GetMarketDay( DateTime initialDateTime, int numberOfDaysAhead )
+	{
+		History history = DataProvider.GetOpenHistory( this.Key );
+		return history.GetDay(initialDateTime, numberOfDaysAhead );
+	}
+//millo
 	}
 }

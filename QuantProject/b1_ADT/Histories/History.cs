@@ -24,6 +24,7 @@ using System;
 using System.Collections;
 using System.Data;
 using QuantProject.ADT;
+using QuantProject.ADT.Statistics;
 
 
 namespace QuantProject.ADT.Histories
@@ -88,6 +89,16 @@ namespace QuantProject.ADT.Histories
       else
         return (DateTime) this.GetKey( this.IndexOfKeyOrPrevious( dateTime ) + 1 );
     }
+	//millo
+	public DateTime GetDay( DateTime initialDateTime, int numberOfDaysAhead )
+	{
+		if ( this.IndexOfKey( initialDateTime ) >= ( this.Count - numberOfDaysAhead ) )
+			// return the last dateTime in the history
+			return (DateTime) this.GetKey(this.Count -1);
+		else
+			return (DateTime) this.GetKey( this.IndexOfKeyOrPrevious( initialDateTime ) + numberOfDaysAhead );
+	}
+	//millo
 
 	  #region "Millo_1 - SimpleAverage and StandardDeviation"
 
@@ -108,14 +119,14 @@ namespace QuantProject.ADT.Histories
 			  {	
 				  data[i] = Convert.ToDouble(this.GetByIndex(index));
 				  i++;
+				  index++;
 				  //simpleAverage.Add(this.GetKey( index ), null);
 			  }
 			  else //Changes the period
 			  {	
 				  i = 0;
-				  simpleAverage.Add( dateTime , Stat.SimpleAverage(data) );
+				  simpleAverage.Add( dateTime , BasicFunctions.SimpleAverage(data) );
 			  }
-			  index++;
 			  checkValue = Math.Floor(index/onEachPeriodOf);//update checkValue
 		  }
 
@@ -139,14 +150,14 @@ namespace QuantProject.ADT.Histories
 			  {	
 				  data[i] = Convert.ToDouble(this.GetByIndex(index));
 				  i++;
+				  index++;
 				  //stdDev.Add(this.GetKey( index ), null);
 			  }
 			  else //Changes the period
 			  {	
 				  i = 0;
-				  stdDev.Add( dateTime , Stat.StdDev (data) );
+				  stdDev.Add( dateTime , BasicFunctions.StdDev (data) );
 			  }
-			  index++;
 			  checkValue = Math.Floor(index/onEachPeriodOf);//update checkValue
 		  }
 

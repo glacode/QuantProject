@@ -111,8 +111,8 @@
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
-                <File
-                    RelPath = "Histories\Stat.cs"
+		<File
+                    RelPath = "Statistics\BasicFunctions.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
