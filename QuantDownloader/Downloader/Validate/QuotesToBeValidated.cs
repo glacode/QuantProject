@@ -1,6 +1,7 @@
 using System;
 using System.Data;
 using System.Data.OleDb;
+using QuantProject.Applications.Downloader.Validate.Validators;
 
 namespace QuantProject.Applications.Downloader.Validate
 {
@@ -11,6 +12,14 @@ namespace QuantProject.Applications.Downloader.Validate
 	{
     private string selectStatement;
     private OleDbDataAdapter oleDbDataAdapter;
+
+    private double suspiciousRatio;
+
+    public double SuspiciousRatio
+    {
+      get { return this.suspiciousRatio; }
+      set { this.suspiciousRatio = value; }
+    }
     
     public QuotesToBeValidated( string tickerIsLike )
 		{
@@ -29,53 +38,29 @@ namespace QuantProject.Applications.Downloader.Validate
       }
     }
 
-    public delegate void SuspiciousDataRowEventHandler(
-      Object sender , SuspiciousDataRowEventArgs eventArgs );
+//    public delegate void SuspiciousDataRowEventHandler(
+//      Object sender , SuspiciousDataRowEventArgs eventArgs );
 
     public event SuspiciousDataRowEventHandler SuspiciousDataRow;
 
     #region "Validate"
-    #region "validate_currentQuotesRow_checkLogicalErrors"
-    /// <summary>
-    /// Adds a row if not ((Low <= Open) and (Open <= High) and (Low <= Close) and (Close <= High))
-    /// </summary>
-    /// <param name="quotesRow">Row of quotes to be checked</param>
-    private void validate_currentQuotesRow_checkLogicalErrors_checkOHLC( DataRow quotesRow )
+    private void suspiciousDataRowHandler( Object sender ,
+      SuspiciousDataRowEventArgs eventArgs )
     {
-      if (!
-        ( ( Convert.ToDouble( quotesRow[ "quLow" ] ) <=
-        ( Convert.ToDouble( quotesRow[ "quOpen" ] ) ) ) &&
-        ( Convert.ToDouble( quotesRow[ "quOpen" ] ) <=
-        ( Convert.ToDouble( quotesRow[ "quHigh" ] ) ) ) &&
-        ( Convert.ToDouble( quotesRow[ "quLow" ] ) <=
-        ( Convert.ToDouble( quotesRow[ "quClose" ] ) ) ) &&
-        ( Convert.ToDouble( quotesRow[ "quClose" ] ) <=
-        ( Convert.ToDouble( quotesRow[ "quHigh" ] ) ) )
-        )
-        ) 
-        SuspiciousDataRow( this , new SuspiciousDataRowEventArgs( quotesRow ) );
-    }
-    /// <summary>
-    /// Adds an error row if quotesRow doesn't respect logical constraints
-    /// </summary>
-    /// <param name="quotesRow">Row of quotes to be checked</param>
-    private void validate_currentQuotesRow_checkLogicalErrors( DataRow quotesRow )
-    {
-      validate_currentQuotesRow_checkLogicalErrors_checkOHLC( quotesRow );
-    }
-    #endregion
-    /// <summary>
-    /// Adds errors for the current quotesRow (if any)
-    /// </summary>
-    /// <param name="quotesRow">Row of quotes to be checked</param>
-    private void validate_currentQuotesRow( DataRow quotesRow )
-    {
-      validate_currentQuotesRow_checkLogicalErrors( quotesRow );
+      SuspiciousDataRow( this , eventArgs );
     }
     public void Validate()
     {
-      foreach ( DataRow quotesRow in this.Rows )
-        this.validate_currentQuotesRow( quotesRow );
+//      QuantProject.Applications.Downloader.Validate.Validators.OHLCvalidator oHLCvalidator =
+//        new QuantProject.Applications.Downloader.Validate.Validators.OHLCvalidator();
+//      oHLCvalidator.SuspiciousDataRow +=
+//        new SuspiciousDataRowEventHandler( suspiciousDataRowHandler );
+//      oHLCvalidator.Validate( this );
+      MultiValidator multiValidator = new MultiValidator();
+      multiValidator.SuspiciousRatio = this.suspiciousRatio;
+      multiValidator.SuspiciousDataRow +=
+        new SuspiciousDataRowEventHandler( this.suspiciousDataRowHandler );
+      multiValidator.Validate( this );
     }
 	}
   #endregion
