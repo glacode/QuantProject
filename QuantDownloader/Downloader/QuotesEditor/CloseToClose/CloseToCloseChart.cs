@@ -25,7 +25,7 @@ using scpl;
 using scpl.Windows;
 using QuantProject.ADT;
 using QuantProject.ADT.Histories;
-using QuantProject.Data;
+using QuantProject.Data.DataProviders;
 using QuantProject.Presentation.Charting;
 
 namespace QuantProject.Applications.Downloader
@@ -41,7 +41,7 @@ namespace QuantProject.Applications.Downloader
 		}
 		protected override void addHistories()
 		{
-			History lowHistory = DataProvider.GetCloseHistory( ((QuotesEditor)this.FindForm()).Ticker );
+			History lowHistory = HistoricalDataProvider.GetCloseHistory( ((QuotesEditor)this.FindForm()).Ticker );
 			this.add( lowHistory , Color.Green );
 		}
   }

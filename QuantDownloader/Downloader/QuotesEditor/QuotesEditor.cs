@@ -9,6 +9,7 @@ using QuantProject.ADT;
 using QuantProject.ADT.Histories;
 using QuantProject.Business.Validation;
 using QuantProject.Data;
+using QuantProject.Data.DataProviders;
 using QuantProject.Data.DataTables;
 
 namespace QuantProject.Applications.Downloader
@@ -115,7 +116,7 @@ namespace QuantProject.Applications.Downloader
 		/// </summary>
 		private void getTickerQuotes()
 		{
-			this.tickerQuotes = DataProvider.GetTickerQuotes( this.textBoxTicker.Text );
+			this.tickerQuotes = HistoricalDataProvider.GetTickerQuotes( this.textBoxTicker.Text );
 		}
 
     /// <summary>

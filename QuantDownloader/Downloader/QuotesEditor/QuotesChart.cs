@@ -25,7 +25,7 @@ using System.Drawing;
 using scpl;
 using scpl.Windows;
 using QuantProject.ADT.Histories;
-using QuantProject.Data;
+using QuantProject.Data.DataProviders;
 using QuantProject.Presentation.Charting;
 
 namespace QuantProject.Applications.Downloader
@@ -54,7 +54,7 @@ namespace QuantProject.Applications.Downloader
     {
       Console.WriteLine( "QuotesChart.PaintingHandler()" );
       this.Clear();
-      this.Add( DataProvider.GetCloseHistory( this.ticker ) );
+      this.Add( HistoricalDataProvider.GetCloseHistory( this.ticker ) );
       base.OnPaint( e );
     }
 	}
