@@ -125,15 +125,38 @@ namespace QuantProject.Data.DataProviders
 			return getHistory( instrumentKey , BarComponent.Low );
 		}
 
+		private static void cache( string instrumentKey , BarComponent barComponent )
+		{
+			if ( !cachedHistories.ContainsKey( instrumentKey ) )
+				// no component at all for the instrument instrumentKey has been cached yet
+				cachedHistories.Add( instrumentKey , new Hashtable() );
+			((Hashtable)cachedHistories[ instrumentKey ]).Add( barComponent ,
+				DataBase.GetHistory( instrumentKey , barComponent ) );
+		}
 		public static double GetMarketValue( string instrumentKey , ExtendedDateTime extendedDateTime )
-    {
-      //DateTime dateTime = 
-      return Convert.ToDouble(
-        ( (History) ((Hashtable)
-          cachedHistories[ instrumentKey ])[ extendedDateTime.BarComponent ] ).GetByIndex(
-          ( (History) ((Hashtable) cachedHistories[ instrumentKey ])[ extendedDateTime.BarComponent ]
-            ).IndexOfKeyOrPrevious( extendedDateTime.DateTime ) ) );
-    }
+		{
+			if ( !cachedHistories.ContainsKey( instrumentKey ) ||
+				!(((Hashtable)cachedHistories[ instrumentKey ]).ContainsKey(
+				extendedDateTime.BarComponent)) )
+				// the instrument instrumentKey has not been cached yet, for the given bar component
+				cache( instrumentKey , extendedDateTime.BarComponent );
+			return Convert.ToDouble(
+				( (History) ((Hashtable)
+				cachedHistories[ instrumentKey ])[ extendedDateTime.BarComponent ] ).GetByIndex(
+				( (History) ((Hashtable) cachedHistories[ instrumentKey ])[ extendedDateTime.BarComponent ]
+				).IndexOfKeyOrPrevious( extendedDateTime.DateTime ) ) );
+		}
+
+		public static double GetMarketValue( string instrumentKey , DateTime dateTime ,
+			BarComponent barComponent )
+		{
+			//DateTime dateTime = 
+			return Convert.ToDouble(
+				( (History) ((Hashtable)
+				cachedHistories[ instrumentKey ])[ barComponent ] ).GetByIndex(
+				( (History) ((Hashtable) cachedHistories[ instrumentKey ])[ barComponent ]
+				).IndexOfKeyOrPrevious( dateTime ) ) );
+		}
 
 		/// <summary>
 		/// returns the quotes DataTable for the given ticker
