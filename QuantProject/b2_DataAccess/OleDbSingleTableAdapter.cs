@@ -49,6 +49,30 @@ namespace QuantProject.DataAccess
 				Console.WriteLine( exceptionMessage );
 			}
 		}
+    
+    public OleDbSingleTableAdapter(string selectStatement, DataTable table )
+    {
+      try
+      {
+        
+        //				string selectStatement =
+        //					"select * from " + tableName + " where 1=2";
+        this.oleDbDataAdapter =
+          new OleDbDataAdapter( selectStatement , ConnectionProvider.OleDbConnection );
+        OleDbCommandBuilder oleDbCommandBuilder = new OleDbCommandBuilder( oleDbDataAdapter );
+        this.oleDbDataAdapter.InsertCommand = oleDbCommandBuilder.GetInsertCommand();
+        this.oleDbDataAdapter.UpdateCommand = oleDbCommandBuilder.GetUpdateCommand();
+        this.oleDbDataAdapter.DeleteCommand = oleDbCommandBuilder.GetDeleteCommand();
+        this.dataTable = table;
+        this.oleDbDataAdapter.Fill( this.dataTable );
+      }
+      catch ( Exception ex )
+      {
+        string exceptionMessage = ex.Message + "\n" + ex.StackTrace;
+        Console.WriteLine( exceptionMessage );
+      }
+    }
+
 
 //		public void SetAdapterAndDataTable( string tableName )
 //		{
