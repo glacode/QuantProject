@@ -35,6 +35,7 @@ namespace QuantProject.Business.Financial.Ordering
 	/// <summary>
 	/// Simulates historical order executions/rejections for end of day simulation
 	/// </summary>
+	[Serializable]
 	public class HistoricalEndOfDayOrderExecutor : IOrderExecutor
 	{
 		private IEndOfDayTimer timer;

@@ -38,6 +38,7 @@ namespace QuantProject.Business.Financial.Accounting.Reporting
 	/// <summary>
 	/// Summary description for AccountReport.
 	/// </summary>
+	[Serializable]
 	public class AccountReport
 	{
     private Account account;

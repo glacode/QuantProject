@@ -28,6 +28,8 @@ namespace QuantProject.Business.Financial.Accounting.Reporting
   /// <summary>
   /// Summary description for ExcelSheet.
   /// </summary>
+  
+  [Serializable]
   public class ReportTable
   {
     private string name;

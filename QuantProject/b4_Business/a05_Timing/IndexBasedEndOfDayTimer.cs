@@ -31,6 +31,7 @@ namespace QuantProject.Business.Timing
 	/// IEndOfDayTimer implementation using a market index as the base
 	/// for time walking simulation
 	/// </summary>
+	[Serializable]
 	public class IndexBasedEndOfDayTimer : HistoricalEndOfDayTimer
 	{
 		private string marketIndex;

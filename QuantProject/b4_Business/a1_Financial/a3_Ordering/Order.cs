@@ -32,7 +32,8 @@ namespace QuantProject.Business.Financial.Ordering
 	/// <summary>
 	/// Summary description for Order.
 	/// </summary>
-	public class Order
+	[Serializable]
+  public class Order
 	{
     private OrderType orderType;
     private Instrument instrument;

@@ -28,7 +28,8 @@ namespace QuantProject.Business.Timing
 	/// <summary>
 	/// Date time to be used with end of day strategies
 	/// </summary>
-	public class EndOfDayDateTime : IComparable
+	[Serializable]
+  public class EndOfDayDateTime : IComparable
 	{
 		private DateTime dateTime;
 		private EndOfDaySpecificTime endOfDaySpecificTime;

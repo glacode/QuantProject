@@ -12,6 +12,7 @@ namespace QuantProject.Data.DataTables
 	/// <summary>
 	/// DataTable for quotes table data
 	/// </summary>
+	[Serializable]
 	public class Quotes : DataTable
 	{
 		public static string TickerFieldName = "quTicker";	// Ticker cannot be simply used because

@@ -31,6 +31,7 @@ namespace QuantProject.Business.DataProviders
 	/// <summary>
 	/// IDataStreamer implementation using end of day historical data
 	/// </summary>
+	[Serializable]
 	public class HistoricalEndOfDayDataStreamer : IDataStreamer
 	{
 		private Hashtable tickers;

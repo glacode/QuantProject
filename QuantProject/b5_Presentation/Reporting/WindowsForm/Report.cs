@@ -32,6 +32,8 @@ namespace QuantProject.Presentation.Reporting.WindowsForm
 	/// <summary>
 	/// Windows Form account report
 	/// </summary>
+	
+  [Serializable]
 	public class Report : Form
 	{
 		private Account account;

@@ -29,6 +29,7 @@ namespace QuantProject.Business.Timing
 	/// <summary>
 	/// IDataStreamer implementation using historical data
 	/// </summary>
+	[Serializable]
 	public class HistoricalEndOfDayTimer : IEndOfDayTimer
 	{
 		protected bool isActive;	// true iff the timer is started and not stopped

@@ -28,7 +28,8 @@ namespace QuantProject.Business.Scripting
 	/// <summary>
 	/// Summary description for Script.
 	/// </summary>
-	public class Script
+	[Serializable]
+  public class Script
 	{
     public Script()
     {

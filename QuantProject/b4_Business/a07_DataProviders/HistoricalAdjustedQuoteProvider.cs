@@ -30,6 +30,7 @@ namespace QuantProject.Business.DataProviders
 	/// <summary>
 	/// Returns historical adjusted quotes
 	/// </summary>
+	[Serializable]
 	public class HistoricalAdjustedQuoteProvider : IHistoricalQuoteProvider
 	{
 		public HistoricalAdjustedQuoteProvider()
