@@ -124,8 +124,9 @@ namespace QuantProject.Business.Financial.Accounting.Reporting
       transactions.Columns.Add( "InstrumentKey"  , Type.GetType( "System.String" ) );
       transactions.Columns.Add( "Quantity"  , Type.GetType( "System.Int32" ) );
       transactions.Columns.Add( "Price"  , Type.GetType( "System.Double" ) );
-      transactions.Columns.Add( "TransactionAmount"  , Type.GetType( "System.Double" ) );
-      transactions.Columns.Add( "AccountCash"  , Type.GetType( "System.Double" ) );
+			transactions.Columns.Add( "TransactionAmount"  , Type.GetType( "System.Double" ) );
+			transactions.Columns.Add( "Commission"  , Type.GetType( "System.Double" ) );
+			transactions.Columns.Add( "AccountCash"  , Type.GetType( "System.Double" ) );
       transactions.Columns.Add( "PortfolioValue"  , Type.GetType( "System.Double" ) );
       transactions.Columns.Add( "AccountValue"  , Type.GetType( "System.Double" ) );
       transactions.Columns.Add( "PnL"  , Type.GetType( "System.Double" ) );
@@ -155,8 +156,10 @@ namespace QuantProject.Business.Financial.Accounting.Reporting
         dataRow[ "InstrumentKey" ] = "";
       dataRow[ "Quantity" ] = transaction.Quantity;
       dataRow[ "Price" ] = transaction.InstrumentPrice;
-      dataRow[ "TransactionAmount" ] = transaction.InstrumentPrice * transaction.Quantity;
-      addBalanceItems( transaction.EndOfDayDateTime , dataRow );
+			dataRow[ "TransactionAmount" ] = transaction.InstrumentPrice * transaction.Quantity;
+			if ( transaction.Commission != null )
+				dataRow[ "Commission" ] = transaction.Commission.Value;
+			addBalanceItems( transaction.EndOfDayDateTime , dataRow );
       detailedDataTable.Rows.Add( dataRow );
     }
     private void addRowsForTransactions( DateTime currentDateTime ,
