@@ -51,12 +51,17 @@ namespace QuantProject.Presentation.Charting
     /// the StartDateTime and the EndDateTime
     /// </summary>
     /// <param name="history">History for the new ChartPlot</param>
-    public void Add( History history )
-    {
-      ChartPlot chartPlot = new ChartPlot( history );
-      this.chartPlots.Add( chartPlot );
-    }
-    /// <summary>
+		public void Add( History history )
+		{
+			ChartPlot chartPlot = new ChartPlot( history , Color.Red );
+			this.chartPlots.Add( chartPlot );
+		}
+		public void Add( History history , Color color )
+		{
+			ChartPlot chartPlot = new ChartPlot( history , color );
+			this.chartPlots.Add( chartPlot );
+		}
+		/// <summary>
     /// Adds a new ChartPlot to the Chart, using the given arguments for the Color,
     /// the StartDate and the EndDate
     /// </summary>
