@@ -25,6 +25,7 @@ using System.Collections;
 using System.Data;
 using QuantProject.ADT;
 using QuantProject.ADT.Optimizing.Genetic;
+using QuantProject.Business.DataProviders;
 using QuantProject.Business.Financial.Accounting;
 using QuantProject.Business.Financial.Accounting.Reporting;
 using QuantProject.Business.Financial.Instruments;
@@ -62,6 +63,9 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
     private EndOfDayDateTime startDateTime;
     private EndOfDayDateTime endDateTime;
     private int numIntervalDays;// number of days for the equity line graph
+		private IHistoricalQuoteProvider historicalQuoteProvider =
+			new HistoricalRawQuoteProvider();
+
 
     //private ProgressBarForm progressBarForm;
 
@@ -111,8 +115,10 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
     private void run_initializeAccount()
     {
       this.account = new Account( "EfficientCloseToOpenPortfolio" , this.endOfDayTimer ,
-        new HistoricalEndOfDayDataStreamer( this.endOfDayTimer ) ,
-        new HistoricalEndOfDayOrderExecutor( this.endOfDayTimer ) );
+        new HistoricalEndOfDayDataStreamer( this.endOfDayTimer ,
+					this.historicalQuoteProvider ) ,
+        new HistoricalEndOfDayOrderExecutor( this.endOfDayTimer ,
+					this.historicalQuoteProvider ) );
      
     }
     private void run_initializeEndOfDayTimerHandler()
@@ -170,7 +176,7 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
       if(endOfDayTimingEventArgs.EndOfDayDateTime.DateTime>=this.endDateTime.DateTime )
       {
         this.endOfDayTimer.Stop();
-        report = new Report( this.account );
+        report = new Report( this.account , this.historicalQuoteProvider );
         report.Show("CTO_Portfolio" , this.numIntervalDays , this.endDateTime , "^MIBTEL" );
 
 
