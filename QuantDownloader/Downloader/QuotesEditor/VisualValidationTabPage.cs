@@ -1,6 +1,7 @@
 using System;
 using System.Drawing;
 using System.Windows.Forms;
+using QuantProject.ADT;
 using QuantProject.Presentation.Charting;
 
 namespace QuantProject.Applications.Downloader
@@ -55,6 +56,7 @@ namespace QuantProject.Applications.Downloader
 				this.VisualValidationChart.SuspiciousDateTime =
 					(DateTime)this.VisualValidationDataGrid[ this.VisualValidationDataGrid.CurrentRowIndex , 0 ];
 			this.VisualValidationDataGrid.Height = this.Height - 10;
+			this.VisualValidationChart.PrecedingDays = ConstantsProvider.PrecedingDaysForVisualValidation;
 			this.VisualValidationChart.Width = this.Width - this.VisualValidationDataGridWidth - 5;
 			this.VisualValidationChart.Height = this.Height - 10;
 			base.OnPaint( e );
