@@ -25,6 +25,7 @@
 # can be useful for creating a module that consists of many directories
 # spread out over the entire source repository.
 QuantProject       QuantProject
+QuantDownloader    QuantDownloader
 mdb                mdb
 b1_ADT             b1_ADT
 b3_Data            QuantProject/b3_Data
