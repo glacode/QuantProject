@@ -21,13 +21,12 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
 using System;
-using System.Data;
-using System.Windows.Forms;
-using System.IO;
-using System.Runtime.Serialization.Formatters.Soap;
 using System.Collections;
+using System.Data;
+using System.IO;
 using System.Reflection;
 using System.Runtime.InteropServices;
+using System.Runtime.Serialization.Formatters.Soap;
 using Excel;
 using QuantProject.ADT;
 using QuantProject.ADT.Histories;
@@ -102,7 +101,8 @@ namespace QuantProject.Business.Financial.Accounting
       }
       catch (Exception exception)
       {
-        MessageBox.Show( exception.ToString() );
+				exception = exception;  // to avoid warning message
+        /// TO DO!!!
       }
     }
 
@@ -168,14 +168,6 @@ namespace QuantProject.Business.Financial.Accounting
           new ExtendedDateTime( dateTime , BarComponent.Close ) ) +
         "\nAccountProfitNetLoss : " + this.GetProfitNetLoss(
           new ExtendedDateTime( dateTime , BarComponent.Close ) );
-    }
-
-    public void ReportToConsole( DateTime dateTime )
-    {
-      Console.WriteLine( "\n\n\n***********\n" );
-      Console.WriteLine( "Report for Account: " + this.Key );
-      Console.WriteLine( this.ToString( dateTime ) );
-      Console.WriteLine( this.Transactions.ToString() );
     }
 
     public AccountReport CreateReport( string reportName ,
