@@ -45,14 +45,18 @@ namespace QuantProject.DataAccess
 			//
 		}
 
-    #region "GetHistories"
+    /// <summary>
+    /// Returns the field name corresponding to the bar component
+    /// </summary>
+    /// <param name="barComponent">Discriminates among Open, High, Low and Closure</param>
+    /// <returns>Field name corresponding to the bar component</returns>
     private static string getFieldName( BarComponent barComponent )
     {
       string fieldName = "";
       switch ( barComponent )
       {
         case BarComponent.Open:
-          fieldName = "quAdjustedOpen";
+          fieldName = "quOpen";
           break;
         case BarComponent.High:
           fieldName = "quHigh";
@@ -67,6 +71,54 @@ namespace QuantProject.DataAccess
           break;
       }
       return fieldName;
+    }
+
+    #region "GetHistory"
+    private static History getHistory_try( string instrumentKey , BarComponent barComponent )
+    {
+      History history = new History();
+      string commandString =
+        "select * from quotes where quTicker='" + instrumentKey + "'";
+      OleDbDataAdapter oleDbDataAdapter = new OleDbDataAdapter( commandString , oleDbConnection );
+      DataTable dataTable = new DataTable();
+      oleDbDataAdapter.Fill( dataTable );
+      history.Import( dataTable , "quDate" , getFieldName( barComponent ) );
+      return history;
+    }
+    /// <summary>
+    /// Returns the full history for the instrument and the specified bar component
+    /// </summary>
+    /// <param name="instrumentKey">Identifier (ticker) for the instrument whose story
+    /// has to be returned</param>
+    /// <param name="barComponent">Discriminates among Open, High, Low and Closure</param>
+    /// <returns>The history for the given instrument and bar component</returns>
+    public static History GetHistory( string instrumentKey , BarComponent barComponent )
+    {
+      History history;
+      try
+      {
+        history = getHistory_try( instrumentKey , barComponent );
+      }
+      catch (Exception ex)
+      {
+        MessageBox.Show( ex.ToString() );
+        history = null;
+      }
+      return history;
+    }
+    #endregion
+
+    #region "GetHistories"
+    private static Single getHistories_try_getValue( DataRow dataRow , DateTime dateTime ,
+      BarComponent barComponent )
+    {
+      Single returnValue;
+      if ( barComponent == BarComponent.Close )
+        returnValue = (Single)dataRow[ getFieldName( barComponent ) ];
+      else
+        returnValue = (Single)dataRow[ getFieldName( barComponent ) ] *
+          (Single)dataRow[ "quAdjustedClose" ] / (Single)dataRow[ "quClose" ];
+      return returnValue;
     }
     private static Hashtable getHistories_try( string instrumentKey , Hashtable barComponents , DateTime startDateTime , DateTime endDateTime )
     {
@@ -83,7 +135,9 @@ namespace QuantProject.DataAccess
       foreach ( DataRow dataRow in dataSet.Tables[ "history" ].Rows )
         foreach ( BarComponent barComponent in barComponents.Keys )
           ((History) histories[ barComponent ]).Add( (DateTime) dataRow[ "quDate" ] ,
-            dataRow[ getFieldName( barComponent ) ] );
+            getHistories_try_getValue( dataRow , (DateTime) dataRow[ "quDate" ] , barComponent ) );
+//          ((History) histories[ barComponent ]).Add( (DateTime) dataRow[ "quDate" ] ,
+//            dataRow[ getFieldName( barComponent ) ] );
       return histories;
     }
     public static Hashtable GetHistories( string instrumentKey , Hashtable barComponents , DateTime startDateTime , DateTime endDateTime )
