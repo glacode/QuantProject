@@ -97,9 +97,9 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
       this.populationSizeForGeneticOptimizer = populationSizeForGeneticOptimizer;
       this.reportTable = new ReportTable( "Summary_Reports" );
       this.startDateTime = new EndOfDayDateTime(
-        new DateTime( 1999 , 1 , 1 ) , EndOfDaySpecificTime.FiveMinutesBeforeMarketClose );
+        new DateTime( 2004 , 1 , 1 ) , EndOfDaySpecificTime.FiveMinutesBeforeMarketClose );
       this.endDateTime = new EndOfDayDateTime(
-        new DateTime( 2004 , 10 , 31 ) , EndOfDaySpecificTime.OneHourAfterMarketClose );
+        new DateTime( 2004 , 1 , 10 ) , EndOfDaySpecificTime.OneHourAfterMarketClose );
       //this.numIntervalDays = 3;
 		}
     #region Run
@@ -203,13 +203,20 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
         this.endOfDayTimer.Stop();
         //report = new Report( this.account , this.historicalQuoteProvider );
         //report.Show("CTO_Portfolio" , this.numIntervalDays , this.endDateTime , "^MIBTEL" );
-        ObjectArchiver.Archive(this.account,
-                               "C:\\Documents and Settings\\Marco\\Documenti\\ProgettiOpenSource\\Quant\\SavedAccounts\\OpenCloseScripts\\" +
-                               "From"+this.numberOfEligibleTickers +
-                                "LiqDays" + this.numDaysForLiquidity + "Portfolio" +
-                                this.numberOfTickersToBeChosen + "GenNum" + 
-                                this.generationNumberForGeneticOptimizer +
-                                "PopSize" + this.populationSizeForGeneticOptimizer + ".qP");
+        string name = "From"+this.numberOfEligibleTickers +
+                      "LiqDays" + this.numDaysForLiquidity + "Portfolio" +
+                      this.numberOfTickersToBeChosen + "GenNum" + 
+                      this.generationNumberForGeneticOptimizer +
+                      "PopSize" + this.populationSizeForGeneticOptimizer;
+        AccountReport accountReport = this.account.CreateReport(name,1,this.endDateTime,"^MIBTEL",
+                                                              new HistoricalAdjustedQuoteProvider());
+        ObjectArchiver.Archive(accountReport,
+                              "C:\\Documents and Settings\\Marco\\Documenti\\ProgettiOpenSource\\Quant\\SavedReports\\OpenCloseScripts\\" +
+                               name + ".rep");
+        
+        //ObjectArchiver.Archive(this.account,
+        //                       "C:\\Documents and Settings\\Marco\\Documenti\\ProgettiOpenSource\\Quant\\SavedAccounts\\OpenCloseScripts\\" +
+        //                       name + ".acc");
 
       }
     }
