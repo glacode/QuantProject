@@ -57,6 +57,8 @@ namespace QuantProject.Applications.Downloader.TickerSelectors
     private System.Windows.Forms.TextBox textBoxMaxNumOfReturnedTickers;
     private System.Windows.Forms.Label label3;
     private System.Windows.Forms.CheckBox checkBoxASCMode;
+    private System.Windows.Forms.TextBox textBoxMarketIndex;
+    private System.Windows.Forms.Label labelMarketIndexKey;
     private DataTable tableOfSelectedTickers;
 
 		public TickerSelectorForm()
@@ -68,20 +70,14 @@ namespace QuantProject.Applications.Downloader.TickerSelectors
       //TODO: complete comboBox's code with all possible types of selections
       this.comboBoxAvailableSelectionRules.Text = "Liquidity";
       this.comboBoxAvailableSelectionRules.Items.Add("Liquidity");
-      this.comboBoxAvailableSelectionRules.Text = "Performance";
       this.comboBoxAvailableSelectionRules.Items.Add("Performance");
-      this.comboBoxAvailableSelectionRules.Text = "CloseToCloseVolatility";
       this.comboBoxAvailableSelectionRules.Items.Add("CloseToCloseVolatility");
-      this.comboBoxAvailableSelectionRules.Text = "CloseToOpenVolatility";
       this.comboBoxAvailableSelectionRules.Items.Add("CloseToOpenVolatility");
-      this.comboBoxAvailableSelectionRules.Text = "AverageCloseToClosePerformance";
       this.comboBoxAvailableSelectionRules.Items.Add("AverageCloseToClosePerformance");
-      this.comboBoxAvailableSelectionRules.Text = "CloseToCloseLinearCorrelation";
       this.comboBoxAvailableSelectionRules.Items.Add("CloseToCloseLinearCorrelation");
-      this.comboBoxAvailableSelectionRules.Text = "CloseToOpenLinearCorrelation";
       this.comboBoxAvailableSelectionRules.Items.Add("CloseToOpenLinearCorrelation");
-      this.comboBoxAvailableSelectionRules.Text = "AverageCloseToOpenPerformance";
       this.comboBoxAvailableSelectionRules.Items.Add("AverageCloseToOpenPerformance");
+      this.comboBoxAvailableSelectionRules.Items.Add("QuotedInEachMarketDay");
 
   	}
     public TickerSelectorForm(string groupID) : this()
@@ -124,6 +120,7 @@ namespace QuantProject.Applications.Downloader.TickerSelectors
       this.buttonSelectTickers = new System.Windows.Forms.Button();
       this.panel2 = new System.Windows.Forms.Panel();
       this.groupBoxSelectionRule = new System.Windows.Forms.GroupBox();
+      this.checkBoxASCMode = new System.Windows.Forms.CheckBox();
       this.label3 = new System.Windows.Forms.Label();
       this.comboBoxAvailableSelectionRules = new System.Windows.Forms.ComboBox();
       this.label2 = new System.Windows.Forms.Label();
@@ -135,7 +132,8 @@ namespace QuantProject.Applications.Downloader.TickerSelectors
       this.dateTimePickerLastDate = new System.Windows.Forms.DateTimePicker();
       this.dateTimePickerFirstDate = new System.Windows.Forms.DateTimePicker();
       this.splitter1 = new System.Windows.Forms.Splitter();
-      this.checkBoxASCMode = new System.Windows.Forms.CheckBox();
+      this.textBoxMarketIndex = new System.Windows.Forms.TextBox();
+      this.labelMarketIndexKey = new System.Windows.Forms.Label();
       ((System.ComponentModel.ISupportInitialize)(this.dataGrid1)).BeginInit();
       this.panel2.SuspendLayout();
       this.groupBoxSelectionRule.SuspendLayout();
@@ -176,6 +174,8 @@ namespace QuantProject.Applications.Downloader.TickerSelectors
       // groupBoxSelectionRule
       // 
       this.groupBoxSelectionRule.Controls.AddRange(new System.Windows.Forms.Control[] {
+                                                                                        this.labelMarketIndexKey,
+                                                                                        this.textBoxMarketIndex,
                                                                                         this.checkBoxASCMode,
                                                                                         this.label3,
                                                                                         this.comboBoxAvailableSelectionRules,
@@ -189,10 +189,18 @@ namespace QuantProject.Applications.Downloader.TickerSelectors
                                                                                         this.dateTimePickerFirstDate});
       this.groupBoxSelectionRule.Location = new System.Drawing.Point(8, 16);
       this.groupBoxSelectionRule.Name = "groupBoxSelectionRule";
-      this.groupBoxSelectionRule.Size = new System.Drawing.Size(376, 184);
+      this.groupBoxSelectionRule.Size = new System.Drawing.Size(376, 216);
       this.groupBoxSelectionRule.TabIndex = 14;
       this.groupBoxSelectionRule.TabStop = false;
       this.groupBoxSelectionRule.Text = "Single Selection rule";
+      // 
+      // checkBoxASCMode
+      // 
+      this.checkBoxASCMode.Location = new System.Drawing.Point(176, 144);
+      this.checkBoxASCMode.Name = "checkBoxASCMode";
+      this.checkBoxASCMode.Size = new System.Drawing.Size(152, 24);
+      this.checkBoxASCMode.TabIndex = 27;
+      this.checkBoxASCMode.Text = "Order by ASC mode";
       // 
       // label3
       // 
@@ -209,6 +217,7 @@ namespace QuantProject.Applications.Downloader.TickerSelectors
       this.comboBoxAvailableSelectionRules.Size = new System.Drawing.Size(176, 21);
       this.comboBoxAvailableSelectionRules.TabIndex = 25;
       this.comboBoxAvailableSelectionRules.Text = "comboBox1";
+      this.comboBoxAvailableSelectionRules.SelectedValueChanged += new System.EventHandler(this.comboBoxAvailableSelectionRules_SelectedValueChanged);
       // 
       // label2
       // 
@@ -283,13 +292,23 @@ namespace QuantProject.Applications.Downloader.TickerSelectors
       this.splitter1.TabIndex = 8;
       this.splitter1.TabStop = false;
       // 
-      // checkBoxASCMode
+      // textBoxMarketIndex
       // 
-      this.checkBoxASCMode.Location = new System.Drawing.Point(176, 144);
-      this.checkBoxASCMode.Name = "checkBoxASCMode";
-      this.checkBoxASCMode.Size = new System.Drawing.Size(152, 24);
-      this.checkBoxASCMode.TabIndex = 27;
-      this.checkBoxASCMode.Text = "Order by ASC mode";
+      this.textBoxMarketIndex.Location = new System.Drawing.Point(176, 176);
+      this.textBoxMarketIndex.Name = "textBoxMarketIndex";
+      this.textBoxMarketIndex.Size = new System.Drawing.Size(88, 20);
+      this.textBoxMarketIndex.TabIndex = 28;
+      this.textBoxMarketIndex.Text = "";
+      this.textBoxMarketIndex.Visible = false;
+      // 
+      // labelMarketIndexKey
+      // 
+      this.labelMarketIndexKey.Location = new System.Drawing.Point(72, 176);
+      this.labelMarketIndexKey.Name = "labelMarketIndexKey";
+      this.labelMarketIndexKey.Size = new System.Drawing.Size(96, 23);
+      this.labelMarketIndexKey.TabIndex = 29;
+      this.labelMarketIndexKey.Text = "Market index key:";
+      this.labelMarketIndexKey.Visible = false;
       // 
       // TickerSelectorForm
       // 
@@ -331,22 +350,30 @@ namespace QuantProject.Applications.Downloader.TickerSelectors
 
     private void buttonSelectTickers_Click(object sender, System.EventArgs e)
     {
-      Cursor.Current = Cursors.WaitCursor;  
-      TickerSelector selector;
-      if(this.textBoxGroupID.Text != "")
-        selector= new TickerSelector(this.getTypeOfRuleSelectedByUser(), this.checkBoxASCMode.Checked, this.textBoxGroupID.Text, 
-                                      this.dateTimePickerFirstDate.Value,
-                                      this.dateTimePickerLastDate.Value,
-                                      Int32.Parse(this.textBoxMaxNumOfReturnedTickers.Text));
-      else
-        selector= new TickerSelector(this.tableOfSelectedTickers, this.getTypeOfRuleSelectedByUser(),
-                                      this.checkBoxASCMode.Checked, this.textBoxGroupID.Text, 
-                                      this.dateTimePickerFirstDate.Value,
-                                      this.dateTimePickerLastDate.Value,
-                                      Int32.Parse(this.textBoxMaxNumOfReturnedTickers.Text));
-      this.dataGrid1.DataSource = selector.GetTableOfSelectedTickers();
-      this.dataGrid1.Refresh();
-      Cursor.Current = Cursors.Default;
+      try
+      {
+        Cursor.Current = Cursors.WaitCursor;  
+        TickerSelector selector;
+        if(this.textBoxGroupID.Text != "")
+          selector= new TickerSelector(this.getTypeOfRuleSelectedByUser(), this.checkBoxASCMode.Checked, this.textBoxGroupID.Text, 
+            this.dateTimePickerFirstDate.Value,
+            this.dateTimePickerLastDate.Value,
+            Int32.Parse(this.textBoxMaxNumOfReturnedTickers.Text));
+        else
+          selector= new TickerSelector(this.tableOfSelectedTickers, this.getTypeOfRuleSelectedByUser(),
+            this.checkBoxASCMode.Checked, this.textBoxGroupID.Text, 
+            this.dateTimePickerFirstDate.Value,
+            this.dateTimePickerLastDate.Value,
+            Int32.Parse(this.textBoxMaxNumOfReturnedTickers.Text));
+        selector.MarketIndex = this.textBoxMarketIndex.Text;
+        this.dataGrid1.DataSource = selector.GetTableOfSelectedTickers();
+        this.dataGrid1.Refresh();
+        Cursor.Current = Cursors.Default;
+      }
+      catch(Exception ex)
+      {
+        MessageBox.Show(ex.ToString());
+      }
     }
 
     private SelectionType getTypeOfRuleSelectedByUser()
@@ -368,7 +395,26 @@ namespace QuantProject.Applications.Downloader.TickerSelectors
         typeSelected = SelectionType.CloseToOpenLinearCorrelation;
       else if (this.comboBoxAvailableSelectionRules.Text == "AverageCloseToOpenPerformance")
         typeSelected = SelectionType.AverageCloseToOpenPerformance;
+      else if (this.comboBoxAvailableSelectionRules.Text == "QuotedInEachMarketDay")
+        typeSelected = SelectionType.QuotedInEachMarketDay; 
       return typeSelected;  
+    }
+
+    private void comboBoxAvailableSelectionRules_SelectedValueChanged(object sender, System.EventArgs e)
+    {
+      if(this.comboBoxAvailableSelectionRules.Text == "QuotedInEachMarketDay")
+      {
+        this.checkBoxASCMode.Enabled = false;
+        this.labelMarketIndexKey.Visible = true;
+        this.textBoxMarketIndex.Visible = true;
+      }
+      else
+      {
+        this.checkBoxASCMode.Enabled = true;
+        this.labelMarketIndexKey.Visible = false;
+        this.textBoxMarketIndex.Text = "";
+        this.textBoxMarketIndex.Visible = false;
+      }
     }    
 
 	}
