@@ -39,11 +39,13 @@ namespace QuantProject.Applications.Downloader.Validate
       this.Rows.Add( dataRow );
       //this.Rows.Add( quotesRow );
     }
-    public void AddRows( string tickerIsLike )
+    public void AddRows( string tickerIsLike , double suspiciousRatio )
     {
       QuotesToBeValidated quotesToBeValidated = new QuotesToBeValidated( tickerIsLike );
+      quotesToBeValidated.SuspiciousRatio = suspiciousRatio;
       quotesToBeValidated.SuspiciousDataRow +=
-        new QuotesToBeValidated.SuspiciousDataRowEventHandler( suspiciousDataRowEventHandler );
+        new SuspiciousDataRowEventHandler( suspiciousDataRowEventHandler );
+//      new QuotesToBeValidated.SuspiciousDataRowEventHandler( suspiciousDataRowEventHandler );
       quotesToBeValidated.Validate();
       this.AcceptChanges();
     }
