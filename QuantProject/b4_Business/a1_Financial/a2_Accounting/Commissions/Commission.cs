@@ -29,7 +29,8 @@ namespace QuantProject.Business.Financial.Accounting.Commissions
 	/// <summary>
 	/// Base class for commissions
 	/// </summary>
-	public class Commission
+	[Serializable]
+  public class Commission
 	{
 		private Transaction transaction;
 
