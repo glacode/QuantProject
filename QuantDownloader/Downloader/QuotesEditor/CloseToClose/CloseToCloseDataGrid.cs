@@ -24,7 +24,6 @@ using System;
 using System.Data;
 using System.Windows.Forms;
 using QuantProject.DataAccess.Tables;
-using QuantProject.Applications.Downloader.Validate;
 using QuantProject.Business.Validation;
 
 namespace QuantProject.Applications.Downloader
