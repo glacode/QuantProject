@@ -126,7 +126,74 @@ namespace QuantProject.Data.DataTables
       if(!tableToAnalyze.Columns.Contains("PeriodForSimpleReturn"))
         tableToAnalyze.Columns.Add("PeriodForSimpleReturn", System.Type.GetType("System.String"));
     }
-
     
+    private static void addColumnNumberOfQuotes(DataTable tableToAnalyze)
+    {
+      if(!tableToAnalyze.Columns.Contains("NumberOfQuotes"))
+        tableToAnalyze.Columns.Add("NumberOfQuotes", System.Type.GetType("System.Int32"));
+    }
+
+    private static int getNumberOfTradingDays(string marketIndex,
+                                              DateTime firstQuoteDate,
+                                              DateTime lastQuoteDate)
+    {
+      QuantProject.Data.DataTables.Quotes marketQuotes = 
+        new QuantProject.Data.DataTables.Quotes(marketIndex, firstQuoteDate, lastQuoteDate);
+      return marketQuotes.Rows.Count;
+    }
+
+    private static void getTickersQuotedInEachMarketDay_addRow(DataRow rowToBeAdded, int numberOfTradingDays,
+                               DataTable tableToWhichRowIsToBeAdded)
+    {
+      DataRow newRow = tableToWhichRowIsToBeAdded.NewRow();
+      newRow[0]= rowToBeAdded[0];
+      newRow["NumberOfQuotes"] = numberOfTradingDays;
+      tableToWhichRowIsToBeAdded.Rows.Add(newRow);
+    }
+    public static DataTable GetTickersQuotedInEachMarketDay(string marketIndex, string groupID,
+                                                            DateTime firstQuoteDate,
+                                                            DateTime lastQuoteDate,
+                                                            long maxNumOfReturnedTickers)
+    {
+      int marketDaysForTheGivenMarket = 
+                    TickerDataTable.getNumberOfTradingDays(marketIndex, firstQuoteDate, lastQuoteDate);
+      DataTable groupOfTicker = QuantProject.DataAccess.Tables.Tickers_tickerGroups.GetTickers(groupID);
+      TickerDataTable.addColumnNumberOfQuotes(groupOfTicker);
+      QuantProject.Data.DataTables.GroupQuotes tickerQuotes = 
+                new QuantProject.Data.DataTables.GroupQuotes(
+                groupID, firstQuoteDate, lastQuoteDate);
+      DataTable returnValue = groupOfTicker.Clone(); 
+      foreach(DataRow row in groupOfTicker.Rows)
+      {
+        if(tickerQuotes.GetNumberOfDaysWithEffectiveTrades((string)row[0]) == marketDaysForTheGivenMarket)
+        //the current ticker has been effectively traded in each market day
+          TickerDataTable.getTickersQuotedInEachMarketDay_addRow(row, marketDaysForTheGivenMarket,
+                                                                 returnValue);
+      }
+      ExtendedDataTable.DeleteRows(returnValue, maxNumOfReturnedTickers);
+      return returnValue;              
+     
+    }
+    
+    public static DataTable GetTickersQuotedInEachMarketDay(string marketIndex, DataTable setOfTickers,
+                                                            DateTime firstQuoteDate,
+                                                            DateTime lastQuoteDate,
+                                                            long maxNumOfReturnedTickers)
+    {
+      int marketDaysForTheGivenMarket = 
+        TickerDataTable.getNumberOfTradingDays(marketIndex, firstQuoteDate, lastQuoteDate);
+      TickerDataTable.addColumnNumberOfQuotes(setOfTickers);
+      DataTable returnValue = setOfTickers.Clone(); 
+      foreach(DataRow row in setOfTickers.Rows)
+      {
+        if(QuantProject.DataAccess.Tables.Quotes.GetNumberOfDaysWithEffectiveTrades((string)row[0],firstQuoteDate,lastQuoteDate) == marketDaysForTheGivenMarket)
+          //the current ticker has the same number of quotes as the market index
+          TickerDataTable.getTickersQuotedInEachMarketDay_addRow(row, marketDaysForTheGivenMarket,
+                                                                  returnValue);         
+      }
+      ExtendedDataTable.DeleteRows(returnValue, maxNumOfReturnedTickers);
+      return returnValue;              
+    }
+
   }
 }
