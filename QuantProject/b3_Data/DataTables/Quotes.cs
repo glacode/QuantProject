@@ -52,11 +52,11 @@ namespace QuantProject.Data.DataTables
     /// returns tickers ordered by volatility computed with Standard deviation of adjusted 
     /// close to close ratio, within the given set of tickers
     /// </summary>
-    public static DataTable GetTickersByVolatility( bool orderByASC,
-      DataTable setOfTickers,
-      DateTime firstQuoteDate,
-      DateTime lastQuoteDate,
-      long maxNumOfReturnedTickers)
+    public static DataTable GetTickersByCloseToCloseVolatility( bool orderByASC,
+                                                              DataTable setOfTickers,
+                                                              DateTime firstQuoteDate,
+                                                              DateTime lastQuoteDate,
+                                                              long maxNumOfReturnedTickers)
     {
       if(!setOfTickers.Columns.Contains("AdjCloseToCloseStandDev"))
         setOfTickers.Columns.Add("AdjCloseToCloseStandDev", System.Type.GetType("System.Double"));
@@ -71,6 +71,31 @@ namespace QuantProject.Data.DataTables
       ExtendedDataTable.DeleteRows(getTickersByVolatility, maxNumOfReturnedTickers);
       return getTickersByVolatility;
     }
+
+    /// <summary>
+    /// returns tickers ordered by volatility computed with Standard deviation of adjusted 
+    /// close to open ratio, within the given set of tickers
+    /// </summary>
+    public static DataTable GetTickersByCloseToOpenVolatility( bool orderByASC,
+      DataTable setOfTickers,
+      DateTime firstQuoteDate,
+      DateTime lastQuoteDate,
+      long maxNumOfReturnedTickers)
+    {
+      if(!setOfTickers.Columns.Contains("CloseToOpenStandDev"))
+        setOfTickers.Columns.Add("CloseToOpenStandDev", System.Type.GetType("System.Double"));
+      foreach(DataRow row in setOfTickers.Rows)
+      {
+        row["CloseToOpenStandDev"] = 
+          QuantProject.DataAccess.Tables.Quotes.GetCloseToOpenStandardDeviation((string)row[0],
+          firstQuoteDate,
+          lastQuoteDate);
+      }
+      DataTable getTickersByVolatility = ExtendedDataTable.CopyAndSort(setOfTickers,"CloseToOpenStandDev", orderByASC);
+      ExtendedDataTable.DeleteRows(getTickersByVolatility, maxNumOfReturnedTickers);
+      return getTickersByVolatility;
+    }
+
 
     /// <summary>
     /// returns tickers by average close to close performance within the given set of tickers
@@ -97,6 +122,32 @@ namespace QuantProject.Data.DataTables
     }
 
     /// <summary>
+    /// returns tickers by average close to open performance within the given set of tickers
+    /// </summary>
+
+    public static DataTable GetTickersByAverageCloseToOpenPerformance( bool orderByASC,
+      DataTable setOfTickers,
+      DateTime firstQuoteDate,
+      DateTime lastQuoteDate,
+      long maxNumOfReturnedTickers)
+    {
+      if(!setOfTickers.Columns.Contains("AverageCloseToOpenPerformance"))
+        setOfTickers.Columns.Add("AverageCloseToOpenPerformance", System.Type.GetType("System.Double"));
+      foreach(DataRow row in setOfTickers.Rows)
+      {
+        row["AverageCloseToOpenPerformance"] = 
+          QuantProject.DataAccess.Tables.Quotes.GetAverageCloseToOpenPerformance((string)row[0],
+          firstQuoteDate,
+          lastQuoteDate);
+      }
+      DataTable tableToReturn = ExtendedDataTable.CopyAndSort(setOfTickers,"AverageCloseToOpenPerformance", orderByASC);
+      ExtendedDataTable.DeleteRows(tableToReturn, maxNumOfReturnedTickers);
+      return tableToReturn;
+    }
+
+
+
+    /// <summary>
     /// Returns a table containing the Pearson correlation coefficient of the adjusted close to close ratios
     /// for any possible couple of tickers contained in the given table, for the specified interval
     /// </summary>
@@ -114,38 +165,84 @@ namespace QuantProject.Data.DataTables
       for(int j=0; j!= initialNumberOfRows; j++)
       {
         string firstTicker = (string)setOfTickers.Rows[j][0];
-        for(int i = j; i!= initialNumberOfRows; i++)
+        for(int i = j+1; i!= initialNumberOfRows; i++)
         {
           string secondTicker = (string)setOfTickers.Rows[i][0];
-          if(firstTicker != secondTicker)
+          DataTable dtFirstTicker = QuantProject.DataAccess.Tables.Quotes.GetTickerQuotes(firstTicker,
+                                                                              firstQuoteDate,
+                                                                              lastQuoteDate);
+          DataTable dtSecondTicker = QuantProject.DataAccess.Tables.Quotes.GetTickerQuotes(secondTicker,
+                                                                                    firstQuoteDate,
+                                                                                    lastQuoteDate);
+          DataRow rowToAdd = setOfTickers.NewRow();
+          rowToAdd[0] = firstTicker;
+          rowToAdd["CorrelatedTicker"] = secondTicker;
+          try
           {
-            DataTable dtFirstTicker = QuantProject.DataAccess.Tables.Quotes.GetTickerQuotes(firstTicker,
-                                                                                firstQuoteDate,
-                                                                                lastQuoteDate);
-            DataTable dtSecondTicker = QuantProject.DataAccess.Tables.Quotes.GetTickerQuotes(secondTicker,
-                                                                                      firstQuoteDate,
-                                                                                      lastQuoteDate);
-            DataRow rowToAdd = setOfTickers.NewRow();
-            rowToAdd[0] = firstTicker;
-            rowToAdd["CorrelatedTicker"] = secondTicker;
-            try
-            {
-              rowToAdd["PearsonCorrelationCoefficient"] = 
-                QuantProject.ADT.Statistics.BasicFunctions.PearsonCorrelationCoefficient(
-                ExtendedDataTable.GetArrayOfFloatFromColumn(dtFirstTicker, "quAdjustedCloseToCloseRatio"),
-                ExtendedDataTable.GetArrayOfFloatFromColumn(dtSecondTicker, "quAdjustedCloseToCloseRatio"));
-              setOfTickers.Rows.Add(rowToAdd);
-            }
-            catch(Exception ex)
-            {
-              string notUsed = ex.ToString();
-            }
+            rowToAdd["PearsonCorrelationCoefficient"] = 
+              QuantProject.ADT.Statistics.BasicFunctions.PearsonCorrelationCoefficient(
+              ExtendedDataTable.GetArrayOfFloatFromColumn(dtFirstTicker, "quAdjustedCloseToCloseRatio"),
+              ExtendedDataTable.GetArrayOfFloatFromColumn(dtSecondTicker, "quAdjustedCloseToCloseRatio"));
+            setOfTickers.Rows.Add(rowToAdd);
+          }
+          catch(Exception ex)
+          {
+            string notUsed = ex.ToString();
           }
         }
       }
       ExtendedDataTable.DeleteRows(setOfTickers, 0, initialNumberOfRows - 1);
       return ExtendedDataTable.CopyAndSort(setOfTickers,"PearsonCorrelationCoefficient", orderByASC);
     }
+
+    /// <summary>
+    /// Returns a table containing the Pearson correlation coefficient of the close to open ratios
+    /// for any possible couple of tickers contained in the given table, for the specified interval
+    /// </summary>
+    public static DataTable GetTickersByCloseToOpenPearsonCorrelationCoefficient( bool orderByASC,
+      DataTable setOfTickers,
+      DateTime firstQuoteDate,
+      DateTime lastQuoteDate)
+                                                              
+    {
+      if(!setOfTickers.Columns.Contains("CorrelatedTicker"))
+        setOfTickers.Columns.Add("CorrelatedTicker", System.Type.GetType("System.String"));
+      if(!setOfTickers.Columns.Contains("PearsonCorrelationCoefficient"))
+        setOfTickers.Columns.Add("PearsonCorrelationCoefficient", System.Type.GetType("System.Double"));
+      int initialNumberOfRows = setOfTickers.Rows.Count;
+      for(int j=0; j!= initialNumberOfRows; j++)
+      {
+        string firstTicker = (string)setOfTickers.Rows[j][0];
+        for(int i = j+1; i!= initialNumberOfRows; i++)
+        {
+          string secondTicker = (string)setOfTickers.Rows[i][0];
+          DataTable dtFirstTicker = QuantProject.DataAccess.Tables.Quotes.GetTickerQuotes(firstTicker,
+            firstQuoteDate,
+            lastQuoteDate);
+          DataTable dtSecondTicker = QuantProject.DataAccess.Tables.Quotes.GetTickerQuotes(secondTicker,
+            firstQuoteDate,
+            lastQuoteDate);
+          DataRow rowToAdd = setOfTickers.NewRow();
+          rowToAdd[0] = firstTicker;
+          rowToAdd["CorrelatedTicker"] = secondTicker;
+          try
+          {
+            rowToAdd["PearsonCorrelationCoefficient"] = 
+              QuantProject.ADT.Statistics.BasicFunctions.PearsonCorrelationCoefficient(
+              ExtendedDataTable.GetArrayOfFloatFromRatioOfColumns(dtFirstTicker, "quClose", "quOpen"),
+              ExtendedDataTable.GetArrayOfFloatFromRatioOfColumns(dtSecondTicker, "quClose", "quOpen"));
+            setOfTickers.Rows.Add(rowToAdd);
+          }
+          catch(Exception ex)
+          {
+            string notUsed = ex.ToString();
+          }
+        }
+      }
+      ExtendedDataTable.DeleteRows(setOfTickers, 0, initialNumberOfRows - 1);
+      return ExtendedDataTable.CopyAndSort(setOfTickers,"PearsonCorrelationCoefficient", orderByASC);
+    }
+
 
 
 		private History history;

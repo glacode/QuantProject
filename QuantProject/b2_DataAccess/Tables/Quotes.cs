@@ -412,9 +412,9 @@ namespace QuantProject.DataAccess.Tables
     
 
     /// <summary>
-    /// Returns tickers ordered by a volatility index (stdDev of adjustedCloseToClose ratio)
+    /// Returns tickers ordered by a close to close volatility index (stdDev of adjustedCloseToClose ratio)
     /// </summary>
-    public static DataTable GetTickersByVolatility( bool orderInASCMode, string groupID,
+    public static DataTable GetTickersByCloseToCloseVolatility( bool orderInASCMode, string groupID,
                                                     DateTime firstQuoteDate,
                                                     DateTime lastQuoteDate,
                                                     long maxNumOfReturnedTickers)
@@ -438,6 +438,32 @@ namespace QuantProject.DataAccess.Tables
     }
     
     /// <summary>
+    /// Returns tickers ordered by a close to open volatility index (stdDev of Close To Open ratio)
+    /// </summary>
+    public static DataTable GetTickersByCloseToOpenVolatility( bool orderInASCMode, string groupID,
+      DateTime firstQuoteDate,
+      DateTime lastQuoteDate,
+      long maxNumOfReturnedTickers)
+    {
+      string sql = "SELECT TOP " + maxNumOfReturnedTickers + " tickers.tiTicker, tickers.tiCompanyName, " +
+        "StDev(quotes.quClose/quotes.quOpen) AS CloseToOpenStandDev " +
+        "FROM quotes INNER JOIN (tickers INNER JOIN tickers_tickerGroups " +
+        "ON tickers.tiTicker = tickers_tickerGroups.ttTiId) " +
+        "ON quotes.quTicker = tickers_tickerGroups.ttTiId " +
+        "WHERE tickers_tickerGroups.ttTgId='" + groupID + "' " +
+        "AND quotes.quDate BETWEEN " +
+        SQLBuilder.GetDateConstant(firstQuoteDate) + " AND " +
+        SQLBuilder.GetDateConstant(lastQuoteDate) + 
+        "GROUP BY tickers.tiTicker, tickers.tiCompanyName " +
+        "ORDER BY StDev(quotes.quClose/quotes.quOpen)";
+      string sortDirection = " DESC";
+      if(orderInASCMode)
+        sortDirection = " ASC";
+      sql = sql + sortDirection;
+      return SqlExecutor.GetDataTable( sql );
+    }
+
+    /// <summary>
     /// Returns tickers ordered by average close to close performance 
     /// </summary>
     public static DataTable GetTickersByAverageCloseToClosePerformance( bool orderInASCMode, string groupID,
@@ -456,6 +482,32 @@ namespace QuantProject.DataAccess.Tables
         SQLBuilder.GetDateConstant(lastQuoteDate) + 
         "GROUP BY tickers.tiTicker, tickers.tiCompanyName " +
         "ORDER BY Avg(quotes.quAdjustedCloseToCloseRatio)";
+      string sortDirection = " DESC";
+      if(orderInASCMode)
+        sortDirection = " ASC";
+      sql = sql + sortDirection;
+      return SqlExecutor.GetDataTable( sql );
+    }
+
+    /// <summary>
+    /// Returns tickers ordered by average close to open performance (in the same bar)
+    /// </summary>
+    public static DataTable GetTickersByAverageCloseToOpenPerformance( bool orderInASCMode, string groupID,
+                                                            DateTime firstQuoteDate,
+                                                            DateTime lastQuoteDate,
+                                                            long maxNumOfReturnedTickers)
+    {
+      string sql = "SELECT TOP " + maxNumOfReturnedTickers + " tickers.tiTicker, tickers.tiCompanyName, " +
+        "Avg(quotes.quClose/quotes.quOpen) AS AverageCloseToOpenPerformance " +
+        "FROM quotes INNER JOIN (tickers INNER JOIN tickers_tickerGroups " +
+        "ON tickers.tiTicker = tickers_tickerGroups.ttTiId) " +
+        "ON quotes.quTicker = tickers_tickerGroups.ttTiId " +
+        "WHERE tickers_tickerGroups.ttTgId='" + groupID + "' " +
+        "AND quotes.quDate BETWEEN " +
+        SQLBuilder.GetDateConstant(firstQuoteDate) + " AND " +
+        SQLBuilder.GetDateConstant(lastQuoteDate) + 
+        "GROUP BY tickers.tiTicker, tickers.tiCompanyName " +
+        "ORDER BY Avg(quotes.quClose/quotes.quOpen)";
       string sortDirection = " DESC";
       if(orderInASCMode)
         sortDirection = " ASC";
@@ -511,6 +563,30 @@ namespace QuantProject.DataAccess.Tables
     }
 
     /// <summary>
+    /// returns the average close to open performance value for the given ticker in the specified interval
+    /// </summary>
+    public static double GetAverageCloseToOpenPerformance( string ticker,
+      DateTime firstQuoteDate,
+      DateTime lastQuoteDate)
+                                                
+    {
+      DataTable dt;
+      string sql = "SELECT quotes.quTicker, " +
+        "Avg([quClose]/[quOpen]) AS AverageCloseToOpenPerformance " +
+        "FROM quotes WHERE quTicker ='" + 
+        ticker + "' " +
+        "AND quotes.quDate BETWEEN " + SQLBuilder.GetDateConstant(firstQuoteDate) + 
+        " AND " + SQLBuilder.GetDateConstant(lastQuoteDate) + 
+        " GROUP BY quotes.quTicker";
+      dt = SqlExecutor.GetDataTable( sql );
+      if(dt.Rows.Count==0)
+        return 0;
+      else
+        return (double)dt.Rows[0]["AverageCloseToOpenPerformance"];
+    }
+
+
+    /// <summary>
     /// returns the standard deviation of the adjusted close to close ratio
     /// for the given ticker in the specified interval
     /// </summary>
@@ -534,7 +610,29 @@ namespace QuantProject.DataAccess.Tables
         return (double)dt.Rows[0]["AdjCloseToCloseStandDev"];
     }
     
-    
+    /// <summary>
+    /// returns the standard deviation of the adjusted close to open ratio
+    /// for the given ticker in the specified interval
+    /// </summary>
+    public static double GetCloseToOpenStandardDeviation( string ticker,
+      DateTime firstQuoteDate,
+      DateTime lastQuoteDate)
+                                                
+    {
+      DataTable dt;
+      string sql = "SELECT quotes.quTicker, " +
+        "StDev(quotes.quClose/quotes.quOpen) AS CloseToOpenStandDev " +
+        "FROM quotes WHERE quTicker ='" + 
+        ticker + "' " +
+        "AND quotes.quDate BETWEEN " + SQLBuilder.GetDateConstant(firstQuoteDate) + 
+        " AND " + SQLBuilder.GetDateConstant(lastQuoteDate) + 
+        " GROUP BY quotes.quTicker";
+      dt = SqlExecutor.GetDataTable( sql );
+      if(dt.Rows.Count==0)
+        return 0;
+      else
+        return (double)dt.Rows[0]["CloseToOpenStandDev"];
+    } 
     
 
 

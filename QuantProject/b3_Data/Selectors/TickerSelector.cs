@@ -133,23 +133,29 @@ namespace QuantProject.Data.Selectors
     //implementation of ITickerSelector
     public DataTable GetTableOfSelectedTickers()
     {
-      switch (this.typeOfSelection)
-      {
-        case SelectionType.Liquidity:
-          return this.getTickersByLiquidity();
-        case SelectionType.Performance:
-          return this.getTickersByPerformance();
-        case SelectionType.Volatility:
-          return this.getTickersByVolatility();
-        case SelectionType.AverageCloseToClosePerformance:
-          return this.getTickersByAverageCloseToClosePerformance();
-        case SelectionType.CloseToCloseLinearCorrelation:
-          return this.getTickersByCloseToCloseLinearCorrelation();
-        //this line should never be reached!
-        default:
-          return new DataTable();
-      }
-       
+        switch (this.typeOfSelection)
+        {
+          case SelectionType.Liquidity:
+            return this.getTickersByLiquidity();
+          case SelectionType.Performance:
+            return this.getTickersByPerformance();
+          case SelectionType.CloseToCloseVolatility:
+            return this.getTickersByCloseToCloseVolatility();
+          case SelectionType.CloseToOpenVolatility:
+            return this.getTickersByCloseToOpenVolatility();
+          case SelectionType.AverageCloseToClosePerformance:
+            return this.getTickersByAverageCloseToClosePerformance();
+          case SelectionType.AverageCloseToOpenPerformance:
+            return this.getTickersByAverageCloseToOpenPerformance();
+          case SelectionType.CloseToCloseLinearCorrelation:
+            return this.getTickersByCloseToCloseLinearCorrelation();
+          case SelectionType.CloseToOpenLinearCorrelation:
+            return this.getTickersByCloseToOpenLinearCorrelation();
+            //this line should never be reached!
+          default:
+            return new DataTable();
+        }
+      
     }
     
     private DataTable getTickersByLiquidity()
@@ -202,17 +208,50 @@ namespace QuantProject.Data.Selectors
       
     }
 
-    private DataTable getTickersByVolatility()
+    private DataTable getTickersByAverageCloseToOpenPerformance()
     {
       if(this.setOfTickersToBeSelected == null)
-        return QuantProject.DataAccess.Tables.Quotes.GetTickersByVolatility(this.isOrderedInASCMode,
+        return QuantProject.DataAccess.Tables.Quotes.GetTickersByAverageCloseToOpenPerformance(this.isOrderedInASCMode,
+          this.groupID, this.firstQuoteDate,
+          this.lastQuoteDate,
+          this.maxNumOfReturnedTickers);
+      else
+        return QuantProject.Data.DataTables.Quotes.GetTickersByAverageCloseToOpenPerformance(this.isOrderedInASCMode,
+          this.setOfTickersToBeSelected,
+          this.firstQuoteDate,
+          this.lastQuoteDate,
+          this.maxNumOfReturnedTickers);
+      
+    }
+
+    private DataTable getTickersByCloseToCloseVolatility()
+    {
+      if(this.setOfTickersToBeSelected == null)
+        return QuantProject.DataAccess.Tables.Quotes.GetTickersByCloseToCloseVolatility(this.isOrderedInASCMode,
                                                                     this.groupID,
                                                                     this.firstQuoteDate,
                                                                     this.lastQuoteDate,
                                                                     this.maxNumOfReturnedTickers);        
 
       else
-        return QuantProject.Data.DataTables.Quotes.GetTickersByVolatility(this.isOrderedInASCMode,
+        return QuantProject.Data.DataTables.Quotes.GetTickersByCloseToCloseVolatility(this.isOrderedInASCMode,
+          this.setOfTickersToBeSelected, 
+          this.firstQuoteDate,
+          this.lastQuoteDate,
+          this.maxNumOfReturnedTickers);
+    }
+
+    private DataTable getTickersByCloseToOpenVolatility()
+    {
+      if(this.setOfTickersToBeSelected == null)
+        return QuantProject.DataAccess.Tables.Quotes.GetTickersByCloseToOpenVolatility(this.isOrderedInASCMode,
+          this.groupID,
+          this.firstQuoteDate,
+          this.lastQuoteDate,
+          this.maxNumOfReturnedTickers);        
+
+      else
+        return QuantProject.Data.DataTables.Quotes.GetTickersByCloseToOpenVolatility(this.isOrderedInASCMode,
           this.setOfTickersToBeSelected, 
           this.firstQuoteDate,
           this.lastQuoteDate,
@@ -221,10 +260,30 @@ namespace QuantProject.Data.Selectors
 
     private DataTable getTickersByCloseToCloseLinearCorrelation()
     {
-       return QuantProject.Data.DataTables.Quotes.GetTickersByAdjCloseToClosePearsonCorrelationCoefficient(this.isOrderedInASCMode,
+      this.launchExceptionIfGroupIDIsNotEmpty();
+      return QuantProject.Data.DataTables.Quotes.GetTickersByAdjCloseToClosePearsonCorrelationCoefficient(this.isOrderedInASCMode,
                                                           this.setOfTickersToBeSelected,
                                                           this.firstQuoteDate,
                                                           this.lastQuoteDate);
+    }
+
+    private DataTable getTickersByCloseToOpenLinearCorrelation()
+    {
+      
+      this.launchExceptionIfGroupIDIsNotEmpty();
+      
+      return QuantProject.Data.DataTables.Quotes.GetTickersByCloseToOpenPearsonCorrelationCoefficient(this.isOrderedInASCMode,
+        this.setOfTickersToBeSelected,
+        this.firstQuoteDate,
+        this.lastQuoteDate);
+    }
+
+    private void launchExceptionIfGroupIDIsNotEmpty()
+    {
+      if(this.groupID!="")
+      {
+        throw new Exception("Not implemented: this type of selection works only with few tickers, at the moment");
+      }
     }
 
     public void SelectAllTickers()
@@ -252,6 +311,8 @@ namespace QuantProject.Data.Selectors
       }
       return tableOfSelectedTickers;
     }
+
+
 
 	}
 }
