@@ -31,6 +31,7 @@ using QuantProject.Business.Testing;
 using QuantProject.Business.Strategies;
 using QuantProject.Business.Scripting;
 using QuantProject.Presentation.MicrosoftExcel;
+using QuantProject.Presentation.Reporting.WindowsForm;
 
 namespace QuantProject.Scripts
 {
@@ -39,20 +40,28 @@ namespace QuantProject.Scripts
 	/// </summary>
 	public class RunOneRank : Script
 	{
+		protected Account account;
+		protected string ticker;
+		protected DateTime startDateTime;
+		protected DateTime endDateTime;
+
     public RunOneRank()
     {
     }
     public override void Run()
     {
       //this.testTicker( "FSELX" , new DateTime( 2003 , 5 , 20 ) , new DateTime( 2003 , 9 , 26 ) );
-      this.testTicker( "REPIX" , new DateTime( 2003 , 7 , 1 ) , new DateTime( 2003 , 11 , 20 ) );
+			this.ticker = "REPIX";
+			this.startDateTime = new DateTime( 2003 , 7 , 1 );
+			this.endDateTime = new DateTime( 2003 , 11 , 20 );
+      this.testTicker();
     }
-    private void testTicker( string ticker , DateTime startDateTime , DateTime endDateTime )
+    private void testTicker()
     {
       QuoteCache.Add( new Instrument( ticker ) , BarComponent.Open );
       QuoteCache.Add( new Instrument( ticker ) , BarComponent.Close );
       //QuoteCache.Add( new Instrument( "MSFT" ) , BarComponent.Close );
-      QuoteCache.SetCache( startDateTime , endDateTime );
+      QuoteCache.SetCache( this.startDateTime , this.endDateTime );
 
       TradingSystems tradingSystems = new TradingSystems();
      
@@ -76,13 +85,9 @@ namespace QuantProject.Scripts
       ((History)tester.Account.GetProfitNetLossHistory(
         new ExtendedDateTime( endDateTime , BarComponent.Close ) ) ).ReportToConsole();
 
-      //      tester.Account.AccountReport.ReportToExcel( "MSFT" ,
-      //        new ExtendedDateTime( endDateTime , BarComponent.Close ) );
-
-      AccountReport accountReport = tester.Account.CreateReport( ticker , 7 ,
-        new ExtendedDateTime( endDateTime , BarComponent.Close ) , ticker );
-      ExcelManager.Add( accountReport );
-      ExcelManager.ShowReport();
+//			uncomment the four lines below to use the Excel reporting feature
+			this.account = tester.Account;
+			
     }
 	}
 }
