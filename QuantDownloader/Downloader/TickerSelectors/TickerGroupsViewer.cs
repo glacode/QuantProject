@@ -136,6 +136,17 @@ namespace QuantProject.Applications.Downloader.TickerSelectors
 			}
 		}
 		
+    /// <summary>
+    /// It gets the selected items in the list view controls
+    /// </summary>
+    public ListView.SelectedListViewItemCollection SelectedListViewItems
+    {
+      get
+      {
+        return this.listViewGroupsAndTickers.SelectedItems;
+      }
+    }
+
 		private void addTickersToTable(DataTable tableToFill)
 		{
 			try

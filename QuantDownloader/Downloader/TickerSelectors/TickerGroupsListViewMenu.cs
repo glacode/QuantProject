@@ -53,7 +53,7 @@ namespace QuantProject.Applications.Downloader.TickerSelectors
     }
     private void removeSelectedItems(object sender, System.EventArgs e)
     {
-      MessageBox.Show(".... NOT IMPLEMENTED YET .... ");
+      //;
     }
     
 

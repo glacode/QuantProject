@@ -3,6 +3,7 @@ using System.Data;
 using System.IO;
 using System.Net;
 using System.Windows.Forms;
+using QuantProject.DataAccess;
 using QuantProject.DataAccess.Tables;
 using QuantProject.ADT;
 
@@ -25,6 +26,8 @@ namespace QuantProject.Applications.Downloader
     private int endMonth = DateTime.Now.Month;
     private int endYear = DateTime.Now.Year;
     private int numberOfQuotesInDatabase;
+    private DataTable downloadedValuesFromSource = new DataTable("quotes");
+    private OleDbSingleTableAdapter adapter;
     
     public TickerDownloader( WebDownloader myForm, DataRow currentDataTickerRow, string quTicker , int numRows )
     {
@@ -34,6 +37,8 @@ namespace QuantProject.Applications.Downloader
       p_quTicker = quTicker;
       p_numRows = numRows;
       this.oleDbConnection1 = myForm.OleDbConnection1;
+      this.adapter = new OleDbSingleTableAdapter("SELECT * FROM quotes WHERE 1=2",
+                                                  this.downloadedValuesFromSource);
     }
 
     /*
@@ -58,12 +63,32 @@ namespace QuantProject.Applications.Downloader
       }
     }
     
-    private void updateCurrentStatusAdjustedClose(string stateOfAdjustedCloseValue )
+    private void updateCurrentStatusAdjustedClose(string status )
     {
       lock( p_myForm.DsTickerCurrentlyDownloaded.Tables[ "Tickers" ] )
       {
         DataRow[] myRows = p_myForm.DsTickerCurrentlyDownloaded.Tables[ "Tickers" ].Select( "tiTicker='" + p_quTicker + "'" );
-        myRows[ 0 ][ "adjustedClose" ] = stateOfAdjustedCloseValue;
+        myRows[ 0 ][ "adjustedClose" ] = status;
+        p_myForm.dataGrid1.Refresh();
+      }
+    }
+
+    private void updateCurrentStatusAdjustedCloseToCloseRatio(string status )
+    {
+      lock( p_myForm.DsTickerCurrentlyDownloaded.Tables[ "Tickers" ] )
+      {
+        DataRow[] myRows = p_myForm.DsTickerCurrentlyDownloaded.Tables[ "Tickers" ].Select( "tiTicker='" + p_quTicker + "'" );
+        myRows[ 0 ][ "adjCloseToCloseRatio" ] = status;
+        p_myForm.dataGrid1.Refresh();
+      }
+    }
+
+    private void updateCurrentStatusDatabaseUpdated(string status )
+    {
+      lock( p_myForm.DsTickerCurrentlyDownloaded.Tables[ "Tickers" ] )
+      {
+        DataRow[] myRows = p_myForm.DsTickerCurrentlyDownloaded.Tables[ "Tickers" ].Select( "tiTicker='" + p_quTicker + "'" );
+        myRows[ 0 ][ "databaseUpdated" ] = status;
         p_myForm.dataGrid1.Refresh();
       }
     }
@@ -82,6 +107,92 @@ namespace QuantProject.Applications.Downloader
       odc.ExecuteNonQuery();
     }
     
+    
+    private void addNewAdjustedValueInTable( StreamReader streamReader,
+                                             DataTable tableToWhichValuesHaveToBeAdded )
+    {
+      string Line;
+      string[] LineIn;
+      DataRow row;
+
+      Line = streamReader.ReadLine();
+      Line = streamReader.ReadLine();
+  		
+      while ( Line != null && ! Line.StartsWith("<"))
+      {
+        LineIn=Line.Split(',');
+  	    row = tableToWhichValuesHaveToBeAdded.NewRow();
+        row[0] = DateTime.Parse( LineIn[0] );
+        row[1] = Double.Parse(LineIn[6]);
+        tableToWhichValuesHaveToBeAdded.Rows.Add(row);
+        
+        Line = streamReader.ReadLine();
+      }
+    }
+    
+    private DataTable getTableOfNewAdjustedValues( DateTime currBeginDate , DateTime currEndDate )
+    {
+      int a = currBeginDate.Month - 1;
+      int b = currBeginDate.Day;
+      int c = currBeginDate.Year;
+      int d = currEndDate.Month - 1;
+      int e = currEndDate.Day;
+      int f = currEndDate.Year;
+      DataTable table = new DataTable();
+      DataColumn date = new DataColumn("quDate", System.Type.GetType("System.DateTime"));
+      DataColumn adjustedValue = new DataColumn("quAdjustedClose", System.Type.GetType("System.Double"));
+      table.Columns.Add(date);
+      table.Columns.Add(adjustedValue);
+      try
+      {
+        HttpWebRequest Req = (HttpWebRequest)WebRequest.Create("http:" + "//table.finance.yahoo.com/table.csv?a=" 
+          + a + "&b=" + b + "&c=" + c +"&d=" + d + "&e=" + e + "&f=" + f + "&s=" + p_quTicker + "&y=0&g=d&ignore=.csv");
+        Req.Method = "GET";
+        Req.Timeout = ConstantsProvider.TimeOutValue;
+        HttpWebResponse hwr = (HttpWebResponse)Req.GetResponse();
+        Stream strm = hwr.GetResponseStream();
+        StreamReader sr = new StreamReader(strm);
+        this.addNewAdjustedValueInTable(sr, table);
+        sr.Close();
+        strm.Close();
+        //hwr.Close();
+      }
+      catch (Exception exception)
+      {
+        MessageBox.Show( exception.ToString() );
+      }
+      return table;
+    }
+    
+    private void addValuesToTable( StreamReader streamReader )
+    {
+      string Line;
+      string[] LineIn;
+      Line = streamReader.ReadLine();
+      Line = streamReader.ReadLine();
+  		
+      while ( Line != null && ! Line.StartsWith("<"))
+      {
+        LineIn=Line.Split(',');
+  	    
+        DataRow myRow =this.downloadedValuesFromSource.NewRow();
+
+        myRow[ "quTicker" ] = this.p_quTicker;
+        myRow[ "quDate" ]=DateTime.Parse( LineIn[0] );
+        myRow[ "quOpen" ]=Double.Parse( LineIn[1] );
+        myRow[ "quHigh" ]=Double.Parse( LineIn[2] );
+        myRow[ "quLow" ]=Double.Parse( LineIn[3] );
+        myRow[ "quClose" ]=Double.Parse( LineIn[4] );
+        myRow[ "quVolume" ]=Double.Parse( LineIn[5] );
+        myRow[ "quAdjustedClose" ]=Double.Parse( LineIn[6] );
+			  
+        this.downloadedValuesFromSource.Rows.Add(myRow);
+
+        Line = streamReader.ReadLine();
+      }
+    }
+
+
 	  private void importTickerForCurrentTimeFrame( DateTime currBeginDate , DateTime currEndDate )
     {
       int a = currBeginDate.Month - 1;
@@ -105,9 +216,11 @@ namespace QuantProject.Applications.Downloader
           Stream strm = hwr.GetResponseStream();
           StreamReader sr = new StreamReader(strm);
 
-          DataBaseImporter dataBaseImporter =
-            new DataBaseImporter( this.oleDbConnection1 , sr, this.p_myForm.radioButtonOverWriteYes.Checked );
-          dataBaseImporter.ImportTicker( p_quTicker );
+          //DataBaseImporter dataBaseImporter =
+            //new DataBaseImporter( this.oleDbConnection1 , sr, this.p_myForm.radioButtonOverWriteYes.Checked );
+          //dataBaseImporter.ImportTicker( p_quTicker );
+          this.addValuesToTable(sr);
+          
           sr.Close();
           strm.Close();
           //hwr.Close();
@@ -126,10 +239,9 @@ namespace QuantProject.Applications.Downloader
       }
     }
     
-	  private void setTimeFrameAndImportTickerForEachTimeFrame(double numDaysOfTimeFrame)
+	  private DataTable getTableOfDownloadedValues()
     {
-      if(numDaysOfTimeFrame == 0)
-        return;
+      double numDaysOfTimeFrame = ConstantsProvider.MaxNumDaysDownloadedAtEachConnection;
 
       DateTime currBeginDate = new DateTime();
       currBeginDate = startDate;
@@ -143,6 +255,8 @@ namespace QuantProject.Applications.Downloader
         this.importTickerForCurrentTimeFrame ( currBeginDate , currEndDate );
         currBeginDate = currEndDate.AddDays( 1 );
       }
+      return this.downloadedValuesFromSource;
+
     }
     
     private void addTickerTo_gridDataSet()
@@ -150,7 +264,9 @@ namespace QuantProject.Applications.Downloader
       DataRow newRow = p_myForm.DsTickerCurrentlyDownloaded.Tables[ "Tickers" ].NewRow();
       newRow[ "tiTicker" ] = p_quTicker;
       newRow[ "currentState" ] = "Searching ...";
+      newRow[ "databaseUpdated" ] = "No";
       newRow[ "adjustedClose"] = "...";
+      newRow[ "adjCloseToCloseRatio"] = "...";
       try
       {
         p_myForm.DsTickerCurrentlyDownloaded.Tables[ "Tickers" ].Rows.Add( newRow );
@@ -174,7 +290,7 @@ namespace QuantProject.Applications.Downloader
     {
       this.endDate = Quotes.GetStartDate(this.p_quTicker);
       this.resetStartDateIfNecessary();
-      this.setTimeFrameAndImportTickerForEachTimeFrame(200);
+      this.checkForNewAdjustedAndContinueOrStop();
     }
     
     private bool getResponseForRepeatedChecks(int numberOfRepeatedChecks)
@@ -191,17 +307,29 @@ namespace QuantProject.Applications.Downloader
       return response;
     }
     
-    private void checkForNewAdjustedValueFromSource()
+    private void checkForNewAdjustedAndContinueOrStop()
     {
       try
       {
         if(this.getResponseForRepeatedChecks(ConstantsProvider.NumberOfCheckToPerformOnAdjustedValues))
         {
           this.updateCurrentStatusAdjustedClose("Changed!");
+          if (Quotes.IsAdjustedCloseToCloseRatioChanged(this.p_quTicker, 
+              this.getTableOfNewAdjustedValues(Quotes.GetStartDate(this.p_quTicker),
+                                               Quotes.GetEndDate(this.p_quTicker))))
+          {
+               this.updateCurrentStatusAdjustedCloseToCloseRatio("Changed!");
+          }
+          else
+          {
+               this.updateCurrentStatusAdjustedCloseToCloseRatio("OK");
+          } 
         }
         else
+        //download is executed
         {
           this.updateCurrentStatusAdjustedClose("OK");
+          this.commitDownloadedValuesToDatabase();
         }
       }
       catch(Exception ex)
@@ -216,9 +344,7 @@ namespace QuantProject.Applications.Downloader
     {
       this.startDate = Quotes.GetEndDate(this.p_quTicker);
       this.endDate = DateTime.Today;
-      this.checkForNewAdjustedValueFromSource();
-      this.setTimeFrameAndImportTickerForEachTimeFrame(200);
-
+      this.checkForNewAdjustedAndContinueOrStop();
     }
     
     private float adjustedCloseFromSource(DateTime adjustedCloseDate)
@@ -234,11 +360,67 @@ namespace QuantProject.Applications.Downloader
       }
       return Single.Parse(LineIn[6]);
     }
+    
+    private void commitDownloadedValuesToDatabase()
+    {
+      Quotes.ComputeCloseToCloseValues(this.downloadedValuesFromSource);
+      this.adapter.OleDbDataAdapter.ContinueUpdateOnError = true;
+      if(this.p_myForm.IsOverWriteYesSelected)
+            Quotes.Delete(this.p_quTicker);
+      this.adapter.OleDbDataAdapter.Update(this.downloadedValuesFromSource);
+      this.updateCurrentStatusDatabaseUpdated("YES");
+    }
+
+    private void resetAndImportTicker()
+    {
+      this.resetStartDateIfNecessary();
+      this.commitDownloadedValuesToDatabase();
+    }
+    
+    
+
     public void DownloadTicker()
     {
       // update grid in webdownloader form
-	    addTickerTo_gridDataSet();
+	    this.downloadedValuesFromSource.Rows.Clear();
+      addTickerTo_gridDataSet();
       this.numberOfQuotesInDatabase = Quotes.GetNumberOfQuotes(this.p_quTicker);
+      if(this.numberOfQuotesInDatabase < 1)
+      // ticker's quotes are downloaded for the first time 
+      {
+        this.resetAndImportTicker();
+      }
+      // in all these cases some ticker's quotes are in the database
+      // and the options choosen by the user in the web downloader form are checked
+      else if(this.p_myForm.IsOnlyAfterLastQuoteSelected && 
+              this.numberOfQuotesInDatabase >= 1)
+      {
+        this.downloadTickerAfterLastQuote();
+      }
+      else if(this.p_myForm.IsBeforeAndAfterSelected &&
+              this.numberOfQuotesInDatabase >= 1)
+      {
+        this.downloadTickerBeforeFirstQuote();
+        this.downloadTickerAfterLastQuote();
+      }
+      else if(this.p_myForm.IsOverWriteNoSelected &&
+              this.numberOfQuotesInDatabase >= 1)
+      {
+        this.resetStartDateIfNecessary(); 
+        this.checkForNewAdjustedAndContinueOrStop();
+      }
+      else if(this.p_myForm.IsOverWriteYesSelected &&
+        this.numberOfQuotesInDatabase >= 1)
+      {
+        this.resetAndImportTicker();
+      }
+
+        // ticker's quotes are downloaded for the first time or
+        // the user has chosen to download all quotes
+     
+
+      /*
+      
       if(this.numberOfQuotesInDatabase>0 && p_myForm.IsUpdateOptionSelected)
       // there are some ticker's quotes in the database and
       // the user has chosen to download new quotes (only after last quote
@@ -261,8 +443,9 @@ namespace QuantProject.Applications.Downloader
         this.resetStartDateIfNecessary();
         setTimeFrameAndImportTickerForEachTimeFrame(200);
       }
-      //Monitor.Pulse( p_myForm.dsTickerCurrentlyDownloaded.Tables[ "Tickers" ] );
-
+      
+      */
+      
     }
     public void DownloadTicker(DateTime startingDate)
     {

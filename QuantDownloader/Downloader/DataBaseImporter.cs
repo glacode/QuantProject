@@ -63,7 +63,11 @@ namespace QuantProject.Applications.Downloader
 
 		public void ImportTicker( string ticker )
 		{
-		  string Line;
+      //all quotes are deleted if in the web downloader form
+      // the radio button "over Write existing record" is checked
+      if(this.overWriteExistingRecords)
+          Quotes.Delete(ticker);
+      string Line;
 		  string[] LineIn;
 
 		  /* string strAccessSelect = "Select * from quotes where 1=2";
@@ -99,10 +103,7 @@ namespace QuantProject.Applications.Downloader
 			  
         myDataSet.Tables["Data"].Rows.Add(myRow);*/
         
-        //the corresponding record is deleted if in the web downloader form
-        // the radio button "over Write existing record" is checked
-        if(this.overWriteExistingRecords)
-          Quotes.Delete(ticker, DateTime.Parse( LineIn[0] ));
+
         Quotes.Add(ticker,DateTime.Parse( LineIn[0] ), Double.Parse( LineIn[1] ),
                    Double.Parse(LineIn[2]), Double.Parse(LineIn[3]), Double.Parse(LineIn[4]),
                    Double.Parse(LineIn[5]), Double.Parse(LineIn[6]));
