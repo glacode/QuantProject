@@ -21,6 +21,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 using System;
 using System.Collections;
+using System.Data;
 using System.Drawing;
 using scpl;
 using QuantProject.ADT.Histories;
@@ -69,34 +70,64 @@ namespace QuantProject.Presentation.Charting
       this.chartPlots.Add( chartPlot );
     }
     #region "OnPaint"
-    private void onPaint_addLinePlot( ChartPlot chartPlot )
-    {
-      int npt=chartPlot.History.Count;
-      int startIndex = chartPlot.History.IndexOfKeyOrPrevious( chartPlot.StartDateTime );
-      int endIndex = chartPlot.History.IndexOfKeyOrPrevious( chartPlot.EndDateTime );
-      int plotLength = endIndex - startIndex + 1;
-      float [] x = new float[ plotLength ];
-      float [] y = new float[ plotLength ];
+		private void onPaint_addLinePlot_ok( ChartPlot chartPlot )
+		{
+			int npt=chartPlot.History.Count;
+			int startIndex = chartPlot.History.IndexOfKeyOrPrevious( chartPlot.StartDateTime );
+			int endIndex = chartPlot.History.IndexOfKeyOrPrevious( chartPlot.EndDateTime );
+			int plotLength = endIndex - startIndex + 1;
+			
+      DataTable dataTable = new DataTable();
+			dataTable.Columns.Add( "X" , DateTime.Now.GetType() );
+			dataTable.Columns.Add( "Y" , System.Type.GetType( "System.Single" ) );
 
-      float step=1.0F;
-      for ( int i=startIndex ; i<=endIndex ; i++ )
-      {
-        x[i-startIndex]=i*step;
-        y[i-startIndex]=(float)chartPlot.History.GetByIndex( i );
-      }
+			for ( int i=startIndex ; i<=endIndex ; i++ )
+			{
+				DataRow dataRow = dataTable.NewRow();
+				dataRow[ "X" ] = (DateTime)chartPlot.History.GetKey( i );
+				dataRow[ "Y" ] = (float)chartPlot.History.GetByIndex( i );
+				dataTable.Rows.Add( dataRow );
+			}
 
-      LinePlot lp=new LinePlot( new ArrayAdapter(x,y) );
-      Pen p=new Pen( chartPlot.Color );
-      lp.Pen=p;
+			LinePlot lp = new LinePlot();
+			lp.DataSource = dataTable;
+			lp.AbscissaData = "X";
+			lp.ValueData = "Y";
 
-//      base.Clear();
-      this.Add(lp);
-    }
-    protected override void OnPaint(System.Windows.Forms.PaintEventArgs e)
+			Pen p=new Pen( chartPlot.Color );
+			lp.Pen=p;
+
+			//      base.Clear();
+			this.Add(lp);
+		}
+		private void onPaint_addLinePlot( ChartPlot chartPlot )
+		{
+			int npt=chartPlot.History.Count;
+			int startIndex = chartPlot.History.IndexOfKeyOrPrevious( chartPlot.StartDateTime );
+			int endIndex = chartPlot.History.IndexOfKeyOrPrevious( chartPlot.EndDateTime );
+			int plotLength = endIndex - startIndex + 1;
+			float [] x = new float[ plotLength ];
+			float [] y = new float[ plotLength ];
+
+			float step=1.0F;
+			for ( int i=startIndex ; i<=endIndex ; i++ )
+			{
+				x[i-startIndex]=i*step;
+				y[i-startIndex]=(float)chartPlot.History.GetByIndex( i );
+			}
+
+//			LinePlot lp=new LinePlot( new ArrayAdapter(x,y) );  commentata per avere compilazione; rimuovi commenti per farlo funzionare con la vecchia scpl
+			Pen p=new Pen( chartPlot.Color );
+//			lp.Pen=p;
+
+			//      base.Clear();
+//			this.Add(lp);
+		}
+		protected override void OnPaint(System.Windows.Forms.PaintEventArgs e)
     {
       Console.WriteLine( "Chart.OnPaint()" );
       foreach ( ChartPlot chartPlot in this.chartPlots )
-        onPaint_addLinePlot( chartPlot );
+        onPaint_addLinePlot_ok( chartPlot );
       base.OnPaint( e );
     }
     #endregion

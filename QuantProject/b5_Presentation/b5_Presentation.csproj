@@ -119,7 +119,7 @@
                 <Reference
                     Name = "scpl"
                     AssemblyName = "scpl"
-                    HintPath = "..\..\..\..\My Documents\nostri\GLAUCO\bin\scpl.dll"
+                    HintPath = "..\b91_QuantProject\bin\Debug\scpl.dll"
                 />
             </References>
         </Build>
