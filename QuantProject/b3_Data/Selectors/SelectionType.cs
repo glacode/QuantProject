@@ -38,6 +38,7 @@ namespace QuantProject.Data.Selectors
     CloseToOpenVolatility,
     CloseToOpenLinearCorrelation,
     CloseToCloseLinearCorrelation,
-    QuotedAtEachMarketDay
+    QuotedAtEachMarketDay,
+    AverageRawOpenPrice
   }
 }
