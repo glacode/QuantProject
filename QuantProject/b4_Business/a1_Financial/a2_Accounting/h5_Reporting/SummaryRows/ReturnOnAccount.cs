@@ -11,8 +11,9 @@ namespace QuantProject.Business.Financial.Accounting.Reporting.SummaryRows
 	{
 		public ReturnOnAccount( Summary summary )
 		{
+      summary.ReturnOnAccount = summary.TotalPnl / ( summary.FinalAccountValue - summary.TotalPnl ) * 100;
       this.rowDescription = "Return on account";
-      this.rowValue = summary.TotalPnl / ( summary.FinalAccountValue - summary.TotalPnl ) * 100;
+      this.rowValue = summary.ReturnOnAccount;
     }
 	}
 }
