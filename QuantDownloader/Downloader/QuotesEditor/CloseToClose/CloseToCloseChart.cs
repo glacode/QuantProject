@@ -23,6 +23,7 @@ using System;
 using System.Drawing;
 using scpl;
 using scpl.Windows;
+using QuantProject.ADT;
 using QuantProject.ADT.Histories;
 using QuantProject.Data;
 using QuantProject.Presentation.Charting;
@@ -65,9 +66,11 @@ namespace QuantProject.Applications.Downloader
     protected void onPaint_setTimeInterval()
     {
       this.startDateTime = (DateTime) this.history.GetKey( Math.Max( 0 ,
-        this.history.IndexOfKeyOrPrevious( this.suspiciousDateTime ) - 20 ) );
+        this.history.IndexOfKeyOrPrevious( this.suspiciousDateTime ) -
+				ConstantsProvider.PrecedingDaysForVisualValidation ) );
       this.endDateTime = (DateTime) this.history.GetKey( Math.Min( this.history.Count - 1 ,
-        this.history.IndexOfKeyOrPrevious( this.suspiciousDateTime ) ) + 20 );
+        this.history.IndexOfKeyOrPrevious( this.suspiciousDateTime ) ) +
+				ConstantsProvider.PrecedingDaysForVisualValidation );
     }
     protected override void OnPaint(System.Windows.Forms.PaintEventArgs e)
     {
