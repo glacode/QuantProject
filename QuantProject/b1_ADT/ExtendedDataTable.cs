@@ -1,5 +1,7 @@
 using System;
 using System.Data;
+using System.Windows.Forms;
+
 
 namespace QuantProject.ADT
 {
@@ -56,6 +58,32 @@ namespace QuantProject.ADT
         table.Rows.RemoveAt((int)i);
       }
     }
+    
+    /// <summary>
+    /// Get an array of float corresponding to a column compatible with the float type in a given data table
+    /// </summary>
+    public static float[] GetArrayOfFloatFromColumn(DataTable table,
+                                                      string columnName)
+    {
+      int numRows = table.Rows.Count;
+      float[] arrayOfFloat = new float[numRows];
+      int index = 0;
+      try
+      {
+        for(; index!= numRows; index++)
+        {
+          arrayOfFloat[index] = (float) table.Rows[index][columnName];
+        }
 
+      }
+      catch(Exception ex)
+      {
+        MessageBox.Show(ex.ToString());
+        index = numRows;
+      }
+      return arrayOfFloat;
+      
+    }
+    
 	}
 }
