@@ -70,12 +70,18 @@ namespace QuantProject.Applications.Downloader.TickerSelectors
       this.comboBoxAvailableSelectionRules.Items.Add("Liquidity");
       this.comboBoxAvailableSelectionRules.Text = "Performance";
       this.comboBoxAvailableSelectionRules.Items.Add("Performance");
-      this.comboBoxAvailableSelectionRules.Text = "Volatility";
-      this.comboBoxAvailableSelectionRules.Items.Add("Volatility");
+      this.comboBoxAvailableSelectionRules.Text = "CloseToCloseVolatility";
+      this.comboBoxAvailableSelectionRules.Items.Add("CloseToCloseVolatility");
+      this.comboBoxAvailableSelectionRules.Text = "CloseToOpenVolatility";
+      this.comboBoxAvailableSelectionRules.Items.Add("CloseToOpenVolatility");
       this.comboBoxAvailableSelectionRules.Text = "AverageCloseToClosePerformance";
       this.comboBoxAvailableSelectionRules.Items.Add("AverageCloseToClosePerformance");
       this.comboBoxAvailableSelectionRules.Text = "CloseToCloseLinearCorrelation";
       this.comboBoxAvailableSelectionRules.Items.Add("CloseToCloseLinearCorrelation");
+      this.comboBoxAvailableSelectionRules.Text = "CloseToOpenLinearCorrelation";
+      this.comboBoxAvailableSelectionRules.Items.Add("CloseToOpenLinearCorrelation");
+      this.comboBoxAvailableSelectionRules.Text = "AverageCloseToOpenPerformance";
+      this.comboBoxAvailableSelectionRules.Items.Add("AverageCloseToOpenPerformance");
 
   	}
     public TickerSelectorForm(string groupID) : this()
@@ -350,12 +356,18 @@ namespace QuantProject.Applications.Downloader.TickerSelectors
         typeSelected = SelectionType.Liquidity;      
       else if (this.comboBoxAvailableSelectionRules.Text == "Performance")
         typeSelected = SelectionType.Performance;
-      else if (this.comboBoxAvailableSelectionRules.Text == "Volatility")
-        typeSelected = SelectionType.Volatility;
+      else if (this.comboBoxAvailableSelectionRules.Text == "CloseToCloseVolatility")
+        typeSelected = SelectionType.CloseToCloseVolatility;
+      else if (this.comboBoxAvailableSelectionRules.Text == "CloseToOpenVolatility")
+        typeSelected = SelectionType.CloseToOpenVolatility;
       else if (this.comboBoxAvailableSelectionRules.Text == "AverageCloseToClosePerformance")
         typeSelected = SelectionType.AverageCloseToClosePerformance;
       else if (this.comboBoxAvailableSelectionRules.Text == "CloseToCloseLinearCorrelation")
         typeSelected = SelectionType.CloseToCloseLinearCorrelation;
+      else if (this.comboBoxAvailableSelectionRules.Text == "CloseToOpenLinearCorrelation")
+        typeSelected = SelectionType.CloseToOpenLinearCorrelation;
+      else if (this.comboBoxAvailableSelectionRules.Text == "AverageCloseToOpenPerformance")
+        typeSelected = SelectionType.AverageCloseToOpenPerformance;
       return typeSelected;  
     }    
 
