@@ -48,13 +48,13 @@ namespace QuantProject.Business.Financial.Instruments
       quoteIdentifierList.Add( array );
     }
 
-    public static void SetCache( DateTime startDateTime , DateTime endDateTime )
-    {
-      foreach ( Object[] array in quoteIdentifierList )
-        HistoricalDataProvider.Add( ((Instrument) array[ 0 ]).Key , (BarComponent) array[ 1 ] );
-      HistoricalDataProvider.SetCachedHistories(
-        startDateTime , endDateTime );
-    }
+//    public static void SetCache( DateTime startDateTime , DateTime endDateTime )
+//    {
+//      foreach ( Object[] array in quoteIdentifierList )
+//        HistoricalDataProvider.Add( ((Instrument) array[ 0 ]).Key , (BarComponent) array[ 1 ] );
+//      HistoricalDataProvider.SetCachedHistories(
+//        startDateTime , endDateTime );
+//    }
 
     public static History GetOpenHistory( string instrumentKey )
     {
