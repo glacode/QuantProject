@@ -46,6 +46,7 @@ namespace QuantProject.Applications.Downloader
 		private OleDbDataAdapter oleDbDataAdapter;
 		private System.Windows.Forms.ContextMenu contextMenuTickerViewer;
 		private System.Windows.Forms.MenuItem menuItemValidateCurrentRows;
+		private System.Windows.Forms.MenuItem menuItemDownloadCurrentRows;
 		private DataTable tableTickers;
 
 		public TickerViewer()
@@ -86,9 +87,10 @@ namespace QuantProject.Applications.Downloader
 			this.label1 = new System.Windows.Forms.Label();
 			this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
 			this.dataGrid1 = new System.Windows.Forms.DataGrid();
-			this.buttonFindTickers = new System.Windows.Forms.Button();
 			this.contextMenuTickerViewer = new System.Windows.Forms.ContextMenu();
 			this.menuItemValidateCurrentRows = new System.Windows.Forms.MenuItem();
+			this.buttonFindTickers = new System.Windows.Forms.Button();
+			this.menuItemDownloadCurrentRows = new System.Windows.Forms.MenuItem();
 			((System.ComponentModel.ISupportInitialize)(this.dataGrid1)).BeginInit();
 			this.SuspendLayout();
 			// 
@@ -121,6 +123,18 @@ namespace QuantProject.Applications.Downloader
 			this.dataGrid1.Size = new System.Drawing.Size(288, 432);
 			this.dataGrid1.TabIndex = 2;
 			// 
+			// contextMenuTickerViewer
+			// 
+			this.contextMenuTickerViewer.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
+																									this.menuItemValidateCurrentRows,
+																									this.menuItemDownloadCurrentRows});
+			// 
+			// menuItemValidateCurrentRows
+			// 
+			this.menuItemValidateCurrentRows.Index = 0;
+			this.menuItemValidateCurrentRows.Text = "Validate selected tickers";
+			this.menuItemValidateCurrentRows.Click += new System.EventHandler(this.menuItemValidateCurrentRows_Click);
+			// 
 			// buttonFindTickers
 			// 
 			this.buttonFindTickers.Location = new System.Drawing.Point(216, 8);
@@ -130,16 +144,11 @@ namespace QuantProject.Applications.Downloader
 			this.buttonFindTickers.Text = "Go";
 			this.buttonFindTickers.Click += new System.EventHandler(this.buttonFindTickers_Click);
 			// 
-			// contextMenuTickerViewer
+			// menuItemDownloadCurrentRows
 			// 
-			this.contextMenuTickerViewer.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
-																									this.menuItemValidateCurrentRows});
-			// 
-			// menuItemValidateCurrentRows
-			// 
-			this.menuItemValidateCurrentRows.Index = 0;
-			this.menuItemValidateCurrentRows.Text = "Validate current rows";
-			this.menuItemValidateCurrentRows.Click += new System.EventHandler(this.menuItemValidateCurrentRows_Click);
+			this.menuItemDownloadCurrentRows.Index = 1;
+			this.menuItemDownloadCurrentRows.Text = "Download quotes of selected tickers";
+			this.menuItemDownloadCurrentRows.Click += new System.EventHandler(this.menuItemDownloadCurrentRows_Click);
 			// 
 			// TickerViewer
 			// 
@@ -226,7 +235,7 @@ namespace QuantProject.Applications.Downloader
 			DataTable dataTableOfDataGrid1 = (DataTable)this.dataGrid1.DataSource;
 			DataTable tableOfSelectedTickers = dataTableOfDataGrid1.Copy();
 			tableOfSelectedTickers.Clear();
-			// so the two tables have the same structure
+			// doing so, the two tables have the same structure
 			int indexOfRow = 0;
 			while(indexOfRow != dataTableOfDataGrid1.Rows.Count)
 			{
@@ -243,9 +252,24 @@ namespace QuantProject.Applications.Downloader
 
 		private void menuItemValidateCurrentRows_Click(object sender, System.EventArgs e)
 		{
+			DataTable tableOfSelectedTickers = this.getTableOfSelectedTickers();
+			if(tableOfSelectedTickers.Rows.Count == 0)
+			{
+				MessageBox.Show("No ticker has been selected!\n\n" + 
+								"Click on the grey area on the left to " +
+								"select a ticker", "QuantDownloader error message",
+								MessageBoxButtons.OK, MessageBoxIcon.Error);
+				return;
+			}
 			QuantProject.Applications.Downloader.Validate.ValidateForm validateForm = 
 				new Validate.ValidateForm(this.getTableOfSelectedTickers());
 			validateForm.Show();
+		}
+
+		private void menuItemDownloadCurrentRows_Click(object sender, System.EventArgs e)
+		{
+			WebDownloader webDownloader = new WebDownloader(this.getTableOfSelectedTickers());
+			webDownloader.Show();
 		}
 		
 
