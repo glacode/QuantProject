@@ -30,19 +30,18 @@ using QuantProject.Business.Financial.Accounting;
 using QuantProject.Business.Financial.Instruments;
 using QuantProject.Business.Strategies;
 
-namespace QuantProject.Business.Financial.Testing
+namespace QuantProject.Business.Testing
 {
   /// <summary>
   /// Summary description for WalkForwardTester.
   /// </summary>
-  public class WalkForwardTester
+  public class WalkForwardTester : BackTester
   {
     private DateTime startDateTime;
     private DateTime endDateTime;
     private int inSampleWindowNumDays;
     private int outOfSampleWindowNumDays;
     private TradingSystems tradingSystems = new TradingSystems();
-    private Accounts accounts = new Accounts();
     private TestWindows testWindows;
 
     public DateTime StartDateTime
@@ -90,8 +89,6 @@ namespace QuantProject.Business.Financial.Testing
       }
     }
 
-    public Parameters Parameters = new Parameters();
-
     public WalkForwardTester()
     {
     }
@@ -101,21 +98,12 @@ namespace QuantProject.Business.Financial.Testing
       tradingSystems.Add( tradingSystem );
     }
 
-    public void Add( Account account )
-    {
-      accounts.AddAccount( account );
-    }
-
-    public Account GetAccount( String accountName )
-    {
-      return accounts.GetAccount( accountName );
-    }
-
     #region "Test"
 
     private Parameters getOptimizedParameters( TestWindow testWindow )
     {
-      Tester tester = new Tester( testWindow , this.tradingSystems , this.GetAccount( "account" ).CashAmount );
+      Tester tester = new Tester( testWindow , this.tradingSystems ,
+        this.Account.CashAmount );
       tester.Parameters = this.Parameters.Copy();
       tester.Optimize();
       return tester.OptimalParameters;
@@ -123,8 +111,8 @@ namespace QuantProject.Business.Financial.Testing
 
     private void testNextStepOutOfSample( Parameters parameters , TestWindow testWindow )
     {
-      Tester tester = new Tester( testWindow , this.tradingSystems , accounts.GetAccount( "account" ).CashAmount );
-      tester.Account = this.GetAccount( "account" );
+      Tester tester = new Tester( testWindow , this.tradingSystems , this.Account.CashAmount );
+      tester.Account = this.Account;
       tester.Parameters = parameters;
       tester.Test();
     }
@@ -146,9 +134,10 @@ namespace QuantProject.Business.Financial.Testing
       while ( ! testWindows.IsComplete() )
       {
         testNextStep();
+        Console.WriteLine( lastDateTime.ToString() );
         lastDateTime = testWindows.OutOfSampleWindow.EndDateTime;
       }
-      this.accounts.ReportToConsole( lastDateTime );
+//      this.accounts.ReportToConsole( lastDateTime );
       //this.accounts.Serialize( "c:\\quantProject.xml" );
     }
 
