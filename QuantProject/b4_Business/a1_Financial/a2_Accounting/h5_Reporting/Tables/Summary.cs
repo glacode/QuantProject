@@ -127,10 +127,13 @@ namespace QuantProject.Business.Financial.Accounting.Reporting.Tables
 //    }
     private void getSummary_setRow( SummaryRow summaryRow , DataTable summaryDataTable )
     {
-      DataRow summary = summaryDataTable.NewRow();
-      summary[ "Information" ] = summaryRow.Description;
-      summary[ "Value" ] = summaryRow.Value;
-      summaryDataTable.Rows.Add( summary );
+      if ( summaryRow.Value != null )
+      {
+        DataRow summary = summaryDataTable.NewRow();
+        summary[ "Information" ] = summaryRow.Description;
+        summary[ "Value" ] = summaryRow.Value;
+        summaryDataTable.Rows.Add( summary );
+      }
     }
     private void getSummaryTable_setRows( DataTable summaryDataTable )
     {
