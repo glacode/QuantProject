@@ -1,9 +1,10 @@
 using System;
 using System.Collections;
 using System.Data;
+using QuantProject.ADT;
 using QuantProject.ADT.Histories;
-using QuantProject.DataAccess.Tables;
 using QuantProject.Business.Validation;
+using QuantProject.Data.DataTables;
 
 namespace QuantProject.Business.Validation.Validators
 {
@@ -13,15 +14,8 @@ namespace QuantProject.Business.Validation.Validators
   public class RangeToRangeValidator : IValidator
   {
     private DataTable dataTableToBeValidated;
-    private double suspiciousRatio = 3;
 
 		private ArrayList rangeToRangeVisuallyValidated;
-
-    public double SuspiciousRatio
-    {
-      get { return this.suspiciousRatio; }
-      set { this.suspiciousRatio = value; }
-    }
 
     public RangeToRangeValidator()
     {
@@ -57,7 +51,7 @@ namespace QuantProject.Business.Validation.Validators
     private void validate_currentTicker_withHistories_validateRow(
       DataRow quoteRow , double currentValue , double averageValue )
     {
-      if ( ( Math.Abs( currentValue / averageValue ) > this.suspiciousRatio ) &&
+      if ( ( Math.Abs( currentValue / averageValue ) > ConstantsProvider.SuspiciousRatio ) &&
 				( this.rangeToRangeVisuallyValidated.IndexOf( quoteRow[ "quDate" ] ) < 0 ) )
         // the current close to close value is suspiciously larger
         // than the average close to close ratio
@@ -86,7 +80,8 @@ namespace QuantProject.Business.Validation.Validators
     }
     private int validate_currentTicker( string currentTicker , int currentTickerStartingRowIndex )
     {
-			this.rangeToRangeVisuallyValidated = VisuallyValidatedQuotes.GetRangeToRangeValidated( currentTicker );
+			this.rangeToRangeVisuallyValidated =
+				QuantProject.DataAccess.Tables.VisuallyValidatedQuotes.GetRangeToRangeValidated( currentTicker );
       History rangeToRange = new History();
       History rangeToRangeMovingAverage;
       int nextTickerStartingRowIndex =
@@ -102,7 +97,7 @@ namespace QuantProject.Business.Validation.Validators
     /// Validates range to range divergencies
     /// </summary>
     /// <param name="dataTableToBeValidated">Quote rows to be validated</param>
-    public void Validate( DataTable dataTableToBeValidated )
+    public void Validate( Quotes dataTableToBeValidated )
     {
       int currentRowIndex = 0;
       string currentTicker;
