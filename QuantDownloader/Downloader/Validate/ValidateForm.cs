@@ -5,6 +5,8 @@ using System.Collections;
 using System.ComponentModel;
 using System.Windows.Forms;
 
+using QuantProject.Business.Validation;
+
 namespace QuantProject.Applications.Downloader.Validate
 {
 	/// <summary>

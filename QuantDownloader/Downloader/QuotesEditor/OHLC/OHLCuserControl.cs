@@ -27,6 +27,7 @@ using System.Drawing;
 using System.Data;
 using System.Windows.Forms;
 using QuantProject.Applications.Downloader.Validate;
+using QuantProject.Business.Validation;
 
 namespace QuantProject.Applications.Downloader
 {

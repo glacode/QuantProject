@@ -1,5 +1,6 @@
 using System;
 using QuantProject.Applications.Downloader.Validate;
+using QuantProject.Business.Validation;
 using QuantProject.DataAccess.Tables;
 
 namespace QuantProject.Applications.Downloader

@@ -7,6 +7,7 @@ using System.Windows.Forms;
 using scpl;
 using QuantProject.ADT;
 using QuantProject.ADT.Histories;
+using QuantProject.Business.Validation;
 using QuantProject.Data;
 using QuantProject.Applications.Downloader.Validate;
 
