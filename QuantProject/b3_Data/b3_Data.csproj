@@ -131,6 +131,11 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "ExtendedDataTable.cs"
+                    SubType = "Component"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "FilterBuilder.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
