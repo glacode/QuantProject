@@ -69,7 +69,7 @@ namespace QuantProject.DataAccess
       //the following code, paying attention to the version number:
       //this.updatingMethods.Add(yourVersionNumber,
       //						new updatingMethodHandler(this.yourMethodName))
-
+      this.updatingMethods.Add( 2 , new updatingMethodHandler(this.updateToVersion2) );
     }
 		public DataBaseVersionManager(OleDbConnection oleDbConnection)
 		{
@@ -94,6 +94,19 @@ namespace QuantProject.DataAccess
 		}
 		
     #endregion
+
+    #region "updating methods"
+    private void updateToVersion2()
+    {
+      string command =
+        "create table validatedTickers " +
+        "( vtTicker TEXT(8) , vtStartDate DATETIME , vtEndDate DATETIME , vtDate DATETIME, " +
+        "CONSTRAINT myKey PRIMARY KEY ( vtTicker ) )";
+      OleDbCommand oleDbCommand = new OleDbCommand( command , this.oleDbConnection );
+      oleDbCommand.ExecuteNonQuery();
+    }
+    #endregion
+
     #region "UpdateDataBaseStructure"
     private int getDataBaseVersionNumber()
     {
