@@ -32,7 +32,7 @@ namespace QuantProject.Business.Financial.Accounting.Commissions
 	[Serializable]
   public class Commission
 	{
-		private Transaction transaction;
+		protected Transaction transaction;
 
 		public virtual double Value
 		{
