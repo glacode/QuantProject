@@ -22,6 +22,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 using System;
 using System.Collections;
 
+using QuantProject.Business.DataProviders;
 using QuantProject.Business.Financial.Accounting;
 using QuantProject.Business.Timing;
 using QuantProject.Data;
@@ -36,6 +37,9 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardOneRank
 	{
 		private int numberTickersToBeChosen;
 
+		private IHistoricalQuoteProvider historicalQuoteProvider =
+			new HistoricalAdjustedQuoteProvider();
+
 		public ChosenTickers( int numberTickersToBeChosen )
 		{
 			this.numberTickersToBeChosen = numberTickersToBeChosen;
@@ -48,9 +52,9 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardOneRank
 			EndOfDayDateTime yesterdayAtClose = new
 				EndOfDayDateTime( account.EndOfDayTimer.GetCurrentTime().DateTime.AddDays( - 1 ) ,
 				EndOfDaySpecificTime.MarketClose );
-			double yesterdayMarketValueAtClose = HistoricalDataProvider.GetMarketValue(
-				ticker ,
-				yesterdayAtClose.GetNearestExtendedDateTime() );
+			double yesterdayMarketValueAtClose =
+					this.historicalQuoteProvider.GetMarketValue( ticker ,
+				yesterdayAtClose );
 			if ( todayMarketValueAtClose > yesterdayMarketValueAtClose )
 				// today close is higher than yesterday close
 				this.Add( ticker , ticker );

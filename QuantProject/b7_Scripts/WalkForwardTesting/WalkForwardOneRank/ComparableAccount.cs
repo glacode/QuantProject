@@ -21,6 +21,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 using System;
 
+using QuantProject.Business.DataProviders;
 using QuantProject.Business.Financial.Accounting;
 using QuantProject.Business.Financial.Accounting.Reporting;
 using QuantProject.Business.Financial.Ordering;
@@ -35,6 +36,9 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardOneRank
 	public class ComparableAccount : Account
 	{
     private double maxAcceptableDrawDown = 0.3;
+
+		private IHistoricalQuoteProvider historicalQuoteProvider =
+			new HistoricalAdjustedQuoteProvider();
 
 		private AccountReport accountReport;
 
@@ -58,7 +62,8 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardOneRank
 			double returnValue;
 			if ( this.accountReport == null )
 				this.accountReport = this.CreateReport( this.Key , 7 ,
-					this.EndOfDayTimer.GetCurrentTime() , this.Key );
+					this.EndOfDayTimer.GetCurrentTime() , this.Key ,
+					this.historicalQuoteProvider );
 			if ( ( this.accountReport.Summary.MaxEquityDrawDown >= this.maxAcceptableDrawDown )
 				|| ( this.accountReport.Summary.TotalPnl <= this.accountReport.Summary.BuyAndHoldPercentageReturn ) )
 				returnValue = Double.MinValue;

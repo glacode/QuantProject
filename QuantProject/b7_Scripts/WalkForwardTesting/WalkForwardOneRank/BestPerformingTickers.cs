@@ -23,6 +23,7 @@ using System;
 using System.Collections;
 
 using QuantProject.ADT;
+using QuantProject.Business.DataProviders;
 using QuantProject.Business.Financial.Accounting;
 using QuantProject.Business.Financial.Ordering;
 using QuantProject.Business.Timing;
@@ -38,6 +39,9 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardOneRank
 	{
 		private int numberBestPerformingTickers;
 		private int numberDaysForPerformanceCalculation;
+
+		private IHistoricalQuoteProvider historicalQuoteProvider =
+			new HistoricalAdjustedQuoteProvider();
 
 		private double calculatedTickers = 0;
 
@@ -68,8 +72,10 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardOneRank
 				new EndOfDayDateTime( dateTime.AddYears( -1 ).AddDays( -1 ) ,
 				EndOfDaySpecificTime.MarketOpen ) );
 			ComparableAccount account = new ComparableAccount( ticker , historicalEndOfDayTimer ,
-				new HistoricalEndOfDayDataStreamer( historicalEndOfDayTimer ) ,
-				new HistoricalEndOfDayOrderExecutor( historicalEndOfDayTimer ) );
+				new HistoricalEndOfDayDataStreamer( historicalEndOfDayTimer ,
+					this.historicalQuoteProvider ) ,
+				new HistoricalEndOfDayOrderExecutor( historicalEndOfDayTimer ,
+					this.historicalQuoteProvider ) );
 			OneRank oneRank = new OneRank( account ,
 				dateTime.AddDays( this.numberDaysForPerformanceCalculation ) );
 			double goodness = account.Goodness;  // forces Goodness computation here (for a better ProgressBar effect)
