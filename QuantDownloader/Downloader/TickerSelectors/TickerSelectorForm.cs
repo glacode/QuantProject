@@ -56,6 +56,7 @@ namespace QuantProject.Applications.Downloader.TickerSelectors
     private System.Windows.Forms.ComboBox comboBoxAvailableSelectionRules;
     private System.Windows.Forms.TextBox textBoxMaxNumOfReturnedTickers;
     private System.Windows.Forms.Label label3;
+    private System.Windows.Forms.CheckBox checkBoxASCMode;
     private DataTable tableOfSelectedTickers;
 
 		public TickerSelectorForm()
@@ -65,10 +66,10 @@ namespace QuantProject.Applications.Downloader.TickerSelectors
       this.dateTimePickerLastDate.Value = DateTime.Now;
       this.dataGrid1.ContextMenu = new TickerViewerMenu(this);
       //TODO: complete comboBox's code with all possible types of selections
-      this.comboBoxAvailableSelectionRules.Text = "Most liquid instruments";
-      this.comboBoxAvailableSelectionRules.Items.Add("Most liquid instruments");
-      this.comboBoxAvailableSelectionRules.Text = "Best performing instruments";
-      this.comboBoxAvailableSelectionRules.Items.Add("Best performing instruments");
+      this.comboBoxAvailableSelectionRules.Text = "Liquidity";
+      this.comboBoxAvailableSelectionRules.Items.Add("Liquidity");
+      this.comboBoxAvailableSelectionRules.Text = "Performance";
+      this.comboBoxAvailableSelectionRules.Items.Add("Performance");
 
   	}
     public TickerSelectorForm(string groupID) : this()
@@ -122,6 +123,7 @@ namespace QuantProject.Applications.Downloader.TickerSelectors
       this.dateTimePickerLastDate = new System.Windows.Forms.DateTimePicker();
       this.dateTimePickerFirstDate = new System.Windows.Forms.DateTimePicker();
       this.splitter1 = new System.Windows.Forms.Splitter();
+      this.checkBoxASCMode = new System.Windows.Forms.CheckBox();
       ((System.ComponentModel.ISupportInitialize)(this.dataGrid1)).BeginInit();
       this.panel2.SuspendLayout();
       this.groupBoxSelectionRule.SuspendLayout();
@@ -162,6 +164,7 @@ namespace QuantProject.Applications.Downloader.TickerSelectors
       // groupBoxSelectionRule
       // 
       this.groupBoxSelectionRule.Controls.AddRange(new System.Windows.Forms.Control[] {
+                                                                                        this.checkBoxASCMode,
                                                                                         this.label3,
                                                                                         this.comboBoxAvailableSelectionRules,
                                                                                         this.label2,
@@ -174,7 +177,7 @@ namespace QuantProject.Applications.Downloader.TickerSelectors
                                                                                         this.dateTimePickerFirstDate});
       this.groupBoxSelectionRule.Location = new System.Drawing.Point(8, 16);
       this.groupBoxSelectionRule.Name = "groupBoxSelectionRule";
-      this.groupBoxSelectionRule.Size = new System.Drawing.Size(376, 144);
+      this.groupBoxSelectionRule.Size = new System.Drawing.Size(376, 184);
       this.groupBoxSelectionRule.TabIndex = 14;
       this.groupBoxSelectionRule.TabStop = false;
       this.groupBoxSelectionRule.Text = "Single Selection rule";
@@ -268,6 +271,14 @@ namespace QuantProject.Applications.Downloader.TickerSelectors
       this.splitter1.TabIndex = 8;
       this.splitter1.TabStop = false;
       // 
+      // checkBoxASCMode
+      // 
+      this.checkBoxASCMode.Location = new System.Drawing.Point(176, 144);
+      this.checkBoxASCMode.Name = "checkBoxASCMode";
+      this.checkBoxASCMode.Size = new System.Drawing.Size(152, 24);
+      this.checkBoxASCMode.TabIndex = 27;
+      this.checkBoxASCMode.Text = "Order by ASC mode";
+      // 
       // TickerSelectorForm
       // 
       this.AutoScaleBaseSize = new System.Drawing.Size(5, 13);
@@ -287,32 +298,10 @@ namespace QuantProject.Applications.Downloader.TickerSelectors
 		#endregion
 
 
-
-
-
-
-		
-	
     // implementation of ITickerSelector interface
 
 		public DataTable GetTableOfSelectedTickers()
 		{
-			/*
-      DataTable dataTableOfDataGrid1 = (DataTable)this.dataGrid1.DataSource;
-			DataTable tableOfSelectedTickers = new DataTable();
-      TickerDataTable.AddColumnsOfTickerTable(tableOfSelectedTickers);
-			int indexOfRow = 0;
-			while(indexOfRow != dataTableOfDataGrid1.Rows.Count)
-			{
-				if(this.dataGrid1.IsSelected(indexOfRow))
-				{
-					DataRow dataRow = tableOfSelectedTickers.NewRow(); 
-					dataRow["Ticker"] = (string)dataTableOfDataGrid1.Rows[indexOfRow][0];
-					dataRow["CompanyName"] = (string)dataTableOfDataGrid1.Rows[indexOfRow][1];
-					tableOfSelectedTickers.Rows.Add(dataRow);
-				}
-				indexOfRow++;
-			}*/
 			return TickerSelector.GetTableOfManuallySelectedTickers(this.dataGrid1);
 		}
 
@@ -330,26 +319,31 @@ namespace QuantProject.Applications.Downloader.TickerSelectors
 
     private void buttonSelectTickers_Click(object sender, System.EventArgs e)
     {
-        SelectionRule rule = new SelectionRule(this.GetTypeOfRuleSelectedByUser(), this.textBoxGroupID.Text, 
-                                            this.dateTimePickerFirstDate.Value,
-                                            this.dateTimePickerLastDate.Value,
-                                            Int32.Parse(this.textBoxMaxNumOfReturnedTickers.Text));
-        TickerSelector selector;
-        if(this.textBoxGroupID.Text != "")
-          selector= new TickerSelector(rule);
-        else
-          selector= new TickerSelector(this.tableOfSelectedTickers,rule);
-        this.dataGrid1.DataSource = selector.GetTableOfSelectedTickers();
-        this.dataGrid1.Refresh();
+      Cursor.Current = Cursors.WaitCursor;  
+      TickerSelector selector;
+      if(this.textBoxGroupID.Text != "")
+        selector= new TickerSelector(this.getTypeOfRuleSelectedByUser(), this.checkBoxASCMode.Checked, this.textBoxGroupID.Text, 
+                                      this.dateTimePickerFirstDate.Value,
+                                      this.dateTimePickerLastDate.Value,
+                                      Int32.Parse(this.textBoxMaxNumOfReturnedTickers.Text));
+      else
+        selector= new TickerSelector(this.tableOfSelectedTickers, this.getTypeOfRuleSelectedByUser(),
+                                      this.checkBoxASCMode.Checked, this.textBoxGroupID.Text, 
+                                      this.dateTimePickerFirstDate.Value,
+                                      this.dateTimePickerLastDate.Value,
+                                      Int32.Parse(this.textBoxMaxNumOfReturnedTickers.Text));
+      this.dataGrid1.DataSource = selector.GetTableOfSelectedTickers();
+      this.dataGrid1.Refresh();
+      Cursor.Current = Cursors.Default;
     }
 
-    private SelectionType GetTypeOfRuleSelectedByUser()
+    private SelectionType getTypeOfRuleSelectedByUser()
     {
-      SelectionType typeSelected = SelectionType.MostLiquid;
-      if(this.comboBoxAvailableSelectionRules.Text == "Most liquid instruments")
-        typeSelected = SelectionType.MostLiquid;      
-      else if (this.comboBoxAvailableSelectionRules.Text == "Best performing instruments")
-        typeSelected = SelectionType.BestPerformer;
+      SelectionType typeSelected = SelectionType.Liquidity;
+      if(this.comboBoxAvailableSelectionRules.Text == "Liquidity")
+        typeSelected = SelectionType.Liquidity;      
+      else if (this.comboBoxAvailableSelectionRules.Text == "Performance")
+        typeSelected = SelectionType.Performance;
       return typeSelected;  
     }    
 
