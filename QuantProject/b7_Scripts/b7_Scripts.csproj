@@ -97,6 +97,11 @@
                     Project = "{6AC0A2C1-B926-4921-A685-F5AA80E81C94}"
                     Package = "{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}"
                 />
+                <Reference
+                    Name = "System.Drawing"
+                    AssemblyName = "System.Drawing"
+                    HintPath = "..\..\..\..\..\..\WINDOWS\Microsoft.NET\Framework\v1.0.3705\System.Drawing.dll"
+                />
             </References>
         </Build>
         <Files>
@@ -147,6 +152,16 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "SimpleTesting\OneRank\EndOfDayOneRank.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "SimpleTesting\OneRank\OneRank.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "SimpleTesting\OneRank\RunOneRank.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
@@ -167,16 +182,6 @@
                     BuildAction = "Compile"
                 />
                 <File
-                    RelPath = "TickerSelectionTesting\DataStreamerHandler.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "TickerSelectionTesting\RunBestTwoIndipendent.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
                     RelPath = "WalkForwardTesting\MSFTwalkForward\RunMSFTwalkForward.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
@@ -187,9 +192,39 @@
                     BuildAction = "Compile"
                 />
                 <File
-                    RelPath = "WalkForwardTesting\WalkForwardOneRank\DataStreamerHandler.cs"
+                    RelPath = "WalkForwardTesting\WalkForwardOneRank\BestPerformingTickers.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "WalkForwardTesting\WalkForwardOneRank\ChosenTickers.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "WalkForwardTesting\WalkForwardOneRank\ComparableAccount.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "WalkForwardTesting\WalkForwardOneRank\EligibleTickers.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "WalkForwardTesting\WalkForwardOneRank\EndOfDayTimerHandler.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "WalkForwardTesting\WalkForwardOneRank\ProgressBarForm.cs"
+                    SubType = "Form"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "WalkForwardTesting\WalkForwardOneRank\ProgressBarForm.resx"
+                    DependentUpon = "ProgressBarForm.cs"
+                    BuildAction = "EmbeddedResource"
                 />
                 <File
                     RelPath = "WalkForwardTesting\WalkForwardOneRank\RunWalkForwardOneRank.cs"
