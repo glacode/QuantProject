@@ -173,7 +173,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardOneRank
 		private void fiveMinutesBeforeMarketCloseEventHandler_openPosition(
 			string ticker )
 		{
-			double maxPositionValue = this.account.CashAmount / this.numberOfTickersToBeChosen;
+			double maxPositionValue = this.account.GetMarketValue() / this.numberOfTickersToBeChosen;
 			long sharesToBeBought = OneRank.MaxBuyableShares( ticker ,
 				maxPositionValue , this.account.DataStreamer );
 			this.account.AddOrder( new Order( OrderType.MarketBuy ,
