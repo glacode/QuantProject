@@ -26,6 +26,7 @@ using System.Windows.Forms;
 using QuantProject.DataAccess.Tables;
 using QuantProject.Data.DataTables;
 using QuantProject.Data.Selectors;
+//using QuantProject.Applications.Downloader.TickerSelectors;
 
 namespace QuantProject.Applications.Downloader.TickerSelectors
 {
@@ -45,6 +46,7 @@ namespace QuantProject.Applications.Downloader.TickerSelectors
     private MenuItem menuItemComputeCloseToCloseRatios = 
                                     new MenuItem("C&ompute Close to Close ratios");
     private MenuItem menuItemQuotesEditor = new MenuItem("&Open Quotes Editor");
+    private MenuItem menuItemTickerSelectorForm = new MenuItem("&Open Ticker Selector");
     
     public TickerViewerMenu(Form ITickerSelectorForm) 
     {
@@ -56,12 +58,14 @@ namespace QuantProject.Applications.Downloader.TickerSelectors
       this.menuItemCopy.Click += new System.EventHandler(this.copySelectedTickers);
       this.menuItemQuotesEditor.Click += new System.EventHandler(this.openQuotesEditor);
       this.menuItemComputeCloseToCloseRatios.Click += new System.EventHandler(this.computeCloseToCloseRatios);
-      
+      this.menuItemTickerSelectorForm.Click += new System.EventHandler(this.openTickerSelectorForm);
+
       this.MenuItems.Add(this.menuItemSelectAll);
       this.MenuItems.Add(this.menuItemDownload);
       this.MenuItems.Add(this.menuItemValidate);
       this.MenuItems.Add(this.menuItemCopy);
       this.MenuItems.Add(this.menuItemQuotesEditor);
+      this.MenuItems.Add(this.menuItemTickerSelectorForm);
       this.MenuItems.Add(this.menuItemComputeCloseToCloseRatios);
       
     }
@@ -142,6 +146,14 @@ namespace QuantProject.Applications.Downloader.TickerSelectors
 
 
     }
-    
+    private void openTickerSelectorForm(object sender, System.EventArgs e)
+    {
+      ITickerSelector iTickerSelector = (ITickerSelector)this.parentForm;
+      TickerDataTable tableOfSelectedTickers = iTickerSelector.GetTableOfSelectedTickers();      
+      TickerSelectorForm selectorForm = new TickerSelectorForm(tableOfSelectedTickers);
+      selectorForm.Show();
+    }
+
+
   } 
 }
