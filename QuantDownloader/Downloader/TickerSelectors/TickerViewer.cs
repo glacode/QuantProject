@@ -416,19 +416,19 @@ namespace QuantProject.Applications.Downloader.TickerSelectors
       DataGridTableStyle dataGrid1TableStyle = new DataGridTableStyle();
       dataGrid1TableStyle.MappingName = this.tableTickers.TableName;
       dataGrid1TableStyle.ColumnHeadersVisible = true;
-      dataGrid1TableStyle.ReadOnly = true;
-      dataGrid1TableStyle.SelectionBackColor = Color.DimGray ;
+      dataGrid1TableStyle.ReadOnly = false;
+      dataGrid1TableStyle.SelectionBackColor = Color.DimGray;
 			
       DataGridTextBoxColumn columnStyle_tiTicker = new DataGridTextBoxColumn();
       columnStyle_tiTicker.MappingName = "tiTicker";
       columnStyle_tiTicker.HeaderText = "Ticker";
-      columnStyle_tiTicker.TextBox.Enabled = false;
+      columnStyle_tiTicker.TextBox.Enabled = true;
       columnStyle_tiTicker.NullText = "";
       columnStyle_tiTicker.Width = 60;
       DataGridTextBoxColumn columnStyle_tiCompanyName = new DataGridTextBoxColumn();
       columnStyle_tiCompanyName.MappingName = "tiCompanyName";
       columnStyle_tiCompanyName.HeaderText = "Company Name";
-      columnStyle_tiCompanyName.TextBox.Enabled = false;
+      columnStyle_tiCompanyName.TextBox.Enabled = true;
       columnStyle_tiCompanyName.NullText = "";
       columnStyle_tiCompanyName.Width = 120;
   
