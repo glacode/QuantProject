@@ -38,11 +38,7 @@ namespace QuantProject.Applications.Downloader.Validate
 			// Required for Windows Form Designer support
 			//
 			InitializeComponent();
-
-      this.validateDataGrid.Location = new System.Drawing.Point(16, 56);
-      this.validateDataGrid.Width = this.Width - 32;
-      this.validateDataGrid.Height = this.Height - 130;
-      this.Controls.Add( this.validateDataGrid );
+			initializeValidateDataGrid();
 			this.buttonGoValidateCurrentSelection.Visible = false;
 			this.tableOfTickersToBeValidated = null;
 
@@ -51,6 +47,7 @@ namespace QuantProject.Applications.Downloader.Validate
 		public ValidateForm(DataTable dataTable)
 		{
 			InitializeComponent();
+			initializeValidateDataGrid();
 			this.labelTickerIsLike.Visible = false;
 			this.textBoxTickerIsLike.Visible = false;
 			this.buttonGo.Visible = false;
@@ -59,6 +56,14 @@ namespace QuantProject.Applications.Downloader.Validate
 			// these two members are not used if the object is created
 			// with the data table
 			this.tableOfTickersToBeValidated = dataTable;
+		}
+
+		private void initializeValidateDataGrid()
+		{
+			this.validateDataGrid.Location = new System.Drawing.Point(16, 56);
+			this.validateDataGrid.Width = this.Width - 32;
+			this.validateDataGrid.Height = this.Height - 130;
+			this.Controls.Add( this.validateDataGrid );
 		}
 		/// <summary>
 		/// Clean up any resources being used.
