@@ -54,6 +54,7 @@ namespace QuantProject.DataAccess
 		{
 			try
 			{
+				this.dataTable = new DataTable();
 				this.oleDbDataAdapter =
 					new OleDbDataAdapter( selectStatement , ConnectionProvider.OleDbConnection );
 				OleDbCommandBuilder oleDbCommandBuilder = new OleDbCommandBuilder( oleDbDataAdapter );
