@@ -37,6 +37,11 @@ namespace QuantProject.Data.DataProviders
 		private ExtendedDateTime endDateTime;
 		private ExtendedDateTime currentDateTime;
 
+		public ExtendedDateTime CurrentDateTime
+		{
+			get { return this.currentDateTime; }
+		}
+
 		public Timer( ExtendedDateTime startDateTime ,
 			ExtendedDateTime endDateTime )
 		{
