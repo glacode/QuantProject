@@ -40,21 +40,23 @@ namespace QuantProject.Applications.Downloader
     public string Ticker
     {
       get { return this.ticker; }
-      set { this.ticker = value; }
+      set
+			{
+				this.ticker = value;
+				this.Clear();
+				this.Add( HistoricalDataProvider.GetAdjustedCloseHistory( this.ticker ) );
+			}
     }
 
 		public QuotesChart()
 		{
-			//
-			// TODO: Add constructor logic here
-			//
 		}
 
     protected override void OnPaint( System.Windows.Forms.PaintEventArgs e )
     {
       Console.WriteLine( "QuotesChart.PaintingHandler()" );
-      this.Clear();
-      this.Add( HistoricalDataProvider.GetCloseHistory( this.ticker ) );
+//      this.Clear();
+//      this.Add( HistoricalDataProvider.GetCloseHistory( this.ticker ) );
       base.OnPaint( e );
     }
 	}
