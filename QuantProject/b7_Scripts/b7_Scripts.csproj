@@ -143,6 +143,16 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "SimpleTesting\ShortTest\EndOfDayTimerHandler.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "SimpleTesting\ShortTest\RunShortTest.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "TickerSelectionTesting\EndOfDayTimerHandlerCTC.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
