@@ -22,6 +22,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 using System;
 using System.Collections;
+using System.Data;
 using QuantProject.ADT;
 
 
@@ -42,6 +43,18 @@ namespace QuantProject.ADT.Histories
       return this[ dateTime ];
     }
 
+    /// <summary>
+    /// Imports DataTable data into this History object
+    /// </summary>
+    /// <param name="dataTable">Contains the data to be imported</param>
+    /// <param name="dateTimeColumnName">Name of the column containing the DateTime keys
+    /// to be imported</param>
+    /// <param name="valueColumnName">Name of the column containing the values to be imported</param>
+    public void Import( DataTable dataTable , string dateTimeColumnName , string valueColumnName )
+    {
+      foreach (DataRow dataRow in dataTable.Rows )
+        this.Add( dataRow[ dateTimeColumnName ] , dataRow[ valueColumnName ] );
+    }
     /// <summary>
     /// Add an history item, if no collision (contemporary events) is expected
     /// </summary>
