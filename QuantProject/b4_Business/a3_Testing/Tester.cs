@@ -24,10 +24,11 @@ using System;
 using System.Diagnostics;
 using QuantProject.Business.Strategies;
 using QuantProject.ADT;
+using QuantProject.ADT.Histories;
 using QuantProject.ADT.Optimizing;
 using QuantProject.Business.Financial.Accounting;
 using QuantProject.Business.Financial.Ordering;
-using QuantProject.ADT.Histories;
+using QuantProject.Business.Timing;
 
 
 namespace QuantProject.Business.Testing
@@ -65,7 +66,7 @@ namespace QuantProject.Business.Testing
         initialCash );
       this.Test();
       return - this.Account.GetProfitNetLoss(
-        new ExtendedDateTime( testWindow.EndDateTime , BarComponent.Close ) );
+        new EndOfDayDateTime( testWindow.EndDateTime , EndOfDaySpecificTime.MarketClose ) );
     }
 
     #region "Test"
