@@ -28,7 +28,7 @@ using System.Reflection;
 using System.Runtime.InteropServices;
 using QuantProject.ADT;
 using QuantProject.ADT.Histories;
-
+using QuantProject.Business.Financial.Instruments;
 namespace QuantProject.Business.Financial.Accounting.Reporting
 {
 	/// <summary>
@@ -38,8 +38,11 @@ namespace QuantProject.Business.Financial.Accounting.Reporting
 	{
     private Account account;
     private Account accountCopy = new Account( "AccountCopy" );
+    private ExtendedDateTime endDateTime;
+    private string buyAndHoldTicker;
     private double totalPnl;
     private double finalAccountValue;
+    private double buyAndHoldPercentageReturn;
     private long intervalDays;
     private ReportTable transactionTable;
     private ReportTable roundTrades;
@@ -61,6 +64,13 @@ namespace QuantProject.Business.Financial.Accounting.Reporting
     public ReportTable Summary
     {
       get { return summary; }
+    }
+    public DateTime StartDateTime
+    {
+      get
+      {
+        return (DateTime) account.Transactions.GetKey( 0 );
+      }
     }
 
     /// <summary>
@@ -144,13 +154,12 @@ namespace QuantProject.Business.Financial.Accounting.Reporting
         % numDaysForInterval ) == 0 )
         addRowForPnl_actually( currentDate , detailedDataTable );
     }
-    private void setRows(  int numDaysForInterval ,
-      ExtendedDateTime endDateTime, System.Data.DataTable detailedDataTable )
+    private void setRows(  int numDaysForInterval , System.Data.DataTable detailedDataTable )
     {
       DateTime currentDate = (DateTime) account.Transactions.GetKey( 0 );
       try
       {
-        while ( currentDate < endDateTime.DateTime )
+        while ( currentDate < this.endDateTime.DateTime )
         {
           //addTransactionsToAccountCopy( currentDate );
           addRowsForTransactions( currentDate , detailedDataTable );
@@ -167,12 +176,11 @@ namespace QuantProject.Business.Financial.Accounting.Reporting
       }
     }
     #endregion
-    private System.Data.DataTable getDetailedDataTable( int numDaysForInterval ,
-      ExtendedDateTime endDateTime )
+    private System.Data.DataTable getDetailedDataTable( int numDaysForInterval )
     {
       System.Data.DataTable detailedDataTable = new System.Data.DataTable();
       setColumns( detailedDataTable );
-      setRows( numDaysForInterval , endDateTime , detailedDataTable );
+      setRows( numDaysForInterval , detailedDataTable );
       return detailedDataTable;
     }
     #endregion
@@ -281,7 +289,8 @@ namespace QuantProject.Business.Financial.Accounting.Reporting
           roundTrade[ "ExitDate" ] = dataRow[ "DateTime" ];
           roundTrade[ "ExitPrice" ] = dataRow[ "Price" ];
           roundTrade[ "%chg" ] =
-            ((double)roundTrade[ "ExitPrice" ] - (double)roundTrade[ "EntryPrice" ])/100;
+            ((double)roundTrade[ "ExitPrice" ] - (double)roundTrade[ "EntryPrice" ])/
+            ((double)roundTrade[ "EntryPrice" ])*100;
           roundTrade[ "%Profit" ] = - ((double)roundTrade[ "%chg" ]);
           roundTrade[ "#bars" ] =
             ((TimeSpan)((DateTime)roundTrade[ "ExitDate" ] - (DateTime)roundTrade[ "EntryDate" ])).Days;
@@ -302,7 +311,7 @@ namespace QuantProject.Business.Financial.Accounting.Reporting
       getRoundTradeTable_setRows( roundTradeDataTable );
       return roundTradeDataTable;
     }
-    public ReportTable getRoundTrades( string reportName )
+    private ReportTable getRoundTrades( string reportName )
     {
       DataTable roundTradeDataTable = getRoundTradeDataTable();
       return new ReportTable( reportName + " - Round Trades" ,
@@ -342,7 +351,7 @@ namespace QuantProject.Business.Financial.Accounting.Reporting
       getEquityTable_setRows( equityDataTable , detailedDataTable );
       return equityDataTable;
     }
-    public ReportTable getEquity( string reportName , DataTable detailedDataTable )
+    private ReportTable getEquity( string reportName , DataTable detailedDataTable )
     {
       DataTable equityDataTable = getEquityDataTable( detailedDataTable );
       return new ReportTable( reportName + " - Equity" ,
@@ -368,6 +377,22 @@ namespace QuantProject.Business.Financial.Accounting.Reporting
       summary[ "Information" ] = "Return on account";
       summary[ "Value" ] = this.totalPnl / ( this.finalAccountValue - this.totalPnl ) * 100;
     }
+    private void getSummaryTable_setRow_BuyAndHoldPercentageReturn( DataRow summary )
+    {
+      if ( this.buyAndHoldTicker != "" )
+      {
+        // the report has to compare to a buy and hold benchmark
+        Instrument buyAndHoldInstrument = new Instrument( this.buyAndHoldTicker );
+        this.buyAndHoldPercentageReturn =
+          ( buyAndHoldInstrument.GetMarketValue( this.endDateTime ) -
+          buyAndHoldInstrument.GetMarketValue(
+          new ExtendedDateTime( this.StartDateTime , BarComponent.Open ) ) ) /
+          buyAndHoldInstrument.GetMarketValue(
+          new ExtendedDateTime( this.StartDateTime , BarComponent.Open ) ) * 100;
+        summary[ "Information" ] = "Buy & hold % return";
+        summary[ "Value" ] = this.buyAndHoldPercentageReturn;
+      }
+    }
     private void getSummaryTable_setRow_AnnualSystemPercentageReturn( DataRow summary )
     {
       double totalROA = this.totalPnl / ( this.finalAccountValue - this.totalPnl );
@@ -385,10 +410,15 @@ namespace QuantProject.Business.Financial.Accounting.Reporting
     }
     private void getSummaryTable_setRow_NumberWinningTrades( DataRow summary )
     {
-      double totalROA = this.totalPnl / ( this.finalAccountValue - this.totalPnl );
       summary[ "Information" ] = "Number winning trades";
       DataRow[] DataRows = this.roundTrades.DataTable.Select( "([%Profit] > 0)" );
       summary[ "Value" ] = DataRows.Length;
+    }
+    private void getSummaryTable_setRow_AverageTradePercentageReturn( DataRow summary )
+    {
+      summary[ "Information" ] = "Average trade % Return";
+      double avgReturn = (double) this.roundTrades.DataTable.Compute( "avg([%Profit])" , "true" );
+      summary[ "Value" ] = avgReturn;
     }
     private void getSummary_setRow( DataTable summaryDataTable ,
       getSummaryTable_setRow getSummaryTable_setRow_object )
@@ -404,11 +434,15 @@ namespace QuantProject.Business.Financial.Accounting.Reporting
       getSummary_setRow( summaryDataTable ,
         new getSummaryTable_setRow( getSummaryTable_setRow_ReturnOnAccount ) );
       getSummary_setRow( summaryDataTable ,
+        new getSummaryTable_setRow( getSummaryTable_setRow_BuyAndHoldPercentageReturn ) );
+      getSummary_setRow( summaryDataTable ,
         new getSummaryTable_setRow( getSummaryTable_setRow_AnnualSystemPercentageReturn ) );
       getSummary_setRow( summaryDataTable ,
         new getSummaryTable_setRow( getSummaryTable_setRow_TotalNumberOfTrades ) );
       getSummary_setRow( summaryDataTable ,
         new getSummaryTable_setRow( getSummaryTable_setRow_NumberWinningTrades ) );
+      getSummary_setRow( summaryDataTable ,
+        new getSummaryTable_setRow( getSummaryTable_setRow_AverageTradePercentageReturn ) );
     }
     #endregion
     private DataTable getSummaryDataTable()
@@ -418,7 +452,7 @@ namespace QuantProject.Business.Financial.Accounting.Reporting
       getSummaryTable_setRows( summaryDataTable );
       return summaryDataTable;
     }
-    public ReportTable getSummary( string reportName )
+    private ReportTable getSummary( string reportName )
     {
       this.totalPnl =
         (double)this.equity.DataTable.Rows[ this.equity.DataTable.Rows.Count - 1 ][ "PnL" ];
@@ -434,9 +468,11 @@ namespace QuantProject.Business.Financial.Accounting.Reporting
 
     #endregion
     public AccountReport Create( string reportName , int numDaysForInterval ,
-      ExtendedDateTime endDateTime )
+      ExtendedDateTime endDateTime , string buyAndHoldTicker )
     {
-      DataTable detailedDataTable = getDetailedDataTable( numDaysForInterval , endDateTime );
+      this.endDateTime = endDateTime;
+      this.buyAndHoldTicker = buyAndHoldTicker;
+      DataTable detailedDataTable = getDetailedDataTable( numDaysForInterval );
       this.transactionTable = getTransactionTable( reportName , detailedDataTable );
       this.roundTrades = getRoundTrades( reportName );
       this.equity = getEquity( reportName , detailedDataTable );
@@ -445,6 +481,10 @@ namespace QuantProject.Business.Financial.Accounting.Reporting
     }
     #endregion
 
-
+    public AccountReport Create( string reportName , int numDaysForInterval ,
+      ExtendedDateTime endDateTime )
+    {
+      return Create( reportName , numDaysForInterval , endDateTime , "" );
+    }
 	}
 }
