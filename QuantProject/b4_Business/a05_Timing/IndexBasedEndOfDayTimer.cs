@@ -46,6 +46,12 @@ namespace QuantProject.Business.Timing
 		{
 			this.marketIndex = marketIndex;
       this.indexQuotes = new Quotes(marketIndex,startDateTime.DateTime,DateTime.Now);
+			if ( this.indexQuotes.Rows.Count == 0 )
+			{
+				string errorMessage = "IndexBasedEndOfDayTimer error: the given " +
+					"index has no quotes in the interval.";
+				throw new Exception( errorMessage );
+			}
       this.StartDateTime = 
               new EndOfDayDateTime(this.indexQuotes.GetQuoteDateOrFollowing(this.StartDateTime.DateTime),
                                                                     EndOfDaySpecificTime.MarketOpen);
