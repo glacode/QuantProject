@@ -87,6 +87,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardOneRank
 			Object sender , NewProgressEventArgs eventArgs )
 		{
 			this.progressBarForm.ProgressBarInSample.Value = eventArgs.CurrentProgress;
+			this.progressBarForm.ProgressBarInSample.Refresh();
 		}
 		private void run_initializeProgressHandlers()
 		{
