@@ -106,7 +106,8 @@ namespace QuantProject.DataAccess.Tables
       string sqlSelectString = "";
       if(firstQuoteDate.CompareTo(lastQuoteDate)>0)
         throw new Exception("Last Date can't be previous of First date!");
-      sqlSelectString = "SELECT tiTicker, tiCompanyName, Min(quotes.quDate) AS FirstQuote, Max(quotes.quDate) AS LastQuote " +
+      sqlSelectString = "SELECT tiTicker, tiCompanyName, " + 
+      "Min(quotes.quDate) AS FirstQuote, Max(quotes.quDate) AS LastQuote, Count(quotes.quDate) AS NumberOfQuotes " +
       "FROM quotes INNER JOIN tickers ON quotes.quTicker = tickers.tiTicker " +
       "WHERE tiTicker LIKE '" +
       tickerSymbolIsLike + "' " +
