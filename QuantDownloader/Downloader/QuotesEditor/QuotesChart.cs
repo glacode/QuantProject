@@ -55,7 +55,6 @@ namespace QuantProject.Applications.Downloader
       Console.WriteLine( "QuotesChart.PaintingHandler()" );
       this.Clear();
       this.Add( DataProvider.GetCloseHistory( this.ticker ) );
-      this.Width = this.Parent.Width - 15;
       base.OnPaint( e );
     }
 	}
