@@ -1,4 +1,5 @@
-using System;  
+using System;
+using System.Collections;
 using System.Data;
 using QuantProject.ADT;
 using QuantProject.ADT.Histories;
@@ -13,6 +14,8 @@ namespace QuantProject.Business.Validation.Validators
   public class CloseToCloseValidator : IValidator
   {
     private DataTable dataTableToBeValidated;
+		private ArrayList closeToCloseVisuallyValidated;
+
 
     public CloseToCloseValidator()
     {
@@ -46,7 +49,8 @@ namespace QuantProject.Business.Validation.Validators
     private void validate_currentTicker_withHistories_validateRow(
       DataRow quoteRow , double currentValue , double averageValue )
     {
-      if ( Math.Abs( currentValue / averageValue ) > ConstantsProvider.SuspiciousRatio )
+			if ( Math.Abs( currentValue / averageValue ) > ConstantsProvider.SuspiciousRatio &&
+				( this.closeToCloseVisuallyValidated.IndexOf( quoteRow[ "quDate" ] ) < 0 ) )
         // the current close to close value is suspiciously larger
         // than the average close to close ratio
         this.SuspiciousDataRow( this , new SuspiciousDataRowEventArgs(
@@ -77,7 +81,9 @@ namespace QuantProject.Business.Validation.Validators
     }
     private int validate_currentTicker( string currentTicker , int currentTickerStartingRowIndex )
     {
-      History closeToClose = new History();
+			this.closeToCloseVisuallyValidated =
+				QuantProject.DataAccess.Tables.VisuallyValidatedQuotes.GetCloseToCloseValidated( currentTicker );
+			History closeToClose = new History();
       History closeToCloseMovingAverage;
       int nextTickerStartingRowIndex =
         validate_currentTicker_set_closeToClose( currentTicker , currentTickerStartingRowIndex ,
