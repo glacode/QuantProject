@@ -58,6 +58,11 @@ namespace QuantProject.Scripts.SimpleTesting
 				new HistoricalEndOfDayOrderExecutor( historicalEndOfDayTimer ,
 				this.historicalQuoteProvider ) ,
 				new IBCommissionManager() );
+//			this.account = new Account( "MSFT" , historicalEndOfDayTimer ,
+//				new HistoricalEndOfDayDataStreamer( historicalEndOfDayTimer ,
+//				this.historicalQuoteProvider ) ,
+//				new HistoricalEndOfDayOrderExecutor( historicalEndOfDayTimer ,
+//				this.historicalQuoteProvider ) );
 			OneRank oneRank = new OneRank( account ,
 				this.endDateTime );
 			Report report = new Report( this.account , this.historicalQuoteProvider );
