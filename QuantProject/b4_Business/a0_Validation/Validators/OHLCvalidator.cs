@@ -1,6 +1,7 @@
 using System;
 using System.Data;
 using QuantProject.Business.Validation;
+using QuantProject.Data.DataTables;
 
 namespace QuantProject.Business.Validation.Validators
 {
@@ -60,9 +61,9 @@ namespace QuantProject.Business.Validation.Validators
     /// Validates Open High Low Close consistencies
     /// </summary>
     /// <param name="dataTable">Quote rows to be validated</param>
-    public void Validate( DataTable dataTable )
+    public void Validate( Quotes quotes )
     {
-      foreach ( DataRow quotesRow in dataTable.Rows )
+      foreach ( DataRow quotesRow in quotes.Rows )
         this.validate_currentQuotesRow( quotesRow );
     }
   }
