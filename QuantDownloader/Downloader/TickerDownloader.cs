@@ -345,10 +345,16 @@ namespace QuantProject.Applications.Downloader
           {
                this.updateCurrentStatusAdjustedCloseToCloseRatio("Changed at " + 
                                                                   Quotes.DateWithDifferentCloseToClose);
+               //stop
           }
           else
           {
                this.updateCurrentStatusAdjustedCloseToCloseRatio("OK");
+               this.updateAdjustedClose();
+               this.updateCurrentStatusAdjustedClose("Updated!");
+               this.downloadedValuesFromSource = this.getTableOfDownloadedValues(Quotes.GetEndDate(this.p_quTicker),
+                                                                                 DateTime.Now);
+               this.commitDownloadedValuesToDatabase();
           } 
         }
         else
@@ -365,6 +371,13 @@ namespace QuantProject.Applications.Downloader
       }
     }
     
+    private void updateAdjustedClose()
+    {
+      foreach(DataRow row in this.downloadedValuesFromSource.Rows)
+      {
+        Quotes.UpdateAdjustedClose(this.p_quTicker, (DateTime)row[Quotes.Date], (float)row[Quotes.AdjustedClose]);
+      }
+    }
     
     
     private void downloadTickerAfterLastQuote()
