@@ -36,7 +36,7 @@ namespace QuantProject.Applications.Downloader
 
 		protected void add( History history , Color color )
 		{
-			if ( this.startDateTime == DateTime.MinValue )
+//			if ( this.startDateTime == DateTime.MinValue )
 				// the startDateTime is not computed yet
 				this.onPaint_setTimeInterval( history );
 			this.Add( history , color , this.startDateTime , this.endDateTime );
