@@ -23,8 +23,9 @@ namespace QuantProject.Business.Financial.Accounting.Reporting.Tables
       transactionsDataTable.Columns.Add( "InstrumentKey"  , Type.GetType( "System.String" ) );
       transactionsDataTable.Columns.Add( "Quantity"  , Type.GetType( "System.Int32" ) );
       transactionsDataTable.Columns.Add( "Price"  , Type.GetType( "System.Double" ) );
-      transactionsDataTable.Columns.Add( "TransactionAmount"  , Type.GetType( "System.Double" ) );
-      transactionsDataTable.Columns.Add( "AccountCash"  , Type.GetType( "System.Double" ) );
+			transactionsDataTable.Columns.Add( "TransactionAmount"  , Type.GetType( "System.Double" ) );
+			transactionsDataTable.Columns.Add( "Commission"  , Type.GetType( "System.Double" ) );
+			transactionsDataTable.Columns.Add( "AccountCash"  , Type.GetType( "System.Double" ) );
       transactionsDataTable.Columns.Add( "PortfolioValue"  , Type.GetType( "System.Double" ) );
       transactionsDataTable.Columns.Add( "AccountValue"  , Type.GetType( "System.Double" ) );
       transactionsDataTable.Columns.Add( "PnL"  , Type.GetType( "System.Double" ) );
@@ -43,8 +44,9 @@ namespace QuantProject.Business.Financial.Accounting.Reporting.Tables
           dataRow[ "InstrumentKey" ] = detailedRow[ "InstrumentKey" ];
           dataRow[ "Quantity" ] = detailedRow[ "Quantity" ];
           dataRow[ "Price" ] = detailedRow[ "Price" ];
-          dataRow[ "TransactionAmount" ] = detailedRow[ "TransactionAmount" ];
-          dataRow[ "AccountCash" ] = detailedRow[ "AccountCash" ];
+					dataRow[ "TransactionAmount" ] = detailedRow[ "TransactionAmount" ];
+					dataRow[ "Commission" ] = detailedRow[ "Commission" ];
+					dataRow[ "AccountCash" ] = detailedRow[ "AccountCash" ];
           dataRow[ "PortfolioValue" ] = detailedRow[ "PortfolioValue" ];
           dataRow[ "AccountValue" ] = detailedRow[ "AccountValue" ];
           dataRow[ "PnL" ] = detailedRow[ "PnL" ];
