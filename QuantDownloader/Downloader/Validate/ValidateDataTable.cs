@@ -19,36 +19,39 @@ namespace QuantProject.Applications.Downloader.Validate
 
     public ValidateDataTable()
     {
-      this.selectStatement =
-        "select * from quotes where 1=2";
-      this.oleDbDataAdapter =
-        new OleDbDataAdapter( selectStatement , ConnectionProvider.OleDbConnection );
-      this.oleDbCommandBuilder = new OleDbCommandBuilder( oleDbDataAdapter );
-      this.oleDbDataAdapter.UpdateCommand = this.oleDbCommandBuilder.GetUpdateCommand();
-      this.oleDbDataAdapter.Fill( this );
-      this.TableName = "quotes";
-//<<<<<<< ValidateDataTable.cs
-      this.Columns.Add( "ValidationWarning" ,
-        ValidationWarning.OpenHighLowCloseLogicalInconsistency.GetType() );
-      
-//=======
-//      
-//>>>>>>> 1.6
+      initializeValidateDataTable();
     }
 
 	public ValidateDataTable(DataTable tableOfTickers)
 	{
+		initializeValidateDataTable();
+		// specific code used by this constructor
+		// the table member is used when the validation procedure
+		// is called by the tickerViewer object
 		this.tableOfTickersToBeValidated = tableOfTickers;
-		
-		this.selectStatement =
-			"select * from quotes where 1=2";
-		this.oleDbDataAdapter =
-			new OleDbDataAdapter( selectStatement , ConnectionProvider.OleDbConnection );
-		this.oleDbCommandBuilder = new OleDbCommandBuilder( oleDbDataAdapter );
-		this.oleDbDataAdapter.UpdateCommand = this.oleDbCommandBuilder.GetUpdateCommand();
-		this.oleDbDataAdapter.Fill( this );
-		this.TableName = "quotes";
 	}
+
+	#region initializeValidateDataTable
+		private void initializeValidateDataTable()
+		{
+			this.selectStatement =
+				"select * from quotes where 1=2";
+			this.oleDbDataAdapter =
+				new OleDbDataAdapter( selectStatement , ConnectionProvider.OleDbConnection );
+			this.oleDbCommandBuilder = new OleDbCommandBuilder( oleDbDataAdapter );
+			this.oleDbDataAdapter.UpdateCommand = this.oleDbCommandBuilder.GetUpdateCommand();
+			this.oleDbDataAdapter.Fill( this );
+			this.TableName = "quotes";
+			//<<<<<<< ValidateDataTable.cs
+			this.Columns.Add( "ValidationWarning" ,
+				ValidationWarning.OpenHighLowCloseLogicalInconsistency.GetType() );
+	      
+			//=======
+			//      
+			//>>>>>>> 1.6
+		}
+	#endregion
+
     /// <summary>
     /// Adds quotesRow to the ValidateDataTable
     /// </summary>

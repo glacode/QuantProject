@@ -27,6 +27,26 @@ namespace QuantProject.Applications.Downloader.Validate
     private System.Windows.Forms.Label labelSuspiciousRatio;
     private QuantProject.Applications.Downloader.Validate.ValidateDataGrid validateDataGrid;
 		private System.Windows.Forms.Button buttonGoValidateCurrentSelection;
+		private System.Windows.Forms.DataGridTableStyle dataGridTableStyle1;
+		private System.Windows.Forms.DataGridTextBoxColumn dataGridTextBoxColumn1;
+		private System.Windows.Forms.DataGridTextBoxColumn dataGridTextBoxColumn2;
+		private System.Windows.Forms.DataGridTextBoxColumn dataGridTextBoxColumn3;
+		private System.Windows.Forms.DataGridTextBoxColumn dataGridTextBoxColumn4;
+		private System.Windows.Forms.DataGridTextBoxColumn dataGridTextBoxColumn5;
+		private System.Windows.Forms.DataGridTextBoxColumn dataGridTextBoxColumn6;
+		private System.Windows.Forms.DataGridTextBoxColumn dataGridTextBoxColumn7;
+		private System.Windows.Forms.DataGridTextBoxColumn dataGridTextBoxColumn8;
+		private System.Windows.Forms.DataGridTextBoxColumn dataGridTextBoxColumn9;
+		private System.Windows.Forms.DataGridTableStyle dataGridTableStyle2;
+		private System.Windows.Forms.DataGridTextBoxColumn dataGridTextBoxColumn10;
+		private System.Windows.Forms.DataGridTextBoxColumn dataGridTextBoxColumn11;
+		private System.Windows.Forms.DataGridTextBoxColumn dataGridTextBoxColumn12;
+		private System.Windows.Forms.DataGridTextBoxColumn dataGridTextBoxColumn13;
+		private System.Windows.Forms.DataGridTextBoxColumn dataGridTextBoxColumn14;
+		private System.Windows.Forms.DataGridTextBoxColumn dataGridTextBoxColumn15;
+		private System.Windows.Forms.DataGridTextBoxColumn dataGridTextBoxColumn16;
+		private System.Windows.Forms.DataGridTextBoxColumn dataGridTextBoxColumn17;
+		private System.Windows.Forms.DataGridTextBoxColumn dataGridTextBoxColumn18;
 		/// <summary>
 		/// Required designer variable.
 		/// </summary>
@@ -85,7 +105,27 @@ namespace QuantProject.Applications.Downloader.Validate
 			this.oleDbInsertCommand1 = new System.Data.OleDb.OleDbCommand();
 			this.oleDbSelectCommand1 = new System.Data.OleDb.OleDbCommand();
 			this.oleDbUpdateCommand1 = new System.Data.OleDb.OleDbCommand();
+			this.dataGridTableStyle1 = new System.Windows.Forms.DataGridTableStyle();
+			this.dataGridTableStyle2 = new System.Windows.Forms.DataGridTableStyle();
+			this.dataGridTextBoxColumn10 = new System.Windows.Forms.DataGridTextBoxColumn();
+			this.dataGridTextBoxColumn11 = new System.Windows.Forms.DataGridTextBoxColumn();
+			this.dataGridTextBoxColumn12 = new System.Windows.Forms.DataGridTextBoxColumn();
+			this.dataGridTextBoxColumn13 = new System.Windows.Forms.DataGridTextBoxColumn();
+			this.dataGridTextBoxColumn14 = new System.Windows.Forms.DataGridTextBoxColumn();
+			this.dataGridTextBoxColumn15 = new System.Windows.Forms.DataGridTextBoxColumn();
+			this.dataGridTextBoxColumn16 = new System.Windows.Forms.DataGridTextBoxColumn();
+			this.dataGridTextBoxColumn17 = new System.Windows.Forms.DataGridTextBoxColumn();
+			this.dataGridTextBoxColumn18 = new System.Windows.Forms.DataGridTextBoxColumn();
 			this.validateDataGrid = new QuantProject.Applications.Downloader.Validate.ValidateDataGrid();
+			this.dataGridTextBoxColumn1 = new System.Windows.Forms.DataGridTextBoxColumn();
+			this.dataGridTextBoxColumn2 = new System.Windows.Forms.DataGridTextBoxColumn();
+			this.dataGridTextBoxColumn3 = new System.Windows.Forms.DataGridTextBoxColumn();
+			this.dataGridTextBoxColumn4 = new System.Windows.Forms.DataGridTextBoxColumn();
+			this.dataGridTextBoxColumn5 = new System.Windows.Forms.DataGridTextBoxColumn();
+			this.dataGridTextBoxColumn6 = new System.Windows.Forms.DataGridTextBoxColumn();
+			this.dataGridTextBoxColumn7 = new System.Windows.Forms.DataGridTextBoxColumn();
+			this.dataGridTextBoxColumn8 = new System.Windows.Forms.DataGridTextBoxColumn();
+			this.dataGridTextBoxColumn9 = new System.Windows.Forms.DataGridTextBoxColumn();
 			this.buttonCommitAndRefresh = new System.Windows.Forms.Button();
 			this.textBoxSuspiciousRatio = new System.Windows.Forms.TextBox();
 			this.labelSuspiciousRatio = new System.Windows.Forms.Label();
@@ -221,6 +261,110 @@ namespace QuantProject.Applications.Downloader.Validate
 			this.oleDbUpdateCommand1.Parameters.Add(new System.Data.OleDb.OleDbParameter("Original_quOpen", System.Data.OleDb.OleDbType.Single, 0, System.Data.ParameterDirection.Input, false, ((System.Byte)(7)), ((System.Byte)(0)), "TheOpen", System.Data.DataRowVersion.Original, null));
 			this.oleDbUpdateCommand1.Parameters.Add(new System.Data.OleDb.OleDbParameter("Original_quOpen1", System.Data.OleDb.OleDbType.Single, 0, System.Data.ParameterDirection.Input, false, ((System.Byte)(7)), ((System.Byte)(0)), "TheOpen", System.Data.DataRowVersion.Original, null));
 			// 
+			// dataGridTableStyle1
+			// 
+			this.dataGridTableStyle1.DataGrid = this.validateDataGrid;
+			this.dataGridTableStyle1.GridColumnStyles.AddRange(new System.Windows.Forms.DataGridColumnStyle[] {
+																												  this.dataGridTextBoxColumn1,
+																												  this.dataGridTextBoxColumn2,
+																												  this.dataGridTextBoxColumn3,
+																												  this.dataGridTextBoxColumn4,
+																												  this.dataGridTextBoxColumn5,
+																												  this.dataGridTextBoxColumn6,
+																												  this.dataGridTextBoxColumn7,
+																												  this.dataGridTextBoxColumn8,
+																												  this.dataGridTextBoxColumn9});
+			this.dataGridTableStyle1.HeaderForeColor = System.Drawing.SystemColors.ControlText;
+			this.dataGridTableStyle1.MappingName = "";
+			// 
+			// dataGridTableStyle2
+			// 
+			this.dataGridTableStyle2.DataGrid = this.validateDataGrid;
+			this.dataGridTableStyle2.GridColumnStyles.AddRange(new System.Windows.Forms.DataGridColumnStyle[] {
+																												  this.dataGridTextBoxColumn10,
+																												  this.dataGridTextBoxColumn11,
+																												  this.dataGridTextBoxColumn12,
+																												  this.dataGridTextBoxColumn13,
+																												  this.dataGridTextBoxColumn14,
+																												  this.dataGridTextBoxColumn15,
+																												  this.dataGridTextBoxColumn16,
+																												  this.dataGridTextBoxColumn17,
+																												  this.dataGridTextBoxColumn18});
+			this.dataGridTableStyle2.HeaderForeColor = System.Drawing.SystemColors.ControlText;
+			this.dataGridTableStyle2.MappingName = "quotes";
+			// 
+			// dataGridTextBoxColumn10
+			// 
+			this.dataGridTextBoxColumn10.Format = "";
+			this.dataGridTextBoxColumn10.FormatInfo = null;
+			this.dataGridTextBoxColumn10.HeaderText = "Ticker";
+			this.dataGridTextBoxColumn10.MappingName = "quTicker";
+			this.dataGridTextBoxColumn10.Width = 39;
+			// 
+			// dataGridTextBoxColumn11
+			// 
+			this.dataGridTextBoxColumn11.Format = "";
+			this.dataGridTextBoxColumn11.FormatInfo = null;
+			this.dataGridTextBoxColumn11.HeaderText = "Date";
+			this.dataGridTextBoxColumn11.MappingName = "quDate";
+			this.dataGridTextBoxColumn11.Width = 32;
+			// 
+			// dataGridTextBoxColumn12
+			// 
+			this.dataGridTextBoxColumn12.Format = "";
+			this.dataGridTextBoxColumn12.FormatInfo = null;
+			this.dataGridTextBoxColumn12.HeaderText = "Open";
+			this.dataGridTextBoxColumn12.MappingName = "quOpen";
+			this.dataGridTextBoxColumn12.Width = 36;
+			// 
+			// dataGridTextBoxColumn13
+			// 
+			this.dataGridTextBoxColumn13.Format = "";
+			this.dataGridTextBoxColumn13.FormatInfo = null;
+			this.dataGridTextBoxColumn13.HeaderText = "High";
+			this.dataGridTextBoxColumn13.MappingName = "quHigh";
+			this.dataGridTextBoxColumn13.Width = 32;
+			// 
+			// dataGridTextBoxColumn14
+			// 
+			this.dataGridTextBoxColumn14.Format = "";
+			this.dataGridTextBoxColumn14.FormatInfo = null;
+			this.dataGridTextBoxColumn14.HeaderText = "Low";
+			this.dataGridTextBoxColumn14.MappingName = "quLow";
+			this.dataGridTextBoxColumn14.Width = 29;
+			// 
+			// dataGridTextBoxColumn15
+			// 
+			this.dataGridTextBoxColumn15.Format = "";
+			this.dataGridTextBoxColumn15.FormatInfo = null;
+			this.dataGridTextBoxColumn15.HeaderText = "Close";
+			this.dataGridTextBoxColumn15.MappingName = "quClose";
+			this.dataGridTextBoxColumn15.Width = 37;
+			// 
+			// dataGridTextBoxColumn16
+			// 
+			this.dataGridTextBoxColumn16.Format = "";
+			this.dataGridTextBoxColumn16.FormatInfo = null;
+			this.dataGridTextBoxColumn16.HeaderText = "Adj. Close";
+			this.dataGridTextBoxColumn16.MappingName = "quAdjustedClose";
+			this.dataGridTextBoxColumn16.Width = 60;
+			// 
+			// dataGridTextBoxColumn17
+			// 
+			this.dataGridTextBoxColumn17.Format = "";
+			this.dataGridTextBoxColumn17.FormatInfo = null;
+			this.dataGridTextBoxColumn17.HeaderText = "Warning";
+			this.dataGridTextBoxColumn17.MappingName = "ValidationWarning";
+			this.dataGridTextBoxColumn17.Width = 50;
+			// 
+			// dataGridTextBoxColumn18
+			// 
+			this.dataGridTextBoxColumn18.Format = "";
+			this.dataGridTextBoxColumn18.FormatInfo = null;
+			this.dataGridTextBoxColumn18.HeaderText = "Ew";
+			this.dataGridTextBoxColumn18.MappingName = "Yuppy";
+			this.dataGridTextBoxColumn18.Width = 24;
+			// 
 			// validateDataGrid
 			// 
 			this.validateDataGrid.DataMember = "";
@@ -230,6 +374,81 @@ namespace QuantProject.Applications.Downloader.Validate
 			this.validateDataGrid.PreferredColumnWidth = 50;
 			this.validateDataGrid.Size = new System.Drawing.Size(696, 224);
 			this.validateDataGrid.TabIndex = 3;
+			this.validateDataGrid.TableStyles.AddRange(new System.Windows.Forms.DataGridTableStyle[] {
+																										 this.dataGridTableStyle2,
+																										 this.dataGridTableStyle1});
+			// 
+			// dataGridTextBoxColumn1
+			// 
+			this.dataGridTextBoxColumn1.Format = "";
+			this.dataGridTextBoxColumn1.FormatInfo = null;
+			this.dataGridTextBoxColumn1.HeaderText = "Ticker";
+			this.dataGridTextBoxColumn1.MappingName = "quTicker";
+			this.dataGridTextBoxColumn1.Width = 39;
+			// 
+			// dataGridTextBoxColumn2
+			// 
+			this.dataGridTextBoxColumn2.Format = "";
+			this.dataGridTextBoxColumn2.FormatInfo = null;
+			this.dataGridTextBoxColumn2.HeaderText = "Date";
+			this.dataGridTextBoxColumn2.MappingName = "quDate";
+			this.dataGridTextBoxColumn2.Width = 32;
+			// 
+			// dataGridTextBoxColumn3
+			// 
+			this.dataGridTextBoxColumn3.Format = "";
+			this.dataGridTextBoxColumn3.FormatInfo = null;
+			this.dataGridTextBoxColumn3.HeaderText = "Open";
+			this.dataGridTextBoxColumn3.MappingName = "quOpen";
+			this.dataGridTextBoxColumn3.Width = 36;
+			// 
+			// dataGridTextBoxColumn4
+			// 
+			this.dataGridTextBoxColumn4.Format = "";
+			this.dataGridTextBoxColumn4.FormatInfo = null;
+			this.dataGridTextBoxColumn4.HeaderText = "High";
+			this.dataGridTextBoxColumn4.MappingName = "quHigh";
+			this.dataGridTextBoxColumn4.Width = 32;
+			// 
+			// dataGridTextBoxColumn5
+			// 
+			this.dataGridTextBoxColumn5.Format = "";
+			this.dataGridTextBoxColumn5.FormatInfo = null;
+			this.dataGridTextBoxColumn5.HeaderText = "Low";
+			this.dataGridTextBoxColumn5.MappingName = "quLow";
+			this.dataGridTextBoxColumn5.Width = 29;
+			// 
+			// dataGridTextBoxColumn6
+			// 
+			this.dataGridTextBoxColumn6.Format = "";
+			this.dataGridTextBoxColumn6.FormatInfo = null;
+			this.dataGridTextBoxColumn6.HeaderText = "Close";
+			this.dataGridTextBoxColumn6.MappingName = "quClose";
+			this.dataGridTextBoxColumn6.Width = 37;
+			// 
+			// dataGridTextBoxColumn7
+			// 
+			this.dataGridTextBoxColumn7.Format = "";
+			this.dataGridTextBoxColumn7.FormatInfo = null;
+			this.dataGridTextBoxColumn7.HeaderText = "Adj. Close";
+			this.dataGridTextBoxColumn7.MappingName = "quAdjustedClose";
+			this.dataGridTextBoxColumn7.Width = 60;
+			// 
+			// dataGridTextBoxColumn8
+			// 
+			this.dataGridTextBoxColumn8.Format = "";
+			this.dataGridTextBoxColumn8.FormatInfo = null;
+			this.dataGridTextBoxColumn8.HeaderText = "Warning";
+			this.dataGridTextBoxColumn8.MappingName = "ValidationWarning";
+			this.dataGridTextBoxColumn8.Width = 50;
+			// 
+			// dataGridTextBoxColumn9
+			// 
+			this.dataGridTextBoxColumn9.Format = "";
+			this.dataGridTextBoxColumn9.FormatInfo = null;
+			this.dataGridTextBoxColumn9.HeaderText = "Ew";
+			this.dataGridTextBoxColumn9.MappingName = "Yuppy";
+			this.dataGridTextBoxColumn9.Width = 24;
 			// 
 			// buttonCommitAndRefresh
 			// 

@@ -53,7 +53,6 @@ namespace QuantProject.Applications.Downloader
 		{
 			InitializeComponent();
 			this.oleDbConnection = ConnectionProvider.OleDbConnection;
-			this.oleDbConnection.Open();
 			this.tableTickers = new DataTable("tickers");
 			this.dataGrid1.DataSource = this.tableTickers;
 			this.setStyle_dataGrid1();
@@ -199,6 +198,8 @@ namespace QuantProject.Applications.Downloader
 
 			try
 			{
+				Cursor.Current = Cursors.WaitCursor;
+				this.oleDbConnection.Open();
 				string criteria = "SELECT * FROM tickers WHERE tiTicker LIKE '" +
 									this.textBoxStringToFind.Text + "'";
 				oleDbDataAdapter  = new OleDbDataAdapter(criteria, this.oleDbConnection);
@@ -224,7 +225,8 @@ namespace QuantProject.Applications.Downloader
 			}
 			finally
 			{
-				;
+				Cursor.Current = Cursors.Default;
+				this.oleDbConnection.Close();
 			}
 		
 		}

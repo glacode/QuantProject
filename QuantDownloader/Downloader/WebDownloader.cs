@@ -41,14 +41,11 @@ namespace QuantProject.Applications.Downloader
 			// Required for Windows Form Designer support
 			//
 			InitializeComponent();
+			//
 			this.Text = "Download quotes of all tickers in the database"; 
 			this.buttonDownloadQuotesOfSelectedTickers.Visible = false;
 			//
-			// TODO: Add any constructor code after InitializeComponent call
-			//
-			//this.oleDbDataAdapter1.Fill(this.dataSet11);
-			this.OleDbConnection1.Open();
-			//this.OleDbConnection1.Close();
+			
 		}
 
 		public WebDownloader(DataTable tableOfSelectedTickers)
@@ -57,15 +54,13 @@ namespace QuantProject.Applications.Downloader
 			// Required for Windows Form Designer support
 			//
 			InitializeComponent();
+			
+			//
 			this.Text = "Download quotes of selected tickers"; 
 			this.button1.Visible = false;
 			this.tableOfSelectedTickers = tableOfSelectedTickers;
 			//
-			// TODO: Add any constructor code after InitializeComponent call
-			//
-			//this.oleDbDataAdapter1.Fill(this.dataSet11);
-			this.OleDbConnection1.Open();
-			//this.OleDbConnection1.Close();
+			
 		}
 
 		/// <summary>
@@ -106,9 +101,9 @@ namespace QuantProject.Applications.Downloader
 			// 
 			this.button1.Location = new System.Drawing.Point(48, 24);
 			this.button1.Name = "button1";
-			this.button1.Size = new System.Drawing.Size(112, 24);
+			this.button1.Size = new System.Drawing.Size(112, 32);
 			this.button1.TabIndex = 0;
-			this.button1.Text = "button1";
+			this.button1.Text = "Download all Tickers\'quotes";
 			this.button1.Click += new System.EventHandler(this.button1_Click);
 			// 
 			// dataGrid1
@@ -199,9 +194,9 @@ namespace QuantProject.Applications.Downloader
 			// 
 			// buttonDownloadQuotesOfSelectedTickers
 			// 
-			this.buttonDownloadQuotesOfSelectedTickers.Location = new System.Drawing.Point(48, 72);
+			this.buttonDownloadQuotesOfSelectedTickers.Location = new System.Drawing.Point(48, 80);
 			this.buttonDownloadQuotesOfSelectedTickers.Name = "buttonDownloadQuotesOfSelectedTickers";
-			this.buttonDownloadQuotesOfSelectedTickers.Size = new System.Drawing.Size(112, 24);
+			this.buttonDownloadQuotesOfSelectedTickers.Size = new System.Drawing.Size(112, 32);
 			this.buttonDownloadQuotesOfSelectedTickers.TabIndex = 2;
 			this.buttonDownloadQuotesOfSelectedTickers.Text = "Download quotes";
 			this.buttonDownloadQuotesOfSelectedTickers.Click += new System.EventHandler(this.buttonDownloadQuotesOfSelectedTickers_Click);
@@ -391,12 +386,35 @@ namespace QuantProject.Applications.Downloader
 		downloadQuotes_withTickerDataSet( ds );
 		this.OleDbConnection1.Close();
 	}
+	
+	private void openDbAndExecuteNonQuery()
+	{
+		try
+		{
+			Cursor.Current = Cursors.WaitCursor;
+			this.OleDbConnection1.Open();
+			oleDbCommand1.Connection = this.OleDbConnection1;
+			this.oleDbCommand1.ExecuteNonQuery();
+	
+		}
+		catch(Exception ex)
+		{
+			MessageBox.Show(ex.ToString());
+		}
+		
+		finally
+		{
+			this.OleDbConnection1.Close();
+			Cursor.Current = Cursors.Default;
+		}
+	
+	}
+
 
     private void button1_Click(object sender, System.EventArgs e)
     {
-      oleDbCommand1.Connection = this.OleDbConnection1;
-      this.oleDbCommand1.ExecuteNonQuery();
-      downloadQuotes();
+		this.openDbAndExecuteNonQuery();
+		downloadQuotes();
     }
 
     private void Form1_Load(object sender, System.EventArgs e)
@@ -406,19 +424,8 @@ namespace QuantProject.Applications.Downloader
 
 		private void buttonDownloadQuotesOfSelectedTickers_Click(object sender, System.EventArgs e)
 		{
-			try
-			{
-				Cursor.Current = Cursors.WaitCursor;
-				oleDbCommand1.Connection = this.OleDbConnection1;
-				this.oleDbCommand1.ExecuteNonQuery();
-				downloadQuotes(this.tableOfSelectedTickers);
-				
-			}
-			finally
-			{
-				Cursor.Current = Cursors.Default;
-			}
-			
+			this.openDbAndExecuteNonQuery();
+			downloadQuotes(this.tableOfSelectedTickers);
 
 		}
 	}
