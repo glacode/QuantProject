@@ -150,13 +150,18 @@
                     BuildAction = "Compile"
                 />
                 <File
-                    RelPath = "WebDownloader.resx"
-                    DependentUpon = "WebDownloader.cs"
-                    BuildAction = "EmbeddedResource"
+                    RelPath = "Validate\IValidator.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
                 />
                 <File
                     RelPath = "Validate\QuotesToBeValidated.cs"
                     SubType = "Component"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Validate\SospiciousDataRowEventArgs.cs"
+                    SubType = "Code"
                     BuildAction = "Compile"
                 />
                 <File
@@ -174,6 +179,7 @@
                     DependentUpon = "ValidateForm.cs"
                     BuildAction = "EmbeddedResource"
                 />
+                <Folder RelPath = "Validate\Validators\" />
             </Include>
         </Files>
     </CSHARP>
