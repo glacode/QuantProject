@@ -16,7 +16,7 @@
                 DefaultTargetSchema = "IE50"
                 DelaySign = "false"
                 OutputType = "WinExe"
-                RootNamespace = "QuantProject.Downloader"
+                RootNamespace = "QuantProject.Applications.Downloader"
                 StartupObject = ""
             >
                 <Config
@@ -92,6 +92,11 @@
         <Files>
             <Include>
                 <File
+                    RelPath = "AdoNetTools.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "App.ico"
                     BuildAction = "Content"
                 />
@@ -135,11 +140,6 @@
                     BuildAction = "Compile"
                 />
                 <File
-                    RelPath = "TestDownloadedData.resx"
-                    DependentUpon = "TestDownloadedData.cs"
-                    BuildAction = "EmbeddedResource"
-                />
-                <File
                     RelPath = "TickerDownloader.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
@@ -153,6 +153,35 @@
                     RelPath = "WebDownloader.resx"
                     DependentUpon = "WebDownloader.cs"
                     BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "Validate\Validate.cs"
+                    SubType = "Form"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Validate\Validate.resx"
+                    DependentUpon = "Validate.cs"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "Validate\ValidateDataset.xsd"
+                    BuildAction = "Content"
+                    Generator = "MSDataSetGenerator"
+                    LastGenOutput = "ValidateDataset.cs"
+                />
+                <File
+                    RelPath = "Validate\ValidateDataset.cs"
+                    DependentUpon = "ValidateDataset.xsd"
+                    SubType = "code"
+                    BuildAction = "Compile"
+                    DesignTime = "True"
+                    AutoGen = "True"
+                />
+                <File
+                    RelPath = "Validate\ValidateDataset.xsx"
+                    DependentUpon = "ValidateDataset.xsd"
+                    BuildAction = "None"
                 />
             </Include>
         </Files>
