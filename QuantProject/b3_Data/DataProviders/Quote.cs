@@ -46,7 +46,7 @@ namespace QuantProject.Data.DataProviders
 			set	{	this.value = value;	}
 		}
 
-		public ExtendedDateTime ExtendedDataTable
+		public ExtendedDateTime ExtendedDateTime
 		{
 			get	{	return this.extendedDateTime;	}
 			set	{	this.extendedDateTime = value;	}
