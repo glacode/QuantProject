@@ -162,6 +162,36 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "Optimizing\Genetic\GeneticOptimizer.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Optimizing\Genetic\Genome.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Optimizing\Genetic\GenomeComparer.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Optimizing\Genetic\GenomeManagement.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Optimizing\Genetic\GenomeManagerTest.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Optimizing\Genetic\IGenomeManager.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "Statistics\BasicFunctions.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
