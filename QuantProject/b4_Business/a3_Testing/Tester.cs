@@ -38,7 +38,6 @@ namespace QuantProject.Business.Testing
 	public class Tester : BackTester
 	{
     private TestWindow testWindow;
-    private TradingSystems tradingSystems;
     private OrderManager orderManager = new OrderManager();
     private double initialCash = 0.0;
     //private TestResults testResults;
@@ -52,7 +51,7 @@ namespace QuantProject.Business.Testing
     public Tester(TestWindow testWindow , TradingSystems tradingSystems , double initialCash)
 		{
 			this.testWindow = testWindow;
-      this.tradingSystems = tradingSystems;
+      this.TradingSystems = tradingSystems;
       this.initialCash = initialCash;
       this.Account.AddCash( new ExtendedDateTime( testWindow.StartDateTime , BarComponent.Open ) ,
         initialCash );
@@ -71,7 +70,7 @@ namespace QuantProject.Business.Testing
     #region "Test"
     private void initializeTradingSystems()
     {
-      foreach (TradingSystem tradingSystem in tradingSystems)
+      foreach (TradingSystem tradingSystem in this.TradingSystems)
       {
         tradingSystem.Parameters = this.Parameters;
         tradingSystem.TestStartDateTime = this.testWindow.StartDateTime;
@@ -97,10 +96,10 @@ namespace QuantProject.Business.Testing
     }
     private void testCurrentExtendedDateTime( ExtendedDateTime extendedDateTime )
     {
-      foreach (TradingSystem tradingSystem in this.tradingSystems)
+      foreach (TradingSystem tradingSystem in this.TradingSystems)
         testCurrentDateForTradingSystem( tradingSystem , extendedDateTime );
     }
-    public void Test()
+    public override void Test()
     {
       DateTime dateTime = this.testWindow.StartDateTime;
       initializeTradingSystems();
