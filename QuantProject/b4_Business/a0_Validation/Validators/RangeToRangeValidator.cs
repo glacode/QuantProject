@@ -86,7 +86,8 @@ namespace QuantProject.Business.Validation.Validators
       int nextTickerStartingRowIndex =
         validate_currentTicker_set_rangeToRange( currentTicker , currentTickerStartingRowIndex ,
           rangeToRange );
-      rangeToRangeMovingAverage = rangeToRange.GetSimpleMovingAverage( 20 );
+      rangeToRangeMovingAverage =
+				rangeToRange.GetSimpleMovingAverage( ConstantsProvider.DaysForMovingAverageForSuspiciousRatioValidation );
       validate_currentTicker_withHistories( rangeToRange , rangeToRangeMovingAverage ,
         currentTickerStartingRowIndex , nextTickerStartingRowIndex );
       return nextTickerStartingRowIndex;
