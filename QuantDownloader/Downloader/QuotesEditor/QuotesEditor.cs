@@ -4,7 +4,7 @@ using System.Drawing;
 using System.Collections;
 using System.ComponentModel;
 using System.Windows.Forms;
-using scpl;
+using NPlot;
 using QuantProject.ADT;
 using QuantProject.ADT.Histories;
 using QuantProject.Business.Validation;

@@ -138,9 +138,9 @@
                     Package = "{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}"
                 />
                 <Reference
-                    Name = "scpl"
-                    AssemblyName = "scpl"
-                    HintPath = "..\b91_QuantProject\bin\Debug\scpl.dll"
+                    Name = "NPlot"
+                    AssemblyName = "NPlot"
+                    HintPath = "..\..\QuantDownloader\Downloader\bin\Debug\NPlot.dll"
                 />
             </References>
         </Build>

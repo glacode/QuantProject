@@ -35,7 +35,6 @@ namespace QuantProject.Applications.Downloader
 			this.VisualValidationDataGrid.Width = this.VisualValidationDataGridWidth;
 //			this.VisualValidationDataGrid.MouseUp +=
 //				new MouseEventHandler( this.initializeVisualValidationDataGrid_mouseUp );
-			this.Controls.Add( this.VisualValidationDataGrid );
 		}
     #endregion
 
@@ -68,6 +67,7 @@ namespace QuantProject.Applications.Downloader
 		public void Clear()
 		{
 			this.VisualValidationDataGrid.DataSource = null;
+			this.Controls.Add( this.VisualValidationDataGrid );
 		}
 
 //		protected override void OnMouseUp( MouseEventArgs e )

@@ -128,9 +128,9 @@
                     HintPath = "..\..\..\..\..\..\WINDOWS\Microsoft.NET\Framework\v1.0.3705\System.Web.Services.dll"
                 />
                 <Reference
-                    Name = "scpl"
-                    AssemblyName = "scpl"
-                    HintPath = "..\..\lib\scpl.dll"
+                    Name = "NPlot"
+                    AssemblyName = "NPlot"
+                    HintPath = "bin\Debug\NPlot.dll"
                 />
             </References>
         </Build>
@@ -200,7 +200,7 @@
                 />
                 <File
                     RelPath = "QuotesEditor\QuotesChart.cs"
-                    SubType = "Code"
+                    SubType = "UserControl"
                     BuildAction = "Compile"
                 />
                 <File
@@ -235,7 +235,7 @@
                 />
                 <File
                     RelPath = "QuotesEditor\VisualValidationChart.cs"
-                    SubType = "Code"
+                    SubType = "UserControl"
                     BuildAction = "Compile"
                 />
                 <File
@@ -250,7 +250,7 @@
                 />
                 <File
                     RelPath = "QuotesEditor\CloseToClose\CloseToCloseChart.cs"
-                    SubType = "Code"
+                    SubType = "UserControl"
                     BuildAction = "Compile"
                 />
                 <File
@@ -280,7 +280,7 @@
                 />
                 <File
                     RelPath = "QuotesEditor\RangeToRange\RangeToRangeChart.cs"
-                    SubType = "Code"
+                    SubType = "UserControl"
                     BuildAction = "Compile"
                 />
                 <File

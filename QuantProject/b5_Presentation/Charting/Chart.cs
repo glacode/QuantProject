@@ -23,7 +23,8 @@ using System;
 using System.Collections;
 using System.Data;
 using System.Drawing;
-using scpl;
+//using scpl;
+using NPlot;
 using QuantProject.ADT.Histories;
 
 namespace QuantProject.Presentation.Charting
@@ -32,7 +33,7 @@ namespace QuantProject.Presentation.Charting
 	/// Base class for QuantProject charting capabilities. Single interface point to
 	/// the scpl library. All scpl dependent code must be written within this class.
 	/// </summary>
-	public class Chart : scpl.Windows.PlotSurface2D
+	public class Chart : NPlot.Windows.PlotSurface2D
 	{
     private ArrayList chartPlots;
 
@@ -97,7 +98,8 @@ namespace QuantProject.Presentation.Charting
 			LinePlot lp = new LinePlot();
 			lp.DataSource = dataTable;
 			lp.AbscissaData = "X";
-			lp.ValueData = "Y";
+//			lp.ValueData = "Y";
+			lp.OrdinateData = "Y";
 
 			Pen p=new Pen( chartPlot.Color );
 			lp.Pen=p;
