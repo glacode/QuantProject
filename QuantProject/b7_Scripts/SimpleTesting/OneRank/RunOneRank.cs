@@ -48,6 +48,9 @@ namespace QuantProject.Scripts.SimpleTesting
 		/// </summary>
 		public RunOneRank()
 		{
+		}
+		public override void Run()
+		{
 			HistoricalEndOfDayTimer historicalEndOfDayTimer =
 				new IndexBasedEndOfDayTimer(
 				new EndOfDayDateTime( this.startDateTime ,
@@ -58,17 +61,17 @@ namespace QuantProject.Scripts.SimpleTesting
 				new HistoricalEndOfDayOrderExecutor( historicalEndOfDayTimer ,
 				this.historicalQuoteProvider ) ,
 				new IBCommissionManager() );
-//			this.account = new Account( "MSFT" , historicalEndOfDayTimer ,
-//				new HistoricalEndOfDayDataStreamer( historicalEndOfDayTimer ,
-//				this.historicalQuoteProvider ) ,
-//				new HistoricalEndOfDayOrderExecutor( historicalEndOfDayTimer ,
-//				this.historicalQuoteProvider ) );
+			//			this.account = new Account( "MSFT" , historicalEndOfDayTimer ,
+			//				new HistoricalEndOfDayDataStreamer( historicalEndOfDayTimer ,
+			//				this.historicalQuoteProvider ) ,
+			//				new HistoricalEndOfDayOrderExecutor( historicalEndOfDayTimer ,
+			//				this.historicalQuoteProvider ) );
 			OneRank oneRank = new OneRank( account ,
 				this.endDateTime );
 			Report report = new Report( this.account , this.historicalQuoteProvider );
 			report.Show( "WFT One Rank" , 1 ,
-			new EndOfDayDateTime( this.endDateTime , EndOfDaySpecificTime.MarketClose ) ,
-			"MSFT" );
+				new EndOfDayDateTime( this.endDateTime , EndOfDaySpecificTime.MarketClose ) ,
+				"MSFT" );
 		}
 	}
 }

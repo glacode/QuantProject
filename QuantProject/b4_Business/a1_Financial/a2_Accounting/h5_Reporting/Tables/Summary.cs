@@ -17,7 +17,7 @@ namespace QuantProject.Business.Financial.Accounting.Reporting.Tables
     private AccountReport accountReport;
 		private IHistoricalQuoteProvider historicalQuoteProvider;
     private double totalPnl;
-    private double buyAndHoldPercentageReturn;
+    private double benchmarkPercentageReturn;
     private double finalAccountValue;
     private long intervalDays;
 		private MaxEquityDrawDown maxEquityDrawDown;
@@ -40,10 +40,10 @@ namespace QuantProject.Business.Financial.Accounting.Reporting.Tables
     {
       get { return totalPnl; }
     }
-    public double BuyAndHoldPercentageReturn
+    public double BenchmarkPercentageReturn
     {
-      get { return buyAndHoldPercentageReturn; }
-      set { buyAndHoldPercentageReturn = value; }
+      get { return this.benchmarkPercentageReturn; }
+      set { this.benchmarkPercentageReturn = value; }
     }
     public double FinalAccountValue
     {
@@ -144,7 +144,7 @@ namespace QuantProject.Business.Financial.Accounting.Reporting.Tables
     {
       getSummary_setRow( new TotalNetProfit( this ) , summaryDataTable );
       getSummary_setRow( new ReturnOnAccount( this ) , summaryDataTable );
-      getSummary_setRow( new BuyAndHoldPercentageReturn( this , this.historicalQuoteProvider ) ,
+      getSummary_setRow( new BenchmarkPercentageReturn( this , this.historicalQuoteProvider ) ,
 				summaryDataTable );
       getSummary_setRow( new AnnualSystemPercentageReturn( this ) , summaryDataTable );
 			this.maxEquityDrawDown = new MaxEquityDrawDown( this );

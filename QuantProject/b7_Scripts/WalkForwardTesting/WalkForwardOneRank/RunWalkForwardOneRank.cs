@@ -24,6 +24,7 @@ using System;
 using System.Collections;
 using System.Data;
 using QuantProject.ADT;
+using QuantProject.ADT.FileManaging;
 using QuantProject.Business.DataProviders;
 using QuantProject.Business.Financial.Accounting;
 using QuantProject.Business.Financial.Accounting.Reporting;
@@ -66,7 +67,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardOneRank
 			this.startDateTime = new EndOfDayDateTime(
 				new DateTime( 1998 , 1 , 1 ) , EndOfDaySpecificTime.MarketOpen );
 			this.endDateTime = new EndOfDayDateTime(
-				new DateTime( 1998 , 8 , 31 ) , EndOfDaySpecificTime.OneHourAfterMarketClose );
+				new DateTime( 1998 , 1 , 20 ) , EndOfDaySpecificTime.OneHourAfterMarketClose );
 			this.numIntervalDays = 1;
 		}
     #region Run
@@ -87,6 +88,8 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardOneRank
 		{
 			this.endOfDayTimerHandler = new EndOfDayTimerHandler( 200 , 20 , 5 , 360 , 30 ,
 				this.account );
+//			this.endOfDayTimerHandler = new EndOfDayTimerHandler( 4 , 3 , 2 , 100 , 30 ,
+//				this.account );
 		}
 		private  void inSampleNewProgressEventHandler(
 			Object sender , NewProgressEventArgs eventArgs )
@@ -131,6 +134,8 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardOneRank
 				// the simulation has reached the ending date
 				this.account.EndOfDayTimer.Stop();
 				this.progressBarForm.Close();
+				ObjectArchiver.Archive( this.account ,
+					@"C:\Documents and Settings\Glauco\Desktop\reports\final.qP" );
 				Report report = new Report( this.account , this.historicalQuoteProvider );
 				report.Show( "WFT One Rank" , this.numIntervalDays , this.endDateTime , "MSFT" );
 			}

@@ -66,12 +66,12 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardOneRank
 					this.EndOfDayTimer.GetCurrentTime() , this.Key ,
 					this.historicalQuoteProvider );
 			if ( ( this.accountReport.Summary.MaxEquityDrawDown >= this.maxAcceptableDrawDown )
-				|| ( this.accountReport.Summary.TotalPnl <= this.accountReport.Summary.BuyAndHoldPercentageReturn ) )
+				|| ( this.accountReport.Summary.TotalPnl <= this.accountReport.Summary.BenchmarkPercentageReturn ) )
 				returnValue = Double.MinValue;
 			else
 				// max draw down is acceptable and the strategy is better than buy and hold
 				returnValue = this.accountReport.Summary.ReturnOnAccount -
-					this.accountReport.Summary.BuyAndHoldPercentageReturn;
+					this.accountReport.Summary.BenchmarkPercentageReturn;
 			return returnValue;
 		}
 		public override double GetFitnessValue()

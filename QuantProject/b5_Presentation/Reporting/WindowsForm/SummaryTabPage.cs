@@ -69,8 +69,8 @@ namespace QuantProject.Presentation.Reporting.WindowsForm
 		private System.Windows.Forms.Label lblValAverageLongTradePercReturn;
 		private System.Windows.Forms.Label lblNumberWinningShortTrades;
 		private System.Windows.Forms.Label lblValNumberWinningShortTrades;
-		private System.Windows.Forms.Label lblBuyAndHoldPercReturn;
-		private System.Windows.Forms.Label lblValBuyAndHoldPercReturn;
+		private System.Windows.Forms.Label lblBenchmarkPercReturn;
+		private System.Windows.Forms.Label lblValBenchmarkPercReturn;
 		private System.Windows.Forms.Label lblNumberWinningLongTrades;
 		private System.Windows.Forms.Label lblValNumberWinningLongTrades;
 		private System.Windows.Forms.Label lblTotalNumberOfShortTrades;
@@ -126,8 +126,8 @@ namespace QuantProject.Presentation.Reporting.WindowsForm
 			this.lblValTotalNetProfit = new System.Windows.Forms.Label();
 			this.lblReturnOnAccount = new System.Windows.Forms.Label();
 			this.lblValReturnOnAccount = new System.Windows.Forms.Label();
-			this.lblBuyAndHoldPercReturn = new System.Windows.Forms.Label();
-			this.lblValBuyAndHoldPercReturn = new System.Windows.Forms.Label();
+			this.lblBenchmarkPercReturn = new System.Windows.Forms.Label();
+			this.lblValBenchmarkPercReturn = new System.Windows.Forms.Label();
 			this.lblAnnualSystemPercReturn = new System.Windows.Forms.Label();
 			this.lblValAnnualSystemPercReturn = new System.Windows.Forms.Label();
 			this.lblMaxEquityDrawDown = new System.Windows.Forms.Label();
@@ -173,14 +173,14 @@ namespace QuantProject.Presentation.Reporting.WindowsForm
 			// 
 			this.addValueLabel( lblValReturnOnAccount , "lblValReturnOnAccount" );
 			// 
-			// lblBuyAndHoldPercReturn
+			// lblBenchmarkPercReturn
 			// 
-			this.addTextLabel( lblBuyAndHoldPercReturn , "lblBuyAndHoldPercReturn" ,
-				"Buy and hold % return:" );
+			this.addTextLabel( lblBenchmarkPercReturn , "lblBenchmarkPercReturn" ,
+				"Benchmark % return:" );
 			// 
-			// lblValBuyAndHoldPercReturn
+			// lblValBenchmarkPercReturn
 			// 
-			this.addValueLabel( lblValBuyAndHoldPercReturn , "lblValBuyAndHoldPercReturn" );
+			this.addValueLabel( lblValBenchmarkPercReturn , "lblValBuyAndHoldPercReturn" );
 			// 
 			// lblAnnualSystemPercReturn
 			// 
@@ -306,8 +306,8 @@ namespace QuantProject.Presentation.Reporting.WindowsForm
 				FormatProvider.ConvertToStringWithTwoDecimals( this.accountReport.Summary.TotalPnl );
 			this.lblValReturnOnAccount.Text =
 				FormatProvider.ConvertToStringWithTwoDecimals( this.accountReport.Summary.ReturnOnAccount );
-			this.lblValBuyAndHoldPercReturn.Text =
-				FormatProvider.ConvertToStringWithTwoDecimals( this.accountReport.Summary.BuyAndHoldPercentageReturn );
+			this.lblValBenchmarkPercReturn.Text =
+				FormatProvider.ConvertToStringWithTwoDecimals( this.accountReport.Summary.BenchmarkPercentageReturn );
 			this.lblValAnnualSystemPercReturn.Text =
 				FormatProvider.ConvertToStringWithTwoDecimals( this.accountReport.Summary.AnnualSystemPercentageReturn );
 			this.lblValMaxEquityDrawDown.Text =
