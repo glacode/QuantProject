@@ -25,6 +25,11 @@ namespace QuantProject.Business.Financial.Accounting.Reporting.Tables
     {
       get { return totalPnl; }
     }
+    public double BuyAndHoldPercentageReturn
+    {
+      get { return buyAndHoldPercentageReturn; }
+      set { buyAndHoldPercentageReturn = value; }
+    }
     public double FinalAccountValue
     {
       get { return finalAccountValue; }
@@ -43,27 +48,6 @@ namespace QuantProject.Business.Financial.Accounting.Reporting.Tables
     }
     #region "getSummaryTable_setRows"
     private delegate void getSummaryTable_setRow( DataRow summary );
-    private void getSummaryTable_setRow_ReturnOnAccount( DataRow summary )
-    {
-      summary[ "Information" ] = "Return on account";
-      summary[ "Value" ] = this.totalPnl / ( this.finalAccountValue - this.totalPnl ) * 100;
-    }
-    private void getSummaryTable_setRow_BuyAndHoldPercentageReturn( DataRow summary )
-    {
-      if ( this.accountReport.BuyAndHoldTicker != "" )
-      {
-        // the report has to compare to a buy and hold benchmark
-        Instrument buyAndHoldInstrument = new Instrument( this.accountReport.BuyAndHoldTicker );
-        this.buyAndHoldPercentageReturn =
-          ( buyAndHoldInstrument.GetMarketValue( this.accountReport.EndDateTime ) -
-          buyAndHoldInstrument.GetMarketValue(
-          new ExtendedDateTime( this.accountReport.StartDateTime , BarComponent.Open ) ) ) /
-          buyAndHoldInstrument.GetMarketValue(
-          new ExtendedDateTime( this.accountReport.StartDateTime , BarComponent.Open ) ) * 100;
-        summary[ "Information" ] = "Buy & hold % return";
-        summary[ "Value" ] = this.buyAndHoldPercentageReturn;
-      }
-    }
     private void getSummaryTable_setRow_AnnualSystemPercentageReturn( DataRow summary )
     {
       double totalROA = this.totalPnl / ( this.finalAccountValue - this.totalPnl );
@@ -155,10 +139,8 @@ namespace QuantProject.Business.Financial.Accounting.Reporting.Tables
     private void getSummaryTable_setRows( DataTable summaryDataTable )
     {
       getSummary_setRow( new TotalNetProfit( this ) , summaryDataTable );
-      getSummary_setRow( summaryDataTable ,
-        new getSummaryTable_setRow( getSummaryTable_setRow_ReturnOnAccount ) );
-      getSummary_setRow( summaryDataTable ,
-        new getSummaryTable_setRow( getSummaryTable_setRow_BuyAndHoldPercentageReturn ) );
+      getSummary_setRow( new ReturnOnAccount( this ) , summaryDataTable );
+      getSummary_setRow( new BuyAndHoldPercentageReturn( this ) , summaryDataTable );
       getSummary_setRow( summaryDataTable ,
         new getSummaryTable_setRow( getSummaryTable_setRow_AnnualSystemPercentageReturn ) );
       getSummary_setRow( new MaxEquityDrawDown( this ) , summaryDataTable );
