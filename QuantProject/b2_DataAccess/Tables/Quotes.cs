@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Data;
 using System.Text;
 using System.Windows.Forms;
@@ -755,22 +756,60 @@ namespace QuantProject.DataAccess.Tables
 			DataTable dataTable)
 		{
 			string sql;
-      if(Tickers_tickerGroups.HasTickers(tickerOrGroupID))
-			  sql =	"select * from quotes INNER JOIN tickers_tickerGroups ON " +
-              "quotes." + Quotes.TickerFieldName + "=tickers_tickerGroups." + Tickers_tickerGroups.Ticker + " " +
-				      "where " + Tickers_tickerGroups.GroupID + "='" + tickerOrGroupID + "' " +
-              "and " + Quotes.Date + ">=" + SQLBuilder.GetDateConstant( startDate ) + " " +
-              "and " + Quotes.Date + "<=" + SQLBuilder.GetDateConstant( endDate ) + " " +
-				      "order by " + Quotes.Date;
-      else
-        sql =	"select * from quotes " +
-              "where " + Quotes.TickerFieldName + "='" + tickerOrGroupID + "' " +
-              "and " + Quotes.Date + ">=" + SQLBuilder.GetDateConstant( startDate ) + " " +
-              "and " + Quotes.Date + "<=" + SQLBuilder.GetDateConstant( endDate ) + " " +
-              "order by " + Quotes.Date;
+			if(Tickers_tickerGroups.HasTickers(tickerOrGroupID))
+				sql =	"select * from quotes INNER JOIN tickers_tickerGroups ON " +
+					"quotes." + Quotes.TickerFieldName + "=tickers_tickerGroups." + Tickers_tickerGroups.Ticker + " " +
+					"where " + Tickers_tickerGroups.GroupID + "='" + tickerOrGroupID + "' " +
+					"and " + Quotes.Date + ">=" + SQLBuilder.GetDateConstant( startDate ) + " " +
+					"and " + Quotes.Date + "<=" + SQLBuilder.GetDateConstant( endDate ) + " " +
+					"order by " + Quotes.Date;
+			else
+				sql =	"select * from quotes " +
+					"where " + Quotes.TickerFieldName + "='" + tickerOrGroupID + "' " +
+					"and " + Quotes.Date + ">=" + SQLBuilder.GetDateConstant( startDate ) + " " +
+					"and " + Quotes.Date + "<=" + SQLBuilder.GetDateConstant( endDate ) + " " +
+					"order by " + Quotes.Date;
 			
-      SqlExecutor.SetDataTable( sql , dataTable );
+			SqlExecutor.SetDataTable( sql , dataTable );
 		}
+
+		#region SetDataTable for tickerList
+		private static string setDataTable_getTickerListWhereClause_getSingleTickerWhereClause(
+			string ticker )
+		{
+			return "(" + Quotes.TickerFieldName + "='" + ticker + "')";
+		}
+		private static string setDataTable_getTickerListWhereClause( ICollection tickerCollection )
+		{
+			string returnValue = "";
+			foreach (string ticker in tickerCollection)
+				if ( returnValue == "" )
+					// this is the first ticker to handle
+					returnValue += setDataTable_getTickerListWhereClause_getSingleTickerWhereClause( ticker );
+				else
+					// this is not the first ticker to handle
+					returnValue += " or " +
+						setDataTable_getTickerListWhereClause_getSingleTickerWhereClause( ticker );
+			return "( " + returnValue + " )";
+		}
+		/// <summary>
+		/// Builds a Quotes data table containing a row for each ticker in the
+		/// collection, with the quotes for the given DateTime
+		/// </summary>
+		/// <param name="tickerCollection">Tickers whose quotes are to be fetched</param>
+		/// <param name="dateTime">Date for the quotes to be fetched</param>
+		/// <param name="dataTable">Output parameter</param>
+		public static void SetDataTable( ICollection tickerCollection , DateTime dateTime , DataTable dataTable)
+		{
+			string sql;
+			sql =	"select * from quotes " +
+				"where " + setDataTable_getTickerListWhereClause( tickerCollection ) +
+				" and " + Quotes.Date + "=" + SQLBuilder.GetDateConstant( dateTime ) + " " +
+				"order by " + Quotes.TickerFieldName;
+			
+			SqlExecutor.SetDataTable( sql , dataTable );
+		}
+		#endregion
 
 
 
