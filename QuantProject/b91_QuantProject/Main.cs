@@ -223,7 +223,8 @@ namespace QuantProject.Principale
     {
       //try
       {
-        new RunMSFTsimpleTest().Run();
+        //new RunMSFTsimpleTest().Run();
+		new RunMSFTsimpleTest_2().Run();
         //new RunOneRank().Run();
         //new RunMSFTwalkForward().Run();
         //new RunMultiTestOneRank().Run();

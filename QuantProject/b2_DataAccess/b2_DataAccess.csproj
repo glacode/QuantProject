@@ -137,6 +137,21 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "Tables\TickerDataTable.cs"
+                    SubType = "Component"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Tables\TickerDataTable.resx"
+                    DependentUpon = "TickerDataTable.cs"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "Tables\Tickers.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "Tables\VisuallyValidatedQuotes.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
