@@ -97,6 +97,16 @@
         <Files>
             <Include>
                 <File
+                    RelPath = "AccountViewer.cs"
+                    SubType = "Form"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "AccountViewer.resx"
+                    DependentUpon = "AccountViewer.cs"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
                     RelPath = "app.config"
                     BuildAction = "None"
                 />
