@@ -1,4 +1,4 @@
-using System;
+using System; 
 using System.Data;
 using QuantProject.ADT.Histories;
 using QuantProject.Business.Validation;
