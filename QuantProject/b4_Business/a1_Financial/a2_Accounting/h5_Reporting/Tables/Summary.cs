@@ -17,7 +17,18 @@ namespace QuantProject.Business.Financial.Accounting.Reporting.Tables
     private double buyAndHoldPercentageReturn;
     private double finalAccountValue;
     private long intervalDays;
-    public AccountReport AccountReport
+		private MaxEquityDrawDown maxEquityDrawDown;
+		private TotalNumberOfTrades totalNumberOfTrades;
+		private NumberWinningTrades numberWinningTrades;
+		private AverageTradePercentageReturn averageTradePercentageReturn;
+		private LargestWinningTradePercentage largestWinningTradePercentage;
+		private LargestLosingTradePercentage largestLosingTradePercentage;
+		private NumberWinningLongTrades numberWinningLongTrades;
+		private AverageLongTradePercentageReturn averageLongTradePercentageReturn;
+		private NumberWinningShortTrades numberWinningShortTrades;
+		private TotalNumberOfLongTrades totalNumberOfLongTrades;
+		private TotalNumberOfShortTrades totalNumberOfShortTrades;
+		public AccountReport AccountReport
     {
       get { return accountReport; }
     }
@@ -40,6 +51,52 @@ namespace QuantProject.Business.Financial.Accounting.Reporting.Tables
     }
     public double ReturnOnAccount;
     public double AnnualSystemPercentageReturn;
+		public double MaxEquityDrawDown
+		{
+			get { return (double)this.maxEquityDrawDown.rowValue; }
+		}
+		public double TotalNumberOfTrades
+		{
+			get { return (int)this.totalNumberOfTrades.rowValue; }
+		}
+		public double NumberWinningTrades
+		{
+			get { return (long)this.numberWinningTrades.rowValue; }
+		}
+		public double AverageTradePercentageReturn
+		{
+			get { return (double)this.averageTradePercentageReturn.rowValue; }
+		}
+		public double LargestWinningTradePercentage
+		{
+			get { return (double)this.largestWinningTradePercentage.rowValue; }
+		}
+		public double LargestLosingTradePercentage
+		{
+			get { return (double)this.largestLosingTradePercentage.rowValue; }
+		}
+		public double NumberWinningLongTrades
+		{
+			get { return (int)this.numberWinningLongTrades.rowValue; }
+		}
+		public double AverageLongTradePercentageReturn
+		{
+			get { return (double)this.averageLongTradePercentageReturn.rowValue; }
+		}
+		public double NumberWinningShortTrades
+		{
+			get { return (int)this.numberWinningShortTrades.rowValue; }
+		}
+		public double TotalNumberOfLongTrades
+		{
+			get { return (int)this.totalNumberOfLongTrades.rowValue; }
+		}
+		public double TotalNumberOfShortTrades
+		{
+			get { return (int)this.totalNumberOfShortTrades.rowValue; }
+		}
+
+
     public Summary( AccountReport accountReport ) :
       base( accountReport.Name + " - Summary" )
     {
@@ -69,17 +126,28 @@ namespace QuantProject.Business.Financial.Accounting.Reporting.Tables
       getSummary_setRow( new ReturnOnAccount( this ) , summaryDataTable );
       getSummary_setRow( new BuyAndHoldPercentageReturn( this ) , summaryDataTable );
       getSummary_setRow( new AnnualSystemPercentageReturn( this ) , summaryDataTable );
-      getSummary_setRow( new MaxEquityDrawDown( this ) , summaryDataTable );
-      getSummary_setRow( new TotalNumberOfTrades( this ) , summaryDataTable );
-      getSummary_setRow( new NumberWinningTrades( this ) , summaryDataTable );
-      getSummary_setRow( new AverageTradePercentageReturn( this ) , summaryDataTable );
-      getSummary_setRow( new LargestWinningTradePercentage( this ) , summaryDataTable );
-      getSummary_setRow( new LargestLosingTradePercentage( this ) , summaryDataTable );
-      getSummary_setRow( new TotalNumberOfLongTrades( this ) , summaryDataTable );
-      getSummary_setRow( new NumberWinningLongTrades( this ) , summaryDataTable );
-      getSummary_setRow( new AverageLongTradePercentageReturn( this ) , summaryDataTable );
-      getSummary_setRow( new TotalNumberOfShortTrades( this ) , summaryDataTable );
-      getSummary_setRow( new NumberWinningShortTrades( this ) , summaryDataTable );
+			this.maxEquityDrawDown = new MaxEquityDrawDown( this );
+      getSummary_setRow( this.maxEquityDrawDown , summaryDataTable );
+			this.totalNumberOfTrades = new TotalNumberOfTrades( this );
+      getSummary_setRow( this.totalNumberOfTrades , summaryDataTable );
+			this.numberWinningTrades = new NumberWinningTrades( this );
+      getSummary_setRow( this.numberWinningTrades , summaryDataTable );
+			this.averageTradePercentageReturn = new AverageTradePercentageReturn( this );
+      getSummary_setRow( this.averageTradePercentageReturn , summaryDataTable );
+			this.largestWinningTradePercentage = new LargestWinningTradePercentage( this );
+      getSummary_setRow( this.largestWinningTradePercentage , summaryDataTable );
+			this.largestLosingTradePercentage = new LargestLosingTradePercentage( this );
+      getSummary_setRow( this.largestLosingTradePercentage , summaryDataTable );
+			this.totalNumberOfLongTrades = new TotalNumberOfLongTrades( this );
+      getSummary_setRow( this.totalNumberOfLongTrades , summaryDataTable );
+			this.numberWinningLongTrades = new NumberWinningLongTrades( this );
+      getSummary_setRow( this.numberWinningLongTrades , summaryDataTable );
+			this.averageLongTradePercentageReturn = new AverageLongTradePercentageReturn( this );
+      getSummary_setRow( this.averageLongTradePercentageReturn , summaryDataTable );
+			this.totalNumberOfShortTrades = new TotalNumberOfShortTrades( this );
+      getSummary_setRow( this.totalNumberOfShortTrades , summaryDataTable );
+			this.numberWinningShortTrades = new NumberWinningShortTrades( this );
+      getSummary_setRow( this.numberWinningShortTrades , summaryDataTable );
       //      getSummary_setRow( summaryDataTable ,
 //        new getSummaryTable_setRow( getSummaryTable_setRow_TotalNumberOfShortTrades ) );
 //      getSummary_setRow( summaryDataTable ,
