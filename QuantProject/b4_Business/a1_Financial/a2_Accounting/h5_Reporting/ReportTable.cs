@@ -40,12 +40,17 @@ namespace QuantProject.Business.Financial.Accounting.Reporting
     public DataTable DataTable
     {
       get { return dataTable; }
+      set { dataTable = value; }
     }
 
     public ReportTable( string name , DataTable dataTable )
     {
       this.name = name;
       this.dataTable = dataTable;
+    }
+    public ReportTable( string name )
+    {
+      this.name = name;
     }
   }
 }
