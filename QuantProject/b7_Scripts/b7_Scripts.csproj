@@ -117,10 +117,6 @@
                     BuildAction = "Compile"
                 />
                 <File
-                    RelPath = "MSFTsimpleTest\ResultOk.txt"
-                    BuildAction = "Content"
-                />
-                <File
                     RelPath = "MSFTsimpleTest\RunMSFTsimpleTest.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
