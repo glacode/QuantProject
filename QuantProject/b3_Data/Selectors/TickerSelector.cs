@@ -47,7 +47,7 @@ namespace QuantProject.Data.Selectors
     public DataTable GetSelectedTickers()
     {
        //TODO: implement switching code to the proper method of selection
-       return Quotes.GetMostLiquidTickers(this.selectionRule.GroupID,
+       return QuantProject.DataAccess.Tables.Quotes.GetMostLiquidTickers(this.selectionRule.GroupID,
                                             this.selectionRule.FirstQuoteDate,
                                             this.selectionRule.LastQuoteDate,
                                             this.selectionRule.MaxNumOfReturnedTickers);
