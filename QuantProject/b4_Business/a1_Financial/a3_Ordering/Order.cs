@@ -21,8 +21,11 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
 using System;
-using QuantProject.Business.Financial.Instruments;
+
 using QuantProject.ADT;
+using QuantProject.Business.Financial.Instruments;
+using QuantProject.Business.Timing;
+
 
 namespace QuantProject.Business.Financial.Ordering
 {
@@ -34,7 +37,7 @@ namespace QuantProject.Business.Financial.Ordering
     private OrderType orderType;
     private Instrument instrument;
     private long quantity;
-    private ExtendedDateTime extendedDateTime;
+    private EndOfDayDateTime endOfDayDateTime;
 
     public OrderType Type
     {
@@ -54,10 +57,10 @@ namespace QuantProject.Business.Financial.Ordering
       set { quantity=value;  }
     }
 
-    public ExtendedDateTime ExtendedDateTime
+    public EndOfDayDateTime EndOfDayDateTime
     {
-      get { return extendedDateTime; }
-      set { extendedDateTime=value;  }
+      get { return endOfDayDateTime; }
+      set { endOfDayDateTime=value;  }
     }
 
 //    public Order( OrderType orderType , Instrument instrument , long quantity )
@@ -67,13 +70,21 @@ namespace QuantProject.Business.Financial.Ordering
 //      Quantity = quantity;
 //    }
 
-    public Order( OrderType orderType , Instrument instrument ,
-      long quantity , ExtendedDateTime extendedDateTime )
-    {
-      Type = orderType;
-      this.Instrument = instrument;
-      Quantity = quantity;
-      this.extendedDateTime = extendedDateTime;
-    }
-  }
+		private void order( OrderType orderType , Instrument instrument , long quantity )
+		{
+			Type = orderType;
+			this.Instrument = instrument;
+			Quantity = quantity;
+		}
+		public Order( OrderType orderType , Instrument instrument ,	long quantity )
+		{
+			this.order( orderType , instrument , quantity );
+		}
+		public Order( OrderType orderType , Instrument instrument ,
+			long quantity , EndOfDayDateTime endOfDayDateTime )
+		{
+			this.order( orderType , instrument , quantity );
+			this.endOfDayDateTime = endOfDayDateTime;
+		}
+	}
 }

@@ -28,6 +28,7 @@ using QuantProject.Business.Financial.Accounting;
 using QuantProject.Business.Financial.Accounting.Reporting;
 using QuantProject.Business.Financial.Instruments;
 using QuantProject.Business.Testing;
+using QuantProject.Business.Timing;
 using QuantProject.Business.Strategies;
 using QuantProject.Business.Scripting;
 using QuantProject.Presentation.Reporting.WindowsForm;
@@ -47,7 +48,8 @@ namespace QuantProject.Scripts
 			base.Run();
 			Report report = new Report( this.account );
 			report.Show( this.ticker , 7 ,
-				new ExtendedDateTime( this.endDateTime , BarComponent.Close ) , this.ticker );		
+				new EndOfDayDateTime( this.endDateTime ,
+				EndOfDaySpecificTime.OneHourAfterMarketClose ) , this.ticker );		
 		}
 	}
 }

@@ -29,6 +29,7 @@ using QuantProject.Business.Financial.Instruments;
 using QuantProject.Business.Scripting;
 using QuantProject.Business.Strategies;
 using QuantProject.Business.Testing;
+using QuantProject.Business.Timing;
 using QuantProject.Presentation.Reporting.MicrosoftExcel;
 
 namespace QuantProject.Scripts
@@ -104,7 +105,7 @@ namespace QuantProject.Scripts
     private void report_addRow( BackTester backTester )
     {
       AccountReport accountReport = backTester.Account.CreateReport( "" , this.numIntervalDays ,
-        new ExtendedDateTime( this.endDateTime , BarComponent.Close ) , backTester.Name );
+        new EndOfDayDateTime( this.endDateTime , EndOfDaySpecificTime.OneHourAfterMarketClose ) , backTester.Name );
       DataRow newRow = this.reportTable.DataTable.NewRow();
       newRow[ "Ticker" ] = backTester.Name;
       newRow[ "Return on Act" ] = accountReport.Summary.ReturnOnAccount;

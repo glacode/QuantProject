@@ -24,6 +24,7 @@ using System;
 using QuantProject.ADT;
 using QuantProject.ADT.Histories;
 using QuantProject.Data.DataProviders;
+using QuantProject.Business.Timing;
 
 namespace QuantProject.Business.Financial.Instruments
 {
@@ -41,15 +42,16 @@ namespace QuantProject.Business.Financial.Instruments
       this.Key = key;
 		}
 
-    public double GetMarketValue( ExtendedDateTime extendedDateTime )
+    public double GetMarketValue( EndOfDayDateTime endOfDayDateTime )
     {
-      return HistoricalDataProvider.GetMarketValue( this.Key , extendedDateTime );
+      return HistoricalDataProvider.GetMarketValue( this.Key , endOfDayDateTime.DateTime ,
+				endOfDayDateTime.GetNearestBarComponent() );
     }
 
     public long GetMaxBuyableQuantity( double availableAmount ,
-      ExtendedDateTime extendedDateTime )
+      EndOfDayDateTime endOfDayDateTime )
     {
-      return (long) Math.Floor( availableAmount / this.GetMarketValue( extendedDateTime ) );
+      return (long) Math.Floor( availableAmount / this.GetMarketValue( endOfDayDateTime ) );
     }
 
     public DateTime GetNextMarketDay( DateTime dateTime )

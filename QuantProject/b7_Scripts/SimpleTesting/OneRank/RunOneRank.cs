@@ -30,6 +30,7 @@ using QuantProject.Business.Financial.Instruments;
 using QuantProject.Business.Testing;
 using QuantProject.Business.Strategies;
 using QuantProject.Business.Scripting;
+using QuantProject.Business.Timing;
 using QuantProject.Presentation.Reporting.MicrosoftExcel;
 using QuantProject.Presentation.Reporting.WindowsForm;
 
@@ -83,7 +84,7 @@ namespace QuantProject.Scripts
         //tester.Account.ReportToConsole( endDateTime );
 
       ((History)tester.Account.GetProfitNetLossHistory(
-        new ExtendedDateTime( endDateTime , BarComponent.Close ) ) ).ReportToConsole();
+        new EndOfDayDateTime( endDateTime , EndOfDaySpecificTime.MarketClose ) ) ).ReportToConsole();
 
 //			uncomment the four lines below to use the Excel reporting feature
 			this.account = tester.Account;

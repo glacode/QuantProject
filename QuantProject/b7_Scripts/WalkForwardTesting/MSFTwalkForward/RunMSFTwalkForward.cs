@@ -30,6 +30,7 @@ using QuantProject.Business.Financial.Instruments;
 using QuantProject.Business.Scripting;
 using QuantProject.Business.Strategies;
 using QuantProject.Business.Testing;
+using QuantProject.Business.Timing;
 using QuantProject.Presentation.Reporting.MicrosoftExcel;
 
 namespace QuantProject.Scripts
@@ -67,7 +68,8 @@ namespace QuantProject.Scripts
       
       
       AccountReport accountReport = walkForwardTester.Account.CreateReport( "MSFT" , 7 ,
-        new ExtendedDateTime( endDateTime , BarComponent.Close ) , "MSFT" );
+        new EndOfDayDateTime( endDateTime ,
+				EndOfDaySpecificTime.OneHourAfterMarketClose ) , "MSFT" );
       ExcelManager.Add( accountReport );
       ExcelManager.ShowReport();
     }

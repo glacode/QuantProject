@@ -24,6 +24,7 @@ using System.Windows.Forms;
 using QuantProject.ADT;
 using QuantProject.Business.Financial.Accounting;
 using QuantProject.Business.Financial.Accounting.Reporting;
+using QuantProject.Business.Timing;
 
 namespace QuantProject.Presentation.Reporting.WindowsForm
 {
@@ -45,7 +46,7 @@ namespace QuantProject.Presentation.Reporting.WindowsForm
 		/// Populates the form and displays itself
 		/// </summary>
 		private void show_set_accountReport( string reportName ,
-			int numDaysForInterval , ExtendedDateTime endDateTime , string buyAndHoldTicker )
+			int numDaysForInterval , EndOfDayDateTime endDateTime , string buyAndHoldTicker )
 		{
 			if ( this.accountReport == null )
 				this.accountReport = this.account.CreateReport( reportName ,
@@ -60,7 +61,7 @@ namespace QuantProject.Presentation.Reporting.WindowsForm
 			this.Controls.Add( this.reportTabControl );
 		}
 		public void Show( string reportName ,
-			int numDaysForInterval , ExtendedDateTime endDateTime , string buyAndHoldTicker )
+			int numDaysForInterval , EndOfDayDateTime endDateTime , string buyAndHoldTicker )
 		{
 			this.show_set_accountReport( reportName ,
 				numDaysForInterval , endDateTime , buyAndHoldTicker );

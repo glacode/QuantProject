@@ -27,9 +27,10 @@ using QuantProject.ADT.Optimizing;
 using QuantProject.Business.Financial.Accounting;
 using QuantProject.Business.Financial.Accounting.Reporting;
 using QuantProject.Business.Financial.Instruments;
-using QuantProject.Business.Testing;
 using QuantProject.Business.Strategies;
 using QuantProject.Business.Scripting;
+using QuantProject.Business.Testing;
+using QuantProject.Business.Timing;
 using QuantProject.Presentation.Reporting.Console;
 using QuantProject.Presentation.Reporting.MicrosoftExcel;
 
@@ -77,13 +78,13 @@ namespace QuantProject.Scripts
 			ConsoleManager.Report( tester.Account , endDateTime );
 
       ((History)tester.Account.GetProfitNetLossHistory(
-        new ExtendedDateTime( endDateTime , BarComponent.Close ) ) ).ReportToConsole();
+        new EndOfDayDateTime( endDateTime , EndOfDaySpecificTime.MarketClose ) ) ).ReportToConsole();
 
 //      tester.Account.AccountReport.ReportToExcel( "MSFT" ,
 //        new ExtendedDateTime( endDateTime , BarComponent.Close ) );
 
       AccountReport accountReport = tester.Account.CreateReport( "MSFT" , 7 ,
-        new ExtendedDateTime( endDateTime , BarComponent.Close ) , "MSFT" );
+        new EndOfDayDateTime( endDateTime , EndOfDaySpecificTime.OneHourAfterMarketClose ) , "MSFT" );
       ExcelManager.Add( accountReport );
       ExcelManager.ShowReport();
     }

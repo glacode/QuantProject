@@ -25,6 +25,7 @@ using System.Collections;
 using QuantProject.ADT;
 using QuantProject.Data.DataProviders;
 using QuantProject.Business.Financial.Accounting;
+using QuantProject.Business.Financial.Accounting.Transactions;
 
 namespace QuantProject.Business.Financial.Ordering
 {
@@ -42,7 +43,8 @@ namespace QuantProject.Business.Financial.Ordering
 
     public virtual double GetInstrumentPrice( Order order )
     {
-      return HistoricalDataProvider.GetMarketValue( order.Instrument.Key , order.ExtendedDateTime );
+      return HistoricalDataProvider.GetMarketValue( order.Instrument.Key ,
+				order.EndOfDayDateTime.GetNearestExtendedDateTime() );
     }
     #region "GetTransaction"
 
@@ -77,18 +79,18 @@ namespace QuantProject.Business.Financial.Ordering
       double instrumentPrice = this.GetInstrumentPrice( order  );
       TimedTransaction transaction = new TimedTransaction(
         getTransactionType( order ) , order.Instrument ,
-        order.Quantity , order.Instrument.GetMarketValue( order.ExtendedDateTime ) ,
-        order.ExtendedDateTime );
+        order.Quantity , order.Instrument.GetMarketValue( order.EndOfDayDateTime ) ,
+        order.EndOfDayDateTime.GetNearestExtendedDateTime() );
       return transaction;
     }
     #endregion
 
-    public Transactions GetTransactions( ArrayList orders )
+    public TransactionHistory GetTransactions( ArrayList orders )
     {
-      Transactions transactions = new Transactions();
+      TransactionHistory transactionHistory = new TransactionHistory();
       foreach (Order order in orders)
-        transactions.Add( this.GetTransaction( order ) );
-      return transactions;
+        transactionHistory.Add( this.GetTransaction( order ) );
+      return transactionHistory;
     }
 	}
 }
