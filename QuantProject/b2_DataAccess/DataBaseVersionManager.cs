@@ -158,7 +158,7 @@ namespace QuantProject.DataAccess
 			this.executeCommand("ALTER TABLE tickers ADD CONSTRAINT PKtiTicker PRIMARY KEY (tiTicker)");
 			this.executeCommand("ALTER TABLE quotes ADD CONSTRAINT PKquTicker_quDate " +
 								"PRIMARY KEY (quTicker, quDate)");
-
+			this.executeCommand("ALTER TABLE tickerGroups ADD CONSTRAINT PKtgId PRIMARY KEY (tgId)");
 			this.executeCommand("ALTER TABLE validatedTickers ADD CONSTRAINT myKey PRIMARY KEY ( vtTicker )");
 			this.executeCommand("ALTER TABLE tickers_tickerGroups " + 
 								"ADD CONSTRAINT PKttTgId_ttTiId PRIMARY KEY ( ttTgId, ttTiId)");
@@ -169,7 +169,8 @@ namespace QuantProject.DataAccess
 	}
 	private void alterTablesAddColumns()
 	{
-		//add code here for adding columns to existing tables;
+		this.executeCommand("ALTER TABLE tickers " + 
+			"ADD COLUMN tiCompanyName TEXT(100)");
 	}
 	private void alterTablesAddIndexes()
 	{
