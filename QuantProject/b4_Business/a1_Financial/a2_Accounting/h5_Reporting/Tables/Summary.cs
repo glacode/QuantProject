@@ -59,9 +59,9 @@ namespace QuantProject.Business.Financial.Accounting.Reporting.Tables
 		{
 			get { return (int)this.totalNumberOfTrades.rowValue; }
 		}
-		public double NumberWinningTrades
+		public int NumberWinningTrades
 		{
-			get { return (long)this.numberWinningTrades.rowValue; }
+			get { return (int)this.numberWinningTrades.rowValue; }
 		}
 		public double AverageTradePercentageReturn
 		{
