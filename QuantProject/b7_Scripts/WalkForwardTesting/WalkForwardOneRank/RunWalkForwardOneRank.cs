@@ -66,14 +66,14 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardOneRank
 			this.startDateTime = new EndOfDayDateTime(
 				new DateTime( 1998 , 1 , 1 ) , EndOfDaySpecificTime.MarketOpen );
 			this.endDateTime = new EndOfDayDateTime(
-				new DateTime( 1998 , 1 , 30 ) , EndOfDaySpecificTime.OneHourAfterMarketClose );
+				new DateTime( 1998 , 8 , 31 ) , EndOfDaySpecificTime.OneHourAfterMarketClose );
 			this.numIntervalDays = 1;
 		}
     #region Run
 		private void run_initializeEndOfDayTimer()
 		{
 			this.endOfDayTimer =
-				new HistoricalEndOfDayTimer( this.startDateTime );
+				new IndexBasedEndOfDayTimer( this.startDateTime, "^SPX" );
 		}
 		private void run_initializeAccount()
 		{
@@ -85,7 +85,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardOneRank
 		}
 		private void run_initializeEndOfDayTimerHandler()
 		{
-			this.endOfDayTimerHandler = new EndOfDayTimerHandler( 50 , 20 , 5 , 360 , 30 ,
+			this.endOfDayTimerHandler = new EndOfDayTimerHandler( 200 , 20 , 5 , 360 , 30 ,
 				this.account );
 		}
 		private  void inSampleNewProgressEventHandler(
@@ -125,8 +125,6 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardOneRank
 		public void oneHourAfterMarketCloseEventHandler(
 			Object sender , EndOfDayTimingEventArgs endOfDayTimingEventArgs )
 		{
-			this.oneHourAfterMarketCloseEventHandler_handleProgessBarForm(
-				 ( IEndOfDayTimer )sender );
 			if ( ( ( IEndOfDayTimer )sender ).GetCurrentTime().DateTime >
 				this.endDateTime.DateTime )
 			{
@@ -136,6 +134,10 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardOneRank
 				Report report = new Report( this.account , this.historicalQuoteProvider );
 				report.Show( "WFT One Rank" , this.numIntervalDays , this.endDateTime , "MSFT" );
 			}
+			else
+				// the simulation has not reached the ending date, yet
+				this.oneHourAfterMarketCloseEventHandler_handleProgessBarForm(
+					( IEndOfDayTimer )sender );
 		}
 		#endregion
 		public override void Run()

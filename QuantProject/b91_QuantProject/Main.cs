@@ -26,6 +26,7 @@ using System.Collections;
 using System.ComponentModel;
 using System.Windows.Forms;
 using QuantProject.Scripts;
+using QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios;
 using QuantProject.Scripts.WalkForwardTesting.WalkForwardOneRank;
 
 namespace QuantProject.Principale
@@ -230,6 +231,7 @@ namespace QuantProject.Principale
 //				new RunOneRankWithWindowsReport().Run();
 				//new RunMSFTwalkForward().Run();
         //new RunMultiTestOneRank().Run();
+				//new RunEfficientCTOPorfolio().Run();
 				new RunWalkForwardOneRank().Run();
       } 
       //catch ( Exception ex )

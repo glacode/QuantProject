@@ -33,22 +33,33 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardOneRank
 	public class EligibleTickers : Hashtable
 	{
 		private int numberEligibleTickersToBeChosen;
+		private int numberDaysForPerformanceCalculation;
 		private int numDaysToComputeLiquidity = 10;
 
-		public EligibleTickers( int numberEligibleTickersToBeChosen )
+		public EligibleTickers( int numberEligibleTickersToBeChosen ,
+			int numberDaysForPerformanceCalculation )
 		{
 			this.numberEligibleTickersToBeChosen = numberEligibleTickersToBeChosen;
+			this.numberDaysForPerformanceCalculation = numberDaysForPerformanceCalculation;
 		}
 
 		#region SetTickers
 		private void setTickers_build( DateTime dateTime )
 		{
-			TickerSelector tickerSelector =
+			TickerSelector mostLiquid =
 				new TickerSelector( SelectionType.Liquidity , false , "Test" ,
 				dateTime.AddDays( - this.numDaysToComputeLiquidity ) , dateTime ,
 				this.numberEligibleTickersToBeChosen );
+			DataTable mostLiquidTickers =
+				mostLiquid.GetTableOfSelectedTickers();
+			TickerSelector quotedInEachMarketDayFromMostLiquid = 
+				new TickerSelector( mostLiquidTickers,
+				SelectionType.QuotedInEachMarketDay, false, "",
+				dateTime.AddDays( - this.numberDaysForPerformanceCalculation ) ,
+				dateTime, this.numberEligibleTickersToBeChosen);
+			quotedInEachMarketDayFromMostLiquid.MarketIndex = "^SPX";
 			DataTable selectedTickers =
-				tickerSelector.GetTableOfSelectedTickers();
+				quotedInEachMarketDayFromMostLiquid.GetTableOfSelectedTickers();
 			foreach ( DataRow dataRow in selectedTickers.Rows )
 				this.Add( dataRow[ "tiTicker" ].ToString() ,
 					dataRow[ "tiTicker" ].ToString() );

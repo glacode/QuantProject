@@ -140,7 +140,7 @@
                 <Reference
                     Name = "scpl"
                     AssemblyName = "scpl"
-                    HintPath = "..\..\QuantDownloader\Downloader\bin\Debug\scpl.dll"
+                    HintPath = "..\b91_QuantProject\bin\Debug\scpl.dll"
                 />
             </References>
         </Build>

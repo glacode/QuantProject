@@ -90,7 +90,8 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardOneRank
 			this.outOfSampleWindowDays = outOfSampleWindowDays;
 			this.account = account;
 
-			this.eligibleTickers = new EligibleTickers( numberEligibleTickers );
+			this.eligibleTickers = new EligibleTickers( numberEligibleTickers ,
+				inSampleWindowDays );
 			this.bestPerformingTickers = new BestPerformingTickers( numberBestPeformingTickers ,
 				this.inSampleWindowDays );
 			this.bestPerformingTickers.NewProgress +=
