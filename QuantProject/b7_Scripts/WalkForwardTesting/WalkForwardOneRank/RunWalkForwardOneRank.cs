@@ -100,13 +100,16 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardOneRank
 		{
 			long elapsedDays = Convert.ToInt64( ((TimeSpan)( endOfDayTimer.GetCurrentTime().DateTime - 
 				this.startDateTime.DateTime )).TotalDays );
-			long totalDays = Convert.ToInt64( ((TimeSpan)( this.endDateTime.DateTime - 
+			double totalDays = Convert.ToDouble( ((TimeSpan)( this.endDateTime.DateTime - 
 				this.startDateTime.DateTime )).TotalDays );
 			if ( Math.Floor( elapsedDays / totalDays * 100 ) >
 				Math.Floor( ( elapsedDays - 1 ) / totalDays * 100 ) )
+			{
 				// a new out of sample time percentage point has been elapsed
 				this.progressBarForm.ProgressBarOutOfSample.Value =
 					Convert.ToInt16( Math.Floor( elapsedDays / totalDays * 100 ) );
+				this.progressBarForm.ProgressBarOutOfSample.Refresh();
+			}
 		}
 		public void oneHourAfterMarketCloseEventHandler(
 			Object sender , EndOfDayTimingEventArgs endOfDayTimingEventArgs )
