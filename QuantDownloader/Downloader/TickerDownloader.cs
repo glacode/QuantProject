@@ -222,7 +222,7 @@ namespace QuantProject.Applications.Downloader
         this.p_myForm.Refresh();
         try
         {
-          HttpWebRequest Req = (HttpWebRequest)WebRequest.Create("http:" + "//table.finance.yahoo.com/table.csv?a=" 
+          HttpWebRequest Req = (HttpWebRequest)WebRequest.Create("http:" + "//ichart.yahoo.com/table.csv?a=" 
             + a + "&b=" + b + "&c=" + c +"&d=" + d + "&e=" + e + "&f=" + f + "&s=" + p_quTicker + "&y=0&g=d&ignore=.csv");
           Req.Method = "GET";
           Req.Timeout = ConstantsProvider.TimeOutValue;
@@ -538,9 +538,12 @@ namespace QuantProject.Applications.Downloader
       {
         try
         {
-          Req = (HttpWebRequest)WebRequest.Create("http:" + "//table.finance.yahoo.com/table.csv?a=" 
-            + a + "&b=" + b + "&c=" + c +"&d=" + d + "&e=" + e + "&f=" + f + "&s=" + p_quTicker + "&y=0&g=d&ignore=.csv");
-          Req.Method = "GET";
+//					Req = (HttpWebRequest)WebRequest.Create("http:" + "//table.finance.yahoo.com/table.csv?a=" 
+//						+ a + "&b=" + b + "&c=" + c +"&d=" + d + "&e=" + e + "&f=" + f + "&s=" + p_quTicker + "&y=0&g=d&ignore=.csv");
+					string url = "http:" + "//ichart.yahoo.com/table.csv?a="
+						+ a + "&b=" + b + "&c=" + c +"&d=" + d + "&e=" + e + "&f=" + f + "&s=" + p_quTicker + "&y=0&g=d&ignore=.csv";
+					Req = (HttpWebRequest)WebRequest.Create( url );
+					Req.Method = "GET";
           Req.Timeout = ConstantsProvider.TimeOutValue;
           hwr = (HttpWebResponse)Req.GetResponse();
           strm = hwr.GetResponseStream();
@@ -577,7 +580,7 @@ namespace QuantProject.Applications.Downloader
       {
         try
         {
-          Req = (HttpWebRequest)WebRequest.Create("http:" + "//table.finance.yahoo.com/table.csv?a=" 
+          Req = (HttpWebRequest)WebRequest.Create("http:" + "//ichart.yahoo.com/table.csv?a=" 
             + a + "&b=" + b + "&c=" + c +"&d=" + d + "&e=" + e + "&f=" + f + "&s=" + p_quTicker + "&y=0&g=d&ignore=.csv");
           Req.Method = "GET";
           Req.Timeout = ConstantsProvider.TimeOutValue;
