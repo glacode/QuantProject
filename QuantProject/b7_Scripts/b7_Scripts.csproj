@@ -73,11 +73,6 @@
                     HintPath = "..\..\..\..\..\..\WINDOWS\Microsoft.NET\Framework\v1.0.3705\System.XML.dll"
                 />
                 <Reference
-                    Name = "Accounting"
-                    Project = "{CC89EA15-3A8B-42E0-8206-E92663147A23}"
-                    Package = "{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}"
-                />
-                <Reference
                     Name = "ADT"
                     Project = "{B8A01161-3698-4591-B1EF-90F5FC7D8DBA}"
                     Package = "{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}"
