@@ -111,16 +111,6 @@
                     BuildAction = "Compile"
                 />
                 <File
-                    RelPath = "BackTestForm.cs"
-                    SubType = "Form"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "BackTestForm.resx"
-                    DependentUpon = "BackTestForm.cs"
-                    BuildAction = "EmbeddedResource"
-                />
-                <File
                     RelPath = "DataSet1.xsd"
                     BuildAction = "Content"
                     Generator = "MSDataSetGenerator"
@@ -133,16 +123,6 @@
                     BuildAction = "Compile"
                     DesignTime = "True"
                     AutoGen = "True"
-                />
-                <File
-                    RelPath = "Form1.cs"
-                    SubType = "Form"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Form1.resx"
-                    DependentUpon = "Form1.cs"
-                    BuildAction = "EmbeddedResource"
                 />
                 <File
                     RelPath = "Main.cs"
