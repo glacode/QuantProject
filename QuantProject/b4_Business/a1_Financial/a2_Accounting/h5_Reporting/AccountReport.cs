@@ -262,7 +262,8 @@ namespace QuantProject.Business.Financial.Accounting.Reporting
           roundTrade[ "ExitDate" ] = dataRow[ "DateTime" ];
           roundTrade[ "ExitPrice" ] = dataRow[ "Price" ];
           roundTrade[ "%chg" ] =
-            ((double)roundTrade[ "ExitPrice" ] - (double)roundTrade[ "EntryPrice" ])/100;
+            ((double)roundTrade[ "ExitPrice" ] - (double)roundTrade[ "EntryPrice" ])/
+            ((double)roundTrade[ "EntryPrice" ])*100;
           roundTrade[ "#bars" ] =
             ((TimeSpan)((DateTime)roundTrade[ "ExitDate" ] - (DateTime)roundTrade[ "EntryDate" ])).Days;
           roundTrade[ "ProfitPerBar" ] = (double)roundTrade[ "%chg" ] / (int)roundTrade[ "#bars" ];
