@@ -98,9 +98,9 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
       this.populationSizeForGeneticOptimizer = populationSizeForGeneticOptimizer;
       this.reportTable = new ReportTable( "Summary_Reports" );
       this.startDateTime = new EndOfDayDateTime(
-        new DateTime( 2004 , 9 , 1 ) , EndOfDaySpecificTime.FiveMinutesBeforeMarketClose );
+        new DateTime( 2004 , 10 , 1 ) , EndOfDaySpecificTime.FiveMinutesBeforeMarketClose );
       this.endDateTime = new EndOfDayDateTime(
-        new DateTime( 2004 , 9 , 10 ) , EndOfDaySpecificTime.OneHourAfterMarketClose );
+        new DateTime( 2004 , 10 , 11 ) , EndOfDaySpecificTime.OneHourAfterMarketClose );
       //this.numIntervalDays = 3;
 		}
     #region Run
@@ -212,15 +212,17 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
                       this.numberOfTickersToBeChosen + "GenNum" + 
                       this.generationNumberForGeneticOptimizer +
                       "PopSize" + this.populationSizeForGeneticOptimizer;
-        AccountReport accountReport = this.account.CreateReport(name,1,this.endDateTime,"^MIBTEL",
-                                                              new HistoricalAdjustedQuoteProvider());
-        ObjectArchiver.Archive(accountReport,
-                              "C:\\Documents and Settings\\Marco\\Documenti\\ProgettiOpenSource\\Quant\\SavedReports\\OpenCloseScripts\\" +
-                               name + ".rep");
+        //AccountReport accountReport = this.account.CreateReport(name,1,this.endDateTime,"^MIBTEL",
+        //                                                      new HistoricalAdjustedQuoteProvider());
+        //ObjectArchiver.Archive(accountReport,
+        //                        System.Configuration.ConfigurationSettings.AppSettings["ReportsArchive"] +
+        //                        "\\OpenCloseScripts\\" + 
+        //                       name + ".rep");
         
-        //ObjectArchiver.Archive(this.account,
-        //                       "C:\\Documents and Settings\\Marco\\Documenti\\ProgettiOpenSource\\Quant\\SavedAccounts\\OpenCloseScripts\\" +
-        //                       name + ".acc");
+        ObjectArchiver.Archive(this.account,
+                               System.Configuration.ConfigurationSettings.AppSettings["AccountsArchive"] +
+                               "\\OpenCloseScripts\\" +
+                               name + ".acc");
 
       }
     }
