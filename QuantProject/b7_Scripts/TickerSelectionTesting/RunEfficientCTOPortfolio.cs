@@ -76,10 +76,10 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
       //this.progressBarForm = new ProgressBarForm();
       this.reportTable = new ReportTable( "Summary_Reports" );
       this.startDateTime = new EndOfDayDateTime(
-        new DateTime( 2000 , 11 , 1 ) , EndOfDaySpecificTime.FiveMinutesBeforeMarketClose );
+        new DateTime( 2000 , 1 , 1 ) , EndOfDaySpecificTime.FiveMinutesBeforeMarketClose );
       this.endDateTime = new EndOfDayDateTime(
-        new DateTime( 2000 , 11 , 4 ) , EndOfDaySpecificTime.OneHourAfterMarketClose );
-      this.numIntervalDays = 2;
+        new DateTime( 2000 , 1 , 10 ) , EndOfDaySpecificTime.OneHourAfterMarketClose );
+      this.numIntervalDays = 7;
 		}
     #region Run
     
@@ -106,7 +106,7 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
     private void run_initializeEndOfDayTimer()
     {
       this.endOfDayTimer =
-        new HistoricalEndOfDayTimer( this.startDateTime );
+        new IndexBasedEndOfDayTimer( this.startDateTime, "^MIBTEL" );
     }
     private void run_initializeAccount()
     {
