@@ -15,7 +15,6 @@ namespace QuantProject.Applications.Downloader.Validate
     private System.Windows.Forms.Label labelTickerIsLike;
     private System.Windows.Forms.Button buttonGo;
     private System.Data.OleDb.OleDbDataAdapter oleDbDataAdapter1;
-    private System.Windows.Forms.DataGrid dataGrid1;
     private ValidateDataTable validateDataTable;
     private System.Data.OleDb.OleDbCommand oleDbSelectCommand1;
     private System.Data.OleDb.OleDbCommand oleDbInsertCommand1;
@@ -25,6 +24,7 @@ namespace QuantProject.Applications.Downloader.Validate
     private System.Windows.Forms.Button buttonCommitAndRefresh;
     private System.Windows.Forms.TextBox textBoxSuspiciousRatio;
     private System.Windows.Forms.Label labelSuspiciousRatio;
+    private QuantProject.Applications.Downloader.Validate.ValidateDataGrid validateDataGrid;
 		/// <summary>
 		/// Required designer variable.
 		/// </summary>
@@ -68,11 +68,11 @@ namespace QuantProject.Applications.Downloader.Validate
       this.oleDbInsertCommand1 = new System.Data.OleDb.OleDbCommand();
       this.oleDbSelectCommand1 = new System.Data.OleDb.OleDbCommand();
       this.oleDbUpdateCommand1 = new System.Data.OleDb.OleDbCommand();
-      this.dataGrid1 = new System.Windows.Forms.DataGrid();
+      this.validateDataGrid = new QuantProject.Applications.Downloader.Validate.ValidateDataGrid();
       this.buttonCommitAndRefresh = new System.Windows.Forms.Button();
       this.textBoxSuspiciousRatio = new System.Windows.Forms.TextBox();
       this.labelSuspiciousRatio = new System.Windows.Forms.Label();
-      ((System.ComponentModel.ISupportInitialize)(this.dataGrid1)).BeginInit();
+      ((System.ComponentModel.ISupportInitialize)(this.validateDataGrid)).BeginInit();
       this.SuspendLayout();
       // 
       // textBoxTickerIsLike
@@ -203,15 +203,15 @@ namespace QuantProject.Applications.Downloader.Validate
       this.oleDbUpdateCommand1.Parameters.Add(new System.Data.OleDb.OleDbParameter("Original_quOpen", System.Data.OleDb.OleDbType.Single, 0, System.Data.ParameterDirection.Input, false, ((System.Byte)(7)), ((System.Byte)(0)), "TheOpen", System.Data.DataRowVersion.Original, null));
       this.oleDbUpdateCommand1.Parameters.Add(new System.Data.OleDb.OleDbParameter("Original_quOpen1", System.Data.OleDb.OleDbType.Single, 0, System.Data.ParameterDirection.Input, false, ((System.Byte)(7)), ((System.Byte)(0)), "TheOpen", System.Data.DataRowVersion.Original, null));
       // 
-      // dataGrid1
+      // validateDataGrid
       // 
-      this.dataGrid1.DataMember = "";
-      this.dataGrid1.HeaderForeColor = System.Drawing.SystemColors.ControlText;
-      this.dataGrid1.Location = new System.Drawing.Point(16, 56);
-      this.dataGrid1.Name = "dataGrid1";
-      this.dataGrid1.PreferredColumnWidth = 50;
-      this.dataGrid1.Size = new System.Drawing.Size(696, 224);
-      this.dataGrid1.TabIndex = 3;
+      this.validateDataGrid.DataMember = "";
+      this.validateDataGrid.HeaderForeColor = System.Drawing.SystemColors.ControlText;
+      this.validateDataGrid.Location = new System.Drawing.Point(16, 56);
+      this.validateDataGrid.Name = "validateDataGrid";
+      this.validateDataGrid.PreferredColumnWidth = 50;
+      this.validateDataGrid.Size = new System.Drawing.Size(696, 224);
+      this.validateDataGrid.TabIndex = 3;
       // 
       // buttonCommitAndRefresh
       // 
@@ -246,24 +246,41 @@ namespace QuantProject.Applications.Downloader.Validate
                                                                   this.labelSuspiciousRatio,
                                                                   this.textBoxSuspiciousRatio,
                                                                   this.buttonCommitAndRefresh,
-                                                                  this.dataGrid1,
+                                                                  this.validateDataGrid,
                                                                   this.buttonGo,
                                                                   this.labelTickerIsLike,
                                                                   this.textBoxTickerIsLike});
       this.Name = "ValidateForm";
       this.Text = "Validate";
-      ((System.ComponentModel.ISupportInitialize)(this.dataGrid1)).EndInit();
+      ((System.ComponentModel.ISupportInitialize)(this.validateDataGrid)).EndInit();
       this.ResumeLayout(false);
 
     }
 		#endregion
 
+    #region "buttonGo_Click"
+//      private void buttonGo_Click_setTableStyle()
+//    {
+//      DataGridTableStyle dataGridTableStyle = new DataGridTableStyle();
+//      dataGridTableStyle.ColumnHeadersVisible = true;
+//      dataGridTableStyle.MappingName = "quotes";
+//      DataGridTextBoxColumn dataGridColumnStyle = new DataGridTextBoxColumn();
+//      dataGridColumnStyle.MappingName = "quTicker";
+//      dataGridColumnStyle.HeaderText = "Ticker";
+//      dataGridTableStyle.GridColumnStyles.Add( dataGridColumnStyle );
+//      this.dataGrid1.TableStyles.Add( dataGridTableStyle );
+//    }
     private void buttonGo_Click(object sender, System.EventArgs e)
     {
-      this.validateDataTable = new ValidateDataTable();
-      this.dataGrid1.DataSource = validateDataTable;
-      validateDataTable.AddRows( textBoxTickerIsLike.Text , Convert.ToDouble( this.textBoxSuspiciousRatio.Text ) );
+      this.validateDataTable = this.validateDataGrid.Validate( this.textBoxTickerIsLike.Text ,
+        this.textBoxSuspiciousRatio.Text );
+//      this.validateDataTable = new ValidateDataTable();
+//      this.dataGrid1.DataSource = validateDataTable;
+//      buttonGo_Click_setTableStyle();
+//      validateDataTable.AddRows( textBoxTickerIsLike.Text , Convert.ToDouble( this.textBoxSuspiciousRatio.Text ) );
     }
+    #endregion
+
 
     private void buttonCommitAndRefresh_Click(object sender, System.EventArgs e)
     {
