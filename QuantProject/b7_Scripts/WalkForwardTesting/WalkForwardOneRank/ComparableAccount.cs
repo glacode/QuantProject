@@ -33,6 +33,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardOneRank
 	/// <summary>
 	/// Summary description for ComparableAccount.
 	/// </summary>
+	[Serializable]
 	public class ComparableAccount : Account
 	{
     private double maxAcceptableDrawDown = 30;
