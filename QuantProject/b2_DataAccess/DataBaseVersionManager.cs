@@ -96,6 +96,35 @@ namespace QuantProject.DataAccess
 	}
 	private void createTables()
     {
+//<<<<<<< DataBaseVersionManager.cs
+//      string command =
+//        "create table validatedTickers " +
+//        "( vtTicker TEXT(8) , vtStartDate DATETIME , vtEndDate DATETIME , vtDate DATETIME, " +
+//        "CONSTRAINT myKey PRIMARY KEY ( vtTicker ) )";
+//      OleDbCommand oleDbCommand = new OleDbCommand( command , this.oleDbConnection );
+//      oleDbCommand.ExecuteNonQuery();
+//      oleDbCommand.CommandText =
+//        "create table validatedTickers " +
+//        "( vvTicker TEXT(8) , vvStartDate DATETIME , vvEndDate DATETIME , " +
+//        "vvHashValue TEXT(50) , vvEditDate DATETIME, " +
+//        "vvCloseToCloseRatio BIT , vvRangeToRangeRatio BIT , " +
+//        "CONSTRAINT myKey PRIMARY KEY ( vvTicker ) )";
+//      oleDbCommand.ExecuteNonQuery();
+//      oleDbCommand.CommandText =
+//        "create table quotesFromOtherSources " +
+//        "(qsTicker TEXT(8) , " +
+//        "qsDate DATETIME , " +
+//        "qsSource SHORT , " +
+//        "qsOpen SINGLE , " +
+//        "qsHigh SINGLE , " +
+//        "qsLow SINGLE , " +
+//        "qsClose SINGLE , " +
+//        "qsVolume SINGLE , " +
+//        "qsAdjustedClose SINGLE , " +
+//        "qsAdjustedCloseToCloseRatio DOUBLE " +
+//        "qsEditDate DATETIME , " +
+//        "CONSTRAINT myKey PRIMARY KEY ( qsTicker , qsDate , qsSource ) )";
+//=======
 		this.executeCommand("CREATE TABLE tickers (tiTicker TEXT(8))");
 		this.executeCommand("CREATE TABLE quotes (quTicker TEXT(8), quDate DATETIME, " +
 							"quOpen REAL, quHigh REAL, quLow REAL, quClose REAL, " +
@@ -108,11 +137,50 @@ namespace QuantProject.DataAccess
 		// validating, updating data from the web, testing strategies
 		this.executeCommand("CREATE TABLE tickerGroups " +
 			"( tgId TEXT(8) , tgDescription(100), tgTgId TEXT(8))");
-		// where to store the relation between a ticker and a group
-		// NOTE that a group can be created inside another group and
-		// a ticker can belong to one or more groups 
-		this.executeCommand("CREATE TABLE tickers_tickerGroups " +
-			"( ttTgId TEXT(8) , ttTiId TEXT(8))");
+    // where to store the relation between a ticker and a group
+    // NOTE that a group can be created inside another group and
+    // a ticker can belong to one or more groups 
+    this.executeCommand("CREATE TABLE tickers_tickerGroups " +
+      "( ttTgId TEXT(8) , ttTiId TEXT(8))");
+    // validatedTickers will contain a record for each ticker whose quotes have already
+    // been validated. The quotes are meant to be ok from vtStartDate to vtEndDate.
+    this.executeCommand( "CREATE TABLE validatedTickers " +
+      "( vtTicker TEXT(8) , vtStartDate DATETIME , vtEndDate DATETIME , vtEditDate DATETIME, " +
+      "CONSTRAINT myKey PRIMARY KEY ( vtTicker ) )" );
+    // visuallyValidatedTickers will contain a record for each ticker whose
+    // quotes with suspicious ratios have been validated.
+    // Field list:
+    // vvTicker: validated ticker
+    // vvStartDate: starting date of the time span being visually validated
+    // vvEndDate: ending date of the time span being visually validated
+    // vvHashValue: hash value for the visually validated quotes
+    // vvCloseToCloseRatio: the close to close ratio has been checked to be acceptable
+    // vvRangeToRangeRatio: the High-Low range ratio has been checked to be acceptable
+    // vvDate: Last date this record has been added/modified
+    this.executeCommand( "CREATE TABLE visuallyValidatedTickers " +
+      "( vvTicker TEXT(8) , vvStartDate DATETIME , vvEndDate DATETIME , " +
+      "vvHashValue TEXT(50) , vvEditDate DATETIME, " +
+      "vvCloseToCloseRatio BIT , vvRangeToRangeRatio BIT , " +
+      "CONSTRAINT myKey PRIMARY KEY ( vvTicker ) )" );
+    // quotesFromSecondarySources will contain quotes coming from sources different
+    // from the main one. It will be used for confirming and thus validation purposes.
+    // Field descriptions:
+    // qsSource: 1 = manually inserted; 2 = automatically downloaded/imported
+    // qsEditDate: last date this record has been added/modified
+    this.executeCommand( "create table quotesFromSecondarySources " +
+      "(qsTicker TEXT(8) , " +
+      "qsDate DATETIME , " +
+      "qsSource SHORT , " +
+      "qsOpen SINGLE , " +
+      "qsHigh SINGLE , " +
+      "qsLow SINGLE , " +
+      "qsClose SINGLE , " +
+      "qsVolume SINGLE , " +
+      "qsAdjustedClose SINGLE , " +
+      "qsAdjustedCloseToCloseRatio DOUBLE " +
+      "qsEditDate DATETIME , " +
+      "CONSTRAINT myKey PRIMARY KEY ( qsTicker , qsDate , qsSource ) )" );
+//    >>>>>>> 1.4
     }
 
 	private void alterTablesAddPrimaryKeys()
