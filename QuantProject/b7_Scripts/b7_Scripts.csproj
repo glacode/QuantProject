@@ -73,18 +73,8 @@
                     HintPath = "..\..\..\..\..\..\WINDOWS\Microsoft.NET\Framework\v1.0.3705\System.XML.dll"
                 />
                 <Reference
-                    Name = "ADT"
-                    Project = "{B8A01161-3698-4591-B1EF-90F5FC7D8DBA}"
-                    Package = "{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}"
-                />
-                <Reference
                     Name = "b4_Business"
                     Project = "{6EE31501-376E-491B-869E-F06D5B7C9C30}"
-                    Package = "{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}"
-                />
-                <Reference
-                    Name = "b5_Presentation"
-                    Project = "{D3DC9EA6-3B06-4255-B19A-5FC5B66A1402}"
                     Package = "{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}"
                 />
                 <Reference
@@ -101,6 +91,16 @@
                     Name = "System.Drawing"
                     AssemblyName = "System.Drawing"
                     HintPath = "..\..\..\..\..\..\WINDOWS\Microsoft.NET\Framework\v1.0.3705\System.Drawing.dll"
+                />
+                <Reference
+                    Name = "b5_Presentation"
+                    Project = "{D3DC9EA6-3B06-4255-B19A-5FC5B66A1402}"
+                    Package = "{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}"
+                />
+                <Reference
+                    Name = "b1_ADT"
+                    Project = "{B8A01161-3698-4591-B1EF-90F5FC7D8DBA}"
+                    Package = "{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}"
                 />
             </References>
         </Build>
