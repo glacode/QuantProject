@@ -107,6 +107,11 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "DataBaseVersionManager.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "SQLBuilder.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
