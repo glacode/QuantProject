@@ -295,7 +295,9 @@ namespace QuantProject.Data.DataTables
                                                   DateTime firstQuoteDate,
                                                   DateTime lastQuoteDate,
                                                   long maxNumOfReturnedTickers,
-                                                  double minPrice, double maxPrice)
+                                                  double minPrice, double maxPrice,
+                                                  double minStdDeviation,
+                                                  double maxStdDeviation)
     {
       if(!setOfTickers.Columns.Contains("AverageRawOpenPrice"))
         setOfTickers.Columns.Add("AverageRawOpenPrice", System.Type.GetType("System.Double"));
@@ -312,19 +314,28 @@ namespace QuantProject.Data.DataTables
                                                                         firstQuoteDate,
                                                                         lastQuoteDate);
       }
-      getTickersByAverageRawOpenPrice_deleteRows(setOfTickers);
+      getTickersByAverageRawOpenPrice_deleteRows(setOfTickers, minPrice, maxPrice,
+                                                 minStdDeviation, maxStdDeviation);
       DataTable returnValue = ExtendedDataTable.CopyAndSort(setOfTickers,"AverageRawOpenPrice", orderByASC);
       ExtendedDataTable.DeleteRows(returnValue, maxNumOfReturnedTickers);
       return returnValue;
     }
 
-	private static void getTickersByAverageRawOpenPrice_deleteRows( DataTable tempTicker)
+	private static void getTickersByAverageRawOpenPrice_deleteRows( DataTable setOfTickers,
+                                                                   double minPrice, double maxPrice,
+                                                                  double minStdDeviation,
+                                                                  double maxStdDeviation)
     {
-      int numRows = tempTicker.Rows.Count;
+      int numRows = setOfTickers.Rows.Count;
       for(int i = 0; i<numRows; i++)
       {
-      	;
-      	///TODO:
+      	double averagePrice = (double)setOfTickers.Rows[i]["AverageRawOpenPrice"];
+      	double stdDeviation = (double)setOfTickers.Rows[i]["RawOpenPriceStdDev"];
+      	if (averagePrice < minPrice || averagePrice > maxPrice ||
+      	    stdDeviation < minStdDeviation || stdDeviation > maxStdDeviation)
+       	//values of rows DON'T respect given criteria
+      		setOfTickers.Rows[i].Delete();
+      	
       }
     }
 		private History history;

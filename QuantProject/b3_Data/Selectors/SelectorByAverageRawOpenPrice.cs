@@ -82,13 +82,15 @@ namespace QuantProject.Data.Selectors
 
     public DataTable GetTableOfSelectedTickers()
     {
-           
+   
       if(this.setOfTickersToBeSelected == null)
         return QuantProject.DataAccess.Tables.Quotes.GetTickersByRawOpenPrice(this.isOrderedInASCMode,
                   this.groupID, this.firstQuoteDate, this.lastQuoteDate, this.maxNumOfReturnedTickers,
                   this.minPrice, this.maxPrice, this.minStdDeviation, this.maxStdDeviation);        
       else
-        return new DataTable();
+        return QuantProject.Data.DataTables.Quotes.GetTickersByAverageRawOpenPrice(this.isOrderedInASCMode,
+      	          this.setOfTickersToBeSelected, this.firstQuoteDate, this.lastQuoteDate, this.maxNumOfReturnedTickers,
+      	          this.minPrice, this.maxPrice, this.minStdDeviation, this.maxStdDeviation);
     }
     public void SelectAllTickers()
     {
