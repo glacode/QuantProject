@@ -89,7 +89,20 @@ namespace QuantProject.DataAccess.Tables
         "select * from quotes where quTicker='" + ticker + "'" );
       return dataTable.Rows.Count;
     }
-    
+
+    /// <summary>
+    /// Returns the adjusted close value for the given ticker at the specified date
+    /// </summary>
+    /// <param name="ticker">ticker for which the adj close has to be returned</param>
+    /// <returns></returns>
+    public static float GetAdjustedClose( string ticker, DateTime date )
+    {
+      DataTable dataTable = SqlExecutor.GetDataTable(
+        "select quAdjustedClose from quotes where quTicker='" + ticker + "' " +
+        "and quDate=" + SQLBuilder.GetDateConstant(date) );
+      return (float)dataTable.Rows[0][0];
+    }
+
     /// <summary>
     /// It provides updating the database for each closeToCloseRatio contained in the given table
     /// (the table refers to the ticker passed as the first parameter)
@@ -233,18 +246,18 @@ namespace QuantProject.DataAccess.Tables
       {
         int numRows = tableDB.Rows.Count;
         DateTime date;
-        double adjCTCInDatabase;
-        double adjCTCInSource;
+        float adjCTCInDatabase;
+        float adjCTCInSource;
         double absoluteDifference;
         DataRow rowToCheck;
         for(int i = 0;i != numRows;i++)
         {
           date = (DateTime)tableDB.Rows[i][Quotes.Date];
-          adjCTCInDatabase = (double)tableDB.Rows[i][Quotes.AdjustedCloseToCloseRatio];
+          adjCTCInDatabase = (float)tableDB.Rows[i][Quotes.AdjustedCloseToCloseRatio];
           rowToCheck = tableSource.Rows.Find(date);
           if(rowToCheck != null)
           {
-            adjCTCInSource = (double)rowToCheck[Quotes.AdjustedCloseToCloseRatio];
+            adjCTCInSource = (float)rowToCheck[Quotes.AdjustedCloseToCloseRatio];
             absoluteDifference = Math.Abs(adjCTCInDatabase - adjCTCInSource);
             if(absoluteDifference > ConstantsProvider.MaxDifferenceForCloseToCloseRatios )
               {
