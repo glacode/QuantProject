@@ -100,69 +100,82 @@ namespace QuantProject.ADT.Histories
 	}
 	//millo
 
-	  #region "Millo_1 - SimpleAverage and StandardDeviation"
-
-	  public History GetSimpleAverage( int onEachPeriodOf , DateTime startDateTime , DateTime endDateTime )
+	  #region "GetFunctionHistory"
+	  
+	  /// <summary>
+	  /// Gets a History object base on a statistical available function
+	  /// </summary>
+	  /// <remarks>
+	  /// Each History's item contains a specific statistical function
+	  /// calculated for each period whose length has to be specified by the user.
+	  /// The key for the History item is the initial date of each period
+	  /// </remarks>
+	  /// <param name="functionToBeCalculated">
+	  /// Statistical available function to be calculated and stored in the current History object
+	  /// </param>
+	  /// <param name="onEachPeriodOf">
+	  /// Length in day of each period of calculation
+	  /// </param>
+	  /// /// <param name="startDateTime">
+	  /// It sets the start date for the time interval containing the returned History
+	  /// </param>
+	  /// /// <param name="endDateTime">
+	  /// It sets the end date for the time interval containing the returned History
+	  /// </param> 
+	  /// 
+	  public History GetFunctionHistory(Function functionToBeCalculated, int onEachPeriodOf,
+										   DateTime startDateTime , DateTime endDateTime )
 	  {
-		  History simpleAverage = new History();
-		  int index = this.IndexOfKeyOrPrevious(startDateTime); 
+		  History functionHistory = new History();
+		  int currentHistoryIndex = this.IndexOfKeyOrPrevious(startDateTime); 
 		  double[] data = new double[onEachPeriodOf];
-		  double checkValue = 0;
-		  int i = 0;
+		  //the array contains the set of data whose length is specified by the user
+		  double periodIndex = 0;
+		  //in the while statement, if it isn't equal to Floor(currentHistoryIndex/onEachPeriodOf)
+		  //the current index belongs to the period with periodIndex increased by one  
+		  int cursorThroughDataArray = 0;
 		  while (
-			  ( index < this.Count ) &&
-			  ( ((IComparable)this.GetKey( index )).CompareTo( endDateTime ) <= 0 ) )
+			  ( currentHistoryIndex < this.Count ) &&
+			  ( ((IComparable)this.GetKey( currentHistoryIndex )).CompareTo( endDateTime ) <= 0 ) )
 		  {
-			  DateTime dateTime = (DateTime)this.GetKey( index );
-			  if (Math.Floor(index/onEachPeriodOf) == checkValue &&
-					i < onEachPeriodOf)
+			  DateTime dateTime = (DateTime)this.GetKey( currentHistoryIndex );
+			  if (Math.Floor(currentHistoryIndex/onEachPeriodOf) == periodIndex &&
+					cursorThroughDataArray < onEachPeriodOf)
+              //currentHistoryIndex belongs to the current period
 			  {	
-				  data[i] = Convert.ToDouble(this.GetByIndex(index));
-				  i++;
-				  index++;
-				  //simpleAverage.Add(this.GetKey( index ), null);
+				  data[cursorThroughDataArray] = Convert.ToDouble(this.GetByIndex(currentHistoryIndex));
+				  cursorThroughDataArray++;
+				  currentHistoryIndex++;
+				  //POSSIBLY: simpleAverage.Add(this.GetKey( currentHistoryIndex ), null);
 			  }
-			  else //Changes the period
+			  else
+		      //currentHistoryIndex doesn't belong to the current period
+			  //so a new item can be added to the object History to be returned
 			  {	
-				  i = 0;
-				  simpleAverage.Add( dateTime , BasicFunctions.SimpleAverage(data) );
+				  cursorThroughDataArray = 0;
+				  switch (functionToBeCalculated)
+				  {
+					  case Function.SimpleAverage:
+						  functionHistory.Add( dateTime , BasicFunctions.SimpleAverage(data) );
+						  break;
+					  case Function.StandardDeviation :
+						  functionHistory.Add( dateTime , BasicFunctions.StdDev(data) );
+						  break;
+				  }
 			  }
-			  checkValue = Math.Floor(index/onEachPeriodOf);//update checkValue
+			  periodIndex = Math.Floor(currentHistoryIndex/onEachPeriodOf);
 		  }
 
-		  return simpleAverage;
+		  return functionHistory;
 	  }
 
-	  public History GetStandardDeviation( int onEachPeriodOf , DateTime startDateTime , DateTime endDateTime )
-	  {
-		  History stdDev = new History();
-		  int index = this.IndexOfKeyOrPrevious(startDateTime); 
-		  double[] data = new double[onEachPeriodOf];
-		  double checkValue = 0;
-		  int i = 0;
-		  while (
-			  ( index < this.Count ) &&
-			  ( ((IComparable)this.GetKey( index )).CompareTo( endDateTime ) <= 0 ) )
-		  {
-			  DateTime dateTime = (DateTime)this.GetKey( index );
-			  if (Math.Floor(index/onEachPeriodOf) == checkValue &&
-					i < onEachPeriodOf)
-			  {	
-				  data[i] = Convert.ToDouble(this.GetByIndex(index));
-				  i++;
-				  index++;
-				  //stdDev.Add(this.GetKey( index ), null);
-			  }
-			  else //Changes the period
-			  {	
-				  i = 0;
-				  stdDev.Add( dateTime , BasicFunctions.StdDev (data) );
-			  }
-			  checkValue = Math.Floor(index/onEachPeriodOf);//update checkValue
-		  }
-
-		  return stdDev ;
-	  }
+	#endregion
+	  
+	  /// <summary>
+	  /// It returns true if the value of the current History item is
+	  /// less than the previous History item
+	  /// </summary>
+	  /// <param name="dateTime">The date key for current History item</param>
 	  public bool IsDecreased(DateTime dateTime)
 	  {	
 		  bool isDecreased;
@@ -180,7 +193,7 @@ namespace QuantProject.ADT.Histories
 	  }
 
 
-#endregion
+
 
 
 
