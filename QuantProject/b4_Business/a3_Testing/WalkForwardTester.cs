@@ -25,10 +25,10 @@ using System.Collections;
 using System.Diagnostics;
 using QuantProject.ADT;
 using QuantProject.ADT.Optimizing;
-using QuantProject.Data;
 using QuantProject.Business.Financial.Accounting;
 using QuantProject.Business.Financial.Instruments;
 using QuantProject.Business.Strategies;
+using QuantProject.Data.DataProviders;
 
 namespace QuantProject.Business.Testing
 {
@@ -127,7 +127,7 @@ namespace QuantProject.Business.Testing
 
     public override void Test()
     {
-      DataProvider.SetCachedHistories( startDateTime , endDateTime );
+      HistoricalDataProvider.SetCachedHistories( startDateTime , endDateTime );
       testWindows = new TestWindows( startDateTime , endDateTime , inSampleWindowNumDays , outOfSampleWindowNumDays );
       DateTime lastDateTime = new DateTime();
       while ( ! testWindows.IsComplete() )

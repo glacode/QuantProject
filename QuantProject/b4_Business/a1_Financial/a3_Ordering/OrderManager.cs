@@ -23,7 +23,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 using System;
 using System.Collections;
 using QuantProject.ADT;
-using QuantProject.Data;
+using QuantProject.Data.DataProviders;
 using QuantProject.Business.Financial.Accounting;
 
 namespace QuantProject.Business.Financial.Ordering
@@ -42,7 +42,7 @@ namespace QuantProject.Business.Financial.Ordering
 
     public virtual double GetInstrumentPrice( Order order )
     {
-      return DataProvider.GetMarketValue( order.Instrument.Key , order.ExtendedDateTime );
+      return HistoricalDataProvider.GetMarketValue( order.Instrument.Key , order.ExtendedDateTime );
     }
     #region "GetTransaction"
 

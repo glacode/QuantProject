@@ -23,7 +23,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 using System;
 using QuantProject.ADT;
 using QuantProject.ADT.Histories;
-using QuantProject.Data;
+using QuantProject.Data.DataProviders;
 
 namespace QuantProject.Business.Financial.Instruments
 {
@@ -43,7 +43,7 @@ namespace QuantProject.Business.Financial.Instruments
 
     public double GetMarketValue( ExtendedDateTime extendedDateTime )
     {
-      return DataProvider.GetMarketValue( this.Key , extendedDateTime );
+      return HistoricalDataProvider.GetMarketValue( this.Key , extendedDateTime );
     }
 
     public long GetMaxBuyableQuantity( double availableAmount ,
@@ -54,13 +54,13 @@ namespace QuantProject.Business.Financial.Instruments
 
     public DateTime GetNextMarketDay( DateTime dateTime )
     {
-      History history = DataProvider.GetOpenHistory( this.Key );
+      History history = HistoricalDataProvider.GetOpenHistory( this.Key );
       return history.GetNextDay( dateTime );
     }
 //millo
 	public DateTime GetMarketDay( DateTime initialDateTime, int numberOfDaysAhead )
 	{
-		History history = DataProvider.GetOpenHistory( this.Key );
+		History history = HistoricalDataProvider.GetOpenHistory( this.Key );
 		return history.GetDay(initialDateTime, numberOfDaysAhead );
 	}
 //millo

@@ -24,7 +24,7 @@ using System;
 using System.Collections;
 using QuantProject.ADT;
 using QuantProject.ADT.Histories;
-using QuantProject.Data;
+using QuantProject.Data.DataProviders;
 
 namespace QuantProject.Business.Financial.Instruments
 {
@@ -51,19 +51,19 @@ namespace QuantProject.Business.Financial.Instruments
     public static void SetCache( DateTime startDateTime , DateTime endDateTime )
     {
       foreach ( Object[] array in quoteIdentifierList )
-        DataProvider.Add( ((Instrument) array[ 0 ]).Key , (BarComponent) array[ 1 ] );
-      DataProvider.SetCachedHistories(
+        HistoricalDataProvider.Add( ((Instrument) array[ 0 ]).Key , (BarComponent) array[ 1 ] );
+      HistoricalDataProvider.SetCachedHistories(
         startDateTime , endDateTime );
     }
 
     public static History GetOpenHistory( string instrumentKey )
     {
-      return DataProvider.GetOpenHistory( instrumentKey );
+      return HistoricalDataProvider.GetOpenHistory( instrumentKey );
     }
   
     public static History GetCloseHistory( string instrumentKey )
     {
-      return DataProvider.GetCloseHistory( instrumentKey );
+      return HistoricalDataProvider.GetCloseHistory( instrumentKey );
     }
   }
 }
