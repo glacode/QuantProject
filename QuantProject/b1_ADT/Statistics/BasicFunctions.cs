@@ -29,8 +29,17 @@ namespace QuantProject.ADT.Statistics
 	/// </summary>
 	public class BasicFunctions
 	{
+    static public  double Sum( double[] data ) 
+    {
+      double sum = 0;
+      for( int i = 0; i < data.Length ; i ++ ) 
+      {
+        sum += data[ i ];
+      }
+      return	sum;
+    }
 		
-		static public  double Sum( double[] data ) 
+    static public  double Sum( float[] data ) 
 		{
 			double sum = 0;
 			for( int i = 0; i < data.Length ; i ++ ) 
@@ -39,7 +48,17 @@ namespace QuantProject.ADT.Statistics
 			}
 			return	sum;
 		}
-		static public  double SumOfSquares( double[] data ) 
+    static public  double SumOfSquares( double[] data ) 
+    {
+      double sumOfSquares = 0;
+      for( int i = 0; i < data.Length ; i ++ ) 
+      {
+        sumOfSquares += data[ i ]*data[ i ];
+      }
+      return	sumOfSquares;
+    }
+		
+    static public  double SumOfSquares( float[] data ) 
 		{
 			double sumOfSquares = 0;
 			for( int i = 0; i < data.Length ; i ++ ) 
@@ -48,26 +67,51 @@ namespace QuantProject.ADT.Statistics
 			}
 			return	sumOfSquares;
 		}
+    
+    static public double SimpleAverage( double[] data ) 
+    {
+      return	BasicFunctions.Sum(data)/data.Length;
+    }
 		
-		static public double SimpleAverage( double[] data ) 
+    static public double SimpleAverage( float[] data ) 
 		{
 			return	BasicFunctions.Sum(data)/data.Length;
 		}
-
-		static public double Variance( double[] data ) 
+    static public double Variance( double[] data ) 
+    {
+      double sum = BasicFunctions.Sum(data);
+      double sumOfSquares = BasicFunctions.SumOfSquares(data);
+      return	(sumOfSquares - sum*sum/data.Length)/data.Length;
+    }
+		static public double Variance( float[] data ) 
 		{
 			double sum = BasicFunctions.Sum(data);
 			double sumOfSquares = BasicFunctions.SumOfSquares(data);
 			return	(sumOfSquares - sum*sum/data.Length)/data.Length;
 		}
-
-		static public double StdDev( double[] data ) 
+    static public double StdDev( double[] data ) 
+    {
+      return	System.Math.Sqrt(BasicFunctions.Variance(data));
+    }
+		static public double StdDev( float[] data ) 
 		{
 			return	System.Math.Sqrt(BasicFunctions.Variance(data));
 		}
-
+    
     static public double PearsonCorrelationCoefficient( double[] firstDataVariable,
                                                         double[] secondDataVariable ) 
+    {
+      BasicFunctions.checkLengthOfDataVariables(firstDataVariable, secondDataVariable);
+      double simpleAvgOfProduct = BasicFunctions.SimpleAverageOfProduct(firstDataVariable, secondDataVariable);
+      double productOfSimpleAvgs = BasicFunctions.SimpleAverage(firstDataVariable) * 
+        BasicFunctions.SimpleAverage(secondDataVariable);
+      double stdDevOfFirst = BasicFunctions.StdDev(firstDataVariable);
+      double stdDevOfSecond = BasicFunctions.StdDev(secondDataVariable);
+      
+      return	(simpleAvgOfProduct - productOfSimpleAvgs)/(stdDevOfFirst*stdDevOfSecond);
+    }
+    static public double PearsonCorrelationCoefficient( float[] firstDataVariable,
+                                                        float[] secondDataVariable ) 
     {
       BasicFunctions.checkLengthOfDataVariables(firstDataVariable, secondDataVariable);
       double simpleAvgOfProduct = BasicFunctions.SimpleAverageOfProduct(firstDataVariable, secondDataVariable);
@@ -80,7 +124,7 @@ namespace QuantProject.ADT.Statistics
     }
 
     static public double SimpleAverageOfProduct( double[] firstDataVariable,
-                                                  double[] secondDataVariable ) 
+                                                 double[] secondDataVariable ) 
     {
       BasicFunctions.checkLengthOfDataVariables(firstDataVariable, secondDataVariable);
       double[] productDataVariable = new double[firstDataVariable.Length];
@@ -92,8 +136,27 @@ namespace QuantProject.ADT.Statistics
 
       return	BasicFunctions.SimpleAverage(productDataVariable);
     }
+    static public double SimpleAverageOfProduct( float[] firstDataVariable,
+                                                 float[] secondDataVariable ) 
+    {
+      BasicFunctions.checkLengthOfDataVariables(firstDataVariable, secondDataVariable);
+      double[] productDataVariable = new double[firstDataVariable.Length];
+      
+      for( int i = 0; i < firstDataVariable.Length ; i ++ ) 
+      {
+        productDataVariable[i]= firstDataVariable[i]*secondDataVariable[i];
+      }
+
+      return	BasicFunctions.SimpleAverage(productDataVariable);
+    }
+    static private void checkLengthOfDataVariables(float[] firstDataVariable,
+                                                    float[] secondDataVariable)
+    {
+      if(firstDataVariable.Length !=secondDataVariable.Length)
+        throw new Exception("The two variables haven't the same length!");
+    }
     static private void checkLengthOfDataVariables(double[] firstDataVariable,
-                                                    double[] secondDataVariable)
+                                                  double[] secondDataVariable)
     {
       if(firstDataVariable.Length !=secondDataVariable.Length)
         throw new Exception("The two variables haven't the same length!");
