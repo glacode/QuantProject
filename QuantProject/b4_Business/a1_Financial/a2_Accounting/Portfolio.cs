@@ -96,7 +96,7 @@ namespace QuantProject.Business.Financial.Accounting
         // the portfolio doesn't contain such instrument yet
         this.Add( instrument.Key , new Position( instrument , -quantity ) ) ;
       if ( this.GetPosition( instrument ).Quantity == 0 )
-        this.Remove( instrument );
+        this.Remove( instrument.Key );
     }
 
 
@@ -114,6 +114,8 @@ namespace QuantProject.Business.Financial.Accounting
         case TransactionType.Sell:
           this.remove( transaction.Instrument , transaction.Quantity );
           break;
+				case TransactionType.AddCash:
+					break;
         default:
           errorArised = true;
           break;
