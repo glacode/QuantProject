@@ -119,6 +119,32 @@ namespace QuantProject.DataAccess.Tables
         "and quDate=" + SQLBuilder.GetDateConstant(date) );
       return (float)dataTable.Rows[0][0];
     }
+    /// <summary>
+    /// Returns the raw (not adjusted) close for the given ticker at the specified date
+    /// is returned
+    /// </summary>
+    /// <param name="ticker">ticker for which the raw close has to be returned</param>
+    /// <returns></returns>
+    public static float GetRawClose( string ticker, DateTime date )
+    {
+      DataTable dataTable = SqlExecutor.GetDataTable(
+        "select quClose from quotes where quTicker='" + ticker + "' " +
+        "and quDate=" + SQLBuilder.GetDateConstant(date) );
+      return (float)dataTable.Rows[0][0];
+    }
+    /// <summary>
+    /// Returns the raw (not adjusted) open for the given ticker at the specified date
+    /// is returned
+    /// </summary>
+    /// <param name="ticker">ticker for which the raw open has to be returned</param>
+    /// <returns></returns>
+    public static float GetRawOpen( string ticker, DateTime date )
+    {
+      DataTable dataTable = SqlExecutor.GetDataTable(
+        "select quOpen from quotes where quTicker='" + ticker + "' " +
+        "and quDate=" + SQLBuilder.GetDateConstant(date) );
+      return (float)dataTable.Rows[0][0];
+    }
 /* moved now to the quotes object in the data layer, where the names are slightly different
       
     /// <summary>
