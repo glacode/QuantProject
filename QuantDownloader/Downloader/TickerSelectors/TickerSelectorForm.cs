@@ -35,7 +35,7 @@ using QuantProject.Data.Selectors;
 namespace QuantProject.Applications.Downloader.TickerSelectors
 {
 	/// <summary>
-	/// It is the user interface for the TickerSelector class
+	/// It is the user interface for the ITickerSelector chosen by user
 	/// </summary>
 	public class TickerSelectorForm : System.Windows.Forms.Form, ITickerSelector
 	{
@@ -77,7 +77,7 @@ namespace QuantProject.Applications.Downloader.TickerSelectors
       this.comboBoxAvailableSelectionRules.Items.Add("CloseToCloseLinearCorrelation");
       this.comboBoxAvailableSelectionRules.Items.Add("CloseToOpenLinearCorrelation");
       this.comboBoxAvailableSelectionRules.Items.Add("AverageCloseToOpenPerformance");
-      this.comboBoxAvailableSelectionRules.Items.Add("QuotedInEachMarketDay");
+      this.comboBoxAvailableSelectionRules.Items.Add("QuotedAtEachMarketDay");
 
   	}
     public TickerSelectorForm(string groupID) : this()
@@ -353,19 +353,8 @@ namespace QuantProject.Applications.Downloader.TickerSelectors
       try
       {
         Cursor.Current = Cursors.WaitCursor;  
-        TickerSelector selector;
-        if(this.textBoxGroupID.Text != "")
-          selector= new TickerSelector(this.getTypeOfRuleSelectedByUser(), this.checkBoxASCMode.Checked, this.textBoxGroupID.Text, 
-            this.dateTimePickerFirstDate.Value,
-            this.dateTimePickerLastDate.Value,
-            Int32.Parse(this.textBoxMaxNumOfReturnedTickers.Text));
-        else
-          selector= new TickerSelector(this.tableOfSelectedTickers, this.getTypeOfRuleSelectedByUser(),
-            this.checkBoxASCMode.Checked, this.textBoxGroupID.Text, 
-            this.dateTimePickerFirstDate.Value,
-            this.dateTimePickerLastDate.Value,
-            Int32.Parse(this.textBoxMaxNumOfReturnedTickers.Text));
-        selector.MarketIndex = this.textBoxMarketIndex.Text;
+        ITickerSelector selector;
+        selector = this.getITickerSelector();
         this.dataGrid1.DataSource = selector.GetTableOfSelectedTickers();
         this.dataGrid1.Refresh();
         Cursor.Current = Cursors.Default;
@@ -376,33 +365,119 @@ namespace QuantProject.Applications.Downloader.TickerSelectors
       }
     }
 
-    private SelectionType getTypeOfRuleSelectedByUser()
+    private ITickerSelector getITickerSelector()
     {
-      SelectionType typeSelected = SelectionType.Liquidity;
+      ITickerSelector returnValue = new SelectorByLiquidity(this.textBoxGroupID.Text,
+                                    this.checkBoxASCMode.Checked, this.dateTimePickerFirstDate.Value,
+                                    this.dateTimePickerLastDate.Value, Int32.Parse(this.textBoxMaxNumOfReturnedTickers.Text ));
+      
       if(this.comboBoxAvailableSelectionRules.Text == "Liquidity")
-        typeSelected = SelectionType.Liquidity;      
+      { 
+        if(this.textBoxGroupID.Text != "")
+          returnValue = new SelectorByLiquidity(this.textBoxGroupID.Text,
+                                                this.checkBoxASCMode.Checked, this.dateTimePickerFirstDate.Value,
+                                                this.dateTimePickerLastDate.Value, Int32.Parse(this.textBoxMaxNumOfReturnedTickers.Text ));
+        else
+          returnValue = new SelectorByLiquidity(this.tableOfSelectedTickers,
+                                                this.checkBoxASCMode.Checked, this.dateTimePickerFirstDate.Value,
+                                                this.dateTimePickerLastDate.Value, Int32.Parse(this.textBoxMaxNumOfReturnedTickers.Text));
+      }
       else if (this.comboBoxAvailableSelectionRules.Text == "Performance")
-        typeSelected = SelectionType.Performance;
+      { 
+        if(this.textBoxGroupID.Text != "")
+          returnValue = new SelectorByAbsolutePerformance(this.textBoxGroupID.Text,
+                                        this.checkBoxASCMode.Checked, this.dateTimePickerFirstDate.Value,
+                                        this.dateTimePickerLastDate.Value, Int32.Parse(this.textBoxMaxNumOfReturnedTickers.Text));
+        else
+          returnValue = new SelectorByAbsolutePerformance(this.tableOfSelectedTickers,
+                      this.checkBoxASCMode.Checked, this.dateTimePickerFirstDate.Value,
+                      this.dateTimePickerLastDate.Value, Int32.Parse(this.textBoxMaxNumOfReturnedTickers.Text));
+      }      
       else if (this.comboBoxAvailableSelectionRules.Text == "CloseToCloseVolatility")
-        typeSelected = SelectionType.CloseToCloseVolatility;
+      { 
+        if(this.textBoxGroupID.Text != "")
+          returnValue = new SelectorByCloseToCloseVolatility(this.textBoxGroupID.Text,
+            this.checkBoxASCMode.Checked, this.dateTimePickerFirstDate.Value,
+            this.dateTimePickerLastDate.Value, Int32.Parse(this.textBoxMaxNumOfReturnedTickers.Text));
+        else
+          returnValue = new SelectorByCloseToCloseVolatility(this.tableOfSelectedTickers,
+            this.checkBoxASCMode.Checked, this.dateTimePickerFirstDate.Value,
+            this.dateTimePickerLastDate.Value, Int32.Parse(this.textBoxMaxNumOfReturnedTickers.Text));
+      }            
       else if (this.comboBoxAvailableSelectionRules.Text == "CloseToOpenVolatility")
-        typeSelected = SelectionType.CloseToOpenVolatility;
+      { 
+        if(this.textBoxGroupID.Text != "")
+          returnValue = new SelectorByOpenToCloseVolatility (this.textBoxGroupID.Text,
+            this.checkBoxASCMode.Checked, this.dateTimePickerFirstDate.Value,
+            this.dateTimePickerLastDate.Value, Int32.Parse(this.textBoxMaxNumOfReturnedTickers.Text));
+        else
+          returnValue = new SelectorByOpenToCloseVolatility (this.tableOfSelectedTickers,
+            this.checkBoxASCMode.Checked, this.dateTimePickerFirstDate.Value,
+            this.dateTimePickerLastDate.Value, Int32.Parse(this.textBoxMaxNumOfReturnedTickers.Text));
+      }                  
       else if (this.comboBoxAvailableSelectionRules.Text == "AverageCloseToClosePerformance")
-        typeSelected = SelectionType.AverageCloseToClosePerformance;
+      { 
+        if(this.textBoxGroupID.Text != "")
+          returnValue = new SelectorByAverageCloseToClosePerformance(this.textBoxGroupID.Text,
+            this.checkBoxASCMode.Checked, this.dateTimePickerFirstDate.Value,
+            this.dateTimePickerLastDate.Value, Int32.Parse(this.textBoxMaxNumOfReturnedTickers.Text));
+        else
+          returnValue = new SelectorByAverageCloseToClosePerformance(this.tableOfSelectedTickers,
+            this.checkBoxASCMode.Checked, this.dateTimePickerFirstDate.Value,
+            this.dateTimePickerLastDate.Value, Int32.Parse(this.textBoxMaxNumOfReturnedTickers.Text));
+      }                  
       else if (this.comboBoxAvailableSelectionRules.Text == "CloseToCloseLinearCorrelation")
-        typeSelected = SelectionType.CloseToCloseLinearCorrelation;
+      { 
+        if(this.textBoxGroupID.Text != "")
+          returnValue = new SelectorByCloseToCloseLinearCorrelation (this.textBoxGroupID.Text,
+            this.checkBoxASCMode.Checked, this.dateTimePickerFirstDate.Value,
+            this.dateTimePickerLastDate.Value, Int32.Parse(this.textBoxMaxNumOfReturnedTickers.Text));
+        else
+          returnValue = new SelectorByCloseToCloseLinearCorrelation(this.tableOfSelectedTickers,
+            this.checkBoxASCMode.Checked, this.dateTimePickerFirstDate.Value,
+            this.dateTimePickerLastDate.Value, Int32.Parse(this.textBoxMaxNumOfReturnedTickers.Text));
+      }                 
       else if (this.comboBoxAvailableSelectionRules.Text == "CloseToOpenLinearCorrelation")
-        typeSelected = SelectionType.CloseToOpenLinearCorrelation;
+      { 
+        if(this.textBoxGroupID.Text != "")
+          returnValue = new SelectorByOpenToCloseLinearCorrelation  (this.textBoxGroupID.Text,
+            this.checkBoxASCMode.Checked, this.dateTimePickerFirstDate.Value,
+            this.dateTimePickerLastDate.Value, Int32.Parse(this.textBoxMaxNumOfReturnedTickers.Text));
+        else
+          returnValue = new SelectorByOpenToCloseLinearCorrelation (this.tableOfSelectedTickers,
+            this.checkBoxASCMode.Checked, this.dateTimePickerFirstDate.Value,
+            this.dateTimePickerLastDate.Value, Int32.Parse(this.textBoxMaxNumOfReturnedTickers.Text));
+      }                 
       else if (this.comboBoxAvailableSelectionRules.Text == "AverageCloseToOpenPerformance")
-        typeSelected = SelectionType.AverageCloseToOpenPerformance;
-      else if (this.comboBoxAvailableSelectionRules.Text == "QuotedInEachMarketDay")
-        typeSelected = SelectionType.QuotedInEachMarketDay; 
-      return typeSelected;  
+      { 
+        if(this.textBoxGroupID.Text != "")
+          returnValue = new SelectorByAverageOpenToClosePerformance(this.textBoxGroupID.Text,
+            this.checkBoxASCMode.Checked, this.dateTimePickerFirstDate.Value,
+            this.dateTimePickerLastDate.Value, Int32.Parse(this.textBoxMaxNumOfReturnedTickers.Text));
+        else
+          returnValue = new SelectorByAverageOpenToClosePerformance(this.tableOfSelectedTickers,
+            this.checkBoxASCMode.Checked, this.dateTimePickerFirstDate.Value,
+            this.dateTimePickerLastDate.Value, Int32.Parse(this.textBoxMaxNumOfReturnedTickers.Text));
+      }                 
+      else if (this.comboBoxAvailableSelectionRules.Text == "QuotedAtEachMarketDay")
+      { 
+        if(this.textBoxGroupID.Text != "")
+          returnValue = new SelectorByQuotationAtEachMarketDay (this.textBoxGroupID.Text,
+            this.checkBoxASCMode.Checked, this.dateTimePickerFirstDate.Value,
+            this.dateTimePickerLastDate.Value, Int32.Parse(this.textBoxMaxNumOfReturnedTickers.Text),
+            this.textBoxMarketIndex.Text);
+        else
+          returnValue = new SelectorByQuotationAtEachMarketDay(this.tableOfSelectedTickers,
+            this.checkBoxASCMode.Checked, this.dateTimePickerFirstDate.Value,
+            this.dateTimePickerLastDate.Value, Int32.Parse(this.textBoxMaxNumOfReturnedTickers.Text),
+            this.textBoxMarketIndex.Text);
+      } 
+      return returnValue;  
     }
 
     private void comboBoxAvailableSelectionRules_SelectedValueChanged(object sender, System.EventArgs e)
     {
-      if(this.comboBoxAvailableSelectionRules.Text == "QuotedInEachMarketDay")
+      if(this.comboBoxAvailableSelectionRules.Text == "QuotedAtEachMarketDay")
       {
         this.checkBoxASCMode.Enabled = false;
         this.labelMarketIndexKey.Visible = true;
