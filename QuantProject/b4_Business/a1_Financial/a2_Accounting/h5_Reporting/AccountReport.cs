@@ -28,7 +28,10 @@ using System.Reflection;
 using System.Runtime.InteropServices;
 using QuantProject.ADT;
 using QuantProject.ADT.Histories;
+using QuantProject.Business.Financial.Accounting.Transactions;
 using QuantProject.Business.Financial.Instruments;
+using QuantProject.Business.Timing;
+
 namespace QuantProject.Business.Financial.Accounting.Reporting
 {
 	/// <summary>
@@ -39,7 +42,7 @@ namespace QuantProject.Business.Financial.Accounting.Reporting
     private Account account;
     private Account accountCopy = new Account( "AccountCopy" );
     private string reportName;
-    private ExtendedDateTime endDateTime;
+    private EndOfDayDateTime endDateTime;
     private string buyAndHoldTicker;
     //private long numDaysForInterval;
     private DataTable detailedDataTable;
@@ -52,7 +55,7 @@ namespace QuantProject.Business.Financial.Accounting.Reporting
     {
       get { return reportName; }
     }    
-    public ExtendedDateTime EndDateTime
+    public EndOfDayDateTime EndDateTime
     {
       get { return endDateTime; }
     }    
@@ -119,22 +122,22 @@ namespace QuantProject.Business.Financial.Accounting.Reporting
       transactions.Columns.Add( "PnL"  , Type.GetType( "System.Double" ) );
     }
     #region "setRows"
-    private void addBalanceItems ( ExtendedDateTime extendedDateTime ,  DataRow dataRow )
+    private void addBalanceItems ( EndOfDayDateTime endOfDayDateTime ,  DataRow dataRow )
     {
       dataRow[ "AccountCash" ] = this.accountCopy.CashAmount;
       dataRow[ "PortfolioValue" ] = this.accountCopy.Portfolio.GetMarketValue(
-        extendedDateTime );
-      dataRow[ "AccountValue" ] = this.accountCopy.GetMarketValue( extendedDateTime );
-      dataRow[ "PnL" ] = this.accountCopy.GetMarketValue( extendedDateTime ) +
+        endOfDayDateTime );
+      dataRow[ "AccountValue" ] = this.accountCopy.GetMarketValue( endOfDayDateTime );
+      dataRow[ "PnL" ] = this.accountCopy.GetMarketValue( endOfDayDateTime ) +
         this.accountCopy.Transactions.TotalWithdrawn -
         this.accountCopy.Transactions.TotalAddedCash;
     }
-    private void addTransactionRow( TimedTransaction transaction ,
+    private void addTransactionRow( EndOfDayTransaction transaction ,
       System.Data.DataTable detailedDataTable )
     {
       DataRow dataRow = detailedDataTable.NewRow();
-      dataRow[ "DateTime" ] = transaction.ExtendedDateTime.DateTime;
-      dataRow[ "BarComponent" ] = transaction.ExtendedDateTime.BarComponent.ToString();
+      dataRow[ "DateTime" ] = transaction.EndOfDayDateTime.DateTime;
+      dataRow[ "BarComponent" ] = transaction.EndOfDayDateTime.EndOfDaySpecificTime.ToString();
       dataRow[ "TransactionType" ] = transaction.Type.ToString();
       if ( transaction.Instrument != null )
         dataRow[ "InstrumentKey" ] = transaction.Instrument.Key;
@@ -143,14 +146,14 @@ namespace QuantProject.Business.Financial.Accounting.Reporting
       dataRow[ "Quantity" ] = transaction.Quantity;
       dataRow[ "Price" ] = transaction.InstrumentPrice;
       dataRow[ "TransactionAmount" ] = transaction.InstrumentPrice * transaction.Quantity;
-      addBalanceItems( transaction.ExtendedDateTime , dataRow );
+      addBalanceItems( transaction.EndOfDayDateTime , dataRow );
       detailedDataTable.Rows.Add( dataRow );
     }
     private void addRowsForTransactions( DateTime currentDateTime ,
       System.Data.DataTable detailedDataTable )
     {
       if ( this.account.Transactions.ContainsKey( currentDateTime ) )
-        foreach ( TimedTransaction transaction in
+        foreach ( EndOfDayTransaction transaction in
           (ArrayList)this.account.Transactions[ currentDateTime ] )
         {
           this.accountCopy.Add( transaction );
@@ -162,7 +165,7 @@ namespace QuantProject.Business.Financial.Accounting.Reporting
     {
       DataRow dataRow = detailedDataTable.NewRow();
       dataRow[ "DateTime" ] = currentDate;
-      addBalanceItems( new ExtendedDateTime( currentDate , BarComponent.Close ) , dataRow );
+      addBalanceItems( new EndOfDayDateTime( currentDate , EndOfDaySpecificTime.MarketClose ) , dataRow );
       detailedDataTable.Rows.Add( dataRow );
     }
     private void addRowForPnl( long numDaysForInterval , DateTime currentDate ,
@@ -206,7 +209,7 @@ namespace QuantProject.Business.Financial.Accounting.Reporting
     #endregion
 
     public AccountReport Create( string reportName , long numDaysForInterval ,
-      ExtendedDateTime endDateTime , string buyAndHoldTicker )
+      EndOfDayDateTime endDateTime , string buyAndHoldTicker )
     {
       this.reportName = reportName;
       this.endDateTime = endDateTime;
@@ -223,7 +226,7 @@ namespace QuantProject.Business.Financial.Accounting.Reporting
     }
 
     public AccountReport Create( string reportName , long numDaysForInterval ,
-      ExtendedDateTime endDateTime )
+      EndOfDayDateTime endDateTime )
     {
       return Create( reportName , numDaysForInterval , endDateTime , "" );
     }

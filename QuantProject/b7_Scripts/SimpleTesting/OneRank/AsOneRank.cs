@@ -51,15 +51,15 @@ namespace QuantProject.Scripts
               virtualOrder.Instrument ,
               virtualOrder.Instrument.GetMaxBuyableQuantity(
               this.account.CashAmount +
-              this.account.Portfolio.GetMarketValue( virtualOrder.ExtendedDateTime ) ,
-              virtualOrder.ExtendedDateTime ) , virtualOrder.ExtendedDateTime ) );
+              this.account.Portfolio.GetMarketValue( virtualOrder.EndOfDayDateTime ) ,
+              virtualOrder.EndOfDayDateTime ) , virtualOrder.EndOfDayDateTime ) );
           break;
         case OrderType.MarketSell:
           if ( this.account.Portfolio.IsLong( virtualOrder.Instrument ) )
             orders.Add( new Order( OrderType.MarketSell ,
               virtualOrder.Instrument ,
               (long) this.account.Portfolio.GetPosition( virtualOrder.Instrument ).Quantity ,
-              virtualOrder.ExtendedDateTime ) );
+              virtualOrder.EndOfDayDateTime ) );
           break;
         default:            
           break;      

@@ -52,15 +52,15 @@ namespace QuantProject.Scripts
 							orders.Add( new Order( OrderType.MarketCover ,
 								virtualOrder.Instrument ,
 								(long) - ((Position)this.account.Portfolio[ virtualOrder.Instrument.Key ]).Quantity ,
-								virtualOrder.ExtendedDateTime ) );
+								virtualOrder.EndOfDayDateTime ) );
 						
 						if ( !this.account.Portfolio.IsLong( virtualOrder.Instrument ) )
 							orders.Add( new Order( OrderType.MarketBuy ,
 								virtualOrder.Instrument ,
 								virtualOrder.Instrument.GetMaxBuyableQuantity(
 								this.account.CashAmount +
-								this.account.Portfolio.GetMarketValue( virtualOrder.ExtendedDateTime ) ,
-								virtualOrder.ExtendedDateTime ) , virtualOrder.ExtendedDateTime ) );
+								this.account.Portfolio.GetMarketValue( virtualOrder.EndOfDayDateTime ) ,
+								virtualOrder.EndOfDayDateTime ) , virtualOrder.EndOfDayDateTime ) );
 					}
 					else
 					//it is a special order that acts in order to close any open position
@@ -69,13 +69,13 @@ namespace QuantProject.Scripts
 							orders.Add( new Order( OrderType.MarketCover ,
 								virtualOrder.Instrument ,
 								-(long) this.account.Portfolio.GetPosition( virtualOrder.Instrument ).Quantity ,
-								virtualOrder.ExtendedDateTime ) );
+								virtualOrder.EndOfDayDateTime ) );
 					
 						if ( this.account.Portfolio.IsLong( virtualOrder.Instrument ) )
 							orders.Add( new Order( OrderType.MarketSell  ,
 								virtualOrder.Instrument ,
 								(long) this.account.Portfolio.GetPosition( virtualOrder.Instrument ).Quantity ,
-								virtualOrder.ExtendedDateTime ) );
+								virtualOrder.EndOfDayDateTime ) );
 					}
 					break;
 
@@ -84,15 +84,15 @@ namespace QuantProject.Scripts
 						orders.Add( new Order( OrderType.MarketSell ,
 							virtualOrder.Instrument ,
 							(long) this.account.Portfolio.GetPosition( virtualOrder.Instrument ).Quantity ,
-							virtualOrder.ExtendedDateTime ) );
+							virtualOrder.EndOfDayDateTime ) );
 					if ( !this.account.Portfolio.IsShort( virtualOrder.Instrument ) )
 						orders.Add( new Order( OrderType.MarketSellShort ,
 							virtualOrder.Instrument ,
 							virtualOrder.Instrument.GetMaxBuyableQuantity( 
 							this.account.CashAmount +
-							this.account.Portfolio.GetMarketValue( virtualOrder.ExtendedDateTime ) ,
-							virtualOrder.ExtendedDateTime ) ,
-							virtualOrder.ExtendedDateTime ) );
+							this.account.Portfolio.GetMarketValue( virtualOrder.EndOfDayDateTime ) ,
+							virtualOrder.EndOfDayDateTime ) ,
+							virtualOrder.EndOfDayDateTime ) );
 					break;
 				default:            
 					break;      

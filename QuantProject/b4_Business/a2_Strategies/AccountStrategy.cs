@@ -58,29 +58,29 @@ namespace QuantProject.Business.Strategies
             orders.Add( new Order( OrderType.MarketCover ,
               virtualOrder.Instrument ,
               (long) - ((Position)this.account.Portfolio[ virtualOrder.Instrument.Key ]).Quantity ,
-              virtualOrder.ExtendedDateTime ) );
+              virtualOrder.EndOfDayDateTime ) );
           if ( !this.account.Portfolio.IsLong( virtualOrder.Instrument ) )
             orders.Add( new Order( OrderType.MarketBuy ,
               virtualOrder.Instrument ,
               virtualOrder.Instrument.GetMaxBuyableQuantity(
                 this.account.CashAmount +
-                this.account.Portfolio.GetMarketValue( virtualOrder.ExtendedDateTime ) ,
-                virtualOrder.ExtendedDateTime ) , virtualOrder.ExtendedDateTime ) );
+                this.account.Portfolio.GetMarketValue( virtualOrder.EndOfDayDateTime ) ,
+                virtualOrder.EndOfDayDateTime ) , virtualOrder.EndOfDayDateTime ) );
           break;
         case OrderType.MarketSell:
           if ( this.account.Portfolio.IsLong( virtualOrder.Instrument ) )
             orders.Add( new Order( OrderType.MarketSell ,
               virtualOrder.Instrument ,
               (long) this.account.Portfolio.GetPosition( virtualOrder.Instrument ).Quantity ,
-              virtualOrder.ExtendedDateTime ) );
+              virtualOrder.EndOfDayDateTime ) );
           if ( !this.account.Portfolio.IsShort( virtualOrder.Instrument ) )
             orders.Add( new Order( OrderType.MarketSellShort ,
             virtualOrder.Instrument ,
             virtualOrder.Instrument.GetMaxBuyableQuantity( 
               this.account.CashAmount +
-              this.account.Portfolio.GetMarketValue( virtualOrder.ExtendedDateTime ) ,
-              virtualOrder.ExtendedDateTime ) ,
-              virtualOrder.ExtendedDateTime ) );
+              this.account.Portfolio.GetMarketValue( virtualOrder.EndOfDayDateTime ) ,
+              virtualOrder.EndOfDayDateTime ) ,
+              virtualOrder.EndOfDayDateTime ) );
           break;
         default:            
           break;      
