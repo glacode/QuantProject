@@ -211,7 +211,6 @@
                     SubType = "Component"
                     BuildAction = "Compile"
                 />
-                <Folder RelPath = "NewFolder1\" />
                 <File
                     RelPath = "Selectors\ITickerReceiver.cs"
                     SubType = "Code"
