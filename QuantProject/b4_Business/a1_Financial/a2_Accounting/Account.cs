@@ -106,11 +106,6 @@ namespace QuantProject.Business.Financial.Accounting
       }
     }
 
-    public void DrawReport()
-    {
-      // TO DO !!!
-    }
-
     public bool Contains( Instrument instrument )
     {
       return Portfolio.Contains( instrument );
