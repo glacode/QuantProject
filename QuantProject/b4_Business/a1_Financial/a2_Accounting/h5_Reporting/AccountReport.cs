@@ -32,6 +32,7 @@ using QuantProject.Business.DataProviders;
 using QuantProject.Business.Financial.Accounting.Transactions;
 using QuantProject.Business.Financial.Instruments;
 using QuantProject.Business.Timing;
+using QuantProject.Data.DataProviders;
 
 namespace QuantProject.Business.Financial.Accounting.Reporting
 {
@@ -46,7 +47,8 @@ namespace QuantProject.Business.Financial.Accounting.Reporting
     private Account accountCopy = new Account( "AccountCopy" );
     private string reportName;
     private EndOfDayDateTime endDateTime;
-    private string buyAndHoldTicker;
+    private string benchmark;
+		private History benchmarkEquityLine;
     //private long numDaysForInterval;
     private DataTable detailedDataTable;
     private Tables.Transactions transactionTable;
@@ -62,9 +64,13 @@ namespace QuantProject.Business.Financial.Accounting.Reporting
     {
       get { return endDateTime; }
     }    
-		public string BuyAndHoldTicker
+		public string Benchmark
 		{
-			get { return buyAndHoldTicker; }
+			get { return this.benchmark; }
+		}
+		public History BenchmarkEquityLine
+		{
+			get { return this.benchmarkEquityLine; }
 		}
 		public Account Account
 		{
@@ -221,12 +227,20 @@ namespace QuantProject.Business.Financial.Accounting.Reporting
     #endregion
     #endregion
 
+		#region Create
+		private History create_getBenchmarkEquityLine()
+		{
+			return HistoricalDataProvider.GetAdjustedCloseHistory(
+				this.benchmark );
+		}
     public AccountReport Create( string reportName , long numDaysForInterval ,
-      EndOfDayDateTime endDateTime , string buyAndHoldTicker )
+      EndOfDayDateTime endDateTime , string benchmark )
     {
       this.reportName = reportName;
       this.endDateTime = endDateTime;
-      this.buyAndHoldTicker = buyAndHoldTicker;
+      this.benchmark = benchmark;
+			if ( benchmark != "" )
+				this.benchmarkEquityLine = this.create_getBenchmarkEquityLine();
       detailedDataTable = getDetailedDataTable( numDaysForInterval );
       this.transactionTable = new Tables.Transactions( reportName , detailedDataTable );
 //      this.transactionTable = getTransactionTable( reportName , detailedDataTable );
@@ -237,6 +251,7 @@ namespace QuantProject.Business.Financial.Accounting.Reporting
       this.summary = new Tables.Summary( this , historicalQuoteProvider );
       return this;
     }
+		#endregion
 
     public AccountReport Create( string reportName , long numDaysForInterval ,
       EndOfDayDateTime endDateTime )

@@ -23,7 +23,7 @@ using System;
 using System.Drawing;
 using System.Windows.Forms;
 using QuantProject.ADT.Histories;
-using QuantProject.Data.DataProviders;
+//using QuantProject.Data.DataProviders;
 using QuantProject.Business.DataProviders;
 using QuantProject.Business.Financial.Accounting.Reporting;
 using QuantProject.Business.Timing;
@@ -49,17 +49,20 @@ namespace QuantProject.Presentation.Reporting.WindowsForm
 		/// <returns></returns>
 		private History getBenchmark()
 		{
-			History buyAndHoldTickerEquityLine =
-				HistoricalDataProvider.GetAdjustedCloseHistory(
-				this.accountReport.BuyAndHoldTicker );
-			HistoricalAdjustedQuoteProvider quoteProvider =
-				new HistoricalAdjustedQuoteProvider();
+//			History buyAndHoldTickerEquityLine =
+//				HistoricalDataProvider.GetAdjustedCloseHistory(
+//				this.accountReport.BuyAndHoldTicker );
+//			HistoricalAdjustedQuoteProvider quoteProvider =
+//				new HistoricalAdjustedQuoteProvider();
+//			DateTime firstDate = (DateTime)this.equity.GetKey( 0 );
+//			double normalizingFactor =
+//				( double )this.equity[ firstDate ] /
+//				( double )quoteProvider.GetMarketValue( this.accountReport.BuyAndHoldTicker ,ù
 			DateTime firstDate = (DateTime)this.equity.GetKey( 0 );
 			double normalizingFactor =
 				( double )this.equity[ firstDate ] /
-				( double )quoteProvider.GetMarketValue( this.accountReport.BuyAndHoldTicker ,
-				new EndOfDayDateTime( firstDate , EndOfDaySpecificTime.MarketClose ) );
-			return buyAndHoldTickerEquityLine.MultiplyBy( normalizingFactor );
+				Convert.ToDouble( this.accountReport.BenchmarkEquityLine[ firstDate ] );
+			return this.accountReport.BenchmarkEquityLine.MultiplyBy( normalizingFactor );
 		}
 		public EquityChartTabPage( AccountReport accountReport )
 		{
