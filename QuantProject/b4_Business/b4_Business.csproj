@@ -217,6 +217,11 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "a05_Timing\IndexBasedEndOfDayTimer.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "a07_DataProviders\HistoricalEndOfDayDataStreamer.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
