@@ -10,7 +10,7 @@ using System.IO;
 using System.Threading;
 using QuantProject.DataAccess;
 
-namespace QuantDownloader
+namespace QuantProject.Applications.Downloader
 {
 	/// <summary>
 	/// Summary description for Form1.
@@ -370,31 +370,5 @@ namespace QuantDownloader
     
     }
 	}
-  public class ImportQuotesCsv
-  {
-    public ImportQuotesCsv()
-    {
-      OleDbConnection odConnection = new OleDbConnection();
-      odConnection.ConnectionString = @"Provider=Microsoft.Jet.OLEDB.4.0;Password="""";User ID=Admin;Data Source=C:\Documents and Settings\Glauco\My Documents\Visual Studio Projects\QuantProject\QuantProject.mdb;Mode=Share Deny None;Extended Properties="""";Jet OLEDB:System database="""";Jet OLEDB:Registry Path="""";Jet OLEDB:Database Password="""";Jet OLEDB:Engine Type=5;Jet OLEDB:Database Locking Mode=1;Jet OLEDB:Global Partial Bulk Ops=2;Jet OLEDB:Global Bulk Transactions=1;Jet OLEDB:New Database Password="""";Jet OLEDB:Create System Database=False;Jet OLEDB:Encrypt Database=False;Jet OLEDB:Don't Copy Locale on Compact=False;Jet OLEDB:Compact Without Replica Repair=False;Jet OLEDB:SFP=False";
-      odConnection.Open();
-      OleDbCommand odc = new OleDbCommand();
-      odc.CommandText = 
-        "INSERT INTO quotes" +
-        "( quTicker, quDate, quOpen, quHigh, quLow, quClose, quVolume )" +
-        "SELECT Ticker, cDate(Date), cDbl(Open), cDbl(High), cDbl(Low), cDbl(Close), cDbl(Volume) " +
-        "FROM quotes_csv";
-      odc.Connection = odConnection;
-      try
-      {
-        odc.ExecuteNonQuery();
-      }
-      catch (Exception ex)
-      {
-        MessageBox.Show( ex.ToString() );
-      }
-      odConnection.Close();
-    }
-  }
-
 
   }
