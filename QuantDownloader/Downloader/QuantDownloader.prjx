@@ -36,6 +36,7 @@
     <File name=".\Validate\ValidateForm.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
     <File name=".\app.config" subtype="Code" buildaction="Nothing" dependson="" data="" />
     <File name=".\App.ico" subtype="Code" buildaction="Nothing" dependson="" data="" />
+    <File name=".\QuantProject.Applications.Downloader.TickerSelectors.TickerSelectorForm.resources" subtype="Code" buildaction="EmbedAsResource" dependson="" data="" />
   </Contents>
   <References>
     <Reference type="Project" refto="b1_ADT" localcopy="True" />
