@@ -49,6 +49,7 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
     private int numberOfTickersToBeChosen;
 		
     private Account account;
+    private ArrayList orders;
 
     public int NumberOfEligibleTickers
     {
@@ -67,7 +68,7 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
       this.numberOfEligibleTickers = numberOfEligibleTickers;
       this.numberOfTickersToBeChosen = numberOfTickersToBeChosen;
       this.account = account;
-      
+      this.orders = new ArrayList();
     }
 		    
     #region MarketOpenEventHandler
@@ -82,8 +83,10 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
       if(this.account.Transactions.Count == 0)
         this.account.AddCash(endOfDayTimingEventArgs.EndOfDayDateTime,
                               16000);
-      
-      //this.account.ExecuteActiveOrders();
+      foreach(object item in this.orders)
+      {
+        this.account.AddOrder((Order)item);
+      }
     }
 		#endregion
 
@@ -144,7 +147,7 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
       long quantity =
         Convert.ToInt64( Math.Floor( cashForSinglePosition / this.account.DataStreamer.GetCurrentBid( ticker ) ) );
       Order order = new Order( OrderType.MarketBuy , new Instrument( ticker ) , quantity );
-      this.account.AddOrder( order );
+      this.orders.Add(order);
     }
     private void oneHourAfterMarketCloseEventHandler_orderChosenTickers_openPositions()
     {
@@ -169,7 +172,7 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
       Object sender , EndOfDayTimingEventArgs endOfDayTimingEventArgs )
     {
       this.setTickers(endOfDayTimingEventArgs.EndOfDayDateTime.DateTime);
-      //this.account.ClearOrders();
+      this.orders.Clear();
       oneHourAfterMarketCloseEventHandler_orderChosenTickers( ( IEndOfDayTimer ) sender );
     }
 		
