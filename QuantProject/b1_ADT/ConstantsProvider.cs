@@ -20,6 +20,7 @@ namespace QuantProject.ADT
     public static int NumberOfCheckToPerformOnAdjustedValues = 3;
     public static double MaxRelativeDifferenceForAdjustedValues = 0.0005;
     public static double MaxRelativeDifferenceForCloseToCloseRatios = 0.0001;
+    // max num days allowed by the data source (yahoo)
     public static double MaxNumDaysDownloadedAtEachConnection = 200;
 	}
 }
