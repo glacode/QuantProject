@@ -175,6 +175,13 @@ namespace QuantProject.Business.Financial.Accounting
       AccountReport accountReport = new AccountReport( this );
       return accountReport.Create( reportName , numDaysForInterval , extendedDateTime );
     }
+    public AccountReport CreateReport( string reportName ,
+      int numDaysForInterval , ExtendedDateTime extendedDateTime , string buyAndHoldTicker )
+    {
+      AccountReport accountReport = new AccountReport( this );
+      return accountReport.Create( reportName , numDaysForInterval ,
+        extendedDateTime , buyAndHoldTicker );
+    }
     public void Serialize( string filePathAndName )
     {
 //      //Dim FS As New IO.FileStream("c:\Rect.xml", IO.FileMode.Create, IO.FileAccess.Write)
