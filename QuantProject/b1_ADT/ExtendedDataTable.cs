@@ -139,22 +139,30 @@ namespace QuantProject.ADT
     
       string columnNameTable1 = firstDataTable.Columns[indexOfColumnOfFirstTable].ColumnName;
       string columnNameTable2 = firstDataTable.Columns[indexOfColumnOfSecondTable].ColumnName;
-      DataRow[] orderedRowsTable1 = firstDataTable.Select(columnNameTable1 + "!=' '", "DESC");
-      DataRow[] orderedRowsTable2 = secondDataTable.Select(columnNameTable2 + "!=' '", "DESC");
+      DataRow[] orderedRowsTable1 = firstDataTable.Select(columnNameTable1 + "<>' '", columnNameTable1 + " DESC");
+      DataRow[] orderedRowsTable2 = secondDataTable.Select(columnNameTable2 + "<>' '", columnNameTable2 + " DESC");
       int j = 0;
+      bool found;
       for(int i=0; i != orderedRowsTable1.Length; i++)
       {
-        for(; j != orderedRowsTable2.Length; j++)
+        found = false;
+        for(; j != orderedRowsTable2.Length && !found; j++)
         {
           int currentIndex = j;
           object object1 = orderedRowsTable1[i][indexOfColumnOfFirstTable];
-          object object2 = orderedRowsTable2[i][indexOfColumnOfSecondTable];
-          if( object1 == object2 )
+          object object2 = orderedRowsTable2[j][indexOfColumnOfSecondTable];
+          if( (string)object1 == (string)object2 )
           {
-            hashTable.Add(object1, object2);
+            found = true;
             j = currentIndex;
+            hashTable.Add(object1, object2);
           }
         }
+        if( !found )
+        {
+          j = 0;
+        }
+
       }
       return hashTable;
 
