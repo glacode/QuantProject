@@ -390,8 +390,9 @@ namespace QuantProject.Applications.Downloader
     private void commitDownloadedValuesToDatabase()
     {
       if(this.p_myForm.IsOverWriteYesSelected)
-            Quotes.Delete(this.p_quTicker);
-      QuantProject.DataAccess.Tables.Quotes.ComputeCloseToCloseValues(this.downloadedValuesFromSource);
+        Quotes.Delete(this.p_quTicker);
+      if(this.p_myForm.IsComputeCloseToCloseRatioSelected)
+        QuantProject.DataAccess.Tables.Quotes.ComputeCloseToCloseValues(this.downloadedValuesFromSource);
       this.adapter.OleDbDataAdapter.ContinueUpdateOnError = true;
       int rowsUpdated = this.adapter.OleDbDataAdapter.Update(this.downloadedValuesFromSource);
       if(rowsUpdated > 0)

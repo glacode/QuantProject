@@ -49,11 +49,9 @@ namespace QuantProject.Applications.Downloader
     private System.Windows.Forms.RadioButton radioButtonDownloadOnlyAfterMax;
     private System.Windows.Forms.Button buttonAbort;
     private Thread downloadThread = null;
-
-		/// <summary>
-		/// Required designer variable.
-		/// </summary>
-		private System.ComponentModel.Container components = null;
+    internal System.Windows.Forms.CheckBox checkBoxComputeCloseToCloseValues;
+    private System.Windows.Forms.ToolTip toolTip1;
+    private System.ComponentModel.IContainer components;
 
 		public WebDownloader()
 		{
@@ -114,6 +112,9 @@ namespace QuantProject.Applications.Downloader
       this.radioButtonAllAvailableUntilNow.Checked = true;
       this.radioButtonDownloadOnlyAfterMax.Checked = true;
       this.dataGrid1.ContextMenu = new TickerViewerMenu(this);
+      this.toolTip1.SetToolTip(this.checkBoxComputeCloseToCloseValues,
+                                "It is possible to compute close to close " +
+                                "ratios out of connection");
       //this.downloadThread = new Thread( new ThreadStart( this.downloadQuotes_createTickerDataSet));
     }
 
@@ -125,6 +126,7 @@ namespace QuantProject.Applications.Downloader
 		/// </summary>
 		private void InitializeComponent()
 		{
+      this.components = new System.ComponentModel.Container();
       this.button1 = new System.Windows.Forms.Button();
       this.dataGrid1 = new System.Windows.Forms.DataGrid();
       this.oleDbDataAdapter1 = new System.Data.OleDb.OleDbDataAdapter();
@@ -148,6 +150,8 @@ namespace QuantProject.Applications.Downloader
       this.radioButtonOverWriteNo = new System.Windows.Forms.RadioButton();
       this.radioButtonOverWriteYes = new System.Windows.Forms.RadioButton();
       this.buttonAbort = new System.Windows.Forms.Button();
+      this.checkBoxComputeCloseToCloseValues = new System.Windows.Forms.CheckBox();
+      this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
       ((System.ComponentModel.ISupportInitialize)(this.dataGrid1)).BeginInit();
       this.groupBoxWebDownloaderOptions.SuspendLayout();
       this.groupBoxUpdateDatabaseOptions.SuspendLayout();
@@ -155,7 +159,7 @@ namespace QuantProject.Applications.Downloader
       // 
       // button1
       // 
-      this.button1.Location = new System.Drawing.Point(88, 352);
+      this.button1.Location = new System.Drawing.Point(16, 392);
       this.button1.Name = "button1";
       this.button1.Size = new System.Drawing.Size(112, 32);
       this.button1.TabIndex = 0;
@@ -250,7 +254,7 @@ namespace QuantProject.Applications.Downloader
       // 
       // buttonDownloadQuotesOfSelectedTickers
       // 
-      this.buttonDownloadQuotesOfSelectedTickers.Location = new System.Drawing.Point(88, 392);
+      this.buttonDownloadQuotesOfSelectedTickers.Location = new System.Drawing.Point(136, 392);
       this.buttonDownloadQuotesOfSelectedTickers.Name = "buttonDownloadQuotesOfSelectedTickers";
       this.buttonDownloadQuotesOfSelectedTickers.Size = new System.Drawing.Size(112, 32);
       this.buttonDownloadQuotesOfSelectedTickers.TabIndex = 2;
@@ -259,7 +263,7 @@ namespace QuantProject.Applications.Downloader
       // 
       // labelNumberOfTickersToDownload
       // 
-      this.labelNumberOfTickersToDownload.Location = new System.Drawing.Point(152, 440);
+      this.labelNumberOfTickersToDownload.Location = new System.Drawing.Point(160, 448);
       this.labelNumberOfTickersToDownload.Name = "labelNumberOfTickersToDownload";
       this.labelNumberOfTickersToDownload.Size = new System.Drawing.Size(48, 24);
       this.labelNumberOfTickersToDownload.TabIndex = 4;
@@ -267,7 +271,7 @@ namespace QuantProject.Applications.Downloader
       // 
       // labelTickersLeft
       // 
-      this.labelTickersLeft.Location = new System.Drawing.Point(8, 440);
+      this.labelTickersLeft.Location = new System.Drawing.Point(16, 448);
       this.labelTickersLeft.Name = "labelTickersLeft";
       this.labelTickersLeft.Size = new System.Drawing.Size(136, 24);
       this.labelTickersLeft.TabIndex = 5;
@@ -275,14 +279,14 @@ namespace QuantProject.Applications.Downloader
       // 
       // dateTimePickerStartingDate
       // 
-      this.dateTimePickerStartingDate.Location = new System.Drawing.Point(96, 104);
+      this.dateTimePickerStartingDate.Location = new System.Drawing.Point(96, 96);
       this.dateTimePickerStartingDate.Name = "dateTimePickerStartingDate";
       this.dateTimePickerStartingDate.Size = new System.Drawing.Size(184, 20);
       this.dateTimePickerStartingDate.TabIndex = 6;
       // 
       // labelStartingDateTime
       // 
-      this.labelStartingDateTime.Location = new System.Drawing.Point(8, 104);
+      this.labelStartingDateTime.Location = new System.Drawing.Point(8, 96);
       this.labelStartingDateTime.Name = "labelStartingDateTime";
       this.labelStartingDateTime.Size = new System.Drawing.Size(80, 23);
       this.labelStartingDateTime.TabIndex = 8;
@@ -310,7 +314,7 @@ namespace QuantProject.Applications.Downloader
       this.groupBoxWebDownloaderOptions.Controls.AddRange(new System.Windows.Forms.Control[] {
                                                                                                this.radioButtonAllAvailableUntilNowSinceStartingDate,
                                                                                                this.radioButtonAllAvailableUntilNow});
-      this.groupBoxWebDownloaderOptions.Location = new System.Drawing.Point(8, 8);
+      this.groupBoxWebDownloaderOptions.Location = new System.Drawing.Point(8, 0);
       this.groupBoxWebDownloaderOptions.Name = "groupBoxWebDownloaderOptions";
       this.groupBoxWebDownloaderOptions.Size = new System.Drawing.Size(288, 88);
       this.groupBoxWebDownloaderOptions.TabIndex = 13;
@@ -380,18 +384,28 @@ namespace QuantProject.Applications.Downloader
       // buttonAbort
       // 
       this.buttonAbort.Enabled = false;
-      this.buttonAbort.Location = new System.Drawing.Point(216, 376);
+      this.buttonAbort.Location = new System.Drawing.Point(256, 408);
       this.buttonAbort.Name = "buttonAbort";
+      this.buttonAbort.Size = new System.Drawing.Size(32, 23);
       this.buttonAbort.TabIndex = 15;
       this.buttonAbort.Text = "Abort";
       this.buttonAbort.Visible = false;
       this.buttonAbort.Click += new System.EventHandler(this.buttonAbort_Click);
       // 
+      // checkBoxComputeCloseToCloseValues
+      // 
+      this.checkBoxComputeCloseToCloseValues.Location = new System.Drawing.Point(16, 352);
+      this.checkBoxComputeCloseToCloseValues.Name = "checkBoxComputeCloseToCloseValues";
+      this.checkBoxComputeCloseToCloseValues.Size = new System.Drawing.Size(272, 24);
+      this.checkBoxComputeCloseToCloseValues.TabIndex = 16;
+      this.checkBoxComputeCloseToCloseValues.Text = "Compute close to close ratios (slower)";
+      // 
       // WebDownloader
       // 
       this.AutoScaleBaseSize = new System.Drawing.Size(5, 13);
-      this.ClientSize = new System.Drawing.Size(840, 470);
+      this.ClientSize = new System.Drawing.Size(840, 486);
       this.Controls.AddRange(new System.Windows.Forms.Control[] {
+                                                                  this.checkBoxComputeCloseToCloseValues,
                                                                   this.buttonAbort,
                                                                   this.groupBoxUpdateDatabaseOptions,
                                                                   this.groupBoxWebDownloaderOptions,
@@ -729,7 +743,15 @@ namespace QuantProject.Applications.Downloader
       this.buttonAbort.Enabled = false; 
       this.downloadThread.Abort(); 
     }
-
+    
+    public bool IsComputeCloseToCloseRatioSelected
+    {
+      get
+      {
+        return this.checkBoxComputeCloseToCloseValues.Checked;
+      }
+    }
+    
     public bool IsBeforeAndAfterSelected
     {
       get
