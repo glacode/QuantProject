@@ -38,17 +38,36 @@ namespace QuantProject.Business.Financial.Accounting.Reporting
 	{
     private Account account;
     private Account accountCopy = new Account( "AccountCopy" );
+    private string reportName;
     private ExtendedDateTime endDateTime;
     private string buyAndHoldTicker;
-    private double totalPnl;
-    private double finalAccountValue;
-    private double buyAndHoldPercentageReturn;
-    private long intervalDays;
-    private ReportTable transactionTable;
+    //private long numDaysForInterval;
+    private DataTable detailedDataTable;
+    private Tables.Transactions transactionTable;
     private ReportTable roundTrades;
     private ReportTable equity;
     private ReportTable summary;
 
+    public string Name
+    {
+      get { return reportName; }
+    }    
+    public ExtendedDateTime EndDateTime
+    {
+      get { return endDateTime; }
+    }    
+    public string BuyAndHoldTicker
+    {
+      get { return buyAndHoldTicker; }
+    }
+//    public long NumDaysForInterval
+//    {
+//      get { return numDaysForInterval; }
+//    }
+    public DataTable DetailedDataTable
+    {
+      get { return detailedDataTable; }
+    }
     public ReportTable TransactionTable
     {
       get { return transactionTable; }
@@ -146,7 +165,7 @@ namespace QuantProject.Business.Financial.Accounting.Reporting
       addBalanceItems( new ExtendedDateTime( currentDate , BarComponent.Close ) , dataRow );
       detailedDataTable.Rows.Add( dataRow );
     }
-    private void addRowForPnl( int numDaysForInterval , DateTime currentDate ,
+    private void addRowForPnl( long numDaysForInterval , DateTime currentDate ,
       System.Data.DataTable detailedDataTable )
     {
       if ( ( Convert.ToInt32(((TimeSpan)(currentDate.Date -
@@ -154,7 +173,7 @@ namespace QuantProject.Business.Financial.Accounting.Reporting
         % numDaysForInterval ) == 0 )
         addRowForPnl_actually( currentDate , detailedDataTable );
     }
-    private void setRows(  int numDaysForInterval , System.Data.DataTable detailedDataTable )
+    private void setRows(  long numDaysForInterval , System.Data.DataTable detailedDataTable )
     {
       DateTime currentDate = (DateTime) account.Transactions.GetKey( 0 );
       try
@@ -176,7 +195,7 @@ namespace QuantProject.Business.Financial.Accounting.Reporting
       }
     }
     #endregion
-    private System.Data.DataTable getDetailedDataTable( int numDaysForInterval )
+    private System.Data.DataTable getDetailedDataTable( long numDaysForInterval )
     {
       System.Data.DataTable detailedDataTable = new System.Data.DataTable();
       setColumns( detailedDataTable );
@@ -184,374 +203,26 @@ namespace QuantProject.Business.Financial.Accounting.Reporting
       return detailedDataTable;
     }
     #endregion
-    #region "getTransactionTable"
-    private void getTransactionTable_setColumns( DataTable detailedDataTable ,
-      DataTable transactionsDataTable )
-    {
-      transactionsDataTable.Columns.Add( "DateTime" , Type.GetType( "System.DateTime" ) );
-      transactionsDataTable.Columns.Add( "BarComponent" , Type.GetType( "System.String" ) );
-      transactionsDataTable.Columns.Add( "TransactionType"  , Type.GetType( "System.String" ) );
-      transactionsDataTable.Columns.Add( "InstrumentKey"  , Type.GetType( "System.String" ) );
-      transactionsDataTable.Columns.Add( "Quantity"  , Type.GetType( "System.Int32" ) );
-      transactionsDataTable.Columns.Add( "Price"  , Type.GetType( "System.Double" ) );
-      transactionsDataTable.Columns.Add( "TransactionAmount"  , Type.GetType( "System.Double" ) );
-      transactionsDataTable.Columns.Add( "AccountCash"  , Type.GetType( "System.Double" ) );
-      transactionsDataTable.Columns.Add( "PortfolioValue"  , Type.GetType( "System.Double" ) );
-      transactionsDataTable.Columns.Add( "AccountValue"  , Type.GetType( "System.Double" ) );
-      transactionsDataTable.Columns.Add( "PnL"  , Type.GetType( "System.Double" ) );
-    }
-    private void getTransactionTable_setRows(  DataTable detailedDataTable ,
-      DataTable transactionsDataTable )
-    {
-      foreach ( DataRow detailedRow in detailedDataTable.Rows )
-        if ( detailedRow[ "TransactionType" ] != System.DBNull.Value )
-          // current detailed row reports a transaction
-        {
-          DataRow dataRow = transactionsDataTable.NewRow();
-          dataRow[ "DateTime" ] = detailedRow[ "DateTime" ];
-          dataRow[ "BarComponent" ] = detailedRow[ "BarComponent" ];
-          dataRow[ "TransactionType" ] = detailedRow[ "TransactionType" ];
-          dataRow[ "InstrumentKey" ] = detailedRow[ "InstrumentKey" ];
-          dataRow[ "Quantity" ] = detailedRow[ "Quantity" ];
-          dataRow[ "Price" ] = detailedRow[ "Price" ];
-          dataRow[ "TransactionAmount" ] = detailedRow[ "TransactionAmount" ];
-          dataRow[ "AccountCash" ] = detailedRow[ "AccountCash" ];
-          dataRow[ "PortfolioValue" ] = detailedRow[ "PortfolioValue" ];
-          dataRow[ "AccountValue" ] = detailedRow[ "AccountValue" ];
-          dataRow[ "PnL" ] = detailedRow[ "PnL" ];
-          transactionsDataTable.Rows.Add( dataRow );
-        }
-    }
-    private DataTable getTransactionTable_actually( DataTable detailedDataTable )
-    {
-      DataTable transactionsDataTable = new DataTable();
-      getTransactionTable_setColumns( detailedDataTable , transactionsDataTable );
-      getTransactionTable_setRows( detailedDataTable , transactionsDataTable );
-      return transactionsDataTable;
-    }
-    private ReportTable getTransactionTable( string reportName , DataTable detailedDataTable )
-    {
-      DataTable transactionsDataTable = getTransactionTable_actually( detailedDataTable );
-      return new ReportTable( reportName + " - Transactions" ,
-        transactionsDataTable );
-      //ExcelManager.Add( reportTable ); daCanc
-    }
     #endregion
-    #region "getRoundTrades"
-    private void getRoundTradeTable_setColumns( DataTable roundTradeDataTable )
-    {
-      roundTradeDataTable.Columns.Add( "Trade" , Type.GetType( "System.String" ) );
-      roundTradeDataTable.Columns.Add( "EntryDate"  , Type.GetType( "System.DateTime" ) );
-      roundTradeDataTable.Columns.Add( "EntryPrice" , Type.GetType( "System.Double" ) );
-      roundTradeDataTable.Columns.Add( "ExitDate"  , Type.GetType( "System.DateTime" ) );
-      roundTradeDataTable.Columns.Add( "ExitPrice"  , Type.GetType( "System.Double" ) );
-      roundTradeDataTable.Columns.Add( "%chg"  , Type.GetType( "System.Double" ) );
-      roundTradeDataTable.Columns.Add( "Profit"  , Type.GetType( "System.Double" ) );
-      roundTradeDataTable.Columns.Add( "%Profit"  , Type.GetType( "System.Double" ) );
-      roundTradeDataTable.Columns.Add( "#bars"  , Type.GetType( "System.Int32" ) );
-      roundTradeDataTable.Columns.Add( "ProfitPerBar"  , Type.GetType( "System.Double" ) );
-      //roundTradeDataTable.Columns.Add( "AccountValue"  , Type.GetType( "System.Double" ) );
-      //roundTradeDataTable.Columns.Add( "PnL"  , Type.GetType( "System.Double" ) );
-    }
-    private void getRoundTradeTable_setRow( DataRow dataRow , DataTable roundTradeDataTable )
-    {
-      DataRow roundTrade;
-      switch ( (string)dataRow[ "TransactionType" ] )
-      {
-        case "BuyLong":
-          roundTrade = roundTradeDataTable.NewRow();
-          roundTrade[ "Trade" ] = "Long";
-          roundTrade[ "EntryDate" ] = dataRow[ "DateTime" ];
-          roundTrade[ "EntryPrice" ] = dataRow[ "Price" ];
-          roundTradeDataTable.Rows.Add( roundTrade );
-          break;
-        case "Sell":
-          roundTrade = roundTradeDataTable.Rows[ roundTradeDataTable.Rows.Count - 1 ];
-          roundTrade[ "ExitDate" ] = dataRow[ "DateTime" ];
-          roundTrade[ "ExitPrice" ] = dataRow[ "Price" ];
-          roundTrade[ "%chg" ] =
-            ((double)roundTrade[ "ExitPrice" ] - (double)roundTrade[ "EntryPrice" ])/
-            ((double)roundTrade[ "EntryPrice" ])*100;
-          roundTrade[ "%Profit" ] = roundTrade[ "%chg" ];
-          roundTrade[ "#bars" ] =
-            ((TimeSpan)((DateTime)roundTrade[ "ExitDate" ] - (DateTime)roundTrade[ "EntryDate" ])).Days;
-          roundTrade[ "ProfitPerBar" ] = (double)roundTrade[ "%chg" ] / (int)roundTrade[ "#bars" ];
-          break;
-        case "SellShort":
-          roundTrade = roundTradeDataTable.NewRow();
-          roundTrade[ "Trade" ] = "Short";
-          roundTrade[ "EntryDate" ] = dataRow[ "DateTime" ];
-          roundTrade[ "EntryPrice" ] = dataRow[ "Price" ];
-          roundTradeDataTable.Rows.Add( roundTrade );
-          break;
-        case "Cover":
-          roundTrade = roundTradeDataTable.Rows[ roundTradeDataTable.Rows.Count - 1 ];
-          roundTrade[ "ExitDate" ] = dataRow[ "DateTime" ];
-          roundTrade[ "ExitPrice" ] = dataRow[ "Price" ];
-          roundTrade[ "%chg" ] =
-            ((double)roundTrade[ "ExitPrice" ] - (double)roundTrade[ "EntryPrice" ])/
-            ((double)roundTrade[ "EntryPrice" ])*100;
-          roundTrade[ "%Profit" ] = - ((double)roundTrade[ "%chg" ]);
-          roundTrade[ "#bars" ] =
-            ((TimeSpan)((DateTime)roundTrade[ "ExitDate" ] - (DateTime)roundTrade[ "EntryDate" ])).Days;
-          roundTrade[ "ProfitPerBar" ] = (double)roundTrade[ "%chg" ] / (int)roundTrade[ "#bars" ];
-          break;
-      }
 
-    }
-    private void getRoundTradeTable_setRows( DataTable roundTradeDataTable )
-    {
-      foreach (DataRow dataRow in this.transactionTable.DataTable.Rows )
-        getRoundTradeTable_setRow( dataRow , roundTradeDataTable );
-    }
-    private DataTable getRoundTradeDataTable()
-    {
-      DataTable roundTradeDataTable = new DataTable();
-      getRoundTradeTable_setColumns( roundTradeDataTable );
-      getRoundTradeTable_setRows( roundTradeDataTable );
-      return roundTradeDataTable;
-    }
-    private ReportTable getRoundTrades( string reportName )
-    {
-      DataTable roundTradeDataTable = getRoundTradeDataTable();
-      return new ReportTable( reportName + " - Round Trades" ,
-        roundTradeDataTable );
-    }
-    #endregion
-    #region "getEquity"
-    private void getEquityTable_setColumns( DataTable equityDataTable )
-    {
-      equityDataTable.Columns.Add( "Date"  , Type.GetType( "System.DateTime" ) );
-      equityDataTable.Columns.Add( "PnL" , Type.GetType( "System.Double" ) );
-      equityDataTable.Columns.Add( "AccountValue"  , Type.GetType( "System.Double" ) );
-      equityDataTable.Columns.Add( "%chg"  , Type.GetType( "System.Double" ) );
-    }
-    private void getEquityTable_setRows( DataTable equityDataTable , DataTable detailedDataTable )
-    {
-      foreach (DataRow detailedRow in detailedDataTable.Rows )
-        if ( detailedRow[ "TransactionType" ] == System.DBNull.Value )
-          // current detailed row reports an equity row
-        {
-          DataRow dataRow = equityDataTable.NewRow();
-          dataRow[ "Date" ] = detailedRow[ "DateTime" ];
-          dataRow[ "PnL" ] = detailedRow[ "PnL" ];
-          dataRow[ "AccountValue" ] = detailedRow[ "AccountValue" ];
-          if ( equityDataTable.Rows.Count > 0 )
-            dataRow[ "%chg" ] = ((double)dataRow[ "AccountValue" ] -
-              (double)equityDataTable.Rows[ equityDataTable.Rows.Count - 1 ][ "AccountValue" ])/
-              (double)equityDataTable.Rows[ equityDataTable.Rows.Count - 1 ][ "AccountValue" ]*
-              100;
-          equityDataTable.Rows.Add( dataRow );
-        }
-    }
-    private DataTable getEquityDataTable( DataTable detailedDataTable )
-    {
-      DataTable equityDataTable = new DataTable();
-      getEquityTable_setColumns( equityDataTable );
-      getEquityTable_setRows( equityDataTable , detailedDataTable );
-      return equityDataTable;
-    }
-    private ReportTable getEquity( string reportName , DataTable detailedDataTable )
-    {
-      DataTable equityDataTable = getEquityDataTable( detailedDataTable );
-      return new ReportTable( reportName + " - Equity" ,
-        equityDataTable );
-    }
-
-    #endregion
-    #region "getSummary"
-    private void getSummaryTable_setColumns( DataTable equityDataTable )
-    {
-      equityDataTable.Columns.Add( "Information"  , Type.GetType( "System.String" ) );
-      equityDataTable.Columns.Add( "Value" , Type.GetType( "System.Double" ) );
-    }
-    #region "getSummaryTable_setRows"
-    private delegate void getSummaryTable_setRow( DataRow summary );
-    private void getSummaryTable_setRow_TotalNetProfit( DataRow summary )
-    {
-      summary[ "Information" ] = "Total net profit";
-      summary[ "Value" ] = this.totalPnl;
-    }
-    private void getSummaryTable_setRow_ReturnOnAccount( DataRow summary )
-    {
-      summary[ "Information" ] = "Return on account";
-      summary[ "Value" ] = this.totalPnl / ( this.finalAccountValue - this.totalPnl ) * 100;
-    }
-    private void getSummaryTable_setRow_BuyAndHoldPercentageReturn( DataRow summary )
-    {
-      if ( this.buyAndHoldTicker != "" )
-      {
-        // the report has to compare to a buy and hold benchmark
-        Instrument buyAndHoldInstrument = new Instrument( this.buyAndHoldTicker );
-        this.buyAndHoldPercentageReturn =
-          ( buyAndHoldInstrument.GetMarketValue( this.endDateTime ) -
-          buyAndHoldInstrument.GetMarketValue(
-          new ExtendedDateTime( this.StartDateTime , BarComponent.Open ) ) ) /
-          buyAndHoldInstrument.GetMarketValue(
-          new ExtendedDateTime( this.StartDateTime , BarComponent.Open ) ) * 100;
-        summary[ "Information" ] = "Buy & hold % return";
-        summary[ "Value" ] = this.buyAndHoldPercentageReturn;
-      }
-    }
-    private void getSummaryTable_setRow_AnnualSystemPercentageReturn( DataRow summary )
-    {
-      double totalROA = this.totalPnl / ( this.finalAccountValue - this.totalPnl );
-      summary[ "Information" ] = "Annual system % return";
-      summary[ "Value" ] = ( ( Math.Pow( 1 + totalROA ,
-        1.0 / ( (double)this.intervalDays/365.0 ) ) ) - 1 ) * 100;
-      //        r = [(1+T)^(1/n)]-1
-    }
-    private void getSummaryTable_setRow_TotalNumberOfTrades( DataRow summary )
-    {
-      double totalROA = this.totalPnl / ( this.finalAccountValue - this.totalPnl );
-      summary[ "Information" ] = "Total # of trades";
-      DataRow[] DataRows = this.roundTrades.DataTable.Select( "(ExitPrice is not null)" );
-      summary[ "Value" ] = DataRows.Length;
-    }
-    private void getSummaryTable_setRow_NumberWinningTrades( DataRow summary )
-    {
-      summary[ "Information" ] = "Number winning trades";
-      DataRow[] DataRows = this.roundTrades.DataTable.Select( "([%Profit] > 0)" );
-      summary[ "Value" ] = DataRows.Length;
-    }
-    private void getSummaryTable_setRow_AverageTradePercentageReturn( DataRow summary )
-    {
-      summary[ "Information" ] = "Average trade % Return";
-      double avgReturn = (double) this.roundTrades.DataTable.Compute( "avg([%Profit])" , "true" );
-      summary[ "Value" ] = avgReturn;
-    }
-    private void getSummaryTable_setRow_LargestWinningTradePercentage( DataRow summary )
-    {
-      summary[ "Information" ] = "Largest winning trade";
-      summary[ "Value" ] =
-        (double) this.roundTrades.DataTable.Compute( "max([%Profit])" , "([%Profit]>0)" );
-    }
-    private void getSummaryTable_setRow_LargestLosingTradePercentage( DataRow summary )
-    {
-      summary[ "Information" ] = "Largest losing trade";
-      summary[ "Value" ] =
-        (double) this.roundTrades.DataTable.Compute( "min([%Profit])" , "([%Profit]<0)" );
-    }
-    private void getSummaryTable_setRow_TotalNumberOfLongTrades( DataRow summary )
-    {
-      double totalROA = this.totalPnl / ( this.finalAccountValue - this.totalPnl );
-      summary[ "Information" ] = "Total # of long trades";
-      DataRow[] DataRows =
-        this.roundTrades.DataTable.Select( "((Trade='Long')and(ExitPrice is not null))" );
-      summary[ "Value" ] = DataRows.Length;
-    }
-    private void getSummaryTable_setRow_NumberWinningLongTrades( DataRow summary )
-    {
-      summary[ "Information" ] = "Number winning long trades";
-      DataRow[] DataRows = this.roundTrades.DataTable.Select( "((Trade='Long')and([%Profit] > 0))" );
-      summary[ "Value" ] = DataRows.Length;
-    }
-    private void getSummaryTable_setRow_AverageLongTradePercentageReturn( DataRow summary )
-    {
-      summary[ "Information" ] = "Average long trade % Return";
-      double avgReturn =
-        (double) this.roundTrades.DataTable.Compute( "avg([%Profit])" , "(Trade='Long')" );
-      summary[ "Value" ] = avgReturn;
-    }
-    private void getSummaryTable_setRow_TotalNumberOfShortTrades( DataRow summary )
-    {
-      double totalROA = this.totalPnl / ( this.finalAccountValue - this.totalPnl );
-      summary[ "Information" ] = "Total # of short trades";
-      DataRow[] DataRows =
-        this.roundTrades.DataTable.Select( "((Trade='Short')and(ExitPrice is not null))" );
-      summary[ "Value" ] = DataRows.Length;
-    }
-    private void getSummaryTable_setRow_NumberWinningShortTrades( DataRow summary )
-    {
-      summary[ "Information" ] = "Number winning short trades";
-      DataRow[] DataRows = this.roundTrades.DataTable.Select( "((Trade='Short')and([%Profit] > 0))" );
-      summary[ "Value" ] = DataRows.Length;
-    }
-    private void getSummaryTable_setRow_AverageShortTradePercentageReturn( DataRow summary )
-    {
-      summary[ "Information" ] = "Average short trade % Return";
-      double avgReturn =
-        (double) this.roundTrades.DataTable.Compute( "avg([%Profit])" , "(Trade='Short')" );
-      summary[ "Value" ] = avgReturn;
-    }
-    private void getSummary_setRow( DataTable summaryDataTable ,
-      getSummaryTable_setRow getSummaryTable_setRow_object )
-    {
-      DataRow summary = summaryDataTable.NewRow();
-      getSummaryTable_setRow_object( summary );
-      summaryDataTable.Rows.Add( summary );
-    }
-    private void getSummaryTable_setRows( DataTable summaryDataTable )
-    {
-      getSummary_setRow( summaryDataTable ,
-        new getSummaryTable_setRow( getSummaryTable_setRow_TotalNetProfit ) );
-      getSummary_setRow( summaryDataTable ,
-        new getSummaryTable_setRow( getSummaryTable_setRow_ReturnOnAccount ) );
-      getSummary_setRow( summaryDataTable ,
-        new getSummaryTable_setRow( getSummaryTable_setRow_BuyAndHoldPercentageReturn ) );
-      getSummary_setRow( summaryDataTable ,
-        new getSummaryTable_setRow( getSummaryTable_setRow_AnnualSystemPercentageReturn ) );
-      getSummary_setRow( summaryDataTable ,
-        new getSummaryTable_setRow( getSummaryTable_setRow_TotalNumberOfTrades ) );
-      getSummary_setRow( summaryDataTable ,
-        new getSummaryTable_setRow( getSummaryTable_setRow_NumberWinningTrades ) );
-      getSummary_setRow( summaryDataTable ,
-        new getSummaryTable_setRow( getSummaryTable_setRow_AverageTradePercentageReturn ) );
-      getSummary_setRow( summaryDataTable ,
-        new getSummaryTable_setRow( getSummaryTable_setRow_LargestWinningTradePercentage ) );
-      getSummary_setRow( summaryDataTable ,
-        new getSummaryTable_setRow( getSummaryTable_setRow_LargestLosingTradePercentage ) );
-      getSummary_setRow( summaryDataTable ,
-        new getSummaryTable_setRow( getSummaryTable_setRow_TotalNumberOfLongTrades ) );
-      getSummary_setRow( summaryDataTable ,
-        new getSummaryTable_setRow( getSummaryTable_setRow_NumberWinningLongTrades ) );
-      getSummary_setRow( summaryDataTable ,
-        new getSummaryTable_setRow( getSummaryTable_setRow_AverageLongTradePercentageReturn ) );
-      getSummary_setRow( summaryDataTable ,
-        new getSummaryTable_setRow( getSummaryTable_setRow_TotalNumberOfShortTrades ) );
-      getSummary_setRow( summaryDataTable ,
-        new getSummaryTable_setRow( getSummaryTable_setRow_NumberWinningShortTrades ) );
-      getSummary_setRow( summaryDataTable ,
-        new getSummaryTable_setRow( getSummaryTable_setRow_AverageShortTradePercentageReturn ) );
-    }
-    #endregion
-    private DataTable getSummaryDataTable()
-    {
-      DataTable summaryDataTable = new DataTable();
-      getSummaryTable_setColumns( summaryDataTable );
-      getSummaryTable_setRows( summaryDataTable );
-      return summaryDataTable;
-    }
-    private ReportTable getSummary( string reportName )
-    {
-      this.totalPnl =
-        (double)this.equity.DataTable.Rows[ this.equity.DataTable.Rows.Count - 1 ][ "PnL" ];
-      this.finalAccountValue =
-        (double)this.equity.DataTable.Rows[ this.equity.DataTable.Rows.Count - 1 ][ "AccountValue" ];
-      this.intervalDays =
-        ((TimeSpan)((DateTime)this.equity.DataTable.Rows[ this.equity.DataTable.Rows.Count - 1 ][ "Date" ] -
-        (DateTime)this.equity.DataTable.Rows[ 0 ][ "Date" ])).Days;
-      DataTable summaryDataTable = getSummaryDataTable();
-      return new ReportTable( reportName + " - Summary" ,
-        summaryDataTable );
-    }
-
-    #endregion
-    public AccountReport Create( string reportName , int numDaysForInterval ,
+    public AccountReport Create( string reportName , long numDaysForInterval ,
       ExtendedDateTime endDateTime , string buyAndHoldTicker )
     {
+      this.reportName = reportName;
       this.endDateTime = endDateTime;
       this.buyAndHoldTicker = buyAndHoldTicker;
-      DataTable detailedDataTable = getDetailedDataTable( numDaysForInterval );
-      this.transactionTable = getTransactionTable( reportName , detailedDataTable );
-      this.roundTrades = getRoundTrades( reportName );
-      this.equity = getEquity( reportName , detailedDataTable );
-      this.summary = getSummary( reportName );
+      detailedDataTable = getDetailedDataTable( numDaysForInterval );
+      this.transactionTable = new Tables.Transactions( reportName , detailedDataTable );
+//      this.transactionTable = getTransactionTable( reportName , detailedDataTable );
+      this.roundTrades = new Tables.RoundTrades( reportName , this.transactionTable );
+      this.equity = new Tables.Equity( reportName , detailedDataTable );
+      //this.equity = getEquity( reportName , detailedDataTable );
+      //this.summary = getSummary( reportName );
+      this.summary = new Tables.Summary( this );
       return this;
     }
-    #endregion
 
-    public AccountReport Create( string reportName , int numDaysForInterval ,
+    public AccountReport Create( string reportName , long numDaysForInterval ,
       ExtendedDateTime endDateTime )
     {
       return Create( reportName , numDaysForInterval , endDateTime , "" );
