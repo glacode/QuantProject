@@ -179,17 +179,17 @@ namespace QuantProject.Business.Financial.Accounting
     }
 
     public AccountReport CreateReport( string reportName ,
-      int numDaysForInterval , ExtendedDateTime extendedDateTime )
+      int numDaysForInterval , ExtendedDateTime endDateTime )
     {
       AccountReport accountReport = new AccountReport( this );
-      return accountReport.Create( reportName , numDaysForInterval , extendedDateTime );
+      return accountReport.Create( reportName , numDaysForInterval , endDateTime );
     }
     public AccountReport CreateReport( string reportName ,
-      int numDaysForInterval , ExtendedDateTime extendedDateTime , string buyAndHoldTicker )
+      int numDaysForInterval , ExtendedDateTime endDateTime , string buyAndHoldTicker )
     {
       AccountReport accountReport = new AccountReport( this );
       return accountReport.Create( reportName , numDaysForInterval ,
-        extendedDateTime , buyAndHoldTicker );
+        endDateTime , buyAndHoldTicker );
     }
     public void Serialize( string filePathAndName )
     {
