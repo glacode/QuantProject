@@ -53,7 +53,8 @@ namespace QuantProject.Applications.Downloader.TickerSelectors
     }
     private void removeSelectedItems(object sender, System.EventArgs e)
     {
-      //;
+      ITickerRemover iTickerRemover = (ITickerRemover)this.parentForm;
+      iTickerRemover.RemoveTickers();
     }
     
 

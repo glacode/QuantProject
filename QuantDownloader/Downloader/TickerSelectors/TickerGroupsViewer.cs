@@ -37,7 +37,8 @@ namespace QuantProject.Applications.Downloader.TickerSelectors
 	/// <summary>
 	/// TickerGroupsViewer.
 	/// </summary>
-	public class TickerGroupsViewer : System.Windows.Forms.Form, ITickerSelector, ITickerReceiver 
+	public class TickerGroupsViewer : System.Windows.Forms.Form,
+                                    ITickerSelector, ITickerReceiver, ITickerRemover 
 	{
 		private OleDbConnection oleDbConnection = ConnectionProvider.OleDbConnection;
 		private OleDbDataAdapter oleDbDataAdapter;
@@ -162,11 +163,58 @@ namespace QuantProject.Applications.Downloader.TickerSelectors
 		private void addTickerToTable(DataTable tableToFill, string tickerID,
 										              string tickerDescription)
 		{
-      DataRow newRow = tableToFill.NewRow();
-      newRow["tiTicker"] = tickerID;
-      newRow["tiCompanyName"] = tickerDescription;
-      tableToFill.Rows.Add(newRow);
+      try
+      {
+        DataRow newRow = tableToFill.NewRow();
+        newRow["tiTicker"] = tickerID;
+        newRow["tiCompanyName"] = tickerDescription;
+        tableToFill.Rows.Add(newRow);
+      }
+      catch(Exception ex)
+      {
+        string notUsed = ex.ToString();
+      }
 		}
+    
+    private void addTickerToTable(DataTable tableToFill, string tickerID)
+      
+    {
+      try
+      {
+        DataRow newRow = tableToFill.NewRow();
+        newRow["tiTicker"] = tickerID;
+        newRow["tiCompanyName"] = "-";
+        tableToFill.Rows.Add(newRow);
+      }
+      catch(Exception ex)
+      {
+        string notUsed = ex.ToString();
+      }
+    }
+    
+    private void addTickersFromTableToTable(DataTable tableFrom, DataTable tableToFill)
+      
+    {
+      DataColumn[] columnPrimaryKeys = new DataColumn[1];
+      columnPrimaryKeys[0] = tableToFill.Columns[0];
+      tableToFill.PrimaryKey = columnPrimaryKeys;
+      
+      foreach(DataRow row in tableFrom.Rows)
+      {
+        try
+        {
+          DataRow newRow = tableToFill.NewRow();
+          newRow["tiTicker"] = (string)row[0];
+          newRow["tiCompanyName"] = "-";
+          tableToFill.Rows.Add(newRow);
+        }
+        catch(Exception ex)
+        {
+          string notUsed = ex.ToString();
+        }
+      }
+    }
+
     // implementation of ITickerSelector interface
     public void SelectAllTickers()
     {
@@ -194,12 +242,50 @@ namespace QuantProject.Applications.Downloader.TickerSelectors
 				// the item references to a node in the treeView :
 				// so it stands for a group of tickers
 				{
-					///TODO: add method to retrieve 
-          MessageBox.Show("NOT IMPLEMENTED YET");  
+					TreeNode node = (TreeNode)item.Tag;
+          DataTable tickersInsideGroup = 
+            QuantProject.DataAccess.Tables.Tickers_tickerGroups.GetTickers((string)node.Tag);
+          this.addTickersFromTableToTable(tickersInsideGroup, tableOfSelectedTickers);  
 				}
 			}
 			return tableOfSelectedTickers;
 		}
+
+    // implementation of ITickerRemover interface
+    public void RemoveTickers()
+    {
+      if(MessageBox.Show("Do you really want to delete the selected items?", 
+        "Confirm deletion", 
+        MessageBoxButtons.YesNo, MessageBoxIcon.Exclamation)
+        == DialogResult.No)
+              return;
+      //update database
+      foreach(ListViewItem item in this.SelectedListViewItems)
+      {
+        if(item.Tag is System.String )
+        // the item contains in Tag property the ticker ID
+            Tickers_tickerGroups.Delete((string)item.Tag,
+                                       (string)this.treeViewGroups.SelectedNode.Tag);
+        else
+        // the item references to a node in the treeView :
+        // so it stands for a group of tickers
+          { 
+            TreeNode node = (TreeNode)item.Tag;
+            TickerGroups.DeleteGroup((string)node.Tag);
+            node.Remove();
+          }
+      }
+      
+      //update list view
+      for(int i = this.listViewGroupsAndTickers.SelectedItems.Count - 1;i>=0;
+                                        i=this.listViewGroupsAndTickers.SelectedItems.Count-1)
+      {
+        this.listViewGroupsAndTickers.SelectedItems[i].Remove();
+      }
+      //refresh
+      this.treeViewGroups.Refresh();
+      this.listViewGroupsAndTickers.Refresh();
+    }    
 
 		#region Windows Form Designer generated code
 		/// <summary>
