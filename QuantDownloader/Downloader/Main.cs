@@ -194,9 +194,9 @@ namespace QuantProject.Applications.Downloader
 
     private void subMenuValidateGo_Click(object sender, System.EventArgs e)
     {
-      QuantProject.Applications.Downloader.Validate validate =
-        new QuantProject.Applications.Downloader.Validate();
-      validate.ShowDialog();
+      QuantProject.Applications.Downloader.Validate.ValidateForm validateForm =
+        new QuantProject.Applications.Downloader.Validate.ValidateForm();
+      validateForm.ShowDialog();
     }
 
 	}
