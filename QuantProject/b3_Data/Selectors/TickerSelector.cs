@@ -37,8 +37,15 @@ namespace QuantProject.Data.Selectors
 	
   public class TickerSelector : ITickerSelector
   {
+    private DataTable setOfTickersToBeSelected = null;
     private SelectionRule selectionRule;
-
+    
+    public TickerSelector(DataTable setOfTickersToBeSelected, SelectionRule selectionRule)
+    {
+      this.setOfTickersToBeSelected = setOfTickersToBeSelected;
+      this.selectionRule = selectionRule;
+    }
+    
     public TickerSelector(SelectionRule selectionRule)
     {
       this.selectionRule = selectionRule;
@@ -46,11 +53,25 @@ namespace QuantProject.Data.Selectors
     
     public DataTable GetSelectedTickers()
     {
-       //TODO: implement switching code to the proper method of selection
-       return QuantProject.DataAccess.Tables.Quotes.GetMostLiquidTickers(this.selectionRule.GroupID,
+       if(this.setOfTickersToBeSelected == null &&
+          this.selectionRule.TypeOfSelection == SelectionType.MostLiquid)
+       {
+         return QuantProject.DataAccess.Tables.Quotes.GetMostLiquidTickers(this.selectionRule.GroupID,
                                             this.selectionRule.FirstQuoteDate,
                                             this.selectionRule.LastQuoteDate,
                                             this.selectionRule.MaxNumOfReturnedTickers);
+       }
+       else if(this.setOfTickersToBeSelected != null &&
+               this.selectionRule.TypeOfSelection == SelectionType.MostLiquid)
+       {
+         return QuantProject.DataAccess.Tables.Quotes.GetMostLiquidTickers(this.setOfTickersToBeSelected, 
+                                            this.selectionRule.FirstQuoteDate,
+                                            this.selectionRule.LastQuoteDate,
+                                            this.selectionRule.MaxNumOfReturnedTickers);    
+       }
+       else
+       return new DataTable();
+       //this line should never be reached!!
     }
     
     
