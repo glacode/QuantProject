@@ -157,9 +157,44 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "DataProviders\HistoricalDataStreamer.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "DataProviders\IDataStreamer.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "DataProviders\NewExtendedDateTimeEventArgs.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "DataProviders\NewQuoteEventArgs.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "DataProviders\Quote.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "DataProviders\Timer.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "DataTables\GroupQuotes.cs"
                     SubType = "Component"
                     BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "DataTables\GroupQuotes.resx"
+                    DependentUpon = "GroupQuotes.cs"
+                    BuildAction = "EmbeddedResource"
                 />
                 <File
                     RelPath = "DataTables\Quotes.cs"
