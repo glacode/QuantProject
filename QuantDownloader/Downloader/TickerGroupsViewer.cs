@@ -147,10 +147,13 @@ namespace QuantProject.Applications.Downloader
 		internal DataTable GetTableOfSelectedTickers()
 		{
 			DataTable tableOfSelectedTickers = new DataTable();
-			tableOfSelectedTickers.Columns.Add("tickerID");
-			tableOfSelectedTickers.Columns["tickerID"].Unique = true;
-			tableOfSelectedTickers.Columns.Add("tickerCompanyName");
-			foreach(ListViewItem item in this.listViewGroupsAndTickers.SelectedItems)
+      DataColumn firstColumn = new DataColumn("tiTicker", System.Type.GetType("System.String"));
+      DataColumn secondColumn = new DataColumn("tiCompanyName", System.Type.GetType("System.String"));
+      firstColumn.Unique = true;
+      tableOfSelectedTickers.Columns.Add(firstColumn);
+      tableOfSelectedTickers.Columns.Add(secondColumn);
+			
+      foreach(ListViewItem item in this.listViewGroupsAndTickers.SelectedItems)
 			{
 				if(item.Tag is System.String)
 				// the item contains in Tag property the ticker ID
@@ -162,7 +165,7 @@ namespace QuantProject.Applications.Downloader
 				}
 				else
 				// the item references to a node in the treeView :
-				// so it represents a group of tickers
+				// so it stands for a group of tickers
 				{
 					MessageBox.Show("NOT IMPLEMENTED YET");  
 				}
