@@ -184,6 +184,18 @@ namespace QuantProject.Data.DataTables
     }
     
     /// <summary>
+    /// Returns the number of days at which the given ticker has been effectively traded 
+    /// </summary>
+    /// <param name="ticker">ticker for which the number of days has to be returned</param>
+    /// <returns></returns>
+    public int GetNumberOfDaysWithEffectiveTrades( string ticker )
+    {
+      DataRow[] rows = this.Select(Quotes.TickerFieldName + "='" + ticker + "'" +
+                                    " AND " + Quotes.Volume + ">0");
+      return rows.Length;
+    }
+
+    /// <summary>
     /// If the given ticker has a quote at the given date, then it returns the given date,
     /// else it returns the first valid following date at which a quote is available
     /// (or the first valid preceding date, in case date is >= the last available quote) 

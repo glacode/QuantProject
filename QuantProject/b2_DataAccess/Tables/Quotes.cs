@@ -92,6 +92,21 @@ namespace QuantProject.DataAccess.Tables
     }
 
     /// <summary>
+    /// Returns the number of days at which the given ticker has beeb effectively traded
+    /// </summary>
+    /// <param name="ticker">ticker for which the number of days has to be returned</param>
+    /// <returns></returns>
+    public static int GetNumberOfDaysWithEffectiveTrades( string ticker, DateTime firstDate,
+                                                          DateTime lastDate)
+    {
+      DataTable dataTable = SqlExecutor.GetDataTable(
+        "select * from quotes WHERE quTicker='" + ticker + "'" +
+        " AND " + "quVolume>0" + " AND quDate BETWEEN " + SQLBuilder.GetDateConstant(firstDate) + 
+        " AND " + SQLBuilder.GetDateConstant(lastDate));
+      return dataTable.Rows.Count;
+    }
+
+    /// <summary>
     /// Returns the adjusted close value for the given ticker at the specified date
     /// is returned
     /// </summary>
