@@ -22,6 +22,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 using System;
 using System.Windows.Forms;
 using QuantProject.ADT;
+using QuantProject.Business.DataProviders;
 using QuantProject.Business.Financial.Accounting;
 using QuantProject.Business.Financial.Accounting.Reporting;
 using QuantProject.Business.Timing;
@@ -34,12 +35,14 @@ namespace QuantProject.Presentation.Reporting.WindowsForm
 	public class Report : Form
 	{
 		private Account account;
+		private IHistoricalQuoteProvider historicalQuoteProvider;
 		private AccountReport accountReport;
 		private ReportTabControl reportTabControl;
 
-		public Report( Account account )
+		public Report( Account account , IHistoricalQuoteProvider historicalQuoteProvider )
 		{
 			this.account = account;
+			this.historicalQuoteProvider = historicalQuoteProvider;
 		}
 
 		/// <summary>
@@ -50,7 +53,8 @@ namespace QuantProject.Presentation.Reporting.WindowsForm
 		{
 			if ( this.accountReport == null )
 				this.accountReport = this.account.CreateReport( reportName ,
-					numDaysForInterval , endDateTime , buyAndHoldTicker );
+					numDaysForInterval , endDateTime , buyAndHoldTicker ,
+					this.historicalQuoteProvider );
 		}
 		private void show_populateForm()
 		{

@@ -1,6 +1,7 @@
 using System;
 using System.Data;
 using QuantProject.ADT;
+using QuantProject.Business.DataProviders;
 using QuantProject.Business.Financial.Instruments;
 using QuantProject.Business.Financial.Accounting.Reporting;
 using QuantProject.Business.Financial.Accounting.Reporting.SummaryRows;
@@ -13,6 +14,7 @@ namespace QuantProject.Business.Financial.Accounting.Reporting.Tables
   public class Summary : ReportTable
   {
     private AccountReport accountReport;
+		private IHistoricalQuoteProvider historicalQuoteProvider;
     private double totalPnl;
     private double buyAndHoldPercentageReturn;
     private double finalAccountValue;
@@ -97,12 +99,23 @@ namespace QuantProject.Business.Financial.Accounting.Reporting.Tables
 		}
 
 
-    public Summary( AccountReport accountReport ) :
-      base( accountReport.Name + " - Summary" )
-    {
-      this.accountReport = accountReport;
-      this.getSummary();
-    }
+		private void summary( AccountReport accountReport )
+		{
+			this.accountReport = accountReport;
+			this.getSummary();
+		}
+		public Summary( AccountReport accountReport ) :
+			base( accountReport.Name + " - Summary" )
+		{
+			this.summary( accountReport );
+		}
+		public Summary( AccountReport accountReport ,
+			IHistoricalQuoteProvider historicalDataProvider ) :
+			base( accountReport.Name + " - Summary" )
+		{
+			this.historicalQuoteProvider = historicalDataProvider;
+			this.summary( accountReport );
+		}
     #region "getSummary"
     private void getSummaryTable_setColumns( DataTable equityDataTable )
     {
@@ -124,7 +137,8 @@ namespace QuantProject.Business.Financial.Accounting.Reporting.Tables
     {
       getSummary_setRow( new TotalNetProfit( this ) , summaryDataTable );
       getSummary_setRow( new ReturnOnAccount( this ) , summaryDataTable );
-      getSummary_setRow( new BuyAndHoldPercentageReturn( this ) , summaryDataTable );
+      getSummary_setRow( new BuyAndHoldPercentageReturn( this , this.historicalQuoteProvider ) ,
+				summaryDataTable );
       getSummary_setRow( new AnnualSystemPercentageReturn( this ) , summaryDataTable );
 			this.maxEquityDrawDown = new MaxEquityDrawDown( this );
       getSummary_setRow( this.maxEquityDrawDown , summaryDataTable );
