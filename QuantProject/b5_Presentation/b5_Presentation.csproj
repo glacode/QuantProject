@@ -202,6 +202,16 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "Reporting\WindowsForm\ReportShower.cs"
+                    SubType = "Form"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Reporting\WindowsForm\ReportShower.resx"
+                    DependentUpon = "ReportShower.cs"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
                     RelPath = "Reporting\WindowsForm\ReportTabControl.cs"
                     SubType = "Component"
                     BuildAction = "Compile"
