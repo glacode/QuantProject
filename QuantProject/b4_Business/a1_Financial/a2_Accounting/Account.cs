@@ -324,7 +324,7 @@ namespace QuantProject.Business.Financial.Accounting
 		public void ClosePosition( Position position )
 		{
 			OrderType orderType = closePosition_getOrderType( position );
-			Order order = new Order( orderType , position.Instrument , position.Quantity );
+			Order order = new Order( orderType , position.Instrument , Math.Abs( position.Quantity ) );
 			this.orderExecutor.Execute( order );
 		}
 		#endregion ClosePosition_position
