@@ -73,7 +73,7 @@ namespace QuantProject.Applications.Downloader
     {
       Console.WriteLine( "CloseToCloseChart.OnPaint()" );
       this.Clear();
-      this.history = DataProvider.GetCloseHistory( this.ticker );
+      this.history = DataProvider.GetCloseHistory( ((QuotesEditor)this.FindForm()).Ticker );
       this.onPaint_setTimeInterval();
       this.Add( this.history , Color.Red , this.startDateTime , this.endDateTime );
       base.OnPaint( e );
