@@ -19,7 +19,28 @@ namespace QuantProject.Applications.Downloader.Validate
 
     public ValidateDataTable()
     {
+//<<<<<<< ValidateDataTable.cs
+//      this.selectStatement =
+//        "select * from quotes where 1=2";
+//      this.oleDbDataAdapter =
+//        new OleDbDataAdapter( selectStatement , ConnectionProvider.OleDbConnection );
+//      this.oleDbCommandBuilder = new OleDbCommandBuilder( oleDbDataAdapter );
+//      this.oleDbDataAdapter.UpdateCommand = this.oleDbCommandBuilder.GetUpdateCommand();
+//      this.oleDbDataAdapter.Fill( this );
+//      this.Columns.Add( new DataColumn( "CloseToCloseHasBeenVisuallyValidated" ,
+//        System.Type.GetType( "System.Boolean" ) ) );
+//
+//      this.TableName = "quotes";
+////<<<<<<< ValidateDataTable.cs
+//      this.Columns.Add( "ValidationWarning" ,
+//        ValidationWarning.OpenHighLowCloseLogicalInconsistency.GetType() );
+      
+//=======
+//      
+//>>>>>>> 1.6
+//=======
       initializeValidateDataTable();
+//>>>>>>> 1.8
     }
 
 	public ValidateDataTable(DataTable tableOfTickers)
@@ -34,14 +55,16 @@ namespace QuantProject.Applications.Downloader.Validate
 	#region initializeValidateDataTable
 		private void initializeValidateDataTable()
 		{
-			this.selectStatement =
+      this.selectStatement =
 				"select * from quotes where 1=2";
 			this.oleDbDataAdapter =
 				new OleDbDataAdapter( selectStatement , ConnectionProvider.OleDbConnection );
 			this.oleDbCommandBuilder = new OleDbCommandBuilder( oleDbDataAdapter );
 			this.oleDbDataAdapter.UpdateCommand = this.oleDbCommandBuilder.GetUpdateCommand();
 			this.oleDbDataAdapter.Fill( this );
-			this.TableName = "quotes";
+      this.Columns.Add( new DataColumn( "CloseToCloseHasBeenVisuallyValidated" ,
+        System.Type.GetType( "System.Boolean" ) ) );
+      this.TableName = "quotes";
 			//<<<<<<< ValidateDataTable.cs
 			this.Columns.Add( "ValidationWarning" ,
 				ValidationWarning.OpenHighLowCloseLogicalInconsistency.GetType() );
