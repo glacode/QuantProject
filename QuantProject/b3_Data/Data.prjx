@@ -28,6 +28,7 @@
     <File name=".\Selectors\SelectorByOpenToCloseLinearCorrelation.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
     <File name=".\Selectors\SelectorByOpenToCloseVolatility.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
     <File name=".\Selectors\SelectorByQuotationAtEachMarketDay.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
+    <File name=".\Selectors\SelectorByAverageRawOpenPrice.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
     <File name=".\Selectors\TickerSelector.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
   </Contents>
   <References>
