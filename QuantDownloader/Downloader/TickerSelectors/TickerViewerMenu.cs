@@ -23,6 +23,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 using System;
 using System.Data;
 using System.Windows.Forms;
+using QuantProject.DataAccess.Tables;
 using QuantProject.Data.DataTables;
 using QuantProject.Data.Selectors;
 
@@ -41,7 +42,8 @@ namespace QuantProject.Applications.Downloader.TickerSelectors
     private MenuItem menuItemDownload = new MenuItem("&Download selection");    
     private MenuItem menuItemValidate = new MenuItem("&Validate selection");
     private MenuItem menuItemCopy = new MenuItem("&Copy selection");
-    //private MenuItem menuItemPaste = new MenuItem("&Paste");
+    private MenuItem menuItemComputeCloseToCloseRatios = 
+                                    new MenuItem("C&ompute Close to Close ratios");
     private MenuItem menuItemQuotesEditor = new MenuItem("&Open Quotes Editor");
     
     public TickerViewerMenu(Form ITickerSelectorForm) 
@@ -53,12 +55,14 @@ namespace QuantProject.Applications.Downloader.TickerSelectors
       this.menuItemValidate.Click += new System.EventHandler(this.validateSelectedTickers);
       this.menuItemCopy.Click += new System.EventHandler(this.copySelectedTickers);
       this.menuItemQuotesEditor.Click += new System.EventHandler(this.openQuotesEditor);
+      this.menuItemComputeCloseToCloseRatios.Click += new System.EventHandler(this.computeCloseToCloseRatios);
       
       this.MenuItems.Add(this.menuItemSelectAll);
       this.MenuItems.Add(this.menuItemDownload);
       this.MenuItems.Add(this.menuItemValidate);
       this.MenuItems.Add(this.menuItemCopy);
       this.MenuItems.Add(this.menuItemQuotesEditor);
+      this.MenuItems.Add(this.menuItemComputeCloseToCloseRatios);
       
     }
     
@@ -122,12 +126,22 @@ namespace QuantProject.Applications.Downloader.TickerSelectors
         new QuotesEditor((string)tableOfSelectedTickers.Rows[0][0]);
       quotesEditor.Show();
     }
-    /*
-    private void paste(object sender, System.EventArgs e)
+
+    private void computeCloseToCloseRatios(object sender, System.EventArgs e)
     {
-      MessageBox.Show("Possible only if ITickerReceiver");
+      Cursor.Current = Cursors.WaitCursor;
+      ITickerSelector iTickerSelector = (ITickerSelector)this.parentForm;
+      TickerDataTable tableOfSelectedTickers = iTickerSelector.GetTableOfSelectedTickers();
+      string currentTicker;
+      foreach(DataRow row in tableOfSelectedTickers.Rows)
+      {
+        currentTicker = (string)row[Tickers.Ticker];
+        QuantProject.DataAccess.Tables.Quotes.ComputeAndCommitCloseToCloseRatios(currentTicker);
+      }
+      Cursor.Current = Cursors.WaitCursor; 
+
 
     }
-    */
+    
   } 
 }
