@@ -69,7 +69,7 @@
                 />
                 <Reference
                     Name = "System.XML"
-                    AssemblyName = "System.XML"
+                    AssemblyName = "System.Xml"
                     HintPath = "..\..\..\..\..\..\WINDOWS\Microsoft.NET\Framework\v1.0.3705\System.XML.dll"
                 />
                 <Reference
@@ -106,6 +106,21 @@
                     AssemblyName = "System.Windows.Forms"
                     HintPath = "..\..\..\..\..\..\WINDOWS\Microsoft.NET\Framework\v1.0.3705\System.Windows.Forms.dll"
                 />
+                <Reference
+                    Name = "scpl"
+                    AssemblyName = "scpl"
+                    HintPath = "..\..\lib\scpl.dll"
+                />
+                <Reference
+                    Name = "b1_ADT"
+                    Project = "{B8A01161-3698-4591-B1EF-90F5FC7D8DBA}"
+                    Package = "{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}"
+                />
+                <Reference
+                    Name = "System.Drawing"
+                    AssemblyName = "System.Drawing"
+                    HintPath = "..\..\..\..\..\..\WINDOWS\Microsoft.NET\Framework\v1.0.3705\System.Drawing.dll"
+                />
             </References>
         </Build>
         <Files>
@@ -113,6 +128,16 @@
                 <File
                     RelPath = "AssemblyInfo.cs"
                     SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Charting\CharPlot.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Charting\Chart.cs"
+                    SubType = "UserControl"
                     BuildAction = "Compile"
                 />
                 <File
