@@ -26,6 +26,7 @@ using System.Collections;
 using System.ComponentModel;
 using System.Windows.Forms;
 using QuantProject.Scripts;
+using QuantProject.Scripts.WalkForwardTesting.WalkForwardOneRank;
 
 namespace QuantProject.Principale
 {
@@ -226,10 +227,10 @@ namespace QuantProject.Principale
 //        new RunMSFTsimpleTest().Run();
 //		new RunMSFTsimpleTest_2().Run();
 				//new RunOneRankWithExcelReport().Run();
-				new RunOneRankWithWindowsReport().Run();
+//				new RunOneRankWithWindowsReport().Run();
 				//new RunMSFTwalkForward().Run();
         //new RunMultiTestOneRank().Run();
-
+				new RunWalkForwardOneRank().Run();
       } 
       //catch ( Exception ex )
       {
