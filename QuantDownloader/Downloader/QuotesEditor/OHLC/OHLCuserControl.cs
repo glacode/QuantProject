@@ -62,7 +62,7 @@ namespace QuantProject.Applications.Downloader
 
     public void PaintingHandler()
     {
-      this.openHighLowCloseDataGrid.DataBind( this.ValidateDataTable );
+      this.openHighLowCloseDataGrid.DataBind();
     }
 
 		/// <summary> 
