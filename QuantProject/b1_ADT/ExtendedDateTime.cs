@@ -27,7 +27,7 @@ namespace QuantProject.ADT
 	/// <summary>
 	/// Summary description for DateTime.
 	/// </summary>
-  public class ExtendedDateTime
+  public class ExtendedDateTime : IComparable
   {
     private DateTime dateTime;
     private BarComponent barComponent;
@@ -83,6 +83,20 @@ namespace QuantProject.ADT
       return compareTo;
     }
 
+		/// <summary>
+		/// Returns the subsequent ExtendedDateTime
+		/// </summary>
+		/// <returns></returns>
+		public ExtendedDateTime MoveNext()
+		{
+			ExtendedDateTime returnValue;
+			if ( this.barComponent == BarComponent.Open )
+				returnValue = new ExtendedDateTime( this.dateTime , BarComponent.Close );
+			else
+				// this.barComponent == BarComponent.Close
+				returnValue = new ExtendedDateTime( this.dateTime.AddDays( 1 ) , BarComponent.Open );
+			return returnValue;
+		}
     public override string ToString()
     {
       return this.DateTime.ToString() + " - " + this.BarComponent.ToString();
