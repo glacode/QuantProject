@@ -50,6 +50,7 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
     private string tickerGroupID;
     private int numberOfEligibleTickers;
     private int numberOfTickersToBeChosen;
+    private int numDaysForLiquidity;
     private int generationNumberForGeneticOptimizer;
     private int populationSizeForGeneticOptimizer;
 		
@@ -67,13 +68,14 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
     }
 		
     public EndOfDayTimerHandlerCTO(string tickerGroupID, int numberOfEligibleTickers, 
-                                int numberOfTickersToBeChosen, Account account,
+                                int numberOfTickersToBeChosen, int numDaysForLiquidity, Account account,
                                 int generationNumberForGeneticOptimizer,
                                 int populationSizeForGeneticOptimizer)
     {
       this.tickerGroupID = tickerGroupID;
       this.numberOfEligibleTickers = numberOfEligibleTickers;
       this.numberOfTickersToBeChosen = numberOfTickersToBeChosen;
+      this.numDaysForLiquidity = numDaysForLiquidity;
       this.account = account;
       this.generationNumberForGeneticOptimizer = generationNumberForGeneticOptimizer;
       this.populationSizeForGeneticOptimizer = populationSizeForGeneticOptimizer;
@@ -170,12 +172,12 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
     private DataTable getSetOfTickersToBeOptimized(DateTime currentDate)
     {
       TickerSelector mostLiquid = new TickerSelector(SelectionType.Liquidity,
-        false, this.tickerGroupID , currentDate.AddDays(-45), currentDate, this.numberOfEligibleTickers);
+        false, this.tickerGroupID , currentDate.AddDays(-this.numDaysForLiquidity), currentDate, this.numberOfEligibleTickers);
       this.eligibleTickers = mostLiquid.GetTableOfSelectedTickers();
       TickerSelector quotedInEachMarketDayFromMostLiquid = 
         new TickerSelector( this.eligibleTickers,
         SelectionType.QuotedInEachMarketDay, false, "",
-        currentDate.AddDays(-45),currentDate,
+        currentDate.AddDays(-this.numDaysForLiquidity),currentDate,
         this.numberOfEligibleTickers);
       quotedInEachMarketDayFromMostLiquid.MarketIndex = "^MIBTEL";
       return quotedInEachMarketDayFromMostLiquid.GetTableOfSelectedTickers();

@@ -356,10 +356,12 @@ namespace QuantProject.Principale
         //call here your scripts
         //new RunWalkForwardOneRank().Run();			
         //new RunEfficientCTCPorfolio().Run();
-        //new RunEfficientCTOPorfolio("STOCKMI",70,5,5,1000).Run();
-        new RunEfficientCTOPorfolio("STOCKMI",100,5,5,1000).Run();
-        new RunEfficientCTOPorfolio("STOCKMI",70,5,10,2500).Run();
-        new RunEfficientCTOPorfolio("STOCKMI",100,5,10,2500).Run();
+        new RunEfficientCTOPorfolio("STOCKMI",100,5,30,10,2500).Run();
+        new RunEfficientCTOPorfolio("STOCKMI",100,5,60,10,2500).Run();
+        //new RunEfficientCTOPorfolio("STOCKMI",100,5,5,1000).Run();
+        //new RunEfficientCTOPorfolio("STOCKMI",70,5,10,2500).Run();
+        //new RunEfficientCTOPorfolio("STOCKMI",100,5,10,2500).Run();
+
       }
       catch ( Exception ex )
       {

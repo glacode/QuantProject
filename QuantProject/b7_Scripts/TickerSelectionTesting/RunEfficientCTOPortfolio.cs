@@ -63,6 +63,7 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
     private string tickerGroupID;
     private int numberOfEligibleTickers;
     private int numberOfTickersToBeChosen;
+    private int numDaysForLiquidity;
     private int generationNumberForGeneticOptimizer;
     private int populationSizeForGeneticOptimizer;
 
@@ -83,13 +84,15 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
     private IEndOfDayTimer endOfDayTimer;
 		
     public RunEfficientCTOPorfolio(string tickerGroupID, int numberOfEligibleTickers, 
-                                    int numberOfTickersToBeChosen, int generationNumberForGeneticOptimizer,
+                                    int numberOfTickersToBeChosen, int numDaysForLiquidity, 
+                                    int generationNumberForGeneticOptimizer,
                                     int populationSizeForGeneticOptimizer)
 		{
       //this.progressBarForm = new ProgressBarForm();
       this.tickerGroupID = tickerGroupID;
       this.numberOfEligibleTickers = numberOfEligibleTickers;
       this.numberOfTickersToBeChosen = numberOfTickersToBeChosen;
+      this.numDaysForLiquidity = numDaysForLiquidity;
       this.generationNumberForGeneticOptimizer = generationNumberForGeneticOptimizer;
       this.populationSizeForGeneticOptimizer = populationSizeForGeneticOptimizer;
       this.reportTable = new ReportTable( "Summary_Reports" );
@@ -140,6 +143,7 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
       this.endOfDayTimerHandler = new EndOfDayTimerHandlerCTO(this.tickerGroupID,
                                                               this.numberOfEligibleTickers,
                                                               this.numberOfTickersToBeChosen,
+                                                              this.numDaysForLiquidity,
                                                               this.account,
                                                               this.generationNumberForGeneticOptimizer, 
                                                               this.populationSizeForGeneticOptimizer);
@@ -201,7 +205,8 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
         //report.Show("CTO_Portfolio" , this.numIntervalDays , this.endDateTime , "^MIBTEL" );
         ObjectArchiver.Archive(this.account,
                                "C:\\Documents and Settings\\Marco\\Documenti\\ProgettiOpenSource\\Quant\\SavedAccounts\\OpenCloseScripts\\" +
-                               "From"+this.numberOfEligibleTickers + "Portfolio" +
+                               "From"+this.numberOfEligibleTickers +
+                                "LiqDays" + this.numDaysForLiquidity + "Portfolio" +
                                 this.numberOfTickersToBeChosen + "GenNum" + 
                                 this.generationNumberForGeneticOptimizer +
                                 "PopSize" + this.populationSizeForGeneticOptimizer + ".qP");
