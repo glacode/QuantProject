@@ -131,6 +131,11 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "FilterBuilder.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "DataTables\Quotes.cs"
                     SubType = "Component"
                     BuildAction = "Compile"
@@ -153,6 +158,16 @@
                 <File
                     RelPath = "DataTables\ValidatedTickers.resx"
                     DependentUpon = "ValidatedTickers.cs"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "DataTables\VisuallyValidatedQuotes.cs"
+                    SubType = "Component"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "DataTables\VisuallyValidatedQuotes.resx"
+                    DependentUpon = "VisuallyValidatedQuotes.cs"
                     BuildAction = "EmbeddedResource"
                 />
                 <File
