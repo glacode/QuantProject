@@ -47,8 +47,7 @@ namespace QuantProject.Scripts.SimpleTesting
 				// cash has not been added yet
 				this.account.AddCash( 10000 );
 		}
-		private void fiveMinutesBeforeMarketCloseEventHandler(
-			Object sender , EndOfDayTimingEventArgs endOfDayTimingEventArgs )
+		private void fiveMinutesBeforeMarketCloseEventHandler_withTickerExchangedNow()
 		{
 			long sharesToBeBought;
 			double todayMarketValueAtClose = this.account.DataStreamer.GetCurrentBid(
@@ -76,6 +75,14 @@ namespace QuantProject.Scripts.SimpleTesting
 			if ( this.account.EndOfDayTimer.GetCurrentTime().DateTime >
 				this.lastDateTime )
 				this.account.EndOfDayTimer.Stop();
+		}
+		private void fiveMinutesBeforeMarketCloseEventHandler(
+			Object sender , EndOfDayTimingEventArgs endOfDayTimingEventArgs )
+		{
+
+			if ( this.account.DataStreamer.IsExchanged( this.account.Key ) )
+				// the given ticker is currently exchanged
+				fiveMinutesBeforeMarketCloseEventHandler_withTickerExchangedNow();
 		}
 		/// <summary>
 		/// Runs the OneRank strategy
