@@ -22,6 +22,11 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 using System;
 using System.Collections;
 
+using QuantProject.Business.Financial.Accounting;
+using QuantProject.Business.Timing;
+using QuantProject.Data;
+using QuantProject.Data.DataProviders;
+
 namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardOneRank
 {
 	/// <summary>
@@ -36,25 +41,43 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardOneRank
 			this.numberTickersToBeChosen = numberTickersToBeChosen;
 		}
 		#region SetTickers
-		private void setTickers_build( BestPerformingTickers bestPerformingTickers )
+		private void setTickers_build_handleTicker( string ticker , Account account )
 		{
-			SortedList sortedList = new SortedList();
-			foreach ( string ticker in bestPerformingTickers.Keys )
-				sortedList.Add( ticker , ( ( ComparableAccount )bestPerformingTickers[ ticker ]).Goodness );
-			for ( int n=0; n<=this.numberTickersToBeChosen ; n++ )
+			double todayMarketValueAtClose = account.DataStreamer.GetCurrentBid(
+				ticker );
+			EndOfDayDateTime yesterdayAtClose = new
+				EndOfDayDateTime( account.EndOfDayTimer.GetCurrentTime().DateTime.AddDays( - 1 ) ,
+				EndOfDaySpecificTime.MarketClose );
+			double yesterdayMarketValueAtClose = HistoricalDataProvider.GetMarketValue(
+				ticker ,
+				yesterdayAtClose.GetNearestExtendedDateTime() );
+			if ( todayMarketValueAtClose > yesterdayMarketValueAtClose )
+				// today close is higher than yesterday close
+				this.Add( ticker , ticker );
+		}
+		private void setTickers_build( BestPerformingTickers bestPerformingTickers ,
+			Account account )
+		{
+			int index = bestPerformingTickers.Count - 1;
+			while ( ( this.Count < this.numberTickersToBeChosen ) &&
+				( index >= 0) )
 			{
-				string key = (string)sortedList.GetKey( n );
-				this.Add( key , key );
+				string ticker = ((Account)bestPerformingTickers[ index ]).Key;
+				if ( account.DataStreamer.IsExchanged( ticker ) )
+					setTickers_build_handleTicker( ticker ,
+						account );
+				index--;
 			}
 		}
 		/// <summary>
 		/// Populates the collection of eligible tickers
 		/// </summary>
 		/// <param name="dateTime"></param>
-		public void SetTickers( BestPerformingTickers bestPerformingTickers )
+		public void SetTickers( BestPerformingTickers bestPerformingTickers ,
+			Account account )
 		{
 			this.Clear();
-			this.setTickers_build( bestPerformingTickers );
+			this.setTickers_build( bestPerformingTickers , account );
 		}
 		#endregion
 	}
