@@ -1,6 +1,7 @@
 using System;
 using System.Data;
 using System.Data.OleDb;
+using QuantProject.DataAccess;
 using QuantProject.Applications.Downloader.Validate.Validators;
 
 namespace QuantProject.Applications.Downloader.Validate
@@ -27,7 +28,8 @@ namespace QuantProject.Applications.Downloader.Validate
 //        "select * from quotes where quTicker like '" + tickerIsLike + "'";
       this.selectStatement =
         "select * from quotes where quTicker = '" + tickerIsLike + "'";
-      this.oleDbDataAdapter = new OleDbDataAdapter( selectStatement , AdoNetTools.OleDbConnection );
+      this.oleDbDataAdapter =
+        new OleDbDataAdapter( selectStatement , ConnectionProvider.OleDbConnection );
       try
       {
         this.oleDbDataAdapter.Fill( this );

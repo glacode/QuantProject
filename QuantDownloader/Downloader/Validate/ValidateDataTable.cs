@@ -1,6 +1,7 @@
 using System;
 using System.Data;
 using System.Data.OleDb;
+using QuantProject.DataAccess;
 
 namespace QuantProject.Applications.Downloader.Validate
 {
@@ -19,7 +20,8 @@ namespace QuantProject.Applications.Downloader.Validate
     {
       this.selectStatement =
         "select * from quotes where 1=2";
-      this.oleDbDataAdapter = new OleDbDataAdapter( selectStatement , AdoNetTools.OleDbConnection );
+      this.oleDbDataAdapter =
+        new OleDbDataAdapter( selectStatement , ConnectionProvider.OleDbConnection );
       this.oleDbCommandBuilder = new OleDbCommandBuilder( oleDbDataAdapter );
       this.oleDbDataAdapter.UpdateCommand = this.oleDbCommandBuilder.GetUpdateCommand();
       this.oleDbDataAdapter.Fill( this );

@@ -17,13 +17,7 @@ namespace QuantProject.Applications.Downloader
 	/// </summary>
 	public class WebDownloader : System.Windows.Forms.Form
 	{
-    private static DataBaseLocator dataBaseLocator = new DataBaseLocator("MDB"); 
-    private static string mdbPath = dataBaseLocator.Path;
-    private static string connectionString =
-      @"Provider=Microsoft.Jet.OLEDB.4.0;Password="""";User ID=Admin;Data Source=" +
-      mdbPath +
-      @";Jet OLEDB:Registry Path="""";Jet OLEDB:Database Password="""";Jet OLEDB:Engine Type=5;Jet OLEDB:Database Locking Mode=1;Jet OLEDB:Global Partial Bulk Ops=2;Jet OLEDB:Global Bulk Transactions=1;Jet OLEDB:New Database Password="""";Jet OLEDB:Create System Database=False;Jet OLEDB:Encrypt Database=False;Jet OLEDB:Don't Copy Locale on Compact=False;Jet OLEDB:Compact Without Replica Repair=False;Jet OLEDB:SFP=False";
-    public OleDbConnection OleDbConnection1 = new OleDbConnection( connectionString );
+    public OleDbConnection OleDbConnection1 = ConnectionProvider.OleDbConnection;
     private System.Windows.Forms.Button button1;
     public System.Windows.Forms.DataGrid dataGrid1;
     private System.Data.OleDb.OleDbDataAdapter oleDbDataAdapter1;
