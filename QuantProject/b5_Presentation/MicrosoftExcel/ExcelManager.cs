@@ -44,6 +44,10 @@ namespace QuantProject.Presentation.MicrosoftExcel
 			// TODO: Add constructor logic here
 			//
 		}
+    public static void Add( ReportTable reportTable )
+    {
+      reportTables.Add( reportTable );
+    }
     public static void Add( AccountReport accountReport )
     {
       reportTables.Add( accountReport.Summary );
