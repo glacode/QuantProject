@@ -73,6 +73,7 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
       this.account = account;
       this.generationNumberForGeneticOptimizer = generationNumberForGeneticOptimizer;
       this.orders = new ArrayList();
+      this.chosenTickers = new string[numberOfTickersToBeChosen];
     }
 		    
     #region MarketOpenEventHandler
@@ -92,10 +93,8 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
     {
       foreach ( string ticker in this.chosenTickers )
       {
-        //if ( !this.account.Contains( ticker ) )
-        //{
+        if(ticker != null)
           marketOpenEventHandler_orderChosenTickers_addToOrderList_forTicker( ticker );
-        //}
       }
     }
     
