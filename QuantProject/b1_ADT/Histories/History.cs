@@ -24,6 +24,7 @@ using System;
 using System.Collections;
 using QuantProject.ADT;
 
+
 namespace QuantProject.ADT.Histories
 {
 	/// <summary>
@@ -74,6 +75,90 @@ namespace QuantProject.ADT.Histories
       else
         return (DateTime) this.GetKey( this.IndexOfKeyOrPrevious( dateTime ) + 1 );
     }
+
+	  #region "Millo_1 - SimpleAverage and StandardDeviation"
+
+	  public History GetSimpleAverage( int onEachPeriodOf , DateTime startDateTime , DateTime endDateTime )
+	  {
+		  History simpleAverage = new History();
+		  int index = this.IndexOfKeyOrPrevious(startDateTime); 
+		  double[] data = new double[onEachPeriodOf];
+		  double checkValue = 0;
+		  int i = 0;
+		  while (
+			  ( index < this.Count ) &&
+			  ( ((IComparable)this.GetKey( index )).CompareTo( endDateTime ) <= 0 ) )
+		  {
+			  DateTime dateTime = (DateTime)this.GetKey( index );
+			  if (Math.Floor(index/onEachPeriodOf) == checkValue &&
+					i < onEachPeriodOf)
+			  {	
+				  data[i] = Convert.ToDouble(this.GetByIndex(index));
+				  i++;
+				  //simpleAverage.Add(this.GetKey( index ), null);
+			  }
+			  else //Changes the period
+			  {	
+				  i = 0;
+				  simpleAverage.Add( dateTime , Stat.SimpleAverage(data) );
+			  }
+			  index++;
+			  checkValue = Math.Floor(index/onEachPeriodOf);//update checkValue
+		  }
+
+		  return simpleAverage;
+	  }
+
+	  public History GetStandardDeviation( int onEachPeriodOf , DateTime startDateTime , DateTime endDateTime )
+	  {
+		  History stdDev = new History();
+		  int index = this.IndexOfKeyOrPrevious(startDateTime); 
+		  double[] data = new double[onEachPeriodOf];
+		  double checkValue = 0;
+		  int i = 0;
+		  while (
+			  ( index < this.Count ) &&
+			  ( ((IComparable)this.GetKey( index )).CompareTo( endDateTime ) <= 0 ) )
+		  {
+			  DateTime dateTime = (DateTime)this.GetKey( index );
+			  if (Math.Floor(index/onEachPeriodOf) == checkValue &&
+					i < onEachPeriodOf)
+			  {	
+				  data[i] = Convert.ToDouble(this.GetByIndex(index));
+				  i++;
+				  //stdDev.Add(this.GetKey( index ), null);
+			  }
+			  else //Changes the period
+			  {	
+				  i = 0;
+				  stdDev.Add( dateTime , Stat.StdDev (data) );
+			  }
+			  index++;
+			  checkValue = Math.Floor(index/onEachPeriodOf);//update checkValue
+		  }
+
+		  return stdDev ;
+	  }
+	  public bool IsDecreased(DateTime dateTime)
+	  {	
+		  bool isDecreased;
+		  int index = this.IndexOfKey(dateTime);
+		  if ( index <= 0 )
+			  isDecreased = false;
+		  else
+		  {
+			  isDecreased = Convert.ToDouble( this[ dateTime ]) <
+				  Convert.ToDouble( this.GetByIndex(index - 1) );
+		  }
+		  return isDecreased;
+		  
+			  
+	  }
+
+
+#endregion
+
+
 
     #region "GetSimpleMovingAverage( int , DateTime , int )"
     private double currentContributionToCurrentSum(

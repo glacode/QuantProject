@@ -112,6 +112,11 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "Histories\Stat.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "Optimizing\Optimizable.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
