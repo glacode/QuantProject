@@ -29,8 +29,7 @@ using QuantProject.Scripts;
 using QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios;
 //using QuantProject.ADT.Optimizing.Genetic;
 
-using QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios;
-
+using QuantProject.Scripts.SimpleTesting;
 using QuantProject.Scripts.WalkForwardTesting.WalkForwardOneRank;
 using QuantProject.Scripts.CallingReportsForRunnedScripts;
 
@@ -301,16 +300,17 @@ namespace QuantProject.Principale
 
     private void menuItemRun_Click(object sender, System.EventArgs e)
     {
-      try
-      {//call here your scripts
+//      try
+//      {//call here your scripts
 	//new RunWalkForwardOneRank().Run();			
-        new RunEfficientCTCPorfolio().Run();
-      }
-      catch ( Exception ex )
-      {
-        string notUsed = ex.ToString();
-        //in this way qP shouldn't stop if running a single script fails ...
-      }
+        // new RunEfficientCTCPorfolio().Run();
+				new RunOneRank().Run();
+//      }
+//      catch ( Exception ex )
+//      {
+//        string notUsed = ex.ToString();
+//        //in this way qP shouldn't stop if running a single script fails ...
+//      }
     }
 
     private void menuItemAccountViewer_Click(object sender, System.EventArgs e)
