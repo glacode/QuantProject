@@ -97,6 +97,11 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "DataBaseLocator.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "SQLBuilder.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
