@@ -62,8 +62,10 @@ namespace QuantProject.Applications.Downloader.Validate
 			this.oleDbCommandBuilder = new OleDbCommandBuilder( oleDbDataAdapter );
 			this.oleDbDataAdapter.UpdateCommand = this.oleDbCommandBuilder.GetUpdateCommand();
 			this.oleDbDataAdapter.Fill( this );
-      this.Columns.Add( new DataColumn( "CloseToCloseHasBeenVisuallyValidated" ,
-        System.Type.GetType( "System.Boolean" ) ) );
+      DataColumn dataColumn = new DataColumn( "CloseToCloseHasBeenVisuallyValidated" ,
+        System.Type.GetType( "System.Boolean" ) );
+      dataColumn.DefaultValue = false;
+      this.Columns.Add( dataColumn );
       this.TableName = "quotes";
 			//<<<<<<< ValidateDataTable.cs
 			this.Columns.Add( "ValidationWarning" ,
