@@ -89,9 +89,9 @@ namespace QuantProject.Scripts.SimpleTesting
 		/// </summary>
 		/// <param name="account">Account with which to run the strategy</param>
 		/// <param name="lastDateTime">Date to stop the strategy</param>
-		public OneRank( Account account , DateTime lastDateTime )
+		public OneRank( Account account1 , DateTime lastDateTime )
 		{
-			this.account = account;
+			this.account = account1;
 			this.lastDateTime = lastDateTime;
 			this.account.EndOfDayTimer.MarketOpen +=
 				new MarketOpenEventHandler(
