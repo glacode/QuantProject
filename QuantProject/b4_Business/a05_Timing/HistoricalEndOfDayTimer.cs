@@ -31,13 +31,13 @@ namespace QuantProject.Business.Timing
 	/// </summary>
 	public class HistoricalEndOfDayTimer : IEndOfDayTimer
 	{
-		private bool isActive;	// true iff the timer is started and not stopped
+		protected bool isActive;	// true iff the timer is started and not stopped
 
-		private Hashtable tickers;
+		protected Hashtable tickers;
 
-		private EndOfDayDateTime currentTime;
+		protected EndOfDayDateTime currentTime;
 
-		private EndOfDayDateTime startDateTime;
+		protected EndOfDayDateTime startDateTime;
 //		private EndOfDayDateTime endDateTime;
 
 		public EndOfDayDateTime StartDateTime
@@ -52,10 +52,10 @@ namespace QuantProject.Business.Timing
 //			set	{	this.endDateTime = value;	}
 //		}
 
-		public event MarketOpenEventHandler MarketOpen;
-		public event FiveMinutesBeforeMarketCloseEventHandler FiveMinutesBeforeMarketClose;
-		public event MarketCloseEventHandler MarketClose;
-		public event OneHourAfterMarketCloseEventHandler OneHourAfterMarketClose;
+		public virtual event MarketOpenEventHandler MarketOpen;
+		public virtual event FiveMinutesBeforeMarketCloseEventHandler FiveMinutesBeforeMarketClose;
+		public virtual event MarketCloseEventHandler MarketClose;
+		public virtual event OneHourAfterMarketCloseEventHandler OneHourAfterMarketClose;
 
 		public HistoricalEndOfDayTimer( EndOfDayDateTime startDateTime )
 		{
@@ -67,7 +67,7 @@ namespace QuantProject.Business.Timing
 		/// <summary>
 		/// Starts the time walking simulation
 		/// </summary>
-		public void Start()
+		public virtual void Start()
 		{
 			this.isActive = true;
 			this.currentTime = this.startDateTime.Copy();
