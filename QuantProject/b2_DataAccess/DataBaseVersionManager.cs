@@ -112,7 +112,8 @@ namespace QuantProject.DataAccess
     // validatedTickers will contain a record for each ticker whose quotes have already
     // been validated. The quotes are meant to be ok from vtStartDate to vtEndDate.
     this.executeCommand( "CREATE TABLE validatedTickers " +
-      "( vtTicker TEXT(8) , vtStartDate DATETIME , vtEndDate DATETIME , vtEditDate DATETIME, " +
+      "( vtTicker TEXT(8) , vtStartDate DATETIME , vtEndDate DATETIME , " +
+			"vtHashValue TEXT(50) , vtEditDate DATETIME, " +
       "CONSTRAINT myKey PRIMARY KEY ( vtTicker ) )" );
     // visuallyValidatedQuotes will contain a record for each
     // quote with suspicious ratio that has been validated.
