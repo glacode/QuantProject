@@ -67,7 +67,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardOneRank
 				new HistoricalEndOfDayTimer(
 				new EndOfDayDateTime( dateTime.AddYears( -1 ).AddDays( -1 ) ,
 				EndOfDaySpecificTime.FiveMinutesBeforeMarketClose ) );
-			Account account = new Account( ticker , historicalEndOfDayTimer ,
+			ComparableAccount account = new ComparableAccount( ticker , historicalEndOfDayTimer ,
 				new HistoricalEndOfDayDataStreamer( historicalEndOfDayTimer ) ,
 				new HistoricalEndOfDayOrderExecutor( historicalEndOfDayTimer ) );
 			OneRank oneRank = new OneRank( account ,
