@@ -84,12 +84,6 @@ namespace QuantProject.Data.DataProviders
 //      }
 //    }
 //
-    public static History GetOpenHistory( string instrumentKey )
-    {
-      return (History)((Hashtable)cachedHistories[ instrumentKey ])[
-        BarComponent.Open ];
-    }
-
 		private static History getHistory( string instrumentKey , QuoteField quoteField )
 		{
 			if ( ( !cachedHistories.Contains( instrumentKey ) ) ||
@@ -100,6 +94,11 @@ namespace QuantProject.Data.DataProviders
 					DataBase.GetHistory( instrumentKey , quoteField );
 			}
 			return (History)((Hashtable)cachedHistories[ instrumentKey ])[ quoteField ];
+		}
+
+		public static History GetOpenHistory( string instrumentKey )
+		{
+			return getHistory( instrumentKey , QuoteField.Open );
 		}
 
 		public static History GetCloseHistory( string instrumentKey )
@@ -115,6 +114,11 @@ namespace QuantProject.Data.DataProviders
 		public static History GetLowHistory( string instrumentKey )
 		{
 			return getHistory( instrumentKey , QuoteField.Low );
+		}
+
+		public static History GetAdjustedCloseHistory( string instrumentKey )
+		{
+			return getHistory( instrumentKey , QuoteField.AdjustedClose );
 		}
 
 		private static void cache( string instrumentKey , QuoteField quoteField )
