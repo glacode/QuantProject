@@ -133,17 +133,12 @@
                     BuildAction = "Compile"
                 />
                 <File
-                    RelPath = "SimpleTesting\OneRank\EndOfDayOneRank.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
                     RelPath = "SimpleTesting\OneRank\OneRank.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
                 <File
-                    RelPath = "SimpleTesting\OneRank\TsOneRank.cs"
+                    RelPath = "SimpleTesting\OneRank\RunOneRank.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
