@@ -3,19 +3,32 @@ using System.Data;
 using QuantProject.ADT;
 using QuantProject.Business.Financial.Instruments;
 using QuantProject.Business.Financial.Accounting.Reporting;
+using QuantProject.Business.Financial.Accounting.Reporting.SummaryRows;
 
 namespace QuantProject.Business.Financial.Accounting.Reporting.Tables
 {
 	/// <summary>
 	/// Summary description for Summary.
 	/// </summary>
-	public class Summary : ReportTable
-	{
+  public class Summary : ReportTable
+  {
     private AccountReport accountReport;
     private double totalPnl;
     private double buyAndHoldPercentageReturn;
     private double finalAccountValue;
     private long intervalDays;
+    public AccountReport AccountReport
+    {
+      get { return accountReport; }
+    }
+    public double TotalPnl
+    {
+      get { return totalPnl; }
+    }
+    public double FinalAccountValue
+    {
+      get { return finalAccountValue; }
+    }
     public Summary( AccountReport accountReport ) :
       base( accountReport.Name + " - Summary" )
     {
@@ -63,21 +76,6 @@ namespace QuantProject.Business.Financial.Accounting.Reporting.Tables
       summary[ "Value" ] = ( ( Math.Pow( 1 + totalROA ,
         1.0 / ( (double)this.intervalDays/365.0 ) ) ) - 1 ) * 100;
       //        r = [(1+T)^(1/n)]-1
-    }
-    private void getSummaryTable_setRow_MaxEquityDrawdown( DataRow summary )
-    {
-      //      double totalROA = this.totalPnl / ( this.finalAccountValue - this.totalPnl );
-      //      summary[ "Information" ] = "Annual system % return";
-      //      summary[ "Value" ] = ( ( Math.Pow( 1 + totalROA ,
-      //        1.0 / ( (double)this.intervalDays/365.0 ) ) ) - 1 ) * 100;
-      //      //        r = [(1+T)^(1/n)]-1
-    }
-    private void getSummaryTable_setRow_TotalNumberOfTrades( DataRow summary )
-    {
-      double totalROA = this.totalPnl / ( this.finalAccountValue - this.totalPnl );
-      summary[ "Information" ] = "Total # of trades";
-      DataRow[] DataRows = this.accountReport.RoundTrades.DataTable.Select( "(ExitPrice is not null)" );
-      summary[ "Value" ] = DataRows.Length;
     }
     private void getSummaryTable_setRow_NumberWinningTrades( DataRow summary )
     {
@@ -152,6 +150,13 @@ namespace QuantProject.Business.Financial.Accounting.Reporting.Tables
       getSummaryTable_setRow_object( summary );
       summaryDataTable.Rows.Add( summary );
     }
+    private void getSummary_setRow( SummaryRow summaryRow , DataTable summaryDataTable )
+    {
+      DataRow summary = summaryDataTable.NewRow();
+      summary[ "Information" ] = summaryRow.Description;
+      summary[ "Value" ] = summaryRow.Value;
+      summaryDataTable.Rows.Add( summary );
+    }
     private void getSummaryTable_setRows( DataTable summaryDataTable )
     {
       getSummary_setRow( summaryDataTable ,
@@ -162,10 +167,8 @@ namespace QuantProject.Business.Financial.Accounting.Reporting.Tables
         new getSummaryTable_setRow( getSummaryTable_setRow_BuyAndHoldPercentageReturn ) );
       getSummary_setRow( summaryDataTable ,
         new getSummaryTable_setRow( getSummaryTable_setRow_AnnualSystemPercentageReturn ) );
-      getSummary_setRow( summaryDataTable ,
-        new getSummaryTable_setRow( getSummaryTable_setRow_MaxEquityDrawdown ) );
-      getSummary_setRow( summaryDataTable ,
-        new getSummaryTable_setRow( getSummaryTable_setRow_TotalNumberOfTrades ) );
+      getSummary_setRow( new MaxEquityDrawDown( this ) , summaryDataTable );
+      getSummary_setRow( new TotalNumberOfTrades( this ) , summaryDataTable );
       getSummary_setRow( summaryDataTable ,
         new getSummaryTable_setRow( getSummaryTable_setRow_NumberWinningTrades ) );
       getSummary_setRow( summaryDataTable ,
