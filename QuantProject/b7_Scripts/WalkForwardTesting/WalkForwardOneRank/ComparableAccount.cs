@@ -68,5 +68,9 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardOneRank
 					this.accountReport.Summary.BuyAndHoldPercentageReturn;
 			return returnValue;
 		}
+		public override double GetFitnessValue()
+		{
+			return this.goodness();
+		}
 	}
 }
