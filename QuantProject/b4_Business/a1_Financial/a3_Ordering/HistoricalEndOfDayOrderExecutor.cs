@@ -53,7 +53,9 @@ namespace QuantProject.Business.Financial.Ordering
 				this.timer.GetCurrentTime().GetNearestBarComponent() );
 			EndOfDayTransaction endOfDayTransaction = new EndOfDayTransaction(
 				TimedTransaction.GetTransactionType( order.Type ) , order.Instrument ,
-				order.Quantity , instrumentPrice ,	this.timer.GetCurrentTime() );
+				order.Quantity , instrumentPrice ,
+				new EndOfDayDateTime( this.timer.GetCurrentTime().DateTime ,
+				this.timer.GetCurrentTime().EndOfDaySpecificTime ) );
 			OrderFilled( this , new OrderFilledEventArgs( order , endOfDayTransaction ) );
 		}
 	}
