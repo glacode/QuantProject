@@ -7,7 +7,8 @@ namespace QuantProject.Business.Financial.Accounting.Reporting.Tables
 	/// <summary>
 	/// Summary description for RoundTrades.
 	/// </summary>
-	public class RoundTrades : ReportTable
+	[Serializable]
+  public class RoundTrades : ReportTable
 	{
     private ReportTable transactionTable;
 

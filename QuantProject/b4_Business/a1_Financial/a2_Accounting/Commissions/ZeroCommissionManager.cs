@@ -29,7 +29,8 @@ namespace QuantProject.Business.Financial.Accounting.Commissions
 	/// This is the commission manager used by an Account
 	/// if no ICommissionManager is specified.
 	/// </summary>
-	public class ZeroCommissionManager : ICommissionManager
+	[Serializable]
+  public class ZeroCommissionManager : ICommissionManager
 	{
 		public ZeroCommissionManager()
 		{

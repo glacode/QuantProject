@@ -28,7 +28,8 @@ namespace QuantProject.Business.Financial.Accounting.Commissions
 	/// Zero value commission. This is the commission
 	/// used by an Account if no ICommissionManager is specified
 	/// </summary>
-	public class ZeroCommission : Commission
+	[Serializable]
+  public class ZeroCommission : Commission
 	{
 		public override double Value
 		{

@@ -5,6 +5,7 @@ namespace QuantProject.Business.Financial.Accounting.Reporting.SummaryRows
 	/// <summary>
 	/// Summary description for SummaryRow.
 	/// </summary>
+  [Serializable]
   public class SummaryRow
   {
     internal string rowDescription;

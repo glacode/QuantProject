@@ -10,7 +10,8 @@ namespace QuantProject.Business.Financial.Accounting.Reporting.SummaryRows
 	/// Account report Summary Row, containing the total
 	/// commission amount.
 	/// </summary>
-	public class TotalCommissionAmount : SummaryRow
+	[Serializable]
+  public class TotalCommissionAmount : SummaryRow
 	{
 		public TotalCommissionAmount( Summary summary )
 		{

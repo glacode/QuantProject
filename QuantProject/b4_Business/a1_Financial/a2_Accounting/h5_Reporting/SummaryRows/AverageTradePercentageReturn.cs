@@ -9,7 +9,8 @@ namespace QuantProject.Business.Financial.Accounting.Reporting.SummaryRows
 	/// <summary>
 	/// Summary description for TotalNumberOfTrades.
 	/// </summary>
-	public class AverageTradePercentageReturn : SummaryRow
+	[Serializable]
+  public class AverageTradePercentageReturn : SummaryRow
 	{
 		public AverageTradePercentageReturn( Summary summary )
 		{

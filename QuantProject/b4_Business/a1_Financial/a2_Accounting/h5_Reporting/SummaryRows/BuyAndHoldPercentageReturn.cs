@@ -11,7 +11,8 @@ namespace QuantProject.Business.Financial.Accounting.Reporting.SummaryRows
 	/// <summary>
 	/// Summary description for TotalNumberOfTrades.
 	/// </summary>
-	public class BuyAndHoldPercentageReturn : SummaryRow
+	[Serializable]
+  public class BuyAndHoldPercentageReturn : SummaryRow
 	{
 		public BuyAndHoldPercentageReturn( Summary summary ,
 			IHistoricalQuoteProvider historicalQuoteProvider )

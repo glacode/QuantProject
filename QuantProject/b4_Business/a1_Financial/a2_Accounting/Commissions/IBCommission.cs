@@ -27,7 +27,8 @@ namespace QuantProject.Business.Financial.Accounting.Commissions
 	/// <summary>
 	/// A sample Commission
 	/// </summary>
-	public class IBCommission : Commission
+	[Serializable]
+  public class IBCommission : Commission
 	{
 		public override double Value
 		{

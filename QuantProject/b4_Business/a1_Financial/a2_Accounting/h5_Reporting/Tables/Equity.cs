@@ -7,7 +7,8 @@ namespace QuantProject.Business.Financial.Accounting.Reporting.Tables
 	/// <summary>
 	/// Summary description for Equity.
 	/// </summary>
-	public class Equity : ReportTable
+	[Serializable]
+  public class Equity : ReportTable
 	{
 		public static string Date = "Date";
 		public static string PnL = "PnL";

@@ -7,7 +7,8 @@ namespace QuantProject.Business.Financial.Accounting.Reporting.Tables
 	/// <summary>
 	/// Summary description for Transactions.
 	/// </summary>
-	public class Transactions : ReportTable
+	[Serializable]
+  public class Transactions : ReportTable
 	{
 		public Transactions( string reportName , DataTable detailedDataTable ) :
       base( reportName + " - Transactions" )

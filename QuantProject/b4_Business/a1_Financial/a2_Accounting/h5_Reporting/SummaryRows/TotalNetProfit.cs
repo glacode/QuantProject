@@ -7,7 +7,8 @@ namespace QuantProject.Business.Financial.Accounting.Reporting.SummaryRows
 	/// <summary>
 	/// Summary description for TotalNumberOfTrades.
 	/// </summary>
-	public class TotalNetProfit : SummaryRow
+	[Serializable]
+  public class TotalNetProfit : SummaryRow
 	{
 		public TotalNetProfit( Summary summary )
 		{

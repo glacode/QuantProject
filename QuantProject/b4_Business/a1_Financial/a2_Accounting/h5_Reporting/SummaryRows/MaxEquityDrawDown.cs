@@ -7,7 +7,8 @@ namespace QuantProject.Business.Financial.Accounting.Reporting.SummaryRows
 	/// <summary>
 	/// Summary description for TotalNumberOfTrades.
 	/// </summary>
-	public class MaxEquityDrawDown : SummaryRow
+	[Serializable]
+  public class MaxEquityDrawDown : SummaryRow
 	{
     private Summary summary;
     private double drawDown;

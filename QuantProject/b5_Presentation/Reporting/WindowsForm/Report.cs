@@ -79,6 +79,13 @@ namespace QuantProject.Presentation.Reporting.WindowsForm
 			this.show_populateForm();
 			base.ShowDialog();
 		}
+    public new void Show()
+    {
+      if(this.accountReport != null)
+        this.show_populateForm();
+      
+      base.ShowDialog();
+    }
     /// <summary>
     /// Clears the existing account report, so that a new one can be created
     /// </summary>

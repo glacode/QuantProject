@@ -27,7 +27,8 @@ namespace QuantProject.Business.Financial.Accounting.Commissions
 	/// <summary>
 	/// A sample Commission Manager
 	/// </summary>
-	public class IBCommissionManager : ICommissionManager
+	[Serializable]
+  public class IBCommissionManager : ICommissionManager
 	{
 		public IBCommissionManager()
 		{

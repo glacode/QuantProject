@@ -9,7 +9,8 @@ namespace QuantProject.Business.Financial.Accounting.Reporting.SummaryRows
 	/// <summary>
 	/// Summary description for TotalNumberOfTrades.
 	/// </summary>
-	public class LargestWinningTradePercentage : SummaryRow
+	[Serializable]
+  public class LargestWinningTradePercentage : SummaryRow
 	{
 		public LargestWinningTradePercentage( Summary summary )
 		{

@@ -11,6 +11,7 @@ namespace QuantProject.Business.Financial.Accounting.Reporting.Tables
 	/// <summary>
 	/// Summary description for Summary.
 	/// </summary>
+  [Serializable]
   public class Summary : ReportTable
   {
     private AccountReport accountReport;

@@ -9,7 +9,8 @@ namespace QuantProject.Business.Financial.Accounting.Reporting.SummaryRows
 	/// <summary>
 	/// Summary description for TotalNumberOfTrades.
 	/// </summary>
-	public class LargestLosingTradePercentage : SummaryRow
+	[Serializable]
+  public class LargestLosingTradePercentage : SummaryRow
 	{
 		public LargestLosingTradePercentage( Summary summary )
 		{
