@@ -22,9 +22,11 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 using System;
 using System.Collections;
+using System.Data;
 using QuantProject.ADT;
 using QuantProject.ADT.Histories;
 using QuantProject.DataAccess;
+using QuantProject.DataAccess.Tables;
 
 namespace QuantProject.Data
 {
@@ -132,5 +134,15 @@ namespace QuantProject.Data
           ( (History) ((Hashtable) cachedHistories[ instrumentKey ])[ extendedDateTime.BarComponent ]
             ).IndexOfKeyOrPrevious( extendedDateTime.DateTime ) ) );
     }
+
+		/// <summary>
+		/// returns the quotes DataTable for the given ticker
+		/// </summary>
+		/// <param name="instrumentKey">ticker whose quotes are to be returned</param>
+		/// <returns></returns>
+		public static DataTable GetTickerQuotes( string instrumentKey )
+		{
+			return Quotes.GetTickerQuotes( instrumentKey );
+		}
 	}
 }
