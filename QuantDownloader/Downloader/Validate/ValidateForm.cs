@@ -23,6 +23,8 @@ namespace QuantProject.Applications.Downloader.Validate
     private System.Data.OleDb.OleDbCommand oleDbDeleteCommand1;
     private System.Windows.Forms.TextBox textBoxTickerIsLike;
     private System.Windows.Forms.Button buttonCommitAndRefresh;
+    private System.Windows.Forms.TextBox textBoxSuspiciousRatio;
+    private System.Windows.Forms.Label labelSuspiciousRatio;
 		/// <summary>
 		/// Required designer variable.
 		/// </summary>
@@ -68,6 +70,8 @@ namespace QuantProject.Applications.Downloader.Validate
       this.oleDbUpdateCommand1 = new System.Data.OleDb.OleDbCommand();
       this.dataGrid1 = new System.Windows.Forms.DataGrid();
       this.buttonCommitAndRefresh = new System.Windows.Forms.Button();
+      this.textBoxSuspiciousRatio = new System.Windows.Forms.TextBox();
+      this.labelSuspiciousRatio = new System.Windows.Forms.Label();
       ((System.ComponentModel.ISupportInitialize)(this.dataGrid1)).BeginInit();
       this.SuspendLayout();
       // 
@@ -89,7 +93,7 @@ namespace QuantProject.Applications.Downloader.Validate
       // 
       // buttonGo
       // 
-      this.buttonGo.Location = new System.Drawing.Point(368, 16);
+      this.buttonGo.Location = new System.Drawing.Point(512, 16);
       this.buttonGo.Name = "buttonGo";
       this.buttonGo.TabIndex = 2;
       this.buttonGo.Text = "Go";
@@ -218,11 +222,29 @@ namespace QuantProject.Applications.Downloader.Validate
       this.buttonCommitAndRefresh.Text = "Commit && Refresh";
       this.buttonCommitAndRefresh.Click += new System.EventHandler(this.buttonCommitAndRefresh_Click);
       // 
+      // textBoxSuspiciousRatio
+      // 
+      this.textBoxSuspiciousRatio.Location = new System.Drawing.Point(344, 16);
+      this.textBoxSuspiciousRatio.Name = "textBoxSuspiciousRatio";
+      this.textBoxSuspiciousRatio.TabIndex = 5;
+      this.textBoxSuspiciousRatio.Text = "5";
+      // 
+      // labelSuspiciousRatio
+      // 
+      this.labelSuspiciousRatio.Location = new System.Drawing.Point(224, 16);
+      this.labelSuspiciousRatio.Name = "labelSuspiciousRatio";
+      this.labelSuspiciousRatio.Size = new System.Drawing.Size(120, 16);
+      this.labelSuspiciousRatio.TabIndex = 6;
+      this.labelSuspiciousRatio.Text = "Suspicious ratio:";
+      this.labelSuspiciousRatio.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+      // 
       // ValidateForm
       // 
       this.AutoScaleBaseSize = new System.Drawing.Size(5, 13);
       this.ClientSize = new System.Drawing.Size(720, 341);
       this.Controls.AddRange(new System.Windows.Forms.Control[] {
+                                                                  this.labelSuspiciousRatio,
+                                                                  this.textBoxSuspiciousRatio,
                                                                   this.buttonCommitAndRefresh,
                                                                   this.dataGrid1,
                                                                   this.buttonGo,
@@ -240,7 +262,7 @@ namespace QuantProject.Applications.Downloader.Validate
     {
       this.validateDataTable = new ValidateDataTable();
       this.dataGrid1.DataSource = validateDataTable;
-      validateDataTable.AddRows( textBoxTickerIsLike.Text );
+      validateDataTable.AddRows( textBoxTickerIsLike.Text , Convert.ToDouble( this.textBoxSuspiciousRatio.Text ) );
     }
 
     private void buttonCommitAndRefresh_Click(object sender, System.EventArgs e)
