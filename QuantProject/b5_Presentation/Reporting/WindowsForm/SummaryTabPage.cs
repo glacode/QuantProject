@@ -37,7 +37,7 @@ namespace QuantProject.Presentation.Reporting.WindowsForm
 		private int labelRows = 8;
 		private int xForLabels = 17;
 		private int textLabelsWidth = 180;
-		private int valueLablesWidth = 50;
+		private int valueLablesWidth = 60;
 		private int textToValueLabelSpacing = 8;
 		private int valueToTextLabelSpacing = 50;
 		private int yStart = 17;
@@ -51,6 +51,8 @@ namespace QuantProject.Presentation.Reporting.WindowsForm
 		private System.Windows.Forms.Label lblValAnnualSystemPercReturn;
 		private System.Windows.Forms.Label lblMaxEquityDrawDown;
 		private System.Windows.Forms.Label lblValMaxEquityDrawDown;
+		private System.Windows.Forms.Label lblTotalCommission;
+		private System.Windows.Forms.Label lblValTotalCommission;
 		private System.Windows.Forms.Label lblTotalNumberOfTrades;
 		private System.Windows.Forms.Label lblValTotalNumberOfTrades;
 		private System.Windows.Forms.Label lblNumberWinningTrades;
@@ -130,6 +132,8 @@ namespace QuantProject.Presentation.Reporting.WindowsForm
 			this.lblValAnnualSystemPercReturn = new System.Windows.Forms.Label();
 			this.lblMaxEquityDrawDown = new System.Windows.Forms.Label();
 			this.lblValMaxEquityDrawDown = new System.Windows.Forms.Label();
+			this.lblTotalCommission = new System.Windows.Forms.Label();
+			this.lblValTotalCommission = new System.Windows.Forms.Label();
 			this.lblTotalNumberOfTrades = new System.Windows.Forms.Label();
 			this.lblValTotalNumberOfTrades = new System.Windows.Forms.Label();
 			this.lblNumberWinningTrades = new System.Windows.Forms.Label();
@@ -190,11 +194,20 @@ namespace QuantProject.Presentation.Reporting.WindowsForm
 			// lblMaxEquityDrawDown
 			// 
 			this.addTextLabel( lblMaxEquityDrawDown , "lblMaxEquityDrawDown" ,
-				"Max equity drawydown (%):" );
+				"Max equity drawdown (%):" );
 			// 
 			// lblValMaxEquityDrawDown
 			// 
 			this.addValueLabel( lblValMaxEquityDrawDown , "lblValMaxEquityDrawDown" );
+			// 
+			// lblTotalCommission
+			// 
+			this.addTextLabel( this.lblTotalCommission , "lblTotalCommission" ,
+				"Total Commission Amount:" );
+			// 
+			// lblValTotalCommission
+			// 
+			this.addValueLabel( this.lblValTotalCommission , "lblValTotalCommission" );
 			// 
 			// lblTotalNumberOfTrades
 			// 
@@ -299,6 +312,8 @@ namespace QuantProject.Presentation.Reporting.WindowsForm
 				FormatProvider.ConvertToStringWithTwoDecimals( this.accountReport.Summary.AnnualSystemPercentageReturn );
 			this.lblValMaxEquityDrawDown.Text =
 				FormatProvider.ConvertToStringWithTwoDecimals( this.accountReport.Summary.MaxEquityDrawDown );
+			this.lblValTotalCommission.Text =
+				FormatProvider.ConvertToStringWithTwoDecimals( this.accountReport.Summary.TotalCommissionAmount );
 			this.lblValTotalNumberOfTrades.Text =
 				FormatProvider.ConvertToStringWithTwoDecimals( this.accountReport.Summary.TotalNumberOfTrades );
 			this.lblValNumberWinningTrades.Text =

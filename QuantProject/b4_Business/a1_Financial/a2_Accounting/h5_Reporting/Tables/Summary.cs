@@ -30,6 +30,7 @@ namespace QuantProject.Business.Financial.Accounting.Reporting.Tables
 		private NumberWinningShortTrades numberWinningShortTrades;
 		private TotalNumberOfLongTrades totalNumberOfLongTrades;
 		private TotalNumberOfShortTrades totalNumberOfShortTrades;
+		private TotalCommissionAmount totalCommissionAmount;
 		public AccountReport AccountReport
     {
       get { return accountReport; }
@@ -98,6 +99,11 @@ namespace QuantProject.Business.Financial.Accounting.Reporting.Tables
 			get { return (int)this.totalNumberOfShortTrades.rowValue; }
 		}
 
+		public double TotalCommissionAmount
+		{
+			get { return (double)this.totalCommissionAmount.rowValue; }
+		}
+
 
 		private void summary( AccountReport accountReport )
 		{
@@ -161,8 +167,10 @@ namespace QuantProject.Business.Financial.Accounting.Reporting.Tables
 			this.totalNumberOfShortTrades = new TotalNumberOfShortTrades( this );
       getSummary_setRow( this.totalNumberOfShortTrades , summaryDataTable );
 			this.numberWinningShortTrades = new NumberWinningShortTrades( this );
-      getSummary_setRow( this.numberWinningShortTrades , summaryDataTable );
-      //      getSummary_setRow( summaryDataTable ,
+			getSummary_setRow( this.numberWinningShortTrades , summaryDataTable );
+			this.totalCommissionAmount = new TotalCommissionAmount( this );
+			getSummary_setRow( this.totalCommissionAmount , summaryDataTable );
+			//      getSummary_setRow( summaryDataTable ,
 //        new getSummaryTable_setRow( getSummaryTable_setRow_TotalNumberOfShortTrades ) );
 //      getSummary_setRow( summaryDataTable ,
 //        new getSummaryTable_setRow( getSummaryTable_setRow_NumberWinningShortTrades ) );
