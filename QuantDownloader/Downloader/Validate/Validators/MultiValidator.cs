@@ -43,27 +43,40 @@ namespace QuantProject.Applications.Downloader.Validate.Validators
         new SuspiciousDataRowEventHandler( suspiciousDataRowHandler );
       oHLCvalidator.Validate( dataTable );
     }
-    /// <summary>
-    /// Validates the Close to Close differencies
-    /// </summary>
-    /// <param name="dataTable">Quote rows to be validated</param>
-    private void validate_CloseToClose( DataTable dataTable )
-    {
-      CloseToCloseValidator closeToCloseValidator = new CloseToCloseValidator();
-      closeToCloseValidator.SuspiciousRatio = this.suspiciousRatio;
-      closeToCloseValidator.SuspiciousDataRow +=
-        new SuspiciousDataRowEventHandler( suspiciousDataRowHandler );
-      closeToCloseValidator.Validate( dataTable );
-    }
-    /// <summary>
+		/// <summary>
+		/// Validates the Close to Close differencies
+		/// </summary>
+		/// <param name="dataTable">Quote rows to be validated</param>
+		private void validate_CloseToClose( DataTable dataTable )
+		{
+			CloseToCloseValidator closeToCloseValidator = new CloseToCloseValidator();
+			closeToCloseValidator.SuspiciousRatio = this.suspiciousRatio;
+			closeToCloseValidator.SuspiciousDataRow +=
+				new SuspiciousDataRowEventHandler( suspiciousDataRowHandler );
+			closeToCloseValidator.Validate( dataTable );
+		}
+		/// <summary>
+		/// Validates the Range to Range differencies
+		/// </summary>
+		/// <param name="dataTable">Quote rows to be validated</param>
+		private void validate_RangeToRange( DataTable dataTable )
+		{
+			RangeToRangeValidator rangeToRangeValidator = new RangeToRangeValidator();
+			rangeToRangeValidator.SuspiciousRatio = this.suspiciousRatio;
+			rangeToRangeValidator.SuspiciousDataRow +=
+				new SuspiciousDataRowEventHandler( suspiciousDataRowHandler );
+			rangeToRangeValidator.Validate( dataTable );
+		}
+		/// <summary>
     /// Validates the quotes rows
     /// </summary>
     /// <param name="dataTable">Contains the quotes rows to be validated</param>
     public void Validate( DataTable dataTable )
     {
       this.validate_OHLC( dataTable );
-      this.validate_CloseToClose( dataTable );
-    }
+			this.validate_CloseToClose( dataTable );
+			this.validate_RangeToRange( dataTable );
+		}
   }
   #endregion
 }
