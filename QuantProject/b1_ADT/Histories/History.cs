@@ -89,12 +89,16 @@ namespace QuantProject.ADT.Histories
       else
         return (DateTime) this.GetKey( this.IndexOfKeyOrPrevious( dateTime ) + 1 );
     }
-	//millo
+	//millo - fixed method
 	public DateTime GetDay( DateTime initialDateTime, int numberOfDaysAhead )
 	{
 		if ( this.IndexOfKey( initialDateTime ) >= ( this.Count - numberOfDaysAhead ) )
-			// return the last dateTime in the history
-			return (DateTime) this.GetKey(this.Count -1);
+			// initial dateTime + n° of days ahead > the last dateTime in History
+			{
+			DateTime dateTime;
+			dateTime = (DateTime)this.GetKey(this.Count -1);
+			return dateTime.AddDays(this.IndexOfKey(initialDateTime) + numberOfDaysAhead - this.Count);
+			}
 		else
 			return (DateTime) this.GetKey( this.IndexOfKeyOrPrevious( initialDateTime ) + numberOfDaysAhead );
 	}
@@ -103,7 +107,7 @@ namespace QuantProject.ADT.Histories
 	  #region "GetFunctionHistory"
 	  
 	  /// <summary>
-	  /// Gets a History object base on a statistical available function
+	  /// Gets a History object based on a statistical available function
 	  /// </summary>
 	  /// <remarks>
 	  /// Each History's item contains a specific statistical function
@@ -138,28 +142,34 @@ namespace QuantProject.ADT.Histories
 			  ( currentHistoryIndex < this.Count ) &&
 			  ( ((IComparable)this.GetKey( currentHistoryIndex )).CompareTo( endDateTime ) <= 0 ) )
 		  {
-			  DateTime dateTime = (DateTime)this.GetKey( currentHistoryIndex );
+			  
 			  if (Math.Floor(currentHistoryIndex/onEachPeriodOf) == periodIndex &&
 					cursorThroughDataArray < onEachPeriodOf)
               //currentHistoryIndex belongs to the current period
 			  {	
 				  data[cursorThroughDataArray] = Convert.ToDouble(this.GetByIndex(currentHistoryIndex));
 				  cursorThroughDataArray++;
+				  functionHistory.Add(this.GetKey( currentHistoryIndex ), null);
 				  currentHistoryIndex++;
-				  //POSSIBLY: simpleAverage.Add(this.GetKey( currentHistoryIndex ), null);
+				  
 			  }
 			  else
 		      //currentHistoryIndex doesn't belong to the current period
 			  //so a new item can be added to the object History to be returned
 			  {	
 				  cursorThroughDataArray = 0;
+				  DateTime dateTime = (DateTime)this.GetKey( currentHistoryIndex - onEachPeriodOf);
 				  switch (functionToBeCalculated)
 				  {
 					  case Function.SimpleAverage:
-						  functionHistory.Add( dateTime , BasicFunctions.SimpleAverage(data) );
+						  functionHistory.SetByIndex(currentHistoryIndex - onEachPeriodOf,
+													 BasicFunctions.SimpleAverage(data));
+						  //functionHistory.Add( dateTime , BasicFunctions.SimpleAverage(data) );
 						  break;
 					  case Function.StandardDeviation :
-						  functionHistory.Add( dateTime , BasicFunctions.StdDev(data) );
+						  functionHistory.SetByIndex(currentHistoryIndex - onEachPeriodOf,
+							  BasicFunctions.StdDev(data));
+						  //functionHistory.Add( dateTime , BasicFunctions.StdDev(data) );
 						  break;
 				  }
 			  }
@@ -172,29 +182,32 @@ namespace QuantProject.ADT.Histories
 	#endregion
 	  
 	  /// <summary>
-	  /// It returns true if the value of the current History item is
-	  /// less than the previous History item
+	  /// It returns true if the current History item value is not null
+	  /// and is less than the immediate previous History item whose value is not null
 	  /// </summary>
 	  /// <param name="dateTime">The date key for current History item</param>
 	  public bool IsDecreased(DateTime dateTime)
 	  {	
-		  bool isDecreased;
+		  bool isDecreased = false;
 		  int index = this.IndexOfKey(dateTime);
-		  if ( index <= 0 )
+		  int previousIndex = index - 1;
+		  if ( index <= 0)
 			  isDecreased = false;
 		  else
 		  {
-			  isDecreased = Convert.ToDouble( this[ dateTime ]) <
-				  Convert.ToDouble( this.GetByIndex(index - 1) );
+			  if(this.GetByIndex(index) != null) 
+			  {
+					while (this.GetByIndex(previousIndex) == null)
+					{  
+						previousIndex --;
+					}
+
+			 		isDecreased = Convert.ToDouble( this.GetByIndex(index)) <
+			  				      Convert.ToDouble( this.GetByIndex(previousIndex) );
+			  }
 		  }
 		  return isDecreased;
-		  
-			  
 	  }
-
-
-
-
 
 
     #region "GetSimpleMovingAverage( int , DateTime , int )"
