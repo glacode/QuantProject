@@ -170,6 +170,11 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "Validate\ValidateDataGrid.cs"
+                    SubType = "Component"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "Validate\ValidateDataTable.cs"
                     SubType = "Component"
                     BuildAction = "Compile"
