@@ -30,18 +30,16 @@ namespace QuantProject.Applications.Downloader
 	/// <summary>
 	/// Contains the quotes with Open High Low Close inconsistency
 	/// </summary>
-	public class OHLCdataGrid : QuotesDataGrid
+	public class OHLCdataGrid : ValidationDataGrid
 	{
-    private DataTable openHighLowCloseDataTable;
 		public OHLCdataGrid()
 		{
+//      this.Dock = DockStyle.Fill;
+			this.Anchor = AnchorStyles.Top|AnchorStyles.Bottom|AnchorStyles.Left|AnchorStyles.Right;
 		}
-    public void DataBind( ValidateDataTable validateDataTable )
+    public override void DataBind()
     {
-      this.openHighLowCloseDataTable = validateDataTable.Clone();
-      string select = "1=1";
-      DataRow[] dataRows = validateDataTable.Select(
-        select );
+      ValidateDataTable validateDataTable = ((QuotesEditor)this.FindForm()).ValidateDataTable;
       DataView dataView = new DataView( validateDataTable );
       dataView.RowFilter = "ValidationWarning=" +
         Convert.ToInt16( ValidationWarning.OpenHighLowCloseLogicalInconsistency );
