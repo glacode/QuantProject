@@ -23,6 +23,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 using System;
 using QuantProject.ADT;
 using QuantProject.Business.Financial.Instruments;
+using QuantProject.Business.Financial.Ordering;
 
 namespace QuantProject.Business.Financial.Accounting
 {
@@ -59,6 +60,42 @@ namespace QuantProject.Business.Financial.Accounting
       this.extendedDateTime = extendedDateTime;
     }
 
+		static public TransactionType GetTransactionType( OrderType orderType )
+		{
+			TransactionType returnValue;
+			switch ( orderType )
+			{
+				case OrderType.LimitBuy:
+					returnValue = TransactionType.BuyLong;
+					break;
+				case OrderType.MarketBuy:
+					returnValue = TransactionType.BuyLong;
+					break;
+				case OrderType.LimitCover:
+					returnValue = TransactionType.Cover;
+					break;
+				case OrderType.MarketCover:
+					returnValue = TransactionType.Cover;
+					break;
+				case OrderType.LimitSell:
+					returnValue = TransactionType.Sell;
+					break;
+				case OrderType.MarketSell:
+					returnValue = TransactionType.Sell;
+					break;
+				case OrderType.LimitSellShort:
+					returnValue = TransactionType.SellShort;
+					break;
+				case OrderType.MarketSellShort:
+					returnValue = TransactionType.SellShort;
+					break;
+					//this line should never be reached!
+				default:
+					returnValue = TransactionType.AddCash;
+					break;
+			}
+			return returnValue;
+		}
     public override string ToString()
     {
       return
