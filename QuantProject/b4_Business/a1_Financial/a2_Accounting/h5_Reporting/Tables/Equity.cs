@@ -9,6 +9,11 @@ namespace QuantProject.Business.Financial.Accounting.Reporting.Tables
 	/// </summary>
 	public class Equity : ReportTable
 	{
+		public static string Date = "Date";
+		public static string PnL = "PnL";
+		public static string AccountValue = "AccountValue";
+		public static string PercentageChange = "%chg";
+
     public Equity( string reportName , DataTable detailedDataTable ) :
       base( reportName + " - Equity" )
 		{
