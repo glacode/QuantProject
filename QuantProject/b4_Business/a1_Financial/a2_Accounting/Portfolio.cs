@@ -21,6 +21,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
 using System;
+using System.Runtime.Serialization;
 using System.Collections;
 using System.Diagnostics;
 using QuantProject.ADT;
@@ -38,6 +39,10 @@ namespace QuantProject.Business.Financial.Accounting
   public class Portfolio : Hashtable
   {
     public Portfolio() : base()
+    {
+    }
+    public Portfolio(SerializationInfo info, StreamingContext context)
+      : base(info, context)
     {
     }
 

@@ -6,6 +6,7 @@ using QuantProject.ADT;
 using QuantProject.ADT.Histories;
 using QuantProject.DataAccess;
 using QuantProject.DataAccess.Tables;
+using System.Runtime.Serialization;
 
 namespace QuantProject.Data.DataTables
 {
@@ -48,6 +49,10 @@ namespace QuantProject.Data.DataTables
 				QuantProject.DataAccess.Tables.Quotes.GetStartDate( ticker ) ,
 				QuantProject.DataAccess.Tables.Quotes.GetEndDate( ticker ) );
 		}
+    public Quotes(SerializationInfo info, StreamingContext context)
+      : base(info, context)
+    {
+    }
 		private void fillDataTable( string ticker , DateTime startDate , DateTime endDate )
 		{
 			QuantProject.DataAccess.Tables.Quotes.SetDataTable( 
