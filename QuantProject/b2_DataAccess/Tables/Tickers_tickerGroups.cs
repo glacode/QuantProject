@@ -90,7 +90,18 @@ namespace QuantProject.DataAccess.Tables
           "WHERE " + Tickers_tickerGroups.GroupID + "='" +
           groupID + "'");
     }
-
+    /*
+    /// <summary>
+    /// It returns a table containing all the tickers 
+    /// gained through a recursion through all the groups contained in the given groupID
+    /// </summary>
+    public static DataTable GetTickersWithRecursionInsideGroup( string groupID)
+    {
+      /// TO DO use a join in order to return a table with tiTicker and company name  
+      
+    }
+    */
+    
     /// <summary>
     /// It returns true if some tickers are grouped in the given groupID
     /// </summary>
