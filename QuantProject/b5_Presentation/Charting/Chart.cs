@@ -85,7 +85,7 @@ namespace QuantProject.Presentation.Charting
 			{
 				DataRow dataRow = dataTable.NewRow();
 				dataRow[ "X" ] = (DateTime)chartPlot.History.GetKey( i );
-				dataRow[ "Y" ] = (float)chartPlot.History.GetByIndex( i );
+				dataRow[ "Y" ] = Convert.ToDouble( chartPlot.History.GetByIndex( i ) );
 				dataTable.Rows.Add( dataRow );
 			}
 
