@@ -152,7 +152,8 @@ namespace QuantProject.Business.Financial.Accounting
       try
       {
         EndOfDayTransaction timedTransaction =
-          new EndOfDayTransaction( TransactionType.AddCash , moneyAmount , endOfDayDateTime );
+          new EndOfDayTransaction( TransactionType.AddCash , moneyAmount ,
+					endOfDayDateTime.Copy() );
         this.Add( timedTransaction );
         //Transactions.MultiAdd( extendedDateTime.DateTime , timedTransaction );
         //cashAmount = cashAmount + moneyAmount;
