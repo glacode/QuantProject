@@ -58,6 +58,12 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
     private ArrayList orders;
 
     private string benchmark;
+    //these two values have to be updated during
+    //backtest, for minimizing commission amount,
+    //according to broker's commission scheme 
+    private double minPriceForMinimumCommission = 0;
+    private double maxPriceForMinimumCommission = 200;
+    
 
     public int NumberOfEligibleTickers
     {
@@ -178,7 +184,8 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
       SelectorByAverageRawOpenPrice selectorByOpenPrice = 
                   new SelectorByAverageRawOpenPrice(this.tickerGroupID, false,
                           currentDate.AddDays(-this.numDaysForLiquidity), currentDate,
-                          this.numberOfEligibleTickers, 25, 35, 0, 0.5);
+                          this.numberOfEligibleTickers, this.minPriceForMinimumCommission,
+                          this.maxPriceForMinimumCommission, 0, 1.5);
       DataTable tickersByPrice = selectorByOpenPrice.GetTableOfSelectedTickers();
       SelectorByLiquidity mostLiquid = new SelectorByLiquidity(tickersByPrice, false,
                                       currentDate.AddDays(-this.numDaysForLiquidity), currentDate, this.numberOfEligibleTickers);
@@ -215,6 +222,13 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
       //that's it the actual chosenTickers member
     }
 
+    private void oneHourAfterMarketCloseEventHandler_updatePrices()
+    {
+    	//min price for minimizing commission amount
+    	//according to IB Broker's commission scheme
+    	this.minPriceForMinimumCommission = this.account.CashAmount/(this.numberOfTickersToBeChosen*100);
+    }
+    
     /// <summary>
     /// Handles a "One hour after market close" event.
     /// </summary>
@@ -223,6 +237,7 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
     public void OneHourAfterMarketCloseEventHandler(
       Object sender , EndOfDayTimingEventArgs endOfDayTimingEventArgs )
     {
+    	this.oneHourAfterMarketCloseEventHandler_updatePrices();
       this.setTickers(endOfDayTimingEventArgs.EndOfDayDateTime.DateTime);
       //sets tickers to be chosen next Market Open event
       this.orders.Clear();
