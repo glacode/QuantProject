@@ -24,6 +24,8 @@ namespace QuantProject.Data.DataTables
 		public static string AdjustedClose = "quAdjustedClose";
 		public static string AdjustedCloseToCloseRatio = "quAdjustedCloseToCloseRatio";
 
+		private History history;
+
 		/// <summary>
 		/// Gets the ticker whose quotes are contained into the Quotes object
 		/// </summary>
@@ -119,6 +121,15 @@ namespace QuantProject.Data.DataTables
 		}
 		#endregion
 
+		private void setHistory()
+		{
+			if ( this.history == null )
+				// history has not been set, yet
+			{
+				this.history = new History();
+				this.history.Import( this , "quDate" , "quAdjustedClose" );
+			}
+		}
 		/// <summary>
 		/// returns the Date for the quote that is precedingDays before
 		/// quoteDate
@@ -128,8 +139,7 @@ namespace QuantProject.Data.DataTables
 		/// <returns></returns>
 		public DateTime GetPrecedingDate( DateTime quoteDate , int precedingDays )
 		{
-			History history = new History();
-			history.Import( this , "quDate" , "quAdjustedClose" );
+			setHistory();
 			return (DateTime) history.GetKey( Math.Max( 0 ,
 				history.IndexOfKeyOrPrevious( quoteDate ) -
 				precedingDays ) );
@@ -145,8 +155,7 @@ namespace QuantProject.Data.DataTables
 		/// <returns></returns>
 		public DateTime GetFollowingDate( DateTime quoteDate , int followingDays )
 		{
-			History history = new History();
-			history.Import( this , "quDate" , "quAdjustedClose" );
+			setHistory();
 			return (DateTime) history.GetKey( Math.Max( 0 ,
 				history.IndexOfKeyOrPrevious( quoteDate ) -
 				followingDays ) );
