@@ -32,59 +32,154 @@ namespace QuantProject.Data.Selectors
   /// Class for advanced selections on tickers
   /// </summary>
   /// <remarks>
-  /// Filter/selection results depend on the SelectionRule used for the instanciation 
-  /// of a new TickerSelector
+  /// Selection depends on the parameters used in the construction of a new TickerSelector object
   /// </remarks>
-	
   public class TickerSelector : ITickerSelector
   {
     private DataTable setOfTickersToBeSelected = null;
-    private SelectionRule selectionRule;
+    private SelectionType typeOfSelection;
+    private string groupID = "";
+    private DateTime firstQuoteDate = QuantProject.ADT.ConstantsProvider.InitialDateTimeForDownload;
+    private DateTime lastQuoteDate = DateTime.Now;
+    private long maxNumOfReturnedTickers = 0;
+    private bool isOrderedInASCMode; 
     
-    public TickerSelector(DataTable setOfTickersToBeSelected, SelectionRule selectionRule)
+    #region properties
+    /// <summary>
+    /// It gets the GroupID from which tickers have to be selected
+    /// </summary>
+    public string GroupID
+    {
+      get{return this.groupID;}
+    }
+    /// <summary>
+    /// It gets the first date of selection for the quotes
+    /// </summary>
+    public DateTime FirstQuoteDate
+    {
+      get{return this.firstQuoteDate;}
+    }
+    /// <summary>
+    /// It gets the last date of selection for the quotes
+    /// </summary>
+    public DateTime LastQuoteDate
+    {
+      get{return this.lastQuoteDate;}
+    }   
+    
+    /// <summary>
+    /// It gets the max number of tickers to be returned
+    /// </summary>
+    public long MaxNumOfReturnedTickers
+    {
+      get{return this.maxNumOfReturnedTickers;}
+    }
+    /// <summary>
+    /// It gets the type of selection provided by the Ticker Selector
+    /// </summary>
+    public SelectionType TypeOfSelection
+    {
+      get{return this.typeOfSelection;}
+    }
+
+    /// <summary>
+    /// It gets / sets the order type for the ticker selector
+    /// </summary>
+    public bool IsOrderedInASCMode
+    {
+      get{return this.isOrderedInASCMode;}
+      set{this.isOrderedInASCMode = value;}
+    }
+    
+    #endregion
+
+    public TickerSelector(DataTable setOfTickersToBeSelected, SelectionType typeOfSelection,
+                          bool orderInASCmode,
+                          string groupID,
+                          DateTime firstQuoteDate,
+                          DateTime lastQuoteDate,
+                          long maxNumOfReturnedTickers)
     {
       this.setOfTickersToBeSelected = setOfTickersToBeSelected;
-      this.selectionRule = selectionRule;
+      this.commonInitialization(typeOfSelection, orderInASCmode, groupID, firstQuoteDate,lastQuoteDate,maxNumOfReturnedTickers);
     }
     
-    public TickerSelector(SelectionRule selectionRule)
+    public TickerSelector(SelectionType typeOfSelection,
+                          bool orderInASCmode,
+                          string groupID,
+                          DateTime firstQuoteDate,
+                          DateTime lastQuoteDate,
+                          long maxNumOfReturnedTickers)
     {
-      this.selectionRule = selectionRule;
+      this.commonInitialization(typeOfSelection, orderInASCmode, groupID, firstQuoteDate,lastQuoteDate,maxNumOfReturnedTickers);
     }
     
+    private void commonInitialization(SelectionType typeOfSelection,
+                                      bool orderInASCmode,
+                                      string groupID,
+                                      DateTime firstQuoteDate,
+                                      DateTime lastQuoteDate,
+                                      long maxNumOfReturnedTickers)
+    {
+      this.typeOfSelection = typeOfSelection;
+      this.isOrderedInASCMode = orderInASCmode;
+      this.groupID = groupID;
+      this.firstQuoteDate = firstQuoteDate;
+      this.lastQuoteDate = lastQuoteDate;
+      this.maxNumOfReturnedTickers = maxNumOfReturnedTickers;
+    }    
+  
+
     //implementation of ITickerSelector
     public DataTable GetTableOfSelectedTickers()
     {
-       if(this.setOfTickersToBeSelected == null &&
-          this.selectionRule.TypeOfSelection == SelectionType.MostLiquid)
-       {
-         return QuantProject.DataAccess.Tables.Quotes.GetMostLiquidTickers(this.selectionRule.GroupID,
-                                            this.selectionRule.FirstQuoteDate,
-                                            this.selectionRule.LastQuoteDate,
-                                            this.selectionRule.MaxNumOfReturnedTickers);
-       }
-       else if(this.setOfTickersToBeSelected != null &&
-               this.selectionRule.TypeOfSelection == SelectionType.MostLiquid)
-       {
-         return QuantProject.DataAccess.Tables.Quotes.GetMostLiquidTickers(this.setOfTickersToBeSelected, 
-                                            this.selectionRule.FirstQuoteDate,
-                                            this.selectionRule.LastQuoteDate,
-                                            this.selectionRule.MaxNumOfReturnedTickers);    
-       }
-       else if(this.setOfTickersToBeSelected == null &&
-         this.selectionRule.TypeOfSelection == SelectionType.BestPerformer)
-       {
-         return TickerDataTable.GetBestPerformingTickers(this.selectionRule.GroupID, 
-                                                        this.selectionRule.FirstQuoteDate,
-                                                        this.selectionRule.LastQuoteDate,
-                                                        this.selectionRule.MaxNumOfReturnedTickers);    
-       }
-
-       else
-       return new DataTable();
-       //this line should never be reached!!
+      switch (this.typeOfSelection)
+      {
+        case SelectionType.Liquidity:
+          return this.getTickersByLiquidity();
+        case SelectionType.Performance:
+          return this.getTickersByPerformance();
+        //this line should never be reached!
+        default:
+          return new DataTable();
+      }
+       
     }
     
+    private DataTable getTickersByLiquidity()
+    {
+      if(this.setOfTickersToBeSelected == null)
+        return QuantProject.DataAccess.Tables.Quotes.GetTickersByLiquidity(this.isOrderedInASCMode,
+                                                                        this.groupID,
+                                                                        this.firstQuoteDate,
+                                                                        this.lastQuoteDate,
+                                                                        this.maxNumOfReturnedTickers);        
+
+      else
+        return QuantProject.Data.DataTables.Quotes.GetTickersByLiquidity(this.isOrderedInASCMode,
+                                                                        this.setOfTickersToBeSelected, 
+                                                                        this.firstQuoteDate,
+                                                                        this.lastQuoteDate,
+                                                                        this.maxNumOfReturnedTickers);
+    }
+    
+    private DataTable getTickersByPerformance()
+    {
+      if(this.setOfTickersToBeSelected == null)
+         return TickerDataTable.GetTickersByPerformance(this.isOrderedInASCMode,
+                                                        this.groupID, 
+                                                        this.firstQuoteDate,
+                                                        this.lastQuoteDate,
+                                                        this.maxNumOfReturnedTickers);
+      else
+        return TickerDataTable.GetTickersByPerformance(this.isOrderedInASCMode,
+                                                        this.setOfTickersToBeSelected,
+                                                        this.firstQuoteDate,
+                                                        this.lastQuoteDate,
+                                                        this.maxNumOfReturnedTickers);
+      
+    }
+
     public void SelectAllTickers()
     {
       ;
@@ -95,25 +190,16 @@ namespace QuantProject.Data.Selectors
 	  /// It returns a dataTable containing tickers selected by the user
 	  /// </summary>
 	  /// <param name="dataGrid">The data grid from which the user has selected tickers</param>
-    
-    
     public static DataTable GetTableOfManuallySelectedTickers(DataGrid dataGrid)
     {
       DataTable dataTableOfDataGrid = (DataTable)dataGrid.DataSource;
-      DataTable tableOfSelectedTickers = new DataTable();
-      TickerDataTable.AddColumnsOfTickerTable(tableOfSelectedTickers);
+      DataTable tableOfSelectedTickers = dataTableOfDataGrid.Clone();
       int indexOfRow = 0;
       while(indexOfRow != dataTableOfDataGrid.Rows.Count)
       {
         if(dataGrid.IsSelected(indexOfRow))
         {
-          DataRow dataRow = tableOfSelectedTickers.NewRow(); 
-          dataRow[0] = dataTableOfDataGrid.Rows[indexOfRow][0];
-          //dataRow["tiTicker"] = dataTableOfDataGrid.Rows[indexOfRow][0];
-
-          dataRow[1] = dataTableOfDataGrid.Rows[indexOfRow][1];
-          //dataRow["tiCompanyName"] = dataTableOfDataGrid.Rows[indexOfRow][0];
-          tableOfSelectedTickers.Rows.Add(dataRow);
+          tableOfSelectedTickers.ImportRow(dataTableOfDataGrid.Rows[indexOfRow]);
         }
         indexOfRow++;
       }
