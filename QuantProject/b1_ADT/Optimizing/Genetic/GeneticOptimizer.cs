@@ -179,14 +179,14 @@ namespace QuantProject.ADT.Optimizing.Genetic
       {
         for (int i = 0; !this.IsConvergenceReached(); i++)
         {
-        	this.generateNewPopulation(true);
+        	this.generateNewPopulation(showOutputToConsole);
         }
       }
       else // the GO simply generates the given number of populations and then stops
       {
         for (int i = 0; i < this.generationNumber; i++)
         {
-          this.generateNewPopulation(true);
+          this.generateNewPopulation(showOutputToConsole);
         }
       }
     }
