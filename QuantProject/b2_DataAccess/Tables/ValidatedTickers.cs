@@ -63,7 +63,7 @@ namespace QuantProject.DataAccess.Tables
 				oleDbSingleTableAdapter.DataTable.Rows.Add(	oleDbSingleTableAdapter.DataTable.NewRow() );
 				oleDbSingleTableAdapter.DataTable.Rows[ 0 ][ ValidatedTickers.Ticker ] = ticker;
 				oleDbSingleTableAdapter.DataTable.Rows[ 0 ][ ValidatedTickers.StartDate ] = startDate;
-				oleDbSingleTableAdapter.DataTable.Rows[ 0 ][ ValidatedTickers.StartDate ] = endDate;
+				oleDbSingleTableAdapter.DataTable.Rows[ 0 ][ ValidatedTickers.EndDate ] = endDate;
 				oleDbSingleTableAdapter.DataTable.Rows[ 0 ][ ValidatedTickers.HashValue ] = hashValue;
 				oleDbSingleTableAdapter.OleDbDataAdapter.Update( oleDbSingleTableAdapter.DataTable );
 			}
