@@ -80,7 +80,7 @@ namespace QuantProject.ADT
     #endregion
     public Object GetKeyOrPrevious( Object key )
     {
-      return this.GetKey( this.IndexOfKey( key ) );
+      return this.GetKey( this.IndexOfKeyOrPrevious( key ) );
     }
     public bool IsLastKey( Object key )
     {
