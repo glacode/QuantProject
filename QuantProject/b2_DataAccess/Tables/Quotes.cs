@@ -13,6 +13,19 @@ namespace QuantProject.DataAccess.Tables
 	{
 		private DataTable quotes;
      
+		// these static fields provide field name in the database table
+		// They are intended to be used through intellisense when necessary
+		public static string TickerFieldName = "quTicker";	// Ticker cannot be simply used because
+																												// it is already used below
+		public static string Date = "quDate";
+		public static string Open = "quOpen";
+		public static string High = "quHigh";
+		public static string Low = "quLow";
+		public static string Close = "quClose";
+		public static string Volume = "quVolume";
+		public static string AdjustedClose = "quAdjustedClose";
+		public static string AdjustedCloseToCloseRatio = "quAdjustedCloseToCloseRatio";
+
 
 		/// <summary>
 		/// Gets the ticker whose quotes are contained into the Quotes object
@@ -26,6 +39,16 @@ namespace QuantProject.DataAccess.Tables
 		public Quotes( string ticker)
 		{
 			this.quotes = Quotes.GetTickerQuotes( ticker );
+		}
+		/// <summary>
+		/// Creates quotes for the given instrument, since the startDate to the endDate
+		/// </summary>
+		/// <param name="ticker"></param>
+		/// <param name="startDate"></param>
+		/// <param name="endDate"></param>
+		public Quotes( string ticker , DateTime startDate , DateTime endDate )
+		{
+			/// TO DO
 		}
 		/// <summary>
 		/// Returns the first date for the given ticker
@@ -243,6 +266,23 @@ namespace QuantProject.DataAccess.Tables
 			string sql = "select * from quotes where quTicker='" + instrumentKey + "' " +
 				"order by quDate";
 			return SqlExecutor.GetDataTable( sql );
+		}
+		/// <summary>
+		/// Returns the quotes for the given instrument , since startDate to endDate
+		/// </summary>
+		/// <param name="ticker"></param>
+		/// <param name="startDate"></param>
+		/// <param name="endDate"></param>
+		/// <returns></returns>
+		public static void SetDataTable( string ticker , DateTime startDate , DateTime endDate ,
+			DataTable dataTable)
+		{
+			string sql =
+				"select * from quotes " +
+				"where " + Quotes.TickerFieldName + "='" + ticker + "' " +
+        "and " + Quotes.Date + ">=" + SQLBuilder.GetDateConstant( startDate ) +
+        "and " + Quotes.Date + "<=" + SQLBuilder.GetDateConstant( endDate );
+			SqlExecutor.SetDataTable( sql , dataTable );
 		}
 
 		/// <summary>
