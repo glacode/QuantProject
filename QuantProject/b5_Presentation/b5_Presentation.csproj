@@ -107,11 +107,6 @@
                     HintPath = "..\..\..\..\..\..\WINDOWS\Microsoft.NET\Framework\v1.0.3705\System.Windows.Forms.dll"
                 />
                 <Reference
-                    Name = "scpl"
-                    AssemblyName = "scpl"
-                    HintPath = "..\..\lib\scpl.dll"
-                />
-                <Reference
                     Name = "b1_ADT"
                     Project = "{B8A01161-3698-4591-B1EF-90F5FC7D8DBA}"
                     Package = "{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}"
@@ -120,6 +115,11 @@
                     Name = "System.Drawing"
                     AssemblyName = "System.Drawing"
                     HintPath = "..\..\..\..\..\..\WINDOWS\Microsoft.NET\Framework\v1.0.3705\System.Drawing.dll"
+                />
+                <Reference
+                    Name = "scpl"
+                    AssemblyName = "scpl"
+                    HintPath = "..\..\..\..\My Documents\nostri\GLAUCO\bin\scpl.dll"
                 />
             </References>
         </Build>

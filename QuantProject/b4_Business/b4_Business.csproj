@@ -136,11 +136,6 @@
                     BuildAction = "Compile"
                 />
                 <File
-                    RelPath = "a0_Validation\QuotesToBeValidated.cs"
-                    SubType = "Component"
-                    BuildAction = "Compile"
-                />
-                <File
                     RelPath = "a0_Validation\SospiciousDataRowEventArgs.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
