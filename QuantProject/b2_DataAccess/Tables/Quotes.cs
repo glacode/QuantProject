@@ -357,7 +357,41 @@ namespace QuantProject.DataAccess.Tables
 
       return SqlExecutor.GetDataTable( sql );
     }
-    
+    /// <summary>
+    /// returns most liquid tickers within the given set of tickers
+    /// </summary>
+
+    public static DataTable GetMostLiquidTickers( DataTable setOfTickers,
+                                                  DateTime firstQuoteDate,
+                                                  DateTime lastQuoteDate,
+                                                  long maxNumOfReturnedTickers)
+    {
+      setOfTickers.Columns.Add("IndexOfLiquidity", System.Type.GetType("System.Double"));
+      DataTable getMostLiquidTicker = setOfTickers.Clone(); 
+      DataTable dt;
+      foreach(DataRow row in setOfTickers.Rows)
+      {
+        string sql = "SELECT quotes.quTicker, " +
+                    "Avg([quVolume]*[quAdjustedClose]) AS AverageTradedValue " +
+                    "FROM quotes WHERE quTicker ='" + 
+                    (string)row[0] + "' " +
+                    "AND quotes.quDate BETWEEN " + SQLBuilder.GetDateConstant(firstQuoteDate) + 
+                    " AND " + SQLBuilder.GetDateConstant(lastQuoteDate) + 
+                    " GROUP BY quotes.quTicker";
+        dt = SqlExecutor.GetDataTable( sql );
+        row["IndexOfLiquidity"] = (double)dt.Rows[0]["AverageTradedValue"];
+      }
+      DataRow[] orderedRows = setOfTickers.Select("", "IndexOfLiquidity DESC");
+      object[] valuesToAdd = new object[3];
+      for(long i = 0;i<maxNumOfReturnedTickers && i<setOfTickers.Rows.Count;i++)
+      {
+        valuesToAdd[0]=orderedRows[i][0];
+        valuesToAdd[1]=orderedRows[i][1];
+        valuesToAdd[2]=orderedRows[i][2];
+        getMostLiquidTicker.Rows.Add(valuesToAdd);
+      }
+      return getMostLiquidTicker;
+    }
 
 		#region GetHashValue
 		private string getHashValue_getQuoteString_getRowString_getSingleValueString( Object value )
