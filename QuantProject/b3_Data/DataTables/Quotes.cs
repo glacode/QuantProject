@@ -285,8 +285,48 @@ namespace QuantProject.Data.DataTables
       return ExtendedDataTable.CopyAndSort(setOfTickers,"PearsonCorrelationCoefficient", orderByASC);
     }
 
+    /// <summary>
+    /// returns tickers with the average raw open price
+    /// belonging to the specified range within the given set of tickers
+    /// </summary>
 
+    public static DataTable GetTickersByAverageRawOpenPrice( bool orderByASC,
+                                                  DataTable setOfTickers,
+                                                  DateTime firstQuoteDate,
+                                                  DateTime lastQuoteDate,
+                                                  long maxNumOfReturnedTickers,
+                                                  double minPrice, double maxPrice)
+    {
+      if(!setOfTickers.Columns.Contains("AverageRawOpenPrice"))
+        setOfTickers.Columns.Add("AverageRawOpenPrice", System.Type.GetType("System.Double"));
+      if(!setOfTickers.Columns.Contains("RawOpenPriceStdDev"))
+      	setOfTickers.Columns.Add("RawOpenPriceStdDev",System.Type.GetType("System.Double"));
+      foreach(DataRow row in setOfTickers.Rows)
+      {
+        row["AverageRawOpenPrice"] = 
+            QuantProject.DataAccess.Tables.Quotes.GetAverageRawOpenPrice((string)row[0],
+                                                                        firstQuoteDate,
+                                                                        lastQuoteDate);
+        row["RawOpenPriceStdDev"] = 
+            QuantProject.DataAccess.Tables.Quotes.GetRawOpenPriceStdDeviation((string)row[0],
+                                                                        firstQuoteDate,
+                                                                        lastQuoteDate);
+      }
+      getTickersByAverageRawOpenPrice_deleteRows(setOfTickers);
+      DataTable returnValue = ExtendedDataTable.CopyAndSort(setOfTickers,"AverageRawOpenPrice", orderByASC);
+      ExtendedDataTable.DeleteRows(returnValue, maxNumOfReturnedTickers);
+      return returnValue;
+    }
 
+	private static void getTickersByAverageRawOpenPrice_deleteRows( DataTable tempTicker)
+    {
+      int numRows = tempTicker.Rows.Count;
+      for(int i = 0; i<numRows; i++)
+      {
+      	;
+      	///TODO:
+      }
+    }
 		private History history;
 
 		/// <summary>

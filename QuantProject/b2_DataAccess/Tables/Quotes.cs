@@ -561,6 +561,35 @@ namespace QuantProject.DataAccess.Tables
     }
 
     /// <summary>
+    /// returns tickers ordered by average raw open price level,
+    /// with a given standard deviation, in a given time interval
+    /// </summary>
+    public static DataTable GetTickersByRawOpenPrice( bool orderInASCMode, string groupID,
+                                                    DateTime firstQuoteDate,
+                                                    DateTime lastQuoteDate,
+                                                    long maxNumOfReturnedTickers, double minPrice,
+                                                    double maxPrice, double minStdDeviation,
+                                                    double maxStdDeviation)
+    {
+      string sql = "SELECT TOP " + maxNumOfReturnedTickers + " quotes.quTicker, tickers.tiCompanyName, " +
+                    "Avg(quotes.quOpen) AS AverageRawOpenPrice, StDev(quotes.quOpen) AS StdDevRawOpenPrice " +
+                  "FROM (quotes INNER JOIN tickers ON quotes.quTicker=tickers.tiTicker) " +
+                  "INNER JOIN tickers_tickerGroups ON tickers.tiTicker=tickers_tickerGroups.ttTiId " +
+                  "WHERE quotes.quDate Between " + SQLBuilder.GetDateConstant(firstQuoteDate) + " " +
+                  "AND " + SQLBuilder.GetDateConstant(lastQuoteDate) + " " +
+                  "AND " + "tickers_tickerGroups.ttTgId='" + groupID + "' " +
+                  "GROUP BY quotes.quTicker, tickers.tiCompanyName " +
+                  "HAVING Avg(quotes.quOpen) BETWEEN " + minPrice + " AND " + maxPrice + " " +
+                    "AND StDev(quotes.quOpen) BETWEEN " + minStdDeviation + " AND " + maxStdDeviation + " " +
+                  "ORDER BY Avg(quotes.quOpen)";
+      string sortDirection = " DESC";
+      if(orderInASCMode)
+        sortDirection = " ASC";
+      sql = sql + sortDirection;
+      return SqlExecutor.GetDataTable( sql );
+    }
+
+    /// <summary>
     /// returns the average traded value for the given ticker in the specified interval
     /// </summary>
     public static double GetAverageTradedValue( string ticker,
@@ -679,8 +708,56 @@ namespace QuantProject.DataAccess.Tables
         return (double)dt.Rows[0]["CloseToOpenStandDev"];
     } 
     
+    /// <summary>
+    /// returns the average raw open price for the given ticker, 
+    /// at the specified time interval 
+    /// </summary>
+    public static double GetAverageRawOpenPrice( string ticker,
+                                                DateTime firstQuoteDate,
+                                                DateTime lastQuoteDate)
+                                                
+    {
+      DataTable dt;
+      string sql = "SELECT quotes.quTicker, tickers.tiCompanyName, " +
+                    "Avg(quotes.quOpen) AS AverageRawOpenPrice " +
+                  "FROM (quotes INNER JOIN tickers ON quotes.quTicker=tickers.tiTicker) " +
+                  "INNER JOIN tickers_tickerGroups ON tickers.tiTicker=tickers_tickerGroups.ttTiId " +
+                  "WHERE quotes.quTicker ='" + ticker + 
+      			  "' AND quotes.quDate Between " + SQLBuilder.GetDateConstant(firstQuoteDate) + " " +
+                  "AND " + SQLBuilder.GetDateConstant(lastQuoteDate) + " " +
+                  "GROUP BY quotes.quTicker, tickers.tiCompanyName";
+      dt = SqlExecutor.GetDataTable( sql );
+      if(dt.Rows.Count==0)
+        return 0;
+      else
+        return (double)dt.Rows[0]["AverageRawOpenPrice"];
+     }
 
-
+	/// <summary>
+    /// returns raw open price's standard deviation for the given ticker,
+    /// at the specified time interval
+	/// </summary>
+    public static double GetRawOpenPriceStdDeviation( string ticker,
+                                                DateTime firstQuoteDate,
+                                                DateTime lastQuoteDate)
+                                                
+    {
+      DataTable dt;
+      string sql = "SELECT quotes.quTicker, tickers.tiCompanyName, " +
+                    "StDev(quotes.quOpen) AS RawOpenPriceStdDev " +
+                  "FROM (quotes INNER JOIN tickers ON quotes.quTicker=tickers.tiTicker) " +
+                  "INNER JOIN tickers_tickerGroups ON tickers.tiTicker=tickers_tickerGroups.ttTiId " +
+                  "WHERE quotes.quTicker ='" + ticker + 
+      			  "' AND quotes.quDate Between " + SQLBuilder.GetDateConstant(firstQuoteDate) + " " +
+                  "AND " + SQLBuilder.GetDateConstant(lastQuoteDate) + " " +
+                  "GROUP BY quotes.quTicker, tickers.tiCompanyName";
+      dt = SqlExecutor.GetDataTable( sql );
+      if(dt.Rows.Count==0)
+        return 0;
+      else
+        return (double)dt.Rows[0]["RawOpenPriceStdDev"];
+     }
+    
 		#region GetHashValue
 		private string getHashValue_getQuoteString_getRowString_getSingleValueString( Object value )
 		{
