@@ -23,6 +23,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 using System;
 
 using QuantProject.ADT;
+using QuantProject.Business.DataProviders;
 using QuantProject.Business.Financial.Instruments;
 using QuantProject.Business.Financial.Accounting;
 using QuantProject.Business.Financial.Ordering;
@@ -38,14 +39,17 @@ namespace QuantProject.Scripts.SimpleTesting
 	{
 		private string ticker;
 		private Account account;
+		private IHistoricalQuoteProvider historicalQuoteProvider =
+			new HistoricalAdjustedQuoteProvider();
 
 		private void fiveMinutesBeforeMarketCloseHandler(
 			Object sender , EndOfDayTimingEventArgs eventArgs )
 		{
 			if ( this.account.GetMarketValue( this.ticker ) <=
-				HistoricalDataProvider.GetMarketValue( this.ticker ,
-				this.account.EndOfDayTimer.GetCurrentTime().DateTime.AddDays( - 1 ) ,
-				BarComponent.Close ) )
+				this.historicalQuoteProvider.GetMarketValue( this.ticker ,
+				new EndOfDayDateTime(
+					this.account.EndOfDayTimer.GetCurrentTime().DateTime.AddDays( - 1 ) ,
+				EndOfDaySpecificTime.MarketClose ) ) )
 			{
 				// today's closing value is lower or equal than yesterday's closing value
 				if ( this.account.Portfolio.Contains( this.ticker ) )
