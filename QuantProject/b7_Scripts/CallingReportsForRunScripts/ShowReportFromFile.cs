@@ -61,8 +61,8 @@ namespace QuantProject.Scripts.CallingReportsForRunScripts
       {
         AccountReport accountReport = 
           (AccountReport)ObjectArchiver.Extract(serializedAccountReportFullPath);
-        ///TODO: ...
-				                                                               
+        Report report = new Report(accountReport);
+        report.Show();
       }
       catch(System.Exception ex)
       {

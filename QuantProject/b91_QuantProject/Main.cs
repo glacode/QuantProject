@@ -61,6 +61,7 @@ namespace QuantProject.Principale
     private System.Windows.Forms.MenuItem menuItemAccountViewer;
     private System.Windows.Forms.MenuItem menuItemShowReportFromAccount;
     private System.Windows.Forms.MenuItem menuItemRunReleasingMode;
+    private System.Windows.Forms.MenuItem menuItemShowSavedReport;
 		/// <summary>
 		/// Required designer variable.
 		/// </summary>
@@ -109,6 +110,7 @@ namespace QuantProject.Principale
       this.menuItemSavedTests = new System.Windows.Forms.MenuItem();
       this.menuItemAccountViewer = new System.Windows.Forms.MenuItem();
       this.menuItemShowReportFromAccount = new System.Windows.Forms.MenuItem();
+      this.menuItemRunReleasingMode = new System.Windows.Forms.MenuItem();
       this.menuItem13 = new System.Windows.Forms.MenuItem();
       this.menuItem14 = new System.Windows.Forms.MenuItem();
       this.menuItem1 = new System.Windows.Forms.MenuItem();
@@ -118,7 +120,7 @@ namespace QuantProject.Principale
       this.menuItem4 = new System.Windows.Forms.MenuItem();
       this.menuItem6 = new System.Windows.Forms.MenuItem();
       this.menuItem7 = new System.Windows.Forms.MenuItem();
-      this.menuItemRunReleasingMode = new System.Windows.Forms.MenuItem();
+      this.menuItemShowSavedReport = new System.Windows.Forms.MenuItem();
       // 
       // mainMenu1
       // 
@@ -167,7 +169,8 @@ namespace QuantProject.Principale
       this.menuItemSavedTests.Index = 1;
       this.menuItemSavedTests.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
                                                                                        this.menuItemAccountViewer,
-                                                                                       this.menuItemShowReportFromAccount});
+                                                                                       this.menuItemShowReportFromAccount,
+                                                                                       this.menuItemShowSavedReport});
       this.menuItemSavedTests.Text = "Saved Tests";
       // 
       // menuItemAccountViewer
@@ -181,6 +184,12 @@ namespace QuantProject.Principale
       this.menuItemShowReportFromAccount.Index = 1;
       this.menuItemShowReportFromAccount.Text = "Show report from account";
       this.menuItemShowReportFromAccount.Click += new System.EventHandler(this.menuItemShowReportFromAccount_Click);
+      // 
+      // menuItemRunReleasingMode
+      // 
+      this.menuItemRunReleasingMode.Index = 2;
+      this.menuItemRunReleasingMode.Text = "Run (releasing mode)";
+      this.menuItemRunReleasingMode.Click += new System.EventHandler(this.menuItemRunReleasingMode_Click);
       // 
       // menuItem13
       // 
@@ -230,11 +239,11 @@ namespace QuantProject.Principale
       this.menuItem7.Index = -1;
       this.menuItem7.Text = "";
       // 
-      // menuItemRunReleasingMode
+      // menuItemShowSavedReport
       // 
-      this.menuItemRunReleasingMode.Index = 2;
-      this.menuItemRunReleasingMode.Text = "Run (releasing mode)";
-      this.menuItemRunReleasingMode.Click += new System.EventHandler(this.menuItemRunReleasingMode_Click);
+      this.menuItemShowSavedReport.Index = 2;
+      this.menuItemShowSavedReport.Text = "Show saved report";
+      this.menuItemShowSavedReport.Click += new System.EventHandler(this.menuItemShowSavedReport_Click);
       // 
       // Principale
       // 
@@ -314,7 +323,8 @@ namespace QuantProject.Principale
 //      {//call here your scripts
 	//new RunWalkForwardOneRank().Run();			
         // new RunEfficientCTCPorfolio().Run();
-				new RunOneRank().Run();
+				//new RunOneRank().Run();
+        new RunEfficientCTOPorfolio("STOCKMI",70,5,30,2,1000).Run();
 //      }
 //      catch ( Exception ex )
 //      {
@@ -330,10 +340,10 @@ namespace QuantProject.Principale
       accountViewer.Show();
     }
 
-    private string getPath()
+    private string getPath(string dialogTitle)
     {
       OpenFileDialog openFileDialog = new OpenFileDialog();
-      openFileDialog.Title = "Select a serialized account please ...";
+      openFileDialog.Title = dialogTitle;
       openFileDialog.Multiselect = false;
       openFileDialog.CheckFileExists = true;
       openFileDialog.ShowDialog();
@@ -342,7 +352,7 @@ namespace QuantProject.Principale
 
     private void menuItemShowReportFromAccount_Click(object sender, System.EventArgs e)
     {
-      string chosenPath = this.getPath();
+      string chosenPath = this.getPath("Select a serialized account please ...");
       if(chosenPath != "")
         ShowReportFromFile.ShowReportFromSerializedAccount(chosenPath);
     }
@@ -356,8 +366,9 @@ namespace QuantProject.Principale
         //call here your scripts
         //new RunWalkForwardOneRank().Run();			
         //new RunEfficientCTCPorfolio().Run();
-        new RunEfficientCTOPorfolio("STOCKMI",100,5,30,10,2500).Run();
-        new RunEfficientCTOPorfolio("STOCKMI",100,5,60,10,2500).Run();
+        
+        //new RunEfficientCTOPorfolio("STOCKMI",100,5,30,10,2500).Run();
+        //new RunEfficientCTOPorfolio("STOCKMI",100,5,60,10,2500).Run();
         //new RunEfficientCTOPorfolio("STOCKMI",100,5,5,1000).Run();
         //new RunEfficientCTOPorfolio("STOCKMI",70,5,10,2500).Run();
         //new RunEfficientCTOPorfolio("STOCKMI",100,5,10,2500).Run();
@@ -372,6 +383,13 @@ namespace QuantProject.Principale
       {
         this.Cursor = Cursors.Default;
       }
+    }
+
+    private void menuItemShowSavedReport_Click(object sender, System.EventArgs e)
+    {
+      string chosenPath = this.getPath("Select a serialized report please ...");
+      if(chosenPath != "")
+        ShowReportFromFile.ShowReportFromSerializedAccountReport(chosenPath);
     }
 
 
