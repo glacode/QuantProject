@@ -117,6 +117,11 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "QuoteField.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "SQLBuilder.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
