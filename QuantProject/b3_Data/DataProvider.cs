@@ -90,6 +90,13 @@ namespace QuantProject.Data
 
     public static History GetCloseHistory( string instrumentKey )
     {
+      if ( ( !cachedHistories.Contains( instrumentKey ) ) ||
+        ( !((Hashtable)cachedHistories[ instrumentKey ]).Contains( BarComponent.Close ) ) )
+      {
+        Add( instrumentKey , BarComponent.Close );
+        ((Hashtable)cachedHistories[ instrumentKey ])[ BarComponent.Close ] =
+          DataBase.GetHistory( instrumentKey , BarComponent.Close );
+      }
       return (History)((Hashtable)cachedHistories[ instrumentKey ])[
         BarComponent.Close ];
     }
