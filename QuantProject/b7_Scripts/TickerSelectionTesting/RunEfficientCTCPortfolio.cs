@@ -80,9 +80,9 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
       //this.progressBarForm = new ProgressBarForm();
       this.reportTable = new ReportTable( "Summary_Reports" );
       this.startDateTime = new EndOfDayDateTime(
-        new DateTime( 2003 , 1 , 1 ) , EndOfDaySpecificTime.MarketOpen );
+        new DateTime( 2000 , 1 , 1 ) , EndOfDaySpecificTime.MarketOpen );
       this.endDateTime = new EndOfDayDateTime(
-        new DateTime( 2003 , 1 , 31 ) , EndOfDaySpecificTime.MarketClose );
+        new DateTime( 2000 , 1 , 20 ) , EndOfDaySpecificTime.MarketClose );
       this.numIntervalDays = 3; //for report
 		}
     #region Run
@@ -160,8 +160,8 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
       {
         this.endOfDayTimer.Stop();
         report = new Report( this.account , this.historicalQuoteProvider );
-        report.Show("CTC_Portfolio" , this.numIntervalDays , this.endDateTime , "^MIBTEL" );
-        //ObjectArchiver.Archive(this.account, "CtcPortfolioAccount.qP","C:\\");
+        //report.Show("CTC_Portfolio" , this.numIntervalDays , this.endDateTime , "^MIBTEL" );
+        ObjectArchiver.Archive(this.account,"C:\\CtcPortfolio.qP");
 
       }
     }
