@@ -169,6 +169,11 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "Main.resx"
+                    DependentUpon = "Main.cs"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
                     RelPath = "QuotesDataGrid.cs"
                     SubType = "Component"
                     BuildAction = "Compile"
@@ -190,13 +195,18 @@
                 />
                 <File
                     RelPath = "QuotesEditor\QuotesChart.cs"
-                    SubType = "Code"
+                    SubType = "UserControl"
                     BuildAction = "Compile"
                 />
                 <File
                     RelPath = "QuotesEditor\QuotesEditor.cs"
                     SubType = "Form"
                     BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "QuotesEditor\QuotesEditor.resx"
+                    DependentUpon = "QuotesEditor.cs"
+                    BuildAction = "EmbeddedResource"
                 />
                 <File
                     RelPath = "QuotesEditor\ValidationDataGrid.cs"
@@ -220,7 +230,7 @@
                 />
                 <File
                     RelPath = "QuotesEditor\VisualValidationChart.cs"
-                    SubType = "Code"
+                    SubType = "UserControl"
                     BuildAction = "Compile"
                 />
                 <File
@@ -235,7 +245,7 @@
                 />
                 <File
                     RelPath = "QuotesEditor\CloseToClose\CloseToCloseChart.cs"
-                    SubType = "Code"
+                    SubType = "UserControl"
                     BuildAction = "Compile"
                 />
                 <File
@@ -265,7 +275,7 @@
                 />
                 <File
                     RelPath = "QuotesEditor\RangeToRange\RangeToRangeChart.cs"
-                    SubType = "Code"
+                    SubType = "UserControl"
                     BuildAction = "Compile"
                 />
                 <File
