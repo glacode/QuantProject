@@ -44,9 +44,11 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
   {
     private DataTable eligibleTickers;
     private string[] chosenTickers;
-
+    
+    private string tickerGroupID;
     private int numberOfEligibleTickers;
     private int numberOfTickersToBeChosen;
+    private int generationNumberForGeneticOptimizer;
 		
     private Account account;
     private ArrayList orders;
@@ -61,13 +63,15 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
       get { return this.account; }
     }
 		
-    public EndOfDayTimerHandler(int numberOfEligibleTickers, 
-      int numberOfTickersToBeChosen, 
-      Account account )
+    public EndOfDayTimerHandler(string tickerGroupID, int numberOfEligibleTickers, 
+                                int numberOfTickersToBeChosen, Account account,
+                                int generationNumberForGeneticOptimizer)
     {
+      this.tickerGroupID = tickerGroupID;
       this.numberOfEligibleTickers = numberOfEligibleTickers;
       this.numberOfTickersToBeChosen = numberOfTickersToBeChosen;
       this.account = account;
+      this.generationNumberForGeneticOptimizer = generationNumberForGeneticOptimizer;
       this.orders = new ArrayList();
     }
 		    
@@ -156,16 +160,24 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
     private void setTickers(DateTime currentDate)
     {
       TickerSelector mostLiquid = new TickerSelector(SelectionType.Liquidity,
-        false, "STOCKMI", currentDate.AddDays(-30), currentDate, this.numberOfEligibleTickers);
+        false, this.tickerGroupID , currentDate.AddDays(-30), currentDate, this.numberOfEligibleTickers);
       this.eligibleTickers = mostLiquid.GetTableOfSelectedTickers();
+      TickerSelector quotedInEachMarketDayFromMostLiquid = 
+          new TickerSelector( this.eligibleTickers,
+                               SelectionType.QuotedInEachMarketDay, false, "",
+                               currentDate.AddDays(-30),currentDate,
+                               this.numberOfEligibleTickers);
+      quotedInEachMarketDayFromMostLiquid.MarketIndex = "^MIBTEL";   
+      DataTable setOfTickersToBeOptimized =
+          quotedInEachMarketDayFromMostLiquid.GetTableOfSelectedTickers();
+      // to check this: it doesn't work !                               
       IGenomeManager genManEfficientCTOPortfolio = 
-        new GenomeManagerForEfficientCTOPortfolio(this.eligibleTickers,currentDate.AddDays(-30), 
+        new GenomeManagerForEfficientCTOPortfolio(setOfTickersToBeOptimized, currentDate.AddDays(-30), 
         currentDate, 
         this.numberOfTickersToBeChosen, 0.005, 0.05);
       GeneticOptimizer GO = new GeneticOptimizer(genManEfficientCTOPortfolio);
       //GO.KeepOnRunningUntilConvergenceIsReached = true;
-      GO.GenerationNumber = 2;
-      GO.MutationRate = 0.05;
+      GO.GenerationNumber = this.generationNumberForGeneticOptimizer;
       GO.Run(false);
       this.chosenTickers = (string[])GO.BestGenome.Meaning;
     }

@@ -76,10 +76,10 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
       //this.progressBarForm = new ProgressBarForm();
       this.reportTable = new ReportTable( "Summary_Reports" );
       this.startDateTime = new EndOfDayDateTime(
-        new DateTime( 2004 , 10 , 4 ) , EndOfDaySpecificTime.FiveMinutesBeforeMarketClose );
+        new DateTime( 2000 , 11 , 1 ) , EndOfDaySpecificTime.FiveMinutesBeforeMarketClose );
       this.endDateTime = new EndOfDayDateTime(
-        new DateTime( 2004 , 10 , 20 ) , EndOfDaySpecificTime.OneHourAfterMarketClose );
-      this.numIntervalDays = 7;
+        new DateTime( 2000 , 11 , 4 ) , EndOfDaySpecificTime.OneHourAfterMarketClose );
+      this.numIntervalDays = 2;
 		}
     #region Run
     
@@ -95,7 +95,7 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
                                                               lastDate, 6, 0.005, 0.05);
       GeneticOptimizer GO = new GeneticOptimizer(genManEfficientCTOPortfolio);
       //GO.KeepOnRunningUntilConvergenceIsReached = true;
-      GO.GenerationNumber = 7;
+      GO.GenerationNumber = 10;
       GO.MutationRate = 0.05;
       GO.Run(true);
       //it has to be changed the decode implementation for this IGenomeManager
@@ -117,7 +117,7 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
     }
     private void run_initializeEndOfDayTimerHandler()
     {
-      this.endOfDayTimerHandler = new EndOfDayTimerHandler(70,6,this.account );
+      this.endOfDayTimerHandler = new EndOfDayTimerHandler("STOCKMI",70,6,this.account,10);
     }
     /*
     private  void inSampleNewProgressEventHandler(
@@ -171,7 +171,8 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
       {
         this.endOfDayTimer.Stop();
         report = new Report( this.account );
-        report.Show("CTO_Portfolio" , this.numIntervalDays , this.endDateTime , "MSFT" );
+        report.Show("CTO_Portfolio" , this.numIntervalDays , this.endDateTime , "^MIBTEL" );
+
 
       }
     }
