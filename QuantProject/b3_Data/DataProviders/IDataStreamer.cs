@@ -39,5 +39,12 @@ namespace QuantProject.Data.DataProviders
     event NewQuoteEventHandler NewQuote;
 		double GetCurrentBid( string ticker );
 		double GetCurrentAsk( string ticker );
+		/// <summary>
+		/// true iif the given ticker is exchanged at the time
+		/// the method is invoked
+		/// </summary>
+		/// <param name="ticker"></param>
+		/// <returns></returns>
+		bool IsExchanged( string ticker );
 	}
 }
