@@ -15,6 +15,7 @@ namespace QuantProject.Applications.Downloader.Validate
     private string selectStatement;
     private OleDbCommandBuilder oleDbCommandBuilder;
     private OleDbDataAdapter oleDbDataAdapter;
+	private DataTable tableOfTickersToBeValidated;
 
     public ValidateDataTable()
     {
@@ -26,8 +27,22 @@ namespace QuantProject.Applications.Downloader.Validate
       this.oleDbDataAdapter.UpdateCommand = this.oleDbCommandBuilder.GetUpdateCommand();
       this.oleDbDataAdapter.Fill( this );
       this.TableName = "quotes";
+      
     }
 
+	public ValidateDataTable(DataTable tableOfTickers)
+	{
+		this.tableOfTickersToBeValidated = tableOfTickers;
+		
+		this.selectStatement =
+			"select * from quotes where 1=2";
+		this.oleDbDataAdapter =
+			new OleDbDataAdapter( selectStatement , ConnectionProvider.OleDbConnection );
+		this.oleDbCommandBuilder = new OleDbCommandBuilder( oleDbDataAdapter );
+		this.oleDbDataAdapter.UpdateCommand = this.oleDbCommandBuilder.GetUpdateCommand();
+		this.oleDbDataAdapter.Fill( this );
+		this.TableName = "quotes";
+	}
     /// <summary>
     /// Adds quotesRow to the ValidateDataTable
     /// </summary>
@@ -52,7 +67,16 @@ namespace QuantProject.Applications.Downloader.Validate
       quotesToBeValidated.Validate();
       this.AcceptChanges();
     }
-
+	public void AddRows(double suspiciousRatio )
+	{
+		QuotesToBeValidated quotesToBeValidated = new QuotesToBeValidated(this.tableOfTickersToBeValidated);
+		quotesToBeValidated.SuspiciousRatio = suspiciousRatio;
+		quotesToBeValidated.SuspiciousDataRow +=
+			new SuspiciousDataRowEventHandler( suspiciousDataRowEventHandler );
+		//      new QuotesToBeValidated.SuspiciousDataRowEventHandler( suspiciousDataRowEventHandler );
+		quotesToBeValidated.Validate();
+		this.AcceptChanges();
+	}
     /// <summary>
     /// Commits the ValidateDataTable changes to the database
     /// </summary>

@@ -23,7 +23,7 @@ namespace QuantProject.Applications.Downloader.Validate
     }
     
     public QuotesToBeValidated( string tickerIsLike )
-		{
+	{
 //      this.selectStatement =
 //        "select * from quotes where quTicker like '" + tickerIsLike + "'";
       this.selectStatement =
@@ -38,7 +38,28 @@ namespace QuantProject.Applications.Downloader.Validate
       {
         Console.WriteLine( exception.ToString() );
       }
-    }
+	}
+
+	public QuotesToBeValidated(DataTable tableOfTickersToBeValidated)
+	{	
+		this.oleDbDataAdapter =
+				new OleDbDataAdapter( "" , ConnectionProvider.OleDbConnection );
+		foreach(DataRow row in tableOfTickersToBeValidated.Rows)
+		{
+			this.oleDbDataAdapter.SelectCommand.CommandText = 
+						"select * from quotes where quTicker = '" + 
+						(string)row[0] + "'";
+			try
+			{
+				this.oleDbDataAdapter.Fill( this );
+			}
+			catch (Exception exception)
+			{
+				Console.WriteLine( exception.ToString() );
+			}
+		}
+
+	}
 
 //    public delegate void SuspiciousDataRowEventHandler(
 //      Object sender , SuspiciousDataRowEventArgs eventArgs );
