@@ -127,5 +127,13 @@ namespace QuantProject.Business.Timing
 			this.endOfDaySpecificTime = nextSpecificTime;
 		}
 		#endregion
+
+    /// <summary>
+    /// Gets the next EndOfDaySpecificTime
+    /// </summary>
+    public EndOfDaySpecificTime GetNextEndOfDaySpecificTime()
+    {
+      return this.getNextSpecificTime();
+    }
 	}
 }
