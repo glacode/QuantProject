@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Data;
 using System.Text;
 using QuantProject.ADT;
@@ -23,6 +24,41 @@ namespace QuantProject.Data.DataTables
 		public static string Volume = "quVolume";
 		public static string AdjustedClose = "quAdjustedClose";
 		public static string AdjustedCloseToCloseRatio = "quAdjustedCloseToCloseRatio";
+
+		/// <summary>
+		/// Builds a Quotes data table containing a row for each ticker in the
+		/// collection, with the quotes for the given DateTime
+		/// </summary>
+		/// <param name="tickerCollection">Tickers whose quotes are to be fetched</param>
+		/// <param name="dateTime">Date for the quotes to be fetched</param>
+		public Quotes( ICollection tickerCollection , DateTime dateTime )
+		{
+			QuantProject.DataAccess.Tables.Quotes.SetDataTable( 
+				tickerCollection , dateTime , this );
+		}
+		public Quotes( string ticker , DateTime startDate , DateTime endDate )
+		{
+			this.fillDataTable( ticker , startDate , endDate );
+		}
+		public Quotes( string ticker )
+		{
+			this.fillDataTable( 
+				ticker ,
+				QuantProject.DataAccess.Tables.Quotes.GetStartDate( ticker ) ,
+				QuantProject.DataAccess.Tables.Quotes.GetEndDate( ticker ) );
+		}
+		private void fillDataTable( string ticker , DateTime startDate , DateTime endDate )
+		{
+			QuantProject.DataAccess.Tables.Quotes.SetDataTable( 
+				ticker , startDate , endDate , this );
+			this.setPrimaryKeys(); 
+		}
+		private void setPrimaryKeys()
+		{
+			DataColumn[] columnPrimaryKeys = new DataColumn[1];
+			columnPrimaryKeys[0] = this.Columns[Quotes.Date];
+			this.PrimaryKey = columnPrimaryKeys;
+		}
 
     /// <summary>
     /// returns most liquid tickers within the given set of tickers
@@ -273,31 +309,6 @@ namespace QuantProject.Data.DataTables
       get{ return ((DateTime)this.Rows[ this.Rows.Count - 1 ][ Quotes.Date ]); }
     }
      
-    private void setPrimaryKeys()
-    {
-      DataColumn[] columnPrimaryKeys = new DataColumn[1];
-      columnPrimaryKeys[0] = this.Columns[Quotes.Date];
-      this.PrimaryKey = columnPrimaryKeys;
-    }
-    
-
-		private void fillDataTable( string ticker , DateTime startDate , DateTime endDate )
-		{
-			QuantProject.DataAccess.Tables.Quotes.SetDataTable( 
-				ticker , startDate , endDate , this );
-      this.setPrimaryKeys(); 
-		}
-		public Quotes( string ticker , DateTime startDate , DateTime endDate )
-		{
-			this.fillDataTable( ticker , startDate , endDate );
-		}
-		public Quotes( string ticker )
-		{
-			this.fillDataTable( 
-				ticker ,
-				QuantProject.DataAccess.Tables.Quotes.GetStartDate( ticker ) ,
-				QuantProject.DataAccess.Tables.Quotes.GetEndDate( ticker ) );
-		}
 		#region GetHashValue
 		private string getHashValue_getQuoteString_getRowString_getSingleValueString( Object value )
 		{
