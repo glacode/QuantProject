@@ -21,6 +21,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
 using System;
+using System.Collections;
 using System.Data;
 using System.Windows.Forms;
 using QuantProject.DataAccess.Tables;
@@ -312,6 +313,26 @@ namespace QuantProject.Data.Selectors
       return tableOfSelectedTickers;
     }
 
+    /// <summary>
+    /// It returns a DataTable, with only one column, containing tickers
+    /// that are contained in both the two tables passed as parameters
+    /// </summary>
+    /// <param name="firstDataTable">The first data table in which the column indexed 0 contains the first set of tickers' symbols</param>
+    /// <param name="secondDataTable">The second data table in which the column indexed 0 contains the second set of tickers' symbols</param>
+    public static DataTable GetTableOfCommonTickers(DataTable firstDataTable, DataTable secondDataTable)
+    {
+      DataTable commonTickers = new DataTable();
+      commonTickers.Columns.Add("tiTicker", System.Type.GetType("System.String"));
+      Hashtable hashTable = ExtendedDataTable.GetCommonValues(firstDataTable, 
+                                                              secondDataTable,0,0);
+      object[] values = new object[1];
+      foreach(DictionaryEntry element in hashTable )
+      {
+        values[0]=element.Value;
+        commonTickers.Rows.Add(values);
+      }
+      return commonTickers;
+    }
 
 
 	}
