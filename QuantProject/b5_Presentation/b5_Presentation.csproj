@@ -187,6 +187,16 @@
                     BuildAction = "EmbeddedResource"
                 />
                 <File
+                    RelPath = "Reporting\WindowsForm\ReportGrid.cs"
+                    SubType = "Component"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Reporting\WindowsForm\ReportGridTabPage.cs"
+                    SubType = "Component"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "Reporting\WindowsForm\ReportTabControl.cs"
                     SubType = "Component"
                     BuildAction = "Compile"
