@@ -2,6 +2,7 @@ using System;
 using System.Data;
 using System.Text;
 using QuantProject.ADT;
+using QuantProject.ADT.Histories;
 
 namespace QuantProject.DataAccess.Tables
 {
@@ -10,11 +11,20 @@ namespace QuantProject.DataAccess.Tables
 	/// </summary>
 	public class Quotes
 	{
-		public Quotes()
+		private DataTable quotes;
+
+		/// <summary>
+		/// Gets the ticker whose quotes are contained into the Quotes object
+		/// </summary>
+		/// <returns></returns>
+		public string Ticker
 		{
-			//
-			// TODO: Add constructor logic here
-			//
+			get{ return ((string)this.quotes.Rows[ 0 ][ "quTicker" ]); }
+		}
+
+		public Quotes( string ticker)
+		{
+			this.quotes = Quotes.GetTickerQuotes( ticker );
 		}
 		/// <summary>
 		/// Returns the first date for the given ticker
@@ -39,7 +49,7 @@ namespace QuantProject.DataAccess.Tables
 			return (DateTime)(dataTable.Rows[ 0 ][ "quDate" ]);
 		}
 		#region GetHashValue
-		private static string getHashValue_getQuoteString_getRowString_getSingleValueString( Object value )
+		private string getHashValue_getQuoteString_getRowString_getSingleValueString( Object value )
 		{
 			string returnValue;
 			if ( value.GetType() == Type.GetType( "System.DateTime" ) )
@@ -59,16 +69,16 @@ namespace QuantProject.DataAccess.Tables
 		/// </summary>
 		/// <param name="dataRow"></param>
 		/// <returns></returns>
-		private static StringBuilder getHashValue_getQuoteString_getRowString( DataRow dataRow )
+		private StringBuilder getHashValue_getQuoteString_getRowString( DataRowView dataRow )
 		{
 			StringBuilder returnValue = new StringBuilder( "" );
-			foreach ( DataColumn dataColumn in dataRow.Table.Columns )
+			foreach ( DataColumn dataColumn in dataRow.DataView.Table.Columns )
 				if ( dataColumn.ColumnName != "quTicker" )
 					returnValue.Append( getHashValue_getQuoteString_getRowString_getSingleValueString(
-						dataRow[ dataColumn ] ) );
+						dataRow[ dataColumn.Ordinal ] ) );
 			//					returnValue += "ggg";
-//					returnValue += getHashValue_getQuoteString_getRowString_getSingleValueString(
-//						dataRow[ dataColumn ] );
+			//					returnValue += getHashValue_getQuoteString_getRowString_getSingleValueString(
+			//						dataRow[ dataColumn ] );
 			return returnValue;
 		}
 		/// <summary>
@@ -76,24 +86,90 @@ namespace QuantProject.DataAccess.Tables
 		/// </summary>
 		/// <param name="ticker"></param>
 		/// <returns></returns>
-		private static string getHashValue_getQuoteString( string ticker )
+		private string getHashValue_getQuoteString( DataView quotes )
 		{
 			StringBuilder returnValue = new StringBuilder( "" );
-			DataTable dataTable = SqlExecutor.GetDataTable(
-				"select * from quotes where quTicker='" + ticker + "'" );
-			foreach ( DataRow dataRow in dataTable.Rows )
+			foreach ( DataRowView dataRow in quotes )
 				returnValue.Append( getHashValue_getQuoteString_getRowString( dataRow ) );
 			return returnValue.ToString();
 		}
+		/// <summary>
+		/// Computes the hash value for the contained quotes
+		/// </summary>
+		/// <returns>Hash value for all the quotes</returns>
+		public string GetHashValue()
+		{
+			DataView quotes = new DataView( this.quotes );
+			return HashProvider.GetHashValue( getHashValue_getQuoteString( quotes ) );
+		}
+		/// <summary>
+		/// Computes the hash value for the contained quotes
+		/// since startDate, to endDate
+		/// </summary>
+		/// <param name="startDate">date where hash begins being computed</param>
+		/// <param name="endDate">date where hash ends being computed</param>
+		/// <returns></returns>
+		public string GetHashValue( DateTime startDate , DateTime endDate )
+		{
+			DataView quotes = new DataView( this.quotes );
+			quotes.RowFilter = "( (quDate>=" + SQLBuilder.GetDateConstant( startDate ) +
+				") and (quDate<=" + SQLBuilder.GetDateConstant( endDate ) + ") )";
+			return HashProvider.GetHashValue( getHashValue_getQuoteString( quotes ) );
+		}
+		#endregion
+
 		/// <summary>
 		/// Computes the hash value for the quotes for the given ticker
 		/// </summary>
 		/// <param name="ticker">Ticker whose quotes must be hashed</param>
 		/// <returns>Hash value for all the quotes for the given ticker</returns>
-		public static string GetHashValue( string ticker )
+//		public static string GetHashValue( string ticker )
+//		{
+//			return HashProvider.GetHashValue( GetHashValue( GetTickerQuotes( ticker ) ) );
+//		}
+		
+		/// <summary>
+		/// returns the quotes DataTable for the given ticker
+		/// </summary>
+		/// <param name="instrumentKey">ticker whose quotes are to be returned</param>
+		/// <returns></returns>
+		public static DataTable GetTickerQuotes( string instrumentKey )
 		{
-			return HashProvider.GetHashValue( getHashValue_getQuoteString( ticker ) );
+			string sql = "select * from quotes where quTicker='" + instrumentKey + "' " +
+				"order by quDate";
+			return SqlExecutor.GetDataTable( sql );
 		}
-		#endregion
+
+		/// <summary>
+		/// returns the Date for the quote that is precedingDays before
+		/// quoteDate
+		/// </summary>
+		/// <param name="quoteDate"></param>
+		/// <param name="precedingDays"></param>
+		/// <returns></returns>
+		public DateTime GetPrecedingDate( DateTime quoteDate , int precedingDays )
+		{
+			History history = new History();
+			history.Import( this.quotes , "quDate" , "quAdjustedClose" );
+			return (DateTime) history.GetKey( Math.Max( 0 ,
+				history.IndexOfKeyOrPrevious( quoteDate ) -
+				precedingDays ) );
+		}
+
+		/// <summary>
+		/// returns the Date for the quote that is followingDays after
+		/// quoteDate
+		/// </summary>
+		/// <param name="quoteDate"></param>
+		/// <param name="precedingDays"></param>
+		/// <returns></returns>
+		public DateTime GetFollowingDate( DateTime quoteDate , int followingDays )
+		{
+			History history = new History();
+			history.Import( this.quotes , "quDate" , "quAdjustedClose" );
+			return (DateTime) history.GetKey( Math.Max( 0 ,
+				history.IndexOfKeyOrPrevious( quoteDate ) -
+				followingDays ) );
+		}
 	}
 }
