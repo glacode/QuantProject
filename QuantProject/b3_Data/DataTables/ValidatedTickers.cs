@@ -19,5 +19,19 @@ namespace QuantProject.Data.DataTables
 		{
 			QuantProject.DataAccess.Tables.ValidatedTickers.SetDataTable( ticker , this );
 		}
+		/// <summary>
+		/// Validates the ticker contained in the quotes DataTable
+		/// </summary>
+		/// <param name="quotes">Contains the quotes for the ticker to be validated</param>
+		public static void Validate( QuantProject.Data.DataTables.Quotes quotes )
+		{
+			DateTime startDate = (DateTime)quotes.Rows[ 0 ][ QuantProject.Data.DataTables.Quotes.Date ];
+			DateTime endDate = (DateTime)quotes.Rows[ quotes.Rows.Count - 1 ][
+				QuantProject.Data.DataTables.Quotes.Date ];
+			string ticker = quotes.Ticker;
+			string hashValue = quotes.GetHashValue();
+			QuantProject.DataAccess.Tables.ValidatedTickers.Validate(
+				ticker , startDate , endDate , hashValue );
+		}
 	}
 }

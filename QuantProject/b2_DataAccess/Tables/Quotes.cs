@@ -485,38 +485,7 @@ namespace QuantProject.DataAccess.Tables
 			SqlExecutor.SetDataTable( sql , dataTable );
 		}
 
-		/// <summary>
-		/// returns the Date for the quote that is precedingDays before
-		/// quoteDate
-		/// </summary>
-		/// <param name="quoteDate"></param>
-		/// <param name="precedingDays"></param>
-		/// <returns></returns>
-		public DateTime GetPrecedingDate( DateTime quoteDate , int precedingDays )
-		{
-			History history = new History();
-			history.Import( this.quotes , "quDate" , "quAdjustedClose" );
-			return (DateTime) history.GetKey( Math.Max( 0 ,
-				history.IndexOfKeyOrPrevious( quoteDate ) -
-				precedingDays ) );
-		}
 
-		/// <summary>
-		/// returns the Date for the quote that is followingDays after
-		/// quoteDate
-		/// </summary>
-		/// <param name="quoteDate"></param>
-		/// <param name="precedingDays"></param>
-		/// <returns></returns>
-		public DateTime GetFollowingDate( DateTime quoteDate , int followingDays )
-		{
-			History history = new History();
-			history.Import( this.quotes , "quDate" , "quAdjustedClose" );
-			return (DateTime) history.GetKey( Math.Max( 0 ,
-				history.IndexOfKeyOrPrevious( quoteDate ) -
-				followingDays ) );
-		}
-    
 
     /// <summary>
     /// Provides updating the database with the closeToCloseRatio for

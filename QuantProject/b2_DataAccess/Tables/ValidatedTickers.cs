@@ -22,18 +22,18 @@ namespace QuantProject.DataAccess.Tables
 		public static string EditDate = "vtEditDate";
 
 
-		/// <summary>
-		/// Returns the hash value for the given instrument
-		/// </summary>
-		/// <param name="ticker">Instrument's ticker</param>
-		/// <param name="startDate">Starting instrument quote's date, for hash value computation</param>
-		/// <param name="endDate">Ending instrument quote's date, for hash value computation</param>
-		/// <returns></returns>
-		public static string GetHashValue( string ticker , DateTime startDate , DateTime endDate )
-		{
-			Quotes quotes = new Quotes( ticker );
-			return quotes.GetHashValue( startDate , endDate );
-		}
+//		/// <summary>
+//		/// Returns the hash value for the given instrument
+//		/// </summary>
+//		/// <param name="ticker">Instrument's ticker</param>
+//		/// <param name="startDate">Starting instrument quote's date, for hash value computation</param>
+//		/// <param name="endDate">Ending instrument quote's date, for hash value computation</param>
+//		/// <returns></returns>
+//		public static string GetHashValue( string ticker , DateTime startDate , DateTime endDate )
+//		{
+//			Quotes quotes = new Quotes( ticker );
+//			return quotes.GetHashValue( startDate , endDate );
+//		}
 
 		/// <summary>
 		/// Returns (if present) the validated ticker row
@@ -48,6 +48,30 @@ namespace QuantProject.DataAccess.Tables
 				"select * from validatedTickers " +
 				"where " + ValidatedTickers.Ticker + "='" + ticker + "'";
 			SqlExecutor.SetDataTable( sql , dataTable );
+		}
+
+		public static void Validate( string ticker , DateTime startDate ,
+			DateTime endDate , string hashValue )
+		{
+			try
+			{
+				SqlExecutor.ExecuteNonQuery( "delete * from validatedTickers " +
+					"where " + ValidatedTickers.Ticker + "='" + ticker + "'" );
+				OleDbSingleTableAdapter oleDbSingleTableAdapter =
+					new OleDbSingleTableAdapter();
+				oleDbSingleTableAdapter.SetAdapter( "validatedTickers" );
+				oleDbSingleTableAdapter.DataTable.Rows.Add(	oleDbSingleTableAdapter.DataTable.NewRow() );
+				oleDbSingleTableAdapter.DataTable.Rows[ 0 ][ ValidatedTickers.Ticker ] = ticker;
+				oleDbSingleTableAdapter.DataTable.Rows[ 0 ][ ValidatedTickers.StartDate ] = startDate;
+				oleDbSingleTableAdapter.DataTable.Rows[ 0 ][ ValidatedTickers.StartDate ] = endDate;
+				oleDbSingleTableAdapter.DataTable.Rows[ 0 ][ ValidatedTickers.HashValue ] = hashValue;
+				oleDbSingleTableAdapter.OleDbDataAdapter.Update( oleDbSingleTableAdapter.DataTable );
+			}
+			catch ( Exception ex )
+			{
+				string exceptionMessage = ex.Message + "\n" + ex.StackTrace;
+				Console.WriteLine( exceptionMessage );
+			}
 		}
 
 	}

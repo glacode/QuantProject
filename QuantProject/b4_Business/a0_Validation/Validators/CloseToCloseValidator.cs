@@ -81,8 +81,7 @@ namespace QuantProject.Business.Validation.Validators
     }
     private int validate_currentTicker( string currentTicker , int currentTickerStartingRowIndex )
     {
-			this.closeToCloseVisuallyValidated =
-				QuantProject.DataAccess.Tables.VisuallyValidatedQuotes.GetCloseToCloseValidated( currentTicker );
+			this.closeToCloseVisuallyValidated = VisuallyValidatedQuotes.GetCloseToCloseValidated( currentTicker );
 			History closeToClose = new History();
       History closeToCloseMovingAverage;
       int nextTickerStartingRowIndex =

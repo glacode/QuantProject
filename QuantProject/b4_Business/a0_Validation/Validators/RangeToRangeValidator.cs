@@ -80,8 +80,7 @@ namespace QuantProject.Business.Validation.Validators
     }
     private int validate_currentTicker( string currentTicker , int currentTickerStartingRowIndex )
     {
-			this.rangeToRangeVisuallyValidated =
-				QuantProject.DataAccess.Tables.VisuallyValidatedQuotes.GetRangeToRangeValidated( currentTicker );
+			this.rangeToRangeVisuallyValidated = VisuallyValidatedQuotes.GetRangeToRangeValidated( currentTicker );
       History rangeToRange = new History();
       History rangeToRangeMovingAverage;
       int nextTickerStartingRowIndex =
