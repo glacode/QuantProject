@@ -127,7 +127,17 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "ValidationTypes.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "Tables\Quotes.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Tables\VisuallyValidatedQuotes.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
