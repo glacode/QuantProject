@@ -31,7 +31,7 @@ namespace QuantProject.Applications.Downloader
 	/// <summary>
 	/// DataGrid used for (record by record) visual validation
 	/// </summary>
-	public class VisualValidationDataGrid : ValidationDataGrid
+	public abstract class VisualValidationDataGrid : ValidationDataGrid
 	{
 		private DataView dataView;
 
@@ -92,15 +92,15 @@ namespace QuantProject.Applications.Downloader
 			this.dataView.AllowNew = false;
 			this.setStyles();
 		}
-		private void confirmVisualValidation()
-		{
-			VisuallyValidatedTickers.ValidateCloseToClose( ((QuotesEditor)this.FindForm()).Ticker );
-		}
+		protected abstract void confirmVisualValidation( string ticker , DateTime quoteDate );
+//		{
+//			VisuallyValidatedTickers.ValidateCloseToClose( ((QuotesEditor)this.FindForm()).Ticker );
+//		}
 		protected override void OnMouseUp(MouseEventArgs e)
 		{
-			Console.WriteLine( "VisualValidationDataGrid.OnMouseUp() " +
-				this[ this.CurrentRowIndex , 0 ].ToString() );
-			((VisualValidationTabPage)this.Parent).VisualValidationChart.Invalidate( true );
+//			Console.WriteLine( "VisualValidationDataGrid.OnMouseUp() " +
+//				this[ this.CurrentRowIndex , 0 ].ToString() );
+//			((VisualValidationTabPage)this.Parent).VisualValidationChart.Invalidate( true );
 			base.OnMouseUp( e );
 		}
 		protected override void OnClick( EventArgs e )
@@ -115,16 +115,6 @@ namespace QuantProject.Applications.Downloader
 			{
 				this[this.CurrentCell] = !System.Convert.ToBoolean(this[this.CurrentCell]);
 				this.Select( true , true );
-			}
-//			DataView checkedDataView = new DataView( ((QuotesEditor)this.FindForm()).ValidateDataTable );
-//			checkedDataView.RowFilter = "(" + this.dataView.RowFilter +
-//				" AND (CloseToCloseHasBeenVisuallyValidated=true))";
-			int checkedItems = 0;
-			for (int rowIndex=0 ; rowIndex<this.dataView.Count ; rowIndex++)
-				if ( (bool)this[ rowIndex , 2] )
-					checkedItems++;
-			if ( checkedItems == this.dataView.Count )
-				// all suspicious data rows have been visually validated
 				if ( MessageBox.Show( this , "You have visually validated all the suspicious " +
 					"quotes, with respect to the " + this.confirmMessage +
 					". Do you confirm your " +
@@ -134,7 +124,31 @@ namespace QuantProject.Applications.Downloader
 					MessageBoxIcon.Question ,
 					MessageBoxDefaultButton.Button1 ) == DialogResult.Yes )
 					// the user asked to write the visual validation to the database
-					this.confirmVisualValidation();
+				{
+					this.confirmVisualValidation( ((QuotesEditor)this.FindForm()).Ticker ,
+						(DateTime)this[ this.CurrentCell.RowNumber , 0 ] );
+					((QuotesEditor)this.FindForm()).Renew();
+				}
+			}
+//			DataView checkedDataView = new DataView( ((QuotesEditor)this.FindForm()).ValidateDataTable );
+//			checkedDataView.RowFilter = "(" + this.dataView.RowFilter +
+//				" AND (CloseToCloseHasBeenVisuallyValidated=true))";
+//			int checkedItems = 0;
+//			for (int rowIndex=0 ; rowIndex<this.dataView.Count ; rowIndex++)
+//				if ( (bool)this[ rowIndex , 2] )
+//					checkedItems++;
+//			if ( checkedItems == this.dataView.Count )
+//				// all suspicious data rows have been visually validated
+//				if ( MessageBox.Show( this , "You have visually validated all the suspicious " +
+//					"quotes, with respect to the " + this.confirmMessage +
+//					". Do you confirm your " +
+//					"visual validation to be permanentely stored into the database?" ,
+//					"Visual Validation Confirmation" ,
+//					MessageBoxButtons.YesNo ,
+//					MessageBoxIcon.Question ,
+//					MessageBoxDefaultButton.Button1 ) == DialogResult.Yes )
+//					// the user asked to write the visual validation to the database
+//					this.confirmVisualValidation();
 		}
 		protected override void OnPaint( PaintEventArgs e )
 		{
