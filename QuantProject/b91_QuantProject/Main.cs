@@ -32,6 +32,7 @@ using QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios;
 using QuantProject.Scripts.SimpleTesting;
 using QuantProject.Scripts.WalkForwardTesting.WalkForwardOneRank;
 using QuantProject.Scripts.CallingReportsForRunScripts;
+using QuantProject.Presentation.Reporting.WindowsForm;
 
 
 
@@ -324,7 +325,8 @@ namespace QuantProject.Principale
 	//new RunWalkForwardOneRank().Run();			
         // new RunEfficientCTCPorfolio().Run();
 				//new RunOneRank().Run();
-        new RunEfficientCTOPorfolio("STOCKMI",70,5,30,2,1000).Run();
+        new RunEfficientCTOPorfolio("STOCKMI",80,4,45,2,1000).Run();
+        new RunEfficientCTOPorfolio("STOCKMI",80,4,45,2,2500).Run();
 //      }
 //      catch ( Exception ex )
 //      {
