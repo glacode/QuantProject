@@ -82,7 +82,7 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
       this.startDateTime = new EndOfDayDateTime(
         new DateTime( 2000 , 1 , 1 ) , EndOfDaySpecificTime.FiveMinutesBeforeMarketClose );
       this.endDateTime = new EndOfDayDateTime(
-        new DateTime( 2000 , 1 , 10 ) , EndOfDaySpecificTime.OneHourAfterMarketClose );
+        new DateTime( 2000 , 12 , 31 ) , EndOfDaySpecificTime.OneHourAfterMarketClose );
       this.numIntervalDays = 7;
 		}
     #region Run
@@ -123,7 +123,7 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
     }
     private void run_initializeEndOfDayTimerHandler()
     {
-      this.endOfDayTimerHandler = new EndOfDayTimerHandler("STOCKMI",70,6,this.account,10);
+      this.endOfDayTimerHandler = new EndOfDayTimerHandler("STOCKMI",70,6,this.account,7);
     }
     /*
     private  void inSampleNewProgressEventHandler(

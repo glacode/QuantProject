@@ -85,7 +85,7 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
       double cashForSinglePosition = this.account.CashAmount / this.numberOfTickersToBeChosen;
       long quantity =
         Convert.ToInt64( Math.Floor( cashForSinglePosition / this.account.DataStreamer.GetCurrentBid( ticker ) ) );
-      Order order = new Order( OrderType.MarketBuy , new Instrument( ticker ) , quantity );
+      Order order = new Order( OrderType.MarketBuy, new Instrument( ticker ) , quantity );
       this.orders.Add(order);
     }
     
@@ -169,7 +169,7 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
       quotedInEachMarketDayFromMostLiquid.MarketIndex = "^MIBTEL";   
       DataTable setOfTickersToBeOptimized =
           quotedInEachMarketDayFromMostLiquid.GetTableOfSelectedTickers();
-      // to check this: it doesn't work !                               
+                                    
       IGenomeManager genManEfficientCTOPortfolio = 
         new GenomeManagerForEfficientCTOPortfolio(setOfTickersToBeOptimized, currentDate.AddDays(-30), 
         currentDate, 
