@@ -39,7 +39,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardOneRank
 		private int numberBestPerformingTickers;
 		private int numberDaysForPerformanceCalculation;
 
-		private long calculatedTickers = 0;
+		private double calculatedTickers = 0;
 
 		private ArrayList eligibleAccounts;
 
@@ -85,7 +85,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardOneRank
 					Math.Floor( ( this.calculatedTickers - 1 ) / eligibleAccounts.Count * 100 ) )
 					// a new time percentage point has been elapsed
 					this.NewProgress( this , new NewProgressEventArgs(
-						Convert.ToInt32( Math.Floor( this.calculatedTickers / eligibleAccounts.Count * 100 ) ) ,
+						Convert.ToInt32( Math.Floor( this.calculatedTickers / eligibleTickers.Count * 100 ) ) ,
 						100 ) );
 			}
 			this.eligibleAccounts.Sort();
