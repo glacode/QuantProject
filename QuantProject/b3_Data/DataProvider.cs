@@ -88,20 +88,42 @@ namespace QuantProject.Data
         BarComponent.Open ];
     }
 
-    public static History GetCloseHistory( string instrumentKey )
-    {
-      if ( ( !cachedHistories.Contains( instrumentKey ) ) ||
-        ( !((Hashtable)cachedHistories[ instrumentKey ]).Contains( BarComponent.Close ) ) )
-      {
-        Add( instrumentKey , BarComponent.Close );
-        ((Hashtable)cachedHistories[ instrumentKey ])[ BarComponent.Close ] =
-          DataBase.GetHistory( instrumentKey , BarComponent.Close );
-      }
-      return (History)((Hashtable)cachedHistories[ instrumentKey ])[
-        BarComponent.Close ];
-    }
+		private static History getHistory( string instrumentKey , BarComponent barComponent )
+		{
+			if ( ( !cachedHistories.Contains( instrumentKey ) ) ||
+				( !((Hashtable)cachedHistories[ instrumentKey ]).Contains( barComponent ) ) )
+			{
+				Add( instrumentKey , barComponent );
+				((Hashtable)cachedHistories[ instrumentKey ])[ barComponent ] =
+					DataBase.GetHistory( instrumentKey , barComponent );
+			}
+			return (History)((Hashtable)cachedHistories[ instrumentKey ])[ barComponent ];
+		}
 
-    public static double GetMarketValue( string instrumentKey , ExtendedDateTime extendedDateTime )
+		public static History GetCloseHistory( string instrumentKey )
+		{
+			if ( ( !cachedHistories.Contains( instrumentKey ) ) ||
+				( !((Hashtable)cachedHistories[ instrumentKey ]).Contains( BarComponent.Close ) ) )
+			{
+				Add( instrumentKey , BarComponent.Close );
+				((Hashtable)cachedHistories[ instrumentKey ])[ BarComponent.Close ] =
+					DataBase.GetHistory( instrumentKey , BarComponent.Close );
+			}
+			return (History)((Hashtable)cachedHistories[ instrumentKey ])[
+				BarComponent.Close ];
+		}
+
+		public static History GetHighHistory( string instrumentKey )
+		{
+			return getHistory( instrumentKey , BarComponent.High );
+		}
+
+		public static History GetLowHistory( string instrumentKey )
+		{
+			return getHistory( instrumentKey , BarComponent.Low );
+		}
+
+		public static double GetMarketValue( string instrumentKey , ExtendedDateTime extendedDateTime )
     {
       //DateTime dateTime = 
       return Convert.ToDouble(
