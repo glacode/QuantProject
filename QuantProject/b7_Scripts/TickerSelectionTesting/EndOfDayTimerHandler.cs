@@ -72,6 +72,34 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
     }
 		    
     #region MarketOpenEventHandler
+    
+    private void marketOpenEventHandler_orderChosenTickers_addToOrderList_forTicker(
+      string ticker )
+    {
+ 
+      double cashForSinglePosition = this.account.CashAmount / this.numberOfTickersToBeChosen;
+      long quantity =
+        Convert.ToInt64( Math.Floor( cashForSinglePosition / this.account.DataStreamer.GetCurrentBid( ticker ) ) );
+      Order order = new Order( OrderType.MarketBuy , new Instrument( ticker ) , quantity );
+      this.orders.Add(order);
+    }
+    
+    private void marketOpenEventHandler_orderChosenTickers_addToOrderList()
+    {
+      foreach ( string ticker in this.chosenTickers )
+      {
+        //if ( !this.account.Contains( ticker ) )
+        //{
+          marketOpenEventHandler_orderChosenTickers_addToOrderList_forTicker( ticker );
+        //}
+      }
+    }
+    
+    private void marketOpenEventHandler_orderChosenTickers()
+    {
+      this.marketOpenEventHandler_orderChosenTickers_addToOrderList();
+    }
+    
     /// <summary>
     /// Handles a "Market Open" event.
     /// </summary>
@@ -80,9 +108,11 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
     public void MarketOpenEventHandler(
       Object sender , EndOfDayTimingEventArgs endOfDayTimingEventArgs )
     {
-      if(this.account.Transactions.Count == 0)
-        this.account.AddCash(endOfDayTimingEventArgs.EndOfDayDateTime,
-                              16000);
+      if(this.orders.Count == 0 && this.account.Transactions.Count == 0)
+        this.account.AddCash(16000);     
+      
+      this.marketOpenEventHandler_orderChosenTickers();
+      
       foreach(object item in this.orders)
       {
         this.account.AddOrder((Order)item);
@@ -111,82 +141,18 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
         }
       } 
     }
-    private void marketCloseEventHandler_openPosition(
-      string ticker )
-    {
-      double maxPositionValue = this.account.CashAmount / this.numberOfTickersToBeChosen;
-      long sharesToBeBought = Convert.ToInt64(
-        Math.Floor( maxPositionValue /
-        this.account.DataStreamer.GetCurrentAsk( ticker ) ) );
-      this.account.AddOrder( new Order( OrderType.MarketBuy ,
-        new Instrument( ticker ) , sharesToBeBought ) );
-    }
-    private void marketCloseEventHandler_openPositions()
-    {
-      foreach ( string ticker in this.chosenTickers )
-        this.marketCloseEventHandler_openPosition( ticker );
-    }
+        
     public void MarketCloseEventHandler(
       Object sender , EndOfDayTimingEventArgs endOfDayTimingEventArgs )
     {
       
       this.marketCloseEventHandler_closePositions();
-      //fiveMinutesBeforeMarketCloseEventHandler_openPositions();
     }
     
     #endregion
 
 		#region OneHourAfterMarketCloseEventHandler
-    private void oneHourAfterMarketCloseEventHandler_orderChosenTickers_closePositions(
-      IEndOfDayTimer endOfDayTimer )
-    {
-      foreach ( Position position in this.account.Portfolio )
-        foreach(string ticker in this.chosenTickers)
-        {
-          if (position.Instrument.Key == ticker )
-          {
-            this.account.ClosePosition( position );
-          }
-        }
-        
-    }
-    private void oneHourAfterMarketCloseEventHandler_orderChosenTickers_openPositions_forTicker(
-      string ticker )
-    {
-      double cashForSinglePosition = this.account.CashAmount / this.numberOfTickersToBeChosen;
-      long quantity =
-        Convert.ToInt64( Math.Floor( cashForSinglePosition / this.account.DataStreamer.GetCurrentBid( ticker ) ) );
-      Order order = new Order( OrderType.MarketBuy , new Instrument( ticker ) , quantity );
-      this.orders.Add(order);
-    }
-    private void oneHourAfterMarketCloseEventHandler_orderChosenTickers_openPositions()
-    {
-      foreach ( string ticker in this.chosenTickers )
-        if ( !this.account.Contains( ticker ) )
-        {
-          oneHourAfterMarketCloseEventHandler_orderChosenTickers_openPositions_forTicker( ticker );
-        }
-    }
-    private void oneHourAfterMarketCloseEventHandler_orderChosenTickers(
-      IEndOfDayTimer endOfDayTimer )
-    {
-      //this.oneHourAfterMarketCloseEventHandler_orderChosenTickers_closePositions( endOfDayTimer );
-      this.oneHourAfterMarketCloseEventHandler_orderChosenTickers_openPositions();
-    }
-    /// <summary>
-    /// Handles a "One hour after market close" event.
-    /// </summary>
-    /// <param name="sender"></param>
-    /// <param name="eventArgs"></param>
-    public void OneHourAfterMarketCloseEventHandler(
-      Object sender , EndOfDayTimingEventArgs endOfDayTimingEventArgs )
-    {
-      this.setTickers(endOfDayTimingEventArgs.EndOfDayDateTime.DateTime);
-      this.orders.Clear();
-      oneHourAfterMarketCloseEventHandler_orderChosenTickers( ( IEndOfDayTimer ) sender );
-    }
-		
-    
+      
     private void setTickers(DateTime currentDate)
     {
       TickerSelector mostLiquid = new TickerSelector(SelectionType.Liquidity,
@@ -203,6 +169,20 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
       GO.Run(false);
       this.chosenTickers = (string[])GO.BestGenome.Meaning;
     }
+
+    /// <summary>
+    /// Handles a "One hour after market close" event.
+    /// </summary>
+    /// <param name="sender"></param>
+    /// <param name="eventArgs"></param>
+    public void OneHourAfterMarketCloseEventHandler(
+      Object sender , EndOfDayTimingEventArgs endOfDayTimingEventArgs )
+    {
+      this.setTickers(endOfDayTimingEventArgs.EndOfDayDateTime.DateTime);
+      //sets tickers to be chosen next Market Open event
+      this.orders.Clear();
+    }
+		   
     #endregion
 		
   }

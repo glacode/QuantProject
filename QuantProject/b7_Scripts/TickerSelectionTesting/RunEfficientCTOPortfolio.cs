@@ -78,8 +78,8 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
       this.startDateTime = new EndOfDayDateTime(
         new DateTime( 2004 , 10 , 4 ) , EndOfDaySpecificTime.FiveMinutesBeforeMarketClose );
       this.endDateTime = new EndOfDayDateTime(
-        new DateTime( 2004 , 10 , 10 ) , EndOfDaySpecificTime.OneHourAfterMarketClose );
-      this.numIntervalDays = 1;
+        new DateTime( 2004 , 10 , 20 ) , EndOfDaySpecificTime.OneHourAfterMarketClose );
+      this.numIntervalDays = 7;
 		}
     #region Run
     
