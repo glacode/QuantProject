@@ -61,10 +61,12 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardOneRank
 			this.progressBarForm = new ProgressBarForm();
 			this.reportTable = new ReportTable( "Summary_Reports" );
 			this.startDateTime = new EndOfDayDateTime(
-				new DateTime( 2002 , 1 , 1 ) , EndOfDaySpecificTime.FiveMinutesBeforeMarketClose );
+				new DateTime( 2002 , 1 , 1 ) , EndOfDaySpecificTime.MarketOpen );
+//			this.endDateTime = new EndOfDayDateTime(
+//				new DateTime( 2002 , 12 , 31 ) , EndOfDaySpecificTime.OneHourAfterMarketClose );
 			this.endDateTime = new EndOfDayDateTime(
-				new DateTime( 2002 , 12 , 31 ) , EndOfDaySpecificTime.OneHourAfterMarketClose );
-      this.numIntervalDays = 7;
+				new DateTime( 2002 , 2 , 28 ) , EndOfDaySpecificTime.OneHourAfterMarketClose );
+			this.numIntervalDays = 7;
 		}
     #region Run
 		private void run_initializeEndOfDayTimer()
@@ -101,7 +103,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardOneRank
 			long elapsedDays = Convert.ToInt64( ((TimeSpan)( endOfDayTimer.GetCurrentTime().DateTime - 
 				this.startDateTime.DateTime )).TotalDays );
 			double totalDays = Convert.ToDouble( ((TimeSpan)( this.endDateTime.DateTime - 
-				this.startDateTime.DateTime )).TotalDays );
+				this.startDateTime.DateTime )).TotalDays + 1);
 			if ( Math.Floor( elapsedDays / totalDays * 100 ) >
 				Math.Floor( ( elapsedDays - 1 ) / totalDays * 100 ) )
 			{
@@ -110,6 +112,12 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardOneRank
 					Convert.ToInt16( Math.Floor( elapsedDays / totalDays * 100 ) );
 				this.progressBarForm.ProgressBarOutOfSample.Refresh();
 			}
+		}
+		public void marketOpenEventHandler(
+			Object sender , EndOfDayTimingEventArgs endOfDayTimingEventArgs )
+		{
+			if ( this.account.Transactions.Count == 0 )
+				this.account.AddCash( 30000 );
 		}
 		public void oneHourAfterMarketCloseEventHandler(
 			Object sender , EndOfDayTimingEventArgs endOfDayTimingEventArgs )
@@ -122,16 +130,19 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardOneRank
 				// the simulation has reached the ending date
 				this.account.EndOfDayTimer.Stop();
 				this.progressBarForm.Close();
+				Report report = new Report( this.account );
+				report.Show( "WFT One Rank" , this.numIntervalDays , this.endDateTime , "MSFT" );
 			}
 		}
 		#endregion
 		public override void Run()
 		{
-			Report report;
 			run_initializeEndOfDayTimer();
 			run_initializeAccount();
 			run_initializeEndOfDayTimerHandler();
 			run_initializeProgressHandlers();
+			this.endOfDayTimer.MarketOpen +=
+				new MarketOpenEventHandler( this.marketOpenEventHandler );
 			this.endOfDayTimer.OneHourAfterMarketClose +=
 				new OneHourAfterMarketCloseEventHandler(
 				this.endOfDayTimerHandler.OneHourAfterMarketCloseEventHandler );
@@ -143,8 +154,6 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardOneRank
 				this.endOfDayTimerHandler.FiveMinutesBeforeMarketCloseEventHandler );
 			this.progressBarForm.Show();
 			this.endOfDayTimer.Start();
-			report = new Report( this.account );
-			report.Show( "WFT One Rank" , this.numIntervalDays , this.startDateTime , "MSFT" );
 		}
     #endregion
 	}
