@@ -30,25 +30,18 @@ using QuantProject.Business.Financial.Ordering;
 using QuantProject.ADT.Histories;
 
 
-namespace QuantProject.Business.Financial.Testing
+namespace QuantProject.Business.Testing
 {
 	/// <summary>
 	/// Summary description for Tester.
 	/// </summary>
-	public class Tester : Optimizable
+	public class Tester : BackTester
 	{
     private TestWindow testWindow;
     private TradingSystems tradingSystems;
-    private Account account = new Account( "test" );
     private OrderManager orderManager = new OrderManager();
     private double initialCash = 0.0;
     //private TestResults testResults;
-
-    public Account Account
-    {
-      get { return account; }
-      set { account = value; }
-    }
 
     public OrderManager OrderManager
     {
@@ -61,17 +54,17 @@ namespace QuantProject.Business.Financial.Testing
 			this.testWindow = testWindow;
       this.tradingSystems = tradingSystems;
       this.initialCash = initialCash;
-      this.account.AddCash( new ExtendedDateTime( testWindow.StartDateTime , BarComponent.Open ) ,
+      this.Account.AddCash( new ExtendedDateTime( testWindow.StartDateTime , BarComponent.Open ) ,
         initialCash );
 		}
 
     public override double Objective()
     {
-      this.account.Clear();
-      account.AddCash( new ExtendedDateTime( testWindow.StartDateTime , BarComponent.Open ) ,
+      this.Account.Clear();
+      this.Account.AddCash( new ExtendedDateTime( testWindow.StartDateTime , BarComponent.Open ) ,
         initialCash );
       this.Test();
-      return - account.GetProfitNetLoss(
+      return - this.Account.GetProfitNetLoss(
         new ExtendedDateTime( testWindow.EndDateTime , BarComponent.Close ) );
     }
 
@@ -87,11 +80,11 @@ namespace QuantProject.Business.Financial.Testing
     }
     private void handleCurrentSignal( Signal signal )
     {
-      Orders orders = account.AccountStrategy.GetOrders( signal );
+      Orders orders = this.Account.AccountStrategy.GetOrders( signal );
       foreach (Order order in orders )
       {
         TimedTransaction transaction = this.OrderManager.GetTransaction( order );
-        account.Add( transaction );
+        this.Account.Add( transaction );
         //Debug.WriteLine( account.ToString( dateTime ) );
       }
     }
