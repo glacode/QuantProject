@@ -77,6 +77,14 @@ namespace QuantProject.Applications.Downloader.Validate.Validators
 			this.validate_CloseToClose( dataTable );
 			this.validate_RangeToRange( dataTable );
 		}
+		/// <summary>
+		/// Validates the instrument quotes for the given ticker
+		/// </summary>
+		/// <param name="ticker">Instrument's ticker</param>
+		public void Validate( string ticker )
+		{
+
+		}
   }
   #endregion
 }
