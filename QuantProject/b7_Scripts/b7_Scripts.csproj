@@ -167,6 +167,16 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "TickerSelectionTesting\DataStreamerHandler.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "TickerSelectionTesting\RunBestTwoIndipendent.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "WalkForwardTesting\MSFTwalkForward\RunMSFTwalkForward.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
