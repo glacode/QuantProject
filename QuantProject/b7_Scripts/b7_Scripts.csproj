@@ -116,38 +116,14 @@
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
-                <File
-                    RelPath = "MultiTesting\MultiTestOneRank\RunMultiTestOneRank.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "SimpleTesting\MSFTsimpleTest\RunMSFTsimpleTest.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
+                <Folder RelPath = "MultiTesting\MultiTestOneRank\" />
                 <File
                     RelPath = "SimpleTesting\MSFTsimpleTest\TsMSFTsimpleTest.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
                 <File
-                    RelPath = "SimpleTesting\MSFTSimpleTest_2\AsMSFTsimpleTest_2.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "SimpleTesting\MSFTSimpleTest_2\RunMSFTsimpleTest_2.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
                     RelPath = "SimpleTesting\MSFTSimpleTest_2\TsMSFTsimpleTest_2.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "SimpleTesting\OneRank\AsOneRank.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
@@ -158,21 +134,6 @@
                 />
                 <File
                     RelPath = "SimpleTesting\OneRank\OneRank.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "SimpleTesting\OneRank\RunOneRank.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "SimpleTesting\OneRank\RunOneRankWithExcelReport.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "SimpleTesting\OneRank\RunOneRankWithWindowsReport.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
@@ -203,11 +164,6 @@
                 />
                 <File
                     RelPath = "TickerSelectionTesting\RunEfficientPortfolio.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "WalkForwardTesting\MSFTwalkForward\RunMSFTwalkForward.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
