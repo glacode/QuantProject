@@ -1,0 +1,108 @@
+/*
+QuantProject - Quantitative Finance Library
+
+BestPerformingTickers.cs
+Copyright (C) 2003 
+Glauco Siliprandi
+
+This program is free software; you can redistribute it and/or
+modify it under the terms of the GNU General Public License
+as published by the Free Software Foundation; either version 2
+of the License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program; if not, write to the Free Software
+Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+*/
+using System;
+using System.Collections;
+
+using QuantProject.ADT;
+using QuantProject.Business.Financial.Accounting;
+using QuantProject.Business.Financial.Ordering;
+using QuantProject.Business.Timing;
+using QuantProject.Data.DataProviders;
+using QuantProject.Scripts.SimpleTesting;
+
+namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardOneRank
+{
+	/// <summary>
+	/// The collection of best performing tickers, among the eligible ones
+	/// </summary>
+	public class BestPerformingTickers : Hashtable,IProgressNotifier
+	{
+		private int numberBestPerformingTickers;
+		private int numberDaysForPerformanceCalculation;
+
+		private long calculatedTickers = 0;
+
+		private ArrayList eligibleAccounts;
+
+		private DateTime lastUpdate;
+
+		public DateTime LastUpdate
+		{
+			get { return this.lastUpdate; }
+		}
+
+		public BestPerformingTickers( int numberBestPerformingTickers ,
+			int numberDaysForPerformanceCalculation )
+		{
+			this.numberBestPerformingTickers = numberBestPerformingTickers;
+			this.numberDaysForPerformanceCalculation = numberDaysForPerformanceCalculation;
+			this.eligibleAccounts = new ArrayList();
+		}
+
+		public event NewProgressEventHandler NewProgress;
+
+		#region SetTickers
+		private void setTickers_build_addAccount( string ticker , DateTime dateTime )
+		{
+			HistoricalEndOfDayTimer historicalEndOfDayTimer =
+				new HistoricalEndOfDayTimer(
+				new EndOfDayDateTime( dateTime.AddYears( -1 ).AddDays( -1 ) ,
+				EndOfDaySpecificTime.FiveMinutesBeforeMarketClose ) );
+			Account account = new Account( ticker , historicalEndOfDayTimer ,
+				new HistoricalEndOfDayDataStreamer( historicalEndOfDayTimer ) ,
+				new HistoricalEndOfDayOrderExecutor( historicalEndOfDayTimer ) );
+			OneRank oneRank = new OneRank( account ,
+				dateTime.AddDays( this.numberDaysForPerformanceCalculation ) );
+			account.Key = ticker;
+			this.eligibleAccounts.Add( account );
+		}
+		private void setTickers_build( EligibleTickers eligibleTickers , DateTime dateTime )
+		{
+			foreach ( string ticker in eligibleTickers.Keys )
+			{
+				setTickers_build_addAccount( ticker , dateTime );
+				this.calculatedTickers++;
+				if ( Math.Floor( this.calculatedTickers / eligibleAccounts.Count * 100 ) >
+					Math.Floor( ( this.calculatedTickers - 1 ) / eligibleAccounts.Count * 100 ) )
+					// a new time percentage point has been elapsed
+					this.NewProgress( this , new NewProgressEventArgs(
+						Convert.ToInt32( Math.Floor( this.calculatedTickers / eligibleAccounts.Count * 100 ) ) ,
+						100 ) );
+			}
+			this.eligibleAccounts.Sort();
+			for ( int index=0 ; index < this.numberBestPerformingTickers ; index++ )
+				this.Add( ((Account)this.eligibleAccounts[ index ]).Key , this.eligibleAccounts[ index ] );
+		}
+		/// <summary>
+		/// Populates the collection of the best performing tickers
+		/// </summary>
+		/// <param name="dateTime"></param>
+		public void SetTickers( EligibleTickers eligibleTickers , DateTime dateTime )
+		{
+			this.NewProgress( this , new NewProgressEventArgs( 0 , 100 ) );
+			this.Clear();
+			this.setTickers_build( eligibleTickers , dateTime );
+			this.lastUpdate = dateTime;
+		}
+		#endregion
+	}
+}
