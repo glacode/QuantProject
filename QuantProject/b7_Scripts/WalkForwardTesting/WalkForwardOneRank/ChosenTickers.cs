@@ -40,10 +40,12 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardOneRank
 		{
 			SortedList sortedList = new SortedList();
 			foreach ( string ticker in bestPerformingTickers.Keys )
-				sortedList.Add( ( ( ComparableAccount )bestPerformingTickers[ ticker ]).Goodness ,
-					ticker );
+				sortedList.Add( ticker , ( ( ComparableAccount )bestPerformingTickers[ ticker ]).Goodness );
 			for ( int n=0; n<=this.numberTickersToBeChosen ; n++ )
-				this.Add( sortedList.GetByIndex( n ) , 1 );
+			{
+				string key = (string)sortedList.GetKey( n );
+				this.Add( key , key );
+			}
 		}
 		/// <summary>
 		/// Populates the collection of eligible tickers
