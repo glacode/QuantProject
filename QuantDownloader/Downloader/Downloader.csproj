@@ -164,29 +164,14 @@
                     BuildAction = "Content"
                 />
                 <File
-                    RelPath = "DataSet1.xsx"
-                    DependentUpon = "DataSet1.xsd"
-                    BuildAction = "None"
-                />
-                <File
                     RelPath = "Main.cs"
                     SubType = "Form"
                     BuildAction = "Compile"
                 />
                 <File
-                    RelPath = "Main.resx"
-                    DependentUpon = "Main.cs"
-                    BuildAction = "EmbeddedResource"
-                />
-                <File
                     RelPath = "QuotesDataGrid.cs"
                     SubType = "Component"
                     BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "QuotesDataGrid.resx"
-                    DependentUpon = "QuotesDataGrid.cs"
-                    BuildAction = "EmbeddedResource"
                 />
                 <File
                     RelPath = "TestDownloadedData.cs"
@@ -204,29 +189,14 @@
                     BuildAction = "Compile"
                 />
                 <File
-                    RelPath = "WebDownloader.resx"
-                    DependentUpon = "WebDownloader.cs"
-                    BuildAction = "EmbeddedResource"
-                />
-                <File
                     RelPath = "QuotesEditor\QuotesChart.cs"
-                    SubType = "UserControl"
+                    SubType = "Code"
                     BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "QuotesEditor\QuotesChart.resx"
-                    DependentUpon = "QuotesChart.cs"
-                    BuildAction = "EmbeddedResource"
                 />
                 <File
                     RelPath = "QuotesEditor\QuotesEditor.cs"
                     SubType = "Form"
                     BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "QuotesEditor\QuotesEditor.resx"
-                    DependentUpon = "QuotesEditor.cs"
-                    BuildAction = "EmbeddedResource"
                 />
                 <File
                     RelPath = "QuotesEditor\ValidationDataGrid.cs"
@@ -250,7 +220,7 @@
                 />
                 <File
                     RelPath = "QuotesEditor\VisualValidationChart.cs"
-                    SubType = "UserControl"
+                    SubType = "Code"
                     BuildAction = "Compile"
                 />
                 <File
@@ -265,7 +235,7 @@
                 />
                 <File
                     RelPath = "QuotesEditor\CloseToClose\CloseToCloseChart.cs"
-                    SubType = "UserControl"
+                    SubType = "Code"
                     BuildAction = "Compile"
                 />
                 <File
@@ -294,13 +264,8 @@
                     BuildAction = "Compile"
                 />
                 <File
-                    RelPath = "QuotesEditor\OHLC\OHLCuserControl.resx"
-                    DependentUpon = "OHLCuserControl.cs"
-                    BuildAction = "EmbeddedResource"
-                />
-                <File
                     RelPath = "QuotesEditor\RangeToRange\RangeToRangeChart.cs"
-                    SubType = "UserControl"
+                    SubType = "Code"
                     BuildAction = "Compile"
                 />
                 <File
@@ -324,19 +289,9 @@
                     BuildAction = "Compile"
                 />
                 <File
-                    RelPath = "TickerSelectors\TickerGroupsListViewMenu.resx"
-                    DependentUpon = "TickerGroupsListViewMenu.cs"
-                    BuildAction = "EmbeddedResource"
-                />
-                <File
                     RelPath = "TickerSelectors\TickerGroupsViewer.cs"
                     SubType = "Form"
                     BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "TickerSelectors\TickerGroupsViewer.resx"
-                    DependentUpon = "TickerGroupsViewer.cs"
-                    BuildAction = "EmbeddedResource"
                 />
                 <File
                     RelPath = "TickerSelectors\TickerSelectorForm.cs"
@@ -354,11 +309,6 @@
                     BuildAction = "Compile"
                 />
                 <File
-                    RelPath = "TickerSelectors\TickerViewerMenu.resx"
-                    DependentUpon = "TickerViewerMenu.cs"
-                    BuildAction = "EmbeddedResource"
-                />
-                <File
                     RelPath = "Validate\ValidateDataGrid.cs"
                     SubType = "Component"
                     BuildAction = "Compile"
@@ -367,11 +317,6 @@
                     RelPath = "Validate\ValidateForm.cs"
                     SubType = "Form"
                     BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Validate\ValidateForm.resx"
-                    DependentUpon = "ValidateForm.cs"
-                    BuildAction = "EmbeddedResource"
                 />
             </Include>
         </Files>
