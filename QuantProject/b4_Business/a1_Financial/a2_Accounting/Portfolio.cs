@@ -24,8 +24,10 @@ using System;
 using System.Collections;
 using System.Diagnostics;
 using QuantProject.ADT;
+using QuantProject.Business.DataProviders;
 using QuantProject.Business.Financial.Instruments;
 using QuantProject.Business.Timing;
+using QuantProject.Data.DataProviders;
 
 namespace QuantProject.Business.Financial.Accounting
 {
@@ -125,14 +127,23 @@ namespace QuantProject.Business.Financial.Accounting
 
     #endregion
 
-		public double GetMarketValue( EndOfDayDateTime endOfDayDateTime )
+		public double GetMarketValue( EndOfDayDateTime endOfDayDateTime ,
+			IHistoricalQuoteProvider historicalQuoteProvider )
 		{
 			double totalValue = 0;
 			foreach (Position position in this.Values)
-				totalValue += position.Instrument.GetMarketValue( endOfDayDateTime ) * position.Quantity;
+				totalValue += historicalQuoteProvider.GetMarketValue(
+					position.Instrument.Key , endOfDayDateTime ) * position.Quantity;
 			return totalValue;
 		}
-
+		public double GetMarketValue( IDataStreamer dataStreamer )
+		{
+			double totalValue = 0;
+			foreach (Position position in this.Values)
+				totalValue += dataStreamer.GetCurrentBid(
+					position.Instrument.Key ) * position.Quantity;
+			return totalValue;
+		}
 		public override string ToString()
     {
       string toString = "";
