@@ -28,6 +28,8 @@ namespace QuantProject.DataAccess.Tables
 		public static string AdjustedClose = "quAdjustedClose";
 		public static string AdjustedCloseToCloseRatio = "quAdjustedCloseToCloseRatio";
 
+    public static DateTime DateWithDifferentCloseToClose = new DateTime(1900,1,1);
+
 
 		/// <summary>
 		/// Gets the ticker whose quotes are contained into the Quotes object
@@ -92,13 +94,12 @@ namespace QuantProject.DataAccess.Tables
     /// It provides updating the database for each closeToCloseRatio contained in the given table
     /// (the table refers to the ticker passed as the first parameter)
     /// </summary>
-    private static void commitAllCloseToCloseRatios(string ticker,
-                                                    DataTable tableContainingCloseToCloseRatios )
+    private static void commitAllCloseToCloseRatios(DataTable tableContainingCloseToCloseRatios )
     {
-      string notUsed = ticker;
       OleDbSingleTableAdapter adapter = 
                       new OleDbSingleTableAdapter("SELECT * FROM quotes WHERE 1=2",
                                                   tableContainingCloseToCloseRatios);
+      adapter.OleDbDataAdapter.ContinueUpdateOnError = true;
       adapter.OleDbDataAdapter.Update(tableContainingCloseToCloseRatios);
       
       /*
@@ -112,21 +113,14 @@ namespace QuantProject.DataAccess.Tables
     }
 
     /// <summary>
-    /// It provides computation of the adjustedCloseToCloseRatios for the given ticker
+    /// It provides computation and commiting to database
+    /// of the adjustedCloseToCloseRatios for the given ticker
     /// </summary>
     public static void ComputeAndCommitCloseToCloseRatios( string ticker)
     {
-      DateTime start = DateTime.Now;
       DataTable tickerQuotes = Quotes.GetTickerQuotes(ticker);
-      DateTime tickerQuotesTime = DateTime.Now;
       Quotes.ComputeCloseToCloseValues(tickerQuotes);
-      DateTime computation = DateTime.Now;
-      Quotes.commitAllCloseToCloseRatios(ticker, tickerQuotes);
-      DateTime commit = DateTime.Now;
-      MessageBox.Show("start : " + start.ToString() + "\n" +
-                      "loading quotes - finished : " + tickerQuotesTime.ToString() + "\n" +
-                      "computation - finished: " + computation.ToString() + "\n" +
-                      "commit - finished: " + commit.ToString());
+      Quotes.commitAllCloseToCloseRatios(tickerQuotes);
     }
     
     /// <summary>
@@ -243,9 +237,6 @@ namespace QuantProject.DataAccess.Tables
         double adjCTCInDatabase;
         double adjCTCInSource;
         double absoluteRelativeDifference;
-        DataColumn[] columnPrimaryKey = new DataColumn[0];
-        columnPrimaryKey[0]= tableSource.Columns["quDate"];
-        tableSource.PrimaryKey = columnPrimaryKey;
         DataRow rowToCheck;
         for(int i = 0;i != numRows;i++)
         {
@@ -255,9 +246,25 @@ namespace QuantProject.DataAccess.Tables
           if(rowToCheck != null)
           {
             adjCTCInSource = (double)rowToCheck[Quotes.AdjustedCloseToCloseRatio];
-            absoluteRelativeDifference = Math.Abs((adjCTCInDatabase - adjCTCInSource)/adjCTCInSource);
-            if(absoluteRelativeDifference > ConstantsProvider.MaxRelativeDifferenceForCloseToCloseRatios )
-               return true;
+            if(adjCTCInSource != 0)
+            {  
+              absoluteRelativeDifference = Math.Abs((adjCTCInDatabase - adjCTCInSource)/adjCTCInSource);
+              if(absoluteRelativeDifference > ConstantsProvider.MaxRelativeDifferenceForCloseToCloseRatios )
+                {
+                  Quotes.DateWithDifferentCloseToClose = date;
+                  return true;
+                }
+            }
+            else if(adjCTCInSource == 0)
+            {  
+              absoluteRelativeDifference = Math.Abs(adjCTCInDatabase - adjCTCInSource);
+              if(absoluteRelativeDifference > ConstantsProvider.MaxRelativeDifferenceForCloseToCloseRatios )
+                {
+                  Quotes.DateWithDifferentCloseToClose = date;
+                  return true;
+                }
+
+            }
           }
         }
       }
@@ -270,41 +277,45 @@ namespace QuantProject.DataAccess.Tables
     }             
 
 
-    public static void ComputeCloseToCloseValues(DataTable tableContainingNewAdjustedValues)
-                                                          
+    public static void ComputeCloseToCloseValues(DataTable tableOfAllQuotesOfAGivenTicker)
     {
-      try
+      DataColumn[] columnPrimaryKey = new DataColumn[1];
+      columnPrimaryKey[0]= tableOfAllQuotesOfAGivenTicker.Columns[Quotes.Date];
+      tableOfAllQuotesOfAGivenTicker.PrimaryKey = columnPrimaryKey;
+      
+      int numRows = tableOfAllQuotesOfAGivenTicker.Rows.Count;
+      DataView orderedDyDate = new DataView(tableOfAllQuotesOfAGivenTicker,
+                                          Quotes.AdjustedClose + ">=0",
+                                          Quotes.Date + " ASC", DataViewRowState.CurrentRows);
+      float previousClose;
+      float currentClose;
+      double currentCloseToCloseRatio;
+      DateTime date;
+      DataRow rowToBeChanged;
+      for(int i = 0;i != numRows;i++)
       {
-        if(!tableContainingNewAdjustedValues.Columns.Contains(Quotes.AdjustedCloseToCloseRatio))
+        date = (DateTime)orderedDyDate[i].Row[Quotes.Date];
+        rowToBeChanged = tableOfAllQuotesOfAGivenTicker.Rows.Find(date);
+        if(i == 0)
+        //the first available quote has 0 as closeToClose ratio
         {
-          tableContainingNewAdjustedValues.Columns.Add(Quotes.AdjustedCloseToCloseRatio,
-                                                       System.Type.GetType("System.Double"));
+          rowToBeChanged[Quotes.AdjustedCloseToCloseRatio] = 0;
         }
-        int numRows = tableContainingNewAdjustedValues.Rows.Count;
-        float previousClose;
-        float currentClose;
-        for(int i = 0;i != numRows;i++)
+        else
         {
-          if(i == 0)
-          //the first available quote has 0 as closeToClose ratio
-          {
-            tableContainingNewAdjustedValues.Rows[i][Quotes.AdjustedCloseToCloseRatio] = 0;
-          }
-          else
-          {
-            previousClose = (float)tableContainingNewAdjustedValues.Rows[i-1]["quAdjustedClose"];
-            currentClose = (float)tableContainingNewAdjustedValues.Rows[i]["quAdjustedClose"];
-            tableContainingNewAdjustedValues.Rows[i][Quotes.AdjustedCloseToCloseRatio] = 
-                                                  (currentClose - previousClose)/previousClose; 
-          }
-        }
-
+          previousClose = (float)orderedDyDate[i-1].Row[Quotes.AdjustedClose];
+          currentClose = (float)orderedDyDate[i].Row[Quotes.AdjustedClose];
+          currentCloseToCloseRatio = (double)orderedDyDate[i].Row[Quotes.AdjustedCloseToCloseRatio];
+          
+          if(previousClose != 0 && (currentCloseToCloseRatio == 0 &&
+                                    (previousClose != currentClose)))
+          // if the previouse adj close is not 0 and the current CTC should not be 0
+          // because previous and current are not equal
+              rowToBeChanged[Quotes.AdjustedCloseToCloseRatio] =
+                                        (currentClose - previousClose)/previousClose;
+       }
+       
       }
-      catch(Exception ex)
-      {
-        MessageBox.Show(ex.ToString());
-      }
-
     }             
 
     /// <summary>
@@ -519,7 +530,7 @@ namespace QuantProject.DataAccess.Tables
       SqlExecutor.ExecuteNonQuery (sql);
     }
 
-    /* Now useless, maybe ...
+    /* Now useless
     /// <summary>
     /// Returns a DataTable containing ticker, date and adjusted value
     /// for the given group of tickers
