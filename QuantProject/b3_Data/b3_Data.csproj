@@ -124,14 +124,6 @@
                     Lcid = "0"
                     WrapperTool = "primary"
                 />
-                <Reference
-                    Name = "Microsoft.Office.Core"
-                    Guid = "{2DF8D04C-5BFA-101B-BDE5-00AA0044DE52}"
-                    VersionMajor = "2"
-                    VersionMinor = "3"
-                    Lcid = "0"
-                    WrapperTool = "primary"
-                />
             </References>
         </Build>
         <Files>
@@ -210,6 +202,16 @@
                     RelPath = "DataTables\TickerDataTable.cs"
                     SubType = "Component"
                     BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "DataTables\Tickers_tickerGroups.cs"
+                    SubType = "Component"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "DataTables\Tickers_tickerGroups.resx"
+                    DependentUpon = "Tickers_tickerGroups.cs"
+                    BuildAction = "EmbeddedResource"
                 />
                 <File
                     RelPath = "DataTables\ValidatedTickers.cs"

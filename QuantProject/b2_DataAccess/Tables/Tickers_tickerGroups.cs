@@ -44,6 +44,23 @@ namespace QuantProject.DataAccess.Tables
     {
       
     }
+    
+    /// <summary>
+    /// It fills the given dataTable with tickers belonging to a given group
+    /// </summary>
+    /// <param name="groupID">The groupID corresponding to the tickers whose
+    /// values have to be stored in the given Data Table</param>
+    /// <param name="dataTable">The dataTable where to store tickers</param>
+    /// <returns></returns>
+    public static void SetDataTable( string groupID , DataTable dataTable)
+    {
+      string sql;
+      sql = "SELECT " + Tickers_tickerGroups.Ticker + " FROM tickers_tickerGroups " +
+            "WHERE " + Tickers_tickerGroups.GroupID + "='" +
+            groupID + "'";
+      SqlExecutor.SetDataTable( sql , dataTable );
+    }
+
     /// <summary>
     /// It provides deletion of the single ticker from the specified group
     /// </summary>

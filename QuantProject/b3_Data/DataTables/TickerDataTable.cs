@@ -63,7 +63,7 @@ namespace QuantProject.Data.DataTables
                                                       DateTime lastQuoteDate,
                                                       long maxNumOfReturnedTickers)
     {
-      DataTable groupOfTicker = Tickers_tickerGroups.GetTickers(groupID);
+      DataTable groupOfTicker = QuantProject.DataAccess.Tables.Tickers_tickerGroups.GetTickers(groupID);
       //also possible, but slower:
       //return TickerDataTable.GetBestPerformingTickers(orderByASC, groupOfTicker, firstQuoteDate,
       //                                                lastQuoteDate, maxNumOfReturnedTickers);
