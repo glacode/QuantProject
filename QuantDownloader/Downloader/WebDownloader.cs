@@ -350,7 +350,7 @@ namespace QuantDownloader
     private void downloadQuotes()
     {
       DataSet ds=new DataSet();
-      downloadQuotes_deleteFrom_quotes();
+      //downloadQuotes_deleteFrom_quotes() - csv files aren't used anymore;
       downloadQuotes_createTickerDataSet( ds );
       //this.OleDbConnection1.Open();
       downloadQuotes_withTickerDataSet( ds );
