@@ -23,5 +23,6 @@ namespace QuantProject.ADT
     public static double MaxDifferenceForCloseToCloseRatios = 0.005;
     // max num days allowed by the data source (yahoo)
     public static double MaxNumDaysDownloadedAtEachConnection = 200;
+		public static string FormatWithTwoDecimals = "0:#,#.00";
 	}
 }
