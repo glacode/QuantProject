@@ -47,6 +47,12 @@ namespace QuantProject.Applications.Downloader
 		private System.Windows.Forms.ContextMenu contextMenuTickerViewer;
 		private System.Windows.Forms.MenuItem menuItemValidateCurrentRows;
 		private System.Windows.Forms.MenuItem menuItemDownloadCurrentRows;
+		private System.Windows.Forms.Panel panel1;
+		private System.Windows.Forms.TextBox textBoxStringToFindInName;
+		private System.Windows.Forms.Label label2;
+		private System.Windows.Forms.Label label3;
+		private System.Windows.Forms.Panel panel2;
+		private System.Windows.Forms.Splitter splitter1;
 		private DataTable tableTickers;
 
 		public TickerViewer()
@@ -85,41 +91,58 @@ namespace QuantProject.Applications.Downloader
 			this.textBoxStringToFind = new System.Windows.Forms.TextBox();
 			this.label1 = new System.Windows.Forms.Label();
 			this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
+			this.textBoxStringToFindInName = new System.Windows.Forms.TextBox();
 			this.dataGrid1 = new System.Windows.Forms.DataGrid();
 			this.contextMenuTickerViewer = new System.Windows.Forms.ContextMenu();
 			this.menuItemValidateCurrentRows = new System.Windows.Forms.MenuItem();
-			this.buttonFindTickers = new System.Windows.Forms.Button();
 			this.menuItemDownloadCurrentRows = new System.Windows.Forms.MenuItem();
+			this.buttonFindTickers = new System.Windows.Forms.Button();
+			this.panel1 = new System.Windows.Forms.Panel();
+			this.label3 = new System.Windows.Forms.Label();
+			this.label2 = new System.Windows.Forms.Label();
+			this.panel2 = new System.Windows.Forms.Panel();
+			this.splitter1 = new System.Windows.Forms.Splitter();
 			((System.ComponentModel.ISupportInitialize)(this.dataGrid1)).BeginInit();
+			this.panel1.SuspendLayout();
+			this.panel2.SuspendLayout();
 			this.SuspendLayout();
 			// 
 			// textBoxStringToFind
 			// 
-			this.textBoxStringToFind.Location = new System.Drawing.Point(48, 8);
+			this.textBoxStringToFind.Location = new System.Drawing.Point(16, 32);
 			this.textBoxStringToFind.Name = "textBoxStringToFind";
-			this.textBoxStringToFind.Size = new System.Drawing.Size(160, 20);
+			this.textBoxStringToFind.Size = new System.Drawing.Size(176, 20);
 			this.textBoxStringToFind.TabIndex = 0;
-			this.textBoxStringToFind.Text = "";
+			this.textBoxStringToFind.Text = "%";
 			this.toolTip1.SetToolTip(this.textBoxStringToFind, "Type chars to filter tickers (you can use % and _ )  ");
 			// 
 			// label1
 			// 
-			this.label1.Location = new System.Drawing.Point(8, 8);
+			this.label1.Location = new System.Drawing.Point(16, 8);
 			this.label1.Name = "label1";
-			this.label1.Size = new System.Drawing.Size(40, 24);
+			this.label1.Size = new System.Drawing.Size(112, 16);
 			this.label1.TabIndex = 1;
-			this.label1.Text = "Find ...";
+			this.label1.Text = "Find Ticker is like";
+			// 
+			// textBoxStringToFindInName
+			// 
+			this.textBoxStringToFindInName.Location = new System.Drawing.Point(16, 112);
+			this.textBoxStringToFindInName.Name = "textBoxStringToFindInName";
+			this.textBoxStringToFindInName.Size = new System.Drawing.Size(176, 20);
+			this.textBoxStringToFindInName.TabIndex = 4;
+			this.textBoxStringToFindInName.Text = "%";
+			this.toolTip1.SetToolTip(this.textBoxStringToFindInName, "Type chars to filter companies (you can use % and _ )  ");
 			// 
 			// dataGrid1
 			// 
+			this.dataGrid1.BorderStyle = System.Windows.Forms.BorderStyle.None;
 			this.dataGrid1.ContextMenu = this.contextMenuTickerViewer;
 			this.dataGrid1.DataMember = "";
-			this.dataGrid1.Dock = System.Windows.Forms.DockStyle.Bottom;
+			this.dataGrid1.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.dataGrid1.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((System.Byte)(0)));
 			this.dataGrid1.HeaderForeColor = System.Drawing.SystemColors.ControlText;
-			this.dataGrid1.Location = new System.Drawing.Point(0, 46);
 			this.dataGrid1.Name = "dataGrid1";
-			this.dataGrid1.Size = new System.Drawing.Size(288, 432);
+			this.dataGrid1.Size = new System.Drawing.Size(200, 478);
 			this.dataGrid1.TabIndex = 2;
 			// 
 			// contextMenuTickerViewer
@@ -134,34 +157,85 @@ namespace QuantProject.Applications.Downloader
 			this.menuItemValidateCurrentRows.Text = "Validate selected tickers";
 			this.menuItemValidateCurrentRows.Click += new System.EventHandler(this.menuItemValidateCurrentRows_Click);
 			// 
-			// buttonFindTickers
-			// 
-			this.buttonFindTickers.Location = new System.Drawing.Point(216, 8);
-			this.buttonFindTickers.Name = "buttonFindTickers";
-			this.buttonFindTickers.Size = new System.Drawing.Size(64, 24);
-			this.buttonFindTickers.TabIndex = 3;
-			this.buttonFindTickers.Text = "Go";
-			this.buttonFindTickers.Click += new System.EventHandler(this.buttonFindTickers_Click);
-			// 
 			// menuItemDownloadCurrentRows
 			// 
 			this.menuItemDownloadCurrentRows.Index = 1;
 			this.menuItemDownloadCurrentRows.Text = "Download quotes of selected tickers";
 			this.menuItemDownloadCurrentRows.Click += new System.EventHandler(this.menuItemDownloadCurrentRows_Click);
 			// 
+			// buttonFindTickers
+			// 
+			this.buttonFindTickers.Location = new System.Drawing.Point(56, 200);
+			this.buttonFindTickers.Name = "buttonFindTickers";
+			this.buttonFindTickers.Size = new System.Drawing.Size(64, 24);
+			this.buttonFindTickers.TabIndex = 3;
+			this.buttonFindTickers.Text = "Go";
+			this.buttonFindTickers.Click += new System.EventHandler(this.buttonFindTickers_Click);
+			// 
+			// panel1
+			// 
+			this.panel1.Controls.AddRange(new System.Windows.Forms.Control[] {
+																				 this.dataGrid1});
+			this.panel1.Dock = System.Windows.Forms.DockStyle.Left;
+			this.panel1.Name = "panel1";
+			this.panel1.Size = new System.Drawing.Size(200, 478);
+			this.panel1.TabIndex = 4;
+			// 
+			// label3
+			// 
+			this.label3.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((System.Byte)(0)));
+			this.label3.Location = new System.Drawing.Point(72, 64);
+			this.label3.Name = "label3";
+			this.label3.Size = new System.Drawing.Size(48, 16);
+			this.label3.TabIndex = 6;
+			this.label3.Text = "AND";
+			// 
+			// label2
+			// 
+			this.label2.Location = new System.Drawing.Point(16, 88);
+			this.label2.Name = "label2";
+			this.label2.Size = new System.Drawing.Size(168, 16);
+			this.label2.TabIndex = 5;
+			this.label2.Text = "Company Name is like";
+			// 
+			// panel2
+			// 
+			this.panel2.Controls.AddRange(new System.Windows.Forms.Control[] {
+																				 this.textBoxStringToFind,
+																				 this.buttonFindTickers,
+																				 this.textBoxStringToFindInName,
+																				 this.label2,
+																				 this.label3,
+																				 this.label1});
+			this.panel2.Dock = System.Windows.Forms.DockStyle.Fill;
+			this.panel2.Location = new System.Drawing.Point(200, 0);
+			this.panel2.Name = "panel2";
+			this.panel2.Size = new System.Drawing.Size(200, 478);
+			this.panel2.TabIndex = 7;
+			// 
+			// splitter1
+			// 
+			this.splitter1.BackColor = System.Drawing.SystemColors.Highlight;
+			this.splitter1.Location = new System.Drawing.Point(200, 0);
+			this.splitter1.Name = "splitter1";
+			this.splitter1.Size = new System.Drawing.Size(3, 478);
+			this.splitter1.TabIndex = 8;
+			this.splitter1.TabStop = false;
+			// 
 			// TickerViewer
 			// 
 			this.AutoScaleBaseSize = new System.Drawing.Size(5, 13);
-			this.ClientSize = new System.Drawing.Size(288, 478);
+			this.ClientSize = new System.Drawing.Size(400, 478);
 			this.Controls.AddRange(new System.Windows.Forms.Control[] {
-																		  this.buttonFindTickers,
-																		  this.dataGrid1,
-																		  this.label1,
-																		  this.textBoxStringToFind});
+																		  this.splitter1,
+																		  this.panel2,
+																		  this.panel1});
 			this.Name = "TickerViewer";
-			this.Text = "TickerViewer";
+			this.Text = "Ticker Viewer";
 			this.Closed += new System.EventHandler(this.TickerViewer_Closed);
 			((System.ComponentModel.ISupportInitialize)(this.dataGrid1)).EndInit();
+			this.panel1.ResumeLayout(false);
+			this.panel2.ResumeLayout(false);
 			this.ResumeLayout(false);
 
 		}
@@ -177,13 +251,20 @@ namespace QuantProject.Applications.Downloader
 			dataGrid1TableStyle.ColumnHeadersVisible = true;
 			dataGrid1TableStyle.ReadOnly = true;
 			dataGrid1TableStyle.SelectionBackColor = Color.DimGray ;
-			DataGridTextBoxColumn columnStyle = new DataGridTextBoxColumn();
-			columnStyle.MappingName = "tiTicker";
-			columnStyle.HeaderText = "Ticker";
-			columnStyle.TextBox.Enabled = false;
-			dataGrid1TableStyle.GridColumnStyles.Add(columnStyle);
+			DataGridTextBoxColumn columnStyle_tiTicker = new DataGridTextBoxColumn();
+			columnStyle_tiTicker.MappingName = "tiTicker";
+			columnStyle_tiTicker.HeaderText = "Ticker";
+			columnStyle_tiTicker.TextBox.Enabled = false;
+			columnStyle_tiTicker.NullText = "";
+			DataGridTextBoxColumn columnStyle_tiCompanyName = new DataGridTextBoxColumn();
+			columnStyle_tiCompanyName.MappingName = "tiCompanyName";
+			columnStyle_tiCompanyName.HeaderText = "Company Name";
+			columnStyle_tiCompanyName.TextBox.Enabled = false;
+			columnStyle_tiCompanyName.NullText = "";
+			dataGrid1TableStyle.GridColumnStyles.Add(columnStyle_tiTicker);
+			dataGrid1TableStyle.GridColumnStyles.Add(columnStyle_tiCompanyName);
 			this.dataGrid1.TableStyles.Add(dataGrid1TableStyle);
-			columnStyle.NullText = "";
+			
 		}
 		#endregion
 
@@ -201,7 +282,9 @@ namespace QuantProject.Applications.Downloader
 				Cursor.Current = Cursors.WaitCursor;
 				this.oleDbConnection.Open();
 				string criteria = "SELECT * FROM tickers WHERE tiTicker LIKE '" +
-									this.textBoxStringToFind.Text + "'";
+									this.textBoxStringToFind.Text + "'" +
+									" AND tiCompanyName LIKE '" +
+									this.textBoxStringToFindInName.Text + "'";
 				oleDbDataAdapter  = new OleDbDataAdapter(criteria, this.oleDbConnection);
 				this.tableTickers.Clear();
 				oleDbDataAdapter.Fill(this.tableTickers);
@@ -273,6 +356,7 @@ namespace QuantProject.Applications.Downloader
 			WebDownloader webDownloader = new WebDownloader(this.getTableOfSelectedTickers());
 			webDownloader.Show();
 		}
+
 		
 
 	}
