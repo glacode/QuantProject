@@ -144,5 +144,38 @@ namespace QuantProject.Data.DataProviders
 		{
 			return Quotes.GetTickerQuotes( instrumentKey );
 		}
+		#region GetQuotes
+		private static double getQuotes_getQuoteValue( DataRow dataRow , ExtendedDateTime extendedDateTime )
+		{
+			double returnValue;
+			/// TO DO: evaluate to use a Quote class, that derives from the DataRow class
+			/// and use properties instead of dataRow accessing
+			if ( extendedDateTime.BarComponent == BarComponent.Open )
+				returnValue = (double)dataRow[ QuantProject.Data.DataTables.Quotes.Open ] *
+					(double)dataRow[ QuantProject.Data.DataTables.Quotes.AdjustedClose ] /
+					(double)dataRow[ QuantProject.Data.DataTables.Quotes.Close ];
+			else
+				returnValue = (double)dataRow[ QuantProject.Data.DataTables.Quotes.AdjustedClose ];
+			return returnValue;
+		}
+		/// <summary>
+		/// Returns the hashtable containing, for each ticker, the
+		/// quote for the given extended date time
+		/// </summary>
+		/// <param name="tickerCollection">List of tickers whose quotes are to be fetched</param>
+		/// <param name="extendedDateTime"></param>
+		/// <returns></returns>
+		public static Hashtable GetQuotes( ICollection tickerCollection ,
+			ExtendedDateTime extendedDateTime )
+		{
+			Hashtable returnValue = new Hashtable();
+			QuantProject.Data.DataTables.Quotes quotes =
+				new QuantProject.Data.DataTables.Quotes( tickerCollection ,extendedDateTime.DateTime );
+			foreach (DataRow dataRow in quotes.Rows)
+				returnValue.Add( dataRow[ QuantProject.Data.DataTables.Quotes.TickerFieldName ] ,
+					getQuotes_getQuoteValue( dataRow , extendedDateTime ) );
+			return returnValue;
+		}
+		#endregion
 	}
 }
