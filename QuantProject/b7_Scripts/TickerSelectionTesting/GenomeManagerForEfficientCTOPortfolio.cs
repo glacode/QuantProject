@@ -103,14 +103,15 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
     public double GetFitnessValue(Genome genome)
     {
       //parameters used to balance the rate of return against variance
-      double a=2.5, b=2.0; 
+      //double a=2.5, b=2.0; 
       double portofolioVariance = this.getPortfolioVariance(genome.Genes());
       double portfolioRateOfReturn = this.getPortfolioRateOfReturn(genome.Genes());
       this.variance = portofolioVariance;
       this.rateOfReturn = portfolioRateOfReturn;
-      
-      double returnValue = System.Math.Pow(((this.targetStdDev*this.targetStdDev)/portofolioVariance),a)*
-                           System.Math.Pow(System.Math.Max(0.0,(portfolioRateOfReturn/this.targetPerformance)),b); 
+      NormalDistribution normal = new NormalDistribution(portfolioRateOfReturn, Math.Sqrt(portofolioVariance));
+      double returnValue = normal.GetProbability(this.targetPerformance*0.5,this.targetPerformance*1.5);
+      //double returnValue = System.Math.Pow(((this.targetStdDev*this.targetStdDev)/portofolioVariance),a)*
+                           //System.Math.Pow(System.Math.Max(0.0,(portfolioRateOfReturn/this.targetPerformance)),b); 
       return returnValue;
     }
     
@@ -153,6 +154,17 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
     
     public object Decode(Genome genome)
     {
+      
+      string[] arrayOfTickers = new string[genome.Genes().Length];
+      int indexOfTicker;
+      for(int index = 0; index < genome.Genes().Length; index++)
+      {
+        indexOfTicker = (int)genome.Genes().GetValue(index);
+        arrayOfTickers[index] = (string)this.setOfTickers.Rows[indexOfTicker][0];
+      }
+      return arrayOfTickers;
+      
+      /*old implementation, to be used for output to console
       string sequenceOfTickers = ""; 
       object returnValue;
       foreach(int index in genome.Genes())
@@ -163,6 +175,8 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
       returnValue += "(rate: " + this.RateOfReturn + " std: " +
                         System.Math.Sqrt(this.Variance) + ")";
       return returnValue;
+      */
+      
     }
     // end of implementation of IGenomeManager
 
