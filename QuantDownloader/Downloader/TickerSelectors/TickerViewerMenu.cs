@@ -88,10 +88,7 @@ namespace QuantProject.Applications.Downloader.TickerSelectors
       
       if(tableOfSelectedTickers.Rows.Count == 0)
       {
-        MessageBox.Show("No ticker has been selected!\n\n" + 
-          "Click on the grey area on the left to " +
-          "select a ticker", "QuantDownloader error message",
-          MessageBoxButtons.OK, MessageBoxIcon.Error);
+        this.displayMessageNoTickersSelected();
         return;
       }
       WebDownloader webDownloader = new WebDownloader(tableOfSelectedTickers);
@@ -103,10 +100,12 @@ namespace QuantProject.Applications.Downloader.TickerSelectors
       DataTable tableOfSelectedTickers = iTickerSelector.GetTableOfSelectedTickers();      
       if(tableOfSelectedTickers.Rows.Count == 0)
       {
-        MessageBox.Show("No ticker has been selected!\n\n" + 
-          "Click on the grey area on the left to " +
-          "select a ticker", "QuantDownloader error message",
-          MessageBoxButtons.OK, MessageBoxIcon.Error);
+        this.displayMessageNoTickersSelected();
+        return;
+      }
+      if(tableOfSelectedTickers.Rows.Count != 1)
+      {
+        this.displayMessageTooManyTickersSelected();
         return;
       }
       QuantProject.Applications.Downloader.Validate.ValidateForm validateForm = 
@@ -120,10 +119,7 @@ namespace QuantProject.Applications.Downloader.TickerSelectors
       
       if(tableOfSelectedTickers.Rows.Count != 1)
       {
-        MessageBox.Show("Choose just one ticker for the quote editor!\n\n" + 
-          "Click on the grey area on the left to " +
-          "select only one ticker", "QuantDownloader error message",
-          MessageBoxButtons.OK, MessageBoxIcon.Error);
+        this.displayMessageTooManyTickersSelected();
         return;
       }
       QuotesEditor quotesEditor = 
@@ -153,7 +149,21 @@ namespace QuantProject.Applications.Downloader.TickerSelectors
       TickerSelectorForm selectorForm = new TickerSelectorForm(tableOfSelectedTickers);
       selectorForm.Show();
     }
-
-
+    
+    private void displayMessageNoTickersSelected()
+    {
+      MessageBox.Show("No ticker has been selected!\n\n" + 
+        "Click on the grey area on the left to " +
+        "select a ticker", "Error message",
+        MessageBoxButtons.OK, MessageBoxIcon.Error);
+    }
+    
+    private void displayMessageTooManyTickersSelected()
+    {
+      MessageBox.Show("Choose just one ticker for this selection!\n\n" + 
+        "Click on the grey area on the left to " +
+        "select only one ticker", "Error message",
+        MessageBoxButtons.OK, MessageBoxIcon.Error);
+    }
   } 
 }

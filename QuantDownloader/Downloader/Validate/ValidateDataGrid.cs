@@ -25,13 +25,14 @@ namespace QuantProject.Applications.Downloader.Validate
     }
     public ValidateDataTable Validate(DataTable dataTable, string suspiciousRatio )
     {
-      this.validateDataTable = new ValidateDataTable(dataTable);
-      this.DataSource = validateDataTable;
+      return this.Validate((string)dataTable.Rows[0][0], suspiciousRatio);
+      //this.validateDataTable = new ValidateDataTable(dataTable);
+      //this.DataSource = validateDataTable;
 //      if ( this.TableStyles.Count == 0 )
 //        // styles have not been defined yet
 //        validate_setTableStyle();
-      validateDataTable.AddRows( "pippo" );
-      return this.validateDataTable;
+      //validateDataTable.AddRows( "pippo" );
+      //return this.validateDataTable;
     }
 	
     #endregion
