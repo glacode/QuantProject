@@ -24,6 +24,7 @@ using System;
 using System.Collections;
 using QuantProject.ADT;
 using QuantProject.ADT.Histories;
+using QuantProject.ADT.Statistics;
 using QuantProject.ADT.Optimizing;
 using QuantProject.Business.Financial.Instruments;
 using QuantProject.Business.Financial.Ordering;
@@ -51,9 +52,13 @@ namespace QuantProject.Scripts
     {
       microsoftCloseHistory = QuoteCache.GetCloseHistory( "MSFT" );
       microsoftCloseHistoryStandardDeviation = 
-		  microsoftCloseHistory.GetStandardDeviation(5, new DateTime(2000,1,1),new DateTime(2000,12,31));
-	  microsoftCloseHistorySimpleAverage = 
-		  microsoftCloseHistory.GetSimpleAverage(5, new DateTime(2000,1,1),new DateTime(2000,12,31));
+		  microsoftCloseHistory.GetFunctionHistory (Function.StandardDeviation,5,
+													new DateTime(2000,1,1),
+													new DateTime(2000,12,31));
+		microsoftCloseHistorySimpleAverage = 
+			microsoftCloseHistory.GetFunctionHistory (Function.SimpleAverage,5,
+													  new DateTime(2000,1,1),
+													  new DateTime(2000,12,31));
 	}
 
     public override Signals GetSignals( ExtendedDateTime extendedDateTime )
@@ -66,15 +71,10 @@ namespace QuantProject.Scripts
 			if ( this.microsoftCloseHistorySimpleAverage.IsDecreased(extendedDateTime.DateTime) )
 			{
 				
-				signal.Add( new Order( OrderType.MarketSellShort , new Instrument( "MSFT" ) , 1 ,
+				signal.Add( new Order( OrderType.MarketSell , new Instrument( "MSFT" ) , 1 ,
 					new ExtendedDateTime(
 					new Instrument( "MSFT" ).GetNextMarketDay( extendedDateTime.DateTime ) ,
 					BarComponent.Open ) ) );
-				signal.Add( new Order( OrderType.MarketCover , new Instrument( "MSFT" ) , 1 ,
-					new ExtendedDateTime(
-					new Instrument( "MSFT" ).GetMarketDay ( extendedDateTime.DateTime,5 ) ,
-					BarComponent.Open ) ) );
-				
 				signals.Add( signal );
 				
 			}
@@ -83,12 +83,14 @@ namespace QuantProject.Scripts
 				signal.Add( new Order( OrderType.MarketBuy , new Instrument( "MSFT" ) , 1 ,
 					new ExtendedDateTime( new Instrument( "MSFT" ).GetNextMarketDay( extendedDateTime.DateTime ) ,
 					BarComponent.Open ) ) );
-				signal.Add( new Order( OrderType.MarketSell , new Instrument( "MSFT" ) , 1 ,
-					new ExtendedDateTime( new Instrument( "MSFT" ).GetMarketDay( extendedDateTime.DateTime,5 ) ,
-					BarComponent.Open ) ) );
 				signals.Add( signal );
 			}
-
+		}
+		else
+		//no signal given by the history of standard deviation
+		{
+			// TODO:...
+			//if there's an open position, return a signal to close it the next market day
 		}
 		
 		return signals;

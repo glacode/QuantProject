@@ -62,6 +62,9 @@ namespace QuantProject.Scripts
         new TestWindow( startDateTime , endDateTime ) ,
         tradingSystems ,
         10000 );
+	  
+	  tester.Account.AccountStrategy = new AsMSFTsimpleTest_2(tester.Account ); 
+
 
       //tester.Parameters.Add( new Parameter( "SMAdays" , 10 , 10 , 2 ) );
 
