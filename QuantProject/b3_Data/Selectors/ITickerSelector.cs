@@ -1,5 +1,5 @@
 /*
-QuantDownloader - Quantitative Finance Library
+QuantProject - Quantitative Finance Library
 
 ITickerSelector.cs
 Copyright (C) 2003 
@@ -22,9 +22,9 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 using System;
 using System.Data;
-using QuantProject.DataAccess.Tables;
+using QuantProject.Data.DataTables;
 
-namespace QuantProject.Applications.Downloader.TickerSelectors
+namespace QuantProject.Data.Selectors
 {
 	/// <summary>
 	/// Interface to be implemented by tickers' selectors
