@@ -158,11 +158,7 @@ namespace QuantProject.Data.DataProviders
 			BarComponent barComponent )
 		{
 			//DateTime dateTime = 
-			return Convert.ToDouble(
-				( (History) ((Hashtable)
-				cachedHistories[ instrumentKey ])[ barComponent ] ).GetByIndex(
-				( (History) ((Hashtable) cachedHistories[ instrumentKey ])[ barComponent ]
-				).IndexOfKeyOrPrevious( dateTime ) ) );
+			return GetMarketValue( instrumentKey , new ExtendedDateTime( dateTime , barComponent ) );
 		}
 
 		/// <summary>
