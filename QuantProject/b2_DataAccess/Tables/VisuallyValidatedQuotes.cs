@@ -11,14 +11,18 @@ namespace QuantProject.DataAccess.Tables
 	/// </summary>
 	public class VisuallyValidatedQuotes
 	{
+		public static string Ticker = "vvTicker";
+		public static string Date = "vvDate";
+		public static string ValidationType = "vvValidationType";
+		public static string HashValue = "vvHashValue";
+		public static string EditDate = "vvEditDate";
+
 		public VisuallyValidatedQuotes()
 		{
 			//
 			// TODO: Add constructor logic here
 			//
 		}
-
-
 		/// <summary>
 		/// Returns the hash value to be stored/read into/from the visuallyValidatedQuotes table
 		/// </summary>
@@ -31,12 +35,7 @@ namespace QuantProject.DataAccess.Tables
 				quotes.GetFollowingDate( quoteDate , ConstantsProvider.PrecedingDaysForVisualValidation ) );
 		}
 
-		/// <summary>
-		/// writes to the database the visual validation of the Close to Close suspicious ratios
-		/// </summary>
-		/// <param name="quotes">contains all the quotes for the ticker to be validated</param>
-		/// <param name="quoteDate">date to be validated</param>
-		public static void ValidateRangeToRange( Quotes quotes , DateTime quoteDate )
+		private static void validate( Quotes quotes , DateTime quoteDate , ValidationTypes validationType )
 		{
 			try
 			{
@@ -49,12 +48,12 @@ namespace QuantProject.DataAccess.Tables
 					"select * from visuallyValidatedQuotes where 1=2" );
 				string hashValue = getHashValue( quotes , quoteDate );
 				oleDbSingleTableAdapter.DataTable.Rows.Add(	oleDbSingleTableAdapter.DataTable.NewRow() );
-				oleDbSingleTableAdapter.DataTable.Rows[ 0 ][ "vvTicker" ] = quotes.Ticker;
-				oleDbSingleTableAdapter.DataTable.Rows[ 0 ][ "vvDate" ] = quoteDate;
-				oleDbSingleTableAdapter.DataTable.Rows[ 0 ][ "vvValidationType" ] =
-					ValidationTypes.RangeToRangeRatio;
-				oleDbSingleTableAdapter.DataTable.Rows[ 0 ][ "vvHashValue" ] = hashValue;
-				oleDbSingleTableAdapter.DataTable.Rows[ 0 ][ "vvEditDate" ] = DateTime.Now;
+				oleDbSingleTableAdapter.DataTable.Rows[ 0 ][ VisuallyValidatedQuotes.Ticker ] = quotes.Ticker;
+				oleDbSingleTableAdapter.DataTable.Rows[ 0 ][ VisuallyValidatedQuotes.Date ] = quoteDate;
+				oleDbSingleTableAdapter.DataTable.Rows[ 0 ][ VisuallyValidatedQuotes.ValidationType ] =
+					validationType;
+				oleDbSingleTableAdapter.DataTable.Rows[ 0 ][ VisuallyValidatedQuotes.HashValue ] = hashValue;
+				oleDbSingleTableAdapter.DataTable.Rows[ 0 ][ VisuallyValidatedQuotes.EditDate ] = DateTime.Now;
 				oleDbSingleTableAdapter.OleDbDataAdapter.Update( oleDbSingleTableAdapter.DataTable );
 			}
 			catch ( Exception ex )
@@ -65,22 +64,61 @@ namespace QuantProject.DataAccess.Tables
 		}
 
 		/// <summary>
-		/// Returns the list of validated quote dates for the given ticker
+		/// writes to the database the visual validation of the Close to Close suspicious ratios
+		/// </summary>
+		/// <param name="quotes">contains all the quotes for the ticker to be validated</param>
+		/// <param name="quoteDate">date to be validated</param>
+		public static void ValidateCloseToClose( Quotes quotes , DateTime quoteDate )
+		{
+			validate( quotes , quoteDate , ValidationTypes.CloseToCloseRatio );
+		}
+
+		/// <summary>
+		/// writes to the database the visual validation of the Range to Range suspicious ratios
+		/// </summary>
+		/// <param name="quotes">contains all the quotes for the ticker to be validated</param>
+		/// <param name="quoteDate">date to be validated</param>
+		public static void ValidateRangeToRange( Quotes quotes , DateTime quoteDate )
+		{
+			validate( quotes , quoteDate , ValidationTypes.RangeToRangeRatio );
+		}
+
+		private static ArrayList getVisuallyValidatedArrayList(
+			string ticker , ValidationTypes validationType )
+		{
+			ArrayList tickers = new ArrayList();
+			Quotes quotes = new Quotes( ticker );
+			DataTable validatedQuotes =	SqlExecutor.GetDataTable(
+				"select * from visuallyValidatedQuotes " +
+				"where " + VisuallyValidatedQuotes.Ticker + "='" + ticker + "'" +
+				"and " + VisuallyValidatedQuotes.ValidationType + "=" +
+				System.Convert.ToInt32( validationType ) );
+			foreach ( DataRow dataRow in validatedQuotes.Rows )
+				if ( (string)dataRow[ "vvHashValue" ] == getHashValue( quotes , (DateTime)dataRow[ "vvDate" ] ) )
+					// the current quote date had been visually validated with respect to the neighborhood quotes
+					tickers.Add( dataRow[ "vvDate" ] );
+			/// TO DO !!! add else branch to raise event 'broken hash value'
+			return tickers;
+		}
+		/// <summary>
+		/// Returns the list of visually validated quote dates for the given ticker,
+		/// with respect to the Close To Close ratio
+		/// </summary>
+		/// <param name="ticker">Instrument ticker whose validated quote dates are to be found</param>
+		/// <returns></returns>
+		public static ArrayList GetCloseToCloseValidated( string ticker )
+		{
+			return getVisuallyValidatedArrayList( ticker , ValidationTypes.CloseToCloseRatio );
+		}
+		/// <summary>
+		/// Returns the list of visually validated quote dates for the given ticker,
+		/// with respect to the Range To Range ratio
 		/// </summary>
 		/// <param name="ticker">Instrument ticker whose validated quote dates are to be found</param>
 		/// <returns></returns>
 		public static ArrayList GetRangeToRangeValidated( string ticker )
 		{
-			ArrayList tickers = new ArrayList();
-			Quotes quotes = new Quotes( ticker );
-			DataTable validatedQuotes =
-				SqlExecutor.GetDataTable( "select * from visuallyValidatedQuotes where vvTicker='" + ticker + "'" );
-			foreach ( DataRow dataRow in validatedQuotes.Rows )
-				if ( (string)dataRow[ "vvHashValue" ] == getHashValue( quotes , (DateTime)dataRow[ "vvDate" ] ) )
-					// the current quote date had been visually validated with respect to the neighborhood quotes
-					tickers.Add( dataRow[ "vvDate" ] );
-				/// TO DO !!! add else branch to raise event 'broken hash value'
-			return tickers;
+			return getVisuallyValidatedArrayList( ticker , ValidationTypes.RangeToRangeRatio );
 		}
 	}
 }
