@@ -1,9 +1,8 @@
 using System;
 using System.Data;
-using QuantProject.Applications.Downloader.Validate;
-using QuantProject.Applications.Downloader.Validate.Validators;
+using QuantProject.Business.Validation;
 
-namespace QuantProject.Applications.Downloader.Validate.Validators
+namespace QuantProject.Business.Validation.Validators
 {
 	/// <summary>
 	/// Calls several different quotes' validators

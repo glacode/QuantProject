@@ -1,8 +1,8 @@
 using System;
 using System.Data;
-using QuantProject.Applications.Downloader.Validate;
+using QuantProject.Business.Validation;
 
-namespace QuantProject.Applications.Downloader.Validate.Validators
+namespace QuantProject.Business.Validation.Validators
 {
 	/// <summary>
 	/// Validates OHLC quotes values

@@ -1,9 +1,9 @@
 using System;
 using System.Data;
 using QuantProject.ADT.Histories;
-using QuantProject.Applications.Downloader.Validate;
+using QuantProject.Business.Validation;
 
-namespace QuantProject.Applications.Downloader.Validate.Validators
+namespace QuantProject.Business.Validation.Validators
 {
 	/// <summary>
 	/// Searches for close to close divergences
