@@ -31,28 +31,23 @@ using QuantProject.Data.DataTables;
 
 namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
 {
-	/// <summary>
-	/// This class implements IGenomeManager, in order to find efficient 
-	/// portfolios based on the comparison of adjustedClose values for each 
-	/// portfolio's ticker
-	/// at the beginning and at the end of a specified interval of days, using the
-	/// GeneticOptimizer
-	/// </summary>
+  /// <summary>
+  /// This is the base class implementing IGenomeManager, in order to find
+  /// efficient portfolios using the GeneticOptimizer
+  /// </summary>
   public class GenomeManagerForEfficientPortfolio : IGenomeManager
   {
-    private int genomeSize;
-    private int minValueForGenes;
-    private int maxValueForGenes;
-    
-    private int intervalLength;
-    
-    private DataTable setOfTickers;
-    private DateTime firstQuoteDate;
-    private DateTime lastQuoteDate;
-    private double targetPerformance;
-    private double targetStdDev;
-    private double variance;
-    private double rateOfReturn;
+    protected int genomeSize;
+    protected int minValueForGenes;
+    protected int maxValueForGenes;
+
+    protected DataTable setOfTickers;
+    protected DateTime firstQuoteDate;
+    protected DateTime lastQuoteDate;
+    protected int numDaysOfPortfolioLife;
+    protected double targetPerformance;
+    protected double variance;
+    protected double rateOfReturn;
     
     //IGenomeManager implementation for properties 
     public int GenomeSize
@@ -81,46 +76,41 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
       get{return this.rateOfReturn;}
     }
 
-    public GenomeManagerForEfficientPortfolio(int intervalLengthInDays,
-                                                DataTable setOfInitialTickers,
-                                                DateTime firstQuoteDate,
-                                                DateTime lastQuoteDate,
-                                                int numberOfTickersInPortfolio,
-                                                double targetPerformance, 
-                                                double targetStdDev)
+    public GenomeManagerForEfficientPortfolio(  DataTable setOfInitialTickers,
+      DateTime firstQuoteDate,
+      DateTime lastQuoteDate,
+      int numberOfTickersInPortfolio,
+      int numDaysOfPortfolioLife,
+      double targetPerformance)
                           
     {
       this.setOfTickers = setOfInitialTickers;
-      this.intervalLength = intervalLengthInDays;
-      //arrayOfRatesOfReturn contains the rates of return computed for the given interval in days
+ 
       if(!this.setOfTickers.Columns.Contains("ArrayOfRatesOfReturn"))
-          this.setOfTickers.Columns.Add("ArrayOfRatesOfReturn", System.Type.GetType("System.Array"));
+        this.setOfTickers.Columns.Add("ArrayOfRatesOfReturn", System.Type.GetType("System.Array"));
       this.firstQuoteDate = firstQuoteDate;
       this.lastQuoteDate = lastQuoteDate;
-     	this.targetPerformance = targetPerformance;
-      this.targetStdDev = targetStdDev;
+      this.targetPerformance = targetPerformance;
       this.genomeSize = numberOfTickersInPortfolio;
-       //each genes is the index for the setOfTickers table
+      this.numDaysOfPortfolioLife = numDaysOfPortfolioLife;
+      //each genes is the index for the setOfTickers table
       this.minValueForGenes = 0;
       this.maxValueForGenes = this.setOfTickers.Rows.Count - 1;
       
       this.retrieveData();
     }
     
-    public double GetFitnessValue(Genome genome)
+    public virtual double GetFitnessValue(Genome genome)
     {
-      //parameters used to balance the rate of return against variance
-      double a=2.5, b=2.0; 
-      double portofolioVariance = this.getPortfolioVariance(genome.Genes());
+      double returnValue;
+      double portfolioVariance = this.getPortfolioVariance(genome.Genes());
       double portfolioRateOfReturn = this.getPortfolioRateOfReturn(genome.Genes());
-      this.variance = portofolioVariance;
+      this.variance = portfolioVariance;
       this.rateOfReturn = portfolioRateOfReturn;
       
-      //double returnValue = System.Math.Pow(((this.targetStdDev*this.targetStdDev)/portofolioVariance),a)*
-                            //System.Math.Pow((portfolioRateOfReturn/this.targetPerformance),b); 
-
-      double returnValue = System.Math.Pow(((this.targetStdDev*this.targetStdDev)/portofolioVariance),a)*
-                           System.Math.Pow(System.Math.Max(0.0,(portfolioRateOfReturn/this.targetPerformance)),b); 
+      NormalDistribution normal = new NormalDistribution(portfolioRateOfReturn, Math.Sqrt(portfolioVariance));
+      //returnValue = normal.GetProbability(this.targetPerformance*0.5,this.targetPerformance*1.5);
+      returnValue = 1 - normal.GetProbability(this.targetPerformance);
       return returnValue;
     }
     
@@ -150,18 +140,18 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
       // in this implementation only one gene is mutated
       // the new value has to be different from all the other genes of the genome
       int newValueForGene = GenomeManagement.RandomGenerator.Next(genome.MinValueForGenes,
-                                                                  genome.MaxValueForGenes +1);
+        genome.MaxValueForGenes +1);
       int genePositionToBeMutated = GenomeManagement.RandomGenerator.Next(genome.Size); 
       while(genome.HasGene(newValueForGene))
       {
         newValueForGene = GenomeManagement.RandomGenerator.Next(genome.MinValueForGenes,
-                                                              genome.MaxValueForGenes +1);
+          genome.MaxValueForGenes +1);
       }
       GenomeManagement.MutateOneGene(genome, mutationRate,
-                                      genePositionToBeMutated, newValueForGene);
+        genePositionToBeMutated, newValueForGene);
     }
     
-    public object Decode(Genome genome)
+    public virtual object Decode(Genome genome)
     {
       string sequenceOfTickers = ""; 
       object returnValue;
@@ -171,12 +161,12 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
       }
       returnValue = sequenceOfTickers;
       returnValue += "(rate: " + this.RateOfReturn + " std: " +
-                        System.Math.Sqrt(this.Variance) + ")";
+        System.Math.Sqrt(this.Variance) + ")";
       return returnValue;
     }
     // end of implementation of IGenomeManager
 
-    private double getPortfolioVariance(int[] tickerIdx)
+    protected double getPortfolioVariance(int[] tickerIdx)
     {
       double sumOfVariances = this.getSumOfVariances(tickerIdx);
       double sumOfCovariances = this.getSumOfCovariances(tickerIdx);
@@ -184,7 +174,7 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
       return returnValue;
     }
     
-    private double getSumOfVariances(int[] tickerIdx)
+    protected double getSumOfVariances(int[] tickerIdx)
     {
       double returnValue = 0;
       double tickerCoeff = 1.0/this.genomeSize;
@@ -196,7 +186,7 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
       return returnValue;
     }
 
-    private double getSumOfCovariances(int[] tickerIdx)
+    protected double getSumOfCovariances(int[] tickerIdx)
     {
       double returnValue = 0;
       float[] ticker_i;
@@ -218,7 +208,7 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
       return returnValue;
     }
 
-    private void retrieveData()
+    protected void retrieveData()
     {
       foreach(DataRow row in this.setOfTickers.Rows)
       {
@@ -227,32 +217,46 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
         row["ArrayOfRatesOfReturn"] = arrayOfRatesOfReturn;
       }
     }
+    //this protected method can be overriden by inherited classes
+    //which can specify the type of rates of return
     
-    private float[] getArrayOfRatesOfReturn(string ticker)
+    //in this basic implementation rates of returns
+    //are based on daily close to close
+    protected virtual float[] getArrayOfRatesOfReturn(string ticker)
     {
       Quotes tickerQuotes = new Quotes(ticker, this.firstQuoteDate, this.lastQuoteDate);
       float[] allAdjValues = ExtendedDataTable.GetArrayOfFloatFromColumn(tickerQuotes, "quAdjustedClose");
-      float[] ratesOfReturns = new float[allAdjValues.Length/this.intervalLength + 1];
+      //float[] ratesOfReturns = new float[allAdjValues.Length/this.intervalLength + 1];
+      float[] ratesOfReturns = new float[allAdjValues.Length];
       int i = 0; //index for ratesOfReturns array
+      /*
       for(int idx = 0; idx + this.intervalLength < allAdjValues.Length; idx += this.intervalLength )
       {
         ratesOfReturns[i] = allAdjValues[idx+this.intervalLength]/
                             allAdjValues[idx] - 1;
         i++;
       }
+      */
+      for(int idx = 0; idx < allAdjValues.Length; idx++)
+      {
+        ratesOfReturns[i] = allAdjValues[idx+1]/
+          allAdjValues[idx] - 1;
+        i++;
+      }
+      
       return ratesOfReturns;
     }
     
     
     
 
-    private double getPortfolioRateOfReturn(int[] tickerIdx)
+    protected double getPortfolioRateOfReturn(int[] tickerIdx)
     {
       double returnValue = 0;
-    	foreach(int idx in tickerIdx)
-    	{
-    		returnValue += BasicFunctions.SimpleAverage((float[])this.setOfTickers.Rows[idx]["ArrayOfRatesOfReturn"]);
-    	}
+      foreach(int idx in tickerIdx)
+      {
+        returnValue += BasicFunctions.SimpleAverage((float[])this.setOfTickers.Rows[idx]["ArrayOfRatesOfReturn"]);
+      }
       //the investement is assumed to be equally divided
       return (returnValue/this.GenomeSize);
     }

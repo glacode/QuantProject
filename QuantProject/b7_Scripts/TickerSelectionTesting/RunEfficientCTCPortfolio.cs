@@ -1,7 +1,7 @@
 /*
 QuantProject - Quantitative Finance Library
 
-RunEfficientCTOPorfolio.cs
+RunEfficientCTCPorfolio.cs
 Copyright (C) 2003 
 Marco Milletti
 
@@ -38,74 +38,57 @@ using QuantProject.Data.DataProviders;
 using QuantProject.Data.Selectors; 
 using QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios;
 using QuantProject.Presentation.Reporting.WindowsForm;
+using QuantProject.ADT.FileManaging;
+
 
 
 namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
 {
 	/// <summary>
-	/// Script to buy at open and sell at close 
-	/// the efficient close to open daily portfolio
+	/// Script to buy at close and sell at close
+	/// after a specified number of market days  
+	/// the efficient portfolio
 	/// The efficient portfolio's generation rules
 	/// (contained in the EndOfDayTimerHandler) are:
 	/// - choose the most liquid tickers;
+	/// - choose only tickers quoted at each market day
+	///   during a given previous interval of days;
 	/// - choose the most efficient portfolio among these tickers
 	/// </summary>
-	public class RunEfficientCTOPorfolio : Script
+	[Serializable]
+  public class RunEfficientCTCPorfolio : Script
 	{
-    //DateTime lastDate = DateTime.Now.Date;
-		//DateTime firstDate = DateTime.Now.Date.AddDays(-60);
-    //these two members are used by the old script
-    DateTime lastDate = new DateTime(2004,11,25);
-    DateTime firstDate = new DateTime(2004,9,25);
-    //
     
     private ReportTable reportTable;
     private EndOfDayDateTime startDateTime;
     private EndOfDayDateTime endDateTime;
     private int numIntervalDays;// number of days for the equity line graph
 		private IHistoricalQuoteProvider historicalQuoteProvider =
-			new HistoricalRawQuoteProvider();
+			new HistoricalAdjustedQuoteProvider();
 
 
     //private ProgressBarForm progressBarForm;
 
-    private EndOfDayTimerHandlerCTO endOfDayTimerHandler;
+    private EndOfDayTimerHandlerCTC endOfDayTimerHandler;
 
     private Account account;
 		
     private IEndOfDayTimer endOfDayTimer;
 		
-    public RunEfficientCTOPorfolio()
+    public RunEfficientCTCPorfolio()
 		{
       //this.progressBarForm = new ProgressBarForm();
       this.reportTable = new ReportTable( "Summary_Reports" );
       this.startDateTime = new EndOfDayDateTime(
-        new DateTime( 2002 , 1 , 1 ) , EndOfDaySpecificTime.FiveMinutesBeforeMarketClose );
+        new DateTime( 2003 , 1 , 1 ) , EndOfDaySpecificTime.MarketOpen );
       this.endDateTime = new EndOfDayDateTime(
-        new DateTime( 2002 , 1 , 20 ) , EndOfDaySpecificTime.OneHourAfterMarketClose );
-      this.numIntervalDays = 2;
+        new DateTime( 2003 , 1 , 31 ) , EndOfDaySpecificTime.MarketClose );
+      this.numIntervalDays = 3; //for report
 		}
     #region Run
     
       
-    private void run_FindBestPortfolioForNextTrade()
-    {
-      //"STOCKMI"
-      TickerSelector mostLiquid = new TickerSelector(SelectionType.Liquidity,
-                                                    false, "STOCKMI", firstDate, lastDate, 70);
-      DataTable tickers = mostLiquid.GetTableOfSelectedTickers();
- 	    IGenomeManager genManEfficientCTOPortfolio = 
-                   new GenomeManagerForEfficientCTOPortfolio(tickers,firstDate,
-                                                              lastDate, 6,1, 0.005);
-      GeneticOptimizer GO = new GeneticOptimizer(genManEfficientCTOPortfolio);
-      //GO.KeepOnRunningUntilConvergenceIsReached = true;
-      GO.GenerationNumber = 10;
-      GO.MutationRate = 0.05;
-      GO.Run(true);
-      //it has to be changed the decode implementation for this IGenomeManager
-      System.Console.WriteLine("\n\nThe best solution found is: " + (string)GO.BestGenome.Meaning +
-        " with {0} generations", GO.GenerationCounter);
-		}
+    
 
     private void run_initializeEndOfDayTimer()
     {
@@ -114,7 +97,7 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
     }
     private void run_initializeAccount()
     {
-      this.account = new Account( "EfficientCloseToOpenPortfolio" , this.endOfDayTimer ,
+      this.account = new Account( "EfficientCloseToClosePortfolio" , this.endOfDayTimer ,
         new HistoricalEndOfDayDataStreamer( this.endOfDayTimer ,
 					this.historicalQuoteProvider ) ,
         new HistoricalEndOfDayOrderExecutor( this.endOfDayTimer ,
@@ -123,7 +106,7 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
     }
     private void run_initializeEndOfDayTimerHandler()
     {
-      this.endOfDayTimerHandler = new EndOfDayTimerHandlerCTO("STOCKMI",70,5,this.account,10);
+      this.endOfDayTimerHandler = new EndOfDayTimerHandlerCTC("STOCKMI",70,5,3,this.account,10);
     }
     /*
     private  void inSampleNewProgressEventHandler(
@@ -177,8 +160,8 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
       {
         this.endOfDayTimer.Stop();
         report = new Report( this.account , this.historicalQuoteProvider );
-        report.Show("CTO_Portfolio" , this.numIntervalDays , this.endDateTime , "^MIBTEL" );
-
+        report.Show("CTC_Portfolio" , this.numIntervalDays , this.endDateTime , "^MIBTEL" );
+        //ObjectArchiver.Archive(this.account, "CtcPortfolioAccount.qP","C:\\");
 
       }
     }
@@ -203,9 +186,9 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
         new MarketCloseEventHandler(
         this.checkDateForReport);
       
-      this.endOfDayTimer.OneHourAfterMarketClose +=
-        new OneHourAfterMarketCloseEventHandler(
-        this.endOfDayTimerHandler.OneHourAfterMarketCloseEventHandler );
+      //this.endOfDayTimer.OneHourAfterMarketClose +=
+        //new OneHourAfterMarketCloseEventHandler(
+        //this.endOfDayTimerHandler.OneHourAfterMarketCloseEventHandler );
       //this.endOfDayTimer.OneHourAfterMarketClose +=
         //new OneHourAfterMarketCloseEventHandler(
         //this.oneHourAfterMarketCloseEventHandler );

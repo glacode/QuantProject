@@ -1,7 +1,7 @@
 /*
 QuantProject - Quantitative Finance Library
 
-EndOfDayTimerHandler.cs
+EndOfDayTimerHandlerCTO.cs
 Copyright (C) 2003 
 Marco Milletti
 
@@ -40,10 +40,11 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
   /// TwoMinutesBeforeMarketCloseEventHandler and OneHourAfterMarketCloseEventHandler
   /// These handlers contain the core strategy for the efficient close to open portfolio!
   /// </summary>
-  public class EndOfDayTimerHandler
+  public class EndOfDayTimerHandlerCTO
   {
     private DataTable eligibleTickers;
     private string[] chosenTickers;
+    //private string[] lastChosenTickers;
     
     private string tickerGroupID;
     private int numberOfEligibleTickers;
@@ -63,7 +64,7 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
       get { return this.account; }
     }
 		
-    public EndOfDayTimerHandler(string tickerGroupID, int numberOfEligibleTickers, 
+    public EndOfDayTimerHandlerCTO(string tickerGroupID, int numberOfEligibleTickers, 
                                 int numberOfTickersToBeChosen, Account account,
                                 int generationNumberForGeneticOptimizer)
     {
@@ -74,6 +75,7 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
       this.generationNumberForGeneticOptimizer = generationNumberForGeneticOptimizer;
       this.orders = new ArrayList();
       this.chosenTickers = new string[numberOfTickersToBeChosen];
+      //this.lastChosenTickers = new string[numberOfTickersToBeChosen];
     }
 		    
     #region MarketOpenEventHandler
@@ -112,7 +114,7 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
       Object sender , EndOfDayTimingEventArgs endOfDayTimingEventArgs )
     {
       if(this.orders.Count == 0 && this.account.Transactions.Count == 0)
-        this.account.AddCash(16000);     
+        this.account.AddCash(15000);     
       
       this.marketOpenEventHandler_orderChosenTickers();
       
@@ -156,29 +158,42 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
 
 		#region OneHourAfterMarketCloseEventHandler
       
-    private void setTickers(DateTime currentDate)
+    private DataTable getSetOfTickersToBeOptimized(DateTime currentDate)
     {
       TickerSelector mostLiquid = new TickerSelector(SelectionType.Liquidity,
-        false, this.tickerGroupID , currentDate.AddDays(-30), currentDate, this.numberOfEligibleTickers);
+        false, this.tickerGroupID , currentDate.AddDays(-45), currentDate, this.numberOfEligibleTickers);
       this.eligibleTickers = mostLiquid.GetTableOfSelectedTickers();
       TickerSelector quotedInEachMarketDayFromMostLiquid = 
-          new TickerSelector( this.eligibleTickers,
-                               SelectionType.QuotedInEachMarketDay, false, "",
-                               currentDate.AddDays(-30),currentDate,
-                               this.numberOfEligibleTickers);
-      quotedInEachMarketDayFromMostLiquid.MarketIndex = "^MIBTEL";   
-      DataTable setOfTickersToBeOptimized =
-          quotedInEachMarketDayFromMostLiquid.GetTableOfSelectedTickers();
-                                    
-      IGenomeManager genManEfficientCTOPortfolio = 
-        new GenomeManagerForEfficientCTOPortfolio(setOfTickersToBeOptimized, currentDate.AddDays(-30), 
-        currentDate, 
-        this.numberOfTickersToBeChosen, 0.005, 0.05);
-      GeneticOptimizer GO = new GeneticOptimizer(genManEfficientCTOPortfolio);
-      //GO.KeepOnRunningUntilConvergenceIsReached = true;
-      GO.GenerationNumber = this.generationNumberForGeneticOptimizer;
-      GO.Run(false);
-      this.chosenTickers = (string[])GO.BestGenome.Meaning;
+        new TickerSelector( this.eligibleTickers,
+        SelectionType.QuotedInEachMarketDay, false, "",
+        currentDate.AddDays(-45),currentDate,
+        this.numberOfEligibleTickers);
+      quotedInEachMarketDayFromMostLiquid.MarketIndex = "^MIBTEL";
+      return quotedInEachMarketDayFromMostLiquid.GetTableOfSelectedTickers();
+    }
+    
+    
+    private void setTickers(DateTime currentDate)
+    {
+      //this.lastChosenTickers = this.chosenTickers;
+      DataTable setOfTickersToBeOptimized = this.getSetOfTickersToBeOptimized(currentDate);
+      if(setOfTickersToBeOptimized.Rows.Count >= this.chosenTickers.Length)
+        //the optimization process is possible only if the initial set of tickers is 
+        //as large as the number of tickers to be chosen                     
+      
+      {
+        IGenomeManager genManEfficientCTOPortfolio = 
+          new GenomeManagerForEfficientCTOPortfolio(setOfTickersToBeOptimized, currentDate.AddDays(-30), 
+          currentDate, this.numberOfTickersToBeChosen, 1, 0.005);
+        GeneticOptimizer GO = new GeneticOptimizer(genManEfficientCTOPortfolio);
+        //GO.KeepOnRunningUntilConvergenceIsReached = true;
+        GO.GenerationNumber = this.generationNumberForGeneticOptimizer;
+        GO.Run(false);
+        this.chosenTickers = (string[])GO.BestGenome.Meaning;
+        //this.lastChosenTickers = this.chosenTickers;
+      }
+      //else it will be buyed again the previous optimized portfolio
+      //that's it the actual chosenTickers member
     }
 
     /// <summary>

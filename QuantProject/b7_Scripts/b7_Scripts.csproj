@@ -143,7 +143,17 @@
                     BuildAction = "Compile"
                 />
                 <File
-                    RelPath = "TickerSelectionTesting\EndOfDayTimerHandler.cs"
+                    RelPath = "TickerSelectionTesting\EndOfDayTimerHandlerCTC.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "TickerSelectionTesting\EndOfDayTimerHandlerCTO.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "TickerSelectionTesting\GenomeManagerForEfficientCTCPortfolio.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
@@ -158,12 +168,12 @@
                     BuildAction = "Compile"
                 />
                 <File
-                    RelPath = "TickerSelectionTesting\RunEfficientCTOPortfolio.cs"
+                    RelPath = "TickerSelectionTesting\RunEfficientCTCPortfolio.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
                 <File
-                    RelPath = "TickerSelectionTesting\RunEfficientPortfolio.cs"
+                    RelPath = "TickerSelectionTesting\RunEfficientCTOPortfolio.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />

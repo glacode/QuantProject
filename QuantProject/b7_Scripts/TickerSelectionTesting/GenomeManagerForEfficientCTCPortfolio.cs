@@ -1,7 +1,7 @@
 /*
 QuantProject - Quantitative Finance Library
 
-GenomeManagerForEfficientCTOPortfolio.cs
+GenomeManagerForEfficientCTCPortfolio.cs
 Copyright (C) 2003 
 Marco Milletti
 
@@ -32,25 +32,27 @@ using QuantProject.Data.DataTables;
 namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
 {
 	/// <summary>
-	/// This class implements IGenomeManager, in order to find efficient 
-	/// portfolios based on tickers' CloseToOpen rates, using the
-	/// GeneticOptimizer
+	/// Class to find efficient 
+	/// portfolios based on tickers' CloseToClose rates (adjusted values),
+	/// using the GeneticOptimizer
 	/// </summary>
-  public class GenomeManagerForEfficientCTOPortfolio : GenomeManagerForEfficientPortfolio
+  public class GenomeManagerForEfficientCTCPortfolio : GenomeManagerForEfficientPortfolio
   {
     
-    public GenomeManagerForEfficientCTOPortfolio(DataTable setOfInitialTickers,
+    public GenomeManagerForEfficientCTCPortfolio(DataTable setOfInitialTickers,
                                                  DateTime firstQuoteDate,
                                                  DateTime lastQuoteDate,
                                                  int numberOfTickersInPortfolio,
                                                  int numDaysOfPortfolioLife,
                                                  double targetPerformance)
-                                :base(setOfInitialTickers,
-                                     firstQuoteDate,
-                                     lastQuoteDate,
-                                     numberOfTickersInPortfolio,
-                                     numDaysOfPortfolioLife,
-                                     targetPerformance)
+                                                 :
+                                                base(setOfInitialTickers,
+                                                firstQuoteDate,
+                                                lastQuoteDate,
+                                                numberOfTickersInPortfolio,
+                                                numDaysOfPortfolioLife,
+                                                targetPerformance)
+                                
                           
     {
       
@@ -69,24 +71,23 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
       }
       return arrayOfTickers;
       
-      /*old implementation, to be used for output to console
-      string sequenceOfTickers = ""; 
-      object returnValue;
-      foreach(int index in genome.Genes())
-      {
-        sequenceOfTickers += (string)this.setOfTickers.Rows[index][0] + ";" ;
-      }
-      returnValue = sequenceOfTickers;
-      returnValue += "(rate: " + this.RateOfReturn + " std: " +
-                        System.Math.Sqrt(this.Variance) + ")";
-      return returnValue;
-      */
     }
   
     protected override float[] getArrayOfRatesOfReturn(string ticker)
     {
       Quotes tickerQuotes = new Quotes(ticker, this.firstQuoteDate, this.lastQuoteDate);
-      return ExtendedDataTable.GetArrayOfFloatFromRatioOfColumns(tickerQuotes, "quClose", "quOpen");
+      float[] allAdjValues = ExtendedDataTable.GetArrayOfFloatFromColumn(tickerQuotes, "quAdjustedClose");
+      float[] ratesOfReturns = new float[allAdjValues.Length/this.numDaysOfPortfolioLife + 1];
+      int i = 0; //index for ratesOfReturns array
+      
+      for(int idx = 0; idx + this.numDaysOfPortfolioLife < allAdjValues.Length; idx += this.numDaysOfPortfolioLife )
+      {
+        ratesOfReturns[i] = allAdjValues[idx+this.numDaysOfPortfolioLife]/
+                            allAdjValues[idx] - 1;
+        i++;
+      }
+
+      return ratesOfReturns;
     }
     
   }
