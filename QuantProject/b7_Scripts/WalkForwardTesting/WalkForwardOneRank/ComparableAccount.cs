@@ -23,6 +23,9 @@ using System;
 
 using QuantProject.Business.Financial.Accounting;
 using QuantProject.Business.Financial.Accounting.Reporting;
+using QuantProject.Business.Financial.Ordering;
+using QuantProject.Business.Timing;
+using QuantProject.Data.DataProviders;
 
 namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardOneRank
 {
@@ -45,21 +48,23 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardOneRank
 		{
 			get {	return this.goodness(); }
 		}
-		public ComparableAccount()
+		public ComparableAccount( string accountName , IEndOfDayTimer endOfDayTimer ,
+			IDataStreamer dataStreamer , IOrderExecutor orderExecutor ) : base( accountName ,
+			endOfDayTimer , dataStreamer , orderExecutor )
 		{
-			//
-			// TODO: Add constructor logic here
-			//
 		}
-
 		private double goodness()
 		{
 			double returnValue;
-			if ( this.accountReport.Summary.MaxEquityDrawDown >= this.maxAcceptableDrawDown )
+			if ( this.accountReport == null )
+				this.accountReport = this.CreateReport( this.Key , 7 ,
+					this.EndOfDayTimer.GetCurrentTime() , this.Key );
+			if ( ( this.accountReport.Summary.MaxEquityDrawDown >= this.maxAcceptableDrawDown )
+				|| ( this.accountReport.Summary.TotalPnl <= this.accountReport.Summary.BuyAndHoldPercentageReturn ) )
 				returnValue = Double.MinValue;
 			else
-				// max draw down is acceptable
-				returnValue = this.accountReport.Summary.TotalPnl /
+				// max draw down is acceptable and the strategy is better than buy and hold
+				returnValue = this.accountReport.Summary.TotalPnl -
 					this.accountReport.Summary.BuyAndHoldPercentageReturn;
 			return returnValue;
 		}
