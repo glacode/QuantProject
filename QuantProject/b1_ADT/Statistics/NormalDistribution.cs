@@ -46,7 +46,7 @@ namespace QuantProject.ADT.Statistics
     	
     	this.average = average;
     	this.stdDeviation = stdDeviation;
-    	this.infinity = 15 * stdDeviation;
+    	this.infinity = this.average + 15 * stdDeviation ;
     	this.numOfIntervalsForPDFIntegralApproximation =
     					Convert.ToInt32(25*this.infinity);
     }
