@@ -53,12 +53,20 @@ namespace QuantProject.ADT
     
     public static void DeleteRows(DataTable table, long fromIndex)
     {
-      for(long i = table.Rows.Count - 1;i>=fromIndex; i=table.Rows.Count-1)
-      {
-        table.Rows.RemoveAt((int)i);
-      }
+      ExtendedDataTable.DeleteRows(table, fromIndex, table.Rows.Count - 1);
+      //for(long i = table.Rows.Count - 1;i>=fromIndex; i=table.Rows.Count-1)
+      //{
+        //table.Rows.RemoveAt((int)i);
+      //}
     }
     
+    public static void DeleteRows(DataTable table, long fromIndex, long toIndex)
+    {
+      for(long i = fromIndex; i <= toIndex; i++)
+      {
+        table.Rows.RemoveAt((int)fromIndex);
+      }
+    }
     /// <summary>
     /// Get an array of float corresponding to a column compatible with the float type in a given data table
     /// </summary>
