@@ -92,6 +92,11 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "ConnectionProvider.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "DataBase.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
