@@ -112,7 +112,27 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "OleDbSingleTableAdapter.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "SQLBuilder.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "SqlExecutor.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Tables\Quotes.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Tables\VisuallyValidatedTickers.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
