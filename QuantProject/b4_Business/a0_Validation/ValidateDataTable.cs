@@ -20,6 +20,8 @@ namespace QuantProject.Business.Validation
 		private OleDbDataAdapter oleDbDataAdapter;
 		private DataTable tableOfTickersToBeValidated;
 
+		public Quotes Quotes;
+
 		public ValidateDataTable()
 		{
 			initializeValidateDataTable();
@@ -86,13 +88,13 @@ namespace QuantProject.Business.Validation
 			multiValidator.Validate( quotes );
 			this.AcceptChanges();
 		}
-		public void AddRows( string tickerIsLike )
+		public void AddRows( string ticker )
 		{
-			Quotes quotesToBeValidated = new Quotes( tickerIsLike );
+			this.Quotes = new Quotes( ticker );
 //			quotesToBeValidated.SuspiciousDataRow +=
 //				new SuspiciousDataRowEventHandler( suspiciousDataRowEventHandler );
 			//      new QuotesToBeValidated.SuspiciousDataRowEventHandler( suspiciousDataRowEventHandler );
-			this.addRows_with_quotesToBeValidated( quotesToBeValidated );
+			this.addRows_with_quotesToBeValidated( this.Quotes );
 		}
 //		public void AddRows(double suspiciousRatio )
 //		{
@@ -112,9 +114,8 @@ namespace QuantProject.Business.Validation
 		/// <param name="endDate"></param>
 		public void AddRows( string ticker , DateTime startDate , DateTime endDate )
 		{
-			Quotes quotesToBeValidated =
-				new Quotes( ticker , startDate , endDate );
-			this.addRows_with_quotesToBeValidated( quotesToBeValidated );
+			this.Quotes =	new Quotes( ticker , startDate , endDate );
+			this.addRows_with_quotesToBeValidated( this.Quotes );
 		}
 		/// <summary>
 		/// Commits the ValidateDataTable changes to the database
