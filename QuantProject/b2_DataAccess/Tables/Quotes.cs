@@ -128,6 +128,30 @@ namespace QuantProject.DataAccess.Tables
         return isAdjustedCloseChanged;
       }
     }             
+    /// <summary>
+    /// returns most liquid tickers with the given features
+    /// </summary>
+
+    public static DataTable GetMostLiquidTickers( string groupID,
+                                                  DateTime firstQuoteDate,
+                                                  DateTime lastQuoteDate,
+                                                  long maxNumOfReturnedTickers)
+    {
+      string sql = "SELECT TOP " + maxNumOfReturnedTickers + " tickers.tiTicker, tickers.tiCompanyName, " +
+                    "Avg([quVolume]*[quAdjustedClose]) AS AverageTradedValue " +
+                    "FROM quotes INNER JOIN (tickers INNER JOIN tickers_tickerGroups " +
+                    "ON tickers.tiTicker = tickers_tickerGroups.ttTiId) " +
+                    "ON quotes.quTicker = tickers_tickerGroups.ttTiId " +
+                    "WHERE tickers_tickerGroups.ttTgId='" + groupID + "' " +
+                    "AND quotes.quDate BETWEEN " +
+                    SQLBuilder.GetDateConstant(firstQuoteDate) + " AND " +
+                    SQLBuilder.GetDateConstant(lastQuoteDate) + 
+                    "GROUP BY tickers.tiTicker, tickers.tiCompanyName " +
+                    "ORDER BY Avg([quVolume]*[quAdjustedClose]) DESC";
+
+      return SqlExecutor.GetDataTable( sql );
+    }
+    
 
 		#region GetHashValue
 		private string getHashValue_getQuoteString_getRowString_getSingleValueString( Object value )

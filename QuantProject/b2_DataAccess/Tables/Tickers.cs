@@ -32,42 +32,21 @@ namespace QuantProject.DataAccess.Tables
 	/// </summary>
 	public class Tickers
 	{
-    private TickerDataTable tickerDataTable;
-    private static TickerDataTable clipboard;
+
+    // these static fields provide field name in the database table
+    // They are intended to be used through intellisense when necessary
+    public static string Ticker = "tiTicker";
+    public static string CompanyName = "tiCompanyName";
+
+    private DataTable tickers;
     private int count;
     
     public Tickers()
     {
-      this.tickerDataTable = (TickerDataTable)SqlExecutor.GetDataTable("SELECT * FROM tickers");
-      this.count = this.Table.Rows.Count;
+      this.tickers = SqlExecutor.GetDataTable("SELECT * FROM tickers");
+      this.count = this.tickers.Rows.Count;
     }
 
-    /// <summary>
-    /// Ticker Table containing tickers to use like a clipboard
-    /// </summary>
-    public static TickerDataTable Clipboard
-    {
-      get
-      {
-        return Tickers.clipboard;
-      }
-      set
-      {
-        Tickers.clipboard = value;
-      }
-    }
-
-
-    /// <summary>
-    /// Table containing all records of the DB table "tickers"
-    /// </summary>
-	  public TickerDataTable Table
-    {
-      get
-      {
-        return this.tickerDataTable;
-      }
-    }
     /// <summary>
     /// Number of tickers in tickers table
     /// </summary>
@@ -78,6 +57,7 @@ namespace QuantProject.DataAccess.Tables
         return this.count;
       }
     }
+    
     
     public static DataTable GetTableOfFilteredTickers(string tickerSymbolIsLike,
                                                       string tickerCompanyNameIsLike)
