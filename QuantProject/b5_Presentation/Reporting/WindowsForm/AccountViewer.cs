@@ -42,6 +42,28 @@ namespace QuantProject.Principale
 			//
 		}
     
+    private void fillAccountsArrayList(IList accountList)
+    {
+      foreach(object item in accountList)
+      {
+        this.accountsArrayList.Add((Account)item);
+      }
+      //
+    }
+
+    public AccountViewer(IList accountList)
+    {
+			
+      //
+      InitializeComponent();
+      this.fillAccountsArrayList(accountList);
+      this.setTableAndGrid();
+      this.updateForm();
+      //
+      // TODO: 
+      //
+    }
+
     private void setTableAndGrid()
     {
       this.accountsTable = new DataTable();
