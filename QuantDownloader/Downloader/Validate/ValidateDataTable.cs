@@ -27,7 +27,13 @@ namespace QuantProject.Applications.Downloader.Validate
       this.oleDbDataAdapter.UpdateCommand = this.oleDbCommandBuilder.GetUpdateCommand();
       this.oleDbDataAdapter.Fill( this );
       this.TableName = "quotes";
+//<<<<<<< ValidateDataTable.cs
+      this.Columns.Add( "ValidationWarning" ,
+        ValidationWarning.OpenHighLowCloseLogicalInconsistency.GetType() );
       
+//=======
+//      
+//>>>>>>> 1.6
     }
 
 	public ValidateDataTable(DataTable tableOfTickers)
@@ -54,6 +60,7 @@ namespace QuantProject.Applications.Downloader.Validate
       DataRow dataRow = this.NewRow();
       foreach (DataColumn dataColumn in quotesRow.Table.Columns )
         dataRow[ dataColumn.ColumnName ] = quotesRow[ dataColumn ];
+      dataRow[ "ValidationWarning" ] = eventArgs.ValidationWarning;
       this.Rows.Add( dataRow );
       //this.Rows.Add( quotesRow );
     }
