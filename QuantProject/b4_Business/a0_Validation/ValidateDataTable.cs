@@ -1,7 +1,10 @@
 using System;
 using System.Data;
 using System.Data.OleDb;
+using QuantProject.ADT;
+using QuantProject.Business.Validation.Validators;
 using QuantProject.DataAccess;
+using QuantProject.Data.DataTables;
 
 namespace QuantProject.Business.Validation
 {
@@ -92,25 +95,47 @@ namespace QuantProject.Business.Validation
 			this.Rows.Add( dataRow );
 			//this.Rows.Add( quotesRow );
 		}
-		public void AddRows( string tickerIsLike , double suspiciousRatio )
+		private void addRows_with_quotesToBeValidated( Quotes quotes )
 		{
-			QuotesToBeValidated quotesToBeValidated = new QuotesToBeValidated( tickerIsLike );
-			quotesToBeValidated.SuspiciousRatio = suspiciousRatio;
-			quotesToBeValidated.SuspiciousDataRow +=
-				new SuspiciousDataRowEventHandler( suspiciousDataRowEventHandler );
-			//      new QuotesToBeValidated.SuspiciousDataRowEventHandler( suspiciousDataRowEventHandler );
-			quotesToBeValidated.Validate();
+//			quotesToBeValidated.SuspiciousDataRow +=
+//				new SuspiciousDataRowEventHandler( suspiciousDataRowEventHandler );
+			//			quotesToBeValidated.Validate();
+			MultiValidator multiValidator = new MultiValidator();
+//			multiValidator.SuspiciousRatio = this.suspiciousRatio;
+			multiValidator.SuspiciousDataRow +=
+				new SuspiciousDataRowEventHandler( this.suspiciousDataRowEventHandler );
+			multiValidator.Validate( quotes );
 			this.AcceptChanges();
 		}
-		public void AddRows(double suspiciousRatio )
+		public void AddRows( string tickerIsLike )
 		{
-			QuotesToBeValidated quotesToBeValidated = new QuotesToBeValidated(this.tableOfTickersToBeValidated);
-			quotesToBeValidated.SuspiciousRatio = suspiciousRatio;
-			quotesToBeValidated.SuspiciousDataRow +=
-				new SuspiciousDataRowEventHandler( suspiciousDataRowEventHandler );
+			Quotes quotesToBeValidated = new Quotes( tickerIsLike );
+//			quotesToBeValidated.SuspiciousDataRow +=
+//				new SuspiciousDataRowEventHandler( suspiciousDataRowEventHandler );
 			//      new QuotesToBeValidated.SuspiciousDataRowEventHandler( suspiciousDataRowEventHandler );
-			quotesToBeValidated.Validate();
-			this.AcceptChanges();
+			this.addRows_with_quotesToBeValidated( quotesToBeValidated );
+		}
+//		public void AddRows(double suspiciousRatio )
+//		{
+//			QuotesToBeValidated quotesToBeValidated = new QuotesToBeValidated(this.tableOfTickersToBeValidated);
+//			quotesToBeValidated.SuspiciousRatio = suspiciousRatio;
+//			quotesToBeValidated.SuspiciousDataRow +=
+//				new SuspiciousDataRowEventHandler( suspiciousDataRowEventHandler );
+//			//      new QuotesToBeValidated.SuspiciousDataRowEventHandler( suspiciousDataRowEventHandler );
+//			quotesToBeValidated.Validate();
+//			this.AcceptChanges();
+//		}
+		/// <summary>
+		/// Add suspicious rows for the given instrument, since the startDate to the endDate
+		/// </summary>
+		/// <param name="ticker"></param>
+		/// <param name="startDate"></param>
+		/// <param name="endDate"></param>
+		public void AddRows( string ticker , DateTime startDate , DateTime endDate )
+		{
+			Quotes quotesToBeValidated =
+				new Quotes( ticker , startDate , endDate );
+			this.addRows_with_quotesToBeValidated( quotesToBeValidated );
 		}
 		/// <summary>
 		/// Commits the ValidateDataTable changes to the database
