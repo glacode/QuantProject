@@ -1,7 +1,9 @@
 using System;  
 using System.Data;
+using QuantProject.ADT;
 using QuantProject.ADT.Histories;
 using QuantProject.Business.Validation;
+using QuantProject.Data.DataTables;
 
 namespace QuantProject.Business.Validation.Validators
 {
@@ -11,13 +13,6 @@ namespace QuantProject.Business.Validation.Validators
   public class CloseToCloseValidator : IValidator
   {
     private DataTable dataTableToBeValidated;
-    private double suspiciousRatio = 2;
-
-    public double SuspiciousRatio
-    {
-      get { return this.suspiciousRatio; }
-      set { this.suspiciousRatio = value; }
-    }
 
     public CloseToCloseValidator()
     {
@@ -51,7 +46,7 @@ namespace QuantProject.Business.Validation.Validators
     private void validate_currentTicker_withHistories_validateRow(
       DataRow quoteRow , double currentValue , double averageValue )
     {
-      if ( Math.Abs( currentValue / averageValue ) > this.suspiciousRatio )
+      if ( Math.Abs( currentValue / averageValue ) > ConstantsProvider.SuspiciousRatio )
         // the current close to close value is suspiciously larger
         // than the average close to close ratio
         this.SuspiciousDataRow( this , new SuspiciousDataRowEventArgs(
@@ -97,7 +92,7 @@ namespace QuantProject.Business.Validation.Validators
     /// Validates close to close divergencies
     /// </summary>
     /// <param name="dataTableToBeValidated">Quote rows to be validated</param>
-    public void Validate( DataTable dataTableToBeValidated )
+    public void Validate( Quotes dataTableToBeValidated )
     {
       int currentRowIndex = 0;
       string currentTicker;

@@ -1,6 +1,7 @@
 using System;
 using System.Data;
 using QuantProject.Business.Validation;
+using QuantProject.Data.DataTables;
 
 namespace QuantProject.Business.Validation.Validators
 {
@@ -9,14 +10,6 @@ namespace QuantProject.Business.Validation.Validators
 	/// </summary>
 	public class MultiValidator : IValidator
 	{
-    private double suspiciousRatio;
-
-    public double SuspiciousRatio
-    {
-      get { return this.suspiciousRatio; }
-      set { this.suspiciousRatio = value; }
-    }
-
 		public MultiValidator()
 		{
 			//
@@ -35,46 +28,44 @@ namespace QuantProject.Business.Validation.Validators
     /// Validates the Open High Low Close consistencies
     /// </summary>
     /// <param name="dataTable">Quote rows to be validated</param>
-    private void validate_OHLC( DataTable dataTable )
+    private void validate_OHLC( Quotes quotes )
     {
       OHLCvalidator oHLCvalidator = new OHLCvalidator();
       oHLCvalidator.SuspiciousDataRow +=
         new SuspiciousDataRowEventHandler( suspiciousDataRowHandler );
-      oHLCvalidator.Validate( dataTable );
+      oHLCvalidator.Validate( quotes );
     }
 		/// <summary>
 		/// Validates the Close to Close differencies
 		/// </summary>
 		/// <param name="dataTable">Quote rows to be validated</param>
-		private void validate_CloseToClose( DataTable dataTable )
+		private void validate_CloseToClose( Quotes quotes )
 		{
 			CloseToCloseValidator closeToCloseValidator = new CloseToCloseValidator();
-			closeToCloseValidator.SuspiciousRatio = this.suspiciousRatio;
 			closeToCloseValidator.SuspiciousDataRow +=
 				new SuspiciousDataRowEventHandler( suspiciousDataRowHandler );
-			closeToCloseValidator.Validate( dataTable );
+			closeToCloseValidator.Validate( quotes );
 		}
 		/// <summary>
 		/// Validates the Range to Range differencies
 		/// </summary>
 		/// <param name="dataTable">Quote rows to be validated</param>
-		private void validate_RangeToRange( DataTable dataTable )
+		private void validate_RangeToRange( Quotes quotes )
 		{
 			RangeToRangeValidator rangeToRangeValidator = new RangeToRangeValidator();
-			rangeToRangeValidator.SuspiciousRatio = this.suspiciousRatio;
 			rangeToRangeValidator.SuspiciousDataRow +=
 				new SuspiciousDataRowEventHandler( suspiciousDataRowHandler );
-			rangeToRangeValidator.Validate( dataTable );
+			rangeToRangeValidator.Validate( quotes );
 		}
 		/// <summary>
     /// Validates the quotes rows
     /// </summary>
     /// <param name="dataTable">Contains the quotes rows to be validated</param>
-    public void Validate( DataTable dataTable )
+    public void Validate( Quotes quotes )
     {
-      this.validate_OHLC( dataTable );
-			this.validate_CloseToClose( dataTable );
-			this.validate_RangeToRange( dataTable );
+      this.validate_OHLC( quotes );
+			this.validate_CloseToClose( quotes );
+			this.validate_RangeToRange( quotes );
 		}
 		/// <summary>
 		/// Validates the instrument quotes for the given ticker
