@@ -46,6 +46,11 @@ namespace QuantProject.Presentation.Reporting.WindowsForm
 			this.account = account;
 			this.historicalQuoteProvider = historicalQuoteProvider;
 		}
+		public Report( AccountReport accountReport )
+		{
+			this.accountReport = accountReport;
+			this.account = this.accountReport.Account;
+		}
 
 		/// <summary>
 		/// Populates the form and displays itself
@@ -81,13 +86,13 @@ namespace QuantProject.Presentation.Reporting.WindowsForm
     {
       this.accountReport = null;
     }
-    
-    /// <summary>
-    /// Imports an existing account report
-    /// </summary>
-    public void Import(AccountReport accountReportToBeImported)
-    {
-      this.accountReport = accountReportToBeImported;
-    }
+  
+//    /// <summary>
+//    /// Imports an existing account report
+//    /// </summary>
+//    public void Import(AccountReport accountReportToBeImported)
+//    {
+//      this.accountReport = accountReportToBeImported;
+//    }
 	}
 }
