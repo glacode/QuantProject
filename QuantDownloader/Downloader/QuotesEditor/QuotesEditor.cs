@@ -15,7 +15,7 @@ namespace QuantProject.Applications.Downloader
 	/// </summary>
 	public class QuotesEditor : System.Windows.Forms.Form
 	{
-		private double suspiciousRatio = 8;
+		private double suspiciousRatio = 3;
 
 		private ValidateDataTable validateDataTable;
 		private CloseToCloseTabPage closeToCloseTabPage = new CloseToCloseTabPage();
