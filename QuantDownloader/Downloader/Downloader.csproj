@@ -194,6 +194,11 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "WebDownloader.resx"
+                    DependentUpon = "WebDownloader.cs"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
                     RelPath = "QuotesEditor\QuotesChart.cs"
                     SubType = "UserControl"
                     BuildAction = "Compile"
@@ -307,6 +312,11 @@
                     RelPath = "TickerSelectors\TickerSelectorForm.cs"
                     SubType = "Form"
                     BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "TickerSelectors\TickerSelectorForm.resx"
+                    DependentUpon = "TickerSelectorForm.cs"
+                    BuildAction = "EmbeddedResource"
                 />
                 <File
                     RelPath = "TickerSelectors\TickerViewer.cs"

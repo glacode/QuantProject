@@ -61,6 +61,8 @@ namespace QuantProject.Applications.Downloader.TickerSelectors
     private System.Windows.Forms.ComboBox comboBoxFirstOperator;
     private System.Windows.Forms.ComboBox comboBoxSecondOperator;
 		private DataTable tableTickers;
+    private System.Windows.Forms.Button buttonViewFaultyTickers;
+    private System.Windows.Forms.Label label4;
     private bool skipRowChangedEvent;// event must be launched only by
                                      // user's changes
 		public TickerViewer()
@@ -69,7 +71,6 @@ namespace QuantProject.Applications.Downloader.TickerSelectors
       this.dataGrid1.ContextMenu = new TickerViewerMenu(this);
       this.tableTickers = new DataTable("tickers");
       this.dataGrid1.DataSource = this.tableTickers;
-			this.setStyle_dataGrid1();
       this.AcceptButton = this.buttonFindTickers;
   	}
 
@@ -115,6 +116,8 @@ namespace QuantProject.Applications.Downloader.TickerSelectors
       this.radioButtonDateQuoteFilter = new System.Windows.Forms.RadioButton();
       this.radioButtonAnyTicker = new System.Windows.Forms.RadioButton();
       this.splitter1 = new System.Windows.Forms.Splitter();
+      this.buttonViewFaultyTickers = new System.Windows.Forms.Button();
+      this.label4 = new System.Windows.Forms.Label();
       ((System.ComponentModel.ISupportInitialize)(this.dataGrid1)).BeginInit();
       this.panel2.SuspendLayout();
       this.groupBoxDateQuoteFilter.SuspendLayout();
@@ -160,7 +163,7 @@ namespace QuantProject.Applications.Downloader.TickerSelectors
       // 
       // buttonFindTickers
       // 
-      this.buttonFindTickers.Location = new System.Drawing.Point(152, 232);
+      this.buttonFindTickers.Location = new System.Drawing.Point(152, 224);
       this.buttonFindTickers.Name = "buttonFindTickers";
       this.buttonFindTickers.Size = new System.Drawing.Size(104, 24);
       this.buttonFindTickers.TabIndex = 0;
@@ -187,6 +190,8 @@ namespace QuantProject.Applications.Downloader.TickerSelectors
       // panel2
       // 
       this.panel2.Controls.AddRange(new System.Windows.Forms.Control[] {
+                                                                         this.label4,
+                                                                         this.buttonViewFaultyTickers,
                                                                          this.groupBoxDateQuoteFilter,
                                                                          this.textBoxStringToFind,
                                                                          this.buttonFindTickers,
@@ -315,6 +320,24 @@ namespace QuantProject.Applications.Downloader.TickerSelectors
       this.splitter1.TabIndex = 8;
       this.splitter1.TabStop = false;
       // 
+      // buttonViewFaultyTickers
+      // 
+      this.buttonViewFaultyTickers.Location = new System.Drawing.Point(144, 296);
+      this.buttonViewFaultyTickers.Name = "buttonViewFaultyTickers";
+      this.buttonViewFaultyTickers.Size = new System.Drawing.Size(120, 24);
+      this.buttonViewFaultyTickers.TabIndex = 15;
+      this.buttonViewFaultyTickers.Text = "&View faulty Tickers";
+      this.buttonViewFaultyTickers.Click += new System.EventHandler(this.buttonViewFaultyTickers_Click);
+      // 
+      // label4
+      // 
+      this.label4.Location = new System.Drawing.Point(24, 264);
+      this.label4.Name = "label4";
+      this.label4.Size = new System.Drawing.Size(352, 16);
+      this.label4.TabIndex = 16;
+      this.label4.Text = "________________________________________";
+      this.label4.TextAlign = System.Drawing.ContentAlignment.TopCenter;
+      // 
       // TickerViewer
       // 
       this.AutoScaleBaseSize = new System.Drawing.Size(5, 13);
@@ -334,9 +357,9 @@ namespace QuantProject.Applications.Downloader.TickerSelectors
 		#endregion
 
 
-		#region Style for dataGrid1
+		#region Style for dataGrid
 		
-		private void setStyle_dataGrid1()
+		private void setStyle_dataGridWithQuoteInfo()
 		{
 			DataGridTableStyle dataGrid1TableStyle = new DataGridTableStyle();
 			dataGrid1TableStyle.MappingName = this.tableTickers.TableName;
@@ -355,28 +378,94 @@ namespace QuantProject.Applications.Downloader.TickerSelectors
 			columnStyle_tiCompanyName.HeaderText = "Company Name";
 			columnStyle_tiCompanyName.TextBox.Enabled = false;
 			columnStyle_tiCompanyName.NullText = "";
-			columnStyle_tiCompanyName.Width = 150;
+			columnStyle_tiCompanyName.Width = 120;
       DataGridTextBoxColumn columnStyle_FirstQuote = new DataGridTextBoxColumn();
       columnStyle_FirstQuote.MappingName = "FirstQuote";
       columnStyle_FirstQuote.HeaderText = "First Quote";
       columnStyle_FirstQuote.TextBox.Enabled = false;
       columnStyle_FirstQuote.NullText = "";
-      columnStyle_FirstQuote.Width = 80;
+      columnStyle_FirstQuote.Width = 60;
       DataGridTextBoxColumn columnStyle_LastQuote = new DataGridTextBoxColumn();
       columnStyle_LastQuote.MappingName = "LastQuote";
       columnStyle_LastQuote.HeaderText = "Last Quote";
       columnStyle_LastQuote.TextBox.Enabled = false;
       columnStyle_LastQuote.NullText = "";
-      columnStyle_LastQuote.Width = 80;
-			
+      columnStyle_LastQuote.Width = 60;
+      
+      DataGridTextBoxColumn columnStyle_NumberOfQuotes = new DataGridTextBoxColumn();
+      columnStyle_NumberOfQuotes.MappingName = "NumberOfQuotes";
+      columnStyle_NumberOfQuotes.HeaderText = "# Quotes";
+      columnStyle_NumberOfQuotes.TextBox.Enabled = false;
+      columnStyle_NumberOfQuotes.NullText = "";
+      columnStyle_NumberOfQuotes.Width = 60;
+
       dataGrid1TableStyle.GridColumnStyles.Add(columnStyle_tiTicker);
 			dataGrid1TableStyle.GridColumnStyles.Add(columnStyle_tiCompanyName);
       dataGrid1TableStyle.GridColumnStyles.Add(columnStyle_FirstQuote);
       dataGrid1TableStyle.GridColumnStyles.Add(columnStyle_LastQuote);
+      dataGrid1TableStyle.GridColumnStyles.Add(columnStyle_NumberOfQuotes); 
+ 
 			this.dataGrid1.TableStyles.Add(dataGrid1TableStyle);
+
       
 			
 		}
+
+    private void setStyle_dataGridWithoutQuoteInfo()
+    {
+      DataGridTableStyle dataGrid1TableStyle = new DataGridTableStyle();
+      dataGrid1TableStyle.MappingName = this.tableTickers.TableName;
+      dataGrid1TableStyle.ColumnHeadersVisible = true;
+      dataGrid1TableStyle.ReadOnly = true;
+      dataGrid1TableStyle.SelectionBackColor = Color.DimGray ;
+			
+      DataGridTextBoxColumn columnStyle_tiTicker = new DataGridTextBoxColumn();
+      columnStyle_tiTicker.MappingName = "tiTicker";
+      columnStyle_tiTicker.HeaderText = "Ticker";
+      columnStyle_tiTicker.TextBox.Enabled = false;
+      columnStyle_tiTicker.NullText = "";
+      columnStyle_tiTicker.Width = 60;
+      DataGridTextBoxColumn columnStyle_tiCompanyName = new DataGridTextBoxColumn();
+      columnStyle_tiCompanyName.MappingName = "tiCompanyName";
+      columnStyle_tiCompanyName.HeaderText = "Company Name";
+      columnStyle_tiCompanyName.TextBox.Enabled = false;
+      columnStyle_tiCompanyName.NullText = "";
+      columnStyle_tiCompanyName.Width = 120;
+  
+      dataGrid1TableStyle.GridColumnStyles.Add(columnStyle_tiTicker);
+      dataGrid1TableStyle.GridColumnStyles.Add(columnStyle_tiCompanyName);
+
+      this.dataGrid1.TableStyles.Add(dataGrid1TableStyle);
+			
+    }
+
+    private void setStyle_faultyTickersDataGrid()
+    {
+      DataGridTableStyle dataGrid1TableStyle = new DataGridTableStyle();
+      dataGrid1TableStyle.MappingName = this.tableTickers.TableName;
+      dataGrid1TableStyle.ColumnHeadersVisible = true;
+      dataGrid1TableStyle.ReadOnly = true;
+      dataGrid1TableStyle.SelectionBackColor = Color.DimGray ;
+			
+      DataGridTextBoxColumn columnStyle_ftTicker = new DataGridTextBoxColumn();
+      columnStyle_ftTicker.MappingName = "ftTicker";
+      columnStyle_ftTicker.HeaderText = "Ticker not downloaded";
+      columnStyle_ftTicker.TextBox.Enabled = false;
+      columnStyle_ftTicker.NullText = "";
+      columnStyle_ftTicker.Width = 100;
+      DataGridTextBoxColumn columnStyle_ftDate = new DataGridTextBoxColumn();
+      columnStyle_ftDate.MappingName = "ftDate";
+      columnStyle_ftDate.HeaderText = "Last attempt";
+      columnStyle_ftDate.TextBox.Enabled = false;
+      columnStyle_ftDate.NullText = "";
+      columnStyle_ftDate.Width = 80;
+  
+      dataGrid1TableStyle.GridColumnStyles.Add(columnStyle_ftTicker);
+      dataGrid1TableStyle.GridColumnStyles.Add(columnStyle_ftDate);
+
+      this.dataGrid1.TableStyles.Add(dataGrid1TableStyle);
+			
+    }
 		#endregion
 
 
@@ -401,6 +490,7 @@ namespace QuantProject.Applications.Downloader.TickerSelectors
           this.tableTickers.RowChanged += new DataRowChangeEventHandler(this.row_Changed);
           this.tableTickers.RowDeleted += new DataRowChangeEventHandler(this.row_Deleted);
           this.dataGrid1.DataSource = this.tableTickers;
+          this.setStyle_dataGridWithoutQuoteInfo();
           this.dataGrid1.ReadOnly = false;
         }
         else
@@ -413,6 +503,7 @@ namespace QuantProject.Applications.Downloader.TickerSelectors
                                                                 this.comboBoxSecondOperator.Text,
                                                                 this.dateTimePickerLastDate.Value);
           this.dataGrid1.DataSource = this.tableTickers;
+          this.setStyle_dataGridWithQuoteInfo();
           this.dataGrid1.ReadOnly = true;
         }        
       }
@@ -541,6 +632,29 @@ namespace QuantProject.Applications.Downloader.TickerSelectors
       {
         this.skipRowChangedEvent = false;
       }
+    }
+
+    private void buttonViewFaultyTickers_Click(object sender, System.EventArgs e)
+    {
+      try
+      {
+        Cursor.Current = Cursors.WaitCursor;
+      
+        this.tableTickers = new FaultyTickers().Table;
+
+        this.dataGrid1.DataSource = this.tableTickers;
+        this.setStyle_faultyTickersDataGrid();
+        this.dataGrid1.ReadOnly = false;
+      }
+      catch(Exception ex)
+      {
+        MessageBox.Show(ex.ToString());
+      }
+      finally
+      {
+        Cursor.Current = Cursors.Default;
+      }
+    
     }
 
 
