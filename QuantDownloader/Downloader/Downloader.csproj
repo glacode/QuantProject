@@ -93,11 +93,6 @@
                     Package = "{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}"
                 />
                 <Reference
-                    Name = "scpl"
-                    AssemblyName = "scpl"
-                    HintPath = "..\..\lib\scpl.dll"
-                />
-                <Reference
                     Name = "b3_Data"
                     Project = "{6AC0A2C1-B926-4921-A685-F5AA80E81C94}"
                     Package = "{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}"
@@ -131,6 +126,11 @@
                     Name = "System.Web.Services"
                     AssemblyName = "System.Web.Services"
                     HintPath = "..\..\..\..\..\..\WINDOWS\Microsoft.NET\Framework\v1.0.3705\System.Web.Services.dll"
+                />
+                <Reference
+                    Name = "scpl"
+                    AssemblyName = "scpl"
+                    HintPath = "bin\Debug\scpl.dll"
                 />
             </References>
         </Build>
@@ -246,7 +246,7 @@
                 />
                 <File
                     RelPath = "QuotesEditor\VisualValidationChart.cs"
-                    SubType = "UserControl"
+                    SubType = "Code"
                     BuildAction = "Compile"
                 />
                 <File
@@ -306,7 +306,7 @@
                 />
                 <File
                     RelPath = "QuotesEditor\RangeToRange\RangeToRangeChart.cs"
-                    SubType = "UserControl"
+                    SubType = "Code"
                     BuildAction = "Compile"
                 />
                 <File
@@ -350,11 +350,6 @@
                     BuildAction = "Compile"
                 />
                 <File
-                    RelPath = "TickerSelectors\TickerSelectorForm.resx"
-                    DependentUpon = "TickerSelectorForm.cs"
-                    BuildAction = "EmbeddedResource"
-                />
-                <File
                     RelPath = "TickerSelectors\TickerViewer.cs"
                     SubType = "Form"
                     BuildAction = "Compile"
@@ -370,34 +365,9 @@
                     BuildAction = "EmbeddedResource"
                 />
                 <File
-                    RelPath = "Validate\IValidator.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Validate\QuotesToBeValidated.cs"
-                    SubType = "Component"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Validate\SospiciousDataRowEventArgs.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
                     RelPath = "Validate\ValidateDataGrid.cs"
                     SubType = "Component"
                     BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Validate\ValidateDataTable.cs"
-                    SubType = "Component"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Validate\ValidateDataTable.resx"
-                    DependentUpon = "ValidateDataTable.cs"
-                    BuildAction = "EmbeddedResource"
                 />
                 <File
                     RelPath = "Validate\ValidateForm.cs"
@@ -408,31 +378,6 @@
                     RelPath = "Validate\ValidateForm.resx"
                     DependentUpon = "ValidateForm.cs"
                     BuildAction = "EmbeddedResource"
-                />
-                <File
-                    RelPath = "Validate\ValidationWarnings.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Validate\Validators\CloseToCloseValidator.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Validate\Validators\MultiValidator.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Validate\Validators\OHLCvalidator.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Validate\Validators\RangeToRangeValidator.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
                 />
             </Include>
         </Files>

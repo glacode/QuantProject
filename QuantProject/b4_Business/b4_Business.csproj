@@ -116,12 +116,72 @@
                     Lcid = "0"
                     WrapperTool = "tlbimp"
                 />
+                <Reference
+                    Name = "b2_DataAccess"
+                    Project = "{8CF7C0D8-A8CB-43DC-B406-77DE62729487}"
+                    Package = "{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}"
+                />
             </References>
         </Build>
         <Files>
             <Include>
                 <File
                     RelPath = "AssemblyInfo.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "a0_Validation\IValidator.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "a0_Validation\QuotesToBeValidated.cs"
+                    SubType = "Component"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "a0_Validation\SospiciousDataRowEventArgs.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "a0_Validation\ValidateDataTable.cs"
+                    SubType = "Component"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "a0_Validation\ValidateDataTable.resx"
+                    DependentUpon = "ValidateDataTable.cs"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "a0_Validation\ValidationWarnings.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "a0_Validation\Validator.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "a0_Validation\Validators\CloseToCloseValidator.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "a0_Validation\Validators\MultiValidator.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "a0_Validation\Validators\OHLCvalidator.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "a0_Validation\Validators\RangeToRangeValidator.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
