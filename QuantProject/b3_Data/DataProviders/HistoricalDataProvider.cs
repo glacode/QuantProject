@@ -56,109 +56,163 @@ namespace QuantProject.Data.DataProviders
     /// </summary>
     /// <param name="instrument">Instrument to be monitored</param>
     /// <param name="barComponent">Bar component to be monitored (Open, High, Low, Close or Volume)</param>
-    public static void Add( string instrumentKey , BarComponent barComponent )
+    public static void Add( string instrumentKey , QuoteField quoteField )
     {
       if ( !cachedHistories.ContainsKey( instrumentKey ) )
         cachedHistories.Add( instrumentKey , new Hashtable() );
       ((Hashtable) cachedHistories[ instrumentKey ]).Add(
-        barComponent , barComponent );
+        quoteField , quoteField );
     }
 
-    //public static void
-
-    public static void SetCachedHistories(
-      DateTime startDateTime , DateTime endDateTime )
-    {
-      ArrayList keyArray = new ArrayList();
-      foreach (string instrumentKey in cachedHistories.Keys)
-        keyArray.Add( instrumentKey );
-      foreach (string instrumentKey in keyArray )
-      {
-        Hashtable barComponents = new Hashtable();
-        foreach (BarComponent barComponent in
-          (( Hashtable )cachedHistories[ instrumentKey ]).Keys )
-          barComponents.Add( barComponent , barComponent );
-        Hashtable histories = DataBase.GetHistories(
-          instrumentKey , barComponents , startDateTime , endDateTime );
-        cachedHistories[ instrumentKey ] = histories;
-      }
-    }
-
+//    //public static void
+//
+//    public static void SetCachedHistories(
+//      DateTime startDateTime , DateTime endDateTime )
+//    {
+//      ArrayList keyArray = new ArrayList();
+//      foreach (string instrumentKey in cachedHistories.Keys)
+//        keyArray.Add( instrumentKey );
+//      foreach (string instrumentKey in keyArray )
+//      {
+//        Hashtable barComponents = new Hashtable();
+//        foreach (BarComponent barComponent in
+//          (( Hashtable )cachedHistories[ instrumentKey ]).Keys )
+//          barComponents.Add( barComponent , barComponent );
+//        Hashtable histories = DataBase.GetHistories(
+//          instrumentKey , barComponents , startDateTime , endDateTime );
+//        cachedHistories[ instrumentKey ] = histories;
+//      }
+//    }
+//
     public static History GetOpenHistory( string instrumentKey )
     {
       return (History)((Hashtable)cachedHistories[ instrumentKey ])[
         BarComponent.Open ];
     }
 
-		private static History getHistory( string instrumentKey , BarComponent barComponent )
+		private static History getHistory( string instrumentKey , QuoteField quoteField )
 		{
 			if ( ( !cachedHistories.Contains( instrumentKey ) ) ||
-				( !((Hashtable)cachedHistories[ instrumentKey ]).Contains( barComponent ) ) )
+				( !((Hashtable)cachedHistories[ instrumentKey ]).Contains( quoteField ) ) )
 			{
-				Add( instrumentKey , barComponent );
-				((Hashtable)cachedHistories[ instrumentKey ])[ barComponent ] =
-					DataBase.GetHistory( instrumentKey , barComponent );
+				Add( instrumentKey , quoteField );
+				((Hashtable)cachedHistories[ instrumentKey ])[ quoteField ] =
+					DataBase.GetHistory( instrumentKey , quoteField );
 			}
-			return (History)((Hashtable)cachedHistories[ instrumentKey ])[ barComponent ];
+			return (History)((Hashtable)cachedHistories[ instrumentKey ])[ quoteField ];
 		}
 
 		public static History GetCloseHistory( string instrumentKey )
 		{
-			if ( ( !cachedHistories.Contains( instrumentKey ) ) ||
-				( !((Hashtable)cachedHistories[ instrumentKey ]).Contains( BarComponent.Close ) ) )
-			{
-				Add( instrumentKey , BarComponent.Close );
-				((Hashtable)cachedHistories[ instrumentKey ])[ BarComponent.Close ] =
-					DataBase.GetHistory( instrumentKey , BarComponent.Close );
-			}
-			return (History)((Hashtable)cachedHistories[ instrumentKey ])[
-				BarComponent.Close ];
+			return getHistory( instrumentKey , QuoteField.Close );
 		}
 
 		public static History GetHighHistory( string instrumentKey )
 		{
-			return getHistory( instrumentKey , BarComponent.High );
+			return getHistory( instrumentKey , QuoteField.High );
 		}
 
 		public static History GetLowHistory( string instrumentKey )
 		{
-			return getHistory( instrumentKey , BarComponent.Low );
+			return getHistory( instrumentKey , QuoteField.Low );
 		}
 
-		private static void cache( string instrumentKey , BarComponent barComponent )
+		private static void cache( string instrumentKey , QuoteField quoteField )
 		{
 			if ( !cachedHistories.ContainsKey( instrumentKey ) )
 				// no component at all for the instrument instrumentKey has been cached yet
 				cachedHistories.Add( instrumentKey , new Hashtable() );
-			((Hashtable)cachedHistories[ instrumentKey ]).Add( barComponent ,
-				DataBase.GetHistory( instrumentKey , barComponent ) );
+			((Hashtable)cachedHistories[ instrumentKey ]).Add( quoteField ,
+				DataBase.GetHistory( instrumentKey , quoteField ) );
 		}
-		public static double GetMarketValue( string instrumentKey , ExtendedDateTime extendedDateTime )
+//		public static double GetMarketValue( string instrumentKey , ExtendedDateTime extendedDateTime )
+//		{
+//			double returnValue;
+//			if ( !cachedHistories.ContainsKey( instrumentKey ) ||
+//				!(((Hashtable)cachedHistories[ instrumentKey ]).ContainsKey(
+//				extendedDateTime.QuoteField)) )
+//				// the instrument instrumentKey has not been cached yet, for the given bar component
+//				cache( instrumentKey , extendedDateTime.QuoteField );
+//			returnValue = Convert.ToDouble(
+//				( (History) ((Hashtable)
+//				cachedHistories[ instrumentKey ])[ extendedDateTime.QuoteField ] ).GetByIndex(
+//				( (History) ((Hashtable) cachedHistories[ instrumentKey ])[ extendedDateTime.QuoteField ]
+//				).IndexOfKeyOrPrevious( extendedDateTime.DateTime ) ) );
+//			return returnValue;
+//		}
+//		public static double GetMarketValue( string instrumentKey , DateTime dateTime ,
+//			QuoteField barComponent )
+//		{
+//			//DateTime dateTime = 
+//			return GetMarketValue( instrumentKey , new ExtendedDateTime( dateTime , barComponent ) );
+//		}
+//
+		private static double getQuote( string instrumentKey , DateTime dateTime , QuoteField quoteField )
 		{
+			double returnValue;
 			if ( !cachedHistories.ContainsKey( instrumentKey ) ||
 				!(((Hashtable)cachedHistories[ instrumentKey ]).ContainsKey(
-				extendedDateTime.BarComponent)) )
+				quoteField )) )
 				// the instrument instrumentKey has not been cached yet, for the given bar component
-				cache( instrumentKey , extendedDateTime.BarComponent );
-			return Convert.ToDouble(
+				cache( instrumentKey , quoteField );
+			returnValue = Convert.ToDouble(
 				( (History) ((Hashtable)
-				cachedHistories[ instrumentKey ])[ extendedDateTime.BarComponent ] ).GetByIndex(
-				( (History) ((Hashtable) cachedHistories[ instrumentKey ])[ extendedDateTime.BarComponent ]
-				).IndexOfKeyOrPrevious( extendedDateTime.DateTime ) ) );
+				cachedHistories[ instrumentKey ])[ quoteField ] ).GetByIndex(
+				( (History) ((Hashtable) cachedHistories[ instrumentKey ])[ quoteField ]
+				).IndexOfKeyOrPrevious( dateTime ) ) );
+			return returnValue;
+		}
+		/// <summary>
+		/// Returns the adjusted market value for the given ticker, at the given ExtendedDateTime
+		/// </summary>
+		/// <param name="instrumentKey">instrument identifier</param>
+		/// <param name="extendedDateTime"></param>
+		/// <returns></returns>
+		public static double GetAdjustedMarketValue( string instrumentKey , ExtendedDateTime extendedDateTime )
+		{
+			double returnValue;
+			double adjustedClose = getQuote( instrumentKey ,
+				extendedDateTime.DateTime , QuoteField.AdjustedClose );
+			if ( extendedDateTime.BarComponent == BarComponent.Close )
+				returnValue = adjustedClose;
+			else
+				// extendedDateTime.BarComponent is equal to BarComponent.Open
+			{
+				double open = getQuote( instrumentKey ,
+					extendedDateTime.DateTime , QuoteField.Open );
+				double close = getQuote( instrumentKey ,
+					extendedDateTime.DateTime , QuoteField.Close );
+				returnValue = open * adjustedClose / close;
+			}
+			return returnValue;
+		}
+		/// <summary>
+		/// Returns the raw market value for the given ticker, at the given ExtendedDateTime
+		/// </summary>
+		/// <param name="instrumentKey">instrument identifier</param>
+		/// <param name="extendedDateTime"></param>
+		/// <returns></returns>
+		public static double GetRawMarketValue( string instrumentKey , ExtendedDateTime extendedDateTime )
+		{
+			double returnValue;
+			if ( extendedDateTime.BarComponent == BarComponent.Close )
+				returnValue = getQuote( instrumentKey ,
+					extendedDateTime.DateTime , QuoteField.Close );
+			else
+				// extendedDateTime.BarComponent is equal to BarComponent.Open
+				returnValue = getQuote( instrumentKey ,
+					extendedDateTime.DateTime , QuoteField.Open );
+			return returnValue;
 		}
 		public static bool WasExchanged( string instrumentKey , ExtendedDateTime extendedDateTime )
 		{
-			double marketValue = GetMarketValue( instrumentKey , extendedDateTime  ); // forces caching if needed
+			ExtendedDateTime atClose = new ExtendedDateTime(
+				extendedDateTime.DateTime , BarComponent.Close );
+			double marketValue = GetRawMarketValue( instrumentKey ,
+				atClose ); // forces caching if needed
 			return ( (History) ((Hashtable)
-				cachedHistories[ instrumentKey ])[ extendedDateTime.BarComponent ] ).ContainsKey(
+				cachedHistories[ instrumentKey ])[ QuoteField.Close ] ).ContainsKey(
 				extendedDateTime.DateTime );
-		}
-
-		public static double GetMarketValue( string instrumentKey , DateTime dateTime ,
-			BarComponent barComponent )
-		{
-			//DateTime dateTime = 
-			return GetMarketValue( instrumentKey , new ExtendedDateTime( dateTime , barComponent ) );
 		}
 
 		/// <summary>
