@@ -419,23 +419,25 @@ namespace QuantProject.Applications.Downloader.TickerSelectors
 	
     // implementation of ITickerSelector interface
 
-		public TickerDataTable GetTableOfSelectedTickers()
+		public DataTable GetTableOfSelectedTickers()
 		{
-			DataTable dataTableOfDataGrid1 = (DataTable)this.dataGrid1.DataSource;
-			TickerDataTable tableOfSelectedTickers = new TickerDataTable();
+			/*
+      DataTable dataTableOfDataGrid1 = (DataTable)this.dataGrid1.DataSource;
+			DataTable tableOfSelectedTickers = new DataTable();
+      TickerDataTable.AddColumnsOfTickerTable(tableOfSelectedTickers);
 			int indexOfRow = 0;
 			while(indexOfRow != dataTableOfDataGrid1.Rows.Count)
 			{
 				if(this.dataGrid1.IsSelected(indexOfRow))
 				{
 					DataRow dataRow = tableOfSelectedTickers.NewRow(); 
-					dataRow[0] = (string)dataTableOfDataGrid1.Rows[indexOfRow][0];
-					dataRow[1] = (string)dataTableOfDataGrid1.Rows[indexOfRow][1];
+					dataRow["Ticker"] = (string)dataTableOfDataGrid1.Rows[indexOfRow][0];
+					dataRow["CompanyName"] = (string)dataTableOfDataGrid1.Rows[indexOfRow][1];
 					tableOfSelectedTickers.Rows.Add(dataRow);
 				}
 				indexOfRow++;
-			}
-			return tableOfSelectedTickers;
+			}*/
+			return TickerSelector.GetTableOfManuallySelectedTickers(this.dataGrid1);
 		}
 
     public void SelectAllTickers()

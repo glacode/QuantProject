@@ -65,8 +65,10 @@ namespace QuantProject.Applications.Downloader.TickerSelectors
       this.dateTimePickerLastDate.Value = DateTime.Now;
       this.dataGrid1.ContextMenu = new TickerViewerMenu(this);
       //TODO: complete comboBox's code with all possible types of selections
-      this.comboBoxAvailableSelectionRules.Text = "Most liquid instrument";
-      this.comboBoxAvailableSelectionRules.Items.Add("Most liquid instrument");
+      this.comboBoxAvailableSelectionRules.Text = "Most liquid instruments";
+      this.comboBoxAvailableSelectionRules.Items.Add("Most liquid instruments");
+      this.comboBoxAvailableSelectionRules.Text = "Best performing instruments";
+      this.comboBoxAvailableSelectionRules.Items.Add("Best performing instruments");
 
   	}
     public TickerSelectorForm(string groupID) : this()
@@ -293,23 +295,25 @@ namespace QuantProject.Applications.Downloader.TickerSelectors
 	
     // implementation of ITickerSelector interface
 
-		public TickerDataTable GetTableOfSelectedTickers()
+		public DataTable GetTableOfSelectedTickers()
 		{
-			DataTable dataTableOfDataGrid1 = (DataTable)this.dataGrid1.DataSource;
-			TickerDataTable tableOfSelectedTickers = new TickerDataTable();
+			/*
+      DataTable dataTableOfDataGrid1 = (DataTable)this.dataGrid1.DataSource;
+			DataTable tableOfSelectedTickers = new DataTable();
+      TickerDataTable.AddColumnsOfTickerTable(tableOfSelectedTickers);
 			int indexOfRow = 0;
 			while(indexOfRow != dataTableOfDataGrid1.Rows.Count)
 			{
 				if(this.dataGrid1.IsSelected(indexOfRow))
 				{
 					DataRow dataRow = tableOfSelectedTickers.NewRow(); 
-					dataRow[0] = (string)dataTableOfDataGrid1.Rows[indexOfRow][0];
-					dataRow[1] = (string)dataTableOfDataGrid1.Rows[indexOfRow][1];
+					dataRow["Ticker"] = (string)dataTableOfDataGrid1.Rows[indexOfRow][0];
+					dataRow["CompanyName"] = (string)dataTableOfDataGrid1.Rows[indexOfRow][1];
 					tableOfSelectedTickers.Rows.Add(dataRow);
 				}
 				indexOfRow++;
-			}
-			return tableOfSelectedTickers;
+			}*/
+			return TickerSelector.GetTableOfManuallySelectedTickers(this.dataGrid1);
 		}
 
     public void SelectAllTickers()
@@ -326,9 +330,7 @@ namespace QuantProject.Applications.Downloader.TickerSelectors
 
     private void buttonSelectTickers_Click(object sender, System.EventArgs e)
     {
-        //TODO: complete code finding a way to construct the right 
-        // selection rule on the base of what selected by the user
-        SelectionRule rule = new SelectionRule(SelectionType.MostLiquid, this.textBoxGroupID.Text, 
+        SelectionRule rule = new SelectionRule(this.GetTypeOfRuleSelectedByUser(), this.textBoxGroupID.Text, 
                                             this.dateTimePickerFirstDate.Value,
                                             this.dateTimePickerLastDate.Value,
                                             Int32.Parse(this.textBoxMaxNumOfReturnedTickers.Text));
@@ -339,8 +341,17 @@ namespace QuantProject.Applications.Downloader.TickerSelectors
           selector= new TickerSelector(this.tableOfSelectedTickers,rule);
         this.dataGrid1.DataSource = selector.GetTableOfSelectedTickers();
         this.dataGrid1.Refresh();
-                        
     }
+
+    private SelectionType GetTypeOfRuleSelectedByUser()
+    {
+      SelectionType typeSelected = SelectionType.MostLiquid;
+      if(this.comboBoxAvailableSelectionRules.Text == "Most liquid instruments")
+        typeSelected = SelectionType.MostLiquid;      
+      else if (this.comboBoxAvailableSelectionRules.Text == "Best performing instruments")
+        typeSelected = SelectionType.BestPerformer;
+      return typeSelected;  
+    }    
 
 	}
 }

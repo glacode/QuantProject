@@ -26,7 +26,7 @@ using System.Windows.Forms;
 using QuantProject.DataAccess.Tables;
 using QuantProject.Data.DataTables;
 using QuantProject.Data.Selectors;
-//using QuantProject.Applications.Downloader.TickerSelectors;
+
 
 namespace QuantProject.Applications.Downloader.TickerSelectors
 {
@@ -84,7 +84,7 @@ namespace QuantProject.Applications.Downloader.TickerSelectors
     private void downloadSelectedTickers(object sender, System.EventArgs e)
     {
       ITickerSelector iTickerSelector = (ITickerSelector)this.parentForm;
-      TickerDataTable tableOfSelectedTickers = iTickerSelector.GetTableOfSelectedTickers();
+      DataTable tableOfSelectedTickers = iTickerSelector.GetTableOfSelectedTickers();
       
       if(tableOfSelectedTickers.Rows.Count == 0)
       {
@@ -100,7 +100,7 @@ namespace QuantProject.Applications.Downloader.TickerSelectors
     private void validateSelectedTickers(object sender, System.EventArgs e)
     {
       ITickerSelector iTickerSelector = (ITickerSelector)this.parentForm;
-      TickerDataTable tableOfSelectedTickers = iTickerSelector.GetTableOfSelectedTickers();      
+      DataTable tableOfSelectedTickers = iTickerSelector.GetTableOfSelectedTickers();      
       if(tableOfSelectedTickers.Rows.Count == 0)
       {
         MessageBox.Show("No ticker has been selected!\n\n" + 
@@ -116,7 +116,7 @@ namespace QuantProject.Applications.Downloader.TickerSelectors
     private void openQuotesEditor(object sender, System.EventArgs e)
     {
       ITickerSelector iTickerSelector = (ITickerSelector)this.parentForm;
-      TickerDataTable tableOfSelectedTickers = iTickerSelector.GetTableOfSelectedTickers();      
+      DataTable tableOfSelectedTickers = iTickerSelector.GetTableOfSelectedTickers();      
       
       if(tableOfSelectedTickers.Rows.Count != 1)
       {
@@ -135,7 +135,7 @@ namespace QuantProject.Applications.Downloader.TickerSelectors
     {
       Cursor.Current = Cursors.WaitCursor;
       ITickerSelector iTickerSelector = (ITickerSelector)this.parentForm;
-      TickerDataTable tableOfSelectedTickers = iTickerSelector.GetTableOfSelectedTickers();
+      DataTable tableOfSelectedTickers = iTickerSelector.GetTableOfSelectedTickers();
       string currentTicker;
       foreach(DataRow row in tableOfSelectedTickers.Rows)
       {
@@ -149,7 +149,7 @@ namespace QuantProject.Applications.Downloader.TickerSelectors
     private void openTickerSelectorForm(object sender, System.EventArgs e)
     {
       ITickerSelector iTickerSelector = (ITickerSelector)this.parentForm;
-      TickerDataTable tableOfSelectedTickers = iTickerSelector.GetTableOfSelectedTickers();      
+      DataTable tableOfSelectedTickers = iTickerSelector.GetTableOfSelectedTickers();      
       TickerSelectorForm selectorForm = new TickerSelectorForm(tableOfSelectedTickers);
       selectorForm.Show();
     }

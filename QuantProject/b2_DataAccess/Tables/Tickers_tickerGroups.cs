@@ -80,9 +80,16 @@ namespace QuantProject.DataAccess.Tables
       }
     }
     
-    
-   
-    
+    /// <summary>
+    /// It returns a table containing tickers of a given groupID
+    /// </summary>
+    public static DataTable GetTickers( string groupID)
+    {
+      /// TO DO use a join in order to return a table with tiTicker and company name  
+      return SqlExecutor.GetDataTable("SELECT " + Tickers_tickerGroups.Ticker + " FROM tickers_tickerGroups " +
+          "WHERE " + Tickers_tickerGroups.GroupID + "='" +
+          groupID + "'");
+    }
 
    
   }

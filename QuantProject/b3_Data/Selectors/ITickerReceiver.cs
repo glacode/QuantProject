@@ -21,7 +21,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
 using System;
-using QuantProject.Data.DataTables;
+//using QuantProject.Data.DataTables;
+using System.Data;
 
 
 namespace QuantProject.Data.Selectors
@@ -31,6 +32,6 @@ namespace QuantProject.Data.Selectors
 	/// </summary>
 	public interface ITickerReceiver
 	{
-    void ReceiveTickers(TickerDataTable tickersToReceive);
+    void ReceiveTickers(DataTable tickersToReceive);
   }
 }

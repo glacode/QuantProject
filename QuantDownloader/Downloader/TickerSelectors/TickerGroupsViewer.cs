@@ -160,19 +160,12 @@ namespace QuantProject.Applications.Downloader.TickerSelectors
 		}
 
 		private void addTickerToTable(DataTable tableToFill, string tickerID,
-										string tickerDescription)
+										              string tickerDescription)
 		{
-			try
-			{
-				DataRow newRow = tableToFill.NewRow();
-				newRow[0] = tickerID;
-				newRow[1] = tickerDescription;
-				tableToFill.Rows.Add(newRow);
-			}
-			catch(Exception ex)
-			{
-				string notUsed = ex.ToString();
-			}
+      DataRow newRow = tableToFill.NewRow();
+      newRow["tiTicker"] = tickerID;
+      newRow["tiCompanyName"] = tickerDescription;
+      tableToFill.Rows.Add(newRow);
 		}
     // implementation of ITickerSelector interface
     public void SelectAllTickers()
@@ -183,9 +176,10 @@ namespace QuantProject.Applications.Downloader.TickerSelectors
       }
     }    
 
-		public TickerDataTable GetTableOfSelectedTickers()
+		public DataTable GetTableOfSelectedTickers()
 		{
-			TickerDataTable tableOfSelectedTickers = new TickerDataTable();
+			DataTable tableOfSelectedTickers = new DataTable();
+      TickerDataTable.AddColumnsOfTickerTable(tableOfSelectedTickers);
       
       foreach(ListViewItem item in this.listViewGroupsAndTickers.SelectedItems)
 			{
@@ -200,7 +194,7 @@ namespace QuantProject.Applications.Downloader.TickerSelectors
 				// the item references to a node in the treeView :
 				// so it stands for a group of tickers
 				{
-					//TODO: add method to retrieve 
+					///TODO: add method to retrieve 
           MessageBox.Show("NOT IMPLEMENTED YET");  
 				}
 			}
@@ -717,7 +711,7 @@ namespace QuantProject.Applications.Downloader.TickerSelectors
 		}
     //implementation of ITickerReceiver interface for this object
 
-    public void ReceiveTickers(TickerDataTable tickers)
+    public void ReceiveTickers(DataTable tickers)
     {
       try
         {

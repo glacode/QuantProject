@@ -32,6 +32,6 @@ namespace QuantProject.Data.Selectors
 	public interface ITickerSelector
 	{
     void SelectAllTickers();
-    TickerDataTable GetTableOfSelectedTickers();
+    DataTable GetTableOfSelectedTickers();
   }
 }

@@ -22,63 +22,74 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 using System;
 using System.Data;
+using QuantProject.ADT;
 using QuantProject.DataAccess.Tables;
 
 namespace QuantProject.Data.DataTables
 {
 	/// <summary>
 	/// The DataTable where to store tickers.
-	/// It has the same structure of DB's table
 	/// </summary>
 	
   public class TickerDataTable : DataTable
 	{
-    private static TickerDataTable clipboard;
-    public static TickerDataTable Clipboard
+    private static DataTable clipboard;
+    public static DataTable Clipboard
     {
       get{ return TickerDataTable.clipboard; }
       set{ TickerDataTable.clipboard = value; }
     }
 
-
-
     public TickerDataTable()
     {
-      this.setStructure();
+      
     }
     
-    private void setStructure()
+    public static void AddColumnsOfTickerTable(DataTable table)
     {
-      DataColumn ticker = new DataColumn(Tickers.Ticker, System.Type.GetType("System.String"));
-      ticker.Unique = true;
-      ticker.AllowDBNull = false;
-      DataColumn companyName = new DataColumn(Tickers.CompanyName, System.Type.GetType("System.String"));
-      this.Columns.Add(ticker);
-      this.Columns.Add(companyName);
+     try
+      {
+      table.Columns.Add("tiTicker", System.Type.GetType("System.String"));
+      table.Columns.Add("tiCompanyName", System.Type.GetType("System.String"));
+			}
+			catch(Exception ex)
+			{
+				string notUsed = ex.ToString();
+			}
     }
-
-    public static TickerDataTable ConvertToTickerDataTable(DataTable dataTableToConvert)
+    
+    public static DataTable GetBestPerformingTickers(string groupID,
+                                                      DateTime firstQuoteDate,
+                                                      DateTime lastQuoteDate,
+                                                      long maxNumOfReturnedTickers)
     {
-      TickerDataTable tickerDataTable = new TickerDataTable();
-      DataRow rowToAdd;
+      DataTable groupOfTicker = Tickers_tickerGroups.GetTickers(groupID);
+      //TO DO change to a structure compatible with TickerDataTable
+      groupOfTicker.Columns.Add("SimpleReturn", System.Type.GetType("System.Double"));
       try
       {
-        foreach(DataRow row in dataTableToConvert.Rows)
+        double firstQuote, lastQuote;
+        foreach(DataRow row in groupOfTicker.Rows)
         {
-          rowToAdd = tickerDataTable.NewRow();
-          rowToAdd[Tickers.Ticker] = row[Tickers.Ticker];
-          rowToAdd[Tickers.CompanyName] = row[Tickers.CompanyName];
-          tickerDataTable.Rows.Add(rowToAdd);
+          firstQuote = QuantProject.DataAccess.Tables.Quotes.GetAdjustedClose((string)row[0],
+                                                                              firstQuoteDate);
+          lastQuote = QuantProject.DataAccess.Tables.Quotes.GetAdjustedClose((string)row[0],
+                                                                              lastQuoteDate);
+          row["SimpleReturn"] = (lastQuote - firstQuote) / firstQuote;
         }
-        
+
       }
       catch(Exception ex)
       {
-        string notUsed = ex.ToString();
+        System.Windows.Forms.MessageBox.Show(ex.ToString());
       }
-      return tickerDataTable;
+      ExtendedDataTable.Sort(groupOfTicker, "SimpleReturn");
+      ExtendedDataTable.DeleteRows(groupOfTicker, maxNumOfReturnedTickers);
+      return groupOfTicker;              
       
     }
+
+
 
   }
 }
