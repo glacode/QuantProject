@@ -54,7 +54,8 @@ namespace QuantProject.Applications.Downloader.Validate.Validators
       if ( Math.Abs( currentValue / averageValue ) > this.suspiciousRatio )
         // the current close to close value is suspiciously larger
         // than the average close to close ratio
-        this.SuspiciousDataRow( this , new SuspiciousDataRowEventArgs( quoteRow ) );
+        this.SuspiciousDataRow( this , new SuspiciousDataRowEventArgs(
+          quoteRow , ValidationWarning.SuspiciousCloseToCloseRatio ) );
     }
     private void validate_currentTicker_withHistories(
       History closeToClose , History closeToCloseMovingAverage ,

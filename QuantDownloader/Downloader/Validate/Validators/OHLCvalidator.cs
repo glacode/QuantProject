@@ -35,8 +35,9 @@ namespace QuantProject.Applications.Downloader.Validate.Validators
         ( Convert.ToDouble( quotesRow[ "quClose" ] ) <=
         ( Convert.ToDouble( quotesRow[ "quHigh" ] ) ) )
         )
-        ) 
-        SuspiciousDataRow( this , new SuspiciousDataRowEventArgs( quotesRow ) );
+        )
+        SuspiciousDataRow( this , new SuspiciousDataRowEventArgs(
+          quotesRow , ValidationWarning.OpenHighLowCloseLogicalInconsistency ) );
     }
     /// <summary>
     /// Adds an error row if quotesRow doesn't respect logical constraints
