@@ -92,6 +92,11 @@
                     AssemblyName = "System.Windows.Forms"
                     HintPath = "..\..\..\..\..\..\WINDOWS\Microsoft.NET\Framework\v1.0.3705\System.Windows.Forms.dll"
                 />
+                <Reference
+                    Name = "b3_Data"
+                    Project = "{6AC0A2C1-B926-4921-A685-F5AA80E81C94}"
+                    Package = "{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}"
+                />
             </References>
         </Build>
         <Files>
@@ -168,6 +173,16 @@
                 />
                 <File
                     RelPath = "WalkForwardTesting\MSFTwalkForward\TsMSFTwalkForward.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "WalkForwardTesting\WalkForwardOneRank\DataStreamerHandler.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "WalkForwardTesting\WalkForwardOneRank\RunWalkForwardOneRank.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
