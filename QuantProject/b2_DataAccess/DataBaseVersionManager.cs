@@ -99,9 +99,6 @@ namespace QuantProject.DataAccess
 		this.executeCommand("CREATE TABLE quotes (quTicker TEXT(8), quDate DATETIME, " +
 							"quOpen REAL, quHigh REAL, quLow REAL, quClose REAL, " +
 							"quVolume INTEGER, quAdjustedClose REAL, quAdjustedCloseToCloseRatio FLOAT)");
-		// table where to store the time period for which tickers' quotes have been validated
-		this.executeCommand("CREATE TABLE validatedTickers " +
-        "( vtTicker TEXT(8) , vtStartDate DATETIME , vtEndDate DATETIME , vtDate DATETIME)");
 		// table of groups where you can collect tickers.
 		// Groups are used to simplify operations like:
 		// validating, updating data from the web, testing strategies
@@ -117,21 +114,18 @@ namespace QuantProject.DataAccess
     this.executeCommand( "CREATE TABLE validatedTickers " +
       "( vtTicker TEXT(8) , vtStartDate DATETIME , vtEndDate DATETIME , vtEditDate DATETIME, " +
       "CONSTRAINT myKey PRIMARY KEY ( vtTicker ) )" );
-    // visuallyValidatedTickers will contain a record for each ticker whose
-    // quotes with suspicious ratios have been validated.
+    // visuallyValidatedQuotes will contain a record for each
+    // quote with suspicious ratio that has been validated.
     // Field list:
-    // vvTicker: validated ticker
-    // vvStartDate: starting date of the time span being visually validated
-    // vvEndDate: ending date of the time span being visually validated
+		// vvTicker: validated ticker
+		// vvDate: validated quote date
+		// vvValidationType: 1 = close to close ratio ; 2 = range to range ratio
     // vvHashValue: hash value for the visually validated quotes
-    // vvCloseToCloseRatio: the close to close ratio has been checked to be acceptable
-    // vvRangeToRangeRatio: the High-Low range ratio has been checked to be acceptable
-    // vvDate: Last date this record has been added/modified
-    this.executeCommand( "CREATE TABLE visuallyValidatedTickers " +
-      "( vvTicker TEXT(8) , vvStartDate DATETIME , vvEndDate DATETIME , " +
-      "vvHashValue TEXT(50) , vvEditDate DATETIME, " +
-      "vvCloseToCloseRatio BIT , vvRangeToRangeRatio BIT , " +
-      "CONSTRAINT myKey PRIMARY KEY ( vvTicker ) )" );
+    // vvEditDate: Last date this record has been added/modified
+    this.executeCommand( "CREATE TABLE visuallyValidatedQuotes " +
+      "( vvTicker TEXT(8) , vvDate DATETIME , vvValidationType INT , " +
+      "vvHashValue TEXT(50) , vvEditDate DATETIME , " +
+      "CONSTRAINT myKey PRIMARY KEY ( vvTicker , vvDate , vvValidationType ) )" );
     // quotesFromSecondarySources will contain quotes coming from sources different
     // from the main one. It will be used for confirming and thus validation purposes.
     // Field descriptions:
@@ -184,6 +178,7 @@ namespace QuantProject.DataAccess
 	private void dropTables()
 	{
 		this.executeCommand("DROP TABLE version");
+		this.executeCommand("DROP TABLE visuallyValidatedTickers");
 	}	
 	private void executeCommand(string commandToBeExecuted)
 	{
