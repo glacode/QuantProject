@@ -1,6 +1,5 @@
 <Project name="b91_QuantProject" standardNamespace="QuantProject" description="" newfilesearch="None" enableviewstate="True" version="1.1" projecttype="C#">
   <Contents>
-    <File name=".\AccountViewer.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
     <File name=".\DataSet1.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
     <File name=".\Main.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
     <File name=".\TestDownloadedData.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
