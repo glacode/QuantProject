@@ -23,6 +23,7 @@ using System;
 using QuantProject.Scripts;
 using QuantProject.Business.Timing;
 using QuantProject.Business.Financial.Accounting;
+using QuantProject.Business.Financial.Accounting.Reporting;
 using QuantProject.Business.DataProviders;
 using QuantProject.ADT.FileManaging;
 using QuantProject.Presentation.Reporting.WindowsForm;
@@ -44,16 +45,30 @@ namespace QuantProject.Scripts.CallingReportsForRunScripts
 			{
 				Account account = 
 						(Account)ObjectArchiver.Extract(serializedAccountFullPath);
-				
 				Report report = new Report(account, new HistoricalAdjustedQuoteProvider());
-				report.Show("CtcPortfolio",3,
-				             new EndOfDayDateTime(new DateTime(2004,10,31), EndOfDaySpecificTime.MarketClose), "^MIBTEL");
-				                                                               
+				ReportShower reportShower = new ReportShower(report);
+        reportShower.Show(); 
 			}
 			catch(System.Exception ex)
 			{
 				System.Windows.Forms.MessageBox.Show(ex.ToString());
 			}
 		}
+    
+    public static void ShowReportFromSerializedAccountReport(string serializedAccountReportFullPath)
+    {
+      try
+      {
+        AccountReport accountReport = 
+          (AccountReport)ObjectArchiver.Extract(serializedAccountReportFullPath);
+        ///TODO: ...
+				                                                               
+      }
+      catch(System.Exception ex)
+      {
+        System.Windows.Forms.MessageBox.Show(ex.ToString());
+      }
+    }
+
 	}			
 }
