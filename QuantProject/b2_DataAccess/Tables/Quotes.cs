@@ -393,7 +393,7 @@ namespace QuantProject.DataAccess.Tables
                                                   long maxNumOfReturnedTickers)
     {
       string sql = "SELECT TOP " + maxNumOfReturnedTickers + " tickers.tiTicker, tickers.tiCompanyName, " +
-                    "Avg([quVolume]*[quAdjustedClose]) AS AverageTradedValue " +
+                    "Avg([quVolume]*[quClose]) AS AverageTradedValue " +
                     "FROM quotes INNER JOIN (tickers INNER JOIN tickers_tickerGroups " +
                     "ON tickers.tiTicker = tickers_tickerGroups.ttTiId) " +
                     "ON quotes.quTicker = tickers_tickerGroups.ttTiId " +
@@ -402,7 +402,7 @@ namespace QuantProject.DataAccess.Tables
                     SQLBuilder.GetDateConstant(firstQuoteDate) + " AND " +
                     SQLBuilder.GetDateConstant(lastQuoteDate) + 
                     "GROUP BY tickers.tiTicker, tickers.tiCompanyName " +
-                    "ORDER BY Avg([quVolume]*[quAdjustedClose])";
+                    "ORDER BY Avg([quVolume]*[quClose])";
       string sortDirection = " DESC";
       if(orderInASCMode)
         sortDirection = " ASC";
@@ -473,7 +473,7 @@ namespace QuantProject.DataAccess.Tables
     {
       DataTable dt;
       string sql = "SELECT quotes.quTicker, " +
-          "Avg([quVolume]*[quAdjustedClose]) AS AverageTradedValue " +
+          "Avg([quVolume]*[quClose]) AS AverageTradedValue " +
           "FROM quotes WHERE quTicker ='" + 
           ticker + "' " +
           "AND quotes.quDate BETWEEN " + SQLBuilder.GetDateConstant(firstQuoteDate) + 
@@ -533,6 +533,9 @@ namespace QuantProject.DataAccess.Tables
       else
         return (double)dt.Rows[0]["AdjCloseToCloseStandDev"];
     }
+    
+    
+    
 
 
 		#region GetHashValue
@@ -626,6 +629,23 @@ namespace QuantProject.DataAccess.Tables
 				"order by quDate";
 			return SqlExecutor.GetDataTable( sql );
 		}
+    
+    /// <summary>
+    /// returns the quotes DataTable for the given ticker
+    /// </summary>
+    /// <param name="instrumentKey">ticker whose quotes are to be returned</param>
+    /// <param name="firstQuoteDate">The first quote date</param>
+    /// <param name="lastQuoteDate">The last quote date</param>
+    /// <returns></returns>
+    public static DataTable GetTickerQuotes( string instrumentKey, DateTime firstQuoteDate,
+                                              DateTime lastQuoteDate)
+    {
+      string sql = "select * from quotes where quTicker='" + instrumentKey + "' " +
+        "AND quotes.quDate BETWEEN " + SQLBuilder.GetDateConstant(firstQuoteDate) + 
+        " AND " + SQLBuilder.GetDateConstant(lastQuoteDate) + " " +
+        "order by quDate";
+      return SqlExecutor.GetDataTable( sql );
+    }
 		/// <summary>
 		/// Returns the quotes for the given instrument , since startDate to endDate
 		/// </summary>
