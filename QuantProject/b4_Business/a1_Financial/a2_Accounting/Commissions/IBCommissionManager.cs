@@ -1,7 +1,7 @@
 /*
 QuantProject - Quantitative Finance Library
 
-ICCommissionManager.cs
+IBCommissionManager.cs
 Copyright (C) 2003 
 Glauco Siliprandi
 
