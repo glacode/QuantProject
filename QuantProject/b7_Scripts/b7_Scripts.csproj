@@ -102,42 +102,37 @@
                     BuildAction = "Compile"
                 />
                 <File
-                    RelPath = "Funds\AsFunds.cs"
+                    RelPath = "SimpleTesting\MSFTsimpleTest\RunMSFTsimpleTest.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
                 <File
-                    RelPath = "Funds\RunFunds.cs"
+                    RelPath = "SimpleTesting\MSFTsimpleTest\TsMSFTsimpleTest.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
                 <File
-                    RelPath = "Funds\TsFunds.cs"
+                    RelPath = "SimpleTesting\OneRank\AsOneRank.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
                 <File
-                    RelPath = "MSFTsimpleTest\RunMSFTsimpleTest.cs"
+                    RelPath = "SimpleTesting\OneRank\RunOneRank.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
                 <File
-                    RelPath = "MSFTsimpleTest\TsMSFTsimpleTest.cs"
+                    RelPath = "SimpleTesting\OneRank\TsOneRank.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
                 <File
-                    RelPath = "Profunds\AsProfunds.cs"
+                    RelPath = "WalkForwardTesting\MSFTwalkForward\RunMSFTwalkForward.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
                 <File
-                    RelPath = "Profunds\RunProfunds.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Profunds\TsProfunds.cs"
+                    RelPath = "WalkForwardTesting\MSFTwalkForward\TsMSFTwalkForward.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
