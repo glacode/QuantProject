@@ -42,16 +42,16 @@ namespace QuantProject.Business.Financial.Instruments
       this.Key = key;
 		}
 
-    public double GetMarketValue( EndOfDayDateTime endOfDayDateTime )
-    {
-      return HistoricalDataProvider.GetMarketValue( this.Key , endOfDayDateTime.DateTime ,
-				endOfDayDateTime.GetNearestBarComponent() );
-    }
-
+//    public double GetMarketValue( EndOfDayDateTime endOfDayDateTime )
+//    {
+//      return HistoricalDataProvider.GetMarketValue( this.Key , endOfDayDateTime.DateTime ,
+//				endOfDayDateTime.GetNearestBarComponent() );
+//    }
+//
     public long GetMaxBuyableQuantity( double availableAmount ,
-      EndOfDayDateTime endOfDayDateTime )
+      IDataStreamer dataStreamer )
     {
-      return (long) Math.Floor( availableAmount / this.GetMarketValue( endOfDayDateTime ) );
+      return (long) Math.Floor( availableAmount / dataStreamer.GetCurrentBid( this.Key ) );
     }
 
     public DateTime GetNextMarketDay( DateTime dateTime )

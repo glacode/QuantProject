@@ -22,11 +22,13 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 using System;
 
-using QuantProject.Data.DataProviders;
+using QuantProject.Business.DataProviders;
 using QuantProject.Business.Financial.Accounting;
 using QuantProject.Business.Financial.Instruments;
 using QuantProject.Business.Financial.Ordering;
 using QuantProject.Business.Timing;
+using QuantProject.Data.DataProviders;
+
 
 namespace QuantProject.Scripts.SimpleTesting
 {
@@ -38,7 +40,8 @@ namespace QuantProject.Scripts.SimpleTesting
 		private Account account;
 
 		private DateTime lastDateTime;
-
+		private IHistoricalQuoteProvider historicalQuoteProvider =
+			new HistoricalAdjustedQuoteProvider();
 
 		public static long MaxBuyableShares( string ticker , double cashAmount, IDataStreamer dataStreamer )
 		{
@@ -62,9 +65,8 @@ namespace QuantProject.Scripts.SimpleTesting
 			EndOfDayDateTime yesterdayAtClose = new
 				EndOfDayDateTime( this.account.EndOfDayTimer.GetCurrentTime().DateTime.AddDays( - 1 ) ,
 				EndOfDaySpecificTime.MarketClose );
-			double yesterdayMarketValueAtClose = HistoricalDataProvider.GetMarketValue(
-				this.account.Key ,
-				yesterdayAtClose.GetNearestExtendedDateTime() );
+			double yesterdayMarketValueAtClose = this.historicalQuoteProvider.GetMarketValue(
+				this.account.Key , yesterdayAtClose );
 			if ( ( todayMarketValueAtClose > yesterdayMarketValueAtClose ) &&
 				( !this.account.Contains( this.account.Key ) ) )
 			{
