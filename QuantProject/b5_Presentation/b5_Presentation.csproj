@@ -162,7 +162,7 @@
                     BuildAction = "Compile"
                 />
                 <File
-                    RelPath = "MicrosoftExcel\ExcelManager.cs"
+                    RelPath = "Reporting\MicrosoftExcel\ExcelManager.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
