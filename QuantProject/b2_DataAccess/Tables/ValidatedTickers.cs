@@ -34,5 +34,21 @@ namespace QuantProject.DataAccess.Tables
 			Quotes quotes = new Quotes( ticker );
 			return quotes.GetHashValue( startDate , endDate );
 		}
+
+		/// <summary>
+		/// Returns (if present) the validated ticker row
+		/// </summary>
+		/// <param name="ticker"></param>
+		/// <param name="startDate"></param>
+		/// <param name="endDate"></param>
+		/// <returns></returns>
+		public static void SetDataTable( string ticker , DataTable dataTable)
+		{
+			string sql =
+				"select * from validatedTickers " +
+				"where " + ValidatedTickers.Ticker + "='" + ticker + "'";
+			SqlExecutor.SetDataTable( sql , dataTable );
+		}
+
 	}
 }

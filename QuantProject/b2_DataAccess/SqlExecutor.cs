@@ -22,6 +22,11 @@ namespace QuantProject.DataAccess
 			oleDbDataAdapter.Fill( dataTable );
 			return dataTable;
 		}
+		public static void SetDataTable( string SqlQuery , DataTable dataTable )
+		{
+			OleDbDataAdapter oleDbDataAdapter = new OleDbDataAdapter( SqlQuery , ConnectionProvider.OleDbConnection );
+			oleDbDataAdapter.Fill( dataTable );
+		}
 		public static void ExecuteNonQuery( string SqlNonQuery )
 		{
 				if(ConnectionProvider.OleDbConnection.State != ConnectionState.Open)
