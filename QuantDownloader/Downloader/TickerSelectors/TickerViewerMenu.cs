@@ -23,7 +23,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 using System;
 using System.Data;
 using System.Windows.Forms;
-using QuantProject.DataAccess.Tables;
+using QuantProject.Data.DataTables;
+using QuantProject.Data.Selectors;
 
 namespace QuantProject.Applications.Downloader.TickerSelectors
 {
@@ -69,7 +70,7 @@ namespace QuantProject.Applications.Downloader.TickerSelectors
     private void copySelectedTickers(object sender, System.EventArgs e)
     {
       ITickerSelector iTickerSelector = (ITickerSelector)this.parentForm;
-      Tickers.Clipboard = iTickerSelector.GetTableOfSelectedTickers();
+      TickerDataTable.Clipboard = iTickerSelector.GetTableOfSelectedTickers();
     }
     
     private void downloadSelectedTickers(object sender, System.EventArgs e)

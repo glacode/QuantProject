@@ -27,8 +27,9 @@ using System.ComponentModel;
 using System.Windows.Forms;
 using System.Data;
 using System.Data.OleDb;
-using QuantProject.DataAccess;
 using QuantProject.DataAccess.Tables;
+using QuantProject.Data.DataTables;
+using QuantProject.Data.Selectors;
 
 namespace QuantProject.Applications.Downloader.TickerSelectors
 {

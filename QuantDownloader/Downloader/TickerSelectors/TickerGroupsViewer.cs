@@ -29,6 +29,8 @@ using System.Data.OleDb;
 using System.Data;
 using QuantProject.DataAccess;
 using QuantProject.DataAccess.Tables;
+using QuantProject.Data.DataTables;
+using QuantProject.Data.Selectors;
 
 namespace QuantProject.Applications.Downloader.TickerSelectors
 {
@@ -55,15 +57,16 @@ namespace QuantProject.Applications.Downloader.TickerSelectors
 		private const int TICKER_IMAGE = 1;
 		private const string FIRST_COLUMN_NAME = "Element Name";
 		private const string SECOND_COLUMN_NAME = "Element Type";
+    private System.Windows.Forms.MenuItem menuItemTickerSelector;
 		private const string THIRD_COLUMN_NAME = "Element Description";
 		
 		public TickerGroupsViewer()
 		{
-			
 			InitializeComponent();
 
 			//
-			this.listViewGroupsAndTickers.ContextMenu = new TickerGroupsListViewMenu(this);
+      this.loadImagesInImageListGroupAndTickers();
+      this.listViewGroupsAndTickers.ContextMenu = new TickerGroupsListViewMenu(this);
       this.listViewGroupsAndTickers.Columns.Add(FIRST_COLUMN_NAME,
 													  this.listViewGroupsAndTickers.Width - 30,
 													  HorizontalAlignment.Left);
@@ -75,6 +78,28 @@ namespace QuantProject.Applications.Downloader.TickerSelectors
 				HorizontalAlignment.Left);
 			//
 		}
+    private void loadImagesInImageListGroupAndTickers()
+    {
+      try
+      {
+        string fileName = Application.ExecutablePath.Substring(0, Application.ExecutablePath.LastIndexOf('\\'))
+                          + @"\Group.bmp";     
+        Image image = Image.FromFile(fileName);
+        this.imageListGroupsAndTickers.Images.Add(image);
+        
+        fileName = Application.ExecutablePath.Substring(0, Application.ExecutablePath.LastIndexOf('\\'))
+          + @"\Ticker.bmp";     
+        image = Image.FromFile(fileName);
+        this.imageListGroupsAndTickers.Images.Add(image);
+
+      }
+      catch(Exception ex)
+      {
+        MessageBox.Show("Put all the bmp files in the dir <<TickerGroupsViewerImages>> inside the bin directory! ", "Files not found");
+        string notUsed = ex.ToString();
+      }
+
+    }
 
 		/// <summary>
 		/// Clean all resources being used.
@@ -164,7 +189,8 @@ namespace QuantProject.Applications.Downloader.TickerSelectors
 				// the item references to a node in the treeView :
 				// so it stands for a group of tickers
 				{
-					MessageBox.Show("NOT IMPLEMENTED YET");  
+					//TODO: add method to retrieve 
+          MessageBox.Show("NOT IMPLEMENTED YET");  
 				}
 			}
 			return tableOfSelectedTickers;
@@ -177,7 +203,6 @@ namespace QuantProject.Applications.Downloader.TickerSelectors
 		private void InitializeComponent()
 		{
       this.components = new System.ComponentModel.Container();
-      System.Resources.ResourceManager resources = new System.Resources.ResourceManager(typeof(TickerGroupsViewer));
       this.treeViewGroups = new System.Windows.Forms.TreeView();
       this.contextMenuTickerGroupsTreeView = new System.Windows.Forms.ContextMenu();
       this.menuItemAddNewGroup = new System.Windows.Forms.MenuItem();
@@ -186,6 +211,7 @@ namespace QuantProject.Applications.Downloader.TickerSelectors
       this.imageListGroupsAndTickers = new System.Windows.Forms.ImageList(this.components);
       this.splitter1 = new System.Windows.Forms.Splitter();
       this.listViewGroupsAndTickers = new System.Windows.Forms.ListView();
+      this.menuItemTickerSelector = new System.Windows.Forms.MenuItem();
       this.SuspendLayout();
       // 
       // treeViewGroups
@@ -204,7 +230,8 @@ namespace QuantProject.Applications.Downloader.TickerSelectors
       this.contextMenuTickerGroupsTreeView.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
                                                                                                     this.menuItemAddNewGroup,
                                                                                                     this.menuItemRemoveGroup,
-                                                                                                    this.menuItemRenameGroup});
+                                                                                                    this.menuItemRenameGroup,
+                                                                                                    this.menuItemTickerSelector});
       // 
       // menuItemAddNewGroup
       // 
@@ -228,7 +255,6 @@ namespace QuantProject.Applications.Downloader.TickerSelectors
       // 
       this.imageListGroupsAndTickers.ColorDepth = System.Windows.Forms.ColorDepth.Depth8Bit;
       this.imageListGroupsAndTickers.ImageSize = new System.Drawing.Size(16, 16);
-      this.imageListGroupsAndTickers.ImageStream = ((System.Windows.Forms.ImageListStreamer)(resources.GetObject("imageListGroupsAndTickers.ImageStream")));
       this.imageListGroupsAndTickers.TransparentColor = System.Drawing.Color.Transparent;
       // 
       // splitter1
@@ -251,6 +277,12 @@ namespace QuantProject.Applications.Downloader.TickerSelectors
       this.listViewGroupsAndTickers.TabIndex = 2;
       this.listViewGroupsAndTickers.View = System.Windows.Forms.View.Details;
       this.listViewGroupsAndTickers.ItemActivate += new System.EventHandler(this.listViewGroupsAndTickers_ItemActivate);
+      // 
+      // menuItemTickerSelector
+      // 
+      this.menuItemTickerSelector.Index = 3;
+      this.menuItemTickerSelector.Text = "&Ticker Selector";
+      this.menuItemTickerSelector.Click += new System.EventHandler(this.menuItemTickerSelector_Click);
       // 
       // TickerGroupsViewer
       // 
@@ -280,13 +312,13 @@ namespace QuantProject.Applications.Downloader.TickerSelectors
 															this.oleDbConnection);
 				this.table = new DataTable();
 				this.oleDbDataAdapter.Fill(this.table);
-				TreeNode rootNode = new TreeNode("GROUPS");
+				TreeNode rootNode = new TreeNode("GROUPS", GROUP_IMAGE, GROUP_IMAGE);
 				rootNode.Tag = "";
 				this.treeViewGroups.Nodes.Add(rootNode);
 				foreach (DataRow row in this.table.Rows)
 				{
 					
-					TreeNode node = new TreeNode((string)row["tgDescription"]);
+					TreeNode node = new TreeNode((string)row["tgDescription"], GROUP_IMAGE, GROUP_IMAGE);
 					node.Tag = (string)row["tgId"];
 					rootNode.Nodes.Add(node);
 				}
@@ -305,7 +337,7 @@ namespace QuantProject.Applications.Downloader.TickerSelectors
 				this.oleDbDataAdapter.Fill(groupsChild);
 				foreach (DataRow row in groupsChild.Rows)
 				{
-					TreeNode node = new TreeNode((string)row["tgDescription"]);
+					TreeNode node = new TreeNode((string)row["tgDescription"], GROUP_IMAGE, GROUP_IMAGE);
 					node.Tag = (string)row["tgId"];
 					currentNode.Nodes.Add(node);
 				}
@@ -720,6 +752,19 @@ namespace QuantProject.Applications.Downloader.TickerSelectors
           Cursor.Current = Cursors.Default;
           this.oleDbConnection.Close();
         }	
+    }
+
+    private void menuItemTickerSelector_Click(object sender, System.EventArgs e)
+    {
+      if((string)this.treeViewGroups.SelectedNode.Tag == "")
+        // it is the root node
+      {
+        MessageBox.Show("Choose a group containing some tickers!");
+        return;
+      }
+      TickerSelectorForm tickerSelectorForm =
+                            new TickerSelectorForm((string)this.treeViewGroups.SelectedNode.Tag);
+      tickerSelectorForm.Show();
     }
          
 

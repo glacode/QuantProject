@@ -24,6 +24,8 @@ using System;
 using System.Data;
 using System.Windows.Forms;
 using QuantProject.DataAccess.Tables;
+using QuantProject.Data.DataTables;
+using QuantProject.Data.Selectors;
 
 namespace QuantProject.Applications.Downloader.TickerSelectors
 {
@@ -47,7 +49,7 @@ namespace QuantProject.Applications.Downloader.TickerSelectors
     private void paste(object sender, System.EventArgs e)
     {
       ITickerReceiver iTickerReceiver = (ITickerReceiver)this.parentForm;
-      iTickerReceiver.ReceiveTickers(Tickers.Clipboard);
+      iTickerReceiver.ReceiveTickers(TickerDataTable.Clipboard);
     }
     private void removeSelectedItems(object sender, System.EventArgs e)
     {

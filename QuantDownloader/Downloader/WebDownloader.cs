@@ -11,6 +11,8 @@ using System.Threading;
 using QuantProject.DataAccess;
 using QuantProject.DataAccess.Tables;
 using QuantProject.Applications.Downloader.TickerSelectors;
+using QuantProject.Data.DataTables;
+using QuantProject.Data.Selectors;
 
 namespace QuantProject.Applications.Downloader
 {

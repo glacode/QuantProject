@@ -325,16 +325,6 @@
                     BuildAction = "Compile"
                 />
                 <File
-                    RelPath = "TickerSelectors\ITickerReceiver.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "TickerSelectors\ITickerSelector.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
                     RelPath = "TickerSelectors\TickerGroupsListViewMenu.cs"
                     SubType = "Component"
                     BuildAction = "Compile"
@@ -348,6 +338,21 @@
                     RelPath = "TickerSelectors\TickerGroupsViewer.cs"
                     SubType = "Form"
                     BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "TickerSelectors\TickerGroupsViewer.resx"
+                    DependentUpon = "TickerGroupsViewer.cs"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "TickerSelectors\TickerSelectorForm.cs"
+                    SubType = "Form"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "TickerSelectors\TickerSelectorForm.resx"
+                    DependentUpon = "TickerSelectorForm.cs"
+                    BuildAction = "EmbeddedResource"
                 />
                 <File
                     RelPath = "TickerSelectors\TickerViewer.cs"
