@@ -31,8 +31,11 @@ namespace QuantProject.Presentation.Reporting.WindowsForm
 	public class ReportTabControl : TabControl
 	{
 		private AccountReport accountReport;
-		private TabPage equityChart;
-		private TabPage summary;
+		private EquityChartTabPage equityChart;
+		private SummaryTabPage summary;
+		private ReportGridTabPage roundTrades;
+		private ReportGridTabPage equity;
+		private ReportGridTabPage transactions;
 
 		public ReportTabControl( AccountReport accountReport )
 		{
@@ -42,6 +45,15 @@ namespace QuantProject.Presentation.Reporting.WindowsForm
 			this.Controls.Add( this.equityChart );
 			this.summary = new SummaryTabPage( this.accountReport );
 			this.Controls.Add( this.summary );
+			this.roundTrades = new ReportGridTabPage(
+				"Round Trades" , this.accountReport.RoundTrades );
+			this.Controls.Add( this.roundTrades );
+			this.equity = new ReportGridTabPage(
+				"Equity" , this.accountReport.Equity );
+			this.Controls.Add( this.equity );
+			this.transactions = new ReportGridTabPage(
+				"Transactions" , this.accountReport.TransactionTable );
+			this.Controls.Add( this.transactions );
 		}
 	}
 }
