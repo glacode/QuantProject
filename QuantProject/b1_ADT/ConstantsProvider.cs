@@ -19,5 +19,7 @@ namespace QuantProject.ADT
     public static int TimeOutValue = 15000;
     public static int NumberOfCheckToPerformOnAdjustedValues = 3;
     public static double MaxRelativeDifferenceForAdjustedValues = 0.0005;
+    public static double MaxRelativeDifferenceForCloseToCloseRatios = 0.0001;
+    public static double MaxNumDaysDownloadedAtEachConnection = 200;
 	}
 }
