@@ -117,7 +117,22 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "IProgressNotifier.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "ITickerReceiver.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "Keyed.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "NewProgressEventArgs.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
