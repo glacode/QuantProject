@@ -74,5 +74,20 @@ namespace QuantProject.Presentation.Reporting.WindowsForm
 			this.show_populateForm();
 			base.ShowDialog();
 		}
+    /// <summary>
+    /// Clears the existing account report, so that a new one can be created
+    /// </summary>
+    public void Clear()
+    {
+      this.accountReport = null;
+    }
+    
+    /// <summary>
+    /// Imports an existing account report
+    /// </summary>
+    public void Import(AccountReport accountReportToBeImported)
+    {
+      this.accountReport = accountReportToBeImported;
+    }
 	}
 }
