@@ -26,6 +26,7 @@ using QuantProject.ADT;
 using QuantProject.Business.Financial.Ordering;
 using QuantProject.Business.Financial.Accounting;
 using QuantProject.Business.Strategies;
+using QuantProject.Data.DataProviders;
 
 namespace QuantProject.Business.Strategies
 {
@@ -48,7 +49,8 @@ namespace QuantProject.Business.Strategies
 			this.account = account;
 		}
 
-    public virtual ArrayList GetOrdersForCurrentVirtualOrder( Order virtualOrder )
+    public virtual ArrayList GetOrdersForCurrentVirtualOrder( Order virtualOrder ,
+			IDataStreamer dataStreamer )
     {
       ArrayList orders = new ArrayList();
       switch(virtualOrder.Type)       
@@ -64,8 +66,8 @@ namespace QuantProject.Business.Strategies
               virtualOrder.Instrument ,
               virtualOrder.Instrument.GetMaxBuyableQuantity(
                 this.account.CashAmount +
-                this.account.Portfolio.GetMarketValue( virtualOrder.EndOfDayDateTime ) ,
-                virtualOrder.EndOfDayDateTime ) , virtualOrder.EndOfDayDateTime ) );
+                this.account.Portfolio.GetMarketValue( this.account.DataStreamer ) ,
+                this.account.DataStreamer ) , virtualOrder.EndOfDayDateTime ) );
           break;
         case OrderType.MarketSell:
           if ( this.account.Portfolio.IsLong( virtualOrder.Instrument ) )
@@ -78,8 +80,8 @@ namespace QuantProject.Business.Strategies
             virtualOrder.Instrument ,
             virtualOrder.Instrument.GetMaxBuyableQuantity( 
               this.account.CashAmount +
-              this.account.Portfolio.GetMarketValue( virtualOrder.EndOfDayDateTime ) ,
-              virtualOrder.EndOfDayDateTime ) ,
+              this.account.Portfolio.GetMarketValue( dataStreamer ) ,
+              dataStreamer ) ,
               virtualOrder.EndOfDayDateTime ) );
           break;
         default:            
@@ -88,7 +90,7 @@ namespace QuantProject.Business.Strategies
       return orders;
     }
 
-    public virtual Orders GetOrders( Signal signal )
+    public virtual Orders GetOrders( Signal signal , IDataStreamer dataStreamer )
     {
       // This is the default account strategy. You may wish to override it.
       // It assumes the signal contains a single virtual order and it invests
@@ -99,7 +101,7 @@ namespace QuantProject.Business.Strategies
       foreach ( Order virtualOrder in signal )
       {
         ArrayList ordersForCurrentVirtualOrder =
-          this.GetOrdersForCurrentVirtualOrder( virtualOrder );
+          this.GetOrdersForCurrentVirtualOrder( virtualOrder , dataStreamer );
         foreach( Order order in ordersForCurrentVirtualOrder )
           orders.Add( order );
       }
