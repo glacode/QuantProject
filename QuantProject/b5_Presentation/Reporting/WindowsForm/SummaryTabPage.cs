@@ -33,9 +33,13 @@ namespace QuantProject.Presentation.Reporting.WindowsForm
 	/// </summary>
 	public class SummaryTabPage : TabPage
 	{
-//		private int currentLabel;
+		// constant values for label's placement
+		private int labelRows = 8;
 		private int xForLabels = 17;
-		private int labelsWidth = 150;
+		private int textLabelsWidth = 180;
+		private int valueLablesWidth = 50;
+		private int textToValueLabelSpacing = 8;
+		private int valueToTextLabelSpacing = 50;
 		private int yStart = 17;
 		private int yStep = 25;
 
@@ -74,14 +78,26 @@ namespace QuantProject.Presentation.Reporting.WindowsForm
 
 		private Point getPointForTextLabel( int labelPosition )
 		{
-			return new Point( xForLabels , yStart + labelPosition * yStep );
+			int x,y;
+			if ( labelPosition < this.labelRows )
+			{
+				x = this.xForLabels;
+				y = this.yStart + labelPosition * this.yStep;
+			}
+			else
+			{
+				x = this.xForLabels + this.textLabelsWidth + this.textToValueLabelSpacing +
+					this.valueLablesWidth + this.valueToTextLabelSpacing;
+				y = this.yStart + ( labelPosition - this.labelRows ) * this.yStep;
+			}
+			return new Point( x , y );
 		}
 		private void addTextLabel( Label label , string name , string text )
 		{
 			this.Controls.Add( label );
 //			label.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
 			label.Location = getPointForTextLabel( ( this.Controls.Count - 1 ) / 2 );
-			label.Width = this.labelsWidth;
+			label.Width = this.textLabelsWidth;
 			label.Name = name;
 			label.Text = text;
 			label.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
@@ -91,14 +107,16 @@ namespace QuantProject.Presentation.Reporting.WindowsForm
 			this.Controls.Add( label );
 			//			label.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
 			label.Location = getPointForValueLabel( ( this.Controls.Count / 2 ) - 1 );
+			label.Width = this.valueLablesWidth;
 			label.Name = name;
-			label.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+			label.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
 		}
 
 		private Point getPointForValueLabel( int labelPosition )
 		{
-			return new Point( xForLabels + labelsWidth + 3 ,
-				yStart + labelPosition * yStep );
+			Point point = getPointForTextLabel( labelPosition ); 
+			point.X += this.textLabelsWidth + this.textToValueLabelSpacing;
+			return point;
 		}
 		private void myInitializeComponent()
 		{
@@ -145,7 +163,7 @@ namespace QuantProject.Presentation.Reporting.WindowsForm
 			// lblReturnOnAccount
 			// 
 			this.addTextLabel( lblReturnOnAccount , "lblReturnOnAccount" ,
-				"Return on account:" );
+				"Return on account (%):" );
 			// 
 			// lblValReturnOnAccount
 			// 
@@ -154,7 +172,7 @@ namespace QuantProject.Presentation.Reporting.WindowsForm
 			// lblBuyAndHoldPercReturn
 			// 
 			this.addTextLabel( lblBuyAndHoldPercReturn , "lblBuyAndHoldPercReturn" ,
-				"Buy & hold % return:" );
+				"Buy and hold % return:" );
 			// 
 			// lblValBuyAndHoldPercReturn
 			// 
@@ -198,7 +216,7 @@ namespace QuantProject.Presentation.Reporting.WindowsForm
 			// 
 			// lblAverageTradePercReturn
 			// 
-			this.addTextLabel( lblNumberWinningTrades , "lblNumberWinningTrades" ,
+			this.addTextLabel( this.lblAverageTradePercReturn , "lblAverageTradePercReturn" ,
 				"Average trade % return:" );
 			// 
 			// lblValAverageTradePercReturn
@@ -207,8 +225,8 @@ namespace QuantProject.Presentation.Reporting.WindowsForm
 			// 
 			// lblLargestWinningTrade
 			// 
-			this.addTextLabel( lblNumberWinningTrades , "lblNumberWinningTrades" ,
-				"Largest winning trade:" );
+			this.addTextLabel( lblLargestWinningTrade , "lblNumberWinningTrades" ,
+				"Largest winning trade (%):" );
 			// 
 			// lblValLargestWinningTrade
 			// 
@@ -216,7 +234,7 @@ namespace QuantProject.Presentation.Reporting.WindowsForm
 			// 
 			// lblLargestLosingTrade
 			// 
-			this.addTextLabel( lblNumberWinningTrades , "lblNumberWinningTrades" ,
+			this.addTextLabel( lblLargestLosingTrade , "lblNumberWinningTrades" ,
 				"Largest losing trade:" );
 			// 
 			// lblValLargestLosingTrade
@@ -269,36 +287,6 @@ namespace QuantProject.Presentation.Reporting.WindowsForm
 			this.addValueLabel( lblValNumberWinningShortTrades , "lblValNumberWinningShortTrades" );
 		}
 	
-		private void addControls()
-		{
-//			this.Controls.Add( this.lblValTotalNetProfit );
-//			this.Controls.Add( this.lblReturnOnAccount );
-//			this.Controls.Add( this.lblValReturnOnAccount );
-			this.Controls.Add( this.lblBuyAndHoldPercReturn );
-			this.Controls.Add( this.lblValBuyAndHoldPercReturn );
-			this.Controls.Add( this.lblAnnualSystemPercReturn );
-			this.Controls.Add( this.lblValAnnualSystemPercReturn );
-			this.Controls.Add( this.lblMaxEquityDrawDown );
-			this.Controls.Add( this.lblValMaxEquityDrawDown );
-			this.Controls.Add( this.lblTotalNumberOfShortTrades );
-			this.Controls.Add( this.lblValTotalNumberOfTrades );
-			this.Controls.Add( this.lblAverageTradePercReturn );
-			this.Controls.Add( this.lblValAverageTradePercReturn );
-			this.Controls.Add( this.lblLargestWinningTrade );
-			this.Controls.Add( this.lblValLargestWinningTrade );
-			this.Controls.Add( this.lblLargestLosingTrade );
-			this.Controls.Add( this.lblValLargestLosingTrade );
-			this.Controls.Add( this.lblTotalNumberOfLongTrades );
-			this.Controls.Add( this.lblValTotalNumberOfLongTrades );
-			this.Controls.Add( this.lblNumberWinningLongTrades );
-			this.Controls.Add( this.lblValNumberWinningLongTrades );
-			this.Controls.Add( this.lblAverageLongTradePercReturn );
-			this.Controls.Add( this.lblValAverageLongTradePercReturn );
-			this.Controls.Add( this.lblTotalNumberOfShortTrades );
-			this.Controls.Add( this.lblValTotalNumberOfTrades );
-			this.Controls.Add( this.lblNumberWinningShortTrades );
-			this.Controls.Add( this.lblValNumberWinningShortTrades );
-		}
 		private void setSummaryValues()
 		{
 			this.lblValTotalNetProfit.Text =
@@ -313,6 +301,8 @@ namespace QuantProject.Presentation.Reporting.WindowsForm
 				FormatProvider.ConvertToStringWithTwoDecimals( this.accountReport.Summary.MaxEquityDrawDown );
 			this.lblValTotalNumberOfTrades.Text =
 				FormatProvider.ConvertToStringWithTwoDecimals( this.accountReport.Summary.TotalNumberOfTrades );
+			this.lblValNumberWinningTrades.Text =
+				FormatProvider.ConvertToStringWithTwoDecimals( this.accountReport.Summary.NumberWinningTrades );
 			this.lblValAverageTradePercReturn.Text =
 				FormatProvider.ConvertToStringWithTwoDecimals( this.accountReport.Summary.AverageTradePercentageReturn );
 			this.lblValLargestWinningTrade.Text =
@@ -327,12 +317,13 @@ namespace QuantProject.Presentation.Reporting.WindowsForm
 				FormatProvider.ConvertToStringWithTwoDecimals( this.accountReport.Summary.AverageLongTradePercentageReturn );
 			this.lblValTotalNumberOfShortTrades.Text =
 				FormatProvider.ConvertToStringWithTwoDecimals( this.accountReport.Summary.TotalNumberOfShortTrades );
+			this.lblValNumberWinningShortTrades.Text =
+				FormatProvider.ConvertToStringWithTwoDecimals( this.accountReport.Summary.NumberWinningShortTrades );
 		}
 		public SummaryTabPage( AccountReport accountReport )
 		{
 			this.accountReport = accountReport;
 			this.myInitializeComponent();
-			this.addControls();
 			this.Text = "Summary";
 			this.setSummaryValues();
 		}
