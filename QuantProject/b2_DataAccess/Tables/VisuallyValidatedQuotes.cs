@@ -3,6 +3,7 @@ using System.Data;
 using QuantProject.ADT;
 using QuantProject.DataAccess;
 
+using System.Collections;
 namespace QuantProject.DataAccess.Tables
 {
 	/// <summary>
@@ -16,6 +17,20 @@ namespace QuantProject.DataAccess.Tables
 			// TODO: Add constructor logic here
 			//
 		}
+
+
+		/// <summary>
+		/// Returns the hash value to be stored/read into/from the visuallyValidatedQuotes table
+		/// </summary>
+		/// <param name="quoteDate">Date whose neighborhood quotes are to be hashed</param>
+		/// <returns></returns>
+		private static string getHashValue( Quotes quotes , DateTime quoteDate )
+		{
+			return quotes.GetHashValue( 
+				quotes.GetPrecedingDate( quoteDate , ConstantsProvider.PrecedingDaysForVisualValidation ) ,
+				quotes.GetFollowingDate( quoteDate , ConstantsProvider.PrecedingDaysForVisualValidation ) );
+		}
+
 		/// <summary>
 		/// writes to the database the visual validation of the Close to Close suspicious ratios
 		/// </summary>
@@ -32,9 +47,7 @@ namespace QuantProject.DataAccess.Tables
 				OleDbSingleTableAdapter oleDbSingleTableAdapter =
 					new OleDbSingleTableAdapter(
 					"select * from visuallyValidatedQuotes where 1=2" );
-				string hashValue = quotes.GetHashValue( 
-					quotes.GetPrecedingDate( quoteDate , ConstantsProvider.PrecedingDaysForVisualValidation ) ,
-					quotes.GetFollowingDate( quoteDate , ConstantsProvider.PrecedingDaysForVisualValidation ) );
+				string hashValue = getHashValue( quotes , quoteDate );
 				oleDbSingleTableAdapter.DataTable.Rows.Add(	oleDbSingleTableAdapter.DataTable.NewRow() );
 				oleDbSingleTableAdapter.DataTable.Rows[ 0 ][ "vvTicker" ] = quotes.Ticker;
 				oleDbSingleTableAdapter.DataTable.Rows[ 0 ][ "vvDate" ] = quoteDate;
@@ -49,6 +62,25 @@ namespace QuantProject.DataAccess.Tables
 				string exceptionMessage = ex.Message + "\n" + ex.StackTrace;
 				Console.WriteLine( exceptionMessage );
 			}
+		}
+
+		/// <summary>
+		/// Returns the list of validated quote dates for the given ticker
+		/// </summary>
+		/// <param name="ticker">Instrument ticker whose validated quote dates are to be found</param>
+		/// <returns></returns>
+		public static ArrayList GetRangeToRangeValidated( string ticker )
+		{
+			ArrayList tickers = new ArrayList();
+			Quotes quotes = new Quotes( ticker );
+			DataTable validatedQuotes =
+				SqlExecutor.GetDataTable( "select * from visuallyValidatedQuotes where vvTicker='" + ticker + "'" );
+			foreach ( DataRow dataRow in validatedQuotes.Rows )
+				if ( (string)dataRow[ "vvHashValue" ] == getHashValue( quotes , (DateTime)dataRow[ "vvDate" ] ) )
+					// the current quote date had been visually validated with respect to the neighborhood quotes
+					tickers.Add( dataRow[ "vvDate" ] );
+				/// TO DO !!! add else branch to raise event 'broken hash value'
+			return tickers;
 		}
 	}
 }
