@@ -28,6 +28,8 @@ namespace QuantProject.Applications.Downloader
     private int numberOfQuotesInDatabase;
     private DataTable downloadedValuesFromSource = new DataTable("quotes");
     private OleDbSingleTableAdapter adapter;
+    private Stream stream;
+    private StreamReader streamReader;
     
     public TickerDownloader( WebDownloader myForm, DataRow currentDataTickerRow, string quTicker , int numRows )
     {
@@ -178,10 +180,12 @@ namespace QuantProject.Applications.Downloader
     /// <summary>
     /// Adds rows to the table (member of the object) containing the downloaded values
     /// </summary>
-    private void addValuesToTable( StreamReader streamReader )
+    private void addCurrentStreamToTable()
     {
       string Line;
       string[] LineIn;
+      if(this.streamReader==null)
+        return;
       Line = streamReader.ReadLine();
       Line = streamReader.ReadLine();
   		
@@ -209,48 +213,24 @@ namespace QuantProject.Applications.Downloader
 
 	  private void importTickerForCurrentTimeFrame( DateTime currBeginDate , DateTime currEndDate )
     {
-      int a = currBeginDate.Month - 1;
-      int b = currBeginDate.Day;
-      int c = currBeginDate.Year;
-      int d = currEndDate.Month - 1;
-      int e = currEndDate.Day;
-      int f = currEndDate.Year;
-      int numTrials = 1;
-
-      while (numTrials < 5)
-      {
-        this.p_myForm.Refresh();
         try
         {
-          HttpWebRequest Req = (HttpWebRequest)WebRequest.Create("http:" + "//ichart.yahoo.com/table.csv?a=" 
-            + a + "&b=" + b + "&c=" + c +"&d=" + d + "&e=" + e + "&f=" + f + "&s=" + p_quTicker + "&y=0&g=d&ignore=.csv");
-          Req.Method = "GET";
-          Req.Timeout = ConstantsProvider.TimeOutValue;
-          HttpWebResponse hwr = (HttpWebResponse)Req.GetResponse();
-          Stream strm = hwr.GetResponseStream();
-          StreamReader sr = new StreamReader(strm);
-
-          //DataBaseImporter dataBaseImporter =
-            //new DataBaseImporter( this.oleDbConnection1 , sr, this.p_myForm.radioButtonOverWriteYes.Checked );
-          //dataBaseImporter.ImportTicker( p_quTicker );
-          this.addValuesToTable(sr);
-          
-          sr.Close();
-          strm.Close();
-          //hwr.Close();
-          
-		      updateCurrentStatus( d + "/" + e + "/" + f );
-          numTrials = 6 ;
+          this.p_myForm.Refresh();
+          this.setStreamsFromYahoo(currBeginDate, currEndDate);
+          this.addCurrentStreamToTable();
+          this.updateCurrentStatus(currEndDate.ToShortDateString());
+          if(this.streamReader!=null)
+            this.streamReader.Close();
+		      //this.updateCurrentStatus( d + "/" + e + "/" + f );
         }
         catch (Exception exception)
         {
           MessageBox.Show( exception.ToString() );
-          updateCurrentStatus( "Trial: " + numTrials );
+          /*updateCurrentStatus( "Trial: " + numTrials );
           numTrials++;
           if (numTrials > 5)
-            addTickerToFaultyTickers();
+            addTickerToFaultyTickers();*/
         }
-      }
     }
     
 
@@ -360,9 +340,9 @@ namespace QuantProject.Applications.Downloader
         else
         //download is executed
         {
-          this.updateCurrentStatusAdjustedClose("OK");
           this.downloadedValuesFromSource = this.getTableOfDownloadedValues();
           this.commitDownloadedValuesToDatabase();
+          this.updateCurrentStatusAdjustedClose("OK");
         }
       }
       catch(Exception ex)
@@ -391,9 +371,9 @@ namespace QuantProject.Applications.Downloader
     {
       string Line;
       string[] LineIn = null;
-      StreamReader streamReader = this.getStreamReaderFromSource(adjustedCloseDate, 0);
-      Line = streamReader.ReadLine();
-      Line = streamReader.ReadLine();
+      this.setStreamsFromYahoo(adjustedCloseDate, 0);
+      Line = this.streamReader.ReadLine();
+      Line = this.streamReader.ReadLine();
       if ( Line != null && ! Line.StartsWith("<"))
       {
         LineIn=Line.Split(',');
@@ -499,6 +479,8 @@ namespace QuantProject.Applications.Downloader
     private bool isAtLeastOneDateAvailable(StreamReader streamReader, int daysToBeTested)
     {
       string Line;
+      if(streamReader == null)
+        return false;
       Line = streamReader.ReadLine();
       // column headers are read
       Line = streamReader.ReadLine();
@@ -513,22 +495,26 @@ namespace QuantProject.Applications.Downloader
           numDays = daysToBeTested + 1;
         }
         numDays++;
-
       }
       return isOneDateAvailableInNextDaysToBeTested;
-
     }
     
-    private StreamReader getStreamReaderFromSource( DateTime initialDateOfTheTimeWindow,
-                                                    int daysOfTheTimeWindow )
+    private void setStreamsFromYahoo( DateTime initialDateOfTheTimeWindow,int daysOfTheTimeWindow)
+                                      
     {
-      int a = initialDateOfTheTimeWindow.Month - 1;
-      int b = initialDateOfTheTimeWindow.Day;
-      int c = initialDateOfTheTimeWindow.Year;
       DateTime endDateOfTheTimeWindow = initialDateOfTheTimeWindow.AddDays(daysOfTheTimeWindow);
-      int d = endDateOfTheTimeWindow.Month - 1;
-      int e = endDateOfTheTimeWindow.Day;
-      int f = endDateOfTheTimeWindow.Year;
+      this.setStreamsFromYahoo(initialDateOfTheTimeWindow, endDateOfTheTimeWindow);
+    }
+
+    /*
+    private StreamReader getStreamReaderFromYahoo(DateTime startDate, DateTime endDate)
+    {
+      int a = startDate.Month - 1;
+      int b = startDate.Day;
+      int c = startDate.Year;
+      int d = endDate.Month - 1;
+      int e = endDate.Day;
+      int f = endDate.Year;
       HttpWebRequest Req;
       HttpWebResponse hwr;
       Stream strm;
@@ -538,12 +524,12 @@ namespace QuantProject.Applications.Downloader
       {
         try
         {
-//					Req = (HttpWebRequest)WebRequest.Create("http:" + "//table.finance.yahoo.com/table.csv?a=" 
-//						+ a + "&b=" + b + "&c=" + c +"&d=" + d + "&e=" + e + "&f=" + f + "&s=" + p_quTicker + "&y=0&g=d&ignore=.csv");
-					string url = "http:" + "//ichart.yahoo.com/table.csv?a="
-						+ a + "&b=" + b + "&c=" + c +"&d=" + d + "&e=" + e + "&f=" + f + "&s=" + p_quTicker + "&y=0&g=d&ignore=.csv";
-					Req = (HttpWebRequest)WebRequest.Create( url );
-					Req.Method = "GET";
+          //					Req = (HttpWebRequest)WebRequest.Create("http:" + "//table.finance.yahoo.com/table.csv?a=" 
+          //						+ a + "&b=" + b + "&c=" + c +"&d=" + d + "&e=" + e + "&f=" + f + "&s=" + p_quTicker + "&y=0&g=d&ignore=.csv");
+          string url = "http:" + "//ichart.yahoo.com/table.csv?a="
+            + a + "&b=" + b + "&c=" + c +"&d=" + d + "&e=" + e + "&f=" + f + "&s=" + p_quTicker + "&y=0&g=d&ignore=.csv";
+          Req = (HttpWebRequest)WebRequest.Create( url );
+          Req.Method = "GET";
           Req.Timeout = ConstantsProvider.TimeOutValue;
           hwr = (HttpWebResponse)Req.GetResponse();
           strm = hwr.GetResponseStream();
@@ -559,48 +545,58 @@ namespace QuantProject.Applications.Downloader
       }
       return sr;
     }
-
-    private bool getResponseForTimeWindow( DateTime initialDateOfTheTimeWindow,
-                                            int daysOfTheTimeWindow )
+*/
+    private void setStreamsFromYahoo(DateTime startDate, DateTime endDate)
     {
-      int a = initialDateOfTheTimeWindow.Month - 1;
-      int b = initialDateOfTheTimeWindow.Day;
-      int c = initialDateOfTheTimeWindow.Year;
-      DateTime endDateOfTheTimeWindow = initialDateOfTheTimeWindow.AddDays(daysOfTheTimeWindow);
-      int d = endDateOfTheTimeWindow.Month - 1;
-      int e = endDateOfTheTimeWindow.Day;
-      int f = endDateOfTheTimeWindow.Year;
+      int a = startDate.Month - 1;
+      int b = startDate.Day;
+      int c = startDate.Year;
+      int d = endDate.Month - 1;
+      int e = endDate.Day;
+      int f = endDate.Year;
       HttpWebRequest Req;
       HttpWebResponse hwr;
-      Stream strm;
-      StreamReader sr;
-      bool response = false;
+      string url;
+      //url = "http:" + "//ichart.yahoo.com/table.csv?a="
+      //      + a + "&b=" + b + "&c=" + c +"&d=" + d + "&e=" + e + "&f=" + f + "&s=" + p_quTicker + "&y=0&g=d&ignore=.csv";
+      url = "http:" + "//table.finance.yahoo.com/table.csv?a=" 
+      		+ a + "&b=" + b + "&c=" + c +"&d=" + d + "&e=" + e + "&f=" + f + "&s=" + p_quTicker + "&y=0&g=d&ignore=.csv";
       int numTrials = 1;
       while(numTrials < 5)
       {
         try
         {
-          Req = (HttpWebRequest)WebRequest.Create("http:" + "//ichart.yahoo.com/table.csv?a=" 
-            + a + "&b=" + b + "&c=" + c +"&d=" + d + "&e=" + e + "&f=" + f + "&s=" + p_quTicker + "&y=0&g=d&ignore=.csv");
+          Req = (HttpWebRequest)WebRequest.Create( url );
           Req.Method = "GET";
           Req.Timeout = ConstantsProvider.TimeOutValue;
           hwr = (HttpWebResponse)Req.GetResponse();
-          strm = hwr.GetResponseStream();
-          sr = new StreamReader(strm);
-          response = this.isAtLeastOneDateAvailable(sr, daysOfTheTimeWindow );
-          sr.Close();
-          strm.Close();
-          //hwr.Close();
+          this.stream = hwr.GetResponseStream();
+          this.streamReader = new StreamReader(this.stream);
           numTrials = 6;
         }
+        
         catch (Exception exception)
         {
           string notUsed = exception.ToString();
           numTrials++;
+          //if(numTrials==6)
+            //throw new Exception("It has not been possible to set streams from Yahoo: \n\n" +
+            //                    "Check the connection to the internet or the following url: \n\n" +
+            //                    url,exception);
         }
       }
+    }
+
+
+    private bool getResponseForTimeWindow( DateTime initialDateOfTheTimeWindow,
+                                            int daysOfTheTimeWindow )
+    {
+      this.setStreamsFromYahoo(initialDateOfTheTimeWindow, daysOfTheTimeWindow);
+      bool response = false;
+      response = this.isAtLeastOneDateAvailable(this.streamReader,daysOfTheTimeWindow );
       return response;
     }
+    
     private DateTime getMiddleDate(DateTime startingDate,
                                    DateTime endingDate)
     {
@@ -614,7 +610,6 @@ namespace QuantProject.Applications.Downloader
     private DateTime firstAvailableDateOnYahoo(DateTime startingDate,
                                                 DateTime endingDate)
     {
-      
       if(startingDate == this.INITIAL_DATE)
       // at the first call, when the actual parameters are INITIAL_DATE and now
       // the dicotomic search may be useless ...
