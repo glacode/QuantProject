@@ -46,7 +46,7 @@ namespace QuantProject.Business.Financial.Accounting.Reporting
     private Tables.Transactions transactionTable;
     private ReportTable roundTrades;
     private ReportTable equity;
-    private ReportTable summary;
+    private Tables.Summary summary;
 
     public string Name
     {
@@ -80,7 +80,7 @@ namespace QuantProject.Business.Financial.Accounting.Reporting
     {
       get { return equity; }
     }
-    public ReportTable Summary
+    public Tables.Summary Summary
     {
       get { return summary; }
     }
