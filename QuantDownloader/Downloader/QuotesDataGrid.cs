@@ -37,28 +37,45 @@ namespace QuantProject.Applications.Downloader
 			this.setTableStyles();
 		}
     #region setTableStyles
-    private void setTableStyles_setColumnStyle( string mappingName , string headerText )
+    private void setTableStyles_setColumnStyle( string mappingName , string headerText ,
+      HorizontalAlignment horizontalAlignment , string format )
     {
-      this.dataGridTableStyle.ColumnHeadersVisible = true;
       DataGridTextBoxColumn dataGridColumnStyle = new DataGridTextBoxColumn();
       dataGridColumnStyle.MappingName = mappingName;
       dataGridColumnStyle.HeaderText = headerText;
+      dataGridColumnStyle.Alignment = horizontalAlignment;
+      dataGridColumnStyle.Format = format;
+//      dataGridColumnStyle.Format = "#,#.00";
       Graphics g = this.CreateGraphics();
       dataGridColumnStyle.Width = (int)g.MeasureString( headerText , this.Font ).Width + 5;
       this.dataGridTableStyle.GridColumnStyles.Add( dataGridColumnStyle );
+    }
+    private void setTableStyles_setColumnStyle( string mappingName , string headerText ,
+      HorizontalAlignment horizontalAlignment )
+    {
+      this.setTableStyles_setColumnStyle( mappingName , headerText , horizontalAlignment ,
+        "#,#.00" );
+    }
+    private void setTableStyles_setColumnStyle( string mappingName , string headerText )
+    {
+      this.setTableStyles_setColumnStyle( mappingName , headerText , HorizontalAlignment.Left );
     }
     private void setTableStyles()
     {
       this.dataGridTableStyle = new DataGridTableStyle();
       this.dataGridTableStyle.MappingName = "quotes";
-      this.setTableStyles_setColumnStyle( "quTicker" , "Ticker" );
-      this.setTableStyles_setColumnStyle( "quDate" , "Date" );
-      this.setTableStyles_setColumnStyle( "quOpen" , "Open" );
-      this.setTableStyles_setColumnStyle( "quHigh" , "High" );
-      this.setTableStyles_setColumnStyle( "quLow" , "Low" );
-      this.setTableStyles_setColumnStyle( "quClose" , "Close" );
-      this.setTableStyles_setColumnStyle( "quAdjustedClose" , "Adj. Close" );
-      this.setTableStyles_setColumnStyle( "ValidationWarning" , "Warning" );
+      this.RowHeaderWidth = 15;
+      this.setTableStyles_setColumnStyle( "quTicker" , "Ticker" , HorizontalAlignment.Left , "" );
+      this.setTableStyles_setColumnStyle( "quDate" , "Date" , HorizontalAlignment.Left , "d" );
+      this.setTableStyles_setColumnStyle( "quOpen" , "Open" , HorizontalAlignment.Right , "#,#.00" );
+      this.setTableStyles_setColumnStyle( "quHigh" , "High" , HorizontalAlignment.Right , "#,#.00" );
+      this.setTableStyles_setColumnStyle( "quLow" , "Low" , HorizontalAlignment.Right , "#,#.00" );
+      this.setTableStyles_setColumnStyle( "quClose" , "Close" , HorizontalAlignment.Right ,
+        "#,#.00" );
+      this.setTableStyles_setColumnStyle( "quAdjustedClose" , "Adj. Close" ,
+        HorizontalAlignment.Right , "#,#.00" );
+      this.setTableStyles_setColumnStyle( "ValidationWarning" , "Warning" ,
+        HorizontalAlignment.Left , "");
       this.setTableStyles_setColumnStyle( "Yuppy" , "Ew" );
       this.TableStyles.Add( dataGridTableStyle );
     }
