@@ -35,7 +35,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardOneRank
 	/// </summary>
 	public class ComparableAccount : Account
 	{
-    private double maxAcceptableDrawDown = 0.3;
+    private double maxAcceptableDrawDown = 30;
 
 		private IHistoricalQuoteProvider historicalQuoteProvider =
 			new HistoricalAdjustedQuoteProvider();
@@ -69,7 +69,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardOneRank
 				returnValue = Double.MinValue;
 			else
 				// max draw down is acceptable and the strategy is better than buy and hold
-				returnValue = this.accountReport.Summary.TotalPnl -
+				returnValue = this.accountReport.Summary.ReturnOnAccount -
 					this.accountReport.Summary.BuyAndHoldPercentageReturn;
 			return returnValue;
 		}
