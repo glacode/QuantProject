@@ -54,6 +54,23 @@ namespace QuantProject.DataAccess
 		delegate void updatingMethodHandler();
 		private SortedList updatingMethods;
 		
+    #region "DataBaseVersionManager"
+    /// <summary>
+    /// The method initialize a populate updatingMethods, a SortedList
+    /// that contains all the delegates that encapsulate all methods
+    /// whose function is to modify the structure of the database.
+    /// The key in the sortedList is the new version number that signs 
+    /// the database after the execution of the encapsulated method 
+    /// </summary>
+    private void initialize_updatingMethods()
+    {
+      this.updatingMethods  = new SortedList();
+      //After adding a new private method to the class, write
+      //the following code, paying attention to the version number:
+      //this.updatingMethods.Add(yourVersionNumber,
+      //						new updatingMethodHandler(this.yourMethodName))
+
+    }
 		public DataBaseVersionManager(OleDbConnection oleDbConnection)
 		{
 			try
@@ -76,6 +93,35 @@ namespace QuantProject.DataAccess
 			}
 		}
 		
+    #endregion
+    #region "UpdateDataBaseStructure"
+    private int getDataBaseVersionNumber()
+    {
+      this.dataTable_version.Clear();
+      this.oleDbDataAdapter.Fill(this.dataTable_version);
+      DataRow dataRow = this.dataTable_version.Rows[0];
+      return (int)dataRow["veId"];
+    }
+    private void setNewDataBaseVersionNumber(int newVersionNumber)
+    {
+      this.dataTable_version.Rows[0]["veId"] = newVersionNumber;
+      this.oleDbDataAdapter.Update(this.dataTable_version);
+      this.dataTable_version.AcceptChanges();
+    }
+    private void executeMethod(DictionaryEntry itemContainingMethod)
+    {
+      this.databaseVersion = this.getDataBaseVersionNumber();
+      int differenceBetweenNewVersionAndDataBaseVersion =
+        (int)itemContainingMethod.Key  - this.databaseVersion;
+      if(differenceBetweenNewVersionAndDataBaseVersion == 1)
+        //db's structure can be updated by the method contained in the item
+      {
+        updatingMethodHandler handler = (updatingMethodHandler)itemContainingMethod.Value;
+        handler();
+        //it calls the method that modifies the db structure
+        this.setNewDataBaseVersionNumber((int)itemContainingMethod.Key);
+      }
+    }
 		public void UpdateDataBaseStructure()
 		{
 			try
@@ -91,57 +137,7 @@ namespace QuantProject.DataAccess
 				MessageBox.Show(ex.ToString());
 				this.oleDbConnection.Close();
 			}
-
 		}
-		
-		private int getDataBaseVersionNumber()
-		{
-			this.dataTable_version.Clear();
-			this.oleDbDataAdapter.Fill(this.dataTable_version);
-			DataRow dataRow = this.dataTable_version.Rows[0];
-			return (int)dataRow["veId"];
-		}
-
-		
-		private void setNewDataBaseVersionNumber(int newVersionNumber)
-		{
-			this.dataTable_version.Rows[0]["veId"] = newVersionNumber;
-			this.oleDbDataAdapter.Update(this.dataTable_version);
-			this.dataTable_version.AcceptChanges();
-		}
-	  /// <summary>
-	  /// The method initialize a populate updatingMethods, a SortedList
-	  /// that contains all the delegates that encapsulate all methods
-	  /// whose function is to modify the structure of the database.
-	  /// The key in the sortedList is the new version number that signs 
-	  /// the database after the execution of the encapsulated method 
-	  /// </summary>
-		private void initialize_updatingMethods()
-		{
-			this.updatingMethods  = new SortedList();
-			//After adding a new private method to the class, write
-			//the following code, paying attention to the version number:
-			//this.updatingMethods.Add(yourVersionNumber,
-			//						new updatingMethodHandler(this.yourMethodName))
-
-		}
-		
-		private void executeMethod(DictionaryEntry itemContainingMethod)
-		{
-			this.databaseVersion = this.getDataBaseVersionNumber();
-			int differenceBetweenNewVersionAndDataBaseVersion =
-				(int)itemContainingMethod.Key  - this.databaseVersion;
-			if(differenceBetweenNewVersionAndDataBaseVersion == 1)
-			//db's structure can be updated by the method contained in the item
-			{
-				updatingMethodHandler handler = (updatingMethodHandler)itemContainingMethod.Value;
-				handler();
-				//it calls the method that modifies the db structure
-				this.setNewDataBaseVersionNumber((int)itemContainingMethod.Key);
-			}
-
-		}
-
-		
+    #endregion	
 	}
 }
