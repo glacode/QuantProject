@@ -117,7 +117,7 @@
                     BuildAction = "Compile"
                 />
                 <File
-                    RelPath = "CallingReportsForRunnedScripts\ShowReportFromFile.cs"
+                    RelPath = "CallingReportsForRunScripts\ShowReportFromFile.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
