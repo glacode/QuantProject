@@ -63,8 +63,8 @@ namespace QuantProject.Applications.Downloader
 				history.IndexOfKeyOrPrevious( this.suspiciousDateTime ) -
 				ConstantsProvider.PrecedingDaysForVisualValidation ) );
 			this.endDateTime = (DateTime) history.GetKey( Math.Min( history.Count - 1 ,
-				history.IndexOfKeyOrPrevious( this.suspiciousDateTime ) ) +
-				ConstantsProvider.PrecedingDaysForVisualValidation );
+				history.IndexOfKeyOrPrevious( this.suspiciousDateTime ) +
+				ConstantsProvider.PrecedingDaysForVisualValidation ) );
 		}
 		protected override void OnPaint(System.Windows.Forms.PaintEventArgs e)
 		{
