@@ -54,7 +54,8 @@ namespace QuantProject.Presentation.Reporting.WindowsForm
 		private void show_populateForm()
 		{
 			this.Location = new System.Drawing.Point( 1000,500);
-			this.Width = 500;
+			this.Width = 700;
+			this.Height = 500;
 			this.reportTabControl = new ReportTabControl( this.accountReport );
 			this.Controls.Add( this.reportTabControl );
 		}
