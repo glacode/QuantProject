@@ -214,6 +214,15 @@ namespace QuantProject.Business.Financial.Accounting
 			return HistoricalDataProvider.GetMarketValue( ticker ,
 				this.endOfDayTimer.GetCurrentTime().GetNearestExtendedDateTime() );
 		}
+		/// <summary>
+		/// Returns the total account value ( cash + position value )
+		/// </summary>
+		/// <returns></returns>
+		public double GetMarketValue()
+		{
+			return this.cashAmount +
+				this.Portfolio.GetMarketValue( this.endOfDayTimer.GetCurrentTime() );
+		}
 		public double GetProfitNetLoss( EndOfDayDateTime endOfDayDateTime )
     {
       return GetMarketValue( endOfDayDateTime ) +
