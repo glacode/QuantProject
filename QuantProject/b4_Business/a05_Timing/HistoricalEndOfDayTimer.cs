@@ -52,10 +52,10 @@ namespace QuantProject.Business.Timing
 //			set	{	this.endDateTime = value;	}
 //		}
 
-		public virtual event MarketOpenEventHandler MarketOpen;
-		public virtual event FiveMinutesBeforeMarketCloseEventHandler FiveMinutesBeforeMarketClose;
-		public virtual event MarketCloseEventHandler MarketClose;
-		public virtual event OneHourAfterMarketCloseEventHandler OneHourAfterMarketClose;
+		public event MarketOpenEventHandler MarketOpen;
+		public event FiveMinutesBeforeMarketCloseEventHandler FiveMinutesBeforeMarketClose;
+		public event MarketCloseEventHandler MarketClose;
+		public event OneHourAfterMarketCloseEventHandler OneHourAfterMarketClose;
 
 		public HistoricalEndOfDayTimer( EndOfDayDateTime startDateTime )
 		{
@@ -63,29 +63,43 @@ namespace QuantProject.Business.Timing
 //			this.endDateTime = EndDateTime;
 			this.tickers = new Hashtable();
 		}
+    
+    protected void callEvents()
+    {
+      if ( ( this.MarketOpen != null ) && ( this.currentTime.EndOfDaySpecificTime ==
+        EndOfDaySpecificTime.MarketOpen ) )
+        this.MarketOpen( this , new EndOfDayTimingEventArgs( this.currentTime ) );
+      if ( ( this.FiveMinutesBeforeMarketClose != null ) && ( this.currentTime.EndOfDaySpecificTime ==
+        EndOfDaySpecificTime.FiveMinutesBeforeMarketClose ) )
+        this.FiveMinutesBeforeMarketClose( this , new EndOfDayTimingEventArgs( this.currentTime ) );
+      if ( ( this.MarketClose != null ) && ( this.currentTime.EndOfDaySpecificTime ==
+        EndOfDaySpecificTime.MarketClose ) )
+        this.MarketClose( this , new EndOfDayTimingEventArgs( this.currentTime ) );
+      if ( ( this.OneHourAfterMarketClose != null ) && ( this.currentTime.EndOfDaySpecificTime ==
+        EndOfDaySpecificTime.OneHourAfterMarketClose ) )
+        this.OneHourAfterMarketClose( this , new EndOfDayTimingEventArgs( this.currentTime ) );
+    }
 
+    protected virtual void moveNext()
+    {
+      this.currentTime.MoveNext();
+    }
+    
+    protected virtual void activeTimer()
+    {
+      this.isActive = true;
+      this.currentTime = this.startDateTime.Copy();
+    }
 		/// <summary>
 		/// Starts the time walking simulation
 		/// </summary>
 		public virtual void Start()
 		{
-			this.isActive = true;
-			this.currentTime = this.startDateTime.Copy();
+      this.activeTimer();
 			while ( this.isActive )
 			{
-				if ( ( this.MarketOpen != null ) && ( this.currentTime.EndOfDaySpecificTime ==
-					EndOfDaySpecificTime.MarketOpen ) )
-					this.MarketOpen( this , new EndOfDayTimingEventArgs( this.currentTime ) );
-				if ( ( this.FiveMinutesBeforeMarketClose != null ) && ( this.currentTime.EndOfDaySpecificTime ==
-					EndOfDaySpecificTime.FiveMinutesBeforeMarketClose ) )
-					this.FiveMinutesBeforeMarketClose( this , new EndOfDayTimingEventArgs( this.currentTime ) );
-				if ( ( this.MarketClose != null ) && ( this.currentTime.EndOfDaySpecificTime ==
-					EndOfDaySpecificTime.MarketClose ) )
-					this.MarketClose( this , new EndOfDayTimingEventArgs( this.currentTime ) );
-				if ( ( this.OneHourAfterMarketClose != null ) && ( this.currentTime.EndOfDaySpecificTime ==
-					EndOfDaySpecificTime.OneHourAfterMarketClose ) )
-					this.OneHourAfterMarketClose( this , new EndOfDayTimingEventArgs( this.currentTime ) );
-				this.currentTime.MoveNext();
+        this.callEvents();
+				this.moveNext();
 			}
 		}
 

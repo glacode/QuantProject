@@ -40,11 +40,6 @@ namespace QuantProject.Business.Timing
     }
     private Quotes indexQuotes;
 
-    public override event MarketOpenEventHandler MarketOpen;
-    public override event FiveMinutesBeforeMarketCloseEventHandler FiveMinutesBeforeMarketClose;
-    public override event MarketCloseEventHandler MarketClose;
-    public override event OneHourAfterMarketCloseEventHandler OneHourAfterMarketClose;
-
 		public IndexBasedEndOfDayTimer( EndOfDayDateTime startDateTime,
                                     string marketIndex): base(startDateTime)
 		{
@@ -61,37 +56,25 @@ namespace QuantProject.Business.Timing
 		/// </summary>
 		public override void Start()
 		{
-			this.isActive = true;
-			this.currentTime = this.startDateTime.Copy();
+			base.activeTimer();
 			while ( this.isActive )
 			{
-				if ( ( this.MarketOpen != null ) && ( this.currentTime.EndOfDaySpecificTime ==
-					EndOfDaySpecificTime.MarketOpen ) )
-					this.MarketOpen( this , new EndOfDayTimingEventArgs( this.currentTime ) );
-				if ( ( this.FiveMinutesBeforeMarketClose != null ) && ( this.currentTime.EndOfDaySpecificTime ==
-					EndOfDaySpecificTime.FiveMinutesBeforeMarketClose ) )
-					this.FiveMinutesBeforeMarketClose( this , new EndOfDayTimingEventArgs( this.currentTime ) );
-				if ( ( this.MarketClose != null ) && ( this.currentTime.EndOfDaySpecificTime ==
-					EndOfDaySpecificTime.MarketClose ) )
-					this.MarketClose( this , new EndOfDayTimingEventArgs( this.currentTime ) );
-				if ( ( this.OneHourAfterMarketClose != null ) && ( this.currentTime.EndOfDaySpecificTime ==
-					EndOfDaySpecificTime.OneHourAfterMarketClose ) )
-					this.OneHourAfterMarketClose( this , new EndOfDayTimingEventArgs( this.currentTime ) );
-				this.moveNext(this.currentTime);
+        base.callEvents();
+				this.moveNext();
 			}
 		}
     //move the current endOfDayDateTime to the next moment
     //at which the market is surely open
-    private void moveNext( EndOfDayDateTime endOfDayDateTimeToMove)
+    protected override void moveNext()
     {
-      EndOfDaySpecificTime nextSpecificTime = endOfDayDateTimeToMove.GetNextEndOfDaySpecificTime();
-      if ( nextSpecificTime < endOfDayDateTimeToMove.EndOfDaySpecificTime )
+      EndOfDaySpecificTime nextSpecificTime = this.currentTime.GetNextEndOfDaySpecificTime();
+      if ( nextSpecificTime < this.currentTime.EndOfDaySpecificTime )
       {
         // the current end of day specific time is the last end of day specific time in the day
-        endOfDayDateTimeToMove.DateTime =
-                        this.indexQuotes.GetFollowingDate(endOfDayDateTimeToMove.DateTime, 1);
+        this.currentTime.DateTime =
+                        this.indexQuotes.GetFollowingDate(this.currentTime.DateTime, 1);
       }
-      endOfDayDateTimeToMove.EndOfDaySpecificTime = nextSpecificTime;
+      this.currentTime.EndOfDaySpecificTime = nextSpecificTime;
     }
 
 
