@@ -33,79 +33,51 @@ namespace QuantProject.ADT.FileManaging
   /// </summary>
   public class ObjectArchiver
   {
-   	private static Stream stream;
-  	private static BinaryFormatter formatter;
-    private static Object archive;
-  	private static string fileName;
-  	private static string directoryPath;
+    private static Stream stream;
+    private static BinaryFormatter formatter =
+      new BinaryFormatter();
   	
    	
     public static void Archive(Object objectToArchive, 
-                        			 	string fileName,
-                        				string directoryPath)
+      string fullPath)
     {
-        	
-    	try
-    	{
-			  ObjectArchiver.archive = objectToArchive;
-    		ObjectArchiver.setDiskPosition(fileName, directoryPath);
-    		ObjectArchiver.setVariables();
-				ObjectArchiver.formatter.Serialize(ObjectArchiver.stream,
-				                                   objectToArchive);
+      try
+      {
+        ObjectArchiver.stream = new FileStream(
+          fullPath,
+          FileMode.Create,
+          FileAccess.Write,
+          FileShare.None);
+				
+        ObjectArchiver.formatter.Serialize(ObjectArchiver.stream,
+        	                                   objectToArchive);
     	}
-    	catch(Exception ex)
-    	{
-    		System.Windows.Forms.MessageBox.Show(ex.ToString());
-    	}
+      finally
+      {
+        ObjectArchiver.stream.Close();
+      }
+    }
+    
+    
+    public static object Extract(string fullPath)
+    {
+      object returnValue = null;
     	
-    	finally
-    	{
-    		ObjectArchiver.stream.Close();
-    	}
-    	
-    	      
+      try
+      {
+        ObjectArchiver.stream = new FileStream(
+          fullPath,
+          FileMode.Open,
+          FileAccess.Read,
+          FileShare.None);
+        returnValue = ObjectArchiver.formatter.Deserialize(stream);
+      }
+      finally
+      {
+        ObjectArchiver.stream.Close();
+      }
+      return returnValue;
     }
-   
-    private static void setDiskPosition(string fileName,
-                        	 	     				string directoryPath)
-    {
-    	ObjectArchiver.fileName = fileName;
-    	ObjectArchiver.directoryPath = directoryPath;
-      
-    }
-    private static void setVariables()
-    {
-    	ObjectArchiver.stream = new FileStream(
-    	                             ObjectArchiver.directoryPath +
-    	                             ObjectArchiver.fileName,
-    	                             FileMode.Create,
-    	                             FileAccess.Write,
-    	                             FileShare.None);
-    	ObjectArchiver.formatter = new BinaryFormatter();
-      
-    }
-   
-    public static object Extract(string fileName,
-                        				 string directoryPath)
-    {
-    	try
-    	{
-    		ObjectArchiver.setDiskPosition(fileName, directoryPath);
-    		ObjectArchiver.setVariables();
-      	return ObjectArchiver.formatter.Deserialize(ObjectArchiver.stream);
-    	}
-    	catch(Exception ex)
-    	{
-    		System.Windows.Forms.MessageBox.Show(ex.ToString());
-    		return new Object(); //just to avoid compiling error
-    		//throw new Exception("Extracting object failed!");
-    	}
-    	finally
-    	{
-    		ObjectArchiver.stream.Close();
-    	}
-    }
-	
   }
   
 }
