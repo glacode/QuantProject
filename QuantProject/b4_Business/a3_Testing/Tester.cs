@@ -55,14 +55,14 @@ namespace QuantProject.Business.Testing
 			this.testWindow = testWindow;
       this.TradingSystems = tradingSystems;
       this.initialCash = initialCash;
-      this.Account.AddCash( new ExtendedDateTime( testWindow.StartDateTime , BarComponent.Open ) ,
+      this.Account.AddCash( new EndOfDayDateTime( testWindow.StartDateTime , EndOfDaySpecificTime.MarketOpen ) ,
         initialCash );
 		}
 
     public override double Objective()
     {
       this.Account.Clear();
-      this.Account.AddCash( new ExtendedDateTime( testWindow.StartDateTime , BarComponent.Open ) ,
+      this.Account.AddCash( new EndOfDayDateTime( testWindow.StartDateTime , EndOfDaySpecificTime.MarketOpen ) ,
         initialCash );
       this.Test();
       return - this.Account.GetProfitNetLoss(

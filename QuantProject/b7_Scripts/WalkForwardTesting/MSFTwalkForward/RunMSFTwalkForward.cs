@@ -63,7 +63,7 @@ namespace QuantProject.Scripts
       walkForwardTester.Parameters.Add( new Parameter( "SMAdays" , 3 , 50 , 2 ) );
       walkForwardTester.Add( new TsMSFTsimpleTest() );
       walkForwardTester.Account.AddCash(
-        new ExtendedDateTime( startDateTime , BarComponent.Open ) , 10000 );
+        new EndOfDayDateTime( startDateTime , EndOfDaySpecificTime.MarketOpen ) , 10000 );
       walkForwardTester.Test();
       
       
