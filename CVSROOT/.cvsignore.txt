@@ -1,0 +1,17 @@
+*.zip
+*.dll
+*.exe
+*.projdata
+*.resources
+*.resx
+*.projdata1
+*.incr
+*.csv
+*.bak
+bin
+obj
+Debug
+temp
+TempPE
+*_daCanc_*
+*.pbd
