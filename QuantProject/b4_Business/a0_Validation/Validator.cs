@@ -17,17 +17,19 @@ namespace QuantProject.Business.Validation
 			//
 		}
 		/// <summary>
-		/// Validates (if the case) the given ticker from startDate to endDate
+		/// Validates (if the case) the given ticker
 		/// </summary>
 		/// <param name="ticker"></param>
-		/// <param name="startDate"></param>
-		/// <param name="endDate"></param>
-		/// <returns>True if and only if the ticker is validated for the given range</returns>
-		private static bool Validate( string ticker , DateTime startDate , DateTime endDate )
+		/// <returns>True if and only if the ticker is validated</returns>
+		private static bool Validate( string ticker )
 		{
+			bool isValid;
 			ValidateDataTable validateDataTable = new ValidateDataTable();
-			validateDataTable.AddRows( ticker , startDate , endDate );
-			return ( validateDataTable.Rows.Count == 0 );
+			validateDataTable.AddRows( ticker );
+			isValid = ( validateDataTable.Rows.Count == 0 );
+			if ( isValid )
+				ValidatedTickers.Validate( validateDataTable.Quotes );
+			return isValid;
 		}
 		/// <summary>
 		/// Checks if the instrument is valid (since the first date to the last date in the quotes table)
