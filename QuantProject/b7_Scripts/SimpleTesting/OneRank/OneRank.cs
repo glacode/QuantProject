@@ -39,7 +39,15 @@ namespace QuantProject.Scripts.SimpleTesting
 
 		private DateTime lastDateTime;
 
-		public void fiveMinutesBeforeMarketCloseEventHandler(
+		private void marketOpenEventHandler(
+			Object sender , EndOfDayTimingEventArgs endOfDayTimingEventArgs )
+		{
+			if ( ( this.account.CashAmount == 0 ) &&
+				( this.account.Transactions.Count == 0 ) )
+				// cash has not been added yet
+				this.account.AddCash( 10000 );
+		}
+		private void fiveMinutesBeforeMarketCloseEventHandler(
 			Object sender , EndOfDayTimingEventArgs endOfDayTimingEventArgs )
 		{
 			long sharesToBeBought;
@@ -78,6 +86,9 @@ namespace QuantProject.Scripts.SimpleTesting
 		{
 			this.account = account;
 			this.lastDateTime = lastDateTime;
+			this.account.EndOfDayTimer.MarketOpen +=
+				new MarketOpenEventHandler(
+				this.marketOpenEventHandler );
 			this.account.EndOfDayTimer.FiveMinutesBeforeMarketClose +=
 				new FiveMinutesBeforeMarketCloseEventHandler(
 				this.fiveMinutesBeforeMarketCloseEventHandler );
