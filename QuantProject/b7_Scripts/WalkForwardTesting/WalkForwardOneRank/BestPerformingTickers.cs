@@ -34,7 +34,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardOneRank
 	/// <summary>
 	/// The collection of best performing tickers, among the eligible ones
 	/// </summary>
-	public class BestPerformingTickers : Hashtable,IProgressNotifier
+	public class BestPerformingTickers : ArrayList,IProgressNotifier
 	{
 		private int numberBestPerformingTickers;
 		private int numberDaysForPerformanceCalculation;
@@ -72,6 +72,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardOneRank
 				new HistoricalEndOfDayOrderExecutor( historicalEndOfDayTimer ) );
 			OneRank oneRank = new OneRank( account ,
 				dateTime.AddDays( this.numberDaysForPerformanceCalculation ) );
+			double goodness = account.Goodness;  // forces Goodness computation here (for a better ProgressBar effect)
 			this.eligibleAccounts.Add( account );
 		}
 		private void setTickers_build( EligibleTickers eligibleTickers , DateTime dateTime )
@@ -88,8 +89,8 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardOneRank
 						100 ) );
 			}
 			this.eligibleAccounts.Sort();
-			for ( int index=0 ; index < this.numberBestPerformingTickers ; index++ )
-				this.Add( ((Account)this.eligibleAccounts[ index ]).Key , this.eligibleAccounts[ index ] );
+			for ( int index=this.numberBestPerformingTickers - 1 ; index >= 0 ; index-- )
+				this.Add( this.eligibleAccounts[ index ] );
 		}
 		/// <summary>
 		/// Populates the collection of the best performing tickers
