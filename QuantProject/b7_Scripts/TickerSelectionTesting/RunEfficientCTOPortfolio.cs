@@ -83,11 +83,15 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
     private Account account;
 		
     private IEndOfDayTimer endOfDayTimer;
-		
+
+    private string benchmark;
+   	
+	
     public RunEfficientCTOPorfolio(string tickerGroupID, int numberOfEligibleTickers, 
                                     int numberOfTickersToBeChosen, int numDaysForLiquidity, 
                                     int generationNumberForGeneticOptimizer,
-                                    int populationSizeForGeneticOptimizer)
+                                    int populationSizeForGeneticOptimizer, string benchmark,
+                                    DateTime startDate, DateTime endDate)
 		{
       //this.progressBarForm = new ProgressBarForm();
       this.tickerGroupID = tickerGroupID;
@@ -98,9 +102,10 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
       this.populationSizeForGeneticOptimizer = populationSizeForGeneticOptimizer;
       this.reportTable = new ReportTable( "Summary_Reports" );
       this.startDateTime = new EndOfDayDateTime(
-        new DateTime( 2004 , 10 , 1 ) , EndOfDaySpecificTime.FiveMinutesBeforeMarketClose );
+        startDate, EndOfDaySpecificTime.FiveMinutesBeforeMarketClose );
       this.endDateTime = new EndOfDayDateTime(
-        new DateTime( 2004 , 10 , 11 ) , EndOfDaySpecificTime.OneHourAfterMarketClose );
+        endDate, EndOfDaySpecificTime.OneHourAfterMarketClose );
+      this.benchmark = benchmark;
       //this.numIntervalDays = 3;
 		}
     #region Run
@@ -131,7 +136,7 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
     private void run_initializeEndOfDayTimer()
     {
       this.endOfDayTimer =
-        new IndexBasedEndOfDayTimer( this.startDateTime, "^MIBTEL" );
+        new IndexBasedEndOfDayTimer( this.startDateTime, this.benchmark );
     }
     private void run_initializeAccount()
     {
@@ -139,7 +144,7 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
         new HistoricalEndOfDayDataStreamer( this.endOfDayTimer ,
 					this.historicalQuoteProvider ) ,
         new HistoricalEndOfDayOrderExecutor( this.endOfDayTimer ,
-					this.historicalQuoteProvider ));
+					this.historicalQuoteProvider ), new IBCommissionManager());
      
     }
     private void run_initializeEndOfDayTimerHandler()
@@ -150,7 +155,8 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
                                                               this.numDaysForLiquidity,
                                                               this.account,
                                                               this.generationNumberForGeneticOptimizer, 
-                                                              this.populationSizeForGeneticOptimizer);
+                                                              this.populationSizeForGeneticOptimizer,
+                                                              this.benchmark);
         
         
     }
@@ -206,18 +212,18 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
       {
         this.endOfDayTimer.Stop();
         //report = new Report( this.account , this.historicalQuoteProvider );
-        //report.Show("CTO_Portfolio" , this.numIntervalDays , this.endDateTime , "^MIBTEL" );
+        //report.Show("CTO_Portfolio" , this.numIntervalDays , this.endDateTime , this.benchmark );
         string name = "From"+this.numberOfEligibleTickers +
                       "LiqDays" + this.numDaysForLiquidity + "Portfolio" +
                       this.numberOfTickersToBeChosen + "GenNum" + 
                       this.generationNumberForGeneticOptimizer +
                       "PopSize" + this.populationSizeForGeneticOptimizer;
-        //AccountReport accountReport = this.account.CreateReport(name,1,this.endDateTime,"^MIBTEL",
-        //                                                      new HistoricalAdjustedQuoteProvider());
-        //ObjectArchiver.Archive(accountReport,
-        //                        System.Configuration.ConfigurationSettings.AppSettings["ReportsArchive"] +
-        //                        "\\OpenCloseScripts\\" + 
-        //                       name + ".rep");
+        AccountReport accountReport = this.account.CreateReport(name,1,this.endDateTime,this.benchmark,
+                                                              new HistoricalAdjustedQuoteProvider());
+        ObjectArchiver.Archive(accountReport,
+                                System.Configuration.ConfigurationSettings.AppSettings["ReportsArchive"] +
+                                "\\OpenCloseScripts\\" + 
+                               name + ".rep");
         
         ObjectArchiver.Archive(this.account,
                                System.Configuration.ConfigurationSettings.AppSettings["AccountsArchive"] +

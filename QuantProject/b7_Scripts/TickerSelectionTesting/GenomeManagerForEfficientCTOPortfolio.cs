@@ -105,10 +105,9 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
       
       NormalDistribution normal = new NormalDistribution(portfolioRateOfReturn, Math.Sqrt(portfolioVariance));
       //for long portfolio
-      //returnValue = normal.GetProbability(this.targetPerformance*0.75,this.targetPerformance*1.25);
+      returnValue = normal.GetProbability(this.targetPerformance*0.75,this.targetPerformance*1.25);
       //for short portfolio
-      returnValue = normal.GetProbability(-this.targetPerformance*1.25,-this.targetPerformance*0.75);
-      //returnValue = 1 - normal.GetProbability(this.targetPerformance);
+      //returnValue = normal.GetProbability(-this.targetPerformance*1.25,-this.targetPerformance*0.75);
       return returnValue;
     }
     

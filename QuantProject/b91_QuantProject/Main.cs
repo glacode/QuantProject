@@ -323,10 +323,12 @@ namespace QuantProject.Principale
 //      try
 //      {//call here your scripts
 	//new RunWalkForwardOneRank().Run();			
-        // new RunEfficientCTCPorfolio().Run();
+        
 				//new RunOneRank().Run();
-        new RunEfficientCTOPorfolio("STOCKMI",80,4,45,2,1000).Run();
-        new RunEfficientCTOPorfolio("STOCKMI",80,4,45,2,2500).Run();
+        new RunEfficientCTOPorfolio("Test2",100,5,45, 1, 3000, "^SPX",
+                                    new DateTime(2004,10,1),
+                                    new DateTime(2004,10,15)).Run();
+        
 //      }
 //      catch ( Exception ex )
 //      {
@@ -367,13 +369,7 @@ namespace QuantProject.Principale
         this.Cursor = Cursors.WaitCursor;
         //call here your scripts
         //new RunWalkForwardOneRank().Run();			
-        //new RunEfficientCTCPorfolio().Run();
-        
-        //new RunEfficientCTOPorfolio("STOCKMI",100,5,30,10,2500).Run();
-        //new RunEfficientCTOPorfolio("STOCKMI",100,5,60,10,2500).Run();
-        //new RunEfficientCTOPorfolio("STOCKMI",100,5,5,1000).Run();
-        //new RunEfficientCTOPorfolio("STOCKMI",70,5,10,2500).Run();
-        //new RunEfficientCTOPorfolio("STOCKMI",100,5,10,2500).Run();
+       
 
       }
       catch ( Exception ex )

@@ -57,6 +57,8 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
     private Account account;
     private ArrayList orders;
 
+    private string benchmark;
+
     public int NumberOfEligibleTickers
     {
       get { return this.numberOfEligibleTickers; }
@@ -70,7 +72,8 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
     public EndOfDayTimerHandlerCTO(string tickerGroupID, int numberOfEligibleTickers, 
                                 int numberOfTickersToBeChosen, int numDaysForLiquidity, Account account,
                                 int generationNumberForGeneticOptimizer,
-                                int populationSizeForGeneticOptimizer)
+                                int populationSizeForGeneticOptimizer,
+                                string benchmark)
     {
       this.tickerGroupID = tickerGroupID;
       this.numberOfEligibleTickers = numberOfEligibleTickers;
@@ -79,6 +82,7 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
       this.account = account;
       this.generationNumberForGeneticOptimizer = generationNumberForGeneticOptimizer;
       this.populationSizeForGeneticOptimizer = populationSizeForGeneticOptimizer;
+      this.benchmark = benchmark;
       this.orders = new ArrayList();
       this.chosenTickers = new string[numberOfTickersToBeChosen];
       this.lastChosenTickers = new string[numberOfTickersToBeChosen];
@@ -93,7 +97,7 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
       double cashForSinglePosition = this.account.CashAmount / this.numberOfTickersToBeChosen;
       long quantity =
         Convert.ToInt64( Math.Floor( cashForSinglePosition / this.account.DataStreamer.GetCurrentBid( ticker ) ) );
-      Order order = new Order( OrderType.MarketSellShort, new Instrument( ticker ) , quantity );
+      Order order = new Order( OrderType.MarketBuy, new Instrument( ticker ) , quantity );
       this.orders.Add(order);
     }
     
@@ -125,7 +129,7 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
       Object sender , EndOfDayTimingEventArgs endOfDayTimingEventArgs )
     {
       if(this.orders.Count == 0 && this.account.Transactions.Count == 0)
-        this.account.AddCash(30000);     
+        this.account.AddCash(15000);     
       
       this.marketOpenEventHandler_orderChosenTickers();
       
@@ -171,13 +175,18 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
       
     private DataTable getSetOfTickersToBeOptimized(DateTime currentDate)
     {
-      SelectorByLiquidity mostLiquid = new SelectorByLiquidity(this.tickerGroupID, false,
+      SelectorByAverageRawOpenPrice selectorByOpenPrice = 
+                  new SelectorByAverageRawOpenPrice(this.tickerGroupID, false,
+                          currentDate.AddDays(-this.numDaysForLiquidity), currentDate,
+                          this.numberOfEligibleTickers, 25, 35, 0, 0.5);
+      DataTable tickersByPrice = selectorByOpenPrice.GetTableOfSelectedTickers();
+      SelectorByLiquidity mostLiquid = new SelectorByLiquidity(tickersByPrice, false,
                                       currentDate.AddDays(-this.numDaysForLiquidity), currentDate, this.numberOfEligibleTickers);
       this.eligibleTickers = mostLiquid.GetTableOfSelectedTickers();
       SelectorByQuotationAtEachMarketDay quotedInEachMarketDayFromMostLiquid = 
         new SelectorByQuotationAtEachMarketDay( this.eligibleTickers,
                                    false, currentDate.AddDays(-this.numDaysForLiquidity),
-                                    currentDate, this.numberOfEligibleTickers, "^MIBTEL");
+                                    currentDate, this.numberOfEligibleTickers, this.benchmark);
       return quotedInEachMarketDayFromMostLiquid.GetTableOfSelectedTickers();
     }
     
