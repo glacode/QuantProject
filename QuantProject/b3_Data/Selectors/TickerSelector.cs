@@ -143,6 +143,8 @@ namespace QuantProject.Data.Selectors
           return this.getTickersByVolatility();
         case SelectionType.AverageCloseToClosePerformance:
           return this.getTickersByAverageCloseToClosePerformance();
+        case SelectionType.CloseToCloseLinearCorrelation:
+          return this.getTickersByCloseToCloseLinearCorrelation();
         //this line should never be reached!
         default:
           return new DataTable();
@@ -215,6 +217,14 @@ namespace QuantProject.Data.Selectors
           this.firstQuoteDate,
           this.lastQuoteDate,
           this.maxNumOfReturnedTickers);
+    }
+
+    private DataTable getTickersByCloseToCloseLinearCorrelation()
+    {
+       return QuantProject.Data.DataTables.Quotes.GetTickersByAdjCloseToClosePearsonCorrelationCoefficient(this.isOrderedInASCMode,
+                                                          this.setOfTickersToBeSelected,
+                                                          this.firstQuoteDate,
+                                                          this.lastQuoteDate);
     }
 
     public void SelectAllTickers()

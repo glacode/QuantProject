@@ -32,7 +32,7 @@ namespace QuantProject.Data.Selectors
     Liquidity,
     Performance,
     AverageCloseToClosePerformance,
-    Volatility/*
-    StatisticalCorrelation*/
+    Volatility,
+    CloseToCloseLinearCorrelation
   }
 }
