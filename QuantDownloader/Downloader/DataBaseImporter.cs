@@ -59,6 +59,8 @@ namespace QuantDownloader
         myRow[ "quClose" ]=Double.Parse( LineIn[4] );
         myRow[ "quVolume" ]=Double.Parse( LineIn[5] );
         myRow[ "quAdjustedClose" ]=Double.Parse( LineIn[6] );
+        myRow[ "quAdjustedOpen" ]=Convert.ToDouble(myRow[ "quOpen" ])*
+          (Convert.ToDouble(myRow[ "quAdjustedClose" ])/Convert.ToDouble(myRow[ "quOpen" ]));
 
 //        myRow["date"]=DateTime.Parse(LineIn[0]);
 //        myRow["time"]=DateTime.Parse(LineIn[1]);
