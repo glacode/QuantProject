@@ -196,12 +196,57 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "a1_Financial\a2_Accounting\h5_Reporting\SummaryRows\AnnualSystemPercentageReturn.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "a1_Financial\a2_Accounting\h5_Reporting\SummaryRows\AverageLongTradePercentageReturn.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "a1_Financial\a2_Accounting\h5_Reporting\SummaryRows\AverageShortTradePercentageReturn.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "a1_Financial\a2_Accounting\h5_Reporting\SummaryRows\AverageTradePercentageReturn.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "a1_Financial\a2_Accounting\h5_Reporting\SummaryRows\BuyAndHoldPercentageReturn.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "a1_Financial\a2_Accounting\h5_Reporting\SummaryRows\LargestLosingTradePercentage.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "a1_Financial\a2_Accounting\h5_Reporting\SummaryRows\LargestWinningTradePercentage.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "a1_Financial\a2_Accounting\h5_Reporting\SummaryRows\MaxEquityDrawDown.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "a1_Financial\a2_Accounting\h5_Reporting\SummaryRows\NumberWinningLongTrades.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "a1_Financial\a2_Accounting\h5_Reporting\SummaryRows\NumberWinningShortTrades.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "a1_Financial\a2_Accounting\h5_Reporting\SummaryRows\NumberWinningTrades.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
@@ -217,6 +262,16 @@
                 />
                 <File
                     RelPath = "a1_Financial\a2_Accounting\h5_Reporting\SummaryRows\TotalNetProfit.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "a1_Financial\a2_Accounting\h5_Reporting\SummaryRows\TotalNumberOfLongTrades.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "a1_Financial\a2_Accounting\h5_Reporting\SummaryRows\TotalNumberOfShortTrades.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />

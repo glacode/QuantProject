@@ -34,6 +34,10 @@ namespace QuantProject.Business.Financial.Accounting.Reporting.Tables
     {
       get { return finalAccountValue; }
     }
+    public double IntervalDays
+    {
+      get { return intervalDays; }
+    }
     public Summary( AccountReport accountReport ) :
       base( accountReport.Name + " - Summary" )
     {
@@ -47,88 +51,80 @@ namespace QuantProject.Business.Financial.Accounting.Reporting.Tables
       equityDataTable.Columns.Add( "Value" , Type.GetType( "System.Double" ) );
     }
     #region "getSummaryTable_setRows"
-    private delegate void getSummaryTable_setRow( DataRow summary );
-    private void getSummaryTable_setRow_AnnualSystemPercentageReturn( DataRow summary )
-    {
-      double totalROA = this.totalPnl / ( this.finalAccountValue - this.totalPnl );
-      summary[ "Information" ] = "Annual system % return";
-      summary[ "Value" ] = ( ( Math.Pow( 1 + totalROA ,
-        1.0 / ( (double)this.intervalDays/365.0 ) ) ) - 1 ) * 100;
-      //        r = [(1+T)^(1/n)]-1
-    }
-    private void getSummaryTable_setRow_NumberWinningTrades( DataRow summary )
-    {
-      summary[ "Information" ] = "Number winning trades";
-      DataRow[] DataRows = this.accountReport.RoundTrades.DataTable.Select( "([%Profit] > 0)" );
-      summary[ "Value" ] = DataRows.Length;
-    }
-    private void getSummaryTable_setRow_AverageTradePercentageReturn( DataRow summary )
-    {
-      summary[ "Information" ] = "Average trade % Return";
-      double avgReturn = (double) this.accountReport.RoundTrades.DataTable.Compute( "avg([%Profit])" , "true" );
-      summary[ "Value" ] = avgReturn;
-    }
-    private void getSummaryTable_setRow_LargestWinningTradePercentage( DataRow summary )
-    {
-      summary[ "Information" ] = "Largest winning trade";
-      summary[ "Value" ] =
-        (double) this.accountReport.RoundTrades.DataTable.Compute( "max([%Profit])" , "([%Profit]>0)" );
-    }
-    private void getSummaryTable_setRow_LargestLosingTradePercentage( DataRow summary )
-    {
-      summary[ "Information" ] = "Largest losing trade";
-      summary[ "Value" ] =
-        (double) this.accountReport.RoundTrades.DataTable.Compute( "min([%Profit])" , "([%Profit]<0)" );
-    }
-    private void getSummaryTable_setRow_TotalNumberOfLongTrades( DataRow summary )
-    {
-      double totalROA = this.totalPnl / ( this.finalAccountValue - this.totalPnl );
-      summary[ "Information" ] = "Total # of long trades";
-      DataRow[] DataRows =
-        this.accountReport.RoundTrades.DataTable.Select( "((Trade='Long')and(ExitPrice is not null))" );
-      summary[ "Value" ] = DataRows.Length;
-    }
-    private void getSummaryTable_setRow_NumberWinningLongTrades( DataRow summary )
-    {
-      summary[ "Information" ] = "Number winning long trades";
-      DataRow[] DataRows = this.accountReport.RoundTrades.DataTable.Select( "((Trade='Long')and([%Profit] > 0))" );
-      summary[ "Value" ] = DataRows.Length;
-    }
-    private void getSummaryTable_setRow_AverageLongTradePercentageReturn( DataRow summary )
-    {
-      summary[ "Information" ] = "Average long trade % Return";
-      double avgReturn =
-        (double) this.accountReport.RoundTrades.DataTable.Compute( "avg([%Profit])" , "(Trade='Long')" );
-      summary[ "Value" ] = avgReturn;
-    }
-    private void getSummaryTable_setRow_TotalNumberOfShortTrades( DataRow summary )
-    {
-      double totalROA = this.totalPnl / ( this.finalAccountValue - this.totalPnl );
-      summary[ "Information" ] = "Total # of short trades";
-      DataRow[] DataRows =
-        this.accountReport.RoundTrades.DataTable.Select( "((Trade='Short')and(ExitPrice is not null))" );
-      summary[ "Value" ] = DataRows.Length;
-    }
-    private void getSummaryTable_setRow_NumberWinningShortTrades( DataRow summary )
-    {
-      summary[ "Information" ] = "Number winning short trades";
-      DataRow[] DataRows = this.accountReport.RoundTrades.DataTable.Select( "((Trade='Short')and([%Profit] > 0))" );
-      summary[ "Value" ] = DataRows.Length;
-    }
-    private void getSummaryTable_setRow_AverageShortTradePercentageReturn( DataRow summary )
-    {
-      summary[ "Information" ] = "Average short trade % Return";
-      double avgReturn =
-        (double) this.accountReport.RoundTrades.DataTable.Compute( "avg([%Profit])" , "(Trade='Short')" );
-      summary[ "Value" ] = avgReturn;
-    }
-    private void getSummary_setRow( DataTable summaryDataTable ,
-      getSummaryTable_setRow getSummaryTable_setRow_object )
-    {
-      DataRow summary = summaryDataTable.NewRow();
-      getSummaryTable_setRow_object( summary );
-      summaryDataTable.Rows.Add( summary );
-    }
+//    private delegate void getSummaryTable_setRow( DataRow summary );
+//    private void getSummaryTable_setRow_NumberWinningTrades( DataRow summary )
+//    {
+//      summary[ "Information" ] = "Number winning trades";
+//      DataRow[] DataRows = this.accountReport.RoundTrades.DataTable.Select( "([%Profit] > 0)" );
+//      summary[ "Value" ] = DataRows.Length;
+//    }
+//    private void getSummaryTable_setRow_AverageTradePercentageReturn( DataRow summary )
+//    {
+//      summary[ "Information" ] = "Average trade % Return";
+//      double avgReturn = (double) this.accountReport.RoundTrades.DataTable.Compute( "avg([%Profit])" , "true" );
+//      summary[ "Value" ] = avgReturn;
+//    }
+//    private void getSummaryTable_setRow_LargestWinningTradePercentage( DataRow summary )
+//    {
+//      summary[ "Information" ] = "Largest winning trade";
+//      summary[ "Value" ] =
+//        (double) this.accountReport.RoundTrades.DataTable.Compute( "max([%Profit])" , "([%Profit]>0)" );
+//    }
+//    private void getSummaryTable_setRow_LargestLosingTradePercentage( DataRow summary )
+//    {
+//      summary[ "Information" ] = "Largest losing trade";
+//      summary[ "Value" ] =
+//        (double) this.accountReport.RoundTrades.DataTable.Compute( "min([%Profit])" , "([%Profit]<0)" );
+//    }
+//    private void getSummaryTable_setRow_TotalNumberOfLongTrades( DataRow summary )
+//    {
+//      double totalROA = this.totalPnl / ( this.finalAccountValue - this.totalPnl );
+//      summary[ "Information" ] = "Total # of long trades";
+//      DataRow[] DataRows =
+//        this.accountReport.RoundTrades.DataTable.Select( "((Trade='Long')and(ExitPrice is not null))" );
+//      summary[ "Value" ] = DataRows.Length;
+//    }
+//    private void getSummaryTable_setRow_NumberWinningLongTrades( DataRow summary )
+//    {
+//      summary[ "Information" ] = "Number winning long trades";
+//      DataRow[] DataRows = this.accountReport.RoundTrades.DataTable.Select( "((Trade='Long')and([%Profit] > 0))" );
+//      summary[ "Value" ] = DataRows.Length;
+//    }
+//    private void getSummaryTable_setRow_AverageLongTradePercentageReturn( DataRow summary )
+//    {
+//      summary[ "Information" ] = "Average long trade % Return";
+//      double avgReturn =
+//        (double) this.accountReport.RoundTrades.DataTable.Compute( "avg([%Profit])" , "(Trade='Long')" );
+//      summary[ "Value" ] = avgReturn;
+//    }
+//    private void getSummaryTable_setRow_TotalNumberOfShortTrades( DataRow summary )
+//    {
+//      double totalROA = this.totalPnl / ( this.finalAccountValue - this.totalPnl );
+//      summary[ "Information" ] = "Total # of short trades";
+//      DataRow[] DataRows =
+//        this.accountReport.RoundTrades.DataTable.Select( "((Trade='Short')and(ExitPrice is not null))" );
+//      summary[ "Value" ] = DataRows.Length;
+//    }
+//    private void getSummaryTable_setRow_NumberWinningShortTrades( DataRow summary )
+//    {
+//      summary[ "Information" ] = "Number winning short trades";
+//      DataRow[] DataRows = this.accountReport.RoundTrades.DataTable.Select( "((Trade='Short')and([%Profit] > 0))" );
+//      summary[ "Value" ] = DataRows.Length;
+//    }
+//    private void getSummaryTable_setRow_AverageShortTradePercentageReturn( DataRow summary )
+//    {
+//      summary[ "Information" ] = "Average short trade % Return";
+//      double avgReturn =
+//        (double) this.accountReport.RoundTrades.DataTable.Compute( "avg([%Profit])" , "(Trade='Short')" );
+//      summary[ "Value" ] = avgReturn;
+//    }
+//    private void getSummary_setRow( DataTable summaryDataTable ,
+//      getSummaryTable_setRow getSummaryTable_setRow_object )
+//    {
+//      DataRow summary = summaryDataTable.NewRow();
+//      getSummaryTable_setRow_object( summary );
+//      summaryDataTable.Rows.Add( summary );
+//    }
     private void getSummary_setRow( SummaryRow summaryRow , DataTable summaryDataTable )
     {
       DataRow summary = summaryDataTable.NewRow();
@@ -141,30 +137,24 @@ namespace QuantProject.Business.Financial.Accounting.Reporting.Tables
       getSummary_setRow( new TotalNetProfit( this ) , summaryDataTable );
       getSummary_setRow( new ReturnOnAccount( this ) , summaryDataTable );
       getSummary_setRow( new BuyAndHoldPercentageReturn( this ) , summaryDataTable );
-      getSummary_setRow( summaryDataTable ,
-        new getSummaryTable_setRow( getSummaryTable_setRow_AnnualSystemPercentageReturn ) );
+      getSummary_setRow( new AnnualSystemPercentageReturn( this ) , summaryDataTable );
       getSummary_setRow( new MaxEquityDrawDown( this ) , summaryDataTable );
       getSummary_setRow( new TotalNumberOfTrades( this ) , summaryDataTable );
-      getSummary_setRow( summaryDataTable ,
-        new getSummaryTable_setRow( getSummaryTable_setRow_NumberWinningTrades ) );
-      getSummary_setRow( summaryDataTable ,
-        new getSummaryTable_setRow( getSummaryTable_setRow_AverageTradePercentageReturn ) );
-      getSummary_setRow( summaryDataTable ,
-        new getSummaryTable_setRow( getSummaryTable_setRow_LargestWinningTradePercentage ) );
-      getSummary_setRow( summaryDataTable ,
-        new getSummaryTable_setRow( getSummaryTable_setRow_LargestLosingTradePercentage ) );
-      getSummary_setRow( summaryDataTable ,
-        new getSummaryTable_setRow( getSummaryTable_setRow_TotalNumberOfLongTrades ) );
-      getSummary_setRow( summaryDataTable ,
-        new getSummaryTable_setRow( getSummaryTable_setRow_NumberWinningLongTrades ) );
-      getSummary_setRow( summaryDataTable ,
-        new getSummaryTable_setRow( getSummaryTable_setRow_AverageLongTradePercentageReturn ) );
-      getSummary_setRow( summaryDataTable ,
-        new getSummaryTable_setRow( getSummaryTable_setRow_TotalNumberOfShortTrades ) );
-      getSummary_setRow( summaryDataTable ,
-        new getSummaryTable_setRow( getSummaryTable_setRow_NumberWinningShortTrades ) );
-      getSummary_setRow( summaryDataTable ,
-        new getSummaryTable_setRow( getSummaryTable_setRow_AverageShortTradePercentageReturn ) );
+      getSummary_setRow( new NumberWinningTrades( this ) , summaryDataTable );
+      getSummary_setRow( new AverageTradePercentageReturn( this ) , summaryDataTable );
+      getSummary_setRow( new LargestWinningTradePercentage( this ) , summaryDataTable );
+      getSummary_setRow( new LargestLosingTradePercentage( this ) , summaryDataTable );
+      getSummary_setRow( new TotalNumberOfLongTrades( this ) , summaryDataTable );
+      getSummary_setRow( new NumberWinningLongTrades( this ) , summaryDataTable );
+      getSummary_setRow( new AverageLongTradePercentageReturn( this ) , summaryDataTable );
+      getSummary_setRow( new TotalNumberOfShortTrades( this ) , summaryDataTable );
+      getSummary_setRow( new NumberWinningShortTrades( this ) , summaryDataTable );
+      //      getSummary_setRow( summaryDataTable ,
+//        new getSummaryTable_setRow( getSummaryTable_setRow_TotalNumberOfShortTrades ) );
+//      getSummary_setRow( summaryDataTable ,
+//        new getSummaryTable_setRow( getSummaryTable_setRow_NumberWinningShortTrades ) );
+//      getSummary_setRow( summaryDataTable ,
+//        new getSummaryTable_setRow( getSummaryTable_setRow_AverageShortTradePercentageReturn ) );
     }
     #endregion
     private DataTable getSummaryDataTable()
