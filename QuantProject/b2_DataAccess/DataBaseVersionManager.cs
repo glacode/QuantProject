@@ -142,7 +142,7 @@ namespace QuantProject.DataAccess
       "qsClose SINGLE , " +
       "qsVolume SINGLE , " +
       "qsAdjustedClose SINGLE , " +
-      "qsAdjustedCloseToCloseRatio DOUBLE , " +
+      "qsAdjustedCloseToCloseRatio SINGLE , " +
       "qsEditDate DATETIME , " +
       "CONSTRAINT myKey PRIMARY KEY ( qsTicker , qsDate , qsSource ) )" );
 
