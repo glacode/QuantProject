@@ -28,7 +28,7 @@ using System.Windows.Forms;
 using QuantProject.ADT;
 using QuantProject.ADT.Optimizing;
 using QuantProject.Business.Financial.Accounting;
-using QuantProject.Business.Financial.Testing;
+using QuantProject.Business.Testing;
 using QuantProject.Scripts;
 
 namespace QuantProject.Principale
@@ -114,19 +114,16 @@ namespace QuantProject.Principale
       tradingSystem.Parameters.Add( new Parameter( "SMAdays" , 2 , 4 , 0.5 ) );
       tradingSystem.Parameters.Add( new Parameter( "CrossPercentage" , 0 , 5 , 1 ) );
 
-      Account account = new Account( "account" );
-      account.AddCash(
-        new ExtendedDateTime( new DateTime( 1995 , 1 , 1 ) , BarComponent.Open ) , 10000 );
-
       WalkForwardTester walkForwardTester = new WalkForwardTester();
       walkForwardTester.StartDateTime = new DateTime( 1995 , 1 , 1 );
       walkForwardTester.EndDateTime = DateTime.Today;
       walkForwardTester.InSampleWindowNumDays = 600;
       walkForwardTester.OutOfSampleWindowNumDays = 30;
       walkForwardTester.Add( tradingSystem );
-      walkForwardTester.Add( account );
+      walkForwardTester.Account.AddCash(
+        new ExtendedDateTime( new DateTime( 1995 , 1 , 1 ) , BarComponent.Open ) , 10000 );
       walkForwardTester.Test();
-      walkForwardTester.GetAccount( "account" ).DrawReport();
+      walkForwardTester.Account.DrawReport();
     }  
 	}
 }
