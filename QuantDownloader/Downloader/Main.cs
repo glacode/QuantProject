@@ -26,6 +26,7 @@ namespace QuantProject.Applications.Downloader
 		private System.Windows.Forms.MenuItem menuItemOpen;
 		private System.Windows.Forms.MenuItem menuItemTickerViewer;
 		private System.Windows.Forms.MenuItem menuItemTickerGroupsViewer;
+		private System.Windows.Forms.MenuItem menuItemQuotesEditor;
 		/// <summary>
 		/// Required designer variable.
 		/// </summary>
@@ -80,20 +81,22 @@ namespace QuantProject.Applications.Downloader
 			this.menuItem4 = new System.Windows.Forms.MenuItem();
 			this.menuItem6 = new System.Windows.Forms.MenuItem();
 			this.menuItem7 = new System.Windows.Forms.MenuItem();
+			this.menuItemQuotesEditor = new System.Windows.Forms.MenuItem();
 			// 
 			// mainMenu1
 			// 
 			this.mainMenu1.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
-																					  this.menuItemOpen,
-																					  this.menuImport,
-																					  this.menuValidate});
+																																							this.menuItemOpen,
+																																							this.menuImport,
+																																							this.menuValidate});
 			// 
 			// menuItemOpen
 			// 
 			this.menuItemOpen.Index = 0;
 			this.menuItemOpen.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
-																						 this.menuItemTickerViewer,
-																						 this.menuItemTickerGroupsViewer});
+																																								 this.menuItemTickerViewer,
+																																								 this.menuItemTickerGroupsViewer,
+																																								 this.menuItemQuotesEditor});
 			this.menuItemOpen.Text = "Open";
 			// 
 			// menuItemTickerViewer
@@ -112,7 +115,7 @@ namespace QuantProject.Applications.Downloader
 			// 
 			this.menuImport.Index = 1;
 			this.menuImport.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
-																					   this.subMenuFromTheWeb});
+																																							 this.subMenuFromTheWeb});
 			this.menuImport.Text = "Import";
 			// 
 			// subMenuFromTheWeb
@@ -125,7 +128,7 @@ namespace QuantProject.Applications.Downloader
 			// 
 			this.menuValidate.Index = 2;
 			this.menuValidate.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
-																						 this.subMenuValidateGo});
+																																								 this.subMenuValidateGo});
 			this.menuValidate.Text = "Validate";
 			// 
 			// subMenuValidateGo
@@ -169,6 +172,12 @@ namespace QuantProject.Applications.Downloader
 			this.menuItem7.Index = -1;
 			this.menuItem7.Text = "";
 			// 
+			// menuItemQuotesEditor
+			// 
+			this.menuItemQuotesEditor.Index = 2;
+			this.menuItemQuotesEditor.Text = "Quotes Editor";
+			this.menuItemQuotesEditor.Click += new System.EventHandler(this.menuItemQuotesEditor_Click);
+			// 
 			// Principale
 			// 
 			this.AutoScaleBaseSize = new System.Drawing.Size(5, 13);
@@ -204,8 +213,9 @@ namespace QuantProject.Applications.Downloader
     {
       //try
       {
-        Application.Run(new Principale());  //togli il commento per riavere la windows application
-        //new RunMSFTsimpleTest().Run();
+        Application.Run(new Principale());  //togli il commento per riavere il downloader
+//        Application.Run(new QuotesEditor( "RYVYX" ));
+//        Application.Run(new TestScpl());
       } 
       //catch ( Exception ex )
       {
@@ -236,6 +246,12 @@ namespace QuantProject.Applications.Downloader
 		{
 			TickerGroupsViewer tickerGroupsViewer = new TickerGroupsViewer();
 			tickerGroupsViewer.Show();
+		}
+
+		private void menuItemQuotesEditor_Click(object sender, System.EventArgs e)
+		{
+			QuotesEditor quotesEditor = new QuotesEditor( "MSFT" );
+			quotesEditor.ShowDialog();
 		}
 
 	}
