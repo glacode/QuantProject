@@ -96,35 +96,6 @@ namespace QuantProject.DataAccess
 	}
 	private void createTables()
     {
-//<<<<<<< DataBaseVersionManager.cs
-//      string command =
-//        "create table validatedTickers " +
-//        "( vtTicker TEXT(8) , vtStartDate DATETIME , vtEndDate DATETIME , vtDate DATETIME, " +
-//        "CONSTRAINT myKey PRIMARY KEY ( vtTicker ) )";
-//      OleDbCommand oleDbCommand = new OleDbCommand( command , this.oleDbConnection );
-//      oleDbCommand.ExecuteNonQuery();
-//      oleDbCommand.CommandText =
-//        "create table validatedTickers " +
-//        "( vvTicker TEXT(8) , vvStartDate DATETIME , vvEndDate DATETIME , " +
-//        "vvHashValue TEXT(50) , vvEditDate DATETIME, " +
-//        "vvCloseToCloseRatio BIT , vvRangeToRangeRatio BIT , " +
-//        "CONSTRAINT myKey PRIMARY KEY ( vvTicker ) )";
-//      oleDbCommand.ExecuteNonQuery();
-//      oleDbCommand.CommandText =
-//        "create table quotesFromOtherSources " +
-//        "(qsTicker TEXT(8) , " +
-//        "qsDate DATETIME , " +
-//        "qsSource SHORT , " +
-//        "qsOpen SINGLE , " +
-//        "qsHigh SINGLE , " +
-//        "qsLow SINGLE , " +
-//        "qsClose SINGLE , " +
-//        "qsVolume SINGLE , " +
-//        "qsAdjustedClose SINGLE , " +
-//        "qsAdjustedCloseToCloseRatio DOUBLE " +
-//        "qsEditDate DATETIME , " +
-//        "CONSTRAINT myKey PRIMARY KEY ( qsTicker , qsDate , qsSource ) )";
-//=======
 		this.executeCommand("CREATE TABLE tickers (tiTicker TEXT(8))");
 		this.executeCommand("CREATE TABLE quotes (quTicker TEXT(8), quDate DATETIME, " +
 							"quOpen REAL, quHigh REAL, quLow REAL, quClose REAL, " +
@@ -136,7 +107,7 @@ namespace QuantProject.DataAccess
 		// Groups are used to simplify operations like:
 		// validating, updating data from the web, testing strategies
 		this.executeCommand("CREATE TABLE tickerGroups " +
-			"( tgId TEXT(8) , tgDescription(100), tgTgId TEXT(8))");
+			"( tgId TEXT(8) , tgDescription TEXT(100), tgTgId TEXT(8))");
     // where to store the relation between a ticker and a group
     // NOTE that a group can be created inside another group and
     // a ticker can belong to one or more groups 
@@ -177,10 +148,9 @@ namespace QuantProject.DataAccess
       "qsClose SINGLE , " +
       "qsVolume SINGLE , " +
       "qsAdjustedClose SINGLE , " +
-      "qsAdjustedCloseToCloseRatio DOUBLE " +
+      "qsAdjustedCloseToCloseRatio DOUBLE , " +
       "qsEditDate DATETIME , " +
       "CONSTRAINT myKey PRIMARY KEY ( qsTicker , qsDate , qsSource ) )" );
-//    >>>>>>> 1.4
     }
 
 	private void alterTablesAddPrimaryKeys()
@@ -219,8 +189,8 @@ namespace QuantProject.DataAccess
 		}
 		catch(Exception ex)
 		{
-			string notUsed = ex.ToString();// to avoid warning after compilation
-		}	
+      string notUsed = ex.ToString();// to avoid warning after compilation
+    }	
 	}
 	
     #endregion
