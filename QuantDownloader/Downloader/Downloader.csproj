@@ -92,6 +92,17 @@
                 />
                 <File
                     RelPath = "AssemblyInfo.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "DataBaseImporter.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "DataBaseLocator.cs"
+                    SubType = "Code"
                     BuildAction = "Compile"
                 />
                 <File
@@ -127,6 +138,11 @@
                     RelPath = "TestDownloadedData.resx"
                     DependentUpon = "TestDownloadedData.cs"
                     BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "TickerDownloader.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
                 />
                 <File
                     RelPath = "WebDownloader.cs"

@@ -1,0 +1,124 @@
+using System;
+using System.Xml;
+using System.IO;
+using System.Windows.Forms;
+
+namespace QuantDownloader
+{
+	/// <summary>
+	/// Locate the database
+	/// </summary>
+	public class DataBaseLocator
+	{
+		private string dataBaseType;
+		private StreamReader stream; 
+		private XmlTextReader xmlTextReader;
+		
+		private string path;
+
+		public DataBaseLocator(string fileExtension)
+		{
+			try
+			{
+				this.dataBaseType = fileExtension;
+				//it looks for the file in the application directory
+				if (!File.Exists("DataBase.xml"))
+					createXmlFile();
+						
+				this.stream = new StreamReader(Application.ExecutablePath.Substring(0, Application.ExecutablePath.LastIndexOf('\\'))
+											+ @"\DataBase.xml");
+				this.xmlTextReader = new XmlTextReader(this.stream);
+				
+				while(xmlTextReader.Read())
+				{
+					if (xmlTextReader.LocalName.ToString() == this.dataBaseType)
+					{
+						//gets full path of the file that contains the database
+						this.Path = xmlTextReader.GetAttribute(0);
+					}
+				}
+				xmlTextReader.Close();
+				stream.Close();
+						
+					
+            }
+			
+			catch (Exception ex)
+			{
+				MessageBox.Show(ex.ToString());
+				xmlTextReader.Close();
+				stream.Close();
+			}
+		}
+		
+		public string Path
+		{
+			get
+			{
+				return path;
+			}
+			set
+			{	
+				path = value;
+			}
+		}
+
+		/// <summary>
+		/// create xmlFile in the application directory
+		/// where to store name and path for the mdb file
+		/// selected by the user
+		/// </summary>
+		private void createXmlFile()
+		{
+			string path;
+			string xmlPath;
+			string selectionByUser;
+			selectionByUser = selectDataBase();
+			if (selectionByUser == "")
+				{
+					MessageBox.Show("With no selection application won't run!");
+					Application.Exit();
+				}
+			else
+				{
+					path = selectionByUser;
+					
+					xmlPath = 
+							Application.ExecutablePath.Substring(0, Application.ExecutablePath.LastIndexOf('\\'))
+								+ @"\DataBase.xml";
+					XmlTextWriter xmlTextWriter = new XmlTextWriter(xmlPath, null);
+					xmlTextWriter.Formatting = Formatting.Indented;
+					xmlTextWriter.WriteStartDocument();
+					xmlTextWriter.WriteStartElement("FILES");
+					xmlTextWriter.WriteStartElement("MDB");
+					xmlTextWriter.WriteAttributeString("fullpath",path);
+					xmlTextWriter.WriteEndElement();
+					xmlTextWriter.WriteEndElement();
+					xmlTextWriter.WriteEndDocument();
+					xmlTextWriter.Flush();
+					xmlTextWriter.Close();
+					
+				}
+
+		}
+		private string selectDataBase()
+		{
+			string fileName = "";
+			switch (this.dataBaseType)
+			{
+				case "MDB":
+				fileName = "QuantProject.mdb";
+				break;
+			}
+
+			OpenFileDialog openFileDialog = new OpenFileDialog();
+			openFileDialog.Title = "Select " + fileName + " please ...";
+			openFileDialog.Multiselect = false;
+			openFileDialog.CheckFileExists = true;
+			openFileDialog.Filter = fileName + "|" + fileName;
+			openFileDialog.ShowDialog();
+			return openFileDialog.FileName;
+		}
+		
+	}
+}
