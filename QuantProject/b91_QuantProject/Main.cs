@@ -31,7 +31,7 @@ using QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios;
 
 using QuantProject.Scripts.SimpleTesting;
 using QuantProject.Scripts.WalkForwardTesting.WalkForwardOneRank;
-using QuantProject.Scripts.CallingReportsForRunnedScripts;
+using QuantProject.Scripts.CallingReportsForRunScripts;
 
 
 
@@ -60,6 +60,7 @@ namespace QuantProject.Principale
     private System.Windows.Forms.MenuItem menuItemSavedTests;
     private System.Windows.Forms.MenuItem menuItemAccountViewer;
     private System.Windows.Forms.MenuItem menuItemShowReportFromAccount;
+    private System.Windows.Forms.MenuItem menuItemRunReleasingMode;
 		/// <summary>
 		/// Required designer variable.
 		/// </summary>
@@ -107,6 +108,7 @@ namespace QuantProject.Principale
       this.menuItemRun = new System.Windows.Forms.MenuItem();
       this.menuItemSavedTests = new System.Windows.Forms.MenuItem();
       this.menuItemAccountViewer = new System.Windows.Forms.MenuItem();
+      this.menuItemShowReportFromAccount = new System.Windows.Forms.MenuItem();
       this.menuItem13 = new System.Windows.Forms.MenuItem();
       this.menuItem14 = new System.Windows.Forms.MenuItem();
       this.menuItem1 = new System.Windows.Forms.MenuItem();
@@ -116,7 +118,7 @@ namespace QuantProject.Principale
       this.menuItem4 = new System.Windows.Forms.MenuItem();
       this.menuItem6 = new System.Windows.Forms.MenuItem();
       this.menuItem7 = new System.Windows.Forms.MenuItem();
-      this.menuItemShowReportFromAccount = new System.Windows.Forms.MenuItem();
+      this.menuItemRunReleasingMode = new System.Windows.Forms.MenuItem();
       // 
       // mainMenu1
       // 
@@ -150,13 +152,14 @@ namespace QuantProject.Principale
       this.menuItem11.Index = 1;
       this.menuItem11.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
                                                                                this.menuItemRun,
-                                                                               this.menuItemSavedTests});
+                                                                               this.menuItemSavedTests,
+                                                                               this.menuItemRunReleasingMode});
       this.menuItem11.Text = "BackTest";
       // 
       // menuItemRun
       // 
       this.menuItemRun.Index = 0;
-      this.menuItemRun.Text = "Run";
+      this.menuItemRun.Text = "Run (debugging mode)";
       this.menuItemRun.Click += new System.EventHandler(this.menuItemRun_Click);
       // 
       // menuItemSavedTests
@@ -172,6 +175,12 @@ namespace QuantProject.Principale
       this.menuItemAccountViewer.Index = 0;
       this.menuItemAccountViewer.Text = "Account viewer";
       this.menuItemAccountViewer.Click += new System.EventHandler(this.menuItemAccountViewer_Click);
+      // 
+      // menuItemShowReportFromAccount
+      // 
+      this.menuItemShowReportFromAccount.Index = 1;
+      this.menuItemShowReportFromAccount.Text = "Show report from account";
+      this.menuItemShowReportFromAccount.Click += new System.EventHandler(this.menuItemShowReportFromAccount_Click);
       // 
       // menuItem13
       // 
@@ -221,11 +230,11 @@ namespace QuantProject.Principale
       this.menuItem7.Index = -1;
       this.menuItem7.Text = "";
       // 
-      // menuItemShowReportFromAccount
+      // menuItemRunReleasingMode
       // 
-      this.menuItemShowReportFromAccount.Index = 1;
-      this.menuItemShowReportFromAccount.Text = "Show report from account";
-      this.menuItemShowReportFromAccount.Click += new System.EventHandler(this.menuItemShowReportFromAccount_Click);
+      this.menuItemRunReleasingMode.Index = 2;
+      this.menuItemRunReleasingMode.Text = "Run (releasing mode)";
+      this.menuItemRunReleasingMode.Click += new System.EventHandler(this.menuItemRunReleasingMode_Click);
       // 
       // Principale
       // 
@@ -297,9 +306,10 @@ namespace QuantProject.Principale
     private void menuItem14_Click(object sender, System.EventArgs e)
     {
     }
-
+    //run scripts in debugging mode
     private void menuItemRun_Click(object sender, System.EventArgs e)
     {
+
 //      try
 //      {//call here your scripts
 	//new RunWalkForwardOneRank().Run();			
@@ -311,6 +321,7 @@ namespace QuantProject.Principale
 //        string notUsed = ex.ToString();
 //        //in this way qP shouldn't stop if running a single script fails ...
 //      }
+
     }
 
     private void menuItemAccountViewer_Click(object sender, System.EventArgs e)
@@ -319,10 +330,50 @@ namespace QuantProject.Principale
       accountViewer.Show();
     }
 
+    private string getPath()
+    {
+      OpenFileDialog openFileDialog = new OpenFileDialog();
+      openFileDialog.Title = "Select a serialized account please ...";
+      openFileDialog.Multiselect = false;
+      openFileDialog.CheckFileExists = true;
+      openFileDialog.ShowDialog();
+      return openFileDialog.FileName;
+    }
+
     private void menuItemShowReportFromAccount_Click(object sender, System.EventArgs e)
     {
-      ShowReportFromFile.ShowReportFromSerializedAccount("C:\\CtcPortfolio.qP");
+      string chosenPath = this.getPath();
+      if(chosenPath != "")
+        ShowReportFromFile.ShowReportFromSerializedAccount(chosenPath);
     }
+
+    
+    private void menuItemRunReleasingMode_Click(object sender, System.EventArgs e)
+    {
+      try
+      { 
+        this.Cursor = Cursors.WaitCursor;
+        //call here your scripts
+        //new RunWalkForwardOneRank().Run();			
+        //new RunEfficientCTCPorfolio().Run();
+        //new RunEfficientCTOPorfolio("STOCKMI",70,5,5,1000).Run();
+        new RunEfficientCTOPorfolio("STOCKMI",100,5,5,1000).Run();
+        new RunEfficientCTOPorfolio("STOCKMI",70,5,10,2500).Run();
+        new RunEfficientCTOPorfolio("STOCKMI",100,5,10,2500).Run();
+      }
+      catch ( Exception ex )
+      {
+        string notUsed = ex.ToString();
+        //in this way qP shouldn't stop if running a single script fails ...
+      }
+      finally
+      {
+        this.Cursor = Cursors.Default;
+      }
+    }
+
+
+
 
 	}
 }
