@@ -24,6 +24,7 @@ using System;
 using System.Collections;
 using System.Data;
 using QuantProject.ADT;
+using QuantProject.Business.DataProviders;
 using QuantProject.Business.Financial.Accounting;
 using QuantProject.Business.Financial.Accounting.Reporting;
 using QuantProject.Business.Financial.Instruments;
@@ -43,6 +44,8 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardOneRank
 	/// </summary>
 	public class RunWalkForwardOneRank : Script
 	{
+		private IHistoricalQuoteProvider historicalQuoteProvider =
+			new HistoricalAdjustedQuoteProvider();
     private ReportTable reportTable;
     private EndOfDayDateTime startDateTime;
     private EndOfDayDateTime endDateTime;
@@ -61,12 +64,10 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardOneRank
 			this.progressBarForm = new ProgressBarForm();
 			this.reportTable = new ReportTable( "Summary_Reports" );
 			this.startDateTime = new EndOfDayDateTime(
-				new DateTime( 2002 , 1 , 1 ) , EndOfDaySpecificTime.MarketOpen );
-//			this.endDateTime = new EndOfDayDateTime(
-//				new DateTime( 2002 , 12 , 31 ) , EndOfDaySpecificTime.OneHourAfterMarketClose );
+				new DateTime( 1998 , 1 , 1 ) , EndOfDaySpecificTime.MarketOpen );
 			this.endDateTime = new EndOfDayDateTime(
-				new DateTime( 2002 , 2 , 28 ) , EndOfDaySpecificTime.OneHourAfterMarketClose );
-			this.numIntervalDays = 7;
+				new DateTime( 1998 , 1 , 30 ) , EndOfDaySpecificTime.OneHourAfterMarketClose );
+			this.numIntervalDays = 1;
 		}
     #region Run
 		private void run_initializeEndOfDayTimer()
@@ -77,8 +78,10 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardOneRank
 		private void run_initializeAccount()
 		{
 			this.account = new Account( "WalkForwardOneRank" , this.endOfDayTimer ,
-				new HistoricalEndOfDayDataStreamer( this.endOfDayTimer ) ,
-				new HistoricalEndOfDayOrderExecutor( this.endOfDayTimer ) );
+				new HistoricalEndOfDayDataStreamer( this.endOfDayTimer ,
+					this.historicalQuoteProvider ) ,
+				new HistoricalEndOfDayOrderExecutor( this.endOfDayTimer ,
+					this.historicalQuoteProvider ) );
 		}
 		private void run_initializeEndOfDayTimerHandler()
 		{
@@ -130,7 +133,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardOneRank
 				// the simulation has reached the ending date
 				this.account.EndOfDayTimer.Stop();
 				this.progressBarForm.Close();
-				Report report = new Report( this.account );
+				Report report = new Report( this.account , this.historicalQuoteProvider );
 				report.Show( "WFT One Rank" , this.numIntervalDays , this.endDateTime , "MSFT" );
 			}
 		}
