@@ -211,14 +211,10 @@ namespace QuantProject.Principale
 
     private void menuItem12_Click(object sender, System.EventArgs e)
     {
-      BackTestForm backTestForm = new BackTestForm();
-      backTestForm.ShowDialog();
     }
 
     private void menuItem10_Click(object sender, System.EventArgs e)
     {
-      Form1 form1 = new Form1();
-      form1.ShowDialog( this );
     }
 
 
@@ -230,6 +226,8 @@ namespace QuantProject.Principale
         new RunMSFTsimpleTest().Run();
         //new RunOneRank().Run();
         //new RunMSFTwalkForward().Run();
+        //new RunMultiTestOneRank().Run();
+
       } 
       //catch ( Exception ex )
       {
@@ -239,8 +237,6 @@ namespace QuantProject.Principale
 
     private void menuItem14_Click(object sender, System.EventArgs e)
     {
-      BackTestForm form1 = new BackTestForm();
-      form1.ShowDialog( this );
     }
 
 	}
