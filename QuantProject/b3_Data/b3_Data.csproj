@@ -124,6 +124,14 @@
                     Lcid = "0"
                     WrapperTool = "primary"
                 />
+                <Reference
+                    Name = "Microsoft.Office.Core"
+                    Guid = "{2DF8D04C-5BFA-101B-BDE5-00AA0044DE52}"
+                    VersionMajor = "2"
+                    VersionMinor = "3"
+                    Lcid = "0"
+                    WrapperTool = "primary"
+                />
             </References>
         </Build>
         <Files>
@@ -184,19 +192,9 @@
                     BuildAction = "Compile"
                 />
                 <File
-                    RelPath = "DataTables\GroupQuotes.resx"
-                    DependentUpon = "GroupQuotes.cs"
-                    BuildAction = "EmbeddedResource"
-                />
-                <File
                     RelPath = "DataTables\Quotes.cs"
                     SubType = "Component"
                     BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "DataTables\Quotes.resx"
-                    DependentUpon = "Quotes.cs"
-                    BuildAction = "EmbeddedResource"
                 />
                 <File
                     RelPath = "DataTables\TickerDataTable.cs"
@@ -209,30 +207,16 @@
                     BuildAction = "Compile"
                 />
                 <File
-                    RelPath = "DataTables\Tickers_tickerGroups.resx"
-                    DependentUpon = "Tickers_tickerGroups.cs"
-                    BuildAction = "EmbeddedResource"
-                />
-                <File
                     RelPath = "DataTables\ValidatedTickers.cs"
                     SubType = "Component"
                     BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "DataTables\ValidatedTickers.resx"
-                    DependentUpon = "ValidatedTickers.cs"
-                    BuildAction = "EmbeddedResource"
                 />
                 <File
                     RelPath = "DataTables\VisuallyValidatedQuotes.cs"
                     SubType = "Component"
                     BuildAction = "Compile"
                 />
-                <File
-                    RelPath = "DataTables\VisuallyValidatedQuotes.resx"
-                    DependentUpon = "VisuallyValidatedQuotes.cs"
-                    BuildAction = "EmbeddedResource"
-                />
+                <Folder RelPath = "NewFolder1\" />
                 <File
                     RelPath = "Selectors\ITickerReceiver.cs"
                     SubType = "Code"
@@ -258,6 +242,7 @@
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
+                <Folder RelPath = "Timing\" />
             </Include>
         </Files>
     </CSHARP>
