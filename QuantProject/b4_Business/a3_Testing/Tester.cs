@@ -1,0 +1,123 @@
+/*
+QuantProject - Quantitative Finance Library
+
+Tester.cs
+Copyright (C) 2003 
+Glauco Siliprandi
+
+This program is free software; you can redistribute it and/or
+modify it under the terms of the GNU General Public License
+as published by the Free Software Foundation; either version 2
+of the License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program; if not, write to the Free Software
+Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+*/
+
+using System;
+using System.Diagnostics;
+using QuantProject.Business.Strategies;
+using QuantProject.ADT;
+using QuantProject.ADT.Optimizing;
+using QuantProject.Business.Financial.Accounting;
+using QuantProject.Business.Financial.Ordering;
+using QuantProject.ADT.Histories;
+
+
+namespace QuantProject.Business.Financial.Testing
+{
+	/// <summary>
+	/// Summary description for Tester.
+	/// </summary>
+	public class Tester : Optimizable
+	{
+    private TestWindow testWindow;
+    private TradingSystems tradingSystems;
+    private Account account = new Account( "test" );
+    private OrderManager orderManager = new OrderManager();
+    private double initialCash = 0.0;
+    //private TestResults testResults;
+
+    public Account Account
+    {
+      get { return account; }
+      set { account = value; }
+    }
+
+    public OrderManager OrderManager
+    {
+      get { return orderManager; }
+      set { orderManager = value; }
+    }
+
+    public Tester(TestWindow testWindow , TradingSystems tradingSystems , double initialCash)
+		{
+			this.testWindow = testWindow;
+      this.tradingSystems = tradingSystems;
+      this.initialCash = initialCash;
+      this.account.AddCash( new ExtendedDateTime( testWindow.StartDateTime , BarComponent.Open ) ,
+        initialCash );
+		}
+
+    public override double Objective()
+    {
+      this.account.Clear();
+      account.AddCash( new ExtendedDateTime( testWindow.StartDateTime , BarComponent.Open ) ,
+        initialCash );
+      this.Test();
+      return - account.GetProfitNetLoss(
+        new ExtendedDateTime( testWindow.EndDateTime , BarComponent.Close ) );
+    }
+
+    #region "Test"
+    private void initializeTradingSystems()
+    {
+      foreach (TradingSystem tradingSystem in tradingSystems)
+      {
+        tradingSystem.Parameters = this.Parameters;
+        tradingSystem.TestStartDateTime = this.testWindow.StartDateTime;
+        tradingSystem.InitializeData();
+      }
+    }
+    private void handleCurrentSignal( Signal signal )
+    {
+      Orders orders = account.AccountStrategy.GetOrders( signal );
+      foreach (Order order in orders )
+      {
+        TimedTransaction transaction = this.OrderManager.GetTransaction( order );
+        account.Add( transaction );
+        //Debug.WriteLine( account.ToString( dateTime ) );
+      }
+    }
+    private void testCurrentDateForTradingSystem( TradingSystem tradingSystem ,
+      ExtendedDateTime extendedDateTime )
+    {
+      Signals signals = tradingSystem.GetSignals( extendedDateTime );
+      foreach (Signal signal in signals)
+        handleCurrentSignal( signal );
+    }
+    private void testCurrentExtendedDateTime( ExtendedDateTime extendedDateTime )
+    {
+      foreach (TradingSystem tradingSystem in this.tradingSystems)
+        testCurrentDateForTradingSystem( tradingSystem , extendedDateTime );
+    }
+    public void Test()
+    {
+      DateTime dateTime = this.testWindow.StartDateTime;
+      initializeTradingSystems();
+      while (dateTime <= this.testWindow.EndDateTime)
+      {
+        testCurrentExtendedDateTime( new ExtendedDateTime( dateTime , BarComponent.Open ) );
+        testCurrentExtendedDateTime( new ExtendedDateTime( dateTime , BarComponent.Close ) );
+        dateTime = dateTime.AddDays( 1 );
+      }
+    }
+    #endregion
+	}
+}
