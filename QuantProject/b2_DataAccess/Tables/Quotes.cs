@@ -206,15 +206,14 @@ namespace QuantProject.DataAccess.Tables
       try
       {
         float adjustedCloseInDatabase;
-        double absoluteRelativeDifference;
+        double absoluteDifference;
           DataTable tableOfSingleRow = 
                     SqlExecutor.GetDataTable("SELECT * FROM quotes WHERE quTicker='" +
                                               ticker + "' AND quDate=" + 
                                               SQLBuilder.GetDateConstant(dateToCheck));
           adjustedCloseInDatabase = (float)(tableOfSingleRow.Rows[0]["quAdjustedClose"]);
-          absoluteRelativeDifference = 
-                            Math.Abs((currentAdjustedValueFromSource - adjustedCloseInDatabase)/currentAdjustedValueFromSource);
-          if(absoluteRelativeDifference>ConstantsProvider.MaxRelativeDifferenceForAdjustedValues)
+          absoluteDifference = Math.Abs(currentAdjustedValueFromSource - adjustedCloseInDatabase);
+          if(absoluteDifference>ConstantsProvider.MaxDifferenceForAdjustedValues)
               isAdjustedCloseChanged = true;
         return isAdjustedCloseChanged;
       }
@@ -236,7 +235,7 @@ namespace QuantProject.DataAccess.Tables
         DateTime date;
         double adjCTCInDatabase;
         double adjCTCInSource;
-        double absoluteRelativeDifference;
+        double absoluteDifference;
         DataRow rowToCheck;
         for(int i = 0;i != numRows;i++)
         {
@@ -246,25 +245,12 @@ namespace QuantProject.DataAccess.Tables
           if(rowToCheck != null)
           {
             adjCTCInSource = (double)rowToCheck[Quotes.AdjustedCloseToCloseRatio];
-            if(adjCTCInSource != 0)
-            {  
-              absoluteRelativeDifference = Math.Abs((adjCTCInDatabase - adjCTCInSource)/adjCTCInSource);
-              if(absoluteRelativeDifference > ConstantsProvider.MaxRelativeDifferenceForCloseToCloseRatios )
-                {
-                  Quotes.DateWithDifferentCloseToClose = date;
-                  return true;
-                }
-            }
-            else if(adjCTCInSource == 0)
-            {  
-              absoluteRelativeDifference = Math.Abs(adjCTCInDatabase - adjCTCInSource);
-              if(absoluteRelativeDifference > ConstantsProvider.MaxRelativeDifferenceForCloseToCloseRatios )
-                {
-                  Quotes.DateWithDifferentCloseToClose = date;
-                  return true;
-                }
-
-            }
+            absoluteDifference = Math.Abs(adjCTCInDatabase - adjCTCInSource);
+            if(absoluteDifference > ConstantsProvider.MaxDifferenceForCloseToCloseRatios )
+              {
+                Quotes.DateWithDifferentCloseToClose = date;
+                return true;
+              }
           }
         }
       }
@@ -273,7 +259,6 @@ namespace QuantProject.DataAccess.Tables
         string notUsed = ex.ToString();
       }
       return false;
-
     }             
 
 
@@ -289,7 +274,6 @@ namespace QuantProject.DataAccess.Tables
                                           Quotes.Date + " ASC", DataViewRowState.CurrentRows);
       float previousClose;
       float currentClose;
-      double currentCloseToCloseRatio;
       DateTime date;
       DataRow rowToBeChanged;
       for(int i = 0;i != numRows;i++)
@@ -297,22 +281,21 @@ namespace QuantProject.DataAccess.Tables
         date = (DateTime)orderedDyDate[i].Row[Quotes.Date];
         rowToBeChanged = tableOfAllQuotesOfAGivenTicker.Rows.Find(date);
         if(i == 0)
-        //the first available quote has 0 as closeToClose ratio
+        //the first available quote ... 
+        
         {
+          // ... has no closeToClose valid ratio
           rowToBeChanged[Quotes.AdjustedCloseToCloseRatio] = 0;
         }
         else
         {
+          //the other quotes have a previous and a current close
           previousClose = (float)orderedDyDate[i-1].Row[Quotes.AdjustedClose];
           currentClose = (float)orderedDyDate[i].Row[Quotes.AdjustedClose];
-          currentCloseToCloseRatio = (double)orderedDyDate[i].Row[Quotes.AdjustedCloseToCloseRatio];
-          
-          if(previousClose != 0 && (currentCloseToCloseRatio == 0 &&
-                                    (previousClose != currentClose)))
-          // if the previouse adj close is not 0 and the current CTC should not be 0
-          // because previous and current are not equal
-              rowToBeChanged[Quotes.AdjustedCloseToCloseRatio] =
-                                        (currentClose - previousClose)/previousClose;
+        
+          if(previousClose != 0)
+          // if the previouse adj close is not 0 the CTC value has to be computed
+              rowToBeChanged[Quotes.AdjustedCloseToCloseRatio] = currentClose/previousClose;
        }
        
       }
