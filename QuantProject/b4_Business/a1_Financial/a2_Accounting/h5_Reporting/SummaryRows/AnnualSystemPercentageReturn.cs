@@ -14,9 +14,10 @@ namespace QuantProject.Business.Financial.Accounting.Reporting.SummaryRows
 		public AnnualSystemPercentageReturn( Summary summary )
 		{
       double totalROA = summary.TotalPnl / ( summary.FinalAccountValue - summary.TotalPnl );
-      this.rowDescription = "Annual system % return";
-      this.rowValue = ( ( Math.Pow( 1 + totalROA ,
+      summary.AnnualSystemPercentageReturn = ( ( Math.Pow( 1 + totalROA ,
         1.0 / ( (double)summary.IntervalDays/365.0 ) ) ) - 1 ) * 100;
+      this.rowDescription = "Annual system % return";
+      this.rowValue = summary.AnnualSystemPercentageReturn;
     }
 	}
 }
