@@ -76,10 +76,10 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
       //this.progressBarForm = new ProgressBarForm();
       this.reportTable = new ReportTable( "Summary_Reports" );
       this.startDateTime = new EndOfDayDateTime(
-        new DateTime( 2002 , 1 , 1 ) , EndOfDaySpecificTime.FiveMinutesBeforeMarketClose );
+        new DateTime( 2004 , 10 , 4 ) , EndOfDaySpecificTime.FiveMinutesBeforeMarketClose );
       this.endDateTime = new EndOfDayDateTime(
-        new DateTime( 2002 , 3 , 31 ) , EndOfDaySpecificTime.OneHourAfterMarketClose );
-      this.numIntervalDays = 7;
+        new DateTime( 2004 , 10 , 10 ) , EndOfDaySpecificTime.OneHourAfterMarketClose );
+      this.numIntervalDays = 1;
 		}
     #region Run
     
@@ -162,13 +162,24 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
     }
     */
 		#endregion
+    
+    private void checkDateForReport(Object sender , EndOfDayTimingEventArgs endOfDayTimingEventArgs)
+    {
+      Report report;
 
+      if(endOfDayTimingEventArgs.EndOfDayDateTime.DateTime>=this.endDateTime.DateTime )
+      {
+        this.endOfDayTimer.Stop();
+        report = new Report( this.account );
+        report.Show("CTO_Portfolio" , this.numIntervalDays , this.startDateTime , "CTO_Portfolio" );
+
+      }
+    }
     public override void Run()
     {
       //old script
       //this.run_FindBestPortfolioForNextTrade();
       
-      Report report;
       run_initializeEndOfDayTimer();
       run_initializeAccount();
       run_initializeEndOfDayTimerHandler();
@@ -177,10 +188,14 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
         new MarketOpenEventHandler(
         this.endOfDayTimerHandler.MarketOpenEventHandler);  
       
-      this.endOfDayTimer.FiveMinutesBeforeMarketClose +=
-        new FiveMinutesBeforeMarketCloseEventHandler(
-        this.endOfDayTimerHandler.FiveMinutesBeforeMarketCloseEventHandler );
-
+      this.endOfDayTimer.MarketClose +=
+        new MarketCloseEventHandler(
+        this.endOfDayTimerHandler.MarketCloseEventHandler);
+      
+      this.endOfDayTimer.MarketClose +=
+        new MarketCloseEventHandler(
+        this.checkDateForReport);
+      
       this.endOfDayTimer.OneHourAfterMarketClose +=
         new OneHourAfterMarketCloseEventHandler(
         this.endOfDayTimerHandler.OneHourAfterMarketCloseEventHandler );
@@ -190,9 +205,6 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
       
       //this.progressBarForm.Show();
       this.endOfDayTimer.Start();
-      report = new Report( this.account );
-      report.Show("CTO_Portfolio" , this.numIntervalDays , this.startDateTime , "CTO_Portfolio" );
-
       
     }
     #endregion 

@@ -90,19 +90,28 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
     }
 		#endregion
 
-    #region FiveMinutesBeforeMarketCloseEventHandler
+    #region MarketCloseEventHandler
     
-    private void fiveMinutesBeforeMarketCloseEventHandler_closePosition(
+    private void marketCloseEventHandler_closePosition(
       string ticker )
     {
       this.account.ClosePosition( ticker );
     }
-    private void fiveMinutesBeforeMarketCloseEventHandler_closePositions()
+    private void marketCloseEventHandler_closePositions()
     {
-      foreach ( string ticker in this.account.Portfolio.Keys )
-        fiveMinutesBeforeMarketCloseEventHandler_closePosition( ticker );
+      if(this.chosenTickers != null)
+      {
+        foreach( string ticker in this.chosenTickers)
+        {
+          for(int i = 0; i<this.account.Portfolio.Keys.Count; i++)
+          {
+            if(this.account.Portfolio[ticker]!=null)
+              marketCloseEventHandler_closePosition( ticker );
+          }
+        }
+      } 
     }
-    private void fiveMinutesBeforeMarketCloseEventHandler_openPosition(
+    private void marketCloseEventHandler_openPosition(
       string ticker )
     {
       double maxPositionValue = this.account.CashAmount / this.numberOfTickersToBeChosen;
@@ -112,15 +121,16 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
       this.account.AddOrder( new Order( OrderType.MarketBuy ,
         new Instrument( ticker ) , sharesToBeBought ) );
     }
-    private void fiveMinutesBeforeMarketCloseEventHandler_openPositions()
+    private void marketCloseEventHandler_openPositions()
     {
       foreach ( string ticker in this.chosenTickers )
-        this.fiveMinutesBeforeMarketCloseEventHandler_openPosition( ticker );
+        this.marketCloseEventHandler_openPosition( ticker );
     }
-    public void FiveMinutesBeforeMarketCloseEventHandler(
+    public void MarketCloseEventHandler(
       Object sender , EndOfDayTimingEventArgs endOfDayTimingEventArgs )
     {
-      this.fiveMinutesBeforeMarketCloseEventHandler_closePositions();
+      
+      this.marketCloseEventHandler_closePositions();
       //fiveMinutesBeforeMarketCloseEventHandler_openPositions();
     }
     
@@ -180,15 +190,15 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
     private void setTickers(DateTime currentDate)
     {
       TickerSelector mostLiquid = new TickerSelector(SelectionType.Liquidity,
-        false, "STOCKMI", currentDate, currentDate.AddDays(60), this.numberOfEligibleTickers);
+        false, "STOCKMI", currentDate.AddDays(-30), currentDate, this.numberOfEligibleTickers);
       this.eligibleTickers = mostLiquid.GetTableOfSelectedTickers();
       IGenomeManager genManEfficientCTOPortfolio = 
-        new GenomeManagerForEfficientCTOPortfolio(this.eligibleTickers,currentDate, 
-        currentDate.AddDays(60), 
+        new GenomeManagerForEfficientCTOPortfolio(this.eligibleTickers,currentDate.AddDays(-30), 
+        currentDate, 
         this.numberOfTickersToBeChosen, 0.005, 0.05);
       GeneticOptimizer GO = new GeneticOptimizer(genManEfficientCTOPortfolio);
       //GO.KeepOnRunningUntilConvergenceIsReached = true;
-      GO.GenerationNumber = 4;
+      GO.GenerationNumber = 2;
       GO.MutationRate = 0.05;
       GO.Run(false);
       this.chosenTickers = (string[])GO.BestGenome.Meaning;
