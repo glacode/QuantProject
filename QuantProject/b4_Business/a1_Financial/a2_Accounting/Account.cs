@@ -34,6 +34,7 @@ using QuantProject.Data.DataProviders;
 using QuantProject.Business.DataProviders;
 using QuantProject.Business.Financial.Accounting.Reporting;
 using QuantProject.Business.Financial.Accounting.Transactions;
+using QuantProject.Business.Financial.Accounting.Commissions;
 using QuantProject.Business.Financial.Instruments;
 using QuantProject.Business.Financial.Ordering;
 using QuantProject.Business.Strategies;
@@ -192,24 +193,29 @@ namespace QuantProject.Business.Financial.Accounting
 
     private void updateCash( Transaction transaction )
     {
-      cashAmount += transaction.CashFlow();
+      cashAmount += transaction.CashFlow() - transaction.Commission.Value;
     }
 
-    public void Add( TimedTransaction transaction )
+		protected virtual Commission getCommission( Transaction transaction )
+		{
+			return new Commission( transaction );
+		}
+    public void Add( EndOfDayTransaction transaction )
     {
+			transaction.Commission = this.getCommission( transaction );
       this.Transactions.Add( transaction );
       this.updateCash( transaction );
       this.Portfolio.Update( transaction );
       //this.accountReport.AddRecord( this );
     }
-		public void Add( EndOfDayTransaction transaction )
-		{
-			this.Transactions.Add( transaction );
-			this.updateCash( transaction );
-			this.Portfolio.Update( transaction );
-			//this.accountReport.AddRecord( this );
-		}
-
+//		public void Add( Transaction transaction )
+//		{
+//			this.Transactions.Add( transaction );
+//			this.updateCash( transaction );
+//			this.Portfolio.Update( transaction );
+//			//this.accountReport.AddRecord( this );
+//		}
+//
 
 //		public double GetMarketValue( EndOfDayDateTime endOfDayDateTime )
 //		{
