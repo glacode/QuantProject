@@ -105,7 +105,7 @@ namespace QuantProject.Business.DataProviders
 			if ( !this.tickers.Contains( ticker ) )
 				this.tickers.Add( ticker , 1 );
 		}
-
+    [field:NonSerialized]
 		public event NewQuoteEventHandler NewQuote;
 
 //		/// <summary>

@@ -47,7 +47,7 @@ namespace QuantProject.Business.Financial.Ordering
 			this.timer = timer;
 			this.historicalQuoteProvider = historicalQuoteProvider;
 		}
-
+    [field:NonSerialized]
 		public event OrderFilledEventHandler OrderFilled;
 
 		// Tries to execute the order

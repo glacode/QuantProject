@@ -52,11 +52,14 @@ namespace QuantProject.Business.Timing
 //			get	{	return this.endDateTime;	}
 //			set	{	this.endDateTime = value;	}
 //		}
-
+    [field:NonSerialized]
 		public event MarketOpenEventHandler MarketOpen;
-		public event FiveMinutesBeforeMarketCloseEventHandler FiveMinutesBeforeMarketClose;
-		public event MarketCloseEventHandler MarketClose;
-		public event OneHourAfterMarketCloseEventHandler OneHourAfterMarketClose;
+		[field:NonSerialized]
+    public event FiveMinutesBeforeMarketCloseEventHandler FiveMinutesBeforeMarketClose;
+		[field:NonSerialized]
+    public event MarketCloseEventHandler MarketClose;
+		[field:NonSerialized]
+    public event OneHourAfterMarketCloseEventHandler OneHourAfterMarketClose;
 
 		public HistoricalEndOfDayTimer( EndOfDayDateTime startDateTime )
 		{
