@@ -92,6 +92,7 @@ namespace QuantProject.DataAccess.Tables
 
     /// <summary>
     /// Returns the adjusted close value for the given ticker at the specified date
+    /// is returned
     /// </summary>
     /// <param name="ticker">ticker for which the adj close has to be returned</param>
     /// <returns></returns>
@@ -102,7 +103,43 @@ namespace QuantProject.DataAccess.Tables
         "and quDate=" + SQLBuilder.GetDateConstant(date) );
       return (float)dataTable.Rows[0][0];
     }
+/* moved now to the quotes object in the data layer, where the names are slightly different
+      
+    /// <summary>
+    /// Returns true if a quote is available for the given ticker at the given date
+    /// </summary>
+    /// <param name="ticker">ticker for which the check has to be done</param>
+    /// <param name="date">date of the check</param>
+    /// <returns></returns>
+    public static bool IsQuoteAvailable( string ticker, DateTime date )
+    {
+      DataTable dataTable = SqlExecutor.GetDataTable(
+        "select quAdjustedClose from quotes where quTicker='" + ticker + "' " +
+        "and quDate=" + SQLBuilder.GetDateConstant(date) );
+      string booleanStringValue = "false";
+      if(dataTable.Rows.Count>0)
+        booleanStringValue = "True";
+      return Boolean.Parse(booleanStringValue);
+    }
 
+    public static DateTime GetFollowingValidQuoteDate( string ticker, DateTime date )
+    {
+      if(Quotes.IsQuoteAvailable(ticker, date))
+      {
+        return date;
+      }
+      else return GetFollowingValidQuoteDate(ticker, date.AddDays(1));
+    }
+    
+    public static DateTime GetPrecedingValidQuoteDate( string ticker, DateTime date )
+    {
+      if(Quotes.IsQuoteAvailable(ticker, date))
+      {
+        return date;
+      }
+      else return GetPrecedingValidQuoteDate(ticker, date.Subtract(new TimeSpan(1,0,0)));
+    }
+*/
     /// <summary>
     /// It provides updating the database for each closeToCloseRatio contained in the given table
     /// (the table refers to the ticker passed as the first parameter)
@@ -351,7 +388,7 @@ namespace QuantProject.DataAccess.Tables
     /// returns most liquid tickers with the given features
     /// </summary>
 
-    public static DataTable GetMostLiquidTickers( string groupID,
+    public static DataTable GetTickersByLiquidity( bool orderInASCMode, string groupID,
                                                   DateTime firstQuoteDate,
                                                   DateTime lastQuoteDate,
                                                   long maxNumOfReturnedTickers)
@@ -366,45 +403,36 @@ namespace QuantProject.DataAccess.Tables
                     SQLBuilder.GetDateConstant(firstQuoteDate) + " AND " +
                     SQLBuilder.GetDateConstant(lastQuoteDate) + 
                     "GROUP BY tickers.tiTicker, tickers.tiCompanyName " +
-                    "ORDER BY Avg([quVolume]*[quAdjustedClose]) DESC";
-
+                    "ORDER BY Avg([quVolume]*[quAdjustedClose])";
+      string sortDirection = " DESC";
+      if(orderInASCMode)
+        sortDirection = " ASC";
+      sql = sql + sortDirection;
       return SqlExecutor.GetDataTable( sql );
     }
+    
     /// <summary>
-    /// returns most liquid tickers within the given set of tickers
+    /// returns the average traded value for the given ticker in the specified interval
     /// </summary>
-
-    public static DataTable GetMostLiquidTickers( DataTable setOfTickers,
-                                                  DateTime firstQuoteDate,
-                                                  DateTime lastQuoteDate,
-                                                  long maxNumOfReturnedTickers)
+    public static double GetAverageTradedValue( string ticker,
+                                                DateTime firstQuoteDate,
+                                                DateTime lastQuoteDate)
+                                                
     {
-      setOfTickers.Columns.Add("IndexOfLiquidity", System.Type.GetType("System.Double"));
-      DataTable getMostLiquidTicker = setOfTickers.Clone(); 
       DataTable dt;
-      foreach(DataRow row in setOfTickers.Rows)
-      {
-        string sql = "SELECT quotes.quTicker, " +
-                    "Avg([quVolume]*[quAdjustedClose]) AS AverageTradedValue " +
-                    "FROM quotes WHERE quTicker ='" + 
-                    (string)row[0] + "' " +
-                    "AND quotes.quDate BETWEEN " + SQLBuilder.GetDateConstant(firstQuoteDate) + 
-                    " AND " + SQLBuilder.GetDateConstant(lastQuoteDate) + 
-                    " GROUP BY quotes.quTicker";
-        dt = SqlExecutor.GetDataTable( sql );
-        row["IndexOfLiquidity"] = (double)dt.Rows[0]["AverageTradedValue"];
-      }
-      DataRow[] orderedRows = setOfTickers.Select("", "IndexOfLiquidity DESC");
-      object[] valuesToAdd = new object[3];
-      for(long i = 0;i<maxNumOfReturnedTickers && i<setOfTickers.Rows.Count;i++)
-      {
-        valuesToAdd[0]=orderedRows[i][0];
-        valuesToAdd[1]=orderedRows[i][1];
-        valuesToAdd[2]=orderedRows[i][2];
-        getMostLiquidTicker.Rows.Add(valuesToAdd);
-      }
-      return getMostLiquidTicker;
-    }
+      string sql = "SELECT quotes.quTicker, " +
+          "Avg([quVolume]*[quAdjustedClose]) AS AverageTradedValue " +
+          "FROM quotes WHERE quTicker ='" + 
+          ticker + "' " +
+          "AND quotes.quDate BETWEEN " + SQLBuilder.GetDateConstant(firstQuoteDate) + 
+          " AND " + SQLBuilder.GetDateConstant(lastQuoteDate) + 
+          " GROUP BY quotes.quTicker";
+      dt = SqlExecutor.GetDataTable( sql );
+      if(dt.Rows.Count==0)
+        return 0;
+      else
+        return (double)dt.Rows[0]["AverageTradedValue"];
+     }
 
 		#region GetHashValue
 		private string getHashValue_getQuoteString_getRowString_getSingleValueString( Object value )
@@ -500,20 +528,29 @@ namespace QuantProject.DataAccess.Tables
 		/// <summary>
 		/// Returns the quotes for the given instrument , since startDate to endDate
 		/// </summary>
-		/// <param name="ticker"></param>
+		/// <param name="tickerOrGroupID">The symbol of a ticker or the groupID corresponding to a specific set of tickers</param>
 		/// <param name="startDate"></param>
 		/// <param name="endDate"></param>
 		/// <returns></returns>
-		public static void SetDataTable( string ticker , DateTime startDate , DateTime endDate ,
+		public static void SetDataTable( string tickerOrGroupID , DateTime startDate , DateTime endDate ,
 			DataTable dataTable)
 		{
-			string sql =
-				"select * from quotes " +
-				"where " + Quotes.TickerFieldName + "='" + ticker + "' " +
-        "and " + Quotes.Date + ">=" + SQLBuilder.GetDateConstant( startDate ) + " " +
-        "and " + Quotes.Date + "<=" + SQLBuilder.GetDateConstant( endDate ) + " " +
-				"order by " + Quotes.Date;
-			SqlExecutor.SetDataTable( sql , dataTable );
+			string sql;
+      if(Tickers_tickerGroups.HasTickers(tickerOrGroupID))
+			  sql =	"select * from quotes INNER JOIN tickers_tickerGroups ON " +
+              "quotes." + Quotes.TickerFieldName + "=tickers_tickerGroups." + Tickers_tickerGroups.Ticker + " " +
+				      "where " + Tickers_tickerGroups.GroupID + "='" + tickerOrGroupID + "' " +
+              "and " + Quotes.Date + ">=" + SQLBuilder.GetDateConstant( startDate ) + " " +
+              "and " + Quotes.Date + "<=" + SQLBuilder.GetDateConstant( endDate ) + " " +
+				      "order by " + Quotes.Date;
+      else
+        sql =	"select * from quotes " +
+              "where " + Quotes.TickerFieldName + "='" + tickerOrGroupID + "' " +
+              "and " + Quotes.Date + ">=" + SQLBuilder.GetDateConstant( startDate ) + " " +
+              "and " + Quotes.Date + "<=" + SQLBuilder.GetDateConstant( endDate ) + " " +
+              "order by " + Quotes.Date;
+			
+      SqlExecutor.SetDataTable( sql , dataTable );
 		}
 
 

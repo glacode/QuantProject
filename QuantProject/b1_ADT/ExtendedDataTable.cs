@@ -18,33 +18,43 @@ namespace QuantProject.ADT
     /// <summary>
     /// Sort the given DataTable by the specified field, in a DESC mode
     /// </summary>
-    
-    public static void Sort(DataTable tableToSort, string sortingFieldName)
+    public static void Sort(DataTable tableToSort, string sortingFieldName, bool sortByASC)
     {
       DataTable copyOfTableToSort = tableToSort.Copy();
-      DataRow[] orderedRows = copyOfTableToSort.Select("", sortingFieldName + " DESC");
-      int numRows = tableToSort.Rows.Count;
-      int numColumns = tableToSort.Columns.Count;
-      object[] valuesToAdd = new object[numColumns];
+      string sortDirection = " DESC";
+      if(sortByASC)
+        sortDirection = " ASC";
+      DataRow[] orderedRows = copyOfTableToSort.Select("", sortingFieldName + sortDirection);
       tableToSort.Rows.Clear();
-      for(int i = 0;i<numRows;i++)
+      for(int i = 0;i<orderedRows.Length;i++)
       {
-        for(int j = 0;j<numColumns;j++)
-        {
-          valuesToAdd[j]=orderedRows[i][j];
-        }
-        tableToSort.Rows.Add(valuesToAdd);
+        tableToSort.ImportRow(orderedRows[i]);
       }
-      tableToSort.AcceptChanges();
-      
     }
-    public static void DeleteRows(DataTable tableWithRowsToDelete, long indexOfRowFromWhichDeletionHasToBeDone)
+    
+    /// <summary>
+    /// Copy the given DataTable into another DataTable, sorting by the specified field, in a DESC mode
+    /// </summary>
+    public static DataTable CopyAndSort(DataTable tableToCopyAndSort, string sortingFieldName, bool sortByASC)
     {
-      for(long i = indexOfRowFromWhichDeletionHasToBeDone;i<tableWithRowsToDelete.Rows.Count;i++)
+      DataTable copyOfTableToCopyAndSort = tableToCopyAndSort.Clone();
+      string sortDirection = " DESC";
+      if(sortByASC)
+         sortDirection = " ASC";
+      DataRow[] orderedRows = tableToCopyAndSort.Select("", sortingFieldName + sortDirection);
+      for(int i = 0;i<orderedRows.Length;i++)
       {
-        tableWithRowsToDelete.Rows.RemoveAt((int)i);
+        copyOfTableToCopyAndSort.ImportRow(orderedRows[i]);
       }
-      tableWithRowsToDelete.AcceptChanges();
+      return copyOfTableToCopyAndSort;
+    }
+    
+    public static void DeleteRows(DataTable table, long fromIndex)
+    {
+      for(long i = table.Rows.Count - 1;i>=fromIndex; i=table.Rows.Count-1)
+      {
+        table.Rows.RemoveAt((int)i);
+      }
     }
 
 	}

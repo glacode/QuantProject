@@ -91,6 +91,18 @@ namespace QuantProject.DataAccess.Tables
           groupID + "'");
     }
 
+    /// <summary>
+    /// It returns true if some tickers are grouped in the given groupID
+    /// </summary>
+    public static bool HasTickers( string groupID)
+    {
+      /// TO DO use a join in order to return a table with tiTicker and company name  
+      DataTable tickers = SqlExecutor.GetDataTable("SELECT " + Tickers_tickerGroups.Ticker + " FROM tickers_tickerGroups " +
+        "WHERE " + Tickers_tickerGroups.GroupID + "='" +
+        groupID + "'");
+      return tickers.Rows.Count > 0;
+    }
+
    
   }
 }

@@ -58,38 +58,75 @@ namespace QuantProject.Data.DataTables
 			}
     }
     
-    public static DataTable GetBestPerformingTickers(string groupID,
+    public static DataTable GetTickersByPerformance(bool orderByASC, string groupID,
                                                       DateTime firstQuoteDate,
                                                       DateTime lastQuoteDate,
                                                       long maxNumOfReturnedTickers)
     {
       DataTable groupOfTicker = Tickers_tickerGroups.GetTickers(groupID);
-      //TO DO change to a structure compatible with TickerDataTable
-      groupOfTicker.Columns.Add("SimpleReturn", System.Type.GetType("System.Double"));
-      try
-      {
-        double firstQuote, lastQuote;
-        foreach(DataRow row in groupOfTicker.Rows)
-        {
-          firstQuote = QuantProject.DataAccess.Tables.Quotes.GetAdjustedClose((string)row[0],
-                                                                              firstQuoteDate);
-          lastQuote = QuantProject.DataAccess.Tables.Quotes.GetAdjustedClose((string)row[0],
-                                                                              lastQuoteDate);
-          row["SimpleReturn"] = (lastQuote - firstQuote) / firstQuote;
-        }
+      //also possible, but slower:
+      //return TickerDataTable.GetBestPerformingTickers(orderByASC, groupOfTicker, firstQuoteDate,
+      //                                                lastQuoteDate, maxNumOfReturnedTickers);
 
-      }
-      catch(Exception ex)
+      TickerDataTable.addColumnsForPerformanceAnalysis(groupOfTicker);
+      DateTime firstAvailableQuoteDate, lastAvailableQuoteDate;
+      double firstQuote, lastQuote;
+      QuantProject.Data.DataTables.GroupQuotes tickerQuotes = 
+                                new QuantProject.Data.DataTables.GroupQuotes(
+                                          groupID, new DateTime(1980,1,1), DateTime.Now);
+      foreach(DataRow row in groupOfTicker.Rows)
       {
-        System.Windows.Forms.MessageBox.Show(ex.ToString());
+        if(tickerQuotes.GetNumberOfQuotes((string)row[0])>0)
+        {
+          firstAvailableQuoteDate = tickerQuotes.GetFirstValidQuoteDate((string)row[0], firstQuoteDate);
+          lastAvailableQuoteDate =  tickerQuotes.GetFirstValidQuoteDate((string)row[0], lastQuoteDate);
+          firstQuote = tickerQuotes.GetAdjustedClose((string)row[0],firstAvailableQuoteDate);
+          lastQuote = tickerQuotes.GetAdjustedClose((string)row[0],lastAvailableQuoteDate);
+          row["SimpleReturn"] = (lastQuote - firstQuote) / firstQuote;
+          row["PeriodForSimpleReturn"] = "From " + firstAvailableQuoteDate.ToShortDateString() + " to " + lastAvailableQuoteDate.ToShortDateString();
+        }
       }
-      ExtendedDataTable.Sort(groupOfTicker, "SimpleReturn");
+      ExtendedDataTable.Sort(groupOfTicker, "SimpleReturn", orderByASC);
       ExtendedDataTable.DeleteRows(groupOfTicker, maxNumOfReturnedTickers);
       return groupOfTicker;              
       
     }
+    
+    public static DataTable GetTickersByPerformance(bool orderByASC, DataTable setOfTickers,
+                                                    DateTime firstQuoteDate,
+                                                    DateTime lastQuoteDate,
+                                                    long maxNumOfReturnedTickers)
+    {
+      TickerDataTable.addColumnsForPerformanceAnalysis(setOfTickers);
+      DateTime firstAvailableQuoteDate, lastAvailableQuoteDate;
+      double firstQuote, lastQuote;
+      foreach(DataRow row in setOfTickers.Rows)
+      {
+        if(QuantProject.DataAccess.Tables.Quotes.GetNumberOfQuotes((string)row[0]) > 0)
+        {
+          QuantProject.Data.DataTables.Quotes quotesOfCurrentTicker =
+                              new QuantProject.Data.DataTables.Quotes((string)row[0]);
+          firstAvailableQuoteDate = quotesOfCurrentTicker.GetFirstValidQuoteDate(firstQuoteDate);
+          lastAvailableQuoteDate =  quotesOfCurrentTicker.GetFirstValidQuoteDate(lastQuoteDate);
+          firstQuote = quotesOfCurrentTicker.GetAdjustedClose(firstAvailableQuoteDate);
+          lastQuote = quotesOfCurrentTicker.GetAdjustedClose(lastAvailableQuoteDate);
+          row["SimpleReturn"] = (lastQuote - firstQuote) / firstQuote;
+          row["PeriodForSimpleReturn"] = "From " + firstAvailableQuoteDate.ToShortDateString() + " to " + lastAvailableQuoteDate.ToShortDateString();
+        }
+      }
+      ExtendedDataTable.Sort(setOfTickers, "SimpleReturn", orderByASC);
+      ExtendedDataTable.DeleteRows(setOfTickers, maxNumOfReturnedTickers);
+      return setOfTickers;              
+    }
 
+    private static void addColumnsForPerformanceAnalysis(DataTable tableToAnalyze)
+    {
+      if(!tableToAnalyze.Columns.Contains("SimpleReturn"))
+        tableToAnalyze.Columns.Add("SimpleReturn", System.Type.GetType("System.Double"));
+      if(!tableToAnalyze.Columns.Contains("PeriodForSimpleReturn"))
+        tableToAnalyze.Columns.Add("PeriodForSimpleReturn", System.Type.GetType("System.String"));
+    }
 
-
+    
   }
 }
