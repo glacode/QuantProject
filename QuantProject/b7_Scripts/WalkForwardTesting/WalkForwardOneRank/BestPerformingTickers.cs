@@ -95,7 +95,9 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardOneRank
 						100 ) );
 			}
 			this.eligibleAccounts.Sort();
-			for ( int index=this.numberBestPerformingTickers - 1 ; index >= 0 ; index-- )
+			for ( int index=this.eligibleAccounts.Count - 1 ;
+				index >= this.eligibleAccounts.Count - this.numberBestPerformingTickers ;
+				index-- )
 				this.Add( this.eligibleAccounts[ index ] );
 		}
 		/// <summary>
