@@ -9,27 +9,27 @@ using QuantProject.Business.Timing;
 namespace QuantProject.Business.Financial.Accounting.Reporting.SummaryRows
 {
 	/// <summary>
-	/// Summary description for TotalNumberOfTrades.
+	/// Percentage return for the Benchmark
 	/// </summary>
 	[Serializable]
-  public class BuyAndHoldPercentageReturn : SummaryRow
+  public class BenchmarkPercentageReturn : SummaryRow
 	{
-		public BuyAndHoldPercentageReturn( Summary summary ,
+		public BenchmarkPercentageReturn( Summary summary ,
 			IHistoricalQuoteProvider historicalQuoteProvider )
 		{
-      if ( summary.AccountReport.BuyAndHoldTicker != "" )
+      if ( summary.AccountReport.Benchmark != "" )
       {
         // the report has to compare to a buy and hold benchmark
 				double beginningMarketValue = historicalQuoteProvider.GetMarketValue(
-					summary.AccountReport.BuyAndHoldTicker ,
+					summary.AccountReport.Benchmark ,
 					new EndOfDayDateTime( summary.AccountReport.StartDateTime , EndOfDaySpecificTime.MarketOpen ) );
 				double finalMarketValue = historicalQuoteProvider.GetMarketValue(
-					summary.AccountReport.BuyAndHoldTicker ,
+					summary.AccountReport.Benchmark ,
 					summary.AccountReport.EndDateTime );
-				summary.BuyAndHoldPercentageReturn = ( finalMarketValue - beginningMarketValue ) /
+				summary.BenchmarkPercentageReturn = ( finalMarketValue - beginningMarketValue ) /
 					beginningMarketValue * 100;
         this.rowDescription = "Buy & hold % return";
-        this.rowValue = summary.BuyAndHoldPercentageReturn;
+        this.rowValue = summary.BenchmarkPercentageReturn;
       }
     }
 	}
