@@ -227,12 +227,9 @@ namespace QuantProject.Principale
     {
       //try
       {
-        //Application.Run(new Principale());  //remove comment to come back to the Windows application
         new RunMSFTsimpleTest().Run();
-//        string pippo =
-//          ((string)Application.CommonAppDataPath).Substring(0, Application.CommonAppDataPath.LastIndexOf('\\'));
-//
-//        MessageBox.Show( Application.LocalUserAppDataPath );
+        //new RunOneRank().Run();
+        //new RunMSFTwalkForward().Run();
       } 
       //catch ( Exception ex )
       {
