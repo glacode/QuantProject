@@ -1,7 +1,7 @@
 using System;
 using System.Data;
+using QuantProject.Data.DataTables;
 using QuantProject.DataAccess;
-using QuantProject.DataAccess.Tables;
 
 namespace QuantProject.Business.Validation
 {
@@ -16,34 +16,31 @@ namespace QuantProject.Business.Validation
 			// TODO: Add constructor logic here
 			//
 		}
-		#region IsValid
-		private static bool isValid_withoutNewBeguinningQuotes( string ticker , DataTable validatedTicker )
+		/// <summary>
+		/// Validates (if the case) the given ticker from startDate to endDate
+		/// </summary>
+		/// <param name="ticker"></param>
+		/// <param name="startDate"></param>
+		/// <param name="endDate"></param>
+		/// <returns>True if and only if the ticker is validated for the given range</returns>
+		private static bool Validate( string ticker , DateTime startDate , DateTime endDate )
 		{
-			bool returnValue = ( ( validatedTicker.Rows.Count > 0 ) &&
-				( (string)validatedTicker.Rows[ 0 ][ ValidatedTickers.HashValue ] ==
-				ValidatedTickers.GetHashValue( ticker , (DateTime)validatedTicker.Rows[ 0 ][ ValidatedTickers.StartDate ] ,
-				(DateTime)validatedTicker.Rows[ 0 ][ ValidatedTickers.EndDate ] ) ) );
-			if ( returnValue )
-				// the validated period is st qui!!!!
-				returnValue = returnValue;
-			return returnValue;
+			ValidateDataTable validateDataTable = new ValidateDataTable();
+			validateDataTable.AddRows( ticker , startDate , endDate );
+			return ( validateDataTable.Rows.Count == 0 );
 		}
 		/// <summary>
 		/// Checks if the instrument is valid (since the first date to the last date in the quotes table)
 		/// </summary>
 		/// <param name="ticker">Instrument's ticker</param>
 		/// <returns></returns>
-		public static bool IsValid( string ticker )
+		public static bool IsValid( string ticker , DateTime startDate , DateTime endDate )
 		{
-			DataTable validatedTicker =
-				SqlExecutor.GetDataTable( "select * from validatedTickers where vvTicker='" + ticker + "'" );
-//			if ( ( validatedTicker.Rows.Count > 0 ) &&
-//				( (DateTime)validatedTicker.Rows[ 0 ][ ValidatedTickers.StartDate ] <
-//					Quotes.GetStartDate( ticker ) ) )
-//				// new quotes have been added at the beguinning of the ticker quotes, since when it was validated
-//				ValidatedTickers.RemoveValidation( ticker );
-			return isValid_withoutNewBeguinningQuotes( ticker , validatedTicker );
+			QuantProject.Data.DataTables.ValidatedTickers validatedTickers =
+				new QuantProject.Data.DataTables.ValidatedTickers( ticker );
+			return ( ( validatedTickers.Rows.Count > 0 ) &&
+				( (DateTime)validatedTickers.Rows[ 0 ][ ValidatedTickers.StartDate ] > startDate ) &&
+				( (DateTime)validatedTickers.Rows[ 0 ][ ValidatedTickers.EndDate ] > endDate ) );
 		}
-		#endregion
 	}
 }
