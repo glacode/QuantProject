@@ -66,6 +66,7 @@ namespace QuantProject.DataAccess
 			{
 				string exceptionMessage = ex.Message + "\n" + ex.StackTrace;
 				Console.WriteLine( exceptionMessage );
+				throw;
 			}
 		}
 
