@@ -31,6 +31,7 @@ using Excel;
 using QuantProject.ADT;
 using QuantProject.ADT.Histories;
 using QuantProject.Data.DataProviders;
+using QuantProject.Business.DataProviders;
 using QuantProject.Business.Financial.Accounting.Reporting;
 using QuantProject.Business.Financial.Accounting.Transactions;
 using QuantProject.Business.Financial.Instruments;
@@ -128,8 +129,12 @@ namespace QuantProject.Business.Financial.Accounting
 		{
 			if ( this.accountReport == null )
 				// the account report has not been computed yet
-				this.accountReport = this.CreateReport( this.Key ,
+			{
+				AccountReport accountReport = new AccountReport( this ,
+					new HistoricalAdjustedQuoteProvider() );
+				this.accountReport = accountReport.Create( this.Key ,
 					1 , this.endOfDayTimer.GetCurrentTime() );
+			}
 			return this.accountReport.Summary.ReturnOnAccount;
 		}
 		public int CompareTo( Object account )
@@ -206,14 +211,13 @@ namespace QuantProject.Business.Financial.Accounting
 		}
 
 
-		public double GetMarketValue( EndOfDayDateTime endOfDayDateTime )
-		{
-			return this.CashAmount + this.Portfolio.GetMarketValue( endOfDayDateTime );
-		}
+//		public double GetMarketValue( EndOfDayDateTime endOfDayDateTime )
+//		{
+//			return this.CashAmount + this.Portfolio.GetMarketValue( endOfDayDateTime );
+//		}
 		public double GetMarketValue( string ticker )
 		{
-			return HistoricalDataProvider.GetMarketValue( ticker ,
-				this.endOfDayTimer.GetCurrentTime().GetNearestExtendedDateTime() );
+			return this.dataStreamer.GetCurrentBid( ticker );
 		}
 		/// <summary>
 		/// Returns the total account value ( cash + position value )
@@ -222,52 +226,50 @@ namespace QuantProject.Business.Financial.Accounting
 		public double GetMarketValue()
 		{
 			return this.cashAmount +
-				this.Portfolio.GetMarketValue( this.endOfDayTimer.GetCurrentTime() );
+				this.Portfolio.GetMarketValue( this.dataStreamer );
 		}
-		public double GetProfitNetLoss( EndOfDayDateTime endOfDayDateTime )
-    {
-      return GetMarketValue( endOfDayDateTime ) +
-        this.Transactions.TotalWithdrawn -
-        this.Transactions.TotalAddedCash;
-    }
-
-    public History GetProfitNetLossHistory( EndOfDayDateTime finalDateTime )
-    {
-      History history = new History();
-      Account account = new Account( "ToGetProfitNetLossHistory" );
-      foreach ( ArrayList arrayList in this.Transactions.Values )
-        foreach ( EndOfDayTransaction transaction in arrayList )
-        {
-          account.Add( transaction );
-          history.MultiAdd( transaction.EndOfDayDateTime.DateTime ,
-            account.GetProfitNetLoss( transaction.EndOfDayDateTime ) );
-        }
-      history.MultiAdd( finalDateTime.DateTime ,
-        account.GetProfitNetLoss( finalDateTime ) );
-      return history;
-    }
-
+//		public double GetProfitNetLoss( EndOfDayDateTime endOfDayDateTime )
+//    {
+//      return GetMarketValue( endOfDayDateTime ) +
+//        this.Transactions.TotalWithdrawn -
+//        this.Transactions.TotalAddedCash;
+//    }
+//    public History GetProfitNetLossHistory( EndOfDayDateTime finalDateTime )
+//    {
+//      History history = new History();
+//      Account account = new Account( "ToGetProfitNetLossHistory" );
+//      foreach ( ArrayList arrayList in this.Transactions.Values )
+//        foreach ( EndOfDayTransaction transaction in arrayList )
+//        {
+//          account.Add( transaction );
+//          history.MultiAdd( transaction.EndOfDayDateTime.DateTime ,
+//            account.GetProfitNetLoss( transaction.EndOfDayDateTime ) );
+//        }
+//      history.MultiAdd( finalDateTime.DateTime ,
+//        account.GetProfitNetLoss( finalDateTime ) );
+//      return history;
+//    }
+//
     public string ToString( DateTime dateTime )
     {
       return
         "\nCashAmount : " + this.CashAmount +
         "\nPortfolioContent : " + this.Portfolio.ToString() +
         "\nPortfolioMarketValue : " + this.Portfolio.GetMarketValue(
-          new EndOfDayDateTime( dateTime , EndOfDaySpecificTime.MarketClose ) ) +
-        "\nAccountProfitNetLoss : " + this.GetProfitNetLoss(
-          new EndOfDayDateTime( dateTime , EndOfDaySpecificTime.MarketClose ) );
+          this.dataStreamer );
     }
 
+//		public AccountReport CreateReport( string reportName ,
+//			int numDaysForInterval , EndOfDayDateTime endDateTime )
+//		{
+//			AccountReport accountReport = new AccountReport( this );
+//			return accountReport.Create( reportName , numDaysForInterval , endDateTime );
+//		}
 		public AccountReport CreateReport( string reportName ,
-			int numDaysForInterval , EndOfDayDateTime endDateTime )
+			int numDaysForInterval , EndOfDayDateTime endDateTime , string buyAndHoldTicker ,
+			IHistoricalQuoteProvider historicalQuoteProvider)
 		{
-			AccountReport accountReport = new AccountReport( this );
-			return accountReport.Create( reportName , numDaysForInterval , endDateTime );
-		}
-		public AccountReport CreateReport( string reportName ,
-			int numDaysForInterval , EndOfDayDateTime endDateTime , string buyAndHoldTicker )
-		{
-			AccountReport accountReport = new AccountReport( this );
+			AccountReport accountReport = new AccountReport( this , historicalQuoteProvider );
 			return accountReport.Create( reportName , numDaysForInterval ,
 				endDateTime , buyAndHoldTicker );
 		}
