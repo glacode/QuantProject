@@ -102,6 +102,21 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "Funds\AsFunds.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Funds\RunFunds.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Funds\TsFunds.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "MSFTsimpleTest\ResultOk.txt"
                     BuildAction = "Content"
                 />

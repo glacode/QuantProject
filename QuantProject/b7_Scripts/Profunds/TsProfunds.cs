@@ -47,7 +47,7 @@ namespace QuantProject.Scripts
 
     public override void InitializeData()
     {
-      fund = QuoteCache.GetOpenHistory( "BRPIX" );
+      fund = QuoteCache.GetOpenHistory( "FSELX" );
 //      microsoftCloseHistorySMA = microsoftCloseHistory.GetSimpleMovingAverage( (int) parameter.Value );
     }
 
@@ -60,17 +60,17 @@ namespace QuantProject.Scripts
         DateTime previousMarketDay = (DateTime)((History)fund).GetKey(
           ((History)fund).IndexOfKeyOrPrevious( extendedDateTime.DateTime ) );
         DateTime nextMarketDay =
-          new Instrument( "BRPIX" ).GetNextMarketDay( extendedDateTime.DateTime );
+          new Instrument( "FSELX" ).GetNextMarketDay( extendedDateTime.DateTime );
         Signal signal = new Signal();
         if ( (Single)fund[ nextMarketDay ] > (Single)fund[ previousMarketDay ] )
         {
-          signal.Add( new Order( OrderType.MarketBuy , new Instrument( "BRPIX" ) , 1 ,
+          signal.Add( new Order( OrderType.MarketBuy , new Instrument( "FSELX" ) , 1 ,
             new ExtendedDateTime( nextMarketDay , BarComponent.Open ) ) );
           signals.Add( signal );
         }
         if ( (Single)fund[ nextMarketDay ] < (Single)fund[ previousMarketDay ] )
         {
-          signal.Add( new Order( OrderType.MarketSell , new Instrument( "BRPIX" ) , 1 ,
+          signal.Add( new Order( OrderType.MarketSell , new Instrument( "FSELX" ) , 1 ,
             new ExtendedDateTime( nextMarketDay , BarComponent.Open ) ) );
           signals.Add( signal );
         }

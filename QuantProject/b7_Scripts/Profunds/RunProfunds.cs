@@ -47,10 +47,10 @@ namespace QuantProject.Scripts
 		}
     public override void Run()
     {
-      DateTime startDateTime = new DateTime( 2000 , 3 , 20 );
+      DateTime startDateTime = new DateTime( 1990 , 3 , 20 );
       DateTime endDateTime = new DateTime( 2003 , 9 , 26 );
-      QuoteCache.Add( new Instrument( "BRPIX" ) , BarComponent.Open );
-      QuoteCache.Add( new Instrument( "BRPIX" ) , BarComponent.Close );
+      QuoteCache.Add( new Instrument( "FSELX" ) , BarComponent.Open );
+      QuoteCache.Add( new Instrument( "FSELX" ) , BarComponent.Close );
       //QuoteCache.Add( new Instrument( "MSFT" ) , BarComponent.Close );
       QuoteCache.SetCache( startDateTime , endDateTime );
 
@@ -79,7 +79,7 @@ namespace QuantProject.Scripts
       //      tester.Account.AccountReport.ReportToExcel( "MSFT" ,
       //        new ExtendedDateTime( endDateTime , BarComponent.Close ) );
 
-      AccountReport accountReport = tester.Account.CreateReport( "BRPIX" , 7 ,
+      AccountReport accountReport = tester.Account.CreateReport( "FSELX" , 7 ,
         new ExtendedDateTime( endDateTime , BarComponent.Close ) );
       ExcelManager.Add( accountReport );
       ExcelManager.ShowReport();
