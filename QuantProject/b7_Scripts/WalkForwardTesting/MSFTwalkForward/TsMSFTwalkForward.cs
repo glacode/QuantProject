@@ -28,6 +28,7 @@ using QuantProject.ADT.Optimizing;
 using QuantProject.Business.Financial.Instruments;
 using QuantProject.Business.Financial.Ordering;
 using QuantProject.Business.Strategies;
+using QuantProject.Business.Timing;
 
 namespace QuantProject.Scripts
 {
@@ -63,8 +64,8 @@ namespace QuantProject.Scripts
           extendedDateTime.DateTime ) )
         {
           signal.Add( new Order( OrderType.MarketBuy , new Instrument( "MSFT" ) , 1 ,
-            new ExtendedDateTime( new Instrument( "MSFT" ).GetNextMarketDay( extendedDateTime.DateTime ) ,
-            BarComponent.Open ) ) );
+            new EndOfDayDateTime( new Instrument( "MSFT" ).GetNextMarketDay( extendedDateTime.DateTime ) ,
+            EndOfDaySpecificTime.MarketOpen ) ) );
           signals.Add( signal );
         }
         else
@@ -73,9 +74,9 @@ namespace QuantProject.Scripts
             extendedDateTime.DateTime ) )
           {
             signal.Add( new Order( OrderType.MarketSell , new Instrument( "MSFT" ) , 1 ,
-              new ExtendedDateTime(
+              new EndOfDayDateTime(
               new Instrument( "MSFT" ).GetNextMarketDay( extendedDateTime.DateTime ) ,
-              BarComponent.Open ) ) );
+              EndOfDaySpecificTime.MarketOpen ) ) );
             signals.Add( signal );
           }
         }

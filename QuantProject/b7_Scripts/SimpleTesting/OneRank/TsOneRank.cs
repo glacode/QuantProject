@@ -28,6 +28,7 @@ using QuantProject.ADT.Optimizing;
 using QuantProject.Business.Financial.Instruments;
 using QuantProject.Business.Financial.Ordering;
 using QuantProject.Business.Strategies;
+using QuantProject.Business.Timing;
 
 namespace QuantProject.Scripts
 {
@@ -64,13 +65,13 @@ namespace QuantProject.Scripts
         if ( (Single)fund[ nextMarketDay ] > (Single)fund[ previousMarketDay ] )
         {
           signal.Add( new Order( OrderType.MarketBuy , new Instrument( this.ticker ) , 1 ,
-            new ExtendedDateTime( nextMarketDay , BarComponent.Open ) ) );
+            new EndOfDayDateTime( nextMarketDay , EndOfDaySpecificTime.MarketOpen ) ) );
           signals.Add( signal );
         }
         if ( (Single)fund[ nextMarketDay ] < (Single)fund[ previousMarketDay ] )
         {
           signal.Add( new Order( OrderType.MarketSell , new Instrument( this.ticker ) , 1 ,
-            new ExtendedDateTime( nextMarketDay , BarComponent.Open ) ) );
+            new EndOfDayDateTime( nextMarketDay , EndOfDaySpecificTime.MarketOpen ) ) );
           signals.Add( signal );
         }
       }
