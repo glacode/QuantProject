@@ -51,6 +51,7 @@ namespace QuantProject.Business.Financial.Accounting.Reporting
     public ReportTable( string name )
     {
       this.name = name;
+      this.dataTable = new DataTable( name );
     }
   }
 }
