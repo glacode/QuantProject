@@ -308,9 +308,17 @@ namespace QuantProject.Applications.Downloader.Validate
     }
 	private void buttonGoValidateCurrentSelection_Click(object sender, System.EventArgs e)
 	{
+		try
+		{
+		Cursor.Current = Cursors.WaitCursor;
 		this.validateDataTable = this.validateDataGrid.Validate(this.tableOfTickersToBeValidated,
 															this.textBoxSuspiciousRatio.Text);
-	}
+		}
+		finally
+		{
+			Cursor.Current = Cursors.Default;
+		}
+		}
 
     #endregion
 
