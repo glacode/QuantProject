@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Drawing;
+using QuantProject.ADT;
 using QuantProject.ADT.Histories;
 using QuantProject.Presentation.Charting;
 
@@ -12,6 +13,7 @@ namespace QuantProject.Applications.Downloader
 	public abstract class VisualValidationChart : Chart
 	{
 		private DateTime suspiciousDateTime;
+		private int precedingDays;
 //		protected ArrayList histories;
 
 		protected DateTime startDateTime = DateTime.MinValue;
@@ -25,6 +27,12 @@ namespace QuantProject.Applications.Downloader
 				this.suspiciousDateTime = value;
 				this.Invalidate();
 			}
+		}
+		
+		public int PrecedingDays
+		{
+			get { return this.precedingDays; }
+			set	{	this.precedingDays = value;	}
 		}
 		
 		public VisualValidationChart()
@@ -52,9 +60,11 @@ namespace QuantProject.Applications.Downloader
 //			this.endDateTime = (DateTime) this.history.GetKey( Math.Min( this.history.Count - 1 ,
 //				this.history.IndexOfKeyOrPrevious( this.suspiciousDateTime ) ) + 20 );
 			this.startDateTime = (DateTime) history.GetKey( Math.Max( 0 ,
-				history.IndexOfKeyOrPrevious( this.suspiciousDateTime ) - 20 ) );
+				history.IndexOfKeyOrPrevious( this.suspiciousDateTime ) -
+				ConstantsProvider.PrecedingDaysForVisualValidation ) );
 			this.endDateTime = (DateTime) history.GetKey( Math.Min( history.Count - 1 ,
-				history.IndexOfKeyOrPrevious( this.suspiciousDateTime ) ) + 20 );
+				history.IndexOfKeyOrPrevious( this.suspiciousDateTime ) ) +
+				ConstantsProvider.PrecedingDaysForVisualValidation );
 		}
 		protected override void OnPaint(System.Windows.Forms.PaintEventArgs e)
 		{
