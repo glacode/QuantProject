@@ -81,6 +81,43 @@ namespace QuantProject.ADT.Histories
       ((ArrayList)this[ dateTime ]).Add( objectToAdd );
     }
 
+		
+		#region MultiplyBy
+		private double multiplyBy_getCurrentValue( DateTime key )
+		{
+			double returnValue;
+			try
+			{
+				returnValue = Convert.ToDouble( this[ key ] );
+			}
+			catch ( Exception exception )
+			{
+				string errorMessage = "The current History object contains a value " +
+					"that cannot be converted to a double. The wrong value is at the date " +
+					key.ToString() + ".\nOriginal error message: " + exception.Message;
+				throw new Exception( errorMessage );
+			}
+			return returnValue;
+		}
+		/// <summary>
+		/// Returns an history where each value is multiplied by the given factor.
+		/// The History instance must contain only numeric values
+		/// </summary>
+		/// <param name="factor"></param>
+		/// <returns></returns>
+		public History MultiplyBy( double factor )
+		{
+			if ( factor == 0.0 )
+				throw new Exception( "factor can not be equal to zero" );
+			History returnValue = new History();
+			foreach ( DateTime key in this.Keys )
+			{				
+				double currentValue = this.multiplyBy_getCurrentValue( key );
+				returnValue.Add( key , currentValue * factor );
+			}
+			return returnValue;
+		}
+		#endregion
     public DateTime GetNextDay( DateTime dateTime )
     {
       if ( this.IndexOfKey( dateTime ) == ( this.Count - 1 ) )
