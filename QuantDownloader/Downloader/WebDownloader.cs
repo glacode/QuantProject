@@ -161,9 +161,9 @@ namespace QuantProject.Applications.Downloader
       // 
       this.dataGrid1.DataMember = "";
       this.dataGrid1.HeaderForeColor = System.Drawing.SystemColors.ControlText;
-      this.dataGrid1.Location = new System.Drawing.Point(328, 8);
+      this.dataGrid1.Location = new System.Drawing.Point(304, 8);
       this.dataGrid1.Name = "dataGrid1";
-      this.dataGrid1.Size = new System.Drawing.Size(432, 456);
+      this.dataGrid1.Size = new System.Drawing.Size(528, 456);
       this.dataGrid1.TabIndex = 1;
       // 
       // oleDbDataAdapter1
@@ -307,7 +307,7 @@ namespace QuantProject.Applications.Downloader
                                                                                                this.radioButtonAllAvailableUntilNow});
       this.groupBoxWebDownloaderOptions.Location = new System.Drawing.Point(8, 8);
       this.groupBoxWebDownloaderOptions.Name = "groupBoxWebDownloaderOptions";
-      this.groupBoxWebDownloaderOptions.Size = new System.Drawing.Size(312, 88);
+      this.groupBoxWebDownloaderOptions.Size = new System.Drawing.Size(288, 88);
       this.groupBoxWebDownloaderOptions.TabIndex = 13;
       this.groupBoxWebDownloaderOptions.TabStop = false;
       this.groupBoxWebDownloaderOptions.Text = "Web Downloader options (source: Yahoo)";
@@ -331,7 +331,7 @@ namespace QuantProject.Applications.Downloader
                                                                                                 this.radioButtonOverWriteYes});
       this.groupBoxUpdateDatabaseOptions.Location = new System.Drawing.Point(8, 136);
       this.groupBoxUpdateDatabaseOptions.Name = "groupBoxUpdateDatabaseOptions";
-      this.groupBoxUpdateDatabaseOptions.Size = new System.Drawing.Size(312, 176);
+      this.groupBoxUpdateDatabaseOptions.Size = new System.Drawing.Size(288, 176);
       this.groupBoxUpdateDatabaseOptions.TabIndex = 14;
       this.groupBoxUpdateDatabaseOptions.TabStop = false;
       this.groupBoxUpdateDatabaseOptions.Text = "Update Database options";
@@ -341,7 +341,7 @@ namespace QuantProject.Applications.Downloader
       this.radioButtonDownloadOnlyAfterMax.Checked = true;
       this.radioButtonDownloadOnlyAfterMax.Location = new System.Drawing.Point(16, 24);
       this.radioButtonDownloadOnlyAfterMax.Name = "radioButtonDownloadOnlyAfterMax";
-      this.radioButtonDownloadOnlyAfterMax.Size = new System.Drawing.Size(288, 24);
+      this.radioButtonDownloadOnlyAfterMax.Size = new System.Drawing.Size(256, 24);
       this.radioButtonDownloadOnlyAfterMax.TabIndex = 3;
       this.radioButtonDownloadOnlyAfterMax.TabStop = true;
       this.radioButtonDownloadOnlyAfterMax.Text = "Download only quotes after last quote (fastest)";
@@ -350,7 +350,7 @@ namespace QuantProject.Applications.Downloader
       // 
       this.radioButtonDownloadBeforeMinAndAfterMax.Location = new System.Drawing.Point(16, 56);
       this.radioButtonDownloadBeforeMinAndAfterMax.Name = "radioButtonDownloadBeforeMinAndAfterMax";
-      this.radioButtonDownloadBeforeMinAndAfterMax.Size = new System.Drawing.Size(288, 32);
+      this.radioButtonDownloadBeforeMinAndAfterMax.Size = new System.Drawing.Size(256, 32);
       this.radioButtonDownloadBeforeMinAndAfterMax.TabIndex = 2;
       this.radioButtonDownloadBeforeMinAndAfterMax.Text = "Download only quotes before first quote and after last quote";
       // 
@@ -358,7 +358,7 @@ namespace QuantProject.Applications.Downloader
       // 
       this.radioButtonOverWriteNo.Location = new System.Drawing.Point(16, 96);
       this.radioButtonOverWriteNo.Name = "radioButtonOverWriteNo";
-      this.radioButtonOverWriteNo.Size = new System.Drawing.Size(288, 32);
+      this.radioButtonOverWriteNo.Size = new System.Drawing.Size(256, 32);
       this.radioButtonOverWriteNo.TabIndex = 1;
       this.radioButtonOverWriteNo.Text = "Download all quotes, adding to database only the missing ones";
       // 
@@ -366,14 +366,14 @@ namespace QuantProject.Applications.Downloader
       // 
       this.radioButtonOverWriteYes.Location = new System.Drawing.Point(16, 136);
       this.radioButtonOverWriteYes.Name = "radioButtonOverWriteYes";
-      this.radioButtonOverWriteYes.Size = new System.Drawing.Size(288, 32);
+      this.radioButtonOverWriteYes.Size = new System.Drawing.Size(256, 32);
       this.radioButtonOverWriteYes.TabIndex = 0;
       this.radioButtonOverWriteYes.Text = "Download all quotes, deleting all existing ones in database";
       // 
       // WebDownloader
       // 
       this.AutoScaleBaseSize = new System.Drawing.Size(5, 13);
-      this.ClientSize = new System.Drawing.Size(768, 470);
+      this.ClientSize = new System.Drawing.Size(840, 470);
       this.Controls.AddRange(new System.Windows.Forms.Control[] {
                                                                   this.groupBoxUpdateDatabaseOptions,
                                                                   this.groupBoxWebDownloaderOptions,
@@ -615,7 +615,6 @@ namespace QuantProject.Applications.Downloader
 	  {
 		  try
 		  {
-			  Cursor.Current = Cursors.WaitCursor;
 			  if (this.OleDbConnection1.State != ConnectionState.Open)
             this.OleDbConnection1.Open();
 			  oleDbCommand1.Connection = this.OleDbConnection1;
@@ -632,7 +631,6 @@ namespace QuantProject.Applications.Downloader
 		  finally
 		  {
 			  this.OleDbConnection1.Close();
-			  Cursor.Current = Cursors.Default;
 		  }
   	
 	  }
@@ -640,16 +638,21 @@ namespace QuantProject.Applications.Downloader
 
     private void button1_Click(object sender, System.EventArgs e)
     {
-	    this.openDbAndSetOleDbCommand();
+      Cursor.Current = Cursors.WaitCursor;
+      this.openDbAndSetOleDbCommand();
 	    this.downloadQuotesOfAllTickers();
       this.button1.Enabled = false;
+      Cursor.Current = Cursors.Default;
+
     }
 
     private void buttonDownloadQuotesOfSelectedTickers_Click(object sender, System.EventArgs e)
     {
-	    this.openDbAndSetOleDbCommand();
+      Cursor.Current = Cursors.WaitCursor;
+      this.openDbAndSetOleDbCommand();
 	    this.downloadQuotesOfSelectedTickers();
       this.buttonDownloadQuotesOfSelectedTickers.Enabled = false;
+      Cursor.Current = Cursors.Default;
     }
 
     private void radioButtonAllAvailableUntilNow_CheckedChanged(object sender, System.EventArgs e)
@@ -667,6 +670,7 @@ namespace QuantProject.Applications.Downloader
     private void WebDownloader_Load(object sender, System.EventArgs e)
     {
       // this is just used for testing code
+      //QuantProject.DataAccess.Tables.Quotes.ComputeAndCommitCloseToCloseRatios("ACE.MI");
 
 
     }

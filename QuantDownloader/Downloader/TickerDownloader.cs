@@ -39,6 +39,7 @@ namespace QuantProject.Applications.Downloader
       this.oleDbConnection1 = myForm.OleDbConnection1;
       this.adapter = new OleDbSingleTableAdapter("SELECT * FROM quotes WHERE 1=2",
                                                   this.downloadedValuesFromSource);
+      this.downloadedValuesFromSource.Columns[Quotes.AdjustedCloseToCloseRatio].DefaultValue = 0;
     }
 
     /*
@@ -52,7 +53,9 @@ namespace QuantProject.Applications.Downloader
       p_myForm.DsTickerCurrentlyDownloaded.Tables[ "Tickers" ].Rows.Add( newRow );
       p_myForm.dataGrid1.Refresh();
     }
-    */	
+    */
+	
+    #region Update Status 
     private void updateCurrentStatus( string newState )
     {
       lock( p_myForm.DsTickerCurrentlyDownloaded.Tables[ "Tickers" ] )
@@ -92,6 +95,9 @@ namespace QuantProject.Applications.Downloader
         p_myForm.dataGrid1.Refresh();
       }
     }
+
+#endregion
+
     private void addTickerToFaultyTickers()
     {
       System.Data.OleDb.OleDbCommand odc = new System.Data.OleDb.OleDbCommand();
@@ -107,7 +113,7 @@ namespace QuantProject.Applications.Downloader
       odc.ExecuteNonQuery();
     }
     
-    
+    /*
     private void addNewAdjustedValueInTable( StreamReader streamReader,
                                              DataTable tableToWhichValuesHaveToBeAdded )
     {
@@ -124,14 +130,19 @@ namespace QuantProject.Applications.Downloader
   	    row = tableToWhichValuesHaveToBeAdded.NewRow();
         row[0] = DateTime.Parse( LineIn[0] );
         row[1] = Double.Parse(LineIn[6]);
+        row[2] = 0;
         tableToWhichValuesHaveToBeAdded.Rows.Add(row);
         
         Line = streamReader.ReadLine();
       }
     }
-    
+    */
+
+    /*
     private DataTable getTableOfNewAdjustedValues( DateTime currBeginDate , DateTime currEndDate )
     {
+     
+      
       int a = currBeginDate.Month - 1;
       int b = currBeginDate.Day;
       int c = currBeginDate.Year;
@@ -139,10 +150,9 @@ namespace QuantProject.Applications.Downloader
       int e = currEndDate.Day;
       int f = currEndDate.Year;
       DataTable table = new DataTable();
-      DataColumn date = new DataColumn("quDate", System.Type.GetType("System.DateTime"));
-      DataColumn adjustedValue = new DataColumn("quAdjustedClose", System.Type.GetType("System.Double"));
-      table.Columns.Add(date);
-      table.Columns.Add(adjustedValue);
+      table.Columns.Add("quDate", System.Type.GetType("System.DateTime"));
+      table.Columns.Add("quAdjustedClose", System.Type.GetType("System.Double"));
+      table.Columns.Add("quAdjustedCloseToCloseRatio", System.Type.GetType("System.Double"));
       try
       {
         HttpWebRequest Req = (HttpWebRequest)WebRequest.Create("http:" + "//table.finance.yahoo.com/table.csv?a=" 
@@ -162,8 +172,12 @@ namespace QuantProject.Applications.Downloader
         MessageBox.Show( exception.ToString() );
       }
       return table;
+      
     }
-    
+    */
+    /// <summary>
+    /// Adds rows to the table (member of the object) containing the downloaded values
+    /// </summary>
     private void addValuesToTable( StreamReader streamReader )
     {
       string Line;
@@ -239,10 +253,13 @@ namespace QuantProject.Applications.Downloader
       }
     }
     
+
+
 	  private DataTable getTableOfDownloadedValues()
     {
       double numDaysOfTimeFrame = ConstantsProvider.MaxNumDaysDownloadedAtEachConnection;
-
+      this.downloadedValuesFromSource.Rows.Clear();
+      this.downloadedValuesFromSource.AcceptChanges();
       DateTime currBeginDate = new DateTime();
       currBeginDate = startDate;
       while ( currBeginDate < endDate )
@@ -259,6 +276,13 @@ namespace QuantProject.Applications.Downloader
 
     }
     
+    private DataTable getTableOfDownloadedValues(DateTime newStartDate, DateTime newEndDate)
+    {
+      this.startDate = newStartDate;
+      this.endDate = newEndDate;
+      return this.getTableOfDownloadedValues();
+    }
+
     private void addTickerTo_gridDataSet()
     {
       DataRow newRow = p_myForm.DsTickerCurrentlyDownloaded.Tables[ "Tickers" ].NewRow();
@@ -315,10 +339,11 @@ namespace QuantProject.Applications.Downloader
         {
           this.updateCurrentStatusAdjustedClose("Changed!");
           if (Quotes.IsAdjustedCloseToCloseRatioChanged(this.p_quTicker, 
-              this.getTableOfNewAdjustedValues(Quotes.GetStartDate(this.p_quTicker),
+              this.getTableOfDownloadedValues(Quotes.GetStartDate(this.p_quTicker),
                                                Quotes.GetEndDate(this.p_quTicker))))
           {
-               this.updateCurrentStatusAdjustedCloseToCloseRatio("Changed!");
+               this.updateCurrentStatusAdjustedCloseToCloseRatio("Changed at " + 
+                                                                  Quotes.DateWithDifferentCloseToClose);
           }
           else
           {
@@ -329,6 +354,7 @@ namespace QuantProject.Applications.Downloader
         //download is executed
         {
           this.updateCurrentStatusAdjustedClose("OK");
+          this.downloadedValuesFromSource = this.getTableOfDownloadedValues();
           this.commitDownloadedValuesToDatabase();
         }
       }
@@ -363,10 +389,10 @@ namespace QuantProject.Applications.Downloader
     
     private void commitDownloadedValuesToDatabase()
     {
-      Quotes.ComputeCloseToCloseValues(this.downloadedValuesFromSource);
-      this.adapter.OleDbDataAdapter.ContinueUpdateOnError = true;
       if(this.p_myForm.IsOverWriteYesSelected)
             Quotes.Delete(this.p_quTicker);
+      QuantProject.DataAccess.Tables.Quotes.ComputeCloseToCloseValues(this.downloadedValuesFromSource);
+      this.adapter.OleDbDataAdapter.ContinueUpdateOnError = true;
       this.adapter.OleDbDataAdapter.Update(this.downloadedValuesFromSource);
       this.updateCurrentStatusDatabaseUpdated("YES");
     }
@@ -374,6 +400,7 @@ namespace QuantProject.Applications.Downloader
     private void resetAndImportTicker()
     {
       this.resetStartDateIfNecessary();
+      this.downloadedValuesFromSource = this.getTableOfDownloadedValues();
       this.commitDownloadedValuesToDatabase();
     }
     
@@ -382,7 +409,6 @@ namespace QuantProject.Applications.Downloader
     public void DownloadTicker()
     {
       // update grid in webdownloader form
-	    this.downloadedValuesFromSource.Rows.Clear();
       addTickerTo_gridDataSet();
       this.numberOfQuotesInDatabase = Quotes.GetNumberOfQuotes(this.p_quTicker);
       if(this.numberOfQuotesInDatabase < 1)
@@ -414,7 +440,6 @@ namespace QuantProject.Applications.Downloader
       {
         this.resetAndImportTicker();
       }
-
         // ticker's quotes are downloaded for the first time or
         // the user has chosen to download all quotes
      
