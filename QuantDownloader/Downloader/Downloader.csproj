@@ -236,7 +236,7 @@
                 />
                 <File
                     RelPath = "QuotesEditor\QuotesChart.cs"
-                    SubType = "Code"
+                    SubType = "UserControl"
                     BuildAction = "Compile"
                 />
                 <File
@@ -245,8 +245,48 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "QuotesEditor\QuotesEditor.resx"
+                    DependentUpon = "QuotesEditor.cs"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "QuotesEditor\ValidationDataGrid.cs"
+                    SubType = "Component"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "QuotesEditor\ValidationGridTabPage.cs"
+                    SubType = "Component"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "QuotesEditor\ValidationTabControl.cs"
+                    SubType = "Component"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "QuotesEditor\ValidationTabPage.cs"
+                    SubType = "Component"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "QuotesEditor\VisualValidationChart.cs"
+                    SubType = "UserControl"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "QuotesEditor\VisualValidationDataGrid.cs"
+                    SubType = "Component"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "QuotesEditor\VisualValidationTabPage.cs"
+                    SubType = "Component"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "QuotesEditor\CloseToClose\CloseToCloseChart.cs"
-                    SubType = "Code"
+                    SubType = "UserControl"
                     BuildAction = "Compile"
                 />
                 <File
@@ -255,17 +295,27 @@
                     BuildAction = "Compile"
                 />
                 <File
-                    RelPath = "QuotesEditor\CloseToClose\CloseToCloseUserControl.cs"
-                    SubType = "UserControl"
+                    RelPath = "QuotesEditor\CloseToClose\CloseToCloseDataGrid.resx"
+                    DependentUpon = "CloseToCloseDataGrid.cs"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "QuotesEditor\CloseToClose\CloseToCloseTabPage.cs"
+                    SubType = "Component"
                     BuildAction = "Compile"
                 />
                 <File
-                    RelPath = "QuotesEditor\CloseToClose\CloseToCloseUserControl.resx"
-                    DependentUpon = "CloseToCloseUserControl.cs"
+                    RelPath = "QuotesEditor\CloseToClose\CloseToCloseTabPage.resx"
+                    DependentUpon = "CloseToCloseTabPage.cs"
                     BuildAction = "EmbeddedResource"
                 />
                 <File
                     RelPath = "QuotesEditor\OHLC\OHLCdataGrid.cs"
+                    SubType = "Component"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "QuotesEditor\OHLC\OHLCtabPage.cs"
                     SubType = "Component"
                     BuildAction = "Compile"
                 />
@@ -278,6 +328,21 @@
                     RelPath = "QuotesEditor\OHLC\OHLCuserControl.resx"
                     DependentUpon = "OHLCuserControl.cs"
                     BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "QuotesEditor\RangeToRange\RangeToRangeChart.cs"
+                    SubType = "UserControl"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "QuotesEditor\RangeToRange\RangeToRangeDataGrid.cs"
+                    SubType = "Component"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "QuotesEditor\RangeToRange\RangeToRangeTabPage.cs"
+                    SubType = "Component"
+                    BuildAction = "Compile"
                 />
                 <File
                     RelPath = "Validate\IValidator.cs"
