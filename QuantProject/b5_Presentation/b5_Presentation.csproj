@@ -97,16 +97,6 @@
                     WrapperTool = "tlbimp"
                 />
                 <Reference
-                    Name = "b4_Business"
-                    Project = "{6EE31501-376E-491B-869E-F06D5B7C9C30}"
-                    Package = "{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}"
-                />
-                <Reference
-                    Name = "b1_ADT"
-                    Project = "{B8A01161-3698-4591-B1EF-90F5FC7D8DBA}"
-                    Package = "{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}"
-                />
-                <Reference
                     Name = "System.Drawing"
                     AssemblyName = "System.Drawing"
                     HintPath = "..\..\..\..\..\..\WINDOWS\Microsoft.NET\Framework\v1.0.3705\System.Drawing.dll"
@@ -137,6 +127,16 @@
                     AssemblyName = "scpl"
                     HintPath = "..\b91_QuantProject\bin\Debug\scpl.dll"
                 />
+                <Reference
+                    Name = "b4_Business"
+                    Project = "{6EE31501-376E-491B-869E-F06D5B7C9C30}"
+                    Package = "{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}"
+                />
+                <Reference
+                    Name = "b1_ADT"
+                    Project = "{B8A01161-3698-4591-B1EF-90F5FC7D8DBA}"
+                    Package = "{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}"
+                />
             </References>
         </Build>
         <Files>
@@ -150,6 +150,10 @@
                     RelPath = "FormatProvider.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "scpl.dll"
+                    BuildAction = "Content"
                 />
                 <File
                     RelPath = "Charting\CharPlot.cs"
@@ -177,19 +181,9 @@
                     BuildAction = "Compile"
                 />
                 <File
-                    RelPath = "Reporting\WindowsForm\EquityChartTabPage.resx"
-                    DependentUpon = "EquityChartTabPage.cs"
-                    BuildAction = "EmbeddedResource"
-                />
-                <File
                     RelPath = "Reporting\WindowsForm\Report.cs"
                     SubType = "Form"
                     BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Reporting\WindowsForm\Report.resx"
-                    DependentUpon = "Report.cs"
-                    BuildAction = "EmbeddedResource"
                 />
                 <File
                     RelPath = "Reporting\WindowsForm\ReportGrid.cs"
@@ -207,19 +201,9 @@
                     BuildAction = "Compile"
                 />
                 <File
-                    RelPath = "Reporting\WindowsForm\ReportTabControl.resx"
-                    DependentUpon = "ReportTabControl.cs"
-                    BuildAction = "EmbeddedResource"
-                />
-                <File
                     RelPath = "Reporting\WindowsForm\SummaryTabPage.cs"
                     SubType = "Component"
                     BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Reporting\WindowsForm\SummaryTabPage.resx"
-                    DependentUpon = "SummaryTabPage.cs"
-                    BuildAction = "EmbeddedResource"
                 />
             </Include>
         </Files>
