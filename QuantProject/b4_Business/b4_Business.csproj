@@ -222,7 +222,22 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "a07_DataProviders\HistoricalAdjustedQuoteProvider.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "a07_DataProviders\HistoricalEndOfDayDataStreamer.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "a07_DataProviders\HistoricalRawQuoteProvider.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "a07_DataProviders\IHistoricalQuoteProvider.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
