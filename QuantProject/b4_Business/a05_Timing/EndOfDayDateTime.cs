@@ -91,6 +91,16 @@ namespace QuantProject.Business.Timing
 				returnValue = 1;
 			return returnValue;
 		}
+		/// <summary>
+		/// Returns a deep copy of the current instance
+		/// </summary>
+		/// <returns></returns>
+		public EndOfDayDateTime Copy()
+		{
+			return new EndOfDayDateTime(
+				new DateTime( this.dateTime.Year , this.dateTime.Month , this.dateTime.Day ) ,
+				this.endOfDaySpecificTime );
+		}
 		#region MoveNext
 		private	EndOfDaySpecificTime getNextSpecificTime( )
 		{
