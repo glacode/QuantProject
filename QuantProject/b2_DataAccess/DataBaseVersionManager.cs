@@ -76,7 +76,6 @@ namespace QuantProject.DataAccess
 			try
 			{
 				this.oleDbConnection = oleDbConnection;
-				this.oleDbConnection.Open();
 				this.initialize_updatingMethods();
 			}
 			catch(Exception ex)
@@ -212,12 +211,10 @@ namespace QuantProject.DataAccess
 					updatingMethodHandler handler = (updatingMethodHandler)method;
 					handler();
 				}
-				this.oleDbConnection.Close();
 			}
 			catch(Exception ex)
 			{
 				MessageBox.Show(ex.ToString());
-				this.oleDbConnection.Close();
 			}
 		}
     #endregion	
