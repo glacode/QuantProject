@@ -171,7 +171,7 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
       {
         this.endOfDayTimer.Stop();
         report = new Report( this.account );
-        report.Show("CTO_Portfolio" , this.numIntervalDays , this.startDateTime , "CTO_Portfolio" );
+        report.Show("CTO_Portfolio" , this.numIntervalDays , this.endDateTime , "MSFT" );
 
       }
     }
