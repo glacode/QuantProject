@@ -26,7 +26,7 @@ using QuantProject.ADT;
 using QuantProject.Business.Timing;
 using QuantProject.Data.DataProviders;
 
-namespace QuantProject.Business.Timing
+namespace QuantProject.Business.DataProviders
 {
 	/// <summary>
 	/// IDataStreamer implementation using end of day historical data
@@ -36,6 +36,7 @@ namespace QuantProject.Business.Timing
 		private Hashtable tickers;
 
 		private IEndOfDayTimer endOfDayTimer;
+		private IHistoricalQuoteProvider historicalQuoteProvider;
 
 		private EndOfDayDateTime startDateTime;
 		private EndOfDayDateTime endDateTime;
@@ -52,9 +53,11 @@ namespace QuantProject.Business.Timing
 			set	{	this.endDateTime = value;	}
 		}
 
-		public HistoricalEndOfDayDataStreamer( IEndOfDayTimer endOfDayTimer )
+		public HistoricalEndOfDayDataStreamer( IEndOfDayTimer endOfDayTimer ,
+			IHistoricalQuoteProvider historicalQuoteProvider )
 		{
 			this.endOfDayTimer = endOfDayTimer;
+			this.historicalQuoteProvider = historicalQuoteProvider;
 			this.endOfDayTimer.MarketOpen += new MarketOpenEventHandler(
 				this.marketOpenEventHandler );
 			this.tickers = new Hashtable();
@@ -67,8 +70,8 @@ namespace QuantProject.Business.Timing
 		/// <returns></returns>
 		public double GetCurrentBid( string ticker )
 		{
-			return HistoricalDataProvider.GetMarketValue( ticker ,
-				this.endOfDayTimer.GetCurrentTime().GetNearestExtendedDateTime() );
+			return historicalQuoteProvider.GetMarketValue( ticker ,
+				this.endOfDayTimer.GetCurrentTime() );
 		}
 
 		/// <summary>
@@ -78,8 +81,8 @@ namespace QuantProject.Business.Timing
 		/// <returns></returns>
 		public double GetCurrentAsk( string ticker )
 		{
-			return HistoricalDataProvider.GetMarketValue( ticker ,
-				this.endOfDayTimer.GetCurrentTime().GetNearestExtendedDateTime() );
+			return historicalQuoteProvider.GetMarketValue( ticker ,
+				this.endOfDayTimer.GetCurrentTime() );
 		}
 
 		/// <summary>

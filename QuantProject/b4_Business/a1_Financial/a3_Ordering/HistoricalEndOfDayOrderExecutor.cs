@@ -24,6 +24,7 @@ using System;
 using System.Collections;
 
 using QuantProject.Data.DataProviders;
+using QuantProject.Business.DataProviders;
 using QuantProject.Business.Financial.Accounting;
 using QuantProject.Business.Financial.Accounting.Transactions;
 using QuantProject.Business.Timing;
@@ -37,10 +38,13 @@ namespace QuantProject.Business.Financial.Ordering
 	public class HistoricalEndOfDayOrderExecutor : IOrderExecutor
 	{
 		private IEndOfDayTimer timer;
+		private IHistoricalQuoteProvider historicalQuoteProvider;
 
-		public HistoricalEndOfDayOrderExecutor( IEndOfDayTimer timer )
+		public HistoricalEndOfDayOrderExecutor( IEndOfDayTimer timer ,
+			IHistoricalQuoteProvider historicalQuoteProvider )
 		{
 			this.timer = timer;
+			this.historicalQuoteProvider = historicalQuoteProvider;
 		}
 
 		public event OrderFilledEventHandler OrderFilled;
@@ -48,9 +52,8 @@ namespace QuantProject.Business.Financial.Ordering
 		// Tries to execute the order
 		public void Execute( Order order )
 		{
-			double instrumentPrice = HistoricalDataProvider.GetMarketValue( order.Instrument.Key ,
-				this.timer.GetCurrentTime().DateTime ,
-				this.timer.GetCurrentTime().GetNearestBarComponent() );
+			double instrumentPrice = this.historicalQuoteProvider.GetMarketValue( order.Instrument.Key ,
+				this.timer.GetCurrentTime() );
 			EndOfDayTransaction endOfDayTransaction = new EndOfDayTransaction(
 				TimedTransaction.GetTransactionType( order.Type ) , order.Instrument ,
 				order.Quantity , instrumentPrice ,
