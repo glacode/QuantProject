@@ -106,6 +106,7 @@ namespace QuantProject.Applications.Downloader
 			// 
 			this.menuItemTickerGroupsViewer.Index = 1;
 			this.menuItemTickerGroupsViewer.Text = "Ticker-Groups Viewer";
+			this.menuItemTickerGroupsViewer.Click += new System.EventHandler(this.menuItemTickerGroupsViewer_Click);
 			// 
 			// menuImport
 			// 
@@ -229,6 +230,12 @@ namespace QuantProject.Applications.Downloader
 		{
 			TickerViewer tickerViewer = new TickerViewer();
 			tickerViewer.Show();
+		}
+
+		private void menuItemTickerGroupsViewer_Click(object sender, System.EventArgs e)
+		{
+			TickerGroupsViewer tickerGroupsViewer = new TickerGroupsViewer();
+			tickerGroupsViewer.Show();
 		}
 
 	}

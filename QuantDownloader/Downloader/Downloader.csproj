@@ -165,6 +165,16 @@
                     BuildAction = "None"
                 />
                 <File
+                    RelPath = "GroupEditor.cs"
+                    SubType = "Form"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "GroupEditor.resx"
+                    DependentUpon = "GroupEditor.cs"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
                     RelPath = "Main.cs"
                     SubType = "Form"
                     BuildAction = "Compile"
@@ -195,6 +205,16 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "TickerGroupsViewer.cs"
+                    SubType = "Form"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "TickerGroupsViewer.resx"
+                    DependentUpon = "TickerGroupsViewer.cs"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
                     RelPath = "TickerViewer.cs"
                     SubType = "Form"
                     BuildAction = "Compile"
@@ -216,7 +236,7 @@
                 />
                 <File
                     RelPath = "QuotesEditor\QuotesChart.cs"
-                    SubType = "UserControl"
+                    SubType = "Code"
                     BuildAction = "Compile"
                 />
                 <File
@@ -226,7 +246,7 @@
                 />
                 <File
                     RelPath = "QuotesEditor\CloseToClose\CloseToCloseChart.cs"
-                    SubType = "UserControl"
+                    SubType = "Code"
                     BuildAction = "Compile"
                 />
                 <File
