@@ -29,6 +29,7 @@ using QuantProject.ADT.Optimizing;
 using QuantProject.Business.Financial.Accounting;
 using QuantProject.Business.Financial.Ordering;
 using QuantProject.Business.Timing;
+using QuantProject.Data.DataProviders;
 
 
 namespace QuantProject.Business.Testing
@@ -42,6 +43,7 @@ namespace QuantProject.Business.Testing
     private TestWindow testWindow;
     private OrderManager orderManager = new OrderManager();
     private double initialCash = 0.0;
+		private IDataStreamer dataStreamer;
     //private TestResults testResults;
 
     public OrderManager OrderManager
@@ -50,10 +52,12 @@ namespace QuantProject.Business.Testing
       set { orderManager = value; }
     }
 
-    public Tester(TestWindow testWindow , TradingSystems tradingSystems , double initialCash)
+    public Tester(TestWindow testWindow , TradingSystems tradingSystems , double initialCash ,
+			IDataStreamer dataStreamer )
 		{
 			this.testWindow = testWindow;
-      this.TradingSystems = tradingSystems;
+			this.dataStreamer = dataStreamer;
+			this.TradingSystems = tradingSystems;
       this.initialCash = initialCash;
       this.Account.AddCash( new EndOfDayDateTime( testWindow.StartDateTime , EndOfDaySpecificTime.MarketOpen ) ,
         initialCash );
@@ -65,8 +69,7 @@ namespace QuantProject.Business.Testing
       this.Account.AddCash( new EndOfDayDateTime( testWindow.StartDateTime , EndOfDaySpecificTime.MarketOpen ) ,
         initialCash );
       this.Test();
-      return - this.Account.GetProfitNetLoss(
-        new EndOfDayDateTime( testWindow.EndDateTime , EndOfDaySpecificTime.MarketClose ) );
+      return - this.Account.GetFitnessValue();
     }
 
     #region "Test"
@@ -79,27 +82,29 @@ namespace QuantProject.Business.Testing
         tradingSystem.InitializeData();
       }
     }
-    private void handleCurrentSignal( Signal signal )
+    private void handleCurrentSignal( Signal signal , IDataStreamer dataStreamer )
     {
-      Orders orders = this.Account.AccountStrategy.GetOrders( signal );
+      Orders orders = this.Account.AccountStrategy.GetOrders( signal , dataStreamer );
       foreach (Order order in orders )
       {
-        TimedTransaction transaction = this.OrderManager.GetTransaction( order );
+        TimedTransaction transaction = this.OrderManager.GetTransaction( order ,
+					dataStreamer );
         this.Account.Add( transaction );
         //Debug.WriteLine( account.ToString( dateTime ) );
       }
     }
     private void testCurrentDateForTradingSystem( TradingSystem tradingSystem ,
-      ExtendedDateTime extendedDateTime )
+      ExtendedDateTime extendedDateTime , IDataStreamer dataStreamer )
     {
       Signals signals = tradingSystem.GetSignals( extendedDateTime );
       foreach (Signal signal in signals)
-        handleCurrentSignal( signal );
+        handleCurrentSignal( signal , dataStreamer );
     }
-    private void testCurrentExtendedDateTime( ExtendedDateTime extendedDateTime )
+    private void testCurrentExtendedDateTime( ExtendedDateTime extendedDateTime ,
+			IDataStreamer dataStreamer )
     {
       foreach (TradingSystem tradingSystem in this.TradingSystems)
-        testCurrentDateForTradingSystem( tradingSystem , extendedDateTime );
+        testCurrentDateForTradingSystem( tradingSystem , extendedDateTime ,dataStreamer );
     }
     public override void Test()
     {
@@ -107,8 +112,10 @@ namespace QuantProject.Business.Testing
       initializeTradingSystems();
       while (dateTime <= this.testWindow.EndDateTime)
       {
-        testCurrentExtendedDateTime( new ExtendedDateTime( dateTime , BarComponent.Open ) );
-        testCurrentExtendedDateTime( new ExtendedDateTime( dateTime , BarComponent.Close ) );
+        testCurrentExtendedDateTime( new ExtendedDateTime( dateTime , BarComponent.Open ) ,
+					dataStreamer );
+        testCurrentExtendedDateTime( new ExtendedDateTime( dateTime , BarComponent.Close ) ,
+					dataStreamer );
         dateTime = dateTime.AddDays( 1 );
       }
     }

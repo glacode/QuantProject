@@ -42,6 +42,7 @@ namespace QuantProject.Business.Testing
     private int inSampleWindowNumDays;
     private int outOfSampleWindowNumDays;
     private TestWindows testWindows;
+		private IDataStreamer dataStreamer;
 
     public DateTime StartDateTime
     {
@@ -88,8 +89,9 @@ namespace QuantProject.Business.Testing
       }
     }
 
-    public WalkForwardTester()
+    public WalkForwardTester( IDataStreamer dataStreamer )
     {
+			this.dataStreamer = dataStreamer;
     }
 
     public void Add( TradingSystem tradingSystem )
@@ -102,7 +104,7 @@ namespace QuantProject.Business.Testing
     private Parameters getOptimizedParameters( TestWindow testWindow )
     {
       Tester tester = new Tester( testWindow , this.TradingSystems ,
-        this.Account.CashAmount );
+        this.Account.CashAmount , this.dataStreamer );
       tester.Parameters = this.Parameters.Copy();
       tester.Optimize();
       return tester.OptimalParameters;
@@ -110,7 +112,8 @@ namespace QuantProject.Business.Testing
 
     private void testNextStepOutOfSample( Parameters parameters , TestWindow testWindow )
     {
-      Tester tester = new Tester( testWindow , this.TradingSystems , this.Account.CashAmount );
+      Tester tester = new Tester( testWindow , this.TradingSystems , this.Account.CashAmount ,
+				this.dataStreamer );
       tester.Account = this.Account;
       tester.Parameters = parameters;
       tester.Test();
@@ -127,7 +130,7 @@ namespace QuantProject.Business.Testing
 
     public override void Test()
     {
-      HistoricalDataProvider.SetCachedHistories( startDateTime , endDateTime );
+//      HistoricalDataProvider.SetCachedHistories( startDateTime , endDateTime );
       testWindows = new TestWindows( startDateTime , endDateTime , inSampleWindowNumDays , outOfSampleWindowNumDays );
       DateTime lastDateTime = new DateTime();
       while ( ! testWindows.IsComplete() )
