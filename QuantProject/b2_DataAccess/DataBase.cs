@@ -36,9 +36,10 @@ namespace QuantProject.DataAccess
 	/// 
 	public class DataBase
 	{
-    private static string mdbPath =
-      ((string)Application.CommonAppDataPath).Substring(0, Application.CommonAppDataPath.LastIndexOf('\\')) +
-      @"\QuantProject.mdb";
+    private static DataBaseLocator dataBaseLocator = new DataBaseLocator("MDB"); 
+	private static string mdbPath = dataBaseLocator.Path;
+      //((string)Application.CommonAppDataPath).Substring(0, Application.CommonAppDataPath.LastIndexOf('\\')) +
+      //@"\QuantProject.mdb";
     private static string connectionString =
       @"Provider=Microsoft.Jet.OLEDB.4.0;Password="""";User ID=Admin;Data Source=" +
       mdbPath +
@@ -48,7 +49,7 @@ namespace QuantProject.DataAccess
 		public DataBase()
 		{
 			//
-			// TODO: Add constructor logic here
+			
 			//
 		}
 
