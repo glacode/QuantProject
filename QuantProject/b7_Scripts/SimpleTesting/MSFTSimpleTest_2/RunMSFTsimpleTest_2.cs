@@ -49,7 +49,7 @@ namespace QuantProject.Scripts
     public override void Run()
     {
       DateTime startDateTime = new DateTime( 2000 , 1 , 1 );
-      DateTime endDateTime = new DateTime( 2000 , 12 , 31 );
+      DateTime endDateTime = new DateTime( 2000 , 12 , 29 );
       QuoteCache.Add( new Instrument( "MSFT" ) , BarComponent.Open );
       QuoteCache.Add( new Instrument( "MSFT" ) , BarComponent.Close );
       QuoteCache.SetCache( startDateTime , endDateTime );

@@ -40,6 +40,84 @@ namespace QuantProject.Scripts
 			// TODO: Add constructor logic here
 			//
 		}
-    }
-	//TODO: override of the base methods
+		public override ArrayList GetOrdersForCurrentVirtualOrder( Order virtualOrder )
+		{
+			ArrayList orders = new ArrayList();
+			switch(virtualOrder.Type)       
+			{
+				case OrderType.MarketBuy:
+					if(virtualOrder.Quantity != 0)
+					{
+						if ( this.account.Portfolio.IsShort( virtualOrder.Instrument ) )
+							orders.Add( new Order( OrderType.MarketCover ,
+								virtualOrder.Instrument ,
+								(long) - ((Position)this.account.Portfolio[ virtualOrder.Instrument.Key ]).Quantity ,
+								virtualOrder.ExtendedDateTime ) );
+						
+						if ( !this.account.Portfolio.IsLong( virtualOrder.Instrument ) )
+							orders.Add( new Order( OrderType.MarketBuy ,
+								virtualOrder.Instrument ,
+								virtualOrder.Instrument.GetMaxBuyableQuantity(
+								this.account.CashAmount +
+								this.account.Portfolio.GetMarketValue( virtualOrder.ExtendedDateTime ) ,
+								virtualOrder.ExtendedDateTime ) , virtualOrder.ExtendedDateTime ) );
+					}
+					else
+					//it is a special order that acts in order to close any open position
+					{
+						if ( this.account.Portfolio.IsShort( virtualOrder.Instrument ) )
+							orders.Add( new Order( OrderType.MarketCover ,
+								virtualOrder.Instrument ,
+								-(long) this.account.Portfolio.GetPosition( virtualOrder.Instrument ).Quantity ,
+								virtualOrder.ExtendedDateTime ) );
+					
+						if ( this.account.Portfolio.IsLong( virtualOrder.Instrument ) )
+							orders.Add( new Order( OrderType.MarketSell  ,
+								virtualOrder.Instrument ,
+								(long) this.account.Portfolio.GetPosition( virtualOrder.Instrument ).Quantity ,
+								virtualOrder.ExtendedDateTime ) );
+					}
+					break;
+
+				case OrderType.MarketSell:
+					if ( this.account.Portfolio.IsLong( virtualOrder.Instrument ) )
+						orders.Add( new Order( OrderType.MarketSell ,
+							virtualOrder.Instrument ,
+							(long) this.account.Portfolio.GetPosition( virtualOrder.Instrument ).Quantity ,
+							virtualOrder.ExtendedDateTime ) );
+					if ( !this.account.Portfolio.IsShort( virtualOrder.Instrument ) )
+						orders.Add( new Order( OrderType.MarketSellShort ,
+							virtualOrder.Instrument ,
+							virtualOrder.Instrument.GetMaxBuyableQuantity( 
+							this.account.CashAmount +
+							this.account.Portfolio.GetMarketValue( virtualOrder.ExtendedDateTime ) ,
+							virtualOrder.ExtendedDateTime ) ,
+							virtualOrder.ExtendedDateTime ) );
+					break;
+				default:            
+					break;      
+			}
+			return orders;
+		}
+
+		public override Orders GetOrders( Signal signal )
+		{
+			// This is the default account strategy. You may wish to override it.
+			// It assumes the signal contains a single virtual order and it invests
+			// all the available cash according to such virtual order. It assumes
+			// the account will always contain a single position (long or short)
+			// determined by the last signal.
+			Orders orders = new Orders();
+			foreach ( Order virtualOrder in signal )
+			{
+				ArrayList ordersForCurrentVirtualOrder =
+					this.GetOrdersForCurrentVirtualOrder( virtualOrder );
+				foreach( Order order in ordersForCurrentVirtualOrder )
+					orders.Add( order );
+			}
+			return orders;
+		}
+	
+	}
+	
 }

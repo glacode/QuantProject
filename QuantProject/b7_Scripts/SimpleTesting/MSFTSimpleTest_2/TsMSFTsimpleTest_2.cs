@@ -44,56 +44,61 @@ namespace QuantProject.Scripts
 			//
 		}
 
-    private History microsoftCloseHistory;
-    private History microsoftCloseHistorySimpleAverage;
-	private History microsoftCloseHistoryStandardDeviation;
+		private History microsoftCloseHistory;
+		private History microsoftCloseHistorySimpleAverage;
+		private History microsoftCloseHistoryStandardDeviation;
 
-    public override void InitializeData()
-    {
-      microsoftCloseHistory = QuoteCache.GetCloseHistory( "MSFT" );
-      microsoftCloseHistoryStandardDeviation = 
-		  microsoftCloseHistory.GetFunctionHistory (Function.StandardDeviation,5,
-													new DateTime(2000,1,1),
-													new DateTime(2000,12,31));
-		microsoftCloseHistorySimpleAverage = 
-			microsoftCloseHistory.GetFunctionHistory (Function.SimpleAverage,5,
-													  new DateTime(2000,1,1),
-													  new DateTime(2000,12,31));
-	}
-
-    public override Signals GetSignals( ExtendedDateTime extendedDateTime )
-    {
-		Signals signals = new Signals();
-		if ( extendedDateTime.BarComponent == BarComponent.Close &&
-			microsoftCloseHistoryStandardDeviation.IsDecreased(extendedDateTime.DateTime))
+		public override void InitializeData()
 		{
+		microsoftCloseHistory = QuoteCache.GetCloseHistory( "MSFT" );
+			
+			microsoftCloseHistoryStandardDeviation = 
+			microsoftCloseHistory.GetFunctionHistory (Function.StandardDeviation,5,
+													  (DateTime)this.microsoftCloseHistory.GetKey(0),
+													  (DateTime)this.microsoftCloseHistory.GetKey(this.microsoftCloseHistory.Count - 1));
+			microsoftCloseHistorySimpleAverage = 
+				microsoftCloseHistory.GetFunctionHistory (Function.SimpleAverage,5,
+													  (DateTime)this.microsoftCloseHistory.GetKey(0),
+													  (DateTime)this.microsoftCloseHistory.GetKey(this.microsoftCloseHistory.Count - 1));
+		}
+
+		public override Signals GetSignals( ExtendedDateTime extendedDateTime )
+		{
+			Signals signals = new Signals();
 			Signal signal = new Signal();
-			if ( this.microsoftCloseHistorySimpleAverage.IsDecreased(extendedDateTime.DateTime) )
-			{
-				
-				signal.Add( new Order( OrderType.MarketSell , new Instrument( "MSFT" ) , 1 ,
-					new ExtendedDateTime(
-					new Instrument( "MSFT" ).GetNextMarketDay( extendedDateTime.DateTime ) ,
-					BarComponent.Open ) ) );
-				signals.Add( signal );
-				
-			}
-			else
-			{
-				signal.Add( new Order( OrderType.MarketBuy , new Instrument( "MSFT" ) , 1 ,
-					new ExtendedDateTime( new Instrument( "MSFT" ).GetNextMarketDay( extendedDateTime.DateTime ) ,
-					BarComponent.Open ) ) );
-				signals.Add( signal );
-			}
+			if ( extendedDateTime.BarComponent == BarComponent.Close)
+			{	
+				if(microsoftCloseHistoryStandardDeviation.IsDecreased(extendedDateTime.DateTime))
+				{
+					if ( this.microsoftCloseHistorySimpleAverage.IsDecreased(extendedDateTime.DateTime) )
+					{
+						
+						signal.Add( new Order( OrderType.MarketSell , new Instrument( "MSFT" ) , 1 ,
+							new ExtendedDateTime(
+							new Instrument( "MSFT" ).GetNextMarketDay( extendedDateTime.DateTime ) ,
+							BarComponent.Open ) ) );
+						signals.Add( signal );
+						
+					}
+					else
+					{
+						signal.Add( new Order( OrderType.MarketBuy , new Instrument( "MSFT" ) , 1 ,
+							new ExtendedDateTime( new Instrument( "MSFT" ).GetNextMarketDay( extendedDateTime.DateTime ) ,
+							BarComponent.Open ) ) );
+						signals.Add( signal );
+					}
+				}
+				else
+				//if no signal is given by the history of standard deviation
+				//add a special signal to be managed by the account strategy
+				{
+					signal.Add( new Order( OrderType.MarketBuy , new Instrument( "MSFT" ) , 0 ,
+						new ExtendedDateTime( new Instrument( "MSFT" ).GetNextMarketDay( extendedDateTime.DateTime ) ,
+						BarComponent.Open ) ) );
+					signals.Add( signal );
+				}
+			}	
+			return signals;
 		}
-		else
-		//no signal given by the history of standard deviation
-		{
-			// TODO:...
-			//if there's an open position, return a signal to close it the next market day
-		}
-		
-		return signals;
-    }
     }	
 }
