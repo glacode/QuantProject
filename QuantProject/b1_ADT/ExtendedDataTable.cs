@@ -94,7 +94,33 @@ namespace QuantProject.ADT
       return arrayOfFloat;
       
     }
-    
+    /// <summary>
+    /// Get an array of float corresponding to a column compatible with the float type in a given data table,
+    /// filtered by the given filterExpression
+    /// </summary>
+    public static float[] GetArrayOfFloatFromColumn(DataTable table,
+                                                    string columnName,
+                                                    string filterExpression)
+    {
+      DataRow[] selectedRows = table.Select(filterExpression);
+      int numRows = selectedRows.Length;
+      float[] arrayOfFloat = new float[numRows];
+      int index = 0;
+      try
+      {
+        for(; index!= numRows; index++)
+        {
+          arrayOfFloat[index] = (float)selectedRows[index][columnName];
+        }
+
+      }
+      catch(Exception ex)
+      {
+        MessageBox.Show(ex.ToString());
+        index = numRows;
+      }
+      return arrayOfFloat;
+    }
     /// <summary>
     /// Get an array of float corresponding to the ratio between columnA and columnB
     /// </summary>

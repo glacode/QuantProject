@@ -91,7 +91,8 @@ namespace QuantProject.DataAccess.Tables
           "FROM tickers WHERE tiTicker LIKE '" +
           tickerSymbolIsLike + "' " +
           "AND tiCompanyName LIKE '" +
-          tickerCompanyNameIsLike + "'";
+          tickerCompanyNameIsLike + "' " + 
+          "ORDER BY tiTicker";
       return sqlSelectString;
     }
 

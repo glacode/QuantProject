@@ -315,22 +315,25 @@ namespace QuantProject.DataAccess.Tables
 
     public static void ComputeCloseToCloseValues(DataTable tableOfAllQuotesOfAGivenTicker)
     {
-      DataColumn[] columnPrimaryKey = new DataColumn[1];
-      columnPrimaryKey[0]= tableOfAllQuotesOfAGivenTicker.Columns[Quotes.Date];
-      tableOfAllQuotesOfAGivenTicker.PrimaryKey = columnPrimaryKey;
+      //DataColumn[] columnPrimaryKey = new DataColumn[1];
+      //columnPrimaryKey[0]= tableOfAllQuotesOfAGivenTicker.Columns[Quotes.Date];
+      //tableOfAllQuotesOfAGivenTicker.PrimaryKey = columnPrimaryKey;
       
       int numRows = tableOfAllQuotesOfAGivenTicker.Rows.Count;
-      DataView orderedDyDate = new DataView(tableOfAllQuotesOfAGivenTicker,
+      DataView orderedByDate = new DataView(tableOfAllQuotesOfAGivenTicker,
                                           Quotes.AdjustedClose + ">=0",
                                           Quotes.Date + " ASC", DataViewRowState.CurrentRows);
       float previousClose;
       float currentClose;
       DateTime date;
       DataRow rowToBeChanged;
+      DataRow[] foundRows;
       for(int i = 0;i != numRows;i++)
       {
-        date = (DateTime)orderedDyDate[i].Row[Quotes.Date];
-        rowToBeChanged = tableOfAllQuotesOfAGivenTicker.Rows.Find(date);
+        date = (DateTime)orderedByDate[i].Row[Quotes.Date];
+        foundRows = tableOfAllQuotesOfAGivenTicker.Select(Quotes.Date + "=" +
+                                                          SQLBuilder.GetDateConstant(date));
+        rowToBeChanged = foundRows[0];
         if(i == 0)
         //the first available quote ... 
         
@@ -341,8 +344,8 @@ namespace QuantProject.DataAccess.Tables
         else
         {
           //the other quotes have a previous and a current close
-          previousClose = (float)orderedDyDate[i-1].Row[Quotes.AdjustedClose];
-          currentClose = (float)orderedDyDate[i].Row[Quotes.AdjustedClose];
+          previousClose = (float)orderedByDate[i-1].Row[Quotes.AdjustedClose];
+          currentClose = (float)orderedByDate[i].Row[Quotes.AdjustedClose];
         
           if(previousClose != 0)
           // if the previouse adj close is not 0 the CTC value has to be computed

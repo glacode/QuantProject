@@ -95,8 +95,8 @@ namespace QuantProject.DataAccess
 	}
 	private void createTables()
     {
-		this.executeCommand("CREATE TABLE tickers (tiTicker TEXT(8))");
-		this.executeCommand("CREATE TABLE quotes (quTicker TEXT(8), quDate DATETIME, " +
+		this.executeCommand("CREATE TABLE tickers (tiTicker TEXT(10))");
+		this.executeCommand("CREATE TABLE quotes (quTicker TEXT(10), quDate DATETIME, " +
 							"quOpen REAL, quHigh REAL, quLow REAL, quClose REAL, " +
 							"quVolume INTEGER, quAdjustedClose REAL, quAdjustedCloseToCloseRatio FLOAT)");
 		// table of groups where you can collect tickers.
@@ -108,11 +108,11 @@ namespace QuantProject.DataAccess
     // NOTE that a group can be created inside another group and
     // a ticker can belong to one or more groups 
     this.executeCommand("CREATE TABLE tickers_tickerGroups " +
-      "( ttTgId TEXT(8) , ttTiId TEXT(8))");
+      "( ttTgId TEXT(8) , ttTiId TEXT(10))");
     // validatedTickers will contain a record for each ticker whose quotes have already
     // been validated. The quotes are meant to be ok from vtStartDate to vtEndDate.
     this.executeCommand( "CREATE TABLE validatedTickers " +
-      "( vtTicker TEXT(8) , vtStartDate DATETIME , vtEndDate DATETIME , " +
+      "( vtTicker TEXT(10) , vtStartDate DATETIME , vtEndDate DATETIME , " +
 			"vtHashValue TEXT(50) , vtEditDate DATETIME, " +
       "CONSTRAINT myKey PRIMARY KEY ( vtTicker ) )" );
     // visuallyValidatedQuotes will contain a record for each
@@ -124,7 +124,7 @@ namespace QuantProject.DataAccess
     // vvHashValue: hash value for the visually validated quotes
     // vvEditDate: Last date this record has been added/modified
     this.executeCommand( "CREATE TABLE visuallyValidatedQuotes " +
-      "( vvTicker TEXT(8) , vvDate DATETIME , vvValidationType INT , " +
+      "( vvTicker TEXT(10) , vvDate DATETIME , vvValidationType INT , " +
       "vvHashValue TEXT(50) , vvEditDate DATETIME , " +
       "CONSTRAINT myKey PRIMARY KEY ( vvTicker , vvDate , vvValidationType ) )" );
     // quotesFromSecondarySources will contain quotes coming from sources different
@@ -133,7 +133,7 @@ namespace QuantProject.DataAccess
     // qsSource: 1 = manually inserted; 2 = automatically downloaded/imported
     // qsEditDate: last date this record has been added/modified
     this.executeCommand( "create table quotesFromSecondarySources " +
-      "(qsTicker TEXT(8) , " +
+      "(qsTicker TEXT(10) , " +
       "qsDate DATETIME , " +
       "qsSource SHORT , " +
       "qsOpen SINGLE , " +
@@ -148,7 +148,7 @@ namespace QuantProject.DataAccess
 
 	// faultyTickers will contain tickers not downloaded from the web
 		this.executeCommand( "CREATE TABLE  faultyTickers " +
-      "(ftTicker TEXT(8) , " +
+      "(ftTicker TEXT(10) , " +
       "ftDate DATETIME)");
     }
 
@@ -171,7 +171,7 @@ namespace QuantProject.DataAccess
 		// add code here for adding new columns to existing tables;
 
     this.executeCommand("ALTER TABLE tickers " + 
-			"ADD COLUMN tiCompanyName TEXT(100)");
+			"ADD COLUMN tiCompanyName TEXT(100) NOT NULL");
     this.executeCommand("ALTER TABLE validatedTickers " +
       "ADD COLUMN vtHashValue TEXT(50)");
     this.executeCommand("ALTER TABLE validatedTickers " +
