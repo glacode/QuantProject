@@ -122,7 +122,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardOneRank
 		}
 		private void oneHourAfterMarketCloseEventHandler_orderChosenTickers_openPositions()
 		{
-			foreach ( string ticker in this.chosenTickers )
+			foreach ( string ticker in this.chosenTickers.Keys )
 				if ( !this.account.Contains( ticker ) )
 				{
 					oneHourAfterMarketCloseEventHandler_orderChosenTickers_openPositions_forTicker( ticker );
@@ -179,7 +179,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardOneRank
 		}
 		private void fiveMinutesBeforeMarketCloseEventHandler_openPositions()
 		{
-			foreach ( string ticker in this.chosenTickers )
+			foreach ( string ticker in this.chosenTickers.Keys )
 				this.fiveMinutesBeforeMarketCloseEventHandler_openPosition( ticker );
 		}
 		public void FiveMinutesBeforeMarketCloseEventHandler(
