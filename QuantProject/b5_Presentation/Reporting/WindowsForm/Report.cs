@@ -93,7 +93,16 @@ namespace QuantProject.Presentation.Reporting.WindowsForm
     {
       this.accountReport = null;
     }
-  
+    
+    /// <summary>
+    /// Gets the date of the last trade
+    /// </summary>
+    public DateTime GetLastTradeDate()
+    {
+      object returnValue;
+      returnValue = this.account.Transactions.GetKey(this.account.Transactions.Count -1);
+      return (DateTime)returnValue;
+    }
 //    /// <summary>
 //    /// Imports an existing account report
 //    /// </summary>
