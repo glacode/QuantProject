@@ -1,6 +1,7 @@
 using System;
 using System.Data;
 using System.Text;
+using System.Windows.Forms;
 using QuantProject.ADT;
 using QuantProject.ADT.Histories;
 
@@ -11,7 +12,8 @@ namespace QuantProject.DataAccess.Tables
 	/// </summary>
 	public class Quotes
 	{
-		private DataTable quotes;
+       
+    private DataTable quotes;
      
 		// these static fields provide field name in the database table
 		// They are intended to be used through intellisense when necessary
@@ -85,7 +87,65 @@ namespace QuantProject.DataAccess.Tables
         "select * from quotes where quTicker='" + ticker + "'" );
       return dataTable.Rows.Count;
     }
+    
+    /// <summary>
+    /// It provides updating the database for each closeToCloseRatio contained in the given table
+    /// (the table refers to the ticker passed as the first parameter)
+    /// </summary>
+    private static void commitAllCloseToCloseRatios(string ticker,
+                                                    DataTable tableContainingCloseToCloseRatios )
+    {
+      string notUsed = ticker;
+      OleDbSingleTableAdapter adapter = 
+                      new OleDbSingleTableAdapter("SELECT * FROM quotes WHERE 1=2",
+                                                  tableContainingCloseToCloseRatios);
+      adapter.OleDbDataAdapter.Update(tableContainingCloseToCloseRatios);
+      
+      /*
+      foreach(DataRow row in tableContainingCloseToCloseRatios.Rows)
+      {
+        Quotes.UpdateCloseToCloseRatio(ticker, (DateTime)row[Quotes.Date],
+                                       (double)row[Quotes.AdjustedCloseToCloseRatio]);
+      }
+      */
+      
+    }
 
+    /// <summary>
+    /// It provides computation of the adjustedCloseToCloseRatios for the given ticker
+    /// </summary>
+    public static void ComputeAndCommitCloseToCloseRatios( string ticker)
+    {
+      DateTime start = DateTime.Now;
+      DataTable tickerQuotes = Quotes.GetTickerQuotes(ticker);
+      DateTime tickerQuotesTime = DateTime.Now;
+      Quotes.ComputeCloseToCloseValues(tickerQuotes);
+      DateTime computation = DateTime.Now;
+      Quotes.commitAllCloseToCloseRatios(ticker, tickerQuotes);
+      DateTime commit = DateTime.Now;
+      MessageBox.Show("start : " + start.ToString() + "\n" +
+                      "loading quotes - finished : " + tickerQuotesTime.ToString() + "\n" +
+                      "computation - finished: " + computation.ToString() + "\n" +
+                      "commit - finished: " + commit.ToString());
+    }
+    
+    /// <summary>
+    /// It provides deletion of all quotes from the table "quotes" for
+    /// the given ticker
+    /// </summary>
+    public static void Delete( string ticker)
+    {
+      try
+      {
+        SqlExecutor.ExecuteNonQuery("DELETE * FROM quotes " +
+                                    "WHERE quTicker ='" +
+                                    ticker + "'");
+      }
+      catch(Exception ex)
+      {
+        string notUsed = ex.ToString();
+      }
+    }
     /// <summary>
     /// It provides deletion of the quote from the table "quotes" for
     /// the given ticker for a specified date
@@ -104,7 +164,26 @@ namespace QuantProject.DataAccess.Tables
         string notUsed = ex.ToString();
       }
     }
-
+    /// <summary>
+    /// It provides deletion of the quote from the table "quotes" for
+    /// the given ticker for the specified interval
+    /// </summary>
+    public static void Delete( string ticker, DateTime fromDate,
+                                DateTime toDate)
+    {
+      try
+      {
+        SqlExecutor.ExecuteNonQuery("DELETE * FROM quotes " +
+          "WHERE quTicker ='" +
+          ticker + "' AND quDate >=" +
+          SQLBuilder.GetDateConstant(fromDate) + " " +
+          "AND quDate<=" + SQLBuilder.GetDateConstant(toDate));
+      }
+      catch(Exception ex)
+      {
+        string notUsed = ex.ToString();
+      }
+    }
     /// <summary>
     /// It provides addition of the given quote's values into table "quotes" 
     /// </summary>
@@ -151,6 +230,116 @@ namespace QuantProject.DataAccess.Tables
         return isAdjustedCloseChanged;
       }
     }             
+    
+    #region IsAdjustedCloseToCloseRatioChanged
+
+    private static bool isAtLeastOneValueChanged(DataTable tableDB, DataTable tableSource)
+                                                          
+    {
+      try
+      {
+        int numRows = tableDB.Rows.Count;
+        DateTime date;
+        double adjCTCInDatabase;
+        double adjCTCInSource;
+        double absoluteRelativeDifference;
+        DataColumn[] columnPrimaryKey = new DataColumn[0];
+        columnPrimaryKey[0]= tableSource.Columns["quDate"];
+        tableSource.PrimaryKey = columnPrimaryKey;
+        DataRow rowToCheck;
+        for(int i = 0;i != numRows;i++)
+        {
+          date = (DateTime)tableDB.Rows[i][Quotes.Date];
+          adjCTCInDatabase = (double)tableDB.Rows[i][Quotes.AdjustedCloseToCloseRatio];
+          rowToCheck = tableSource.Rows.Find(date);
+          if(rowToCheck != null)
+          {
+            adjCTCInSource = (double)rowToCheck[Quotes.AdjustedCloseToCloseRatio];
+            absoluteRelativeDifference = Math.Abs((adjCTCInDatabase - adjCTCInSource)/adjCTCInSource);
+            if(absoluteRelativeDifference > ConstantsProvider.MaxRelativeDifferenceForCloseToCloseRatios )
+               return true;
+          }
+        }
+      }
+      catch(Exception ex)
+      {
+        string notUsed = ex.ToString();
+      }
+      return false;
+
+    }             
+
+
+    public static void ComputeCloseToCloseValues(DataTable tableContainingNewAdjustedValues)
+                                                          
+    {
+      try
+      {
+        if(!tableContainingNewAdjustedValues.Columns.Contains(Quotes.AdjustedCloseToCloseRatio))
+        {
+          tableContainingNewAdjustedValues.Columns.Add(Quotes.AdjustedCloseToCloseRatio,
+                                                       System.Type.GetType("System.Double"));
+        }
+        int numRows = tableContainingNewAdjustedValues.Rows.Count;
+        float previousClose;
+        float currentClose;
+        for(int i = 0;i != numRows;i++)
+        {
+          if(i == 0)
+          //the first available quote has 0 as closeToClose ratio
+          {
+            tableContainingNewAdjustedValues.Rows[i][Quotes.AdjustedCloseToCloseRatio] = 0;
+          }
+          else
+          {
+            previousClose = (float)tableContainingNewAdjustedValues.Rows[i-1]["quAdjustedClose"];
+            currentClose = (float)tableContainingNewAdjustedValues.Rows[i]["quAdjustedClose"];
+            tableContainingNewAdjustedValues.Rows[i][Quotes.AdjustedCloseToCloseRatio] = 
+                                                  (currentClose - previousClose)/previousClose; 
+          }
+        }
+
+      }
+      catch(Exception ex)
+      {
+        MessageBox.Show(ex.ToString());
+      }
+
+    }             
+
+    /// <summary>
+    /// It returns true if the adjustedCloseToCloseRatio computed
+    /// with the adjusted values from the source is not equal to the ratio
+    /// stored in the database 
+    /// </summary>
+    public static bool IsAdjustedCloseToCloseRatioChanged(string ticker,
+                                                          DataTable tableContainingNewAdjustedValues)
+                                                          
+    {
+      bool isAdjustedCloseToCloseRatioChanged = false;
+      try
+      {
+        DataTable adjustedCloseToCloseFromDatabase = 
+          SqlExecutor.GetDataTable("SELECT " + Quotes.Date + ", " +
+                                   Quotes.AdjustedCloseToCloseRatio + " " +
+                                   "FROM quotes WHERE " + Quotes.TickerFieldName + "='" + ticker +
+                                   "' ORDER BY " + Quotes.Date);
+         Quotes.ComputeCloseToCloseValues(tableContainingNewAdjustedValues);
+         isAdjustedCloseToCloseRatioChanged = 
+              Quotes.isAtLeastOneValueChanged(adjustedCloseToCloseFromDatabase, tableContainingNewAdjustedValues);
+      }
+      catch(Exception ex)
+      {
+        string notUsed = ex.ToString();
+        return true;
+      }
+      
+      return isAdjustedCloseToCloseRatioChanged;
+
+    }             
+    
+    #endregion
+    
     /// <summary>
     /// returns most liquid tickers with the given features
     /// </summary>
@@ -316,5 +505,36 @@ namespace QuantProject.DataAccess.Tables
 				history.IndexOfKeyOrPrevious( quoteDate ) -
 				followingDays ) );
 		}
+    
+
+    /// <summary>
+    /// Provides updating the database with the closeToCloseRatio for
+    /// the given ticker at a specified date
+    /// </summary>
+    public static void UpdateCloseToCloseRatio( string ticker, DateTime date, double closeToCloseRatio )
+    {
+      string sql = "UPDATE quotes SET quotes.quAdjustedCloseToCloseRatio =" +
+                    closeToCloseRatio + " WHERE quotes.quTicker='" + ticker + "' AND " +
+                    "quotes.quDate=" + SQLBuilder.GetDateConstant(date);
+      SqlExecutor.ExecuteNonQuery (sql);
+    }
+
+    /* Now useless, maybe ...
+    /// <summary>
+    /// Returns a DataTable containing ticker, date and adjusted value
+    /// for the given group of tickers
+    /// </summary>
+    /// <param name="groupID">group for which the dataTable has to be returned</param>
+    /// <returns></returns>
+    public static DataTable GetTableWithAdjustedValues( string groupID )
+    {
+      string sql = "SELECT quotes.quTicker, quotes.quDate, quotes.quAdjustedClose, " +
+        "tickers_tickerGroups.ttTgId FROM quotes INNER JOIN " + 
+        "tickers_tickerGroups ON quotes.quTicker = tickers_tickerGroups.ttTiId " +
+        "WHERE tickers_tickerGroups.ttTgId='" + groupID + "' " +
+        "ORDER BY quotes.quTicker, quotes.quDate";
+      return SqlExecutor.GetDataTable( sql );
+    }
+    */
 	}
 }
