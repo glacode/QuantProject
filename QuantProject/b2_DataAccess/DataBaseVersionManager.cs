@@ -151,6 +151,11 @@ namespace QuantProject.DataAccess
       "qsAdjustedCloseToCloseRatio DOUBLE , " +
       "qsEditDate DATETIME , " +
       "CONSTRAINT myKey PRIMARY KEY ( qsTicker , qsDate , qsSource ) )" );
+
+	// faultyTickers will contain tickers not downloaded from the web
+		this.executeCommand( "CREATE TABLE  faultyTickers " +
+      "(ftTicker TEXT(8) , " +
+      "ftDate DATETIME)");
     }
 
 	private void alterTablesAddPrimaryKeys()
