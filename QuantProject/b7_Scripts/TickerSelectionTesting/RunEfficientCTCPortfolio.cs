@@ -56,126 +56,55 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
 	/// - choose the most efficient portfolio among these tickers
 	/// </summary>
 	[Serializable]
-  public class RunEfficientCTCPorfolio : Script
+	public class RunEfficientCTCPorfolio : RunEfficientPorfolio
 	{
-    
-    private ReportTable reportTable;
-    private EndOfDayDateTime startDateTime;
-    private EndOfDayDateTime endDateTime;
-
-//    private int numIntervalDays;// number of days for the equity line graph
-
-		private IHistoricalQuoteProvider historicalQuoteProvider =
-			new HistoricalAdjustedQuoteProvider();
-
-
-    //private ProgressBarForm progressBarForm;
-
-    private EndOfDayTimerHandlerCTC endOfDayTimerHandler;
-
-    private Account account;
+    private int numDayOfPortfolioLife;
 		
-    private IEndOfDayTimer endOfDayTimer;
-		
-    public RunEfficientCTCPorfolio()
+    public RunEfficientCTCPorfolio(string tickerGroupID, int numberOfEligibleTickers, 
+                                    int numberOfTickersToBeChosen, int numDaysForLiquidity, 
+                                    int generationNumberForGeneticOptimizer,
+                                    int populationSizeForGeneticOptimizer, string benchmark,
+                                    DateTime startDate, DateTime endDate,
+                                   	int numDaysOfPortfolioLife, double targetReturn,
+                                    PortfolioType portfolioType):
+																base(tickerGroupID, numberOfEligibleTickers, 
+                                    numberOfTickersToBeChosen, numDaysForLiquidity, 
+                                    generationNumberForGeneticOptimizer,
+                                    populationSizeForGeneticOptimizer, benchmark,
+                                    startDate, endDate, targetReturn,
+                                   	portfolioType)
 		{
-      //this.progressBarForm = new ProgressBarForm();
-      this.reportTable = new ReportTable( "Summary_Reports" );
-      this.startDateTime = new EndOfDayDateTime(
-        new DateTime( 2004 , 1 , 1 ) , EndOfDaySpecificTime.MarketOpen );
-      this.endDateTime = new EndOfDayDateTime(
-        new DateTime( 2004 , 3 , 31 ) , EndOfDaySpecificTime.MarketClose );
-      //this.numIntervalDays = 3; //for report
-
+      this.ScriptName = "CloseToCloseScripts";
+      this.numDayOfPortfolioLife = numDaysOfPortfolioLife;
 		}
     #region Run
+       
     
-      
+    protected override void run_initializeEndOfDayTimerHandler()
+    {
+      this.endOfDayTimerHandler = new EndOfDayTimerHandlerCTC(this.tickerGroupID, this.numberOfEligibleTickers,
+    	                                                        this.numberOfTickersToBeChosen, this.numDaysForLiquidity,
+    	                                                        this.account,
+    	                                                        this.generationNumberForGeneticOptimizer,
+    	                                                        this.populationSizeForGeneticOptimizer, this.benchmark,
+    	                                                        this.numDayOfPortfolioLife, this.targetReturn,
+    	                                                       	this.portfolioType);
+    }
     
-
-    private void run_initializeEndOfDayTimer()
+    protected override void run_initializeHistoricalQuoteProvider()
     {
-      this.endOfDayTimer =
-        new IndexBasedEndOfDayTimer( this.startDateTime, "^MIBTEL" );
+    	this.historicalQuoteProvider = new HistoricalAdjustedQuoteProvider();
     }
-    private void run_initializeAccount()
-    {
-      this.account = new Account( "EfficientCloseToClosePortfolio" , this.endOfDayTimer ,
-        new HistoricalEndOfDayDataStreamer( this.endOfDayTimer ,
-					this.historicalQuoteProvider ) ,
-        new HistoricalEndOfDayOrderExecutor( this.endOfDayTimer ,
-					this.historicalQuoteProvider ) );
-     
-    }
-    private void run_initializeEndOfDayTimerHandler()
-    {
-      this.endOfDayTimerHandler = new EndOfDayTimerHandlerCTC("STOCKMI",70,5,3,this.account,10);
-    }
-    /*
-    private  void inSampleNewProgressEventHandler(
-      Object sender , NewProgressEventArgs eventArgs )
-    {
-      this.progressBarForm.ProgressBarInSample.Value = eventArgs.CurrentProgress;
-      this.progressBarForm.ProgressBarInSample.Refresh();
-    }
-    private void run_initializeProgressHandlers()
-    {
-      this.endOfDayTimerHandler.InSampleNewProgress +=
-        new InSampleNewProgressEventHandler( this.inSampleNewProgressEventHandler );
-    }
-    */
-		#region oneHourAfterMarketCloseEventHandler
-    /*
-    private void oneHourAfterMarketCloseEventHandler_handleProgessBarForm(
-      IEndOfDayTimer endOfDayTimer )
-    {
-      long elapsedDays = Convert.ToInt64( ((TimeSpan)( endOfDayTimer.GetCurrentTime().DateTime - 
-        this.startDateTime.DateTime )).TotalDays );
-      long totalDays = Convert.ToInt64( ((TimeSpan)( this.endDateTime.DateTime - 
-        this.startDateTime.DateTime )).TotalDays );
-      if ( Math.Floor( elapsedDays / totalDays * 100 ) >
-        Math.Floor( ( elapsedDays - 1 ) / totalDays * 100 ) )
-        // a new out of sample time percentage point has been elapsed
-        this.progressBarForm.ProgressBarOutOfSample.Value =
-          Convert.ToInt16( Math.Floor( elapsedDays / totalDays * 100 ) );
-    }
-    public void oneHourAfterMarketCloseEventHandler(
-      Object sender , EndOfDayTimingEventArgs endOfDayTimingEventArgs )
-    {
-      this.oneHourAfterMarketCloseEventHandler_handleProgessBarForm(
-        ( IEndOfDayTimer )sender );
-      if ( ( ( IEndOfDayTimer )sender ).GetCurrentTime().DateTime >
-        this.endDateTime.DateTime )
-      {
-        // the simulation has reached the ending date
-        this.account.EndOfDayTimer.Stop();
-        this.progressBarForm.Close();
-      }
-    }
-    */
-		#endregion
     
-    private void checkDateForReport(Object sender , EndOfDayTimingEventArgs endOfDayTimingEventArgs)
-    {
-      Report report;
-
-      if(endOfDayTimingEventArgs.EndOfDayDateTime.DateTime>=this.endDateTime.DateTime )
-      {
-        this.endOfDayTimer.Stop();
-        report = new Report( this.account , this.historicalQuoteProvider );
-        //report.Show("CTC_Portfolio" , this.numIntervalDays , this.endDateTime , "^MIBTEL" );
-        ObjectArchiver.Archive(this.account,"C:\\CtcPortfolio.qP");
-
-      }
-    }
     public override void Run()
     {
       //old script
       //this.run_FindBestPortfolioForNextTrade();
-      
+      run_initializeHistoricalQuoteProvider();
       run_initializeEndOfDayTimer();
       run_initializeAccount();
       run_initializeEndOfDayTimerHandler();
+      
       //run_initializeProgressHandlers();
       this.endOfDayTimer.MarketOpen +=
         new MarketOpenEventHandler(

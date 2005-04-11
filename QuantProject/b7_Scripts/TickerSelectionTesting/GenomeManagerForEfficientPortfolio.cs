@@ -44,10 +44,10 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
     protected DataTable setOfTickers;
     protected DateTime firstQuoteDate;
     protected DateTime lastQuoteDate;
-    protected int numDaysOfPortfolioLife;
     protected double targetPerformance;
     protected double variance;
     protected double rateOfReturn;
+    protected PortfolioType portfolioType;
     
     //IGenomeManager implementation for properties 
     public int GenomeSize
@@ -76,12 +76,18 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
       get{return this.rateOfReturn;}
     }
 
-    public GenomeManagerForEfficientPortfolio(  DataTable setOfInitialTickers,
-      DateTime firstQuoteDate,
-      DateTime lastQuoteDate,
-      int numberOfTickersInPortfolio,
-      int numDaysOfPortfolioLife,
-      double targetPerformance)
+    public PortfolioType PortfolioType
+    {
+      get{return this.portfolioType;}
+      set{this.portfolioType = value;}
+    }
+    
+    public GenomeManagerForEfficientPortfolio(DataTable setOfInitialTickers,
+																				      DateTime firstQuoteDate,
+																				      DateTime lastQuoteDate,
+																				      int numberOfTickersInPortfolio,
+																				      double targetPerformance,
+																				      PortfolioType portfolioType)
                           
     {
       this.setOfTickers = setOfInitialTickers;
@@ -92,12 +98,10 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
       this.lastQuoteDate = lastQuoteDate;
       this.targetPerformance = targetPerformance;
       this.genomeSize = numberOfTickersInPortfolio;
-      this.numDaysOfPortfolioLife = numDaysOfPortfolioLife;
       //each genes is the index for the setOfTickers table
       this.minValueForGenes = 0;
       this.maxValueForGenes = this.setOfTickers.Rows.Count - 1;
-      
-      this.retrieveData();
+      this.portfolioType = portfolioType;
     }
     
     public virtual double GetFitnessValue(Genome genome)
@@ -109,8 +113,11 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
       this.rateOfReturn = portfolioRateOfReturn;
       
       NormalDistribution normal = new NormalDistribution(portfolioRateOfReturn, Math.Sqrt(portfolioVariance));
-      returnValue = normal.GetProbability(this.targetPerformance*0.75,this.targetPerformance*1.25);
-      //returnValue = 1 - normal.GetProbability(this.targetPerformance);
+      if(this.portfolioType == PortfolioType.OnlyLong)
+         returnValue = normal.GetProbability(this.targetPerformance*0.75,this.targetPerformance*1.25);
+      else//only short orders are permitted
+      	returnValue = normal.GetProbability(-this.targetPerformance*1.25,-this.targetPerformance*0.75);
+      
       return returnValue;
     }
     
@@ -217,6 +224,7 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
         row["ArrayOfRatesOfReturn"] = arrayOfRatesOfReturn;
       }
     }
+    
     //this protected method can be overriden by inherited classes
     //which can specify the type of rates of return
     
@@ -249,7 +257,7 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
       {
         returnValue += BasicFunctions.SimpleAverage((float[])this.setOfTickers.Rows[idx]["ArrayOfRatesOfReturn"]);
       }
-      //the investement is assumed to be equally divided
+      //the investment is assumed to be equally divided
       return (returnValue/this.GenomeSize);
     }
   }

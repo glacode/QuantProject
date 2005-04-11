@@ -41,72 +41,27 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
   /// These handlers contain the core strategy for the efficient close to open portfolio!
   /// </summary>
   [Serializable]
-  public class EndOfDayTimerHandlerCTO
+  public class EndOfDayTimerHandlerCTO : EndOfDayTimerHandler
   {
-    private DataTable eligibleTickers;
-    private string[] chosenTickers;
-    private string[] lastChosenTickers;
     
-    private string tickerGroupID;
-    private int numberOfEligibleTickers;
-    private int numberOfTickersToBeChosen;
-    private int numDaysForLiquidity;
-    private int generationNumberForGeneticOptimizer;
-    private int populationSizeForGeneticOptimizer;
-		
-    private Account account;
-    private ArrayList orders;
-
-    private string benchmark;
-    //these two values have to be updated during
-    //backtest, for minimizing commission amount,
-    //according to broker's commission scheme 
-    private double minPriceForMinimumCommission = 0;
-    private double maxPriceForMinimumCommission = 200;
-    
-
-    public int NumberOfEligibleTickers
-    {
-      get { return this.numberOfEligibleTickers; }
-    }
-		
-    public Account Account
-    {
-      get { return this.account; }
-    }
-		
     public EndOfDayTimerHandlerCTO(string tickerGroupID, int numberOfEligibleTickers, 
                                 int numberOfTickersToBeChosen, int numDaysForLiquidity, Account account,
                                 int generationNumberForGeneticOptimizer,
                                 int populationSizeForGeneticOptimizer,
-                                string benchmark)
+                                string benchmark, double targetReturn,
+                                PortfolioType portfolioType):
+  															base(tickerGroupID, numberOfEligibleTickers, 
+                                numberOfTickersToBeChosen, numDaysForLiquidity, account,
+                                generationNumberForGeneticOptimizer,
+                                populationSizeForGeneticOptimizer,
+                                benchmark, targetReturn,
+                                portfolioType)
     {
-      this.tickerGroupID = tickerGroupID;
-      this.numberOfEligibleTickers = numberOfEligibleTickers;
-      this.numberOfTickersToBeChosen = numberOfTickersToBeChosen;
-      this.numDaysForLiquidity = numDaysForLiquidity;
-      this.account = account;
-      this.generationNumberForGeneticOptimizer = generationNumberForGeneticOptimizer;
-      this.populationSizeForGeneticOptimizer = populationSizeForGeneticOptimizer;
-      this.benchmark = benchmark;
-      this.orders = new ArrayList();
-      this.chosenTickers = new string[numberOfTickersToBeChosen];
-      this.lastChosenTickers = new string[numberOfTickersToBeChosen];
+      
     }
 		    
     #region MarketOpenEventHandler
-    
-    private void marketOpenEventHandler_orderChosenTickers_addToOrderList_forTicker(
-      string ticker )
-    {
- 
-      double cashForSinglePosition = this.account.CashAmount / this.numberOfTickersToBeChosen;
-      long quantity =
-        Convert.ToInt64( Math.Floor( cashForSinglePosition / this.account.DataStreamer.GetCurrentBid( ticker ) ) );
-      Order order = new Order( OrderType.MarketBuy, new Instrument( ticker ) , quantity );
-      this.orders.Add(order);
-    }
-    
+        
     private void marketOpenEventHandler_orderChosenTickers_addToOrderList()
     {
       int idx = 0;
@@ -114,7 +69,7 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
       {
         if(ticker != null)
         {  
-          marketOpenEventHandler_orderChosenTickers_addToOrderList_forTicker( ticker );
+          this.AddOrderForTicker( ticker );
           this.lastChosenTickers[idx] = ticker;
         }
         idx++;
@@ -131,11 +86,11 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
     /// </summary>
     /// <param name="sender"></param>
     /// <param name="eventArgs"></param>
-    public void MarketOpenEventHandler(
+    public override void MarketOpenEventHandler(
       Object sender , EndOfDayTimingEventArgs endOfDayTimingEventArgs )
     {
       if(this.orders.Count == 0 && this.account.Transactions.Count == 0)
-        this.account.AddCash(15000);     
+        this.account.AddCash(17000);     
       
       this.marketOpenEventHandler_orderChosenTickers();
       
@@ -168,7 +123,7 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
       } 
     }
         
-    public void MarketCloseEventHandler(
+    public override void MarketCloseEventHandler(
       Object sender , EndOfDayTimingEventArgs endOfDayTimingEventArgs )
     {
       
@@ -181,20 +136,23 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
       
     private DataTable getSetOfTickersToBeOptimized(DateTime currentDate)
     {
+      /*
       SelectorByAverageRawOpenPrice selectorByOpenPrice = 
                   new SelectorByAverageRawOpenPrice(this.tickerGroupID, false,
                           currentDate.AddDays(-this.numDaysForLiquidity), currentDate,
                           this.numberOfEligibleTickers, this.minPriceForMinimumCommission,
-                          this.maxPriceForMinimumCommission, 0, 1.5);
+                          this.maxPriceForMinimumCommission, 0, 2);
       DataTable tickersByPrice = selectorByOpenPrice.GetTableOfSelectedTickers();
-      SelectorByLiquidity mostLiquid = new SelectorByLiquidity(tickersByPrice, false,
+      */
+     
+      SelectorByLiquidity mostLiquid = new SelectorByLiquidity(this.tickerGroupID, false,
                                       currentDate.AddDays(-this.numDaysForLiquidity), currentDate, this.numberOfEligibleTickers);
       this.eligibleTickers = mostLiquid.GetTableOfSelectedTickers();
-      SelectorByQuotationAtEachMarketDay quotedInEachMarketDayFromMostLiquid = 
+      SelectorByQuotationAtEachMarketDay quotedAtEachMarketDayFromMostLiquid = 
         new SelectorByQuotationAtEachMarketDay( this.eligibleTickers,
                                    false, currentDate.AddDays(-this.numDaysForLiquidity),
                                     currentDate, this.numberOfEligibleTickers, this.benchmark);
-      return quotedInEachMarketDayFromMostLiquid.GetTableOfSelectedTickers();
+      return quotedAtEachMarketDayFromMostLiquid.GetTableOfSelectedTickers();
     }
     
     
@@ -208,8 +166,12 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
       
       {
         IGenomeManager genManEfficientCTOPortfolio = 
-          new GenomeManagerForEfficientCTOPortfolio(setOfTickersToBeOptimized, currentDate.AddDays(-30), 
-          currentDate, this.numberOfTickersToBeChosen, 1, 0.005);
+          new GenomeManagerForEfficientCTOPortfolio(setOfTickersToBeOptimized,
+        	                                          currentDate.AddDays(-this.numDaysForLiquidity),
+        	                                          currentDate,
+        	                                          this.numberOfTickersToBeChosen,
+        	                                          this.targetReturn,
+        	                                         	this.portfolioType);
         GeneticOptimizer GO = new GeneticOptimizer(genManEfficientCTOPortfolio);
         //GO.KeepOnRunningUntilConvergenceIsReached = true;
         GO.GenerationNumber = this.generationNumberForGeneticOptimizer;
@@ -227,6 +189,8 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
     	//min price for minimizing commission amount
     	//according to IB Broker's commission scheme
     	this.minPriceForMinimumCommission = this.account.CashAmount/(this.numberOfTickersToBeChosen*100);
+      this.maxPriceForMinimumCommission = this.maxPriceForMinimumCommission;
+      //just to avoid warning message
     }
     
     /// <summary>
@@ -234,10 +198,10 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
     /// </summary>
     /// <param name="sender"></param>
     /// <param name="eventArgs"></param>
-    public void OneHourAfterMarketCloseEventHandler(
+    public override void OneHourAfterMarketCloseEventHandler(
       Object sender , EndOfDayTimingEventArgs endOfDayTimingEventArgs )
     {
-    	this.oneHourAfterMarketCloseEventHandler_updatePrices();
+    	//this.oneHourAfterMarketCloseEventHandler_updatePrices();
       this.setTickers(endOfDayTimingEventArgs.EndOfDayDateTime.DateTime);
       //sets tickers to be chosen next Market Open event
       this.orders.Clear();

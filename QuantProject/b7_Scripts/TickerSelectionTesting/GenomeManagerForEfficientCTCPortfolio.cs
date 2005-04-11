@@ -38,24 +38,27 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
 	/// </summary>
   public class GenomeManagerForEfficientCTCPortfolio : GenomeManagerForEfficientPortfolio
   {
+    private int numDaysOfPortfolioLife;
     
     public GenomeManagerForEfficientCTCPortfolio(DataTable setOfInitialTickers,
                                                  DateTime firstQuoteDate,
                                                  DateTime lastQuoteDate,
                                                  int numberOfTickersInPortfolio,
                                                  int numDaysOfPortfolioLife,
-                                                 double targetPerformance)
+                                                 double targetPerformance,
+                                                 PortfolioType portfolioType)
                                                  :
                                                 base(setOfInitialTickers,
                                                 firstQuoteDate,
                                                 lastQuoteDate,
                                                 numberOfTickersInPortfolio,
-                                                numDaysOfPortfolioLife,
-                                                targetPerformance)
+                                                targetPerformance,
+                                                portfolioType)
                                 
                           
     {
-      
+      this.numDaysOfPortfolioLife = numDaysOfPortfolioLife;
+      this.retrieveData();
     }
     
     

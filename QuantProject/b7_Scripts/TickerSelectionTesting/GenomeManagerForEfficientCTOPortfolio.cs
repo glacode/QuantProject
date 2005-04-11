@@ -43,17 +43,17 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
                                                  DateTime firstQuoteDate,
                                                  DateTime lastQuoteDate,
                                                  int numberOfTickersInPortfolio,
-                                                 int numDaysOfPortfolioLife,
-                                                 double targetPerformance)
+                                                 double targetPerformance,
+                                                 PortfolioType portfolioType)
                                 :base(setOfInitialTickers,
                                      firstQuoteDate,
                                      lastQuoteDate,
                                      numberOfTickersInPortfolio,
-                                     numDaysOfPortfolioLife,
-                                     targetPerformance)
+                                     targetPerformance,
+                                     portfolioType)
                           
     {
-      
+      this.retrieveData(); 
     }
     
     
@@ -94,23 +94,7 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
       }
       return returnValue; 
     }
-
-    public override double GetFitnessValue(Genome genome)
-    {
-      double returnValue;
-      double portfolioVariance = this.getPortfolioVariance(genome.Genes());
-      double portfolioRateOfReturn = this.getPortfolioRateOfReturn(genome.Genes());
-      this.variance = portfolioVariance;
-      this.rateOfReturn = portfolioRateOfReturn;
-      
-      NormalDistribution normal = new NormalDistribution(portfolioRateOfReturn, Math.Sqrt(portfolioVariance));
-      //for long portfolio
-      returnValue = normal.GetProbability(this.targetPerformance*0.75,this.targetPerformance*1.25);
-      //for short portfolio
-      //returnValue = normal.GetProbability(-this.targetPerformance*1.25,-this.targetPerformance*0.75);
-      return returnValue;
-    }
-    
+   
   }
 
 }
