@@ -43,7 +43,6 @@
     <File name=".\a1_Financial\a2_Accounting\h5_Reporting\SummaryRows\AverageLongTradePercentageReturn.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
     <File name=".\a1_Financial\a2_Accounting\h5_Reporting\SummaryRows\AverageShortTradePercentageReturn.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
     <File name=".\a1_Financial\a2_Accounting\h5_Reporting\SummaryRows\AverageTradePercentageReturn.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
-    <File name=".\a1_Financial\a2_Accounting\h5_Reporting\SummaryRows\BuyAndHoldPercentageReturn.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
     <File name=".\a1_Financial\a2_Accounting\h5_Reporting\SummaryRows\LargestLosingTradePercentage.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
     <File name=".\a1_Financial\a2_Accounting\h5_Reporting\SummaryRows\LargestWinningTradePercentage.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
     <File name=".\a1_Financial\a2_Accounting\h5_Reporting\SummaryRows\MaxEquityDrawDown.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
@@ -83,6 +82,7 @@
     <File name=".\a3_Testing\TestWindows.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
     <File name=".\a3_Testing\WalkForwardTester.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
     <File name=".\a4_Scripting\Script.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
+    <File name=".\a1_Financial\a2_Accounting\h5_Reporting\SummaryRows\BenchmarkPercentageReturn.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
   </Contents>
   <References>
     <Reference type="Project" refto="b1_ADT" localcopy="True" />

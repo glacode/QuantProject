@@ -16,7 +16,7 @@
     <File name=".\Reporting\WindowsForm\AccountViewer.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
   </Contents>
   <References>
-    <Reference type="Assembly" refto="..\..\scpl.dll" localcopy="True" />
+    <Reference type="Assembly" refto="..\..\NPlot.dll" localcopy="True" />
     <Reference type="Project" refto="b1_ADT" localcopy="True" />
     <Reference type="Project" refto="b2_DataAccess" localcopy="True" />
     <Reference type="Project" refto="b3_Data" localcopy="True" />
