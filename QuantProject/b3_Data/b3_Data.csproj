@@ -282,6 +282,11 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "Selectors\SelectorByWinningOpenToClose.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "Selectors\TickerSelector.cs"
                     SubType = "Code"
                     BuildAction = "Compile"

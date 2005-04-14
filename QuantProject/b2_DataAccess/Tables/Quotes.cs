@@ -590,6 +590,32 @@ namespace QuantProject.DataAccess.Tables
     }
 
     /// <summary>
+    /// returns tickers having raw close greater than raw open 
+    /// at the given interval of days (within the given group of tickers).
+    /// Tickers are ordered by raw close to open ratio.
+    /// </summary>
+    public static DataTable GetTickersByWinningOpenToClose( bool orderInASCMode, string groupID,
+                                                    DateTime firstQuoteDate,
+                               											DateTime lastQuoteDate,
+                                                    long maxNumOfReturnedTickers)
+    {
+      string sql = "SELECT TOP " + maxNumOfReturnedTickers + " quotes.quTicker, tickers.tiCompanyName, " +
+                  "quotes.quClose/quotes.quOpen AS CloseToOpenRatio " +
+      						"FROM (quotes INNER JOIN tickers ON quotes.quTicker=tickers.tiTicker) " +
+                  "INNER JOIN tickers_tickerGroups ON tickers.tiTicker=tickers_tickerGroups.ttTiId " +
+                  "WHERE quotes.quDate Between " + SQLBuilder.GetDateConstant(firstQuoteDate) + " " +
+                  "AND " + SQLBuilder.GetDateConstant(lastQuoteDate) + " " +
+                  "AND " + "tickers_tickerGroups.ttTgId='" + groupID + "' " +
+      						"AND " + "quotes.quClose > quotes.quOpen " +
+                  "ORDER BY quotes.quClose/quotes.quOpen";
+      string sortDirection = " DESC";
+      if(orderInASCMode)
+        sortDirection = " ASC";
+      sql = sql + sortDirection;
+      return SqlExecutor.GetDataTable( sql );
+    }
+    
+    /// <summary>
     /// returns the average traded value for the given ticker in the specified interval
     /// </summary>
     public static double GetAverageTradedValue( string ticker,
