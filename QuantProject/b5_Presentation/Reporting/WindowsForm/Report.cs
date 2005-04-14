@@ -77,14 +77,14 @@ namespace QuantProject.Presentation.Reporting.WindowsForm
 			this.show_set_accountReport( reportName ,
 				numDaysForInterval , endDateTime , buyAndHoldTicker );
 			this.show_populateForm();
-			base.ShowDialog();
+			base.Show();
 		}
     public new void Show()
     {
       if(this.accountReport != null)
         this.show_populateForm();
       
-      base.ShowDialog();
+      base.Show();
     }
     /// <summary>
     /// Clears the existing account report, so that a new one can be created
