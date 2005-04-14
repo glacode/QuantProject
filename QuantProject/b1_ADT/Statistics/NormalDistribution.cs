@@ -32,7 +32,8 @@ namespace QuantProject.ADT.Statistics
 	/// </summary>
   public class NormalDistribution : IPdfDefiner
 	{
-	  
+	  const int numIntForInfinityApproximation = 15;
+	  const int minimumIntervalsForAreaApproximation = 25;
 	  private double average;
 		private double stdDeviation;
 		
@@ -46,9 +47,11 @@ namespace QuantProject.ADT.Statistics
     	
     	this.average = average;
     	this.stdDeviation = stdDeviation;
-    	this.infinity = this.average + 15 * stdDeviation ;
+    	this.infinity = this.average + 
+    									numIntForInfinityApproximation * stdDeviation ;
     	this.numOfIntervalsForPDFIntegralApproximation =
-    					Convert.ToInt32(25*this.infinity);
+    			Math.Max(Convert.ToInt32(this.infinity*minimumIntervalsForAreaApproximation),
+    		           minimumIntervalsForAreaApproximation);
     }
     /// <summary>
     /// gets the probability density function at point x
