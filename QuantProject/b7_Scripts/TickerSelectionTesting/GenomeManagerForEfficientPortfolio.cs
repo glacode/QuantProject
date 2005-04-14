@@ -79,7 +79,7 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
     public PortfolioType PortfolioType
     {
       get{return this.portfolioType;}
-      set{this.portfolioType = value;}
+      //set{this.portfolioType = value;}
     }
     
     public GenomeManagerForEfficientPortfolio(DataTable setOfInitialTickers,
@@ -106,18 +106,27 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
     
     public virtual double GetFitnessValue(Genome genome)
     {
-      double returnValue;
+      double returnValue = 0;
       double portfolioVariance = this.getPortfolioVariance(genome.Genes());
       double portfolioRateOfReturn = this.getPortfolioRateOfReturn(genome.Genes());
-      this.variance = portfolioVariance;
-      this.rateOfReturn = portfolioRateOfReturn;
       
-      NormalDistribution normal = new NormalDistribution(portfolioRateOfReturn, Math.Sqrt(portfolioVariance));
-      if(this.portfolioType == PortfolioType.OnlyLong)
-         returnValue = normal.GetProbability(this.targetPerformance*0.75,this.targetPerformance*1.25);
-      else//only short orders are permitted
-      	returnValue = normal.GetProbability(-this.targetPerformance*1.25,-this.targetPerformance*0.75);
-      
+      if(!Double.IsInfinity(portfolioVariance) ||
+         !Double.IsInfinity(portfolioRateOfReturn) ||
+         !Double.IsNaN(portfolioVariance) ||
+         !Double.IsNaN(portfolioRateOfReturn))
+      //variance and rate of return are 
+      //double values computed in the right way
+      {
+	      this.variance = portfolioVariance;
+      	this.rateOfReturn = portfolioRateOfReturn;
+      	NormalDistribution normal = new NormalDistribution(portfolioRateOfReturn, Math.Sqrt(portfolioVariance));
+	      if(this.portfolioType == PortfolioType.OnlyLong)
+	         //returnValue = normal.GetProbability(this.targetPerformance*0.75,this.targetPerformance*1.25);
+	      	returnValue = 1.0 - normal.GetProbability(this.targetPerformance);
+	      else//only short orders are permitted
+	      	//returnValue = normal.GetProbability(-this.targetPerformance*1.25,-this.targetPerformance*0.75);
+	      	returnValue = normal.GetProbability(this.targetPerformance);
+      }
       return returnValue;
     }
     

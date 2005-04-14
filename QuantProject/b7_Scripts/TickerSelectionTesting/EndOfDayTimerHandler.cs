@@ -99,7 +99,7 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
       this.portfolioType = portfolioType;
     }
 		
-    public virtual void AddOrderForTicker(string ticker )
+    protected virtual void addOrderForTicker(string ticker )
     {
  
       double cashForSinglePosition = this.account.CashAmount / this.numberOfTickersToBeChosen;

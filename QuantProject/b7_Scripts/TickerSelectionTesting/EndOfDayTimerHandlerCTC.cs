@@ -135,7 +135,7 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
       {
         this.lastChosenTickers[idx] = ticker;
         if(ticker != null)
-           this.AddOrderForTicker( ticker );
+           this.addOrderForTicker( ticker );
         idx++;
       }
     }

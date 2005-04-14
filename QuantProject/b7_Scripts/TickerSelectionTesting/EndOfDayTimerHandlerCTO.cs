@@ -69,7 +69,7 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
       {
         if(ticker != null)
         {  
-          this.AddOrderForTicker( ticker );
+          this.addOrderForTicker( ticker );
           this.lastChosenTickers[idx] = ticker;
         }
         idx++;
@@ -144,8 +144,11 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
                           this.maxPriceForMinimumCommission, 0, 2);
       DataTable tickersByPrice = selectorByOpenPrice.GetTableOfSelectedTickers();
       */
-     
-      SelectorByLiquidity mostLiquid = new SelectorByLiquidity(this.tickerGroupID, false,
+     	SelectorByWinningOpenToClose selectorByWinningOpenToClose = 
+     					new SelectorByWinningOpenToClose(this.tickerGroupID, false, currentDate,
+     		                                 currentDate, this.numberOfEligibleTickers);
+     	DataTable winningOpenToCloseTickers = selectorByWinningOpenToClose.GetTableOfSelectedTickers();
+      SelectorByLiquidity mostLiquid = new SelectorByLiquidity(winningOpenToCloseTickers, false,
                                       currentDate.AddDays(-this.numDaysForLiquidity), currentDate, this.numberOfEligibleTickers);
       this.eligibleTickers = mostLiquid.GetTableOfSelectedTickers();
       SelectorByQuotationAtEachMarketDay quotedAtEachMarketDayFromMostLiquid = 
