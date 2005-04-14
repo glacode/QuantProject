@@ -47,15 +47,15 @@ namespace QuantProject.Applications.Downloader.TickerSelectors
 		private System.Windows.Forms.CheckBox checkBoxASCMode;
 		private System.Windows.Forms.GroupBox groupBoxSelectionRule;
 		private System.Windows.Forms.DateTimePicker dateTimePickerFirstDate;
-		private System.Windows.Forms.DataGrid dataGrid1;
 		private System.Windows.Forms.DateTimePicker dateTimePickerLastDate;
-		private System.Windows.Forms.TextBox textBoxMarketIndex;
+		private System.Windows.Forms.TextBox textBoxMaxStdDev;
 		private System.Windows.Forms.ToolTip toolTip1;
 		private System.Windows.Forms.Label labelMarketIndexKey;
+		private System.Windows.Forms.DataGrid dataGrid1;
 		private System.Windows.Forms.Label label2;
 		private System.Windows.Forms.Label label1;
 		private System.Windows.Forms.TextBox textBoxGroupID;
-		private System.Windows.Forms.TextBox textBoxMaxStdDev;
+		private System.Windows.Forms.TextBox textBoxMarketIndex;
 		private System.Windows.Forms.ComboBox comboBoxAvailableSelectionRules;
 		private System.Windows.Forms.Label label3;
 		private System.Windows.Forms.Label labelMinStdDev;
@@ -87,6 +87,7 @@ namespace QuantProject.Applications.Downloader.TickerSelectors
       this.comboBoxAvailableSelectionRules.Items.Add("AverageCloseToOpenPerformance");
       this.comboBoxAvailableSelectionRules.Items.Add("QuotedAtEachMarketDay");
       this.comboBoxAvailableSelectionRules.Items.Add("AverageRawOpenPrice");
+      this.comboBoxAvailableSelectionRules.Items.Add("WinningOpenToClose");
 
   	}
     public TickerSelectorForm(string groupID) : this()
@@ -134,15 +135,15 @@ namespace QuantProject.Applications.Downloader.TickerSelectors
 			this.labelMinStdDev = new System.Windows.Forms.Label();
 			this.label3 = new System.Windows.Forms.Label();
 			this.comboBoxAvailableSelectionRules = new System.Windows.Forms.ComboBox();
-			this.textBoxMaxStdDev = new System.Windows.Forms.TextBox();
+			this.textBoxMarketIndex = new System.Windows.Forms.TextBox();
 			this.textBoxGroupID = new System.Windows.Forms.TextBox();
 			this.label1 = new System.Windows.Forms.Label();
 			this.label2 = new System.Windows.Forms.Label();
+			this.dataGrid1 = new System.Windows.Forms.DataGrid();
 			this.labelMarketIndexKey = new System.Windows.Forms.Label();
 			this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
-			this.textBoxMarketIndex = new System.Windows.Forms.TextBox();
+			this.textBoxMaxStdDev = new System.Windows.Forms.TextBox();
 			this.dateTimePickerLastDate = new System.Windows.Forms.DateTimePicker();
-			this.dataGrid1 = new System.Windows.Forms.DataGrid();
 			this.dateTimePickerFirstDate = new System.Windows.Forms.DateTimePicker();
 			this.groupBoxSelectionRule = new System.Windows.Forms.GroupBox();
 			this.checkBoxASCMode = new System.Windows.Forms.CheckBox();
@@ -252,14 +253,14 @@ namespace QuantProject.Applications.Downloader.TickerSelectors
 			this.comboBoxAvailableSelectionRules.Text = "comboBox1";
 			this.comboBoxAvailableSelectionRules.SelectedValueChanged += new System.EventHandler(this.comboBoxAvailableSelectionRules_SelectedValueChanged);
 			// 
-			// textBoxMaxStdDev
+			// textBoxMarketIndex
 			// 
-			this.textBoxMaxStdDev.Location = new System.Drawing.Point(232, 200);
-			this.textBoxMaxStdDev.Name = "textBoxMaxStdDev";
-			this.textBoxMaxStdDev.Size = new System.Drawing.Size(56, 20);
-			this.textBoxMaxStdDev.TabIndex = 36;
-			this.textBoxMaxStdDev.Text = "";
-			this.textBoxMaxStdDev.Visible = false;
+			this.textBoxMarketIndex.Location = new System.Drawing.Point(192, 176);
+			this.textBoxMarketIndex.Name = "textBoxMarketIndex";
+			this.textBoxMarketIndex.Size = new System.Drawing.Size(88, 20);
+			this.textBoxMarketIndex.TabIndex = 28;
+			this.textBoxMarketIndex.Text = "";
+			this.textBoxMarketIndex.Visible = false;
 			// 
 			// textBoxGroupID
 			// 
@@ -285,32 +286,6 @@ namespace QuantProject.Applications.Downloader.TickerSelectors
 			this.label2.TabIndex = 24;
 			this.label2.Text = "Max Num of returned tickers";
 			// 
-			// labelMarketIndexKey
-			// 
-			this.labelMarketIndexKey.Location = new System.Drawing.Point(88, 176);
-			this.labelMarketIndexKey.Name = "labelMarketIndexKey";
-			this.labelMarketIndexKey.Size = new System.Drawing.Size(96, 23);
-			this.labelMarketIndexKey.TabIndex = 29;
-			this.labelMarketIndexKey.Text = "Market index key:";
-			this.labelMarketIndexKey.Visible = false;
-			// 
-			// textBoxMarketIndex
-			// 
-			this.textBoxMarketIndex.Location = new System.Drawing.Point(192, 176);
-			this.textBoxMarketIndex.Name = "textBoxMarketIndex";
-			this.textBoxMarketIndex.Size = new System.Drawing.Size(88, 20);
-			this.textBoxMarketIndex.TabIndex = 28;
-			this.textBoxMarketIndex.Text = "";
-			this.textBoxMarketIndex.Visible = false;
-			// 
-			// dateTimePickerLastDate
-			// 
-			this.dateTimePickerLastDate.Format = System.Windows.Forms.DateTimePickerFormat.Short;
-			this.dateTimePickerLastDate.Location = new System.Drawing.Point(240, 24);
-			this.dateTimePickerLastDate.Name = "dateTimePickerLastDate";
-			this.dateTimePickerLastDate.Size = new System.Drawing.Size(88, 20);
-			this.dateTimePickerLastDate.TabIndex = 15;
-			// 
 			// dataGrid1
 			// 
 			this.dataGrid1.BorderStyle = System.Windows.Forms.BorderStyle.None;
@@ -322,6 +297,32 @@ namespace QuantProject.Applications.Downloader.TickerSelectors
 			this.dataGrid1.Name = "dataGrid1";
 			this.dataGrid1.Size = new System.Drawing.Size(432, 478);
 			this.dataGrid1.TabIndex = 2;
+			// 
+			// labelMarketIndexKey
+			// 
+			this.labelMarketIndexKey.Location = new System.Drawing.Point(88, 176);
+			this.labelMarketIndexKey.Name = "labelMarketIndexKey";
+			this.labelMarketIndexKey.Size = new System.Drawing.Size(96, 23);
+			this.labelMarketIndexKey.TabIndex = 29;
+			this.labelMarketIndexKey.Text = "Market index key:";
+			this.labelMarketIndexKey.Visible = false;
+			// 
+			// textBoxMaxStdDev
+			// 
+			this.textBoxMaxStdDev.Location = new System.Drawing.Point(232, 200);
+			this.textBoxMaxStdDev.Name = "textBoxMaxStdDev";
+			this.textBoxMaxStdDev.Size = new System.Drawing.Size(56, 20);
+			this.textBoxMaxStdDev.TabIndex = 36;
+			this.textBoxMaxStdDev.Text = "";
+			this.textBoxMaxStdDev.Visible = false;
+			// 
+			// dateTimePickerLastDate
+			// 
+			this.dateTimePickerLastDate.Format = System.Windows.Forms.DateTimePickerFormat.Short;
+			this.dateTimePickerLastDate.Location = new System.Drawing.Point(240, 24);
+			this.dateTimePickerLastDate.Name = "dateTimePickerLastDate";
+			this.dateTimePickerLastDate.Size = new System.Drawing.Size(88, 20);
+			this.dateTimePickerLastDate.TabIndex = 15;
 			// 
 			// dateTimePickerFirstDate
 			// 
@@ -579,9 +580,20 @@ namespace QuantProject.Applications.Downloader.TickerSelectors
             Double.Parse(this.textBoxMinPrice.Text),Double.Parse(this.textBoxMaxPrice.Text),
             Double.Parse(this.textBoxMinStdDev.Text), Double.Parse(this.textBoxMaxStdDev.Text));
       } 
+      else if (this.comboBoxAvailableSelectionRules.Text == "WinningOpenToClose")
+      { 
+        if(this.textBoxGroupID.Text != "")
+          returnValue = new SelectorByWinningOpenToClose(this.textBoxGroupID.Text,
+            this.checkBoxASCMode.Checked, this.dateTimePickerFirstDate.Value,
+            this.dateTimePickerLastDate.Value, Int32.Parse(this.textBoxMaxNumOfReturnedTickers.Text));
+        else
+        	returnValue = new SelectorByWinningOpenToClose(this.textBoxGroupID.Text,
+            this.checkBoxASCMode.Checked, this.dateTimePickerFirstDate.Value,
+            this.dateTimePickerLastDate.Value, Int32.Parse(this.textBoxMaxNumOfReturnedTickers.Text));
+      } 
       return returnValue;  
     }
-
+		   
     private void setVisibilityForControls_QuotedAtEachMarketDay(bool showControls)
     {
       this.checkBoxASCMode.Enabled = showControls==false;
