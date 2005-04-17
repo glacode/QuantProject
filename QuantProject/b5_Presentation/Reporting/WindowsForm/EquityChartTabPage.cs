@@ -38,7 +38,6 @@ namespace QuantProject.Presentation.Reporting.WindowsForm
 	{
 		private AccountReport accountReport;
 		private Chart equityChart;
-		private History equity = new History();
 		private History benchmark;
 		
 		/// <summary>
@@ -49,18 +48,10 @@ namespace QuantProject.Presentation.Reporting.WindowsForm
 		/// <returns></returns>
 		private History getBenchmark()
 		{
-//			History buyAndHoldTickerEquityLine =
-//				HistoricalDataProvider.GetAdjustedCloseHistory(
-//				this.accountReport.BuyAndHoldTicker );
-//			HistoricalAdjustedQuoteProvider quoteProvider =
-//				new HistoricalAdjustedQuoteProvider();
-//			DateTime firstDate = (DateTime)this.equity.GetKey( 0 );
-//			double normalizingFactor =
-//				( double )this.equity[ firstDate ] /
-//				( double )quoteProvider.GetMarketValue( this.accountReport.BuyAndHoldTicker ,ù
-			DateTime firstDate = (DateTime)this.equity.GetKey( 0 );
+			DateTime firstDate =
+				(DateTime)this.accountReport.EquityHistory.GetKey( 0 );
 			double normalizingFactor =
-				( double )this.equity[ firstDate ] /
+				( double )this.accountReport.EquityHistory[ firstDate ] /
 				Convert.ToDouble( this.accountReport.BenchmarkEquityLine[ firstDate ] );
 			return this.accountReport.BenchmarkEquityLine.MultiplyBy( normalizingFactor );
 		}
@@ -70,22 +61,13 @@ namespace QuantProject.Presentation.Reporting.WindowsForm
 			this.accountReport = accountReport;
 			this.equityChart = new Chart();
 			this.equityChart.Dock = DockStyle.Fill;
-			this.equity.Import( this.accountReport.Equity.DataTable ,
-				QuantProject.Business.Financial.Accounting.Reporting.Tables.Equity.Date ,
-				QuantProject.Business.Financial.Accounting.Reporting.Tables.Equity.AccountValue );
-			this.equityChart.Add( equity , Color.Red );
+			this.equityChart.Add( accountReport.EquityHistory , Color.Red );
 			this.benchmark = this.getBenchmark();
-			this.equityChart.Add( benchmark , Color.Blue , (DateTime)this.equity.GetKey( 0 ) ,
-				(DateTime)this.equity.GetKey( this.equity.Count - 1 ) );
+//			this.equityChart.Add( benchmark , Color.Blue ,
+//				(DateTime)this.accountReport.EquityHistory.GetKey( 0 ) ,
+//				(DateTime)this.accountReport.EquityHistory.GetKey( this.accountReport.EquityHistory.Count - 1 ) );
+			this.equityChart.Add( benchmark , Color.Blue );
 			this.Controls.Add( this.equityChart );
 		}
-//		protected override void OnPaint(System.Windows.Forms.PaintEventArgs e)
-//		{
-//			this.VisualValidationDataGrid.Height = this.Height - 10;
-//			this.VisualValidationChart.PrecedingDays = ConstantsProvider.PrecedingDaysForVisualValidation;
-//			this.VisualValidationChart.Width = this.Width - this.VisualValidationDataGridWidth - 5;
-//			this.VisualValidationChart.Height = this.Height - 10;
-//			base.OnPaint( e );
-//		}	
 	}
 }
