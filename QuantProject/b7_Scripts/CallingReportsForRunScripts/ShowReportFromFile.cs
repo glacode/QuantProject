@@ -46,6 +46,8 @@ namespace QuantProject.Scripts.CallingReportsForRunScripts
 				Account account = 
 						(Account)ObjectArchiver.Extract(serializedAccountFullPath);
 				Report report = new Report(account, new HistoricalAdjustedQuoteProvider());
+				report.Text = 
+							serializedAccountFullPath.Substring(serializedAccountFullPath.LastIndexOf("\\") + 1);
 				ReportShower reportShower = new ReportShower(report);
         reportShower.Show(); 
 			}
@@ -62,6 +64,8 @@ namespace QuantProject.Scripts.CallingReportsForRunScripts
         AccountReport accountReport = 
           (AccountReport)ObjectArchiver.Extract(serializedAccountReportFullPath);
         Report report = new Report(accountReport);
+        report.Text = 
+        	serializedAccountReportFullPath.Substring(serializedAccountReportFullPath.LastIndexOf("\\") + 1);
         report.Show();
       }
       catch(System.Exception ex)
