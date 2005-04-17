@@ -24,6 +24,7 @@ using System;
 using System.IO;
 using System.Collections;
 using System.Data;
+using System.Windows.Forms;
 using QuantProject.ADT;
 using QuantProject.ADT.Optimizing.Genetic;
 using QuantProject.ADT.FileManaging;
@@ -154,7 +155,11 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
     {
       //Report report;
 
-      if(endOfDayTimingEventArgs.EndOfDayDateTime.DateTime>=this.endDateTime.DateTime )
+      if(endOfDayTimingEventArgs.EndOfDayDateTime.DateTime>=this.endDateTime.DateTime ||
+         File.Exists(Application.ExecutablePath.Substring(0, Application.ExecutablePath.LastIndexOf('\\'))
+								      + @"\StopScript.txt"))
+      //If you want to stop timer and save script until now, create 
+        //in bin dir a file named "StopScript.txt"
       {
         this.endOfDayTimer.Stop();
         
