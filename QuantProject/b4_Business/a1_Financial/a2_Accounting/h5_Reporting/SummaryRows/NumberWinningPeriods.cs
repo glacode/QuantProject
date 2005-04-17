@@ -43,9 +43,9 @@ namespace QuantProject.Business.Financial.Accounting.Reporting.SummaryRows
 				(double)this.summary.AccountReport.EquityHistory.GetByIndex( i ) ) /
 				(double)this.summary.AccountReport.EquityHistory.GetByIndex( i );
 			double benchmarkGain =
-				( (double)this.summary.AccountReport.BenchmarkEquityLine.GetByIndex( i + 1 ) -
-				(double)this.summary.AccountReport.BenchmarkEquityLine.GetByIndex( i ) ) /
-				(double)this.summary.AccountReport.BenchmarkEquityLine.GetByIndex( i );
+				( Convert.ToDouble( this.summary.AccountReport.BenchmarkEquityLine.GetByIndex( i + 1 ) ) -
+				Convert.ToDouble( this.summary.AccountReport.BenchmarkEquityLine.GetByIndex( i ) ) ) /
+				Convert.ToDouble( this.summary.AccountReport.BenchmarkEquityLine.GetByIndex( i ) );
 			if ( ( equityHistoryGain - benchmarkGain ) > ConstantsProvider.MinForDifferentGains )
 				this.summary.NumberWinningPeriods++;
 			else
