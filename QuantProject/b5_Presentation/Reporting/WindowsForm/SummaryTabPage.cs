@@ -34,7 +34,7 @@ namespace QuantProject.Presentation.Reporting.WindowsForm
 	public class SummaryTabPage : TabPage
 	{
 		// constant values for label's placement
-		private int labelRows = 8;
+		private int labelRows = 10;
 		private int xForLabels = 17;
 		private int textLabelsWidth = 180;
 		private int valueLablesWidth = 60;
@@ -53,6 +53,14 @@ namespace QuantProject.Presentation.Reporting.WindowsForm
 		private System.Windows.Forms.Label lblValMaxEquityDrawDown;
 		private System.Windows.Forms.Label lblTotalCommission;
 		private System.Windows.Forms.Label lblValTotalCommission;
+		private System.Windows.Forms.Label lblNumberWinningPeriods;
+		private System.Windows.Forms.Label lblValNumberWinningPeriods;
+		private System.Windows.Forms.Label lblNumberLosingPeriods;
+		private System.Windows.Forms.Label lblValNumberLosingPeriods;
+		private System.Windows.Forms.Label lblNumberEvenPeriods;
+		private System.Windows.Forms.Label lblValNumberEvenPeriods;
+		private System.Windows.Forms.Label lblPercentageWinningPeriods;
+		private System.Windows.Forms.Label lblValPercentageWinningPeriods;
 		private System.Windows.Forms.Label lblTotalNumberOfTrades;
 		private System.Windows.Forms.Label lblValTotalNumberOfTrades;
 		private System.Windows.Forms.Label lblNumberWinningTrades;
@@ -134,6 +142,14 @@ namespace QuantProject.Presentation.Reporting.WindowsForm
 			this.lblValMaxEquityDrawDown = new System.Windows.Forms.Label();
 			this.lblTotalCommission = new System.Windows.Forms.Label();
 			this.lblValTotalCommission = new System.Windows.Forms.Label();
+			this.lblNumberWinningPeriods = new System.Windows.Forms.Label();
+			this.lblValNumberWinningPeriods = new System.Windows.Forms.Label();
+			this.lblNumberLosingPeriods = new System.Windows.Forms.Label();
+			this.lblValNumberLosingPeriods = new System.Windows.Forms.Label();
+			this.lblNumberEvenPeriods = new System.Windows.Forms.Label();
+			this.lblValNumberEvenPeriods = new System.Windows.Forms.Label();
+			this.lblPercentageWinningPeriods = new System.Windows.Forms.Label();
+			this.lblValPercentageWinningPeriods = new System.Windows.Forms.Label();
 			this.lblTotalNumberOfTrades = new System.Windows.Forms.Label();
 			this.lblValTotalNumberOfTrades = new System.Windows.Forms.Label();
 			this.lblNumberWinningTrades = new System.Windows.Forms.Label();
@@ -208,6 +224,33 @@ namespace QuantProject.Presentation.Reporting.WindowsForm
 			// lblValTotalCommission
 			// 
 			this.addValueLabel( this.lblValTotalCommission , "lblValTotalCommission" );
+			// 
+			// lblNumberWinningPeriods
+			// 
+			this.addTextLabel( this.lblNumberWinningPeriods , "lblNumberWinningPeriods" ,
+				"Number Winning Periods:" );
+			// 
+			// lblValNumberWinningPeriods
+			// 
+			this.addValueLabel( this.lblValNumberWinningPeriods , "lblValNumberWinningPeriods" );
+			// 
+			// lblNumberLosingPeriods
+			// 
+			this.addTextLabel( this.lblNumberLosingPeriods , "lblNumberWinningPeriods" ,
+				"Number Losing Periods:" );
+			// 
+			// lblValNumberLosingPeriods
+			// 
+			this.addValueLabel( this.lblValNumberLosingPeriods , "lblValNumberLosingPeriods" );
+			// 
+			// lblPercentageWinningPeriods
+			// 
+			this.addTextLabel( this.lblPercentageWinningPeriods , "lblPercentageWinningPeriods" ,
+				"% Winning Periods:" );
+			// 
+			// lblValPercentageWinningPeriods
+			// 
+			this.addValueLabel( this.lblValPercentageWinningPeriods , "lblValPercentageWinningPeriods" );
 			// 
 			// lblTotalNumberOfTrades
 			// 
@@ -314,6 +357,12 @@ namespace QuantProject.Presentation.Reporting.WindowsForm
 				FormatProvider.ConvertToStringWithTwoDecimals( this.accountReport.Summary.MaxEquityDrawDown );
 			this.lblValTotalCommission.Text =
 				FormatProvider.ConvertToStringWithTwoDecimals( this.accountReport.Summary.TotalCommissionAmount );
+			this.lblValNumberWinningPeriods.Text =
+				this.accountReport.Summary.NumberWinningPeriods.ToString();
+			this.lblValNumberLosingPeriods.Text =
+				this.accountReport.Summary.NumberLosingPeriods.ToString();
+			this.lblValPercentageWinningPeriods.Text =
+				FormatProvider.ConvertToStringWithTwoDecimals( this.accountReport.Summary.PercentageWinningPeriods );
 			this.lblValTotalNumberOfTrades.Text =
 				FormatProvider.ConvertToStringWithTwoDecimals( this.accountReport.Summary.TotalNumberOfTrades );
 			this.lblValNumberWinningTrades.Text =

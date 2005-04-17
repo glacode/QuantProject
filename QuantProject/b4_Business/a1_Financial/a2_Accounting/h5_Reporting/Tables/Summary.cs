@@ -18,7 +18,7 @@ namespace QuantProject.Business.Financial.Accounting.Reporting.Tables
 		private IHistoricalQuoteProvider historicalQuoteProvider;
     private double totalPnl;
     private double benchmarkPercentageReturn;
-    private double finalAccountValue;
+		private double finalAccountValue;
     private long intervalDays;
 		private MaxEquityDrawDown maxEquityDrawDown;
 		private TotalNumberOfTrades totalNumberOfTrades;
@@ -55,6 +55,16 @@ namespace QuantProject.Business.Financial.Accounting.Reporting.Tables
     }
     public double ReturnOnAccount;
     public double AnnualSystemPercentageReturn;
+		public int NumberWinningPeriods;
+		public int NumberLosingPeriods;
+		public int NumberEvenPeriods;
+		public double PercentageWinningPeriods
+		{
+			get
+			{
+				return this.NumberWinningPeriods*100/(this.NumberWinningPeriods+this.NumberLosingPeriods);
+			}
+		}
 		public double MaxEquityDrawDown
 		{
 			get { return Convert.ToDouble( this.maxEquityDrawDown.Value ); }
@@ -144,9 +154,14 @@ namespace QuantProject.Business.Financial.Accounting.Reporting.Tables
     {
       getSummary_setRow( new TotalNetProfit( this ) , summaryDataTable );
       getSummary_setRow( new ReturnOnAccount( this ) , summaryDataTable );
-      getSummary_setRow( new BenchmarkPercentageReturn( this , this.historicalQuoteProvider ) ,
+			getSummary_setRow( new BenchmarkPercentageReturn( this , this.historicalQuoteProvider ) ,
 				summaryDataTable );
-      getSummary_setRow( new AnnualSystemPercentageReturn( this ) , summaryDataTable );
+			getSummary_setRow( new NumberWinningPeriods( this ) ,	summaryDataTable );
+			getSummary_setRow( new NumberLosingPeriods( this ) ,	summaryDataTable );
+			getSummary_setRow( new NumberEvenPeriods( this ) ,	summaryDataTable );
+			getSummary_setRow( new PercentageWinningPeriods( this ) ,	summaryDataTable );
+			//this.getSummary_setRows_forEquityVsBenchmarkComparison();
+			getSummary_setRow( new AnnualSystemPercentageReturn( this ) , summaryDataTable );
 			this.maxEquityDrawDown = new MaxEquityDrawDown( this );
       getSummary_setRow( this.maxEquityDrawDown , summaryDataTable );
 			this.totalNumberOfTrades = new TotalNumberOfTrades( this );
