@@ -54,6 +54,7 @@ namespace QuantProject.Business.Financial.Accounting.Reporting
     private Tables.Transactions transactionTable;
     private ReportTable roundTrades;
     private ReportTable equity;
+		private History equityHistory;
     private Tables.Summary summary;
 
     public string Name
@@ -92,11 +93,26 @@ namespace QuantProject.Business.Financial.Accounting.Reporting
     {
       get { return roundTrades; }
     }
-    public ReportTable Equity
-    {
-      get { return equity; }
-    }
-    public Tables.Summary Summary
+		public ReportTable Equity
+		{
+			get { return equity; }
+		}
+		public History EquityHistory
+		{
+			get
+			{
+				if ( this.equityHistory == null )
+					// this.equityHistory has not been imported yet
+				{
+					this.equityHistory = new History();
+					this.equityHistory.Import( this.Equity.DataTable ,
+						QuantProject.Business.Financial.Accounting.Reporting.Tables.Equity.Date ,
+						QuantProject.Business.Financial.Accounting.Reporting.Tables.Equity.AccountValue );
+				}
+				return this.equityHistory;
+			}
+		}
+		public Tables.Summary Summary
     {
       get { return summary; }
     }
@@ -228,10 +244,12 @@ namespace QuantProject.Business.Financial.Accounting.Reporting
     #endregion
 
 		#region Create
-		private History create_getBenchmarkEquityLine()
+		private void setBenchmarkEquityLine()
 		{
-			return HistoricalDataProvider.GetAdjustedCloseHistory(
+			History benchmarkQuotes = HistoricalDataProvider.GetAdjustedCloseHistory(
 				this.benchmark );
+			this.benchmarkEquityLine = benchmarkQuotes.Select( this.EquityHistory );
+			this.benchmarkEquityLine.Interpolate( this.EquityHistory.Keys , new PreviousInterpolator() );
 		}
     public AccountReport Create( string reportName , long numDaysForInterval ,
       EndOfDayDateTime endDateTime , string benchmark )
@@ -239,13 +257,13 @@ namespace QuantProject.Business.Financial.Accounting.Reporting
       this.reportName = reportName;
       this.endDateTime = endDateTime;
       this.benchmark = benchmark;
-			if ( benchmark != "" )
-				this.benchmarkEquityLine = this.create_getBenchmarkEquityLine();
       detailedDataTable = getDetailedDataTable( numDaysForInterval );
       this.transactionTable = new Tables.Transactions( reportName , detailedDataTable );
 //      this.transactionTable = getTransactionTable( reportName , detailedDataTable );
       this.roundTrades = new Tables.RoundTrades( reportName , this.transactionTable );
       this.equity = new Tables.Equity( reportName , detailedDataTable );
+			if ( benchmark != "" )
+				this.setBenchmarkEquityLine();
       //this.equity = getEquity( reportName , detailedDataTable );
       //this.summary = getSummary( reportName );
       this.summary = new Tables.Summary( this , historicalQuoteProvider );
