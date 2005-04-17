@@ -32,54 +32,77 @@ namespace QuantProject.ADT.Histories
 	/// <summary>
 	/// Summary description for History.
 	/// </summary>
-  [Serializable]
-  public class History : AdvancedSortedList
-  {
-    public History() : base()
-    {
-    }
+	[Serializable]
+	public class History : AdvancedSortedList
+	{
+		public History() : base()
+		{
+		}
     
-    public Object GetValue( DateTime dateTime )
-    {
-      return this[ dateTime ];
-    }
+		public Object GetValue( DateTime dateTime )
+		{
+			return this[ dateTime ];
+		}
 
-    /// <summary>
-    /// Imports DataTable data into this History object
-    /// </summary>
-    /// <param name="dataTable">Contains the data to be imported</param>
-    /// <param name="dateTimeColumnName">Name of the column containing the DateTime keys
-    /// to be imported</param>
-    /// <param name="valueColumnName">Name of the column containing the values to be imported</param>
-    public void Import( DataTable dataTable , string dateTimeColumnName , string valueColumnName )
-    {
-      foreach (DataRow dataRow in dataTable.Rows )
-        this.Add( dataRow[ dateTimeColumnName ] , dataRow[ valueColumnName ] );
-    }
-    /// <summary>
-    /// Add an history item, if no collision (contemporary events) is expected
-    /// </summary>
-    /// <param name="dateTime"></param>
-    /// <param name="objectToAdd"></param>
-    /// <returns></returns>
-    public void Add( DateTime dateTime , Object objectToAdd )
-    {
-      base.Add( dateTime , objectToAdd );
-    }
+		/// <summary>
+		/// Imports DataTable data into this History object
+		/// </summary>
+		/// <param name="dataTable">Contains the data to be imported</param>
+		/// <param name="dateTimeColumnName">Name of the column containing the DateTime keys
+		/// to be imported</param>
+		/// <param name="valueColumnName">Name of the column containing the values to be imported</param>
+		public void Import( DataTable dataTable , string dateTimeColumnName , string valueColumnName )
+		{
+			foreach (DataRow dataRow in dataTable.Rows )
+				this.Add( dataRow[ dateTimeColumnName ] , dataRow[ valueColumnName ] );
+		}
 
-    /// <summary>
-    /// Add an history item when collisions (contemporary events) are possible
-    /// </summary>
-    /// <param name="dateTime"></param>
-    /// <param name="objectToAdd"></param>
-    public void MultiAdd( DateTime dateTime , Object objectToAdd )
-    {
-      if (!this.ContainsKey( dateTime ))
-      {
-        this[ dateTime ] = new ArrayList();
-      }
-      ((ArrayList)this[ dateTime ]).Add( objectToAdd );
-    }
+		/// <summary>
+		/// Returns an history where only common dates are selected
+		/// </summary>
+		/// <param name="selectingHistory">Provides the relevant dates to be selected</param>
+		/// <returns></returns>
+		public History Select( History selectingHistory )
+		{
+			History returnValue = new History();
+			foreach ( DateTime dateTime in selectingHistory.Keys )
+				if ( this.ContainsKey( dateTime ) )
+					returnValue.Add( dateTime , this.GetValue( dateTime ) );
+			return returnValue;
+		}
+
+		public void Interpolate( ICollection dateTimeCollection ,
+			IInterpolationMethod interpolationMethod )
+		{
+			foreach ( DateTime dateTime in dateTimeCollection )
+				if ( !this.ContainsKey( dateTime ) )
+					this.Add( dateTime , interpolationMethod.GetValue( this , dateTime ) );
+		}
+
+		/// <summary>
+		/// Add an history item, if no collision (contemporary events) is expected
+		/// </summary>
+		/// <param name="dateTime"></param>
+		/// <param name="objectToAdd"></param>
+		/// <returns></returns>
+		public void Add( DateTime dateTime , Object objectToAdd )
+		{
+			base.Add( dateTime , objectToAdd );
+		}
+
+		/// <summary>
+		/// Add an history item when collisions (contemporary events) are possible
+		/// </summary>
+		/// <param name="dateTime"></param>
+		/// <param name="objectToAdd"></param>
+		public void MultiAdd( DateTime dateTime , Object objectToAdd )
+		{
+			if (!this.ContainsKey( dateTime ))
+			{
+				this[ dateTime ] = new ArrayList();
+			}
+			((ArrayList)this[ dateTime ]).Add( objectToAdd );
+		}
 
 		
 		#region MultiplyBy
@@ -118,103 +141,103 @@ namespace QuantProject.ADT.Histories
 			return returnValue;
 		}
 		#endregion
-    public DateTime GetNextDay( DateTime dateTime )
-    {
-      if ( this.IndexOfKey( dateTime ) == ( this.Count - 1 ) )
-        // it is the last dateTime in the history
-        return dateTime.AddDays( 1 );
-      else
-        return (DateTime) this.GetKey( this.IndexOfKeyOrPrevious( dateTime ) + 1 );
-    }
-	//millo - fixed method
-	public DateTime GetDay( DateTime initialDateTime, int numberOfDaysAhead )
-	{
-		if ( this.IndexOfKey( initialDateTime ) >= ( this.Count - numberOfDaysAhead ) )
-			// initial dateTime + n° of days ahead > the last dateTime in History
+		public DateTime GetNextDay( DateTime dateTime )
+		{
+			if ( this.IndexOfKey( dateTime ) == ( this.Count - 1 ) )
+				// it is the last dateTime in the history
+				return dateTime.AddDays( 1 );
+			else
+				return (DateTime) this.GetKey( this.IndexOfKeyOrPrevious( dateTime ) + 1 );
+		}
+		//millo - fixed method
+		public DateTime GetDay( DateTime initialDateTime, int numberOfDaysAhead )
+		{
+			if ( this.IndexOfKey( initialDateTime ) >= ( this.Count - numberOfDaysAhead ) )
+				// initial dateTime + n° of days ahead > the last dateTime in History
 			{
-			DateTime dateTime;
-			dateTime = (DateTime)this.GetKey(this.Count -1);
-			return dateTime.AddDays(this.IndexOfKey(initialDateTime) + numberOfDaysAhead - this.Count);
+				DateTime dateTime;
+				dateTime = (DateTime)this.GetKey(this.Count -1);
+				return dateTime.AddDays(this.IndexOfKey(initialDateTime) + numberOfDaysAhead - this.Count);
 			}
-		else
-			return (DateTime) this.GetKey( this.IndexOfKeyOrPrevious( initialDateTime ) + numberOfDaysAhead );
-	}
-	//millo
+			else
+				return (DateTime) this.GetKey( this.IndexOfKeyOrPrevious( initialDateTime ) + numberOfDaysAhead );
+		}
+		//millo
 
 	  #region "GetFunctionHistory"
 	  
-	  /// <summary>
-	  /// Gets a History object based on a statistical available function
-	  /// </summary>
-	  /// <remarks>
-	  /// Each History's item contains a specific statistical function
-	  /// calculated for each period whose length has to be specified by the user.
-	  /// The key for the History item is the initial date of each period
-	  /// </remarks>
-	  /// <param name="functionToBeCalculated">
-	  /// Statistical available function to be calculated and stored in the current History object
-	  /// </param>
-	  /// <param name="onEachPeriodOf">
-	  /// Length in day of each period of calculation
-	  /// </param>
-	  /// /// <param name="startDateTime">
-	  /// It sets the start date for the time interval containing the returned History
-	  /// </param>
-	  /// /// <param name="endDateTime">
-	  /// It sets the end date for the time interval containing the returned History
-	  /// </param> 
-	  /// 
-	  public History GetFunctionHistory(Function functionToBeCalculated, int onEachPeriodOf,
-										   DateTime startDateTime , DateTime endDateTime )
-	  {
-		  History functionHistory = new History();
-		  int currentHistoryIndex = this.IndexOfKeyOrPrevious(startDateTime); 
-		  double[] data = new double[onEachPeriodOf];
-		  //the array contains the set of data whose length is specified by the user
-		  double periodIndex = 0;
-		  //in the while statement, if it isn't equal to Floor(currentHistoryIndex/onEachPeriodOf)
-		  //the current index belongs to the period with periodIndex increased by one  
-		  int cursorThroughDataArray = 0;
-		  while (
-			  ( currentHistoryIndex < this.Count ) &&
-			  ( ((IComparable)this.GetKey( currentHistoryIndex )).CompareTo( endDateTime ) <= 0 ) )
-		  {
+		/// <summary>
+		/// Gets a History object based on a statistical available function
+		/// </summary>
+		/// <remarks>
+		/// Each History's item contains a specific statistical function
+		/// calculated for each period whose length has to be specified by the user.
+		/// The key for the History item is the initial date of each period
+		/// </remarks>
+		/// <param name="functionToBeCalculated">
+		/// Statistical available function to be calculated and stored in the current History object
+		/// </param>
+		/// <param name="onEachPeriodOf">
+		/// Length in day of each period of calculation
+		/// </param>
+		/// /// <param name="startDateTime">
+		/// It sets the start date for the time interval containing the returned History
+		/// </param>
+		/// /// <param name="endDateTime">
+		/// It sets the end date for the time interval containing the returned History
+		/// </param> 
+		/// 
+		public History GetFunctionHistory(Function functionToBeCalculated, int onEachPeriodOf,
+			DateTime startDateTime , DateTime endDateTime )
+		{
+			History functionHistory = new History();
+			int currentHistoryIndex = this.IndexOfKeyOrPrevious(startDateTime); 
+			double[] data = new double[onEachPeriodOf];
+			//the array contains the set of data whose length is specified by the user
+			double periodIndex = 0;
+			//in the while statement, if it isn't equal to Floor(currentHistoryIndex/onEachPeriodOf)
+			//the current index belongs to the period with periodIndex increased by one  
+			int cursorThroughDataArray = 0;
+			while (
+				( currentHistoryIndex < this.Count ) &&
+				( ((IComparable)this.GetKey( currentHistoryIndex )).CompareTo( endDateTime ) <= 0 ) )
+			{
 			  
-			  if (Math.Floor(currentHistoryIndex/onEachPeriodOf) == periodIndex &&
+				if (Math.Floor(currentHistoryIndex/onEachPeriodOf) == periodIndex &&
 					cursorThroughDataArray < onEachPeriodOf)
-              //currentHistoryIndex belongs to the current period
-			  {	
-				  data[cursorThroughDataArray] = Convert.ToDouble(this.GetByIndex(currentHistoryIndex));
-				  cursorThroughDataArray++;
-				  functionHistory.Add(this.GetKey( currentHistoryIndex ), null);
-				  currentHistoryIndex++;
+					//currentHistoryIndex belongs to the current period
+				{	
+					data[cursorThroughDataArray] = Convert.ToDouble(this.GetByIndex(currentHistoryIndex));
+					cursorThroughDataArray++;
+					functionHistory.Add(this.GetKey( currentHistoryIndex ), null);
+					currentHistoryIndex++;
 				  
-			  }
-			  else
-		      //currentHistoryIndex doesn't belong to the current period
-			  //so a new item can be added to the object History to be returned
-			  {	
-				  cursorThroughDataArray = 0;
-				  DateTime dateTime = (DateTime)this.GetKey( currentHistoryIndex - onEachPeriodOf);
-				  switch (functionToBeCalculated)
-				  {
-					  case Function.SimpleAverage:
-						  functionHistory.SetByIndex(currentHistoryIndex - onEachPeriodOf,
-													 BasicFunctions.SimpleAverage(data));
-						  //functionHistory.Add( dateTime , BasicFunctions.SimpleAverage(data) );
-						  break;
-					  case Function.StandardDeviation :
-						  functionHistory.SetByIndex(currentHistoryIndex - onEachPeriodOf,
-							  BasicFunctions.StdDev(data));
-						  //functionHistory.Add( dateTime , BasicFunctions.StdDev(data) );
-						  break;
-				  }
-			  }
-			  periodIndex = Math.Floor(currentHistoryIndex/onEachPeriodOf);
-		  }
+				}
+				else
+					//currentHistoryIndex doesn't belong to the current period
+					//so a new item can be added to the object History to be returned
+				{	
+					cursorThroughDataArray = 0;
+					DateTime dateTime = (DateTime)this.GetKey( currentHistoryIndex - onEachPeriodOf);
+					switch (functionToBeCalculated)
+					{
+						case Function.SimpleAverage:
+							functionHistory.SetByIndex(currentHistoryIndex - onEachPeriodOf,
+								BasicFunctions.SimpleAverage(data));
+							//functionHistory.Add( dateTime , BasicFunctions.SimpleAverage(data) );
+							break;
+						case Function.StandardDeviation :
+							functionHistory.SetByIndex(currentHistoryIndex - onEachPeriodOf,
+								BasicFunctions.StdDev(data));
+							//functionHistory.Add( dateTime , BasicFunctions.StdDev(data) );
+							break;
+					}
+				}
+				periodIndex = Math.Floor(currentHistoryIndex/onEachPeriodOf);
+			}
 
-		  return functionHistory;
-	  }
+			return functionHistory;
+		}
 
 	#endregion
 	  
