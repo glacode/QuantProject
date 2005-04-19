@@ -587,7 +587,7 @@ namespace QuantProject.Applications.Downloader.TickerSelectors
             this.checkBoxASCMode.Checked, this.dateTimePickerFirstDate.Value,
             this.dateTimePickerLastDate.Value, Int32.Parse(this.textBoxMaxNumOfReturnedTickers.Text));
         else
-        	returnValue = new SelectorByWinningOpenToClose(this.textBoxGroupID.Text,
+        	returnValue = new SelectorByWinningOpenToClose(this.tableOfSelectedTickers,
             this.checkBoxASCMode.Checked, this.dateTimePickerFirstDate.Value,
             this.dateTimePickerLastDate.Value, Int32.Parse(this.textBoxMaxNumOfReturnedTickers.Text));
       } 
