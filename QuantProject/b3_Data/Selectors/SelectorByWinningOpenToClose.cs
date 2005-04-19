@@ -68,10 +68,11 @@ namespace QuantProject.Data.Selectors
     {
    
       if(this.setOfTickersToBeSelected == null)
-        return QuantProject.DataAccess.Tables.Quotes.GetTickersByWinningOpenToClose(this.isOrderedInASCMode,
+        return QuantProject.DataAccess.Tables.Quotes.GetTickersByOpenToCloseWinningDays(this.isOrderedInASCMode,
                   this.groupID, this.firstQuoteDate, this.lastQuoteDate, this.maxNumOfReturnedTickers);        
       else
-      	return new DataTable();
+      	return QuantProject.Data.DataTables.Quotes.GetTickersByOpenToCloseWinningDays(this.isOrderedInASCMode,
+                  this.setOfTickersToBeSelected, this.firstQuoteDate, this.lastQuoteDate, this.maxNumOfReturnedTickers); 
     }
     public void SelectAllTickers()
     {
