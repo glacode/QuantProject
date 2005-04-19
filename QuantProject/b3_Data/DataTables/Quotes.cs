@@ -338,7 +338,33 @@ namespace QuantProject.Data.DataTables
       	
       }
     }
-		private History history;
+		
+    /// <summary>
+    /// returns tickers counting how many times raw close is greater than raw open 
+    /// for the given interval of days (within the given table of tickers).
+    /// Tickers are ordered by the number of days raw open is greater than raw close
+    /// </summary>
+    public static DataTable GetTickersByOpenToCloseWinningDays( bool orderByASC,
+                                                  DataTable setOfTickers,
+                                                  DateTime firstQuoteDate,
+                                                  DateTime lastQuoteDate,
+                                                  long maxNumOfReturnedTickers)
+    {
+      if(!setOfTickers.Columns.Contains("NumOpenCloseWinningDays"))
+        setOfTickers.Columns.Add("NumOpenCloseWinningDays", System.Type.GetType("System.Double"));
+      foreach(DataRow row in setOfTickers.Rows)
+      {
+        row["NumOpenCloseWinningDays"] = 
+            QuantProject.DataAccess.Tables.Quotes.GetNumberOfOpenToCloseWinningDays((string)row[0],
+        	                                                                        firstQuoteDate, lastQuoteDate);
+      }
+      DataTable returnValue = ExtendedDataTable.CopyAndSort(setOfTickers,"NumOpenCloseWinningDays", orderByASC);
+      ExtendedDataTable.DeleteRows(returnValue, maxNumOfReturnedTickers);
+      return returnValue;
+    }
+    
+    
+    private History history;
 
 		/// <summary>
 		/// Gets the ticker whose quotes are contained into the Quotes object
