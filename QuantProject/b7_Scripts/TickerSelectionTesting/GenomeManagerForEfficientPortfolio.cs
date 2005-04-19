@@ -125,7 +125,7 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
 	      	returnValue = 1.0 - normal.GetProbability(this.targetPerformance);
 	      else//only short orders are permitted
 	      	//returnValue = normal.GetProbability(-this.targetPerformance*1.25,-this.targetPerformance*0.75);
-	      	returnValue = normal.GetProbability(this.targetPerformance);
+	      	returnValue = normal.GetProbability(-this.targetPerformance);
       }
       return returnValue;
     }
