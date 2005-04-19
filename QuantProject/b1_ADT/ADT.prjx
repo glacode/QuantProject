@@ -27,6 +27,8 @@
     <File name=".\Statistics\Function.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
     <File name=".\Statistics\IPdfDefiner.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
     <File name=".\Statistics\NormalDistribution.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
+    <File name=".\Histories\PreviousInterpolator.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
+    <File name=".\Histories\IInterpolatonMethod.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
   </Contents>
   <References />
   <DeploymentInformation target="" script="" strategy="File" />
