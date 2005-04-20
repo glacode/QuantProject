@@ -257,6 +257,11 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "a1_Financial\a2_Accounting\Account.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "a1_Financial\a2_Accounting\AccountReportRecord.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
@@ -438,11 +443,6 @@
                 />
                 <File
                     RelPath = "a1_Financial\a2_Accounting\h5_Reporting\SummaryRows\TotalNumberOfTrades.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "a1_Financial\a2_Accounting\h5_Reporting\Tables\Account.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
