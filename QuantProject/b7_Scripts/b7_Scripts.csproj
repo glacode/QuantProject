@@ -233,6 +233,11 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "WalkForwardTesting\WalkForwardOneRank\IWalkForwardProgressNotifier.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "WalkForwardTesting\WalkForwardOneRank\ProgressBarForm.cs"
                     SubType = "Form"
                     BuildAction = "Compile"
