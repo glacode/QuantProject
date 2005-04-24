@@ -38,6 +38,8 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardOneRank
 	{
     private double maxAcceptableDrawDown = 30;
 
+		private double minAcceptableWinningPeriods = 30;
+
 		private IHistoricalQuoteProvider historicalQuoteProvider =
 			new HistoricalAdjustedQuoteProvider();
 
@@ -65,6 +67,8 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardOneRank
 				this.accountReport = this.CreateReport( this.Key , 7 ,
 					this.EndOfDayTimer.GetCurrentTime() , this.Key ,
 					this.historicalQuoteProvider );
+
+			// old goodness computation
 			if ( ( this.accountReport.Summary.MaxEquityDrawDown >= this.maxAcceptableDrawDown )
 				|| ( this.accountReport.Summary.TotalPnl <= this.accountReport.Summary.BenchmarkPercentageReturn ) )
 				returnValue = Double.MinValue;
@@ -72,6 +76,13 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardOneRank
 				// max draw down is acceptable and the strategy is better than buy and hold
 				returnValue = this.accountReport.Summary.ReturnOnAccount -
 					this.accountReport.Summary.BenchmarkPercentageReturn;
+
+			// new goodness computation
+			if ( this.accountReport.Summary.NumberWinningPeriods < this.minAcceptableWinningPeriods )
+				returnValue = Double.MinValue;
+			else
+				returnValue = Convert.ToDouble( this.accountReport.Summary.PercentageWinningPeriods );
+
 			return returnValue;
 		}
 		public override double GetFitnessValue()
