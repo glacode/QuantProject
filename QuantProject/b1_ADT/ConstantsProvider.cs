@@ -22,7 +22,7 @@ namespace QuantProject.ADT
     public static double MaxDifferenceForAdjustedValues = 0.01;
     public static double MaxDifferenceForCloseToCloseRatios = 0.005;
 		// threshold above which the equity line gain and the benchmark gain are considered different
-		public static double MinForDifferentGains = 0.01;
+		public static double MinForDifferentGains = 0.0003;
     // max num days allowed by the data source (yahoo)
     public static double MaxNumDaysDownloadedAtEachConnection = 200;
 		public static string FormatWithTwoDecimals = "0:#,#.00";
