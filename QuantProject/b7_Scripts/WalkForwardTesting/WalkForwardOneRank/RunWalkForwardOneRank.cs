@@ -23,6 +23,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 using System;
 using System.Collections;
 using System.Data;
+using System.Threading;
+
 using QuantProject.ADT;
 using QuantProject.ADT.FileManaging;
 using QuantProject.Business.DataProviders;
@@ -43,7 +45,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardOneRank
 	/// Script to test the One Rank strategy on many tickers, chosing the best group
 	/// when a fixed time span has elapsed.
 	/// </summary>
-	public class RunWalkForwardOneRank : Script
+	public class RunWalkForwardOneRank : Script , IWalkForwardProgressNotifier
 	{
 		private IHistoricalQuoteProvider historicalQuoteProvider =
 			new HistoricalAdjustedQuoteProvider();
@@ -62,7 +64,6 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardOneRank
 
 		public RunWalkForwardOneRank()
 		{
-			this.progressBarForm = new ProgressBarForm();
 			this.reportTable = new ReportTable( "Summary_Reports" );
 			this.startDateTime = new EndOfDayDateTime(
 				new DateTime( 1998 , 1 , 1 ) , EndOfDaySpecificTime.MarketOpen );
@@ -70,6 +71,10 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardOneRank
 				new DateTime( 1998 , 1 , 20 ) , EndOfDaySpecificTime.OneHourAfterMarketClose );
 			this.numIntervalDays = 1;
 		}
+
+		public event NewProgressEventHandler InSampleNewProgress;
+		public event NewProgressEventHandler OutOfSampleNewProgress;
+
     #region Run
 		private void run_initializeEndOfDayTimer()
 		{
@@ -94,9 +99,21 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardOneRank
 		private  void inSampleNewProgressEventHandler(
 			Object sender , NewProgressEventArgs eventArgs )
 		{
-			this.progressBarForm.ProgressBarInSample.Value = eventArgs.CurrentProgress;
-			this.progressBarForm.ProgressBarInSample.Refresh();
+			this.InSampleNewProgress( this , eventArgs );
 		}
+		#region
+		private void run_initializeProgressBar_newThread()
+		{
+			this.progressBarForm = new ProgressBarForm( this );
+			this.progressBarForm.ShowDialog();
+		}
+		private void run_initializeProgressBar()
+		{
+			Thread thread = new Thread(new ThreadStart(run_initializeProgressBar_newThread));
+//			thread.IsBackground = true;
+			thread.Start();
+		}
+		#endregion
 		private void run_initializeProgressHandlers()
 		{
 			this.endOfDayTimerHandler.InSampleNewProgress +=
@@ -114,9 +131,10 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardOneRank
 				Math.Floor( ( elapsedDays - 1 ) / totalDays * 100 ) )
 			{
 				// a new out of sample time percentage point has been elapsed
-				this.progressBarForm.ProgressBarOutOfSample.Value =
-					Convert.ToInt16( Math.Floor( elapsedDays / totalDays * 100 ) );
-				this.progressBarForm.ProgressBarOutOfSample.Refresh();
+				int currentProgress = Convert.ToInt16( Math.Floor( elapsedDays / totalDays * 100 ) );
+				NewProgressEventArgs newProgressEventArgs =
+					new NewProgressEventArgs( currentProgress , 100 );
+				this.OutOfSampleNewProgress( this , newProgressEventArgs );
 			}
 		}
 		public void marketOpenEventHandler(
@@ -133,7 +151,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardOneRank
 			{
 				// the simulation has reached the ending date
 				this.account.EndOfDayTimer.Stop();
-				this.progressBarForm.Close();
+//				this.progressBarForm.Close();
 				ObjectArchiver.Archive( this.account ,
 					@"C:\Documents and Settings\Glauco\Desktop\reports\final.qP" );
 				Report report = new Report( this.account , this.historicalQuoteProvider );
@@ -150,6 +168,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardOneRank
 			run_initializeEndOfDayTimer();
 			run_initializeAccount();
 			run_initializeEndOfDayTimerHandler();
+			run_initializeProgressBar();
 			run_initializeProgressHandlers();
 			this.endOfDayTimer.MarketOpen +=
 				new MarketOpenEventHandler( this.marketOpenEventHandler );
@@ -162,7 +181,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardOneRank
 			this.endOfDayTimer.FiveMinutesBeforeMarketClose +=
 				new FiveMinutesBeforeMarketCloseEventHandler(
 				this.endOfDayTimerHandler.FiveMinutesBeforeMarketCloseEventHandler );
-			this.progressBarForm.Show();
+//			this.progressBarForm.Show();
 			this.endOfDayTimer.Start();
 		}
     #endregion
