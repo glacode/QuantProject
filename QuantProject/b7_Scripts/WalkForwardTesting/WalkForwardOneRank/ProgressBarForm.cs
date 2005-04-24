@@ -4,6 +4,8 @@ using System.Collections;
 using System.ComponentModel;
 using System.Windows.Forms;
 
+using QuantProject.ADT;
+
 namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardOneRank
 {
 	/// <summary>
@@ -32,7 +34,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardOneRank
 			set { this.progressBarInSample = value; }
 		}
 			
-		public ProgressBarForm()
+		public ProgressBarForm( IWalkForwardProgressNotifier walkForwardProgressNotifier )
 		{
 			//
 			// Required for Windows Form Designer support
@@ -44,8 +46,42 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardOneRank
 			//
 			this.progressBarOutOfSample.Maximum = 100;
 			this.progressBarInSample.Maximum = 100;
+			walkForwardProgressNotifier.InSampleNewProgress +=
+				new NewProgressEventHandler( this.inSampleNewProgressEventHandler );
+			walkForwardProgressNotifier.OutOfSampleNewProgress +=
+				new NewProgressEventHandler( this.outOfSampleNewProgressEventHandler );
 		}
 
+		private void inSampleNewProgressEventHandler(
+			object sender , NewProgressEventArgs newProgressEventArgs )
+		{
+			if ( this.InvokeRequired )
+			{
+				// we're not in the UI thread, so we need to call BeginInvoke
+				this.BeginInvoke( new NewProgressEventHandler( this.inSampleNewProgressEventHandler ) ,
+					new object[]{ sender , newProgressEventArgs });
+			}
+			else
+				// we are in the UI thread
+			{
+				this.progressBarInSample.Value = newProgressEventArgs.CurrentProgress;
+			}
+		}
+		private void outOfSampleNewProgressEventHandler(
+			object sender , NewProgressEventArgs newProgressEventArgs )
+		{
+			if ( this.InvokeRequired )
+			{
+				// we're not in the UI thread, so we need to call BeginInvoke
+				this.BeginInvoke( new NewProgressEventHandler( this.outOfSampleNewProgressEventHandler ) ,
+					new object[]{ sender , newProgressEventArgs });
+			}
+			else
+				// we are in the UI thread
+			{
+				this.progressBarOutOfSample.Value = newProgressEventArgs.CurrentProgress;
+			}
+		}
 		/// <summary>
 		/// Clean up any resources being used.
 		/// </summary>
