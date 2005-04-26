@@ -36,6 +36,18 @@ namespace QuantProject.Data.DataTables
 	{
     private string groupID;
     
+    //Static method for computing close to close ratios
+    //of all tickers belonging to a given group
+    static public void ComputeCloseToCloseRatios(string groupID)
+    {
+    	DataTable tickers = 
+    		QuantProject.DataAccess.Tables.Tickers_tickerGroups.GetTickers(groupID);
+    	foreach(DataRow row in tickers.Rows)
+    	{
+    		QuantProject.DataAccess.Tables.Quotes.ComputeAndCommitCloseToCloseRatios((string)row[0]);
+    	}
+    }
+    
     public GroupQuotes( string groupID, DateTime startDate, DateTime endDate)
     {
       this.groupID = groupID;
