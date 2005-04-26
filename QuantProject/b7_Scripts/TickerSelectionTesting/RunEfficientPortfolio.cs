@@ -52,7 +52,9 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
 	[Serializable]
   public class RunEfficientPorfolio
 	{
-    
+    public static double MaxNumberOfHoursForScript = 10;
+    //if MaxNumberOfHoursForScript has elapsed and the script
+    //is still running, it will be stopped.
     protected string tickerGroupID;
     protected int numberOfEligibleTickers;
     protected int numberOfTickersToBeChosen;
@@ -82,6 +84,8 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
     protected double targetReturn;
     
     protected PortfolioType portfolioType;
+    
+    protected DateTime startingTimeForScript;
    	    
     public virtual string ScriptName
     {
@@ -114,6 +118,7 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
      	this.ScriptName = "EfficientGeneric";
      	this.targetReturn = targetReturn;
      	this.portfolioType = portfolioType;
+     	this.startingTimeForScript = DateTime.Now;
       //this.numIntervalDays = 3;
 		}
     #region Run
@@ -156,10 +161,9 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
       //Report report;
 
       if(endOfDayTimingEventArgs.EndOfDayDateTime.DateTime>=this.endDateTime.DateTime ||
-         File.Exists(Application.ExecutablePath.Substring(0, Application.ExecutablePath.LastIndexOf('\\'))
-								      + @"\StopScript.txt"))
-      //If you want to stop timer and save script until now, create 
-        //in bin dir a file named "StopScript.txt"
+         DateTime.Now >= this.startingTimeForScript.AddHours(RunEfficientPorfolio.MaxNumberOfHoursForScript))
+      //last date is reached by the timer or MaxNumberOfHoursForScript hours
+      //are elapsed from the time script started
       {
         this.endOfDayTimer.Stop();
         

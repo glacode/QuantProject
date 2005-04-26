@@ -78,15 +78,17 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
   
     protected override float[] getArrayOfRatesOfReturn(string ticker)
     {
-      Quotes tickerQuotes = new Quotes(ticker, this.firstQuoteDate, this.lastQuoteDate);
+      float coefficient = this.getCoefficient(ticker);
+      string tickerCode = GenomeManagerForEfficientPortfolio.GetCleanTickerCode(ticker);
+    	Quotes tickerQuotes = new Quotes(tickerCode, this.firstQuoteDate, this.lastQuoteDate);
       float[] allAdjValues = ExtendedDataTable.GetArrayOfFloatFromColumn(tickerQuotes, "quAdjustedClose");
       float[] ratesOfReturns = new float[allAdjValues.Length/this.numDaysOfPortfolioLife + 1];
       int i = 0; //index for ratesOfReturns array
       
       for(int idx = 0; idx + this.numDaysOfPortfolioLife < allAdjValues.Length; idx += this.numDaysOfPortfolioLife )
       {
-        ratesOfReturns[i] = allAdjValues[idx+this.numDaysOfPortfolioLife]/
-                            allAdjValues[idx] - 1;
+        ratesOfReturns[i] = (allAdjValues[idx+this.numDaysOfPortfolioLife]/
+      	                     allAdjValues[idx] - 1)*coefficient;
         i++;
       }
 

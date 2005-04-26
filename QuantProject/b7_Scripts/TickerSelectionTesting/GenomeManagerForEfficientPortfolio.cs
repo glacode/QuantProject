@@ -27,7 +27,7 @@ using QuantProject.ADT.Statistics;
 using QuantProject.ADT.Optimizing.Genetic;
 using QuantProject.Data;
 using QuantProject.Data.DataTables;
-
+using QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios;
 
 namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
 {
@@ -42,12 +42,25 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
     protected int maxValueForGenes;
 
     protected DataTable setOfTickers;
+    protected int originalNumOfTickers;
     protected DateTime firstQuoteDate;
     protected DateTime lastQuoteDate;
     protected double targetPerformance;
     protected double variance;
     protected double rateOfReturn;
     protected PortfolioType portfolioType;
+    
+    static public string GetCleanTickerCode(string tickerModifiedCode)
+    {
+    	if(tickerModifiedCode.StartsWith("-"))
+    	//if the first char is "-"
+    	//each element of the array of rates of return is
+    	//multiplied by -1
+    		return tickerModifiedCode.Substring(1,tickerModifiedCode.Length -1);
+    	else
+    		return tickerModifiedCode;
+    		
+    }
     
     //IGenomeManager implementation for properties 
     public int GenomeSize
@@ -91,18 +104,64 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
                           
     {
       this.setOfTickers = setOfInitialTickers;
- 
+ 			this.originalNumOfTickers = setOfInitialTickers.Rows.Count;
       if(!this.setOfTickers.Columns.Contains("ArrayOfRatesOfReturn"))
         this.setOfTickers.Columns.Add("ArrayOfRatesOfReturn", System.Type.GetType("System.Array"));
       this.firstQuoteDate = firstQuoteDate;
       this.lastQuoteDate = lastQuoteDate;
       this.targetPerformance = targetPerformance;
       this.genomeSize = numberOfTickersInPortfolio;
+      this.portfolioType = portfolioType;
+      this.setMinAndMaxValueForGenes();
+      this.set_SetOfInitialTickers();
+  
+    }
+    
+    
+    private void set_SetOfInitialTickers()
+    {
+      
+      if(this.portfolioType == PortfolioType.ShortAndLong)
+      {
+      	for(int i = 0;i<this.originalNumOfTickers;i++)
+      	{
+      		string ticker = (string)this.setOfTickers.Rows[i][0];
+      		DataRow newRow = this.setOfTickers.NewRow();
+      		newRow[0] = "-" + ticker;
+      		this.setOfTickers.Rows.Add(newRow);
+      		//so, if row[i][0]="TICKER" 
+      		//row[i+originalNumOfTickers][0]="-TICKER"
+      	}
+      }
+    }
+    
+    private void setMinAndMaxValueForGenes()
+    {
       //each genes is the index for the setOfTickers table
       this.minValueForGenes = 0;
-      this.maxValueForGenes = this.setOfTickers.Rows.Count - 1;
-      this.portfolioType = portfolioType;
+      
+      if(this.portfolioType == PortfolioType.OnlyLong ||
+         this.portfolioType == PortfolioType.OnlyShort)
+            this.maxValueForGenes = this.setOfTickers.Rows.Count - 1;
+      else//ShortAndLong
+            this.maxValueForGenes = this.setOfTickers.Rows.Count*2 - 1;
     }
+    
+    protected float getCoefficient(string ticker)
+    {
+    	float returnValue;
+    	if(ticker.StartsWith("-"))
+    	//if the first char is "-"
+    	//each element of the array of rates of return is
+    	//multiplied by -1
+    		returnValue = -1;
+    	else
+    		returnValue = 1;
+    	
+    	return returnValue;
+    		
+    }
+    
     
     public virtual double GetFitnessValue(Genome genome)
     {
@@ -120,8 +179,11 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
 	      this.variance = portfolioVariance;
       	this.rateOfReturn = portfolioRateOfReturn;
       	NormalDistribution normal = new NormalDistribution(portfolioRateOfReturn, Math.Sqrt(portfolioVariance));
-	      if(this.portfolioType == PortfolioType.OnlyLong)
-	         //returnValue = normal.GetProbability(this.targetPerformance*0.75,this.targetPerformance*1.25);
+	      if(this.portfolioType == PortfolioType.OnlyLong ||
+      	   this.portfolioType == PortfolioType.ShortAndLong)
+	        //the genome fitness is evaluated as if
+      		//the portfolio was long
+      		//ALTERNATIVE: returnValue = normal.GetProbability(this.targetPerformance*0.75,this.targetPerformance*1.25);
 	      	returnValue = 1.0 - normal.GetProbability(this.targetPerformance);
 	      else//only short orders are permitted
 	      	//returnValue = normal.GetProbability(-this.targetPerformance*1.25,-this.targetPerformance*0.75);
@@ -141,7 +203,10 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
       // the others already stored in the given genome
       int returnValue = GenomeManagement.RandomGenerator.Next(genome.MinValueForGenes,
         genome.MaxValueForGenes + 1);
-      while(genome.HasGene(returnValue))
+      while(genome.HasGene(returnValue) ||
+            genome.HasGene(returnValue + this.originalNumOfTickers))
+      //the portfolio can't have a long position and a short position
+      // for the same ticker
       {
         returnValue = GenomeManagement.RandomGenerator.Next(genome.MinValueForGenes,
           genome.MaxValueForGenes + 1);
@@ -207,7 +272,7 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
       double returnValue = 0;
       float[] ticker_i;
       float[] ticker_j;
-      double tickerCoeff = 1/this.genomeSize;
+      double tickerCoeff = 1.0/this.genomeSize;
       for(int i = 0; i<this.genomeSize ; i++)
       {
         ticker_i = (float[])this.setOfTickers.Rows[i]["ArrayOfRatesOfReturn"];

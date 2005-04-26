@@ -101,15 +101,18 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
 		
     protected virtual void addOrderForTicker(string ticker )
     {
- 
+    	string tickerCode = 
+    			GenomeManagerForEfficientPortfolio.GetCleanTickerCode(ticker);
       double cashForSinglePosition = this.account.CashAmount / this.numberOfTickersToBeChosen;
       long quantity =
-        Convert.ToInt64( Math.Floor( cashForSinglePosition / this.account.DataStreamer.GetCurrentBid( ticker ) ) );
+        Convert.ToInt64( Math.Floor( cashForSinglePosition / this.account.DataStreamer.GetCurrentBid( tickerCode ) ) );
       Order order;
-      if(this.portfolioType == PortfolioType.OnlyLong)
-          order = new Order( OrderType.MarketBuy, new Instrument( ticker ) , quantity );
-      else// only short orders are permitted
-      		order = new Order( OrderType.MarketSellShort, new Instrument( ticker ) , quantity );
+      if(this.portfolioType == PortfolioType.OnlyShort ||
+         		(this.portfolioType == PortfolioType.ShortAndLong &&
+              ticker != tickerCode))
+        order = new Order( OrderType.MarketSellShort, new Instrument( tickerCode ) , quantity );  
+      else      		
+      	order = new Order( OrderType.MarketBuy, new Instrument( tickerCode ) , quantity );
       
       this.orders.Add(order);
     }

@@ -70,7 +70,8 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
         if(ticker != null)
         {  
           this.addOrderForTicker( ticker );
-          this.lastChosenTickers[idx] = ticker;
+          this.lastChosenTickers[idx] = 
+          		GenomeManagerForEfficientPortfolio.GetCleanTickerCode(ticker);
         }
         idx++;
       }
@@ -144,17 +145,25 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
                           this.maxPriceForMinimumCommission, 0, 2);
       DataTable tickersByPrice = selectorByOpenPrice.GetTableOfSelectedTickers();
       */
-     	SelectorByWinningOpenToClose selectorByWinningOpenToClose = 
+     	/*SelectorByWinningOpenToClose selectorByWinningOpenToClose = 
      					new SelectorByWinningOpenToClose(this.tickerGroupID, false, currentDate,
      		                                 currentDate, this.numberOfEligibleTickers);
      	DataTable winningOpenToCloseTickers = selectorByWinningOpenToClose.GetTableOfSelectedTickers();
-      SelectorByLiquidity mostLiquid = new SelectorByLiquidity(winningOpenToCloseTickers, false,
-                                      currentDate.AddDays(-this.numDaysForLiquidity), currentDate, this.numberOfEligibleTickers);
-      this.eligibleTickers = mostLiquid.GetTableOfSelectedTickers();
+      */
+     	SelectorByLiquidity mostLiquid = new SelectorByLiquidity(this.tickerGroupID, false,
+                                      currentDate.AddDays(-this.numDaysForLiquidity), currentDate,
+                                      this.numberOfEligibleTickers/2);
+      SelectorByOpenToCloseVolatility lessVolatile = 
+      	new SelectorByOpenToCloseVolatility(mostLiquid.GetTableOfSelectedTickers(),
+      	                                    false, currentDate.AddDays(-this.numDaysForLiquidity),
+      	                                    currentDate,
+      	                                    this.numberOfEligibleTickers/4);
+      
+      this.eligibleTickers = lessVolatile.GetTableOfSelectedTickers();
       SelectorByQuotationAtEachMarketDay quotedAtEachMarketDayFromMostLiquid = 
         new SelectorByQuotationAtEachMarketDay( this.eligibleTickers,
                                    false, currentDate.AddDays(-this.numDaysForLiquidity),
-                                    currentDate, this.numberOfEligibleTickers, this.benchmark);
+                                    currentDate, this.numberOfEligibleTickers/4, this.benchmark);
       return quotedAtEachMarketDayFromMostLiquid.GetTableOfSelectedTickers();
     }
     

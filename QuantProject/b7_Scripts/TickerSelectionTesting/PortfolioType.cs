@@ -31,6 +31,7 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
   public enum PortfolioType
   {
     OnlyLong,
-    OnlyShort
+    OnlyShort,
+    ShortAndLong
   }
 }

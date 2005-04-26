@@ -133,7 +133,8 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
       int idx = 0;
       foreach ( string ticker in this.chosenTickers )
       {
-        this.lastChosenTickers[idx] = ticker;
+      	this.lastChosenTickers[idx] = 
+      			GenomeManagerForEfficientPortfolio.GetCleanTickerCode(ticker);
         if(ticker != null)
            this.addOrderForTicker( ticker );
         idx++;
