@@ -720,6 +720,8 @@ namespace QuantProject.DataAccess.Tables
       DateTime lastQuoteDate)
                                                 
     {
+      double returnValue = Double.MaxValue;
+      
       DataTable dt;
       string sql = "SELECT quotes.quTicker, " +
         "StDev(quotes.quClose/quotes.quOpen) AS CloseToOpenStandDev " +
@@ -729,10 +731,13 @@ namespace QuantProject.DataAccess.Tables
         " AND " + SQLBuilder.GetDateConstant(lastQuoteDate) + 
         " GROUP BY quotes.quTicker";
       dt = SqlExecutor.GetDataTable( sql );
-      if(dt.Rows.Count==0)
-        return 0;
-      else
-        return (double)dt.Rows[0]["CloseToOpenStandDev"];
+      if(dt.Rows.Count > 0)
+      {  
+        if( dt.Rows[0]["CloseToOpenStandDev"] is double )
+        //cast is possible
+            returnValue = (double)dt.Rows[0]["CloseToOpenStandDev"];
+      }
+      return returnValue;
     } 
     
     /// <summary>
@@ -744,7 +749,8 @@ namespace QuantProject.DataAccess.Tables
                                                 DateTime lastQuoteDate)
                                                 
     {
-      DataTable dt;
+      double returnValue = 0;
+    	DataTable dt;
       string sql = "SELECT quotes.quTicker, tickers.tiCompanyName, " +
                     "Avg(quotes.quOpen) AS AverageRawOpenPrice " +
                   "FROM (quotes INNER JOIN tickers ON quotes.quTicker=tickers.tiTicker) " +
@@ -754,10 +760,14 @@ namespace QuantProject.DataAccess.Tables
                   "AND " + SQLBuilder.GetDateConstant(lastQuoteDate) + " " +
                   "GROUP BY quotes.quTicker, tickers.tiCompanyName";
       dt = SqlExecutor.GetDataTable( sql );
-      if(dt.Rows.Count==0)
-        return 0;
-      else
-        return (double)dt.Rows[0]["AverageRawOpenPrice"];
+      if(dt.Rows.Count > 0)
+      {  
+        if( dt.Rows[0]["AverageRawOpenPrice"] is double )
+        //cast is possible
+            returnValue = (double)dt.Rows[0]["AverageRawOpenPrice"];
+      }
+      return returnValue;
+      	
      }
 
 	/// <summary>
@@ -769,7 +779,8 @@ namespace QuantProject.DataAccess.Tables
                                                 DateTime lastQuoteDate)
                                                 
     {
-      DataTable dt;
+      double returnValue = Double.MaxValue;
+			DataTable dt;
       string sql = "SELECT quotes.quTicker, tickers.tiCompanyName, " +
                     "StDev(quotes.quOpen) AS RawOpenPriceStdDev " +
                   "FROM (quotes INNER JOIN tickers ON quotes.quTicker=tickers.tiTicker) " +
@@ -779,10 +790,13 @@ namespace QuantProject.DataAccess.Tables
                   "AND " + SQLBuilder.GetDateConstant(lastQuoteDate) + " " +
                   "GROUP BY quotes.quTicker, tickers.tiCompanyName";
       dt = SqlExecutor.GetDataTable( sql );
-      if(dt.Rows.Count==0)
-        return 0;
-      else
-        return (double)dt.Rows[0]["RawOpenPriceStdDev"];
+      if(dt.Rows.Count > 0)
+      {  
+        if( dt.Rows[0]["RawOpenPriceStdDev"] is double )
+        //cast is possible
+            returnValue = (double)dt.Rows[0]["RawOpenPriceStdDev"];
+      }
+      return returnValue;
      }
     
 	  /// <summary>
@@ -804,8 +818,10 @@ namespace QuantProject.DataAccess.Tables
     	
      	dt = SqlExecutor.GetDataTable( sql );
      	if(dt.Rows.Count > 0)
-     		returnValue = (int)dt.Rows[0][0];
-     	
+     	{
+     		if(dt.Rows[0][0] is int)
+     			returnValue = (int)dt.Rows[0][0];
+     	}
      	return returnValue;
     }
 	
