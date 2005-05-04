@@ -29,6 +29,8 @@
     <File name=".\TickerSelectionTesting\RunEfficientPortfolio.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
     <File name=".\TickerSelectionTesting\PortfolioType.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
     <File name=".\WalkForwardTesting\WalkForwardOneRank\IWalkForwardProgressNotifier.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
+    <File name=".\TickerSelectionTesting\RunTestOptimizedCTOPortfolio.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
+    <File name=".\TickerSelectionTesting\EndOfDayTimerHandlerCTOTest.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
   </Contents>
   <References>
     <Reference type="Project" refto="b1_ADT" localcopy="True" />
