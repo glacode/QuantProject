@@ -166,24 +166,33 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
     public virtual double GetFitnessValue(Genome genome)
     {
       double returnValue = 0;
-      double portfolioVariance = this.getPortfolioVariance(genome.Genes());
-      double portfolioRateOfReturn = this.getPortfolioRateOfReturn(genome.Genes());
-      
-      if(!Double.IsInfinity(portfolioVariance) ||
-         !Double.IsInfinity(portfolioRateOfReturn) ||
-         !Double.IsNaN(portfolioVariance) ||
-         !Double.IsNaN(portfolioRateOfReturn))
-      //variance and rate of return are 
-      //double values computed in the right way
+      //OLD IMPLEMENTATION double portfolioRateOfReturn = this.getPortfolioRateOfReturn(genome.Genes());
+      //OLD IMPLEMENTATION double portfolioVariance = this.getPortfolioVariance(genome.Genes());
+      double[] portfolioRatesOfReturn = this.getPortfolioRatesOfReturn(genome.Genes());
+      double averagePortfolioRateOfReturn = 
+            BasicFunctions.SimpleAverage(portfolioRatesOfReturn);
+        
+      double portfolioVariance = 
+            BasicFunctions.Variance(portfolioRatesOfReturn);
+
+      if(!Double.IsInfinity(portfolioVariance) &&
+         !Double.IsInfinity(averagePortfolioRateOfReturn) &&
+         !Double.IsNaN(portfolioVariance) &&
+         !Double.IsNaN(averagePortfolioRateOfReturn))
+      //both variance and rate of return are 
+      //double values computed in the right way:
+      // so it's possible to assign fitness using normal distribution class
       {
 	      this.variance = portfolioVariance;
-      	this.rateOfReturn = portfolioRateOfReturn;
-      	NormalDistribution normal = new NormalDistribution(portfolioRateOfReturn, Math.Sqrt(portfolioVariance));
+      	this.rateOfReturn = averagePortfolioRateOfReturn;
+      	NormalDistribution normal = 
+      		new NormalDistribution(this.rateOfReturn,
+      		                       Math.Sqrt(this.variance));
 	      if(this.portfolioType == PortfolioType.OnlyLong ||
       	   this.portfolioType == PortfolioType.ShortAndLong)
 	        //the genome fitness is evaluated as if
       		//the portfolio was long
-      		//ALTERNATIVE: returnValue = normal.GetProbability(this.targetPerformance*0.75,this.targetPerformance*1.25);
+      		//returnValue = normal.GetProbability(this.targetPerformance*0.75,this.targetPerformance*1.25);
 	      	returnValue = 1.0 - normal.GetProbability(this.targetPerformance);
 	      else//only short orders are permitted
 	      	//returnValue = normal.GetProbability(-this.targetPerformance*1.25,-this.targetPerformance*0.75);
@@ -249,30 +258,30 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
 
     protected double getPortfolioVariance(int[] tickerIdx)
     {
-      double sumOfVariances = this.getSumOfVariances(tickerIdx);
-      double sumOfCovariances = this.getSumOfCovariances(tickerIdx);
+      double sumOfVariances = this.getWeightedSumOfVariances(tickerIdx);
+      double sumOfCovariances = this.getWeightedSumOfCovariances(tickerIdx);
       double returnValue = sumOfVariances + sumOfCovariances; 
       return returnValue;
     }
     
-    protected double getSumOfVariances(int[] tickerIdx)
+    protected double getWeightedSumOfVariances(int[] tickerIdx)
     {
       double returnValue = 0;
-      double tickerCoeff = 1.0/this.genomeSize;
+      double tickerCoeff = 1.0/this.genomeSize;  
       foreach(int idx in tickerIdx)
       {
-        returnValue += BasicFunctions.Variance((float[])this.setOfTickers.Rows[idx]["ArrayOfRatesOfReturn"]);
+        returnValue += tickerCoeff * tickerCoeff * 
+        				BasicFunctions.Variance((float[])this.setOfTickers.Rows[idx]["ArrayOfRatesOfReturn"]);
       }
-      returnValue = returnValue * tickerCoeff * tickerCoeff;
       return returnValue;
     }
 
-    protected double getSumOfCovariances(int[] tickerIdx)
+    protected double getWeightedSumOfCovariances(int[] tickerIdx)
     {
       double returnValue = 0;
       float[] ticker_i;
       float[] ticker_j;
-      double tickerCoeff = 1.0/this.genomeSize;
+      double tickerCoeff = 1.0/this.genomeSize; 
       for(int i = 0; i<this.genomeSize ; i++)
       {
         ticker_i = (float[])this.setOfTickers.Rows[i]["ArrayOfRatesOfReturn"];
@@ -281,11 +290,11 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
           if(j != i)
           {
             ticker_j = (float[])this.setOfTickers.Rows[j]["ArrayOfRatesOfReturn"];
-            returnValue += BasicFunctions.CoVariance(ticker_i, ticker_j);
+            returnValue += tickerCoeff * tickerCoeff * 
+            				BasicFunctions.CoVariance(ticker_i, ticker_j);
           }
         }
       }
-      returnValue = returnValue * tickerCoeff * tickerCoeff;
       return returnValue;
     }
 
@@ -320,20 +329,38 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
       
       return ratesOfReturns;
     }
-    
-    
-    
-
+   
     protected double getPortfolioRateOfReturn(int[] tickerIdx)
     {
       double returnValue = 0;
       foreach(int idx in tickerIdx)
       {
-        returnValue += BasicFunctions.SimpleAverage((float[])this.setOfTickers.Rows[idx]["ArrayOfRatesOfReturn"]);
+        returnValue += 
+        		BasicFunctions.SimpleAverage((float[])this.setOfTickers.Rows[idx]["ArrayOfRatesOfReturn"]);
       }
       //the investment is assumed to be equally divided
       return (returnValue/this.GenomeSize);
+      
     }
+    
+    protected double[] getPortfolioRatesOfReturn(int[] tickerIdx)
+    {
+      int numberOfExaminedReturns = 
+          ((float[])this.setOfTickers.Rows[tickerIdx[0]]["ArrayOfRatesOfReturn"]).Length;
+      double[] returnValue = new double[numberOfExaminedReturns];
+      for(int i = 0; i<returnValue.Length; i++)    
+      {  
+        foreach(int idx in tickerIdx)
+        {
+          float[] tickerRatesOfReturn = (float[])this.setOfTickers.Rows[idx]["ArrayOfRatesOfReturn"];
+          returnValue[i] += tickerRatesOfReturn[i]/this.genomeSize; 
+          //the investment is assumed to be equally divided for each ticker
+        }
+      }
+      return returnValue;
+      
+    }
+    
   }
 
 }
