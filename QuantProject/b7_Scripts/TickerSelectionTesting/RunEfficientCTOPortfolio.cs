@@ -98,7 +98,7 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
                                                               this.benchmark,
                                                               this.targetReturn,
                                                               this.portfolioType);
-        
+       
         
     }
     

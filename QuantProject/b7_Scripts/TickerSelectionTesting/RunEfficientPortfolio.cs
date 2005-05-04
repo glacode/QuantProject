@@ -52,7 +52,7 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
 	[Serializable]
   public class RunEfficientPorfolio
 	{
-    public static double MaxNumberOfHoursForScript = 10;
+    public static double MaxNumberOfHoursForScript = 6;
     //if MaxNumberOfHoursForScript has elapsed and the script
     //is still running, it will be stopped.
     protected string tickerGroupID;
@@ -128,6 +128,7 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
       //default endOfDayTimer
     	this.endOfDayTimer =
         new IndexBasedEndOfDayTimer( this.startDateTime, this.benchmark );
+    	
     }
     
     protected virtual void run_initializeAccount()
@@ -205,6 +206,7 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
         new MarketCloseEventHandler(
         this.checkDateForReport);
       
+      //in inherited classes'override method: 
       //add here TimerHandler's handlers to timer's events
       //example
       //this.endOfDayTimer.EVENT_NAME +=

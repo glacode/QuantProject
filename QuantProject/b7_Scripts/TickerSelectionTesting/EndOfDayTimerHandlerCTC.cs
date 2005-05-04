@@ -69,12 +69,14 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
     private DataTable getSetOfTickersToBeOptimized(DateTime currentDate)
     {
       SelectorByLiquidity mostLiquid = new SelectorByLiquidity(this.tickerGroupID,false,
-                                      currentDate.AddDays(-this.numDaysForLiquidity), currentDate, this.numberOfEligibleTickers);
+                                      currentDate.AddDays(-this.numDaysForLiquidity),
+                                      currentDate,
+                                      this.numberOfEligibleTickers/2);
       this.eligibleTickers = mostLiquid.GetTableOfSelectedTickers();
       SelectorByQuotationAtEachMarketDay quotedInEachMarketDayFromMostLiquid = 
         new SelectorByQuotationAtEachMarketDay(this.eligibleTickers,
                                   false, currentDate.AddDays(-this.numDaysForLiquidity),currentDate,
-                                  this.numberOfEligibleTickers, this.benchmark);
+                                  this.numberOfEligibleTickers/2, this.benchmark);
       return quotedInEachMarketDayFromMostLiquid.GetTableOfSelectedTickers();
     }
     
@@ -149,7 +151,7 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
     private void marketCloseEventHandler_openPositions()
     {
       if(this.orders.Count == 0 && this.account.Transactions.Count == 0)
-        this.account.AddCash(15000);     
+        this.account.AddCash(17000);     
       
       this.marketCloseEventHandler_orderChosenTickers();
       
