@@ -52,7 +52,7 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
 	[Serializable]
   public class RunEfficientPorfolio
 	{
-    public static double MaxNumberOfHoursForScript = 6;
+    public static double MaxNumberOfHoursForScript = 5;
     //if MaxNumberOfHoursForScript has elapsed and the script
     //is still running, it will be stopped.
     protected string tickerGroupID;
@@ -86,13 +86,17 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
     protected PortfolioType portfolioType;
     
     protected DateTime startingTimeForScript;
-   	    
+      	    
     public virtual string ScriptName
     {
     	get{return this.scriptName;}
     	set{this.scriptName = value;}
     }
-    	
+    
+    public DateTime TimerLastDate
+    {
+    	get{return this.endOfDayTimer.GetCurrentTime().DateTime ;}
+    }	
 	
     public RunEfficientPorfolio(string tickerGroupID, int numberOfEligibleTickers, 
                                     int numberOfTickersToBeChosen, int numDaysForLiquidity, 
@@ -159,40 +163,45 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
     
     protected virtual void checkDateForReport(Object sender , EndOfDayTimingEventArgs endOfDayTimingEventArgs)
     {
-      //Report report;
-
       if(endOfDayTimingEventArgs.EndOfDayDateTime.DateTime>=this.endDateTime.DateTime ||
          DateTime.Now >= this.startingTimeForScript.AddHours(RunEfficientPorfolio.MaxNumberOfHoursForScript))
       //last date is reached by the timer or MaxNumberOfHoursForScript hours
       //are elapsed from the time script started
-      {
-        this.endOfDayTimer.Stop();
-        
-        string fileName = "From"+this.numberOfEligibleTickers +
+    		this.SaveScriptResults();
+    }
+    
+    public virtual void SaveScriptResults()
+    {
+      string fileName = "From"+this.numberOfEligibleTickers +
                       "LiqDays" + this.numDaysForLiquidity + "Portfolio" +
                       this.numberOfTickersToBeChosen + "GenNum" + 
                       this.generationNumberForGeneticOptimizer +
                       "PopSize" + this.populationSizeForGeneticOptimizer +
         							"Target" + Convert.ToString(this.targetReturn) + 
         							Convert.ToString(this.portfolioType);
-        string dirNameWhereToSaveReports = System.Configuration.ConfigurationSettings.AppSettings["ReportsArchive"] +
+      string dirNameWhereToSaveReports = System.Configuration.ConfigurationSettings.AppSettings["ReportsArchive"] +
                          								"\\" + this.ScriptName + "\\";
-        string dirNameWhereToSaveAccounts = System.Configuration.ConfigurationSettings.AppSettings["AccountsArchive"] +
-                         									"\\" + this.ScriptName + "\\";
-        //default report with numIntervalDays = 1
-        AccountReport accountReport = this.account.CreateReport(fileName,1,this.endDateTime,this.benchmark,
-                                                              new HistoricalAdjustedQuoteProvider());
-        this.checkDateForReport_createDirIfNotPresent(dirNameWhereToSaveReports);
-        ObjectArchiver.Archive(accountReport,
-                               dirNameWhereToSaveReports + 
-                               fileName + ".rep");
-        
-        this.checkDateForReport_createDirIfNotPresent(dirNameWhereToSaveAccounts);
-        ObjectArchiver.Archive(this.account,
-                               dirNameWhereToSaveAccounts +
-                               fileName + ".acc");
-      }
+      string dirNameWhereToSaveAccounts = System.Configuration.ConfigurationSettings.AppSettings["AccountsArchive"] +
+                       									"\\" + this.ScriptName + "\\";
+      //default report with numIntervalDays = 1
+      AccountReport accountReport = this.account.CreateReport(fileName,1,
+                                    		this.endOfDayTimer.GetCurrentTime(),
+                                    		this.benchmark,
+                                        new HistoricalAdjustedQuoteProvider());
+      this.checkDateForReport_createDirIfNotPresent(dirNameWhereToSaveReports);
+      ObjectArchiver.Archive(accountReport,
+                             dirNameWhereToSaveReports + 
+                             fileName + ".rep");
+      this.checkDateForReport_createDirIfNotPresent(dirNameWhereToSaveAccounts);
+      ObjectArchiver.Archive(this.account,
+                             dirNameWhereToSaveAccounts +
+                             fileName + ".acc");
+      
+      this.endOfDayTimer.Stop();
+       
     }
+    
+    
     public virtual void Run()
     {
       run_initializeHistoricalQuoteProvider();

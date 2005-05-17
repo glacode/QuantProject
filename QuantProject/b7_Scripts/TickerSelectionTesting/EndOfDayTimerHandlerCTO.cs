@@ -148,7 +148,7 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
      	
      	SelectorByLiquidity mostLiquid = new SelectorByLiquidity(this.tickerGroupID, false,
                                       currentDate.AddDays(-this.numDaysForLiquidity), currentDate,
-                                      this.numberOfEligibleTickers/2);
+                                      this.numberOfEligibleTickers);
       //SelectorByOpenToCloseVolatility lessVolatile = 
       //	new SelectorByOpenToCloseVolatility(mostLiquid.GetTableOfSelectedTickers(),
       //	                                    true, currentDate.AddDays(-this.numDaysForLiquidity/3),
@@ -159,7 +159,7 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
       SelectorByQuotationAtEachMarketDay quotedAtEachMarketDayFromMostLiquid = 
         new SelectorByQuotationAtEachMarketDay( this.eligibleTickers,
                                    false, currentDate.AddDays(-this.numDaysForLiquidity),
-                                    currentDate, this.numberOfEligibleTickers/2, this.benchmark);
+                                    currentDate, this.numberOfEligibleTickers, this.benchmark);
       //SelectorByWinningOpenToClose winners =
       //	new SelectorByWinningOpenToClose(quotedAtEachMarketDayFromMostLiquid.GetTableOfSelectedTickers(),
       //	                                 false, currentDate.AddDays(-2),
@@ -185,7 +185,9 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
         	                                          this.numberOfTickersToBeChosen,
         	                                          this.targetReturn,
         	                                         	this.portfolioType);
-        GeneticOptimizer GO = new GeneticOptimizer(genManEfficientCTOPortfolio);
+        GeneticOptimizer GO = new GeneticOptimizer(genManEfficientCTOPortfolio,
+                                                    this.populationSizeForGeneticOptimizer,
+                                                    this.generationNumberForGeneticOptimizer);
         //GO.KeepOnRunningUntilConvergenceIsReached = true;
         GO.GenerationNumber = this.generationNumberForGeneticOptimizer;
         GO.PopulationSize = this.populationSizeForGeneticOptimizer;

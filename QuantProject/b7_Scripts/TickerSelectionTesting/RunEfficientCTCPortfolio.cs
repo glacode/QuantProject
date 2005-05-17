@@ -59,6 +59,7 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
 	public class RunEfficientCTCPorfolio : RunEfficientPorfolio
 	{
     private int numDayOfPortfolioLife;
+    private double maxAcceptableCloseToCloseDrawdown;
 		
     public RunEfficientCTCPorfolio(string tickerGroupID, int numberOfEligibleTickers, 
                                     int numberOfTickersToBeChosen, int numDaysForLiquidity, 
@@ -66,7 +67,7 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
                                     int populationSizeForGeneticOptimizer, string benchmark,
                                     DateTime startDate, DateTime endDate,
                                    	int numDaysOfPortfolioLife, double targetReturn,
-                                    PortfolioType portfolioType):
+                                    PortfolioType portfolioType, double maxAcceptableCloseToCloseDrawdown):
 																base(tickerGroupID, numberOfEligibleTickers, 
                                     numberOfTickersToBeChosen, numDaysForLiquidity, 
                                     generationNumberForGeneticOptimizer,
@@ -76,6 +77,7 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
 		{
       this.ScriptName = "CloseToCloseScripts";
       this.numDayOfPortfolioLife = numDaysOfPortfolioLife;
+      this.maxAcceptableCloseToCloseDrawdown = maxAcceptableCloseToCloseDrawdown;
 		}
     #region Run
        
@@ -88,7 +90,7 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
     	                                                        this.generationNumberForGeneticOptimizer,
     	                                                        this.populationSizeForGeneticOptimizer, this.benchmark,
     	                                                        this.numDayOfPortfolioLife, this.targetReturn,
-    	                                                       	this.portfolioType);
+    	                                                       	this.portfolioType, this.maxAcceptableCloseToCloseDrawdown);
     }
     
     protected override void run_initializeHistoricalQuoteProvider()

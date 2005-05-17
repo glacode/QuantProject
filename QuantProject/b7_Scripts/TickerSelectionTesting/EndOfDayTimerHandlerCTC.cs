@@ -45,6 +45,11 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
   {
     private int numDaysOfPortfolioLife;
     private int daysCounter;
+    private double maxAcceptableCloseToCloseDrawdown;
+    private bool stopLossConditionReached;
+    private double currentAccountValue;
+    private double previousAccountValue;
+
     public EndOfDayTimerHandlerCTC(string tickerGroupID, int numberOfEligibleTickers, 
                                 int numberOfTickersToBeChosen, int numDaysForLiquidity,
                                 Account account,                                
@@ -53,7 +58,7 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
                                 string benchmark,
                                 int numDaysOfPortfolioLife,
                                 double targetReturn,
-                               	PortfolioType portfolioType):
+                               	PortfolioType portfolioType, double maxAcceptableCloseToCloseDrawdown):
     														base(tickerGroupID, numberOfEligibleTickers, 
                                 numberOfTickersToBeChosen, numDaysForLiquidity, account,
                                 generationNumberForGeneticOptimizer,
@@ -63,6 +68,10 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
     {
       this.numDaysOfPortfolioLife = numDaysOfPortfolioLife;
       this.daysCounter = 0;
+      this.maxAcceptableCloseToCloseDrawdown = maxAcceptableCloseToCloseDrawdown;
+      this.stopLossConditionReached = false;
+      this.currentAccountValue = 0.0;
+      this.previousAccountValue = 0.0;
     }
 		    
     #region MarketOpenEventHandler
@@ -71,12 +80,12 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
       SelectorByLiquidity mostLiquid = new SelectorByLiquidity(this.tickerGroupID,false,
                                       currentDate.AddDays(-this.numDaysForLiquidity),
                                       currentDate,
-                                      this.numberOfEligibleTickers/2);
+                                      this.numberOfEligibleTickers);
       this.eligibleTickers = mostLiquid.GetTableOfSelectedTickers();
       SelectorByQuotationAtEachMarketDay quotedInEachMarketDayFromMostLiquid = 
         new SelectorByQuotationAtEachMarketDay(this.eligibleTickers,
                                   false, currentDate.AddDays(-this.numDaysForLiquidity),currentDate,
-                                  this.numberOfEligibleTickers/2, this.benchmark);
+                                  this.numberOfEligibleTickers, this.benchmark);
       return quotedInEachMarketDayFromMostLiquid.GetTableOfSelectedTickers();
     }
     
@@ -100,7 +109,9 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
           currentDate, this.numberOfTickersToBeChosen,
           this.numDaysOfPortfolioLife, this.targetReturn,
          	this.portfolioType);
-        GeneticOptimizer GO = new GeneticOptimizer(genManEfficientCTCPortfolio);
+        GeneticOptimizer GO = new GeneticOptimizer(genManEfficientCTCPortfolio,
+                                                    this.populationSizeForGeneticOptimizer, 
+                                                    this.generationNumberForGeneticOptimizer);
         //GO.KeepOnRunningUntilConvergenceIsReached = true;
         GO.GenerationNumber = this.generationNumberForGeneticOptimizer;
         GO.Run(false);
@@ -125,6 +136,7 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
         //sets tickers to be chosen at next close
         this.orders.Clear();
       }
+      this.updateStopLossCondition();
     }
 		#endregion
 
@@ -180,12 +192,28 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
         }
       }
     }
-        
+    
+    private void updateStopLossCondition()
+    {
+      this.previousAccountValue = this.currentAccountValue;
+      this.currentAccountValue = this.account.GetMarketValue();
+      if((this.currentAccountValue - this.previousAccountValue)
+           /this.previousAccountValue < -this.maxAcceptableCloseToCloseDrawdown)
+      {
+        this.stopLossConditionReached = true;
+      }
+      else
+      {
+        this.stopLossConditionReached = false;
+      }
+    }    
+    
     public override void MarketCloseEventHandler(
       Object sender , EndOfDayTimingEventArgs endOfDayTimingEventArgs )
     {
       this.daysCounter++;
-      if(this.daysCounter == this.numDaysOfPortfolioLife)
+      if(this.daysCounter == this.numDaysOfPortfolioLife ||
+          this.stopLossConditionReached)
       //it's time to change portfolio
       {
         this.marketCloseEventHandler_closePositions();
