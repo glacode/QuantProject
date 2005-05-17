@@ -30,7 +30,7 @@ namespace QuantProject.ADT.Optimizing.Genetic
 	/// Representation of an individual through features
 	/// provided by biology
 	/// </summary>
-  public class Genome 
+	public class Genome : IComparable
 	{
 	  private int[] genes;
     private int minValueForGenes;
@@ -67,7 +67,19 @@ namespace QuantProject.ADT.Optimizing.Genetic
     {
       get{return this.maxValueForGenes;}
     }
+		
+    //implementation of IComparable interface
+    public int CompareTo(object obj) {
+        if(obj is Genome) {
+            Genome genome = (Genome)obj;
 
+            return this.Fitness.CompareTo(genome.Fitness);
+        }
+        
+        throw new ArgumentException("Object is not a Genome");    
+    }
+		//end of implementation of IComparable interface
+    
     /// <summary>
     /// It creates a  new genome object initialized by a IGenomeManager
     /// </summary>
