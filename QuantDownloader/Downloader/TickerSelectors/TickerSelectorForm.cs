@@ -88,6 +88,7 @@ namespace QuantProject.Applications.Downloader.TickerSelectors
       this.comboBoxAvailableSelectionRules.Items.Add("QuotedAtEachMarketDay");
       this.comboBoxAvailableSelectionRules.Items.Add("AverageRawOpenPrice");
       this.comboBoxAvailableSelectionRules.Items.Add("WinningOpenToClose");
+      this.comboBoxAvailableSelectionRules.Items.Add("OpenCloseCorrelationToBenchmark");
 
   	}
     public TickerSelectorForm(string groupID) : this()
@@ -590,6 +591,17 @@ namespace QuantProject.Applications.Downloader.TickerSelectors
         	returnValue = new SelectorByWinningOpenToClose(this.tableOfSelectedTickers,
             this.checkBoxASCMode.Checked, this.dateTimePickerFirstDate.Value,
             this.dateTimePickerLastDate.Value, Int32.Parse(this.textBoxMaxNumOfReturnedTickers.Text));
+      }
+      else if (this.comboBoxAvailableSelectionRules.Text == "OpenCloseCorrelationToBenchmark")
+      { 
+        if(this.textBoxGroupID.Text != "")
+          returnValue = new SelectorByOpenCloseCorrelationToBenchmark(this.textBoxGroupID.Text, this.textBoxMarketIndex.Text,
+            this.checkBoxASCMode.Checked, this.dateTimePickerFirstDate.Value,
+            this.dateTimePickerLastDate.Value, Int32.Parse(this.textBoxMaxNumOfReturnedTickers.Text));
+        else
+          returnValue = new SelectorByOpenCloseCorrelationToBenchmark(this.tableOfSelectedTickers, this.textBoxMarketIndex.Text,
+                              this.checkBoxASCMode.Checked, this.dateTimePickerFirstDate.Value,
+                              this.dateTimePickerLastDate.Value, Int32.Parse(this.textBoxMaxNumOfReturnedTickers.Text));
       } 
       return returnValue;  
     }
@@ -615,7 +627,8 @@ namespace QuantProject.Applications.Downloader.TickerSelectors
     }  
     private void comboBoxAvailableSelectionRules_SelectedValueChanged(object sender, System.EventArgs e)
     {
-      if(this.comboBoxAvailableSelectionRules.Text == "QuotedAtEachMarketDay")
+      if(this.comboBoxAvailableSelectionRules.Text == "QuotedAtEachMarketDay" ||
+          this.comboBoxAvailableSelectionRules.Text == "OpenCloseCorrelationToBenchmark")
       {
       	this.setVisibilityForControls_QuotedAtEachMarketDay(true);
       }
