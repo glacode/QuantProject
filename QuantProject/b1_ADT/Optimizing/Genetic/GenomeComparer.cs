@@ -35,15 +35,24 @@ namespace QuantProject.ADT.Optimizing.Genetic
 		}
 		public int Compare( object x, object y)
 		{
-			if ( !(x is Genome) || !(y is Genome))
-				throw new ArgumentException("Not of type Genome");
-
-			if (((Genome) x).Fitness > ((Genome) y).Fitness)
-				return 1;
-			else if (((Genome) x).Fitness == ((Genome) y).Fitness)
-				return 0;
+			int returnValue = 0;
+			
+			if((x is Genome) && (y is Genome))	
+			{
+				if ( ((Genome) x).Fitness > ((Genome) y).Fitness )
+					returnValue = 1;
+				else if ( ((Genome) x).Fitness < ((Genome) y).Fitness )
+					returnValue = -1;
+			}
 			else
-				return -1;
+        throw new ArgumentException("Both objects to compare must be genomes!");
+      //old implementation
+      //else if ( !(x is Genome) && (y is Genome))
+				//returnValue = -1;
+			//else if	((x is Genome) && !(y is Genome))				
+				//returnValue = 1;
+										
+			return returnValue;
 		}
 	}
 }
