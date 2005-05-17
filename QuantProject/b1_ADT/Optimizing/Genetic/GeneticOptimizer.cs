@@ -128,12 +128,14 @@ namespace QuantProject.ADT.Optimizing.Genetic
     /// The class needs to be initialized by an object implementing
     /// IGenomeManager interface 
     /// Default GO parameters: crossoverRate = 0.85, mutationRate = 0.02, elitismRate = 0.01,
-    /// populationSize = 1000, generationNumber = 100
     /// keepOnRunningUntilConvergenceIsReached = false, minConvergenceRate = 0.80 
     /// </summary>
-    public GeneticOptimizer(IGenomeManager genomeManager)
+    public GeneticOptimizer(IGenomeManager genomeManager, int populationSize,
+                            int generationNumber)
     {
       this.genomeManager = genomeManager;
+      this.populationSize = populationSize;
+      this.generationNumber = generationNumber;
       
       this.commonInitialization();
     }
@@ -324,18 +326,19 @@ namespace QuantProject.ADT.Optimizing.Genetic
               i >=(populationSize - this.elitismRate*this.populationSize);
               i--)
       {
-        this.currentEliteToTransmitToNextGeneration.Add((Genome)this.currentGeneration[i]);
+      	if(this.currentGeneration[i] is Genome)
+      		this.currentEliteToTransmitToNextGeneration.Add((Genome)this.currentGeneration[i]);
       }
     }
 
     private void transmitEliteToNextGeneration()
     {
       for(int i = 0;
-          i < this.currentEliteToTransmitToNextGeneration.Count-1;
+          i < this.currentEliteToTransmitToNextGeneration.Count;
           i++)
         
       {
-        this.nextGeneration.Add(this.currentEliteToTransmitToNextGeneration[i]);
+    		this.nextGeneration.Add((Genome)this.currentEliteToTransmitToNextGeneration[i]);
       }
     }
 
@@ -407,10 +410,11 @@ namespace QuantProject.ADT.Optimizing.Genetic
     private void updateCurrentGeneration()
     {
       this.currentGeneration.Clear();
-      // Note that next generation is greater than current:
+      int numOfNextGeneration = this.nextGeneration.Count;
+        // Note that next generation is greater than current:
       // due to the population size, genomes with lowest fitness are abandoned
       for (int i = 1 ; i <= this.populationSize; i++)
-        this.currentGeneration.Add(this.nextGeneration[this.nextGeneration.Count - i]);
+        this.currentGeneration.Add(this.nextGeneration[numOfNextGeneration - i]);
     }
 
     private void updateBestGenomeFoundInRunning(Genome genomeValue)
