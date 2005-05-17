@@ -3,6 +3,7 @@ using System.Collections;
 using System.Data;
 using System.Text;
 using QuantProject.ADT;
+using QuantProject.ADT.Statistics;
 using QuantProject.ADT.Histories;
 using QuantProject.DataAccess;
 using QuantProject.DataAccess.Tables;
@@ -363,6 +364,58 @@ namespace QuantProject.Data.DataTables
       return returnValue;
     }
     
+    private static float[] getArrayOfCloseToOpenRatios(string ticker,
+                                                      DateTime firstQuoteDate,
+                                                      DateTime lastQuoteDate)
+    {
+      float[] returnValue;
+      Quotes tickerQuotes = new Quotes(ticker, firstQuoteDate, lastQuoteDate);
+      returnValue = ExtendedDataTable.GetArrayOfFloatFromRatioOfColumns(tickerQuotes, "quClose", "quOpen");
+      return returnValue;
+
+    }
+
+    /// <summary>
+    /// returns tickers of a given group ordered by open - close 
+    /// correlation to a given benchmark
+    /// </summary>
+    public static DataTable GetTickersByOpenCloseCorrelationToBenchmark( bool orderByASC,
+      string groupID, string benchmark,
+      DateTime firstQuoteDate,
+      DateTime lastQuoteDate,
+      long maxNumOfReturnedTickers)
+    {
+      DataTable tickersOfGroup = new Tickers_tickerGroups(groupID);
+      return GetTickersByOpenCloseCorrelationToBenchmark(orderByASC, tickersOfGroup, benchmark,
+                                                  firstQuoteDate, lastQuoteDate,
+                                                  maxNumOfReturnedTickers);
+    }
+    
+    /// <summary>
+    /// returns tickers of a given set of tickers ordered by open - close 
+    /// correlation to a given benchmark
+    /// </summary>
+    public static DataTable GetTickersByOpenCloseCorrelationToBenchmark( bool orderByASC,
+      DataTable setOfTickers, string benchmark,
+      DateTime firstQuoteDate,
+      DateTime lastQuoteDate,
+      long maxNumOfReturnedTickers)
+    {
+      if(!setOfTickers.Columns.Contains("OpenCloseCorrelationToBenchmark"))
+        setOfTickers.Columns.Add("OpenCloseCorrelationToBenchmark", System.Type.GetType("System.Double"));
+      float[] benchmarkRatios = getArrayOfCloseToOpenRatios(benchmark, firstQuoteDate, lastQuoteDate);
+      foreach(DataRow row in setOfTickers.Rows)
+      {
+        float[] tickerRatios = getArrayOfCloseToOpenRatios((string)row[0], 
+          firstQuoteDate, lastQuoteDate);
+      	if(tickerRatios.Length == benchmarkRatios.Length)
+      		row["OpenCloseCorrelationToBenchmark"] =
+          	BasicFunctions.PearsonCorrelationCoefficient(benchmarkRatios, tickerRatios);
+      }
+      DataTable tableToReturn = ExtendedDataTable.CopyAndSort(setOfTickers,"OpenCloseCorrelationToBenchmark", orderByASC);
+      ExtendedDataTable.DeleteRows(tableToReturn, maxNumOfReturnedTickers);
+      return tableToReturn;
+    }
     
     private History history;
 

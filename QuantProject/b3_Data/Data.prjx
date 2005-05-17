@@ -32,6 +32,7 @@
     <File name=".\Selectors\TickerSelector.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
     <File name=".\QuantProject.Applications.Downloader.TickerSelectors.TickerSelectorForm.resources" subtype="Code" buildaction="EmbedAsResource" dependson="" data="" />
     <File name=".\Selectors\SelectorByWinningOpenToClose.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
+    <File name=".\Selectors\SelectorByOpenCloseCorrelationToBenchmark.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
   </Contents>
   <References>
     <Reference type="Project" refto="b2_DataAccess" localcopy="True" />

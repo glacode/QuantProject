@@ -192,9 +192,19 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "DataTables\Quotes.resx"
+                    DependentUpon = "Quotes.cs"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
                     RelPath = "DataTables\TickerDataTable.cs"
                     SubType = "Component"
                     BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "DataTables\TickerDataTable.resx"
+                    DependentUpon = "TickerDataTable.cs"
+                    BuildAction = "EmbeddedResource"
                 />
                 <File
                     RelPath = "DataTables\Tickers_tickerGroups.cs"
@@ -263,6 +273,11 @@
                 />
                 <File
                     RelPath = "Selectors\SelectorByLiquidity.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Selectors\SelectorByOpenCloseCorrelationToBenchmark.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />

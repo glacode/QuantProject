@@ -40,6 +40,7 @@ namespace QuantProject.Data.Selectors
     CloseToCloseLinearCorrelation,
     QuotedAtEachMarketDay,
     AverageRawOpenPrice,
-    WinningOpenToClose
+    WinningOpenToClose,
+    OpenCloseCorrelationToBenchmark
   }
 }
