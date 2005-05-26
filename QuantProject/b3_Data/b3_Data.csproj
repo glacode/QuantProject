@@ -197,11 +197,6 @@
                     BuildAction = "Compile"
                 />
                 <File
-                    RelPath = "DataProviders\Caching\MissingQuoteException.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
                     RelPath = "DataTables\GroupQuotes.cs"
                     SubType = "Component"
                     BuildAction = "Compile"
