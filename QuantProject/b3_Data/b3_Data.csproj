@@ -182,6 +182,26 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "DataProviders\Caching\Cache.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "DataProviders\Caching\CachePage.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "DataProviders\Caching\EarlyDateException.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "DataProviders\Caching\MissingQuoteException.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "DataTables\GroupQuotes.cs"
                     SubType = "Component"
                     BuildAction = "Compile"
