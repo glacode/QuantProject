@@ -64,7 +64,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardOneRank
 		{
 			double returnValue;
 			if ( this.accountReport == null )
-				this.accountReport = this.CreateReport( this.Key , 7 ,
+				this.accountReport = this.CreateReport( this.Key , 1 ,
 					this.EndOfDayTimer.GetCurrentTime() , this.Key ,
 					this.historicalQuoteProvider );
 
