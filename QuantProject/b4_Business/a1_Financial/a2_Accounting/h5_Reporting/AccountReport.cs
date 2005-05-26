@@ -247,7 +247,8 @@ namespace QuantProject.Business.Financial.Accounting.Reporting
 		private void setBenchmarkEquityLine()
 		{
 			History benchmarkQuotes = HistoricalDataProvider.GetAdjustedCloseHistory(
-				this.benchmark );
+				this.benchmark , (DateTime)this.EquityHistory.GetKey( 0 ) ,
+				(DateTime)this.EquityHistory.GetKey( this.EquityHistory.Count - 1 ) );
 			this.benchmarkEquityLine = benchmarkQuotes.Select( this.EquityHistory );
 			this.benchmarkEquityLine.Interpolate( this.EquityHistory.Keys , new PreviousInterpolator() );
 		}
