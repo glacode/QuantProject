@@ -83,86 +83,61 @@ namespace QuantProject.DataAccess
     }
 
     #region "GetHistory"
-    private static History getHistory_try( string instrumentKey , QuoteField quoteField )
+    private static History getHistory_try( string instrumentKey , QuoteField quoteField ,
+			DateTime firstDate , DateTime lastDate )
     {
       History history = new History();
       string commandString =
-        "select * from quotes where quTicker='" + instrumentKey + "'";
+        "select * from quotes where (quTicker='" + instrumentKey + "') " +
+				"and (quDate>=" + SQLBuilder.GetDateConstant( firstDate ) + ") " +
+				"and (quDate<=" + SQLBuilder.GetDateConstant( lastDate ) + ")";
       OleDbDataAdapter oleDbDataAdapter = new OleDbDataAdapter( commandString , oleDbConnection );
       DataTable dataTable = new DataTable();
       oleDbDataAdapter.Fill( dataTable );
       history.Import( dataTable , "quDate" , getFieldName( quoteField ) );
       return history;
     }
-    /// <summary>
-    /// Returns the full history for the instrument and the specified quote field
-    /// </summary>
-    /// <param name="instrumentKey">Identifier (ticker) for the instrument whose story
-    /// has to be returned</param>
-    /// <param name="quoteField">Discriminates among Open, High, Low and Closure</param>
-    /// <returns>The history for the given instrument and quote field</returns>
-    public static History GetHistory( string instrumentKey , QuoteField quoteField )
-    {
-      History history;
-      try
-      {
-        history = getHistory_try( instrumentKey , quoteField );
-      }
-      catch (Exception ex)
-      {
-        MessageBox.Show( ex.ToString() );
-        history = null;
-      }
-      return history;
-    }
-    #endregion
+		private static History getHistory_common( string instrumentKey , QuoteField quoteField ,
+			DateTime firstDate , DateTime lastDate )
+		{
+			History history;
+			try
+			{
+				history = getHistory_try( instrumentKey , quoteField , firstDate , lastDate );
+			}
+			catch (Exception ex)
+			{
+				MessageBox.Show( ex.ToString() );
+				history = null;
+			}
+			return history;
+		}
+		/// <summary>
+		/// Returns the full history for the instrument and the specified quote field
+		/// </summary>
+		/// <param name="instrumentKey">Identifier (ticker) for the instrument whose story
+		/// has to be returned</param>
+		/// <param name="quoteField">Discriminates among Open, High, Low and Closure</param>
+		/// <returns>The history for the given instrument and quote field</returns>
+		public static History GetHistory( string instrumentKey , QuoteField quoteField )
+		{
+			return getHistory_common( instrumentKey , quoteField , DateTime.MinValue , DateTime.MaxValue );
+		}
 
-//    #region "GetHistories"
-//    private static Single getHistories_try_getValue( DataRow dataRow , DateTime dateTime ,
-//      QuoteField quoteField )
-//    {
-//      Single returnValue;
-//      if ( quoteField == QuoteField.cl )
-//        returnValue = (Single)dataRow[ getFieldName( quoteField ) ];
-//      else
-//        returnValue = (Single)dataRow[ getFieldName( quoteField ) ] *
-//          (Single)dataRow[ "quAdjustedClose" ] / (Single)dataRow[ "quClose" ];
-//      return returnValue;
-//    }
-//    private static Hashtable getHistories_try( string instrumentKey , Hashtable barComponents , DateTime startDateTime , DateTime endDateTime )
-//    {
-//      Hashtable histories = new Hashtable();
-//      foreach (BarComponent barComponent in barComponents.Keys)
-//        histories.Add( barComponent , new History() );
-//      string commandString =
-//        "select * from quotes where quTicker='" + instrumentKey + "' and " +
-//        "quDate>=" + SQLBuilder.GetDateConstant( startDateTime ) + " and " +
-//        "quDate<=" + SQLBuilder.GetDateConstant( endDateTime );
-//      OleDbDataAdapter oleDbDataAdapter = new OleDbDataAdapter( commandString , oleDbConnection );
-//      DataSet dataSet = new DataSet();
-//      oleDbDataAdapter.Fill( dataSet , "history" );
-//      foreach ( DataRow dataRow in dataSet.Tables[ "history" ].Rows )
-//        foreach ( BarComponent barComponent in barComponents.Keys )
-//          ((History) histories[ barComponent ]).Add( (DateTime) dataRow[ "quDate" ] ,
-//            getHistories_try_getValue( dataRow , (DateTime) dataRow[ "quDate" ] , barComponent ) );
-////          ((History) histories[ barComponent ]).Add( (DateTime) dataRow[ "quDate" ] ,
-////            dataRow[ getFieldName( barComponent ) ] );
-//      return histories;
-//    }
-//    public static Hashtable GetHistories( string instrumentKey , Hashtable barComponents , DateTime startDateTime , DateTime endDateTime )
-//    {
-//      Hashtable histories;
-//      try
-//      {
-//        histories = getHistories_try( instrumentKey , barComponents , startDateTime , endDateTime );
-//      }
-//      catch (Exception ex)
-//      {
-//        MessageBox.Show( ex.ToString() );
-//        histories = null;
-//      }
-//      return histories;
-//    }
-//    #endregion
+		/// <summary>
+		/// Returns the history for the instrument and the specified quote field
+		/// </summary>
+		/// <param name="instrumentKey">Identifier (ticker) for the instrument whose story
+		/// has to be returned</param>
+		/// <param name="quoteField">Discriminates among Open, High, Low and Closure</param>
+		/// <param name="firstDate">First date for quotes to be fetched</param>
+		/// <param name="lastDate">Last date for quotes to be fetched</param>
+		/// <returns>The history for the given instrument and quote field</returns>
+		public static History GetHistory( string instrumentKey , QuoteField quoteField ,
+			DateTime firstDate , DateTime lastDate )
+		{
+			return getHistory_common( instrumentKey , quoteField , firstDate , lastDate );
+		}
+		#endregion
   }
 }
