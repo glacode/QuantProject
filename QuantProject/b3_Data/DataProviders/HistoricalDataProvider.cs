@@ -23,8 +23,10 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 using System;
 using System.Collections;
 using System.Data;
+
 using QuantProject.ADT;
 using QuantProject.ADT.Histories;
+using QuantProject.Data.DataProviders.Caching;
 using QuantProject.DataAccess;
 using QuantProject.DataAccess.Tables;
 
@@ -35,7 +37,31 @@ namespace QuantProject.Data.DataProviders
 	/// </summary>
 	public class HistoricalDataProvider
 	{
-    private static Hashtable cachedHistories = new Hashtable();
+		private static Hashtable cachedHistories = new Hashtable();
+
+		private static Cache privateCache = new Cache();
+
+
+		private static DateTime minDate = DateTime.MinValue;
+		private static DateTime maxDate = DateTime.MaxValue;
+
+		/// <summary>
+		/// When defined, sets the minimum DateTime to be cached
+		/// </summary>
+		public static DateTime MinDate
+		{
+			get { return minDate; }
+			set { minDate = value; }
+		}
+
+		/// <summary>
+		/// When defined, sets the maximum DateTime to be cached
+		/// </summary>
+		public static DateTime MaxDate
+		{
+			get { return maxDate; }
+			set { maxDate = value; }
+		}
 
 		public HistoricalDataProvider()
 		{
@@ -96,6 +122,20 @@ namespace QuantProject.Data.DataProviders
 			return (History)((Hashtable)cachedHistories[ instrumentKey ])[ quoteField ];
 		}
 
+		private static History getHistory( string ticker , QuoteField quoteField ,
+			DateTime firstDate , DateTime lastDate )
+		{
+			History returnValue = new History();
+			DateTime currentDate = firstDate;
+			while ( currentDate <= lastDate )
+			{
+				returnValue.Add( currentDate , privateCache.GetQuote(
+					ticker , currentDate , quoteField ) );
+				currentDate = currentDate.AddDays( 1 );
+			}
+			return returnValue;
+		}
+
 		public static History GetOpenHistory( string instrumentKey )
 		{
 			return getHistory( instrumentKey , QuoteField.Open );
@@ -121,13 +161,35 @@ namespace QuantProject.Data.DataProviders
 			return getHistory( instrumentKey , QuoteField.AdjustedClose );
 		}
 
+		public static History GetAdjustedCloseHistory( string ticker ,
+			DateTime firstDate , DateTime lastDate )
+		{
+			return getHistory( ticker , QuoteField.AdjustedClose ,
+				firstDate , lastDate );
+		}
+
+		private static History cache_getHistory( string instrumentKey , QuoteField quoteField )
+		{
+			History returnValue;
+			if ( ( MinDate != DateTime.MinValue ) &&
+				( MaxDate != DateTime.MaxValue ) )
+				// the script has set a min date value and a max date value for the historical quotes
+				returnValue = DataBase.GetHistory( instrumentKey , quoteField ,
+					MinDate , MaxDate );
+			else
+				// the script has NOT set a min date value and a max date value for the historical quotes
+				returnValue = DataBase.GetHistory( instrumentKey , quoteField );
+			return returnValue;
+		}
+
 		private static void cache( string instrumentKey , QuoteField quoteField )
 		{
 			if ( !cachedHistories.ContainsKey( instrumentKey ) )
 				// no component at all for the instrument instrumentKey has been cached yet
 				cachedHistories.Add( instrumentKey , new Hashtable() );
+			History quoteHistory = cache_getHistory( instrumentKey , quoteField );
 			((Hashtable)cachedHistories[ instrumentKey ]).Add( quoteField ,
-				DataBase.GetHistory( instrumentKey , quoteField ) );
+				quoteHistory );
 		}
 //		public static double GetMarketValue( string instrumentKey , ExtendedDateTime extendedDateTime )
 //		{
@@ -175,16 +237,16 @@ namespace QuantProject.Data.DataProviders
 		public static double GetAdjustedMarketValue( string instrumentKey , ExtendedDateTime extendedDateTime )
 		{
 			double returnValue;
-			double adjustedClose = getQuote( instrumentKey ,
+			double adjustedClose = privateCache.GetQuote( instrumentKey ,
 				extendedDateTime.DateTime , QuoteField.AdjustedClose );
 			if ( extendedDateTime.BarComponent == BarComponent.Close )
 				returnValue = adjustedClose;
 			else
 				// extendedDateTime.BarComponent is equal to BarComponent.Open
 			{
-				double open = getQuote( instrumentKey ,
+				double open = privateCache.GetQuote( instrumentKey ,
 					extendedDateTime.DateTime , QuoteField.Open );
-				double close = getQuote( instrumentKey ,
+				double close = privateCache.GetQuote( instrumentKey ,
 					extendedDateTime.DateTime , QuoteField.Close );
 				returnValue = open * adjustedClose / close;
 			}
@@ -208,15 +270,20 @@ namespace QuantProject.Data.DataProviders
 					extendedDateTime.DateTime , QuoteField.Open );
 			return returnValue;
 		}
-		public static bool WasExchanged( string instrumentKey , ExtendedDateTime extendedDateTime )
+//		public static bool WasExchanged( string instrumentKey , ExtendedDateTime extendedDateTime )
+//		{
+//			ExtendedDateTime atClose = new ExtendedDateTime(
+//				extendedDateTime.DateTime , BarComponent.Close );
+//			double marketValue = GetRawMarketValue( instrumentKey ,
+//				atClose ); // forces caching if needed
+//			History instrumentQuotes =
+//				(History)((Hashtable)cachedHistories[ instrumentKey ])[ QuoteField.Close ];
+//			bool returnValue = instrumentQuotes.ContainsKey( extendedDateTime.DateTime );
+//			return returnValue;
+//		}
+		public static bool WasExchanged( string ticker , ExtendedDateTime extendedDateTime )
 		{
-			ExtendedDateTime atClose = new ExtendedDateTime(
-				extendedDateTime.DateTime , BarComponent.Close );
-			double marketValue = GetRawMarketValue( instrumentKey ,
-				atClose ); // forces caching if needed
-			return ( (History) ((Hashtable)
-				cachedHistories[ instrumentKey ])[ QuoteField.Close ] ).ContainsKey(
-				extendedDateTime.DateTime );
+			return privateCache.WasExchanged( ticker , extendedDateTime );
 		}
 
 		/// <summary>
