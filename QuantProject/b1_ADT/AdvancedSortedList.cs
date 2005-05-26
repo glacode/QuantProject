@@ -58,19 +58,28 @@ namespace QuantProject.ADT
         key , startIndex , endIndex );
     }
 
-    public int previousIndexOfKey( Object key )
-    {
-      if ( ((IComparable)this.GetKey( this.Count - 1 )).CompareTo( key ) < 0 )
-        // the last element key is less then the key to search
-        return this.Count - 1;
-      else
-        // ((IComparable)this.GetKey( this.Count - 1 )).CompareTo( key ) > 0
-        return 
-          previousIndexOfKey_dicotomicSearch( key , 0 , this.Count - 1 );
-    }
+		public int previousIndexOfKey( Object key )
+		{
+			if ( ((IComparable)this.GetKey( this.Count - 1 )).CompareTo( key ) < 0 )
+				// the last element key is less then the key to search
+				return this.Count - 1;
+			else
+				// ((IComparable)this.GetKey( this.Count - 1 )).CompareTo( key ) > 0
+				return 
+					previousIndexOfKey_dicotomicSearch( key , 0 , this.Count - 1 );
+		}
 
+		/// <summary>
+		/// Returns the index for the given key. If the key is missing, it returns the
+		/// index for the next previous element.
+		/// </summary>
+		/// <param name="key"></param>
+		/// <returns></returns>
     public int IndexOfKeyOrPrevious( Object key )
     {
+			if ( ((IComparable)this.GetKey( 0 )).CompareTo( key ) > 0 )
+				// the given key is less then the first key in the sorted list
+				throw new IndexOfKeyOrPreviousException( (IComparable)this.GetKey( 0 ) , key );
       int indexOfKey = this.IndexOfKey( key );
       if ( indexOfKey >= 0 )
         return indexOfKey;
@@ -82,6 +91,10 @@ namespace QuantProject.ADT
     {
       return this.GetKey( this.IndexOfKeyOrPrevious( key ) );
     }
+		public object GetByKeyOrPrevious( Object key )
+		{
+			return this[ this.GetKeyOrPrevious( key ) ];
+		}
     public bool IsLastKey( Object key )
     {
       return ( this.IndexOfKey( key ) == ( this.Count - 1 ) );
