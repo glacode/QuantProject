@@ -140,7 +140,7 @@
                 <Reference
                     Name = "NPlot"
                     AssemblyName = "NPlot"
-                    HintPath = "..\..\QuantDownloader\Downloader\bin\Debug\NPlot.dll"
+                    HintPath = "bin\Debug\NPlot.dll"
                 />
             </References>
         </Build>
