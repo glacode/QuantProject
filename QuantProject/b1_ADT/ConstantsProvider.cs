@@ -26,5 +26,8 @@ namespace QuantProject.ADT
     // max num days allowed by the data source (yahoo)
     public static double MaxNumDaysDownloadedAtEachConnection = 200;
 		public static string FormatWithTwoDecimals = "0:#,#.00";
+		public static DateTime MinQuoteDateTime = new DateTime( 1950 , 1 , 1 );
+		public static int CachePages = 1000;
+		public static int PagesToBeRemovedFromCache = 500; // for Garbage Collection
 	}
 }
