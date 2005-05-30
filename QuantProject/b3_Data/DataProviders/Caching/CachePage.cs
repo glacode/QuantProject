@@ -30,7 +30,7 @@ namespace QuantProject.Data.DataProviders.Caching
 	/// <summary>
 	/// A page containing quotes in main memory (fetched from the disk)
 	/// </summary>
-	public class CachePage : Hashtable
+	public class CachePage
 	{
     private string ticker;
 		private int year;
