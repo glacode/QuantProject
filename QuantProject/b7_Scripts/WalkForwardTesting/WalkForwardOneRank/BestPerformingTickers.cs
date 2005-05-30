@@ -29,6 +29,7 @@ using QuantProject.Business.Financial.Accounting;
 using QuantProject.Business.Financial.Ordering;
 using QuantProject.Business.Timing;
 using QuantProject.Data.DataProviders;
+using QuantProject.Data.DataProviders.Caching;
 using QuantProject.Scripts.SimpleTesting;
 
 namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardOneRank
@@ -132,14 +133,22 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardOneRank
 			this.tickersWithGoodness.Clear();
 			foreach ( string ticker in eligibleTickers.Keys )
 			{
-				setTickers_build_addTickerWithGoodness( ticker , dateTime );
-				this.calculatedTickers++;
-				if ( Math.Floor( this.calculatedTickers / this.tickersWithGoodness.Count * 100 ) >
-					Math.Floor( ( this.calculatedTickers - 1 ) / this.tickersWithGoodness.Count * 100 ) )
-					// a new time percentage point has been elapsed
-					this.NewProgress( this , new NewProgressEventArgs(
-						Convert.ToInt32( Math.Floor( this.calculatedTickers / eligibleTickers.Count * 100 ) ) ,
-						100 ) );
+				try
+				{
+					setTickers_build_addTickerWithGoodness( ticker , dateTime );
+					this.calculatedTickers++;
+					if ( Math.Floor( this.calculatedTickers / this.tickersWithGoodness.Count * 100 ) >
+						Math.Floor( ( this.calculatedTickers - 1 ) / this.tickersWithGoodness.Count * 100 ) )
+						// a new time percentage point has been elapsed
+						this.NewProgress( this , new NewProgressEventArgs(
+							Convert.ToInt32( Math.Floor( this.calculatedTickers / eligibleTickers.Count * 100 ) ) ,
+							100 ) );
+				} 
+				catch ( MissingQuoteException exception )
+				{
+					// the given ticker has not quotes for alle the inSample period
+					string doNothing = exception.Message;
+				}
 			}
 			for ( int index=this.tickersWithGoodness.Count - 1 ;
 				index >= this.tickersWithGoodness.Count - this.numberBestPerformingTickers ;
