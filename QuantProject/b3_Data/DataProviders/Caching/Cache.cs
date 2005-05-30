@@ -130,6 +130,11 @@ namespace QuantProject.Data.DataProviders.Caching
 				this.Remove( key );
 		}
 		#endregion
+//		private void getQuote_checkEarlyDateException( DateTime dateTime )
+//		{
+//			if ( dateTime < ConstantsProvider.MinQuoteDateTime )
+//				throw new EarlyDateException( dateTime );
+//		}
 		#region addPage
 //		private void addTicker( string ticker )
 //		{
@@ -156,27 +161,40 @@ namespace QuantProject.Data.DataProviders.Caching
 //				quotesForTickerAndYear.Add( quoteField , cachePage );
 //			}
 //		}
-		private void addPage( string ticker , DateTime dateTime , QuoteField quoteField )
+		private void addPage( string ticker , int year , QuoteField quoteField )
 		{
 			if ( this.Count + 1 > this.maxNumPages )
 				this.removeUnusedPages();
-			CachePage cachePage = new CachePage( ticker , dateTime.Year , quoteField );
+			CachePage cachePage = new CachePage( ticker , year , quoteField );
 			cachePage.LoadData();
-			this.Add( this.getKey( ticker , dateTime.Year , quoteField ) , cachePage );
+			this.Add( this.getKey( ticker , year , quoteField ) , cachePage );
 			this.currentNumPages ++ ;
+		}
+		private void addPage( string ticker , DateTime dateTime , QuoteField quoteField )
+		{
+			this.addPage( ticker , dateTime.Year , quoteField );
 		}
 		#endregion
 		public double GetQuote( string ticker , DateTime dateTime , QuoteField quoteField )
 		{
 			double returnValue;
-			if ( dateTime < ConstantsProvider.MinQuoteDateTime )
-				throw new EarlyDateException( dateTime );
+//			this.getQuote_checkEarlyDateException( dateTime );
 			if ( !this.ContainsKey( this.getKey( ticker , dateTime.Year , quoteField ) ) )
 				// the instrument instrumentKey has not been cached yet, for the given bar component
 				this.addPage( ticker , dateTime , quoteField );
 			try
 			{
 				CachePage cachePage = this.getCachePage( ticker , dateTime , quoteField );
+				if ( cachePage.Quotes.Count == 0 )
+				{
+					this.addPage( ticker , dateTime.Year - 1 , quoteField );
+					cachePage = this.getCachePage( ticker , dateTime.Year - 1 , quoteField );
+					if ( cachePage.Quotes.Count == 0 )
+						// ticker has no quotes both in the dateTime year and in the
+						// previous year
+						throw new MissingQuoteException( ticker , dateTime );
+				}
+
 				if ( cachePage.Rank != this.currentPageRank )
 				{
 					this.currentPageRank ++ ;
