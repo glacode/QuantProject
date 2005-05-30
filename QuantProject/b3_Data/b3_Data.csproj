@@ -192,7 +192,7 @@
                     BuildAction = "Compile"
                 />
                 <File
-                    RelPath = "DataProviders\Caching\EarlyDateException.cs"
+                    RelPath = "DataProviders\Caching\MissingQuoteException.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
