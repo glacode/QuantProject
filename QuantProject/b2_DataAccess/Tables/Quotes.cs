@@ -317,40 +317,41 @@ namespace QuantProject.DataAccess.Tables
     }             
     
     #region IsAdjustedCloseToCloseRatioChanged
+    
+    private static void isAtLeastOneValueChanged_setPrimaryKey(DataTable tableToBeSet)
+    {
+      DataColumn[] columnPrimaryKeys = new DataColumn[1];
+      columnPrimaryKeys[0] = tableToBeSet.Columns[Quotes.Date];
+      tableToBeSet.PrimaryKey = columnPrimaryKeys;
+    }
 
     private static bool isAtLeastOneValueChanged(DataTable tableDB, DataTable tableSource)
                                                           
     {
-      try
+      bool returnValue = false;
+      int numRows = tableDB.Rows.Count;
+      DateTime date;
+      float adjCTCInDatabase, adjCTCInSource;
+      double absoluteDifference;
+      DataRow rowToCheck;
+      for(int i = 0;i != numRows;i++)
       {
-        int numRows = tableDB.Rows.Count;
-        DateTime date;
-        float adjCTCInDatabase;
-        float adjCTCInSource;
-        double absoluteDifference;
-        DataRow rowToCheck;
-        for(int i = 0;i != numRows;i++)
+        date = (DateTime)tableDB.Rows[i][Quotes.Date];
+        adjCTCInDatabase = (float)tableDB.Rows[i][Quotes.AdjustedCloseToCloseRatio];
+        isAtLeastOneValueChanged_setPrimaryKey(tableSource);
+        rowToCheck = tableSource.Rows.Find(date);
+        if(rowToCheck != null)
         {
-          date = (DateTime)tableDB.Rows[i][Quotes.Date];
-          adjCTCInDatabase = (float)tableDB.Rows[i][Quotes.AdjustedCloseToCloseRatio];
-          rowToCheck = tableSource.Rows.Find(date);
-          if(rowToCheck != null)
-          {
-            adjCTCInSource = (float)rowToCheck[Quotes.AdjustedCloseToCloseRatio];
-            absoluteDifference = Math.Abs(adjCTCInDatabase - adjCTCInSource);
-            if(absoluteDifference > ConstantsProvider.MaxDifferenceForCloseToCloseRatios )
-              {
-                Quotes.DateWithDifferentCloseToClose = date;
-                return true;
-              }
-          }
+          adjCTCInSource = (float)rowToCheck[Quotes.AdjustedCloseToCloseRatio];
+          absoluteDifference = Math.Abs(adjCTCInDatabase - adjCTCInSource);
+          if(absoluteDifference > ConstantsProvider.MaxDifferenceForCloseToCloseRatios )
+            {
+              Quotes.DateWithDifferentCloseToClose = date;
+              returnValue = true;
+            }
         }
       }
-      catch(Exception ex)
-      {
-        string notUsed = ex.ToString();
-      }
-      return false;
+      return returnValue;
     }             
 
 
