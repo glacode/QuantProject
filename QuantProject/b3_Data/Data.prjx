@@ -9,6 +9,7 @@
     <File name=".\DataProviders\NewQuoteEventArgs.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
     <File name=".\DataProviders\Quote.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
     <File name=".\DataProviders\Timer.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
+    <File name=".\DataProviders\Caching\Cache.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
     <File name=".\DataTables\GroupQuotes.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
     <File name=".\DataTables\Quotes.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
     <File name=".\DataTables\TickerDataTable.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
@@ -33,6 +34,8 @@
     <File name=".\QuantProject.Applications.Downloader.TickerSelectors.TickerSelectorForm.resources" subtype="Code" buildaction="EmbedAsResource" dependson="" data="" />
     <File name=".\Selectors\SelectorByWinningOpenToClose.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
     <File name=".\Selectors\SelectorByOpenCloseCorrelationToBenchmark.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
+    <File name=".\DataProviders\Caching\EarlyDateException.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
+    <File name=".\DataProviders\Caching\CachePage.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
   </Contents>
   <References>
     <Reference type="Project" refto="b2_DataAccess" localcopy="True" />

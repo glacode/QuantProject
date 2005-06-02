@@ -31,6 +31,8 @@
     <File name=".\WalkForwardTesting\WalkForwardOneRank\IWalkForwardProgressNotifier.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
     <File name=".\TickerSelectionTesting\RunTestOptimizedCTOPortfolio.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
     <File name=".\TickerSelectionTesting\EndOfDayTimerHandlerCTOTest.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
+    <File name=".\TickerSelectionTesting\RunTestOptimizedCTCPortfolio.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
+    <File name=".\TickerSelectionTesting\EndOfDayTimerHandlerCTCTest.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
   </Contents>
   <References>
     <Reference type="Project" refto="b1_ADT" localcopy="True" />
