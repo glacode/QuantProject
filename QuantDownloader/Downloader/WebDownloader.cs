@@ -51,6 +51,7 @@ namespace QuantProject.Applications.Downloader
     private Thread downloadThread = null;
     internal System.Windows.Forms.CheckBox checkBoxComputeCloseToCloseValues;
     private System.Windows.Forms.ToolTip toolTip1;
+    internal System.Windows.Forms.CheckBox checkBoxDownloadOnlyAfterCloseToCloseCheck;
     private System.ComponentModel.IContainer components;
 
 		public WebDownloader()
@@ -152,6 +153,7 @@ namespace QuantProject.Applications.Downloader
       this.buttonAbort = new System.Windows.Forms.Button();
       this.checkBoxComputeCloseToCloseValues = new System.Windows.Forms.CheckBox();
       this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
+      this.checkBoxDownloadOnlyAfterCloseToCloseCheck = new System.Windows.Forms.CheckBox();
       ((System.ComponentModel.ISupportInitialize)(this.dataGrid1)).BeginInit();
       this.groupBoxWebDownloaderOptions.SuspendLayout();
       this.groupBoxUpdateDatabaseOptions.SuspendLayout();
@@ -159,7 +161,7 @@ namespace QuantProject.Applications.Downloader
       // 
       // button1
       // 
-      this.button1.Location = new System.Drawing.Point(16, 392);
+      this.button1.Location = new System.Drawing.Point(16, 424);
       this.button1.Name = "button1";
       this.button1.Size = new System.Drawing.Size(112, 32);
       this.button1.TabIndex = 0;
@@ -254,7 +256,7 @@ namespace QuantProject.Applications.Downloader
       // 
       // buttonDownloadQuotesOfSelectedTickers
       // 
-      this.buttonDownloadQuotesOfSelectedTickers.Location = new System.Drawing.Point(136, 392);
+      this.buttonDownloadQuotesOfSelectedTickers.Location = new System.Drawing.Point(136, 424);
       this.buttonDownloadQuotesOfSelectedTickers.Name = "buttonDownloadQuotesOfSelectedTickers";
       this.buttonDownloadQuotesOfSelectedTickers.Size = new System.Drawing.Size(112, 32);
       this.buttonDownloadQuotesOfSelectedTickers.TabIndex = 2;
@@ -263,7 +265,7 @@ namespace QuantProject.Applications.Downloader
       // 
       // labelNumberOfTickersToDownload
       // 
-      this.labelNumberOfTickersToDownload.Location = new System.Drawing.Point(160, 448);
+      this.labelNumberOfTickersToDownload.Location = new System.Drawing.Point(160, 472);
       this.labelNumberOfTickersToDownload.Name = "labelNumberOfTickersToDownload";
       this.labelNumberOfTickersToDownload.Size = new System.Drawing.Size(48, 24);
       this.labelNumberOfTickersToDownload.TabIndex = 4;
@@ -271,7 +273,7 @@ namespace QuantProject.Applications.Downloader
       // 
       // labelTickersLeft
       // 
-      this.labelTickersLeft.Location = new System.Drawing.Point(16, 448);
+      this.labelTickersLeft.Location = new System.Drawing.Point(16, 472);
       this.labelTickersLeft.Name = "labelTickersLeft";
       this.labelTickersLeft.Size = new System.Drawing.Size(136, 24);
       this.labelTickersLeft.TabIndex = 5;
@@ -384,7 +386,7 @@ namespace QuantProject.Applications.Downloader
       // buttonAbort
       // 
       this.buttonAbort.Enabled = false;
-      this.buttonAbort.Location = new System.Drawing.Point(256, 408);
+      this.buttonAbort.Location = new System.Drawing.Point(256, 440);
       this.buttonAbort.Name = "buttonAbort";
       this.buttonAbort.Size = new System.Drawing.Size(32, 23);
       this.buttonAbort.TabIndex = 15;
@@ -400,11 +402,22 @@ namespace QuantProject.Applications.Downloader
       this.checkBoxComputeCloseToCloseValues.TabIndex = 16;
       this.checkBoxComputeCloseToCloseValues.Text = "Compute close to close ratios (slower)";
       // 
+      // checkBoxDownloadOnlyAfterCloseToCloseCheck
+      // 
+      this.checkBoxDownloadOnlyAfterCloseToCloseCheck.Location = new System.Drawing.Point(16, 384);
+      this.checkBoxDownloadOnlyAfterCloseToCloseCheck.Name = "checkBoxDownloadOnlyAfterCloseToCloseCheck";
+      this.checkBoxDownloadOnlyAfterCloseToCloseCheck.Size = new System.Drawing.Size(272, 24);
+      this.checkBoxDownloadOnlyAfterCloseToCloseCheck.TabIndex = 17;
+      this.checkBoxDownloadOnlyAfterCloseToCloseCheck.Text = "Download only after CTC check (slower)";
+      this.toolTip1.SetToolTip(this.checkBoxDownloadOnlyAfterCloseToCloseCheck, "If checked, commit to database is performed only for tickers for which new adjust" +
+        "ed values respect current close to close ratio  ");
+      // 
       // WebDownloader
       // 
       this.AutoScaleBaseSize = new System.Drawing.Size(5, 13);
-      this.ClientSize = new System.Drawing.Size(840, 486);
+      this.ClientSize = new System.Drawing.Size(840, 494);
       this.Controls.AddRange(new System.Windows.Forms.Control[] {
+                                                                  this.checkBoxDownloadOnlyAfterCloseToCloseCheck,
                                                                   this.checkBoxComputeCloseToCloseValues,
                                                                   this.buttonAbort,
                                                                   this.groupBoxUpdateDatabaseOptions,
@@ -787,6 +800,13 @@ namespace QuantProject.Applications.Downloader
       get
       {
         return this.radioButtonOverWriteNo.Checked;
+      }
+    }
+    public bool IsCheckCloseToCloseSelected
+    {
+      get
+      {
+        return this.checkBoxDownloadOnlyAfterCloseToCloseCheck.Checked;
       }
     }
   }
