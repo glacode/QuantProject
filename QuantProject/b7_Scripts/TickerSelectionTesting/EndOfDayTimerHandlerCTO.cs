@@ -62,7 +62,7 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
 		    
     #region MarketOpenEventHandler
         
-    private void marketOpenEventHandler_orderChosenTickers_addToOrderList()
+    protected void marketOpenEventHandler_orderChosenTickers_addToOrderList()
     {
       int idx = 0;
       foreach ( string ticker in this.chosenTickers )
@@ -77,7 +77,7 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
       }
     }
     
-    private void marketOpenEventHandler_orderChosenTickers()
+    protected void marketOpenEventHandler_orderChosenTickers()
     {
       this.marketOpenEventHandler_orderChosenTickers_addToOrderList();
     }
@@ -104,12 +104,12 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
 
     #region MarketCloseEventHandler
     
-    private void marketCloseEventHandler_closePosition(
+    protected void marketCloseEventHandler_closePosition(
       string ticker )
     {
       this.account.ClosePosition( ticker );
     }
-    private void marketCloseEventHandler_closePositions()
+    protected void marketCloseEventHandler_closePositions()
     {
       if(this.lastChosenTickers != null)
       {
@@ -135,7 +135,7 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
 
 		#region OneHourAfterMarketCloseEventHandler
       
-    private DataTable getSetOfTickersToBeOptimized(DateTime currentDate)
+    protected DataTable getSetOfTickersToBeOptimized(DateTime currentDate)
     {
       /*
       SelectorByAverageRawOpenPrice selectorByOpenPrice = 
@@ -149,14 +149,14 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
      	SelectorByLiquidity mostLiquid = new SelectorByLiquidity(this.tickerGroupID, false,
                                       currentDate.AddDays(-this.numDaysForLiquidity), currentDate,
                                       this.numberOfEligibleTickers);
-      //SelectorByOpenToCloseVolatility lessVolatile = 
-      //	new SelectorByOpenToCloseVolatility(mostLiquid.GetTableOfSelectedTickers(),
-      //	                                    true, currentDate.AddDays(-this.numDaysForLiquidity/3),
-      //	                                    currentDate,
-      //	                                    this.numberOfEligibleTickers/4);
+      /*SelectorByOpenToCloseVolatility lessVolatile = 
+      	new SelectorByOpenToCloseVolatility(mostLiquid.GetTableOfSelectedTickers(),
+      	                                    true, currentDate.AddDays(-5),
+      	                                    currentDate,
+      	                                    this.numberOfEligibleTickers/2);*/
       
       this.eligibleTickers = mostLiquid.GetTableOfSelectedTickers();
-      SelectorByQuotationAtEachMarketDay quotedAtEachMarketDayFromMostLiquid = 
+      SelectorByQuotationAtEachMarketDay quotedAtEachMarketDayFromEligible = 
         new SelectorByQuotationAtEachMarketDay( this.eligibleTickers,
                                    false, currentDate.AddDays(-this.numDaysForLiquidity),
                                     currentDate, this.numberOfEligibleTickers, this.benchmark);
@@ -165,11 +165,11 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
       //	                                 false, currentDate.AddDays(-2),
       //	                                 currentDate, this.numberOfEligibleTickers/4);      	                                 
       //return winners.GetTableOfSelectedTickers();
-      return quotedAtEachMarketDayFromMostLiquid.GetTableOfSelectedTickers();
+      return quotedAtEachMarketDayFromEligible.GetTableOfSelectedTickers();
     }
     
     
-    private void setTickers(DateTime currentDate)
+    protected virtual void setTickers(DateTime currentDate)
     {
       
       DataTable setOfTickersToBeOptimized = this.getSetOfTickersToBeOptimized(currentDate);
@@ -185,21 +185,20 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
         	                                          this.numberOfTickersToBeChosen,
         	                                          this.targetReturn,
         	                                         	this.portfolioType);
+        
         GeneticOptimizer GO = new GeneticOptimizer(genManEfficientCTOPortfolio,
                                                     this.populationSizeForGeneticOptimizer,
                                                     this.generationNumberForGeneticOptimizer);
-        //GO.KeepOnRunningUntilConvergenceIsReached = true;
-        GO.GenerationNumber = this.generationNumberForGeneticOptimizer;
-        GO.PopulationSize = this.populationSizeForGeneticOptimizer;
+        
         GO.Run(false);
+        
         this.chosenTickers = (string[])GO.BestGenome.Meaning;
-        //this.lastChosenTickers = this.chosenTickers;
       }
       //else it will be buyed again the previous optimized portfolio
       //that's it the actual chosenTickers member
     }
 
-    private void oneHourAfterMarketCloseEventHandler_updatePrices()
+    protected void oneHourAfterMarketCloseEventHandler_updatePrices()
     {
     	//min price for minimizing commission amount
     	//according to IB Broker's commission scheme

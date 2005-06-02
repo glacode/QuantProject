@@ -43,12 +43,13 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
   [Serializable]
   public class EndOfDayTimerHandlerCTC : EndOfDayTimerHandler
   {
-    private int numDaysOfPortfolioLife;
-    private int daysCounter;
-    private double maxAcceptableCloseToCloseDrawdown;
-    private bool stopLossConditionReached;
-    private double currentAccountValue;
-    private double previousAccountValue;
+    protected int numDaysOfPortfolioLife;
+    protected int numDaysForReturnCalculation;
+    protected int daysCounter;
+    protected double maxAcceptableCloseToCloseDrawdown;
+    protected bool stopLossConditionReached;
+    protected double currentAccountValue;
+    protected double previousAccountValue;
 
     public EndOfDayTimerHandlerCTC(string tickerGroupID, int numberOfEligibleTickers, 
                                 int numberOfTickersToBeChosen, int numDaysForLiquidity,
@@ -57,6 +58,7 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
                                 int populationSizeForGeneticOptimizer,
                                 string benchmark,
                                 int numDaysOfPortfolioLife,
+                                int numDaysForReturnCalculation,
                                 double targetReturn,
                                	PortfolioType portfolioType, double maxAcceptableCloseToCloseDrawdown):
     														base(tickerGroupID, numberOfEligibleTickers, 
@@ -67,6 +69,7 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
                                 portfolioType)
     {
       this.numDaysOfPortfolioLife = numDaysOfPortfolioLife;
+      this.numDaysForReturnCalculation = numDaysForReturnCalculation;
       this.daysCounter = 0;
       this.maxAcceptableCloseToCloseDrawdown = maxAcceptableCloseToCloseDrawdown;
       this.stopLossConditionReached = false;
@@ -75,7 +78,7 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
     }
 		    
     #region MarketOpenEventHandler
-    private DataTable getSetOfTickersToBeOptimized(DateTime currentDate)
+    protected DataTable getSetOfTickersToBeOptimized(DateTime currentDate)
     {
       SelectorByLiquidity mostLiquid = new SelectorByLiquidity(this.tickerGroupID,false,
                                       currentDate.AddDays(-this.numDaysForLiquidity),
@@ -90,7 +93,7 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
     }
     
     
-    private void setTickers(DateTime currentDate)
+    protected virtual void setTickers(DateTime currentDate)
     {
       DataTable setOfTickersToBeOptimized = this.getSetOfTickersToBeOptimized(currentDate);
       if(setOfTickersToBeOptimized.Rows.Count > this.chosenTickers.Length*2)
@@ -107,7 +110,8 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
           new GenomeManagerForEfficientCTCPortfolio(setOfTickersToBeOptimized,
           currentDate.AddDays(-this.numDaysForLiquidity), 
           currentDate, this.numberOfTickersToBeChosen,
-          this.numDaysOfPortfolioLife, this.targetReturn,
+          this.numDaysOfPortfolioLife, this.numDaysForReturnCalculation,
+          this.targetReturn,
          	this.portfolioType);
         GeneticOptimizer GO = new GeneticOptimizer(genManEfficientCTCPortfolio,
                                                     this.populationSizeForGeneticOptimizer, 
@@ -142,7 +146,7 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
 
     #region MarketCloseEventHandler
     
-    private void marketCloseEventHandler_orderChosenTickers_addToOrderList()
+    protected void marketCloseEventHandler_orderChosenTickers_addToOrderList()
     {
       int idx = 0;
       foreach ( string ticker in this.chosenTickers )
@@ -154,13 +158,13 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
         idx++;
       }
     }
-    private void marketCloseEventHandler_orderChosenTickers()
+    protected void marketCloseEventHandler_orderChosenTickers()
     {
       this.marketCloseEventHandler_orderChosenTickers_addToOrderList();
     }
 
 
-    private void marketCloseEventHandler_openPositions()
+    protected void marketCloseEventHandler_openPositions()
     {
       if(this.orders.Count == 0 && this.account.Transactions.Count == 0)
         this.account.AddCash(17000);     
@@ -173,12 +177,12 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
       }
     }
 
-    private void marketCloseEventHandler_closePosition(
+    protected void marketCloseEventHandler_closePosition(
       string ticker )
     {
       this.account.ClosePosition( ticker );
     }
-    private void marketCloseEventHandler_closePositions()
+    protected void marketCloseEventHandler_closePositions()
     {
       if(this.lastChosenTickers != null)
       {
@@ -193,7 +197,7 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
       }
     }
     
-    private void updateStopLossCondition()
+    protected void updateStopLossCondition()
     {
       this.previousAccountValue = this.currentAccountValue;
       this.currentAccountValue = this.account.GetMarketValue();

@@ -39,12 +39,14 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
   public class GenomeManagerForEfficientCTCPortfolio : GenomeManagerForEfficientPortfolio
   {
     private int numDaysOfPortfolioLife;
+    private int numDaysForReturnCalculation;
     
     public GenomeManagerForEfficientCTCPortfolio(DataTable setOfInitialTickers,
                                                  DateTime firstQuoteDate,
                                                  DateTime lastQuoteDate,
                                                  int numberOfTickersInPortfolio,
                                                  int numDaysOfPortfolioLife,
+                                                 int numDaysForReturnCalculation,
                                                  double targetPerformance,
                                                  PortfolioType portfolioType)
                                                  :
@@ -58,6 +60,7 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
                           
     {
       this.numDaysOfPortfolioLife = numDaysOfPortfolioLife;
+      this.numDaysForReturnCalculation = numDaysForReturnCalculation;
       this.retrieveData();
     }
     
@@ -82,12 +85,12 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
       string tickerCode = GenomeManagerForEfficientPortfolio.GetCleanTickerCode(ticker);
     	Quotes tickerQuotes = new Quotes(tickerCode, this.firstQuoteDate, this.lastQuoteDate);
       float[] allAdjValues = ExtendedDataTable.GetArrayOfFloatFromColumn(tickerQuotes, "quAdjustedClose");
-      float[] ratesOfReturns = new float[allAdjValues.Length/this.numDaysOfPortfolioLife + 1];
+      float[] ratesOfReturns = new float[allAdjValues.Length/this.numDaysForReturnCalculation + 1];
       int i = 0; //index for ratesOfReturns array
       
-      for(int idx = 0; idx + this.numDaysOfPortfolioLife < allAdjValues.Length; idx += this.numDaysOfPortfolioLife )
+      for(int idx = 0; idx + this.numDaysForReturnCalculation < allAdjValues.Length; idx += this.numDaysForReturnCalculation )
       {
-        ratesOfReturns[i] = (allAdjValues[idx+this.numDaysOfPortfolioLife]/
+        ratesOfReturns[i] = (allAdjValues[idx+this.numDaysForReturnCalculation]/
       	                     allAdjValues[idx] - 1)*coefficient;
         i++;
       }

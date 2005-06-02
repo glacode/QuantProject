@@ -162,8 +162,28 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
     		
     }
     
+    protected virtual double getFitnessValue_calculate()
+    {
+      double returnValue = 0;                                            
+        
+      NormalDistribution normal = 
+        new NormalDistribution(this.rateOfReturn,
+        Math.Sqrt(this.variance));
+      if(this.portfolioType == PortfolioType.OnlyLong ||
+        this.portfolioType == PortfolioType.ShortAndLong)
+        //the genome fitness is evaluated as if
+        //the portfolio was long
+        //returnValue = normal.GetProbability(this.targetPerformance*0.75,this.targetPerformance*1.25);
+        returnValue = 1.0 - normal.GetProbability(this.targetPerformance);
+      else//only short orders are permitted
+        //returnValue = normal.GetProbability(-this.targetPerformance*1.25,-this.targetPerformance*0.75);
+        returnValue = normal.GetProbability(-this.targetPerformance);
+
+      return returnValue;
+      
+    }
     
-    public virtual double GetFitnessValue(Genome genome)
+    public double GetFitnessValue(Genome genome)
     {
       double returnValue = 0;
       //OLD IMPLEMENTATION double portfolioRateOfReturn = this.getPortfolioRateOfReturn(genome.Genes());
@@ -178,26 +198,17 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
       if(!Double.IsInfinity(portfolioVariance) &&
          !Double.IsInfinity(averagePortfolioRateOfReturn) &&
          !Double.IsNaN(portfolioVariance) &&
-         !Double.IsNaN(averagePortfolioRateOfReturn))
+         !Double.IsNaN(averagePortfolioRateOfReturn) &&
+        	portfolioVariance > 0.0)
       //both variance and rate of return are 
       //double values computed in the right way:
-      // so it's possible to assign fitness using normal distribution class
+      // so it's possible to assign fitness
       {
 	      this.variance = portfolioVariance;
       	this.rateOfReturn = averagePortfolioRateOfReturn;
-      	NormalDistribution normal = 
-      		new NormalDistribution(this.rateOfReturn,
-      		                       Math.Sqrt(this.variance));
-	      if(this.portfolioType == PortfolioType.OnlyLong ||
-      	   this.portfolioType == PortfolioType.ShortAndLong)
-	        //the genome fitness is evaluated as if
-      		//the portfolio was long
-      		//returnValue = normal.GetProbability(this.targetPerformance*0.75,this.targetPerformance*1.25);
-	      	returnValue = 1.0 - normal.GetProbability(this.targetPerformance);
-	      else//only short orders are permitted
-	      	//returnValue = normal.GetProbability(-this.targetPerformance*1.25,-this.targetPerformance*0.75);
-	      	returnValue = normal.GetProbability(-this.targetPerformance);
+      	returnValue = this.getFitnessValue_calculate();
       }
+      
       return returnValue;
     }
     
@@ -232,7 +243,10 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
       int newValueForGene = GenomeManagement.RandomGenerator.Next(genome.MinValueForGenes,
         genome.MaxValueForGenes +1);
       int genePositionToBeMutated = GenomeManagement.RandomGenerator.Next(genome.Size); 
-      while(genome.HasGene(newValueForGene))
+      while(genome.HasGene(newValueForGene) || 
+            genome.HasGene(newValueForGene + this.originalNumOfTickers))
+        //the portfolio can't have a long position and a short position
+        // for the same ticker
       {
         newValueForGene = GenomeManagement.RandomGenerator.Next(genome.MinValueForGenes,
           genome.MaxValueForGenes +1);

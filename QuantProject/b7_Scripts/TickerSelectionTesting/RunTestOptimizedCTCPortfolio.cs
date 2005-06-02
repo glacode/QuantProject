@@ -1,7 +1,7 @@
 /*
 QuantProject - Quantitative Finance Library
 
-RunEfficientCTCPorfolio.cs
+RunTestOptimizedCTCPortfolio.cs
 Copyright (C) 2003 
 Marco Milletti
 
@@ -56,13 +56,10 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
 	/// - choose the most efficient portfolio among these tickers
 	/// </summary>
 	[Serializable]
-	public class RunEfficientCTCPorfolio : RunEfficientPorfolio
+	public class RunTestOptimizedCTCPortfolio : RunEfficientCTCPorfolio
 	{
-    protected int numDayOfPortfolioLife;
-    protected int numDaysForReturnCalculation;
-    protected double maxAcceptableCloseToCloseDrawdown;
-		
-    public RunEfficientCTCPorfolio(string tickerGroupID, int numberOfEligibleTickers, 
+   
+    public RunTestOptimizedCTCPortfolio(string tickerGroupID, int numberOfEligibleTickers, 
                                     int numberOfTickersToBeChosen, int numDaysForLiquidity, 
                                     int generationNumberForGeneticOptimizer,
                                     int populationSizeForGeneticOptimizer, string benchmark,
@@ -75,67 +72,35 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
                                     numberOfTickersToBeChosen, numDaysForLiquidity, 
                                     generationNumberForGeneticOptimizer,
                                     populationSizeForGeneticOptimizer, benchmark,
-                                    startDate, endDate, targetReturn,
-                                   	portfolioType, maxRunningHours)
+                                    startDate, endDate,
+                                   	numDaysOfPortfolioLife, numDaysForReturnCalculation, 
+                                   	targetReturn,
+                                    portfolioType, maxAcceptableCloseToCloseDrawdown, 
+                                    maxRunningHours)
 		{
-      this.ScriptName = "CloseToCloseScripts";
-      this.numDayOfPortfolioLife = numDaysOfPortfolioLife;
-      this.numDaysForReturnCalculation = numDaysForReturnCalculation;
-      this.maxAcceptableCloseToCloseDrawdown = maxAcceptableCloseToCloseDrawdown;
+      this.ScriptName = "TestOptimizedCTCPortfolio";
+      
 		}
-    #region Run
-       
-    
+  
     protected override void run_initializeEndOfDayTimerHandler()
     {
-      this.endOfDayTimerHandler = new EndOfDayTimerHandlerCTC(this.tickerGroupID, this.numberOfEligibleTickers,
+      this.endOfDayTimerHandler = new EndOfDayTimerHandlerCTCTest(this.tickerGroupID, this.numberOfEligibleTickers,
     	                                                        this.numberOfTickersToBeChosen, this.numDaysForLiquidity,
     	                                                        this.account,
     	                                                        this.generationNumberForGeneticOptimizer,
     	                                                        this.populationSizeForGeneticOptimizer, this.benchmark,
-    	                                                        this.numDayOfPortfolioLife, this.numDaysForReturnCalculation,
+    	                                                        this.numDayOfPortfolioLife, 
+    	                                                        this.numDaysForReturnCalculation,
     	                                                        this.targetReturn,
     	                                                       	this.portfolioType, this.maxAcceptableCloseToCloseDrawdown);
     }
     
-    protected override void run_initializeHistoricalQuoteProvider()
-    {
-    	this.historicalQuoteProvider = new HistoricalAdjustedQuoteProvider();
-    }
-    
+        
     public override void Run()
     {
-      //old script
-      //this.run_FindBestPortfolioForNextTrade();
-      run_initializeHistoricalQuoteProvider();
-      run_initializeEndOfDayTimer();
-      run_initializeAccount();
-      run_initializeEndOfDayTimerHandler();
-      
-      //run_initializeProgressHandlers();
-      this.endOfDayTimer.MarketOpen +=
-        new MarketOpenEventHandler(
-        this.endOfDayTimerHandler.MarketOpenEventHandler);  
-      
-      this.endOfDayTimer.MarketClose +=
-        new MarketCloseEventHandler(
-        this.endOfDayTimerHandler.MarketCloseEventHandler);
-      
-      this.endOfDayTimer.MarketClose +=
-        new MarketCloseEventHandler(
-        this.checkDateForReport);
-      
-      //this.endOfDayTimer.OneHourAfterMarketClose +=
-        //new OneHourAfterMarketCloseEventHandler(
-        //this.endOfDayTimerHandler.OneHourAfterMarketCloseEventHandler );
-      //this.endOfDayTimer.OneHourAfterMarketClose +=
-        //new OneHourAfterMarketCloseEventHandler(
-        //this.oneHourAfterMarketCloseEventHandler );
-      
-      //this.progressBarForm.Show();
-      this.endOfDayTimer.Start();
-      
+    	base.Run();
+      ((EndOfDayTimerHandlerCTCTest)this.endOfDayTimerHandler).Reset();
     }
-    #endregion 
+   
 	}
 }

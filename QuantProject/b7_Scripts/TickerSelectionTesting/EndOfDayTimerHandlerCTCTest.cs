@@ -1,7 +1,7 @@
 /*
 QuantProject - Quantitative Finance Library
 
-EndOfDayTimerHandlerCTOTest.cs
+EndOfDayTimerHandlerCTCTest.cs
 Copyright (C) 2003 
 Marco Milletti
 
@@ -36,44 +36,54 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
 {
 	
   /// <summary>
-  /// Implements MarketOpenEventHandler,
-  /// TwoMinutesBeforeMarketCloseEventHandler and OneHourAfterMarketCloseEventHandler
-  /// These handlers contain the core strategy for the efficient close to open portfolio!
+  /// Implements MarketOpenEventHandler and MarketCloseEventHandler
+  /// These handlers contain the core strategy for the efficient close to close
+  /// portfolio (with a given days of life)!
   /// </summary>
   [Serializable]
-  public class EndOfDayTimerHandlerCTOTest : EndOfDayTimerHandlerCTO
+  public class EndOfDayTimerHandlerCTCTest : EndOfDayTimerHandlerCTC
   {
+   
     private static bool optimized;
-    public EndOfDayTimerHandlerCTOTest(string tickerGroupID, int numberOfEligibleTickers, 
-                                int numberOfTickersToBeChosen, int numDaysForLiquidity, Account account,
+
+    public EndOfDayTimerHandlerCTCTest(string tickerGroupID, int numberOfEligibleTickers, 
+                                int numberOfTickersToBeChosen, int numDaysForLiquidity,
+                                Account account,                                
                                 int generationNumberForGeneticOptimizer,
                                 int populationSizeForGeneticOptimizer,
-                                string benchmark, double targetReturn,
-                                PortfolioType portfolioType):
-  															base(tickerGroupID, numberOfEligibleTickers, 
-                                numberOfTickersToBeChosen, numDaysForLiquidity, account,
+                                string benchmark,
+                                int numDaysOfPortfolioLife,
+                                int numDaysForReturnCalculation,
+                                double targetReturn,
+                               	PortfolioType portfolioType, double maxAcceptableCloseToCloseDrawdown):
+    														base(tickerGroupID, numberOfEligibleTickers, 
+                                numberOfTickersToBeChosen, numDaysForLiquidity,
+                                account,                                
                                 generationNumberForGeneticOptimizer,
                                 populationSizeForGeneticOptimizer,
-                                benchmark, targetReturn,
-                                portfolioType)
+                                benchmark,
+                                numDaysOfPortfolioLife,
+                                numDaysForReturnCalculation,
+                                targetReturn,
+                               	portfolioType, maxAcceptableCloseToCloseDrawdown)
     {
-      
+     
     }
-    
+		    
     protected override void setTickers(DateTime currentDate)
     {
-    	if(!EndOfDayTimerHandlerCTOTest.optimized)
-    	{
-    		base.setTickers(currentDate);
-	      EndOfDayTimerHandlerCTOTest.optimized = true;
-	   	}
+      if(!EndOfDayTimerHandlerCTCTest.optimized)
+      {
+      	base.setTickers(currentDate);
+      	EndOfDayTimerHandlerCTCTest.optimized = true;
+      }
     }
-		
+
     public void Reset()
     {
-      EndOfDayTimerHandlerCTOTest.optimized = false;
+      EndOfDayTimerHandlerCTCTest.optimized = false;
     }
-
+  
   }
-}
 
+}

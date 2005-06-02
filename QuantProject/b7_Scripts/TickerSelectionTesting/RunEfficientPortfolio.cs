@@ -52,9 +52,6 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
 	[Serializable]
   public class RunEfficientPorfolio
 	{
-    public static double MaxNumberOfHoursForScript = 5;
-    //if MaxNumberOfHoursForScript has elapsed and the script
-    //is still running, it will be stopped.
     protected string tickerGroupID;
     protected int numberOfEligibleTickers;
     protected int numberOfTickersToBeChosen;
@@ -86,6 +83,9 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
     protected PortfolioType portfolioType;
     
     protected DateTime startingTimeForScript;
+    protected double maxRunningHours;
+    //if MaxNumberOfHoursForScript has elapsed and the script
+    //is still running, it will be stopped.
       	    
     public virtual string ScriptName
     {
@@ -99,12 +99,13 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
     }	
 	
     public RunEfficientPorfolio(string tickerGroupID, int numberOfEligibleTickers, 
-                                    int numberOfTickersToBeChosen, int numDaysForLiquidity, 
-                                    int generationNumberForGeneticOptimizer,
-                                    int populationSizeForGeneticOptimizer, string benchmark,
-                                    DateTime startDate, DateTime endDate, 
-                                   double targetReturn,
-                                   PortfolioType portfolioType)
+                                int numberOfTickersToBeChosen, int numDaysForLiquidity, 
+                                int generationNumberForGeneticOptimizer,
+                                int populationSizeForGeneticOptimizer, string benchmark,
+                                DateTime startDate, DateTime endDate, 
+                                double targetReturn,
+                                PortfolioType portfolioType, 
+                                double maxRunningHours)
 		{
       //this.progressBarForm = new ProgressBarForm();
       this.tickerGroupID = tickerGroupID;
@@ -123,6 +124,7 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
      	this.targetReturn = targetReturn;
      	this.portfolioType = portfolioType;
      	this.startingTimeForScript = DateTime.Now;
+      this.maxRunningHours = maxRunningHours;
       //this.numIntervalDays = 3;
 		}
     #region Run
@@ -164,8 +166,8 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
     protected virtual void checkDateForReport(Object sender , EndOfDayTimingEventArgs endOfDayTimingEventArgs)
     {
       if(endOfDayTimingEventArgs.EndOfDayDateTime.DateTime>=this.endDateTime.DateTime ||
-         DateTime.Now >= this.startingTimeForScript.AddHours(RunEfficientPorfolio.MaxNumberOfHoursForScript))
-      //last date is reached by the timer or MaxNumberOfHoursForScript hours
+         DateTime.Now >= this.startingTimeForScript.AddHours(this.maxRunningHours))
+      //last date is reached by the timer or maxRunning hours
       //are elapsed from the time script started
     		this.SaveScriptResults();
     }

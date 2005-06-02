@@ -61,13 +61,13 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
                                     int generationNumberForGeneticOptimizer,
                                     int populationSizeForGeneticOptimizer, string benchmark,
                                     DateTime startDate, DateTime endDate, double targetReturn,
-                                    PortfolioType portfolioType):
+                                    PortfolioType portfolioType, double maxRunningHours):
   																base(tickerGroupID, numberOfEligibleTickers, 
                                      numberOfTickersToBeChosen, numDaysForLiquidity, 
                                     generationNumberForGeneticOptimizer,
                                     populationSizeForGeneticOptimizer, benchmark,
                                     startDate, endDate, targetReturn,
-                                   	portfolioType)
+                                   	portfolioType, maxRunningHours)
 		{
       this.ScriptName = "OpenCloseScripts";
 		}

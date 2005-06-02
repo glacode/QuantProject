@@ -49,7 +49,7 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
 	/// in choosing the best open/close portfolio
 	/// </summary>
 	[Serializable]
-  public class RunTestOptimizedCTOPorfolio : RunEfficientPorfolio
+  public class RunTestOptimizedCTOPorfolio : RunEfficientCTOPorfolio
 	{
     	
     public RunTestOptimizedCTOPorfolio(string tickerGroupID, int numberOfEligibleTickers, 
@@ -57,13 +57,13 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
                                     int generationNumberForGeneticOptimizer,
                                     int populationSizeForGeneticOptimizer, string benchmark,
                                     DateTime startDate, DateTime endDate, double targetReturn,
-                                    PortfolioType portfolioType):
+                                    PortfolioType portfolioType, double maxRunningHours):
   																base(tickerGroupID, numberOfEligibleTickers, 
                                      numberOfTickersToBeChosen, numDaysForLiquidity, 
                                     generationNumberForGeneticOptimizer,
                                     populationSizeForGeneticOptimizer, benchmark,
                                     startDate, endDate, targetReturn,
-                                   	portfolioType)
+                                   	portfolioType, maxRunningHours)
 		{
       this.ScriptName = "TestOptimizedCTOPortfolio";
 		}
@@ -81,41 +81,12 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
                                                               this.targetReturn,
                                                               this.portfolioType);
        
-        
-    }
-  	protected override void run_initializeHistoricalQuoteProvider()
-    {
-      this.historicalQuoteProvider = 
-      					new HistoricalRawQuoteProvider();
-        
     }
   	
   	public override void Run()
     {
-      run_initializeHistoricalQuoteProvider();
-      run_initializeEndOfDayTimer();
-      run_initializeAccount();
-      run_initializeEndOfDayTimerHandler();
-
-      this.endOfDayTimer.MarketOpen +=
-        new MarketOpenEventHandler(
-        this.endOfDayTimerHandler.MarketOpenEventHandler);  
-      
-      this.endOfDayTimer.MarketClose +=
-        new MarketCloseEventHandler(
-        this.endOfDayTimerHandler.MarketCloseEventHandler);
-      
-      this.endOfDayTimer.MarketClose +=
-        new MarketCloseEventHandler(
-        this.checkDateForReport);
-      
-      this.endOfDayTimer.OneHourAfterMarketClose +=
-        new OneHourAfterMarketCloseEventHandler(
-        this.endOfDayTimerHandler.OneHourAfterMarketCloseEventHandler );
-      
-      this.endOfDayTimer.Start();
+  		base.Run();
       ((EndOfDayTimerHandlerCTOTest)this.endOfDayTimerHandler).Reset();
- 
     }
         
 	}
