@@ -42,7 +42,7 @@ namespace QuantProject.ADT.Statistics
 	  
 	  public NormalDistribution(double average, double stdDeviation)
     {
-    	if(stdDeviation < 0)
+    	if(stdDeviation <= 0)
     		throw new Exception("Standard deviation must be > 0!");
     	
     	this.average = average;
@@ -59,7 +59,10 @@ namespace QuantProject.ADT.Statistics
     /// </summary>
     public double GetProbabilityDensityValue(double x)
     {
-    	double y;
+    	if(Double.IsInfinity(x) || Double.IsNaN(x))
+    		throw new Exception("Density value of x is not computable!");
+    	
+    	double y = 0;
     	y = Math.Pow(Math.E,(-Math.Pow(x-this.average,2)
     	             /(2*this.stdDeviation*this.stdDeviation)))
     	    /(Math.Sqrt(2*Math.PI)*this.stdDeviation);
@@ -73,7 +76,9 @@ namespace QuantProject.ADT.Statistics
     /// </summary>
  		public double GetProbability(double y)
     {
-     	return this.GetProbability(-this.infinity, y);
+     	if(Double.IsInfinity(y) || Double.IsNaN(y))
+    		throw new Exception("Prob(Y<y) is not computable!");
+ 			return this.GetProbability(-this.infinity, y);
     }
     
     /// <summary>
@@ -82,9 +87,13 @@ namespace QuantProject.ADT.Statistics
     /// </summary>
  		public double GetProbability(double a, double b)
     {
-     	return 
+     	if( Double.IsInfinity(a) || Double.IsNaN(a) ||
+ 			    Double.IsInfinity(b) || Double.IsNaN(b) )
+    				throw new Exception("Prob(a<Y<b) is not computable!");
+ 			
+ 			return
      	CalculusApproximation.GetArea((IPdfDefiner)this,a,b,
-     	                           this.numOfIntervalsForPDFIntegralApproximation);
+     	                           		this.numOfIntervalsForPDFIntegralApproximation);
     }
     
 	}
