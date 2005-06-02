@@ -36,14 +36,15 @@ namespace QuantProject.ADT.Optimizing.Genetic
 	public class GeneticOptimizer
 	{
     #region fields  
+    private static Random random = new Random((int)DateTime.Now.Ticks);
     
-    private double mutationRate = 0.02;
-    private double crossoverRate = 0.85;
-    private double elitismRate = 0.01;
-    private double minConvergenceRate = 0.80;
-    private bool keepOnRunningUntilConvergenceIsReached = false;
-    private int populationSize = 1000;
-    private int generationNumber = 100;
+    private double mutationRate;
+    private double crossoverRate;
+    private double elitismRate;
+    private double minConvergenceRate;
+    private bool keepOnRunningUntilConvergenceIsReached;
+    private int populationSize;
+    private int generationNumber;
     private int genomeSize;
     private int minValueForGenes;
     private int maxValueForGenes;
@@ -58,7 +59,6 @@ namespace QuantProject.ADT.Optimizing.Genetic
     private ArrayList nextGeneration;
     private ArrayList cumulativeFitnessList;
 	
-    private static Random random = new Random((int)DateTime.Now.Ticks);
     private int generationCounter;
     #endregion
     
@@ -157,21 +157,26 @@ namespace QuantProject.ADT.Optimizing.Genetic
 
     private void commonInitialization()
     {
-      this.genomeSize = this.genomeManager.GenomeSize;
+      this.mutationRate = 0.02;
+   		this.crossoverRate = 0.85;
+    	this.elitismRate = 0.01;
+    	this.minConvergenceRate = 0.80;
+    	this.keepOnRunningUntilConvergenceIsReached = false;
+    	this.genomeSize = this.genomeManager.GenomeSize;
       this.minValueForGenes = this.genomeManager.MinValueForGenes;
       this.maxValueForGenes = this.genomeManager.MaxValueForGenes;
       this.genomeComparer = new GenomeComparer();
       this.cumulativeFitnessList = new ArrayList(this.PopulationSize);
       this.currentGeneration = new ArrayList(this.PopulationSize);
-      this.nextGeneration = new ArrayList();
-      this.currentEliteToTransmitToNextGeneration =
-        new ArrayList((int)(this.ElitismRate*(double)this.PopulationSize));
-      
+      int eliteNumber = (int)(this.ElitismRate*(double)this.PopulationSize);
+      this.currentEliteToTransmitToNextGeneration = new ArrayList(eliteNumber);
+      this.nextGeneration = new ArrayList(this.populationSize +
+                                         	eliteNumber);
       this.generationCounter = 1;
     }
     
     /// <summary>
-    /// Method which starts the GeneticOptmizer
+    /// Method to start the GeneticOptmizer
     /// </summary>
     public void Run(bool showOutputToConsole)
     {
@@ -251,14 +256,11 @@ namespace QuantProject.ADT.Optimizing.Genetic
     {
       double randomFitness = this.totalFitness *(double)GeneticOptimizer.random.Next(1,1001)/1000;
       int idx = -1;
-      int mid;
       int first = 0;
       int last = this.populationSize -1;
-      mid = (last - first)/2;
-
+      int mid = (last - first)/2;
       //  Need to implement a specific search, because the
       //  ArrayList's BinarySearch is for exact values only
-      
       while (idx == -1 && first <= last)
       {
         if (randomFitness < (double)this.cumulativeFitnessList[mid])
@@ -269,12 +271,10 @@ namespace QuantProject.ADT.Optimizing.Genetic
         {
           first = mid;
         }
-        
         mid = (first + last)/2;
         if ((last - first) == 1) 
           idx = last;
-          
-      }
+       }
       return idx;
     }
 
@@ -284,7 +284,7 @@ namespace QuantProject.ADT.Optimizing.Genetic
     /// </summary>
     private void calculateTotalFitness()
     {
-      this.totalFitness = 0;
+      this.totalFitness = 0.0;
       for (int i = 0; i < this.populationSize; i++)
       {
         Genome g = ((Genome) this.currentGeneration[i]);
