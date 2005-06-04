@@ -46,6 +46,11 @@ namespace QuantProject.Presentation.Reporting.WindowsForm
 		private System.Windows.Forms.MenuItem saveReport;
     private SaveFileDialog saveFileDialog;
 
+		public ReportGrid TransactionGrid
+		{
+			get { return this.reportTabControl.TransactionGrid; }
+		}
+
 		public Report( Account account , IHistoricalQuoteProvider historicalQuoteProvider )
 		{
 			this.account = account;
@@ -86,7 +91,7 @@ namespace QuantProject.Presentation.Reporting.WindowsForm
 		/// <summary>
 		/// Populates the form and displays itself
 		/// </summary>
-		private void show_set_accountReport( string reportName ,
+		private void create_set_accountReport( string reportName ,
 			int numDaysForInterval , EndOfDayDateTime endDateTime , string buyAndHoldTicker )
 		{
 			if ( this.accountReport == null )
@@ -94,7 +99,7 @@ namespace QuantProject.Presentation.Reporting.WindowsForm
 					numDaysForInterval , endDateTime , buyAndHoldTicker ,
 					this.historicalQuoteProvider );
 		}
-		private void show_populateForm()
+		private void create_populateForm()
 		{
 			this.Location = new System.Drawing.Point( 1000,500);
 			this.Width = 700;
@@ -102,21 +107,34 @@ namespace QuantProject.Presentation.Reporting.WindowsForm
 			this.reportTabControl = new ReportTabControl( this.accountReport );
 			this.Controls.Add( this.reportTabControl );
 		}
-		public void Show( string reportName ,
-			int numDaysForInterval , EndOfDayDateTime endDateTime , string buyAndHoldTicker )
+		/// <summary>
+		/// Creates the report data, but it doesn't show the report
+		/// </summary>
+		/// <param name="reportName"></param>
+		/// <param name="numDaysForInterval"></param>
+		/// <param name="endDateTime"></param>
+		/// <param name="benchmark"></param>
+		public void Create( string reportName ,
+			int numDaysForInterval , EndOfDayDateTime endDateTime , string benchmark )
 		{
-			this.show_set_accountReport( reportName ,
-				numDaysForInterval , endDateTime , buyAndHoldTicker );
-			this.show_populateForm();
+			create_set_accountReport( reportName ,
+				numDaysForInterval , endDateTime , benchmark );
+			create_populateForm();
+		}
+		public void Show( string reportName ,
+			int numDaysForInterval , EndOfDayDateTime endDateTime , string benchmark )
+		{
+			if ( this.accountReport == null )
+				this.Create( reportName ,	numDaysForInterval , endDateTime , benchmark );
 			base.Show();
 		}
-    public new void Show()
-    {
-      if(this.accountReport != null)
-        this.show_populateForm();
-      
-      base.Show();
-    }
+//    public new void Show()
+//    {
+//      if(this.accountReport != null)
+//        this.show_populateForm();
+//      
+//      base.Show();
+//    }
     /// <summary>
     /// Clears the existing account report, so that a new one can be created
     /// </summary>
