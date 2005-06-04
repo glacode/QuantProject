@@ -30,10 +30,17 @@ namespace QuantProject.Presentation.Reporting.WindowsForm
 	/// </summary>
 	public class ReportGridTabPage : TabPage
 	{
+		private ReportGrid reportGrid;
+
+		public ReportGrid ReportGrid
+		{
+			get { return this.reportGrid; }
+		}
+
 		public ReportGridTabPage( string title , ReportTable reportTable )
 		{
 			this.Text = title;
-			ReportGrid reportGrid = new ReportGrid( reportTable );
+			this.reportGrid = new ReportGrid( reportTable );
 			reportGrid.Dock = DockStyle.Fill;
 			this.Controls.Add( reportGrid );
 		}

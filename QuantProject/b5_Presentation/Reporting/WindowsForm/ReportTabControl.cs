@@ -37,6 +37,11 @@ namespace QuantProject.Presentation.Reporting.WindowsForm
 		private ReportGridTabPage equity;
 		private ReportGridTabPage transactions;
 
+		public ReportGrid TransactionGrid
+		{
+			get { return this.transactions.ReportGrid; }
+		}
+
 		public ReportTabControl( AccountReport accountReport )
 		{
 			this.accountReport = accountReport;
