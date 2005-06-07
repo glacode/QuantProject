@@ -48,7 +48,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardOneRank
 		private double calculatedTickers = 0;
 
 		private ArrayList eligibleAccounts;
-		private SortedList tickersWithGoodness;
+		private ArrayList tickersWithGoodness;
 
 		private DateTime lastUpdate;
 
@@ -63,7 +63,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardOneRank
 			this.numberBestPerformingTickers = numberBestPerformingTickers;
 			this.numberDaysForPerformanceCalculation = numberDaysForPerformanceCalculation;
 			this.eligibleAccounts = new ArrayList();
-			this.tickersWithGoodness = new SortedList();
+			this.tickersWithGoodness = new ArrayList();
 		}
 
 		public event NewProgressEventHandler NewProgress;
@@ -126,7 +126,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardOneRank
 				new HistoricalEndOfDayOrderExecutor( historicalEndOfDayTimer ,
 				this.historicalQuoteProvider ) );
 			OneRank oneRank = new OneRank( account , dateTime );
-			this.tickersWithGoodness.Add( account.Key , account.Goodness );
+			this.tickersWithGoodness.Add( new EstimatedObject( account.Key , account.Goodness ) );
 		}
 		private void setTickers_build( EligibleTickers eligibleTickers , DateTime dateTime )
 		{
@@ -150,11 +150,12 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardOneRank
 					string doNothing = exception.Message;
 				}
 			}
+			this.tickersWithGoodness.Sort();
 			for ( int index=this.tickersWithGoodness.Count - 1 ;
 				index >= this.tickersWithGoodness.Count - this.numberBestPerformingTickers ;
 				index-- )
 			{
-				this.Add( this.tickersWithGoodness.GetKey( index ) );
+				this.Add( ((EstimatedObject)this.tickersWithGoodness[ index ]).ObjectToBeEstimated );
 			}
 		}
 		/// <summary>
