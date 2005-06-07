@@ -16,8 +16,9 @@ namespace QuantProject.Business.Financial.Accounting.Reporting.SummaryRows
     private void updateDrawDownForCurrentRow( DataRow dataRow )
     {
       this.maxEquityValue = Math.Max( this.maxEquityValue , (double)dataRow[ "AccountValue" ] );
-      this.drawDown =
-        Math.Max( this.drawDown , this.maxEquityValue - (double)dataRow[ "AccountValue" ] );
+      this.drawDown = Math.Max( this.drawDown ,
+				( ( this.maxEquityValue - (double)dataRow[ "AccountValue" ] ) /
+				this.maxEquityValue ) );
     }
     private void setDrawDown()
     {
@@ -31,8 +32,7 @@ namespace QuantProject.Business.Financial.Accounting.Reporting.SummaryRows
       this.summary = summary;
       this.rowDescription = "Max equity drawdown (%)";
       setDrawDown();
-      this.rowValue = this.drawDown/this.maxEquityValue*100;
-
+      this.rowValue = this.drawDown*100;
     }
 	}
 }
