@@ -44,19 +44,33 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardOneRank
 		}
 
 		#region SetTickers
-		private void setTickers_build( DateTime dateTime )
+		private DataTable setTickers_build_getSelectedTickers( DateTime dateTime )
 		{
 			SelectorByLiquidity mostLiquid =
 				new SelectorByLiquidity("Test", false ,	dateTime.AddDays( - this.numDaysToComputeLiquidity ) , dateTime ,
-				                        this.numberEligibleTickersToBeChosen );
+				this.numberEligibleTickersToBeChosen );
 			DataTable mostLiquidTickers =
 				mostLiquid.GetTableOfSelectedTickers();
 			SelectorByQuotationAtEachMarketDay quotedInEachMarketDayFromMostLiquid = 
 				new SelectorByQuotationAtEachMarketDay( mostLiquidTickers,
-				                           false,	dateTime.AddDays( - this.numberDaysForPerformanceCalculation ) ,
-				                           dateTime, this.numberEligibleTickersToBeChosen,"^SPX");
-			DataTable selectedTickers =
-				quotedInEachMarketDayFromMostLiquid.GetTableOfSelectedTickers();
+				false,	dateTime.AddDays( - this.numberDaysForPerformanceCalculation ) ,
+				dateTime, this.numberEligibleTickersToBeChosen,"^SPX");
+			return quotedInEachMarketDayFromMostLiquid.GetTableOfSelectedTickers();
+		}
+		private DataTable setTickers_buildQuickly_getSelectedTickers()
+		{
+			DataTable returnValue =
+				new QuantProject.Data.DataTables.Tickers_tickerGroups( "millo" );
+			returnValue.Columns[ 0 ].ColumnName = "tiTicker";
+			return returnValue;
+		}
+		private void setTickers_build( DateTime dateTime )
+		{
+			// for fast debug, comment the following line
+			DataTable selectedTickers = setTickers_build_getSelectedTickers( dateTime );
+			// for fast debug, uncomment the following line 
+//			DataTable selectedTickers = setTickers_buildQuickly_getSelectedTickers();
+
 			foreach ( DataRow dataRow in selectedTickers.Rows )
 				this.Add( dataRow[ "tiTicker" ].ToString() ,
 					dataRow[ "tiTicker" ].ToString() );
