@@ -23,7 +23,9 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 using System;
 using System.Collections;
 using System.Data;
+using System.Drawing;
 using System.Threading;
+using System.Windows.Forms;
 
 using QuantProject.ADT;
 using QuantProject.ADT.FileManaging;
@@ -38,6 +40,7 @@ using QuantProject.Business.Testing;
 using QuantProject.Business.Timing;
 using QuantProject.Data.DataProviders;
 using QuantProject.Presentation.Reporting.WindowsForm;
+using QuantProject.Scripts.SimpleTesting;
 
 namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardOneRank
 {
@@ -50,8 +53,11 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardOneRank
 		private IHistoricalQuoteProvider historicalQuoteProvider =
 			new HistoricalAdjustedQuoteProvider();
     private ReportTable reportTable;
+
     private EndOfDayDateTime startDateTime;
     private EndOfDayDateTime endDateTime;
+		int numberDaysForPerformanceCalculation;
+
     private int numIntervalDays;
 
     private ProgressBarForm progressBarForm;
@@ -68,7 +74,8 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardOneRank
 			this.startDateTime = new EndOfDayDateTime(
 				new DateTime( 1998 , 1 , 1 ) , EndOfDaySpecificTime.MarketOpen );
 			this.endDateTime = new EndOfDayDateTime(
-				new DateTime( 1998 , 1 , 20 ) , EndOfDaySpecificTime.OneHourAfterMarketClose );
+				new DateTime( 1998 , 12 , 31 ) , EndOfDaySpecificTime.OneHourAfterMarketClose );
+			this.numberDaysForPerformanceCalculation = 1800;
 			this.numIntervalDays = 1;
 		}
 
@@ -91,7 +98,8 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardOneRank
 		}
 		private void run_initializeEndOfDayTimerHandler()
 		{
-			this.endOfDayTimerHandler = new EndOfDayTimerHandler( 200 , 20 , 5 , 360 , 30 ,
+			this.endOfDayTimerHandler = new EndOfDayTimerHandler( 200 , 20 , 5 ,
+				this.numberDaysForPerformanceCalculation , 30 ,
 				this.account );
 //			this.endOfDayTimerHandler = new EndOfDayTimerHandler( 4 , 3 , 2 , 100 , 30 ,
 //				this.account );
@@ -143,6 +151,31 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardOneRank
 			if ( this.account.Transactions.Count == 0 )
 				this.account.AddCash( 30000 );
 		}
+		#region oneHourAfterMarketCloseEventHandler
+		private void showOneRankForm( object sender ,
+			MouseEventArgs eventArgs )
+		{
+			DataGrid dataGrid = (DataGrid)sender;
+			Point point = new Point( eventArgs.X , eventArgs.Y );
+			DataGrid.HitTestInfo hitTestInfo = dataGrid.HitTest( point );
+			DataTable dataTable = (DataTable)dataGrid.DataSource;
+			DataRow dataRow = dataTable.Rows[ hitTestInfo.Row ];
+			//			MessageBox.Show( dataRow[ "DateTime" ].ToString() );
+			DateTime rowDateTime = (DateTime)dataRow[ "DateTime" ];
+			string rowTicker = (string)dataRow[ "InstrumentKey"];
+			OneRankForm oneRankForm = new OneRankForm();
+			oneRankForm.FirstDateTime =
+				rowDateTime.AddDays( -this.numberDaysForPerformanceCalculation );
+			oneRankForm.LastDateTime = rowDateTime;
+			oneRankForm.Ticker = rowTicker;
+			oneRankForm.Show();
+		}
+		private void mouseEventHandler( object sender , MouseEventArgs eventArgs )
+		{
+			if ( eventArgs.Button == MouseButtons.Right )
+				this.showOneRankForm( sender , eventArgs );
+		}
+		#endregion
 		public void oneHourAfterMarketCloseEventHandler(
 			Object sender , EndOfDayTimingEventArgs endOfDayTimingEventArgs )
 		{
@@ -152,10 +185,13 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardOneRank
 				// the simulation has reached the ending date
 				this.account.EndOfDayTimer.Stop();
 //				this.progressBarForm.Close();
-				ObjectArchiver.Archive( this.account ,
-					@"C:\Documents and Settings\Glauco\Desktop\reports\final.qP" );
+//				ObjectArchiver.Archive( this.account ,
+//					@"C:\Documents and Settings\Glauco\Desktop\reports\final.qP" );
 				Report report = new Report( this.account , this.historicalQuoteProvider );
-				report.Show( "WFT One Rank" , this.numIntervalDays , this.endDateTime , "MSFT" );
+				report.Create( "WFT One Rank" , this.numIntervalDays , this.endDateTime , "MSFT" );
+				report.TransactionGrid.MouseUp +=
+					new MouseEventHandler( this.mouseEventHandler );
+				report.Show();
 			}
 			else
 				// the simulation has not reached the ending date, yet
