@@ -102,6 +102,11 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "EstimatedObject.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "ExtendedDataTable.cs"
                     SubType = "Component"
                     BuildAction = "Compile"
