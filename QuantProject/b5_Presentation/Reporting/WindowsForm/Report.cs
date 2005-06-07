@@ -46,6 +46,16 @@ namespace QuantProject.Presentation.Reporting.WindowsForm
 		private System.Windows.Forms.MenuItem saveReport;
     private SaveFileDialog saveFileDialog;
 
+		public AccountReport AccountReport
+		{
+			get
+			{
+				AccountReport returnValue = this.accountReport;
+				if ( this.accountReport == null )
+					throw new Exception( "The AccountReport has not been created yet!" );
+				return returnValue;
+			}
+		}
 		public ReportGrid TransactionGrid
 		{
 			get { return this.reportTabControl.TransactionGrid; }
@@ -62,6 +72,7 @@ namespace QuantProject.Presentation.Reporting.WindowsForm
 			this.accountReport = accountReport;
 			this.account = this.accountReport.Account;
 			this.initializeComponent();
+			this.create_populateForm();
 		}
 		
 		private void initializeComponent()
