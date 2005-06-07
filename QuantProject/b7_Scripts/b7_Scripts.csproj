@@ -138,6 +138,16 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "SimpleTesting\OneRank\OneRankForm.cs"
+                    SubType = "Form"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "SimpleTesting\OneRank\OneRankForm.resx"
+                    DependentUpon = "OneRankForm.cs"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
                     RelPath = "SimpleTesting\OneRank\RunOneRank.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
