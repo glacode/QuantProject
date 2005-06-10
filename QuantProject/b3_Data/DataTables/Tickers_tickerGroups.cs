@@ -37,7 +37,12 @@ namespace QuantProject.Data.DataTables
     // They are intended to be used through intellisense when necessary
     public static string GroupID = "ttTgId";
     public static string Ticker = "ttTiId";
-        
+    
+    public Tickers_tickerGroups()
+    {
+      
+    }
+
     public Tickers_tickerGroups(string groupID)
     {
       this.fillDataTable(groupID);
