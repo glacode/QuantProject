@@ -71,6 +71,7 @@ namespace QuantProject.ADT.Optimizing.Genetic
       //return GenomeManagement.UniformCrossover(parent1, parent2);
 			//return GenomeManagement.AlternateFixedCrossover(parent1, parent2);
     	return GenomeManagement.OnePointCrossover(parent1, parent2);
+      //return GenomeManagement.MixGenesWithoutDuplicates(parent1, parent2);
     }
 		
 		public void Mutate(Genome genome, double mutationRate)

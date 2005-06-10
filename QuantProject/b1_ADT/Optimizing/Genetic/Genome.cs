@@ -108,12 +108,16 @@ namespace QuantProject.ADT.Optimizing.Genetic
       this.fitness = this.genomeManager.GetFitnessValue(this);
     }
     
+    
+    /// <summary>
+    /// It creates an new genome, identical to the current instance
+    /// </summary>
     public Genome Clone()
     {
       Genome returnValue = new Genome(this.genomeManager);
+      returnValue.CopyValuesInGenes(this.genes);
       returnValue.Fitness = this.Fitness;
       returnValue.Meaning = this.Meaning;
-      returnValue.CopyValuesInGenes(this.genes);
       
       return returnValue;
     }

@@ -34,28 +34,44 @@ namespace QuantProject.ADT.Optimizing.Genetic
   public sealed class GenomeManagement 
 	{
 		
-    public static Random RandomGenerator = new Random((int)DateTime.Now.Ticks);
+    public static Random RandomGenerator; 
     private static int genomeSize;
 		private static Genome[] childs;
 		private static int[,] maskForChilds;
-    /*
-    public GenomeManagement()
+    
+    static GenomeManagement()
     {
-	  				    	
+	  		RandomGenerator = new Random((int)DateTime.Now.Ticks);
+		    childs = new Genome[2];  	
 		}
-		*/
+    
+    private static void initializeStaticMembers(Genome parent1, Genome parent2)
+    {
+      genomeSize = parent1.Size;
+      childs[0] = parent1.Clone();
+      childs[1] = parent2.Clone();
+      //the two childs now points to their parents
+      maskForChilds = new int[childs.Length, genomeSize];
+    }
+
+    private static void assignFitnessAndMeaningToChilds()
+    {
+      foreach(Genome child in childs)
+      {
+        child.AssignMeaning();
+        child.CalculateFitness();
+      }
+    }
   	/// <summary>
-		/// Returns an array of genome (childs) based 
+		/// Returns an array of genome (length = 2) based 
 		/// on classical one point crossover genes recombination
 		/// </summary>
   	public static Genome[] OnePointCrossover(Genome parent1, Genome parent2)
 		{
-			if(parent1.Size != parent2.Size)
+			GenomeManagement.initializeStaticMembers(parent1, parent2);
+      if(parent1.Size != parent2.Size)
 				throw new Exception("Genomes must have the same size!");	
-			GenomeManagement.genomeSize = parent1.Size;
-		  GenomeManagement.childs = new Genome[2]{parent1.Clone(),parent1.Clone()};
-			
-			int pos = GenomeManagement.RandomGenerator.Next(0, parent1.Size);
+      int pos = GenomeManagement.RandomGenerator.Next(0, parent1.Size);
 			for(int i = 0 ; i < parent1.Size ; i++)
 			{
 				if (i < pos)
@@ -69,14 +85,13 @@ namespace QuantProject.ADT.Optimizing.Genetic
 					childs[1].SetGeneValue(parent1.GetGeneValue(i), i);
 				}
 			}
-			return GenomeManagement.childs;
+			GenomeManagement.assignFitnessAndMeaningToChilds();
+      return GenomeManagement.childs;
 		}
 		
 		private static void setMaskForChildsForUniformCrossover()
 		{
-			for(int childIndex = 0 ;
-					childIndex < GenomeManagement.childs.Length;
-					childIndex++)
+			for(int childIndex = 0; childIndex < 2; childIndex++)
       {
         for(int i = 0 ; i < GenomeManagement.genomeSize ; i++)
       	{
@@ -87,60 +102,73 @@ namespace QuantProject.ADT.Optimizing.Genetic
 		
 		private static void setMaskForChildsForAlternateFixedCrossover()
 		{
-			for(int childIndex = 0 ;
-					childIndex < GenomeManagement.childs.Length;
-					childIndex++)
+			for(int childIndex = 0; childIndex < 2; childIndex++)
       {
-        for(int i = 0 ; i < GenomeManagement.genomeSize ; i++)
+        for(int genePos = 0; genePos < genomeSize; genePos++)
       	{
-  	  		if(i%2 == 0)
-					//index is even
-						maskForChilds[childIndex, i] = 1;
+  	  		if(genePos%2 == 0)
+					//gene position is even
+						maskForChilds[childIndex, genePos] = 1;
 					else
-					// index is odd
-						maskForChilds[childIndex, i] = 2;
+					// gene position is odd
+						maskForChilds[childIndex, genePos] = 2;
 	     	}
       }
 		}
-		
-		private static void setMaskForChildsForMixingWithoutDuplicates(Genome parent1, Genome parent2)
-		{
-			for(int childIndex = 0 ;
-					childIndex < GenomeManagement.childs.Length;
-					childIndex++)
+    
+    private static int firstGenePositionOfParent1NotPresentInParent2(Genome parent1,
+                                                                Genome parent2)
+    {
+      int returnValue = -1;
+      for(int genePos = 0 ;
+          genePos < GenomeManagement.genomeSize && returnValue == -1;
+          genePos++)
       {
-        for(int i = 0 ; i < GenomeManagement.genomeSize ; i++)
-      	{
-   	      if(parent2.HasGene(parent1.GetGeneValue(i)) ||
-   	         parent1.HasGene(parent2.GetGeneValue(i)))//index contains a common gene
-  	      {
-						maskForChilds[childIndex, i] = childIndex + 1;
-  	      }
-					else// index doesn't contain a common gene
-					{
-  	      	if(i%2 == 0)//index is even
-							maskForChilds[childIndex, i] = childIndex%2 + 1;
-						else// index is odd
-							maskForChilds[childIndex, i] = childIndex%2 + 2;
-					}
-       	}
+        if(!parent2.HasGene(parent1.GetGeneValue(genePos)))
+          returnValue = genePos;
+      }    
+      return returnValue;
+    }
+			
+    private static bool setMaskForChildsForMixingWithoutDuplicates(Genome parent1, Genome parent2)
+		{
+			bool returnValue = false;
+      int firstGenePosOfParent1NotPresentInParent2 = 
+        firstGenePositionOfParent1NotPresentInParent2(parent1, parent2);
+      int firstGenePosOfParent2NotPresentInParent1 = 
+        firstGenePositionOfParent1NotPresentInParent2(parent2, parent1);
+      if(firstGenePosOfParent1NotPresentInParent2 > -1 &&
+         firstGenePosOfParent2NotPresentInParent1 > -1 )
+        //there is at least a gene in parent1 not present in parent2 and viceversa
+      {
+          for(int genePos = 0 ; genePos < GenomeManagement.genomeSize ; genePos++)
+          {
+            if(genePos == firstGenePosOfParent1NotPresentInParent2)
+                maskForChilds[0, genePos] = 1;
+            else
+                maskForChilds[0, genePos] = 2;
+            
+            if(genePos == firstGenePosOfParent2NotPresentInParent1)
+              maskForChilds[1, genePos] = 2;
+            else
+              maskForChilds[1, genePos] = 1;
+          }
+          returnValue = true;
       }
+      return returnValue;
 		}
 		
-		//it assumes just two parents only
 		private static void setChildsUsingMaskForChilds(Genome parent1,
 		                                                Genome parent2)
 		{
-			for(int childIndex = 0 ;
-					childIndex < GenomeManagement.childs.Length;
-					childIndex++)
+      for(int childIndex = 0; childIndex < 2; childIndex++)
       {
-        for(int i = 0 ; i < GenomeManagement.genomeSize ; i++)
+        for(int genePos = 0 ; genePos < GenomeManagement.genomeSize ; genePos++)
       	{
-  	      if(maskForChilds[childIndex,i]==1)
-           	childs[childIndex].SetGeneValue(parent1.GetGeneValue(i), i);
-       		else//maskForChilds[childIndex,i]==2
-           	childs[childIndex].SetGeneValue(parent2.GetGeneValue(i), i);
+  	      if(maskForChilds[childIndex,genePos]==1)
+           	childs[childIndex].SetGeneValue(parent1.GetGeneValue(genePos), genePos);
+       		else//maskForChilds[childIndex,genePos]==2
+           	childs[childIndex].SetGeneValue(parent2.GetGeneValue(genePos), genePos);
         }
       }
 			
@@ -152,16 +180,13 @@ namespace QuantProject.ADT.Optimizing.Genetic
 		/// </summary> 
     public static Genome[] UniformCrossover(Genome parent1, Genome parent2)
     {
+      initializeStaticMembers(parent1, parent2);
       if(parent1.Size != parent2.Size)
 				throw new Exception("Genomes must have the same size!");	
-      GenomeManagement.genomeSize = parent1.Size;
-      GenomeManagement.childs = 
-      						new Genome[2]{parent1.Clone(),parent1.Clone()};
-      GenomeManagement.maskForChilds = new int[childs.Length, GenomeManagement.genomeSize];
-			GenomeManagement.setMaskForChildsForUniformCrossover();
-     	GenomeManagement.setChildsUsingMaskForChilds(parent1, parent2);
+			setMaskForChildsForUniformCrossover();
+     	setChildsUsingMaskForChilds(parent1, parent2);
 			    
-      return GenomeManagement.childs;
+      return childs;
     }
 
     /// <summary>
@@ -170,40 +195,35 @@ namespace QuantProject.ADT.Optimizing.Genetic
 		/// </summary> 
     public static Genome[] AlternateFixedCrossover(Genome parent1, Genome parent2)
     {
+      initializeStaticMembers(parent1, parent2);
       if(parent1.Size != parent2.Size)
 				throw new Exception("Genomes must have the same size!");	
-      GenomeManagement.genomeSize = parent1.Size;
-      GenomeManagement.childs = 
-      						new Genome[2]{parent1.Clone(),parent1.Clone()};
-      GenomeManagement.maskForChilds = new int[childs.Length, GenomeManagement.genomeSize];
-      GenomeManagement.setMaskForChildsForAlternateFixedCrossover();
-     	GenomeManagement.setChildsUsingMaskForChilds(parent1, parent2);
+      setMaskForChildsForAlternateFixedCrossover();
+     	setChildsUsingMaskForChilds(parent1, parent2);
       
-      return GenomeManagement.childs;
+      return childs;
     }
 
 		/// <summary>
 		/// This method returns an array of genomes based on 
-		/// a mix of the genes of parents, such that childs,
+		/// a mix of the genes of parents, such that the 2 childs,
 		/// if possible, are different from parents and, at 
 		/// the same time, childs' genes are not duplicated  
 		/// </summary> 
     public static Genome[] MixGenesWithoutDuplicates(Genome parent1, Genome parent2)
     {
+      initializeStaticMembers(parent1, parent2);
       if(parent1.Size > (parent1.MaxValueForGenes - parent1.MinValueForGenes + 1))
 			//it is impossible not to duplicate genes if size is too
 			// large for the range of variation of each gene
 				throw new Exception("Impossible to avoid duplicates with the given size!");
       if(parent1.Size != parent2.Size)
 				throw new Exception("Genomes must have the same size!");	
-      GenomeManagement.genomeSize = parent1.Size;
-      GenomeManagement.childs = 
-      						new Genome[2]{parent1.Clone(),parent1.Clone()};
-      GenomeManagement.maskForChilds = new int[childs.Length, GenomeManagement.genomeSize];
-      GenomeManagement.setMaskForChildsForMixingWithoutDuplicates(parent1, parent2);
-     	GenomeManagement.setChildsUsingMaskForChilds(parent1, parent2);
       
-      return GenomeManagement.childs;
+      if(setMaskForChildsForMixingWithoutDuplicates(parent1, parent2))
+     	  setChildsUsingMaskForChilds(parent1, parent2);
+      
+      return childs;
     }
 
 
