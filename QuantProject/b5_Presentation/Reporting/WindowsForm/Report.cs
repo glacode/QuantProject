@@ -44,6 +44,7 @@ namespace QuantProject.Presentation.Reporting.WindowsForm
 		private System.Windows.Forms.MenuItem file;
 		private System.Windows.Forms.MenuItem saveAccount;
 		private System.Windows.Forms.MenuItem saveReport;
+    private System.Windows.Forms.MenuItem saveTransactions;
     private SaveFileDialog saveFileDialog;
 
 		public AccountReport AccountReport
@@ -84,6 +85,9 @@ namespace QuantProject.Presentation.Reporting.WindowsForm
 			
 			this.saveReport = new MenuItem();
 			this.saveReport.Text = "Save Report";
+
+      this.saveTransactions = new MenuItem();
+      this.saveTransactions.Text = "Save Transactions";
 			
 			this.file = new MenuItem();
 			this.file.Text = "File";
@@ -92,11 +96,11 @@ namespace QuantProject.Presentation.Reporting.WindowsForm
 			
 			this.file.MenuItems.AddRange(new MenuItem[] 
 			                             {this.saveAccount,
-			                             	this.saveReport});
+			                             	this.saveReport, this.saveTransactions});
 			this.Menu = this.mainMenu;
 			this.saveAccount.Click += new System.EventHandler(this.saveAccount_Click);
 			this.saveReport.Click += new System.EventHandler(this.saveReport_Click);
-					
+			this.saveTransactions.Click += new System.EventHandler(this.saveTransactions_Click);		
 		}
 		
 		/// <summary>
@@ -164,20 +168,25 @@ namespace QuantProject.Presentation.Reporting.WindowsForm
       return (DateTime)returnValue;
     }
 		
-    #region save account or report
+    #region save account or report or transactions
     
     private void saveAccount_Click(object sender, System.EventArgs e)
     {
-    	this.saveAccountOrReport((MenuItem)sender);
+    	this.saveObject((MenuItem)sender);
     }
  
    
 		private void saveReport_Click(object sender, System.EventArgs e)
     {
-			this.saveAccountOrReport((MenuItem)sender);
+			this.saveObject((MenuItem)sender);
 	  }
     
-    private void saveAccountOrReport_setSaveFileDialog(MenuItem sender)
+    private void saveTransactions_Click(object sender, System.EventArgs e)
+    {
+      this.saveObject((MenuItem)sender);
+    }
+    
+    private void saveObject_setSaveFileDialog(MenuItem sender)
     {
       this.saveFileDialog = new SaveFileDialog();
       if(sender.Text.EndsWith("Report"))
@@ -188,13 +197,19 @@ namespace QuantProject.Presentation.Reporting.WindowsForm
         this.saveFileDialog.InitialDirectory = 
           System.Configuration.ConfigurationSettings.AppSettings["ReportsArchive"];
       }
-      else
+      else if(sender.Text.EndsWith("Account"))
         //else the text property of the menu item sender contains at the end
         // the word "Account"; so it will be saved an account object
       { 
         this.saveFileDialog.DefaultExt = "qPa";
         this.saveFileDialog.InitialDirectory =
            System.Configuration.ConfigurationSettings.AppSettings["AccountsArchive"];
+      }
+      else if(sender.Text.EndsWith("Transactions"))
+        //else the text property of the menu item sender contains at the end
+        // the word "Transactions"; so it will be saved a TransactionHistory object
+      { 
+        this.saveFileDialog.DefaultExt = "qPt";
       }
       
       this.saveFileDialog.AddExtension = true;
@@ -206,9 +221,9 @@ namespace QuantProject.Presentation.Reporting.WindowsForm
       this.saveFileDialog.CheckPathExists = true;
    }
 
-    private void saveAccountOrReport(MenuItem sender)
+    private void saveObject(MenuItem sender)
     {
-      this.saveAccountOrReport_setSaveFileDialog(sender);
+      this.saveObject_setSaveFileDialog(sender);
       this.saveFileDialog.FileOk += new System.ComponentModel.CancelEventHandler(this.fileOk_Click);
       this.saveFileDialog.ShowDialog();
     }
@@ -218,8 +233,11 @@ namespace QuantProject.Presentation.Reporting.WindowsForm
       if(((SaveFileDialog)sender).Title.EndsWith("Report"))
         QuantProject.ADT.FileManaging.ObjectArchiver.Archive(this.accountReport,
                                                            this.saveFileDialog.FileName);
-      else
+      else if(((SaveFileDialog)sender).Title.EndsWith("Account"))
         QuantProject.ADT.FileManaging.ObjectArchiver.Archive(this.account,
+          this.saveFileDialog.FileName);
+      else if(((SaveFileDialog)sender).Title.EndsWith("Transactions"))
+        QuantProject.ADT.FileManaging.ObjectArchiver.Archive(this.account.Transactions,
           this.saveFileDialog.FileName);
     }
 

@@ -21,18 +21,22 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
 using System;
+using System.IO;
 using System.Drawing;
 using System.Collections;
 using System.ComponentModel;
 using System.Windows.Forms;
 using QuantProject.Scripts;
 using QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios;
-//using QuantProject.ADT.Optimizing.Genetic;
+using QuantProject.ADT.Optimizing.Genetic;
 
 using QuantProject.Scripts.SimpleTesting;
 using QuantProject.Scripts.WalkForwardTesting.WalkForwardOneRank;
 using QuantProject.Scripts.CallingReportsForRunScripts;
 using QuantProject.Presentation.Reporting.WindowsForm;
+using QuantProject.ADT.Statistics;
+
+
 
 
 
@@ -43,7 +47,9 @@ namespace QuantProject.Principale
 	/// </summary>
 	public class Principale : System.Windows.Forms.Form
 	{
-    private System.Windows.Forms.MainMenu mainMenu1;
+    public static RunEfficientPorfolio runEfficientPortfolio;
+		
+		private System.Windows.Forms.MainMenu mainMenu1;
     private System.Windows.Forms.MenuItem menuItem1;
     private System.Windows.Forms.MenuItem menuItem2;
     private System.Windows.Forms.MenuItem menuItem3;
@@ -63,6 +69,7 @@ namespace QuantProject.Principale
     private System.Windows.Forms.MenuItem menuItemShowReportFromAccount;
     private System.Windows.Forms.MenuItem menuItemRunReleasingMode;
     private System.Windows.Forms.MenuItem menuItemShowSavedReport;
+    private System.Windows.Forms.MenuItem menuItemShowReportFromTransactions;
 		/// <summary>
 		/// Required designer variable.
 		/// </summary>
@@ -111,6 +118,7 @@ namespace QuantProject.Principale
       this.menuItemSavedTests = new System.Windows.Forms.MenuItem();
       this.menuItemAccountViewer = new System.Windows.Forms.MenuItem();
       this.menuItemShowReportFromAccount = new System.Windows.Forms.MenuItem();
+      this.menuItemShowSavedReport = new System.Windows.Forms.MenuItem();
       this.menuItemRunReleasingMode = new System.Windows.Forms.MenuItem();
       this.menuItem13 = new System.Windows.Forms.MenuItem();
       this.menuItem14 = new System.Windows.Forms.MenuItem();
@@ -121,7 +129,7 @@ namespace QuantProject.Principale
       this.menuItem4 = new System.Windows.Forms.MenuItem();
       this.menuItem6 = new System.Windows.Forms.MenuItem();
       this.menuItem7 = new System.Windows.Forms.MenuItem();
-      this.menuItemShowSavedReport = new System.Windows.Forms.MenuItem();
+      this.menuItemShowReportFromTransactions = new System.Windows.Forms.MenuItem();
       // 
       // mainMenu1
       // 
@@ -171,7 +179,8 @@ namespace QuantProject.Principale
       this.menuItemSavedTests.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
                                                                                        this.menuItemAccountViewer,
                                                                                        this.menuItemShowReportFromAccount,
-                                                                                       this.menuItemShowSavedReport});
+                                                                                       this.menuItemShowSavedReport,
+                                                                                       this.menuItemShowReportFromTransactions});
       this.menuItemSavedTests.Text = "Saved Tests";
       // 
       // menuItemAccountViewer
@@ -185,6 +194,12 @@ namespace QuantProject.Principale
       this.menuItemShowReportFromAccount.Index = 1;
       this.menuItemShowReportFromAccount.Text = "Show report from account";
       this.menuItemShowReportFromAccount.Click += new System.EventHandler(this.menuItemShowReportFromAccount_Click);
+      // 
+      // menuItemShowSavedReport
+      // 
+      this.menuItemShowSavedReport.Index = 2;
+      this.menuItemShowSavedReport.Text = "Show saved report";
+      this.menuItemShowSavedReport.Click += new System.EventHandler(this.menuItemShowSavedReport_Click);
       // 
       // menuItemRunReleasingMode
       // 
@@ -240,11 +255,11 @@ namespace QuantProject.Principale
       this.menuItem7.Index = -1;
       this.menuItem7.Text = "";
       // 
-      // menuItemShowSavedReport
+      // menuItemShowReportFromTransactions
       // 
-      this.menuItemShowSavedReport.Index = 2;
-      this.menuItemShowSavedReport.Text = "Show saved report";
-      this.menuItemShowSavedReport.Click += new System.EventHandler(this.menuItemShowSavedReport_Click);
+      this.menuItemShowReportFromTransactions.Index = 3;
+      this.menuItemShowReportFromTransactions.Text = "Show report from transactions";
+      this.menuItemShowReportFromTransactions.Click += new System.EventHandler(this.menuItemShowReportFromTransactions_Click);
       // 
       // Principale
       // 
@@ -266,12 +281,97 @@ namespace QuantProject.Principale
     private void menuItem10_Click(object sender, System.EventArgs e)
     {
     }
+    
+    static void runMilloScripts()
+    {
+      /*QuantProject.Principale.Principale.runEfficientPortfolio = 
+        new RunEfficientCTCPorfolio("Test",150,4,60,10,15000,"^SPX",
+                                    new DateTime(2004,3,1),
+											              new DateTime(2004,5,31),15,2,0.0,
+                                    PortfolioType.ShortAndLong,0.05,
+                                    2);*/
+      /*QuantProject.Principale.Principale.runEfficientPortfolio = 
+        new RunTestOptimizedCTCPortfolio("Test",150,4,60,10,25000,"^SPX",
+        new DateTime(2004,3,1),
+        new DateTime(2004,3,1).AddDays(60),15,2,0.015,
+        PortfolioType.ShortAndLong,0.1,
+        2);/*
+    	/*QuantProject.Principale.Principale.runEfficientPortfolio =
+    		new RunEfficientCTOPorfolio("Test",150,4,45,10,1000,
+											        "^SPX",
+											        new DateTime(2004,1,1),
+											        new DateTime(2004,1,15),
+											        0.0, PortfolioType.ShortAndLong, 2);*/
+                              
+    	QuantProject.Principale.Principale.runEfficientPortfolio = 
+    		new RunTestOptimizedCTOPorfolio("Test",150,5,45,10,50000,
+											        "^SPX",
+											        new DateTime(2004,3,1),
+											        new DateTime(2004,3,1).AddDays(45),
+											        0.0005, PortfolioType.ShortAndLong, 12);
+                              
+    		/*new RunTestOptimizedCTCPortfolio("Test",150,6,90,10,20000,
+    		                                 "^SPX",
+    		                                 new DateTime(2002,10,1),
+        	                        				new DateTime(2002,10,1).AddDays(120),
+        	                        				5,2,0.0,
+        	                        				PortfolioType.ShortAndLong, 0.50, 10);*/
+    		                                 
+    	QuantProject.Principale.Principale.runEfficientPortfolio.Run();
+ /*     QuantProject.Principale.Principale.runEfficientPortfolio = 
+        new RunTestOptimizedCTOPorfolio("Test",150,6,45,10,150000,
+        "^SPX",
+        new DateTime(2003,1,1),
+        new DateTime(2003,1,1).AddDays(45),
+        0.0, PortfolioType.OnlyShort, 12);
+      
+      QuantProject.Principale.Principale.runEfficientPortfolio.Run();  */
+      /*
+    	QuantProject.Principale.Principale.runEfficientPortfolio =
+    	new RunTestOptimizedCTCPortfolio("Test",100,5,120,10,150000,
+    	                            "^SPX",
+    	                            new DateTime(2002,10,1),
+        	                        new DateTime(2002,10,1).AddDays(120),
+        	                        5, 0.0,
+        	                       	PortfolioType.ShortAndLong, 0.50, 10);
+    	QuantProject.Principale.Principale.runEfficientPortfolio.Run();
+    	
+      QuantProject.Principale.Principale.runEfficientPortfolio =
+        new RunTestOptimizedCTCPortfolio("Test",150,5,80,15,60000,
+        "^SPX",
+        new DateTime(2002,10,1),
+        new DateTime(2002,10,1).AddDays(80),
+        5, 0.0,
+        PortfolioType.OnlyLong , 0.50, 10);
+      QuantProject.Principale.Principale.runEfficientPortfolio.Run();
 
+      QuantProject.Principale.Principale.runEfficientPortfolio =
+        new RunTestOptimizedCTCPortfolio("Test",150,5,160,15,60000,
+        "^SPX",
+        new DateTime(2002,10,1),
+        new DateTime(2002,10,1).AddDays(160),
+        5, 0.0,
+        PortfolioType.ShortAndLong, 0.50, 10);
+      QuantProject.Principale.Principale.runEfficientPortfolio.Run();
+			*/
+         	
+    	/*
+    	    	QuantProject.Principale.Principale.runEfficientPortfolio =  		
+    		new RunEfficientCTOPorfolio("Test",500,6,45,15,50000,
+											        "^SPX",
+											        new DateTime(2002,1,1),
+											        new DateTime(2004,12,31),
+											        0.0, PortfolioType.OnlyLong);
+    	
+    	 QuantProject.Principale.Principale.runEfficientPortfolio.Run();
+    	*/
+    			
+    }
 
     [STAThread]
     static void Main() 
     {
-      //try
+      try
       {
         //new RunMSFTsimpleTest().Run();
 //		new RunMSFTsimpleTest_2().Run();
@@ -284,6 +384,13 @@ namespace QuantProject.Principale
         //new RunEfficientCTCPorfolio().Run();
 				//new RunEfficientPorfolio().Run();
         Application.Run(new Principale());
+        //geneticOptimizerTest();
+        //Application.Run(new OneRankForm());
+        //runMilloScripts();
+        
+        //new RunEfficientCTOPorfolio("Test",200,5,60,10,5000, "^SPX",
+        //                            new DateTime(2000,1,1),
+        //                            new DateTime(2001,12,31)).Run();
       //  new RunMSFTwalkForward().Run();
 
 	//		new RunOneRankWithWindowsReport().Run();
@@ -297,22 +404,48 @@ namespace QuantProject.Principale
 				//new RunWalkForwardOneRank().Run();
 
       } 
-      //catch ( Exception ex )
+      catch ( Exception ex )
       {
-        //MessageBox.Show( ex.ToString() ) ;
+      	QuantProject.Principale.Principale.runEfficientPortfolio.SaveScriptResults();
+      	writeExceptionToLogFile(ex);
       }
     }
-    /*
+    static private void writeExceptionToLogFile(Exception ex)
+    {
+    	string path = Application.ExecutablePath.Substring(0, Application.ExecutablePath.LastIndexOf('\\'))
+										+ @"\ExceptionLog.txt";
+    	if(File.Exists(path))
+    	{
+    	  StreamWriter w = File.AppendText(path);
+	      w.Write("\r\nTime of exception : ");
+	      w.WriteLine("{0} {1}", DateTime.Now.ToLongDateString(),
+	                  DateTime.Now.ToLocalTime());
+	      w.Write("\r\nScript name: {0}",
+	              QuantProject.Principale.Principale.runEfficientPortfolio.ScriptName );
+	      w.Write("\r\nTimer date: {0}",
+	              QuantProject.Principale.Principale.runEfficientPortfolio.TimerLastDate.ToLongDateString() );
+	      
+	      w.WriteLine("\n  :{0}", ex.ToString());
+	      w.WriteLine("\n  :{0}", ex.StackTrace.ToString());
+	      w.WriteLine ("\n-----------------------------------");
+	      // Update the underlying file.
+	      w.Flush();
+	      w.Close();
+    	}
+    	
+
+    }
+    
     private static void geneticOptimizerTest()
     {
       IGenomeManager genomeManagerTest = new GenomeManagerTest(5,1,10);     
-      GeneticOptimizer GO = new GeneticOptimizer(genomeManagerTest);
-      GO.KeepOnRunningUntilConvergenceIsReached = true;
+      GeneticOptimizer GO = new GeneticOptimizer(genomeManagerTest,1000,10);
+      //GO.KeepOnRunningUntilConvergenceIsReached = true;
       GO.Run(true);
       System.Console.WriteLine("\n\nThe best solution found is: " + (string)GO.BestGenome.Meaning +
                                 " with {0} generations", GO.GenerationCounter);
     }
-    */
+    
     private void menuItem14_Click(object sender, System.EventArgs e)
     {
     }
@@ -325,9 +458,18 @@ namespace QuantProject.Principale
 	//new RunWalkForwardOneRank().Run();			
         
 				//new RunOneRank().Run();
-        new RunEfficientCTOPorfolio("Test2",100,5,45, 1, 3000, "^SPX",
-                                    new DateTime(2004,10,1),
-                                    new DateTime(2004,10,15)).Run();
+        //new RunEfficientCTCPorfolio("Test",400,5,90,10,10000,
+        //	                         	"^SPX",
+        //	                          new DateTime(2004,1,1),
+        //	                          new DateTime(2004,2,29),
+        //	                          3).Run();
+        
+        //this.Close();
+        runMilloScripts();
+        
+        //new RunEfficientCTOPorfolio("Test",200,5,60,2,500, "^SPX",
+        //                            new DateTime(2004,1,1),
+        //                            new DateTime(2004,1,15)).Run();
         
 //      }
 //      catch ( Exception ex )
@@ -374,7 +516,7 @@ namespace QuantProject.Principale
       }
       catch ( Exception ex )
       {
-        string notUsed = ex.ToString();
+        ex = ex;
         //in this way qP shouldn't stop if running a single script fails ...
       }
       finally
@@ -388,6 +530,13 @@ namespace QuantProject.Principale
       string chosenPath = this.getPath("Select a serialized report please ...");
       if(chosenPath != "")
         ShowReportFromFile.ShowReportFromSerializedAccountReport(chosenPath);
+    }
+
+    private void menuItemShowReportFromTransactions_Click(object sender, System.EventArgs e)
+    {
+      string chosenPath = this.getPath("Select a serialized TransactionHistory please ...");
+      if(chosenPath != "")
+        ShowReportFromFile.ShowReportFromSerializedTransactionHistory(chosenPath);
     }
 
 

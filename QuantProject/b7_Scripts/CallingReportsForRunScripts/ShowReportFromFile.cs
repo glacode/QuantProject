@@ -20,10 +20,12 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 using System;
+using System.Collections;
 using QuantProject.Scripts;
 using QuantProject.Business.Timing;
 using QuantProject.Business.Financial.Accounting;
 using QuantProject.Business.Financial.Accounting.Reporting;
+using QuantProject.Business.Financial.Accounting.Transactions;
 using QuantProject.Business.DataProviders;
 using QuantProject.ADT.FileManaging;
 using QuantProject.Presentation.Reporting.WindowsForm;
@@ -46,7 +48,8 @@ namespace QuantProject.Scripts.CallingReportsForRunScripts
 				Account account = 
 						(Account)ObjectArchiver.Extract(serializedAccountFullPath);
 				Report report = new Report(account, new HistoricalAdjustedQuoteProvider());
-				report.Text = 
+				
+        report.Text = 
 							serializedAccountFullPath.Substring(serializedAccountFullPath.LastIndexOf("\\") + 1);
 				ReportShower reportShower = new ReportShower(report);
         reportShower.Show(); 
@@ -73,6 +76,32 @@ namespace QuantProject.Scripts.CallingReportsForRunScripts
         System.Windows.Forms.MessageBox.Show(ex.ToString());
       }
     }
+    
 
+
+
+    public static void ShowReportFromSerializedTransactionHistory(string serializedTransactionHistoryFullPath)
+    {
+      try
+      {
+        TransactionHistory transactions = 
+          (TransactionHistory)ObjectArchiver.Extract(serializedTransactionHistoryFullPath);
+        Account account = new Account("FromSerializedTransactions");
+        foreach(Object key in transactions.Keys)
+        {
+          foreach(EndOfDayTransaction transaction in (ArrayList)transactions[key])
+          {
+            account.Add(transaction);
+          }
+        }
+        Report report = new Report(account, new HistoricalAdjustedQuoteProvider());
+        ReportShower reportShower = new ReportShower(report);
+        reportShower.Show(); 
+      }
+      catch(System.Exception ex)
+      {
+        System.Windows.Forms.MessageBox.Show(ex.ToString());
+      }
+    }
 	}			
 }
