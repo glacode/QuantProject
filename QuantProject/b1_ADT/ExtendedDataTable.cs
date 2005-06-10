@@ -37,22 +37,35 @@ namespace QuantProject.ADT
     }
     
     /// <summary>
-    /// Copy the given DataTable into another DataTable, sorting by the specified field, in a DESC mode
+    /// Copy the given DataTable into another DataTable, sorting by the specified field, in the given mode
     /// </summary>
     public static DataTable CopyAndSort(DataTable tableToCopyAndSort, string sortingFieldName, bool sortByASC)
+    {
+      return ExtendedDataTable.CopyAndSort(tableToCopyAndSort,
+                                           "", sortingFieldName, sortByASC);
+    }
+    
+    /// <summary>
+    /// Copy the given DataTable into another DataTable, 
+    /// filtering by the given expression, sorting by the specified field, in the given mode
+    /// </summary>
+    public static DataTable CopyAndSort(DataTable tableToCopyAndSort, 
+                                        string filterExpression,
+                                        string sortingFieldName, bool sortByASC)
     {
       DataTable copyOfTableToCopyAndSort = tableToCopyAndSort.Clone();
       string sortDirection = " DESC";
       if(sortByASC)
-         sortDirection = " ASC";
-      DataRow[] orderedRows = tableToCopyAndSort.Select("", sortingFieldName + sortDirection);
+        sortDirection = " ASC";
+      
+      DataRow[] orderedRows = tableToCopyAndSort.Select(filterExpression, sortingFieldName + sortDirection);
       for(int i = 0;i<orderedRows.Length;i++)
       {
         copyOfTableToCopyAndSort.ImportRow(orderedRows[i]);
       }
       return copyOfTableToCopyAndSort;
     }
-    
+
     public static void DeleteRows(DataTable table, long fromIndex)
     {
       ExtendedDataTable.DeleteRows(table, fromIndex, table.Rows.Count - 1);
