@@ -60,6 +60,7 @@ namespace QuantProject.Applications.Downloader.TickerSelectors
 		private const string SECOND_COLUMN_NAME = "Element Type";
     private System.Windows.Forms.MenuItem menuItemTickerSelector;
 		private const string THIRD_COLUMN_NAME = "Element Description";
+    private SortOrder lastSorting = SortOrder.None;
 		
 		public TickerGroupsViewer()
 		{
@@ -366,6 +367,7 @@ namespace QuantProject.Applications.Downloader.TickerSelectors
       // listViewGroupsAndTickers
       // 
       this.listViewGroupsAndTickers.Activation = System.Windows.Forms.ItemActivation.TwoClick;
+      this.listViewGroupsAndTickers.AllowColumnReorder = true;
       this.listViewGroupsAndTickers.AllowDrop = true;
       this.listViewGroupsAndTickers.Dock = System.Windows.Forms.DockStyle.Fill;
       this.listViewGroupsAndTickers.Location = new System.Drawing.Point(123, 0);
@@ -377,6 +379,7 @@ namespace QuantProject.Applications.Downloader.TickerSelectors
       this.listViewGroupsAndTickers.ItemActivate += new System.EventHandler(this.listViewGroupsAndTickers_ItemActivate);
       this.listViewGroupsAndTickers.DragDrop += new System.Windows.Forms.DragEventHandler(this.listViewGroupsAndTickers_DragDrop);
       this.listViewGroupsAndTickers.DragEnter += new System.Windows.Forms.DragEventHandler(this.listViewGroupsAndTickers_DragEnter);
+      this.listViewGroupsAndTickers.ColumnClick += new System.Windows.Forms.ColumnClickEventHandler(this.listViewGroupsAndTickers_ColumnClick);
       this.listViewGroupsAndTickers.ItemDrag += new System.Windows.Forms.ItemDragEventHandler(this.listViewGroupsAndTickers_ItemDrag);
       this.listViewGroupsAndTickers.DragLeave += new System.EventHandler(this.listViewGroupsAndTickers_DragLeave);
       // 
@@ -884,6 +887,18 @@ namespace QuantProject.Applications.Downloader.TickerSelectors
     private void listViewGroupsAndTickers_DragEnter(object sender, System.Windows.Forms.DragEventArgs e)
     {
       //MessageBox.Show("Drag here?");
+    }
+
+    private void listViewGroupsAndTickers_ColumnClick(object sender, System.Windows.Forms.ColumnClickEventArgs e)
+    {
+      if(this.lastSorting == SortOrder.None ||
+                  this.lastSorting == SortOrder.Descending) 
+        this.listViewGroupsAndTickers.Sorting = SortOrder.Ascending;
+      else
+        this.listViewGroupsAndTickers.Sorting = SortOrder.Descending;
+      this.listViewGroupsAndTickers.Sort();
+      this.lastSorting = this.listViewGroupsAndTickers.Sorting;
+      this.listViewGroupsAndTickers.Sorting = SortOrder.None;
     }
          
 
