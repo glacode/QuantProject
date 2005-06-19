@@ -362,6 +362,16 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "a1_Financial\a2_Accounting\h5_Reporting\SummaryRows\DoubleSummaryRow.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "a1_Financial\a2_Accounting\h5_Reporting\SummaryRows\IntegerSummaryRow.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "a1_Financial\a2_Accounting\h5_Reporting\SummaryRows\LargestLosingTradePercentage.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
@@ -403,6 +413,11 @@
                 />
                 <File
                     RelPath = "a1_Financial\a2_Accounting\h5_Reporting\SummaryRows\NumberWinningTrades.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "a1_Financial\a2_Accounting\h5_Reporting\SummaryRows\PercentageSummaryRow.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
