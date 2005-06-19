@@ -12,7 +12,7 @@ namespace QuantProject.Business.Financial.Accounting.Reporting.SummaryRows
 	/// Percentage return for the Benchmark
 	/// </summary>
 	[Serializable]
-  public class BenchmarkPercentageReturn : SummaryRow
+  public class BenchmarkPercentageReturn : PercentageSummaryRow
 	{
 		public BenchmarkPercentageReturn( Summary summary ,
 			IHistoricalQuoteProvider historicalQuoteProvider )
@@ -26,10 +26,11 @@ namespace QuantProject.Business.Financial.Accounting.Reporting.SummaryRows
 				double finalMarketValue = historicalQuoteProvider.GetMarketValue(
 					summary.AccountReport.Benchmark ,
 					summary.AccountReport.EndDateTime );
-				summary.BenchmarkPercentageReturn = ( finalMarketValue - beginningMarketValue ) /
-					beginningMarketValue * 100;
+//				summary.BenchmarkPercentageReturn = ( finalMarketValue - beginningMarketValue ) /
+//					beginningMarketValue * 100;
         this.rowDescription = "Buy & hold % return";
-        this.rowValue = summary.BenchmarkPercentageReturn;
+				this.rowValue = ( finalMarketValue - beginningMarketValue ) /
+					beginningMarketValue * 100;
       }
     }
 	}
