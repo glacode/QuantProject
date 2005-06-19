@@ -38,7 +38,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardOneRank
 	{
     private double maxAcceptableDrawDown = 30;
 
-		private double minAcceptableWinningPeriods = 30;
+		private double minAcceptableWinningPeriods = 52;
 
 		private IHistoricalQuoteProvider historicalQuoteProvider =
 			new HistoricalAdjustedQuoteProvider();
@@ -69,19 +69,26 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardOneRank
 					this.historicalQuoteProvider );
 
 			// old goodness computation
-			if ( ( this.accountReport.Summary.MaxEquityDrawDown >= this.maxAcceptableDrawDown )
-				|| ( this.accountReport.Summary.TotalPnl <= this.accountReport.Summary.BenchmarkPercentageReturn ) )
+			if ( ( (double)this.accountReport.Summary.MaxEquityDrawDown.Value >=
+				this.maxAcceptableDrawDown )
+				|| ( this.accountReport.Summary.TotalPnl <=
+				(double)this.accountReport.Summary.BenchmarkPercentageReturn.Value ) )
 				returnValue = Double.MinValue;
 			else
 				// max draw down is acceptable and the strategy is better than buy and hold
-				returnValue = this.accountReport.Summary.ReturnOnAccount -
-					this.accountReport.Summary.BenchmarkPercentageReturn;
+				returnValue = (double)this.accountReport.Summary.ReturnOnAccount.Value -
+					(double)this.accountReport.Summary.BenchmarkPercentageReturn.Value;
 
 			// new goodness computation
-			if ( this.accountReport.Summary.NumberWinningPeriods < this.minAcceptableWinningPeriods )
+//			if ( this.accountReport.Summary.NumberWinningPeriods < this.minAcceptableWinningPeriods )
+//				returnValue = Double.MinValue;
+//			else
+//				returnValue = Convert.ToDouble( this.accountReport.Summary.PercentageWinningPeriods );
+			if ( (double)this.accountReport.Summary.PercentageWinningPeriods.Value <
+				this.minAcceptableWinningPeriods )
 				returnValue = Double.MinValue;
 			else
-				returnValue = Convert.ToDouble( this.accountReport.Summary.PercentageWinningPeriods );
+				returnValue = Convert.ToDouble( - (double)this.accountReport.Summary.MaxEquityDrawDown.Value );
 
 			return returnValue;
 		}
