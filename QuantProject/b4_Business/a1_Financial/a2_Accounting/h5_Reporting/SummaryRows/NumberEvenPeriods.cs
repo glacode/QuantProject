@@ -32,7 +32,7 @@ namespace QuantProject.Business.Financial.Accounting.Reporting.SummaryRows
 	/// Summary row that computes the Equity Line vs Benchmark comparison
 	/// </summary>
 	[Serializable]
-	public class NumberEvenPeriods : SummaryRow
+	public class NumberEvenPeriods : IntegerSummaryRow
 	{
 		public NumberEvenPeriods( Summary summary )
 		{

@@ -11,9 +11,9 @@ namespace QuantProject.Business.Financial.Accounting.Reporting.SummaryRows
 	/// commission amount.
 	/// </summary>
 	[Serializable]
-  public class TotalCommissionAmount : SummaryRow
+  public class TotalCommissionAmount : DoubleSummaryRow
 	{
-		public TotalCommissionAmount( Summary summary )
+		public TotalCommissionAmount( Summary summary ) : base( 2 )
 		{
       this.rowDescription = "Total commission amount";
       double avgReturn =

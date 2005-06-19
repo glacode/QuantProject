@@ -32,12 +32,14 @@ namespace QuantProject.Business.Financial.Accounting.Reporting.SummaryRows
 	/// Summary row that computes the Equity Line vs Benchmark comparison
 	/// </summary>
 	[Serializable]
-	public class PercentageWinningPeriods : SummaryRow
+	public class PercentageWinningPeriods : PercentageSummaryRow
 	{
 		public PercentageWinningPeriods( Summary summary )
 		{
-			this.rowDescription = "# losing periods";
-			this.rowValue = summary.PercentageWinningPeriods;
+			this.rowDescription = "% winning periods";
+			this.rowValue = (double)summary.NumberWinningPeriods.Value * 100/
+				((double)summary.NumberWinningPeriods.Value +
+				(double)summary.NumberLosingPeriods.Value);
 		}
 	}
 }

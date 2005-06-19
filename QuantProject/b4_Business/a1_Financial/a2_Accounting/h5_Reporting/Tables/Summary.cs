@@ -17,9 +17,12 @@ namespace QuantProject.Business.Financial.Accounting.Reporting.Tables
     private AccountReport accountReport;
 		private IHistoricalQuoteProvider historicalQuoteProvider;
     private double totalPnl;
-    private double benchmarkPercentageReturn;
+    private BenchmarkPercentageReturn benchmarkPercentageReturn;
+		private AnnualSystemPercentageReturn annualSystemPercentageReturn;
 		private double finalAccountValue;
     private long intervalDays;
+		private TotalNetProfit totalNetProfit;
+		private ReturnOnAccount returnOnAccount;
 		private MaxEquityDrawDown maxEquityDrawDown;
 		private TotalNumberOfTrades totalNumberOfTrades;
 		private NumberWinningTrades numberWinningTrades;
@@ -32,6 +35,9 @@ namespace QuantProject.Business.Financial.Accounting.Reporting.Tables
 		private TotalNumberOfLongTrades totalNumberOfLongTrades;
 		private TotalNumberOfShortTrades totalNumberOfShortTrades;
 		private TotalCommissionAmount totalCommissionAmount;
+		private NumberWinningPeriods numberWinningPeriods;
+		private NumberLosingPeriods numberLosingPeriods;
+		private PercentageWinningPeriods percentageWinningPeriods;
 		public AccountReport AccountReport
     {
       get { return accountReport; }
@@ -40,10 +46,17 @@ namespace QuantProject.Business.Financial.Accounting.Reporting.Tables
     {
       get { return totalPnl; }
     }
-    public double BenchmarkPercentageReturn
+		public TotalNetProfit TotalNetProfit
+		{
+			get { return this.totalNetProfit; }
+		}
+		public ReturnOnAccount ReturnOnAccount
+		{
+			get { return this.returnOnAccount; }
+		}
+		public BenchmarkPercentageReturn BenchmarkPercentageReturn
     {
       get { return this.benchmarkPercentageReturn; }
-      set { this.benchmarkPercentageReturn = value; }
     }
     public double FinalAccountValue
     {
@@ -53,72 +66,82 @@ namespace QuantProject.Business.Financial.Accounting.Reporting.Tables
     {
       get { return intervalDays; }
     }
-    public double ReturnOnAccount;
-    public double AnnualSystemPercentageReturn;
-		public int NumberWinningPeriods;
-		public int NumberLosingPeriods;
+		public AnnualSystemPercentageReturn AnnualSystemPercentageReturn
+		{
+			get { return this.annualSystemPercentageReturn; }
+		}
+		public MaxEquityDrawDown MaxEquityDrawDown
+		{
+			get { return this.maxEquityDrawDown; }
+		}
+		public TotalCommissionAmount TotalCommissionAmount
+		{
+			get { return this.totalCommissionAmount; }
+		}
+		public NumberWinningPeriods NumberWinningPeriods
+		{
+			get { return this.numberWinningPeriods; }
+		}
+		public NumberLosingPeriods NumberLosingPeriods
+		{
+			get { return this.numberLosingPeriods; }
+		}
 		public int NumberEvenPeriods;
-		public double PercentageWinningPeriods
+		public PercentageWinningPeriods PercentageWinningPeriods
 		{
 			get
 			{
-				return this.NumberWinningPeriods*100/(this.NumberWinningPeriods+this.NumberLosingPeriods);
+				return this.percentageWinningPeriods;
 			}
 		}
-		public double MaxEquityDrawDown
+		public TotalNumberOfTrades TotalNumberOfTrades
 		{
-			get { return Convert.ToDouble( this.maxEquityDrawDown.Value ); }
+			get { return this.totalNumberOfTrades; }
 		}
-		public double TotalNumberOfTrades
+		public NumberWinningTrades NumberWinningTrades
 		{
-			get { return (int)this.totalNumberOfTrades.Value; }
+			get { return this.numberWinningTrades; }
 		}
-		public int NumberWinningTrades
+		public AverageTradePercentageReturn AverageTradePercentageReturn
 		{
-			get { return (int)this.numberWinningTrades.Value; }
+			get { return this.averageTradePercentageReturn; }
 		}
-		public double AverageTradePercentageReturn
+		public LargestWinningTradePercentage LargestWinningTradePercentage
 		{
-			get { return Convert.ToDouble( this.averageTradePercentageReturn.Value ); }
+			get { return this.largestWinningTradePercentage; }
 		}
-		public double LargestWinningTradePercentage
+		public LargestLosingTradePercentage LargestLosingTradePercentage
 		{
-			get { return Convert.ToDouble( this.largestWinningTradePercentage.Value ); }
+			get { return this.largestLosingTradePercentage; }
 		}
-		public double LargestLosingTradePercentage
+		public TotalNumberOfLongTrades TotalNumberOfLongTrades
 		{
-			get { return Convert.ToDouble( this.largestLosingTradePercentage.Value ); }
+			get { return this.totalNumberOfLongTrades; }
 		}
-		public double NumberWinningLongTrades
+		public NumberWinningLongTrades NumberWinningLongTrades
 		{
-			get { return (int)this.numberWinningLongTrades.Value; }
+			get { return this.numberWinningLongTrades; }
 		}
-		public double AverageLongTradePercentageReturn
+		public AverageLongTradePercentageReturn AverageLongTradePercentageReturn
 		{
-			get { return Convert.ToDouble( this.averageLongTradePercentageReturn.Value ); }
+			get { return this.averageLongTradePercentageReturn; }
 		}
-		public double NumberWinningShortTrades
+		public TotalNumberOfShortTrades TotalNumberOfShortTrades
 		{
-			get { return (int)this.numberWinningShortTrades.Value; }
+			get { return this.totalNumberOfShortTrades; }
 		}
-		public double TotalNumberOfLongTrades
+		public NumberWinningShortTrades NumberWinningShortTrades
 		{
-			get { return (int)this.totalNumberOfLongTrades.Value; }
-		}
-		public double TotalNumberOfShortTrades
-		{
-			get { return (int)this.totalNumberOfShortTrades.Value; }
+			get { return this.numberWinningShortTrades; }
 		}
 
-		public double TotalCommissionAmount
-		{
-			get { return Convert.ToDouble( this.totalCommissionAmount.Value ); }
-		}
 
 
 		private void summary( AccountReport accountReport )
 		{
 			this.accountReport = accountReport;
+			this.numberWinningPeriods =	new NumberWinningPeriods( this );
+			this.numberLosingPeriods = new NumberLosingPeriods( this );
 			this.getSummary();
 		}
 		public Summary( AccountReport accountReport ) :
@@ -153,15 +176,23 @@ namespace QuantProject.Business.Financial.Accounting.Reporting.Tables
     private void getSummaryTable_setRows( DataTable summaryDataTable )
     {
       getSummary_setRow( new TotalNetProfit( this ) , summaryDataTable );
-      getSummary_setRow( new ReturnOnAccount( this ) , summaryDataTable );
-			getSummary_setRow( new BenchmarkPercentageReturn( this , this.historicalQuoteProvider ) ,
+			this.returnOnAccount = new ReturnOnAccount( this ); 
+      getSummary_setRow( this.returnOnAccount , summaryDataTable );
+			this.benchmarkPercentageReturn =
+				new BenchmarkPercentageReturn( this , this.historicalQuoteProvider );
+			getSummary_setRow( this.benchmarkPercentageReturn ,
 				summaryDataTable );
-			getSummary_setRow( new NumberWinningPeriods( this ) ,	summaryDataTable );
-			getSummary_setRow( new NumberLosingPeriods( this ) ,	summaryDataTable );
+			this.numberWinningPeriods = new NumberWinningPeriods( this );
+			getSummary_setRow( this.numberWinningPeriods ,	summaryDataTable );
+			this.numberLosingPeriods = new NumberLosingPeriods( this );
+			getSummary_setRow( this.numberLosingPeriods ,	summaryDataTable );
 			getSummary_setRow( new NumberEvenPeriods( this ) ,	summaryDataTable );
-			getSummary_setRow( new PercentageWinningPeriods( this ) ,	summaryDataTable );
+			this.percentageWinningPeriods = new PercentageWinningPeriods( this );
+			getSummary_setRow( this.percentageWinningPeriods ,	summaryDataTable );
 			//this.getSummary_setRows_forEquityVsBenchmarkComparison();
-			getSummary_setRow( new AnnualSystemPercentageReturn( this ) , summaryDataTable );
+			this.totalNetProfit = new TotalNetProfit( this );
+			this.annualSystemPercentageReturn = new AnnualSystemPercentageReturn( this );
+			getSummary_setRow( this.annualSystemPercentageReturn , summaryDataTable );
 			this.maxEquityDrawDown = new MaxEquityDrawDown( this );
       getSummary_setRow( this.maxEquityDrawDown , summaryDataTable );
 			this.totalNumberOfTrades = new TotalNumberOfTrades( this );

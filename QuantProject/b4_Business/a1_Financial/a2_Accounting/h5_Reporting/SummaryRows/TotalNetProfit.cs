@@ -8,9 +8,9 @@ namespace QuantProject.Business.Financial.Accounting.Reporting.SummaryRows
 	/// Summary description for TotalNumberOfTrades.
 	/// </summary>
 	[Serializable]
-  public class TotalNetProfit : SummaryRow
+  public class TotalNetProfit : DoubleSummaryRow
 	{
-		public TotalNetProfit( Summary summary )
+		public TotalNetProfit( Summary summary ) : base( 2 )
 		{
       this.rowDescription = "Total net profit";
       this.rowValue = summary.TotalPnl;

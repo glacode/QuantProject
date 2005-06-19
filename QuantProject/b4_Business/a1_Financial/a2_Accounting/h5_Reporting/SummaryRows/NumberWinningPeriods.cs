@@ -32,9 +32,13 @@ namespace QuantProject.Business.Financial.Accounting.Reporting.SummaryRows
 	/// Summary row that computes the Equity Line vs Benchmark comparison
 	/// </summary>
 	[Serializable]
-	public class NumberWinningPeriods : SummaryRow
+	public class NumberWinningPeriods : IntegerSummaryRow
 	{
 		private Summary summary;
+
+		private double numberWinningPeriods;
+		private double numberLosingPeriods;
+		private double numberEvenPeriods;
 
 		private void setWinningLosingAndEvenPeriods_forPeriod( int i )
 		{
@@ -47,30 +51,35 @@ namespace QuantProject.Business.Financial.Accounting.Reporting.SummaryRows
 				Convert.ToDouble( this.summary.AccountReport.BenchmarkEquityLine.GetByIndex( i ) ) ) /
 				Convert.ToDouble( this.summary.AccountReport.BenchmarkEquityLine.GetByIndex( i ) );
 			if ( ( equityHistoryGain - benchmarkGain ) > ConstantsProvider.MinForDifferentGains )
-				this.summary.NumberWinningPeriods++;
+				this.numberWinningPeriods++;
 			else
 			{
 				if ( ( benchmarkGain - equityHistoryGain ) > ConstantsProvider.MinForDifferentGains )
-					this.summary.NumberLosingPeriods++;
+					this.numberLosingPeriods++;
 				else
-					this.summary.NumberEvenPeriods++;
+					this.numberEvenPeriods++;
 			}
 		}
 
 		public void SetWinningLosingAndEvenPeriods()
 		{
-			this.summary.NumberWinningPeriods = 0;
-			this.summary.NumberLosingPeriods = 0;
-			this.summary.NumberEvenPeriods = 0;
+			this.numberWinningPeriods = 0;
+			this.numberLosingPeriods = 0;
+			this.numberEvenPeriods = 0;
 			for ( int i=0; i<this.summary.AccountReport.EquityHistory.Count - 1 ; i++ )
 				this.setWinningLosingAndEvenPeriods_forPeriod( i );
 		}
-		public NumberWinningPeriods( Summary summary )
+		public NumberWinningPeriods( Summary summary ) : base()
 		{
 			this.summary = summary;
 			this.SetWinningLosingAndEvenPeriods();
 			this.rowDescription = "# winning periods";
-			this.rowValue = this.summary.NumberWinningPeriods;
+			this.format = ConstantsProvider.FormatWithZeroDecimals;
+			this.rowValue = this.numberWinningPeriods;
+		}
+		public double NumberLosingPeriods
+		{
+			get { return this.numberLosingPeriods; }
 		}
 	}
 }

@@ -10,9 +10,9 @@ namespace QuantProject.Business.Financial.Accounting.Reporting.SummaryRows
 	/// Summary description for TotalNumberOfTrades.
 	/// </summary>
 	[Serializable]
-  public class TotalNumberOfLongTrades : SummaryRow
+  public class TotalNumberOfLongTrades : IntegerSummaryRow
 	{
-		public TotalNumberOfLongTrades( Summary summary )
+		public TotalNumberOfLongTrades( Summary summary ) : base()
 		{
       double totalROA = summary.TotalPnl / ( summary.FinalAccountValue - summary.TotalPnl );
       this.rowDescription = "Total # of long trades";

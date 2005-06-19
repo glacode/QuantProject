@@ -10,11 +10,12 @@ namespace QuantProject.Business.Financial.Accounting.Reporting.SummaryRows
 	/// Summary description for TotalNumberOfTrades.
 	/// </summary>
 	[Serializable]
-  public class NumberWinningTrades : SummaryRow
+  public class NumberWinningTrades : IntegerSummaryRow
 	{
 		public NumberWinningTrades( Summary summary )
 		{
       this.rowDescription = "Number winning trades";
+			this.format = ConstantsProvider.FormatWithZeroDecimals;
 			try
 			{
 				DataRow[] DataRows = summary.AccountReport.RoundTrades.DataTable.Select( "([%Profit] > 0)" );

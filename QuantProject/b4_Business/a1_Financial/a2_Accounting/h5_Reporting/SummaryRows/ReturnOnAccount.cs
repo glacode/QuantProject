@@ -8,13 +8,12 @@ namespace QuantProject.Business.Financial.Accounting.Reporting.SummaryRows
 	/// Summary description for TotalNumberOfTrades.
 	/// </summary>
 	[Serializable]
-  public class ReturnOnAccount : SummaryRow
+  public class ReturnOnAccount : PercentageSummaryRow
 	{
 		public ReturnOnAccount( Summary summary )
 		{
-      summary.ReturnOnAccount = summary.TotalPnl / ( summary.FinalAccountValue - summary.TotalPnl ) * 100;
       this.rowDescription = "Return on account";
-      this.rowValue = summary.ReturnOnAccount;
+      this.rowValue = summary.TotalPnl / ( summary.FinalAccountValue - summary.TotalPnl ) * 100;
     }
 	}
 }

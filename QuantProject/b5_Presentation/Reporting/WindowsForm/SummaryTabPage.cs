@@ -20,10 +20,13 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 using System;
+using System.Collections;
 using System.Drawing;
+using System.Reflection;
 using System.Windows.Forms;
 using QuantProject.ADT;
 using QuantProject.Business.Financial.Accounting.Reporting;
+using QuantProject.Business.Financial.Accounting.Reporting.SummaryRows;
 using QuantProject.Presentation;
 
 namespace QuantProject.Presentation.Reporting.WindowsForm
@@ -42,6 +45,12 @@ namespace QuantProject.Presentation.Reporting.WindowsForm
 		private int valueToTextLabelSpacing = 50;
 		private int yStart = 17;
 		private int yStep = 25;
+
+		private ArrayList summaryItems;
+		/// <summary>
+		/// used just to apply the GetType method
+		/// </summary>
+		private SummaryRow summaryRow;
 
 		private System.Windows.Forms.Label lblValTotalNetProfit;
 		private System.Windows.Forms.Label lblTotalNetProfit;
@@ -122,14 +131,56 @@ namespace QuantProject.Presentation.Reporting.WindowsForm
 			label.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
 		}
 
+		private void addTextLabel( Label label )
+		{
+			this.Controls.Add( label );
+			//			label.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+			label.Location = getPointForTextLabel( ( this.Controls.Count - 1 ) / 2 );
+			label.Width = this.textLabelsWidth;
+			label.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+		}
+		private void addValueLabel( Label label )
+		{
+			this.Controls.Add( label );
+			//			label.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+			label.Location = getPointForValueLabel( ( this.Controls.Count / 2 ) - 1 );
+			label.Width = this.valueLablesWidth;
+			label.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+		}
+
 		private Point getPointForValueLabel( int labelPosition )
 		{
 			Point point = getPointForTextLabel( labelPosition ); 
 			point.X += this.textLabelsWidth + this.textToValueLabelSpacing;
 			return point;
 		}
-		private void myInitializeComponent()
+		private void myInitializeComponent_addItem( SummaryItem summaryItem )
 		{
+			this.addTextLabel( summaryItem.Description );
+			this.addValueLabel( summaryItem.Value );
+		}
+		private void myInitializeComponent_addSummaryRow( PropertyInfo propertyInfo )
+		{
+			Object ob = propertyInfo.GetValue( this.accountReport.Summary , null );
+			if ( ob is SummaryRow )
+			{
+				this.summaryItems.Add( new SummaryItem(
+					(SummaryRow)ob ) );
+			}
+		}
+		private void myInitializeComponent_addSummaryRows()
+		{
+			foreach ( PropertyInfo summaryProperty in
+				this.accountReport.Summary.GetType().GetProperties() )
+				myInitializeComponent_addSummaryRow( summaryProperty );
+		}
+		private void myInitializeComponent_old()
+		{
+			this.summaryItems = new ArrayList();
+			myInitializeComponent_addSummaryRows();
+			foreach( SummaryItem summaryItem in this.summaryItems )
+				this.myInitializeComponent_addItem( summaryItem );
+
 			this.lblTotalNetProfit = new System.Windows.Forms.Label();
 			this.lblValTotalNetProfit = new System.Windows.Forms.Label();
 			this.lblReturnOnAccount = new System.Windows.Forms.Label();
@@ -343,53 +394,62 @@ namespace QuantProject.Presentation.Reporting.WindowsForm
 			this.addValueLabel( lblValNumberWinningShortTrades , "lblValNumberWinningShortTrades" );
 		}
 	
+		private void myInitializeComponent()
+		{
+			this.summaryItems = new ArrayList();
+			myInitializeComponent_addSummaryRows();
+			foreach( SummaryItem summaryItem in this.summaryItems )
+				this.myInitializeComponent_addItem( summaryItem );
+		}
+	
 		private void setSummaryValues()
 		{
 			this.lblValTotalNetProfit.Text =
 				FormatProvider.ConvertToStringWithTwoDecimals( this.accountReport.Summary.TotalPnl );
 			this.lblValReturnOnAccount.Text =
-				FormatProvider.ConvertToStringWithTwoDecimals( this.accountReport.Summary.ReturnOnAccount );
+				FormatProvider.ConvertToStringWithTwoDecimals( (double)this.accountReport.Summary.ReturnOnAccount.Value );
 			this.lblValBenchmarkPercReturn.Text =
-				FormatProvider.ConvertToStringWithTwoDecimals( this.accountReport.Summary.BenchmarkPercentageReturn );
+				FormatProvider.ConvertToStringWithTwoDecimals( (double)this.accountReport.Summary.BenchmarkPercentageReturn.Value );
 			this.lblValAnnualSystemPercReturn.Text =
-				FormatProvider.ConvertToStringWithTwoDecimals( this.accountReport.Summary.AnnualSystemPercentageReturn );
-			this.lblValMaxEquityDrawDown.Text =
-				FormatProvider.ConvertToStringWithTwoDecimals( this.accountReport.Summary.MaxEquityDrawDown );
+				FormatProvider.ConvertToStringWithTwoDecimals( (double)this.accountReport.Summary.AnnualSystemPercentageReturn.Value );
+//			this.lblValMaxEquityDrawDown.Text =
+//				FormatProvider.ConvertToStringWithTwoDecimals( this.accountReport.Summary.MaxEquityDrawDown );
 			this.lblValTotalCommission.Text =
-				FormatProvider.ConvertToStringWithTwoDecimals( this.accountReport.Summary.TotalCommissionAmount );
+				FormatProvider.ConvertToStringWithTwoDecimals( (double)this.accountReport.Summary.TotalCommissionAmount.Value );
 			this.lblValNumberWinningPeriods.Text =
 				this.accountReport.Summary.NumberWinningPeriods.ToString();
 			this.lblValNumberLosingPeriods.Text =
 				this.accountReport.Summary.NumberLosingPeriods.ToString();
 			this.lblValPercentageWinningPeriods.Text =
-				FormatProvider.ConvertToStringWithTwoDecimals( this.accountReport.Summary.PercentageWinningPeriods );
-			this.lblValTotalNumberOfTrades.Text =
-				FormatProvider.ConvertToStringWithTwoDecimals( this.accountReport.Summary.TotalNumberOfTrades );
-			this.lblValNumberWinningTrades.Text =
-				FormatProvider.ConvertToStringWithTwoDecimals( this.accountReport.Summary.NumberWinningTrades );
-			this.lblValAverageTradePercReturn.Text =
-				FormatProvider.ConvertToStringWithTwoDecimals( this.accountReport.Summary.AverageTradePercentageReturn );
-			this.lblValLargestWinningTrade.Text =
-				FormatProvider.ConvertToStringWithTwoDecimals( this.accountReport.Summary.LargestWinningTradePercentage );
-			this.lblValLargestLosingTrade.Text =
-				FormatProvider.ConvertToStringWithTwoDecimals( this.accountReport.Summary.LargestLosingTradePercentage );
-			this.lblValTotalNumberOfLongTrades.Text =
-				FormatProvider.ConvertToStringWithTwoDecimals( this.accountReport.Summary.TotalNumberOfLongTrades );
-			this.lblValNumberWinningLongTrades.Text =
-				FormatProvider.ConvertToStringWithTwoDecimals( this.accountReport.Summary.NumberWinningLongTrades );
-			this.lblValAverageLongTradePercReturn.Text =
-				FormatProvider.ConvertToStringWithTwoDecimals( this.accountReport.Summary.AverageLongTradePercentageReturn );
-			this.lblValTotalNumberOfShortTrades.Text =
-				FormatProvider.ConvertToStringWithTwoDecimals( this.accountReport.Summary.TotalNumberOfShortTrades );
-			this.lblValNumberWinningShortTrades.Text =
-				FormatProvider.ConvertToStringWithTwoDecimals( this.accountReport.Summary.NumberWinningShortTrades );
+				FormatProvider.ConvertToStringWithTwoDecimals( (double)this.accountReport.Summary.PercentageWinningPeriods.Value );
+//			this.lblValTotalNumberOfTrades.Text =
+//				FormatProvider.ConvertToStringWithTwoDecimals( this.accountReport.Summary.TotalNumberOfTrades );
+//			this.lblValNumberWinningTrades.Text =
+//				FormatProvider.ConvertToStringWithTwoDecimals( this.accountReport.Summary.NumberWinningTrades );
+//			this.lblValAverageTradePercReturn.Text =
+//				FormatProvider.ConvertToStringWithTwoDecimals( this.accountReport.Summary.AverageTradePercentageReturn );
+//			this.lblValLargestWinningTrade.Text =
+//				FormatProvider.ConvertToStringWithTwoDecimals( (double)this.accountReport.Summary.LargestWinningTradePercentage.Value );
+//			this.lblValLargestLosingTrade.Text =
+//				FormatProvider.ConvertToStringWithTwoDecimals( (double)this.accountReport.Summary.LargestLosingTradePercentage.Value );
+//			this.lblValTotalNumberOfLongTrades.Text =
+//				FormatProvider.ConvertToStringWithZeroDecimals( (int)this.accountReport.Summary.TotalNumberOfLongTrades.Value );
+//			this.lblValNumberWinningLongTrades.Text =
+//				FormatProvider.ConvertToStringWithTwoDecimals( (double)this.accountReport.Summary.NumberWinningLongTrades.Value );
+//			this.lblValAverageLongTradePercReturn.Text =
+//				FormatProvider.ConvertToStringWithTwoDecimals( (double)this.accountReport.Summary.AverageLongTradePercentageReturn.Value );
+//			this.lblValTotalNumberOfShortTrades.Text =
+//				FormatProvider.ConvertToStringWithTwoDecimals( (double)this.accountReport.Summary.TotalNumberOfShortTrades.Value );
+//			this.lblValNumberWinningShortTrades.Text =
+//				FormatProvider.ConvertToStringWithTwoDecimals( (double)this.accountReport.Summary.NumberWinningShortTrades.Value );
 		}
 		public SummaryTabPage( AccountReport accountReport )
 		{
 			this.accountReport = accountReport;
+			this.summaryRow = new SummaryRow();
 			this.myInitializeComponent();
 			this.Text = "Summary";
-			this.setSummaryValues();
+//			this.setSummaryValues();
 		}
 	}
 }

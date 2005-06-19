@@ -32,12 +32,13 @@ namespace QuantProject.Business.Financial.Accounting.Reporting.SummaryRows
 	/// Summary row that computes the Equity Line vs Benchmark comparison
 	/// </summary>
 	[Serializable]
-	public class NumberLosingPeriods : SummaryRow
+	public class NumberLosingPeriods : IntegerSummaryRow
 	{
-		public NumberLosingPeriods( Summary summary )
+		public NumberLosingPeriods( Summary summary ) : base()
 		{
 			this.rowDescription = "# losing periods";
-			this.rowValue = summary.NumberLosingPeriods;
+			this.format = ConstantsProvider.FormatWithZeroDecimals;
+			this.rowValue = summary.NumberWinningPeriods.NumberLosingPeriods;
 		}
 	}
 }
