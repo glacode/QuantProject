@@ -10,6 +10,7 @@ namespace QuantProject.Business.Financial.Accounting.Reporting.SummaryRows
   {
     internal string rowDescription;
     internal object rowValue;
+		internal string format;
 
     public string Description
     {
@@ -27,14 +28,24 @@ namespace QuantProject.Business.Financial.Accounting.Reporting.SummaryRows
 					returnValue = 0;
 				return returnValue;
 			}
-      set { rowValue = value; }
+      set { this.rowValue = value; }
     }
+		public string FormattedValue
+		{
+			get
+			{
+				string returnValue = "";
+				if ( this.format == "" )
+					throw new Exception( "No format has been defined!" );
+				if ( this.rowValue != null )
+					returnValue = string.Format( "{0:" + this.format + "}" , this.Value );
+				return returnValue;
+			}
+		}
 
 		public SummaryRow()
 		{
-			//
-			// TODO: Add constructor logic here
-			//
+			this.format = "";
 		}
 	}
 }
