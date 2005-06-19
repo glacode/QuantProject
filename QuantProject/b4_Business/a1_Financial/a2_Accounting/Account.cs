@@ -152,7 +152,7 @@ namespace QuantProject.Business.Financial.Accounting
 				this.accountReport = accountReport.Create( this.Key ,
 					1 , this.endOfDayTimer.GetCurrentTime() );
 			}
-			return this.accountReport.Summary.ReturnOnAccount;
+			return (double)this.accountReport.Summary.ReturnOnAccount.Value;
 		}
 		public int CompareTo( Object account )
 		{
