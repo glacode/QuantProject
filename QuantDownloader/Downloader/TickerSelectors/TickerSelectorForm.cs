@@ -608,7 +608,7 @@ namespace QuantProject.Applications.Downloader.TickerSelectors
 		   
     private void setVisibilityForControls_QuotedAtEachMarketDay(bool showControls)
     {
-      this.checkBoxASCMode.Enabled = showControls==false;
+      this.checkBoxASCMode.Enabled = showControls;
       this.labelMarketIndexKey.Visible = showControls;
       this.textBoxMarketIndex.Visible = showControls;
     }    
