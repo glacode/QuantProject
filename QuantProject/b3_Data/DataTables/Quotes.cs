@@ -412,7 +412,10 @@ namespace QuantProject.Data.DataTables
       		row["OpenCloseCorrelationToBenchmark"] =
           	BasicFunctions.PearsonCorrelationCoefficient(benchmarkRatios, tickerRatios);
       }
-      DataTable tableToReturn = ExtendedDataTable.CopyAndSort(setOfTickers,"OpenCloseCorrelationToBenchmark", orderByASC);
+      DataTable tableToReturn = ExtendedDataTable.CopyAndSort(setOfTickers,
+                                                            "OpenCloseCorrelationToBenchmark > 0",
+                                                            "OpenCloseCorrelationToBenchmark",
+                                                            orderByASC);
       ExtendedDataTable.DeleteRows(tableToReturn, maxNumOfReturnedTickers);
       return tableToReturn;
     }
