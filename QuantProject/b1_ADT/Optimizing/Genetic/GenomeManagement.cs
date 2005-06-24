@@ -117,26 +117,31 @@ namespace QuantProject.ADT.Optimizing.Genetic
 		}
     
     private static int firstGenePositionOfParent1NotPresentInParent2(Genome parent1,
-                                                                Genome parent2)
+                                                                Genome parent2,
+                                                               int constToDiscoverGenesDuplicates)
     {
       int returnValue = -1;
       for(int genePos = 0 ;
           genePos < GenomeManagement.genomeSize && returnValue == -1;
           genePos++)
       {
-        if(!parent2.HasGene(parent1.GetGeneValue(genePos)))
+      	int geneValue = parent1.GetGeneValue(genePos);
+      	if(!parent2.HasGene(geneValue) &&
+      	   !parent2.HasGene(geneValue + constToDiscoverGenesDuplicates) &&
+      	   !parent2.HasGene(geneValue - constToDiscoverGenesDuplicates))
           returnValue = genePos;
       }    
       return returnValue;
     }
 			
-    private static bool setMaskForChildsForMixingWithoutDuplicates(Genome parent1, Genome parent2)
+    private static bool setMaskForChildsForMixingWithoutDuplicates(Genome parent1, Genome parent2,
+		                                                           int constToDiscoverGenesDuplicates)
 		{
 			bool returnValue = false;
       int firstGenePosOfParent1NotPresentInParent2 = 
-        firstGenePositionOfParent1NotPresentInParent2(parent1, parent2);
+        firstGenePositionOfParent1NotPresentInParent2(parent1, parent2, constToDiscoverGenesDuplicates);
       int firstGenePosOfParent2NotPresentInParent1 = 
-        firstGenePositionOfParent1NotPresentInParent2(parent2, parent1);
+        firstGenePositionOfParent1NotPresentInParent2(parent2, parent1, constToDiscoverGenesDuplicates);
       if(firstGenePosOfParent1NotPresentInParent2 > -1 &&
          firstGenePosOfParent2NotPresentInParent1 > -1 )
         //there is at least a gene in parent1 not present in parent2 and viceversa
@@ -203,14 +208,27 @@ namespace QuantProject.ADT.Optimizing.Genetic
       
       return childs;
     }
-
+		
+    private static void launchExIfAChildHasDuplicateGenes(int constToDiscoverGenesDuplicates)
+		{
+      foreach(Genome gen in childs)
+      {
+      	if(gen.HasSomeDuplicateGenes(constToDiscoverGenesDuplicates))
+      		throw new Exception("A child with duplicate genes has been generated!");
+      }
+			
+		}
 		/// <summary>
 		/// This method returns an array of genomes based on 
 		/// a mix of the genes of parents, such that the 2 childs,
 		/// if possible, are different from parents and, at 
 		/// the same time, childs' genes are not duplicated  
 		/// </summary> 
-    public static Genome[] MixGenesWithoutDuplicates(Genome parent1, Genome parent2)
+		/// <param name="parent1">First genome parent from which genes are to be mixed in offspring</param>
+    /// <param name="parents">Second genome parent from which genes are to be mixed in offspring</param>
+    /// <param name="constToDiscoverGenesDuplicates">Gene y is a duplicate of gene x iff y = x or y = x + constToDiscoverGenesDuplicates</param>
+    public static Genome[] MixGenesWithoutDuplicates(Genome parent1, Genome parent2,
+		                                             int constToDiscoverGenesDuplicates)
     {
       initializeStaticMembers(parent1, parent2);
       if(parent1.Size > (parent1.MaxValueForGenes - parent1.MinValueForGenes + 1))
@@ -220,9 +238,10 @@ namespace QuantProject.ADT.Optimizing.Genetic
       if(parent1.Size != parent2.Size)
 				throw new Exception("Genomes must have the same size!");	
       
-      if(setMaskForChildsForMixingWithoutDuplicates(parent1, parent2))
+      if(setMaskForChildsForMixingWithoutDuplicates(parent1, parent2,
+                                                    constToDiscoverGenesDuplicates))
      	  setChildsUsingMaskForChilds(parent1, parent2);
-      
+      launchExIfAChildHasDuplicateGenes(constToDiscoverGenesDuplicates);
       return childs;
     }
 
