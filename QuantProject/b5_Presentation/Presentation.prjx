@@ -14,6 +14,7 @@
     <File name=".\Reporting\WindowsForm\ReportTabControl.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
     <File name=".\Reporting\WindowsForm\SummaryTabPage.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
     <File name=".\Reporting\WindowsForm\AccountViewer.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
+    <File name=".\Reporting\WindowsForm\SummaryItem.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
   </Contents>
   <References>
     <Reference type="Assembly" refto="..\..\NPlot.dll" localcopy="True" />

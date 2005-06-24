@@ -33,6 +33,9 @@
     <File name=".\TickerSelectionTesting\EndOfDayTimerHandlerCTOTest.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
     <File name=".\TickerSelectionTesting\RunTestOptimizedCTCPortfolio.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
     <File name=".\TickerSelectionTesting\EndOfDayTimerHandlerCTCTest.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
+    <File name=".\SimpleTesting\OneRank\OneRankForm.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
+    <File name=".\TickerSelectionTesting\EndOfDayTimerHandlerLastChosenPortfolio.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
+    <File name=".\TickerSelectionTesting\RunLastChosenPortfolioOutOfSample.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
   </Contents>
   <References>
     <Reference type="Project" refto="b1_ADT" localcopy="True" />

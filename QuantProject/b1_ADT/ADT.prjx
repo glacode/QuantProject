@@ -30,6 +30,8 @@
     <File name=".\Histories\PreviousInterpolator.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
     <File name=".\Histories\IInterpolatonMethod.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
     <File name=".\IndexOfKeyOrPreviousException.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
+    <File name=".\Statistics\AdvancedFunctions.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
+    <File name=".\EstimatedObject.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
   </Contents>
   <References />
   <DeploymentInformation target="" script="" strategy="File" />
