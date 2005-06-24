@@ -167,15 +167,18 @@ namespace QuantProject.ADT.Optimizing.Genetic
 	  /// It returns true if the current instance of genome has some duplicate
 	  /// values in genes
 	  /// </summary>
-    public bool HasSomeDuplicateGenes()
+    public bool HasSomeDuplicateGenes(int constToDiscoverDuplicateGenes)
     {
       bool returnValue = false;
       for(int i = 0; i < this.size ; i++)
       {
         for(int j = i + 1; j < this.size ; j++)
         {
-          if(this.genes[i] == this.genes[j])
-            returnValue = true;
+          if(this.genes[i] == this.genes[j] ||
+        	 this.genes[i] + constToDiscoverDuplicateGenes == this.genes[j] ||
+        	 this.genes[i] == this.genes[j] + constToDiscoverDuplicateGenes)
+            
+        		returnValue = true;
         }
       }
       return returnValue;
