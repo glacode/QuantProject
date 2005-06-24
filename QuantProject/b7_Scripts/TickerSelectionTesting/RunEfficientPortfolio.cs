@@ -86,7 +86,20 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
     protected double maxRunningHours;
     //if MaxNumberOfHoursForScript has elapsed and the script
     //is still running, it will be stopped.
-      	    
+    
+    public string[] LastChosenTickers
+    {
+      get { return this.endOfDayTimerHandler.LastChosenTickers; }
+    }
+    public PortfolioType TypeOfPortfolio
+    {
+      get { return this.portfolioType; }
+    }
+    
+    public IHistoricalQuoteProvider HistoricalQuoteProvider
+    {
+      get { return this.historicalQuoteProvider; }
+    }
     public virtual string ScriptName
     {
     	get{return this.scriptName;}
@@ -98,7 +111,25 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
     	get{return this.endOfDayTimer.GetCurrentTime().DateTime ;}
     }	
 	
-    public RunEfficientPorfolio(string tickerGroupID, int numberOfEligibleTickers, 
+		public RunEfficientPorfolio(string benchmark,
+                                DateTime startDate, DateTime endDate, 
+                                PortfolioType portfolioType, 
+                                double maxRunningHours)
+		{
+     
+      this.startDateTime = new EndOfDayDateTime(
+        startDate, EndOfDaySpecificTime.FiveMinutesBeforeMarketClose );
+      this.endDateTime = new EndOfDayDateTime(
+        endDate, EndOfDaySpecificTime.OneHourAfterMarketClose );
+      this.benchmark = benchmark;
+     	this.ScriptName = "EfficientGeneric";
+     	this.portfolioType = portfolioType;
+     	this.startingTimeForScript = DateTime.Now;
+      this.maxRunningHours = maxRunningHours;
+      //this.numIntervalDays = 3;
+		}
+    
+    public RunEfficientPorfolio(string tickerGroupID, int numberOfEligibleTickers,
                                 int numberOfTickersToBeChosen, int numDaysForLiquidity, 
                                 int generationNumberForGeneticOptimizer,
                                 int populationSizeForGeneticOptimizer, string benchmark,
@@ -128,7 +159,7 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
       //this.numIntervalDays = 3;
 		}
     #region Run
- 
+ 		
     protected virtual void run_initializeEndOfDayTimer()
     {
       //default endOfDayTimer
@@ -183,7 +214,7 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
         							Convert.ToString(this.portfolioType);
       string dirNameWhereToSaveReports = System.Configuration.ConfigurationSettings.AppSettings["ReportsArchive"] +
                          								"\\" + this.ScriptName + "\\";
-      string dirNameWhereToSaveAccounts = System.Configuration.ConfigurationSettings.AppSettings["AccountsArchive"] +
+      string dirNameWhereToSaveTransactions = System.Configuration.ConfigurationSettings.AppSettings["TransactionsArchive"] +
                        									"\\" + this.ScriptName + "\\";
       //default report with numIntervalDays = 1
       AccountReport accountReport = this.account.CreateReport(fileName,1,
@@ -193,26 +224,26 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
       this.checkDateForReport_createDirIfNotPresent(dirNameWhereToSaveReports);
       ObjectArchiver.Archive(accountReport,
                              dirNameWhereToSaveReports + 
-                             fileName + ".rep");
-      this.checkDateForReport_createDirIfNotPresent(dirNameWhereToSaveAccounts);
-      ObjectArchiver.Archive(this.account,
-                             dirNameWhereToSaveAccounts +
-                             fileName + ".acc");
+                             fileName + ".qPr");
+      this.checkDateForReport_createDirIfNotPresent(dirNameWhereToSaveTransactions);
+      ObjectArchiver.Archive(this.account.Transactions,
+                             dirNameWhereToSaveTransactions +
+                             fileName + ".qPt");
       
       this.endOfDayTimer.Stop();
        
     }
     
-    
-    public virtual void Run()
+    protected virtual void run_initialize()
     {
       run_initializeHistoricalQuoteProvider();
-    	run_initializeEndOfDayTimer();
+      run_initializeEndOfDayTimer();
       run_initializeAccount();
       run_initializeEndOfDayTimerHandler();
-      
       //run_initializeProgressHandlers();
-       
+    }
+    protected virtual void run_addEventHandlers()
+    {
       this.endOfDayTimer.MarketClose +=
         new MarketCloseEventHandler(
         this.checkDateForReport);
@@ -222,12 +253,19 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
       //example
       //this.endOfDayTimer.EVENT_NAME +=
       //  new EVENT_NAMEEventHandler(
-      //  this.endOfDayTimerHandler.EVENT_NAMEEventHandler);  
-          
+      //  this.endOfDayTimerHandler.EVENT_NAMEEventHandler);
+    }
+    
+    
+    public virtual void Run()
+    {
+      this.run_initialize();
+      this.run_addEventHandlers();
       //this.progressBarForm.Show();
       this.endOfDayTimer.Start();
-      
     }
+    
     #endregion 
+    
 	}
 }

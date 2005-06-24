@@ -52,36 +52,38 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
 	/// - choose the most liquid tickers;
 	/// - choose the most efficient portfolio among these tickers
 	/// </summary>
-	[Serializable]
+  [Serializable]
   public class RunEfficientCTOPorfolio : RunEfficientPorfolio
-	{
-    	
+  {
+    protected int numDaysBetweenEachOptimization;	
     public RunEfficientCTOPorfolio(string tickerGroupID, int numberOfEligibleTickers, 
-                                    int numberOfTickersToBeChosen, int numDaysForLiquidity, 
-                                    int generationNumberForGeneticOptimizer,
-                                    int populationSizeForGeneticOptimizer, string benchmark,
-                                    DateTime startDate, DateTime endDate, double targetReturn,
-                                    PortfolioType portfolioType, double maxRunningHours):
-  																base(tickerGroupID, numberOfEligibleTickers, 
-                                     numberOfTickersToBeChosen, numDaysForLiquidity, 
-                                    generationNumberForGeneticOptimizer,
-                                    populationSizeForGeneticOptimizer, benchmark,
-                                    startDate, endDate, targetReturn,
-                                   	portfolioType, maxRunningHours)
-		{
+      int numberOfTickersToBeChosen, int numDaysForLiquidity, 
+      int generationNumberForGeneticOptimizer,
+      int populationSizeForGeneticOptimizer, string benchmark,
+      DateTime startDate, DateTime endDate, double targetReturn,
+      PortfolioType portfolioType, double maxRunningHours,
+     	int numDaysBetweenEachOptimization):
+      base(tickerGroupID, numberOfEligibleTickers, 
+      numberOfTickersToBeChosen, numDaysForLiquidity, 
+      generationNumberForGeneticOptimizer,
+      populationSizeForGeneticOptimizer, benchmark,
+      startDate, endDate, targetReturn,
+      portfolioType, maxRunningHours)
+    {
       this.ScriptName = "OpenCloseScripts";
-		}
+      this.numDaysBetweenEachOptimization = numDaysBetweenEachOptimization;
+    }
     
-  	#region Run
+    #region auxiliary overriden methods for Run
         
-		/*
+    /* delete remark delimitations for having ib commission
     protected override void run_initializeAccount()
     {
       this.account = new Account( this.ScriptName , this.endOfDayTimer ,
         new HistoricalEndOfDayDataStreamer( this.endOfDayTimer ,
-					this.historicalQuoteProvider ) ,
+          this.historicalQuoteProvider ) ,
         new HistoricalEndOfDayOrderExecutor( this.endOfDayTimer ,
-					this.historicalQuoteProvider ), new IBCommissionManager());
+          this.historicalQuoteProvider ), new IBCommissionManager());
      
     }
     */
@@ -89,33 +91,24 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
     protected override void run_initializeEndOfDayTimerHandler()
     {
       this.endOfDayTimerHandler = new EndOfDayTimerHandlerCTO(this.tickerGroupID,
-                                                              this.numberOfEligibleTickers,
-                                                              this.numberOfTickersToBeChosen,
-                                                              this.numDaysForLiquidity,
-                                                              this.account,
-                                                              this.generationNumberForGeneticOptimizer, 
-                                                              this.populationSizeForGeneticOptimizer,
-                                                              this.benchmark,
-                                                              this.targetReturn,
-                                                              this.portfolioType);
-       
-        
+        this.numberOfEligibleTickers,
+        this.numberOfTickersToBeChosen,
+        this.numDaysForLiquidity,
+        this.account,
+        this.generationNumberForGeneticOptimizer, 
+        this.populationSizeForGeneticOptimizer,
+        this.benchmark,
+        this.targetReturn,
+        this.portfolioType, this.numDaysBetweenEachOptimization);
     }
     
     protected override void run_initializeHistoricalQuoteProvider()
     {
-      this.historicalQuoteProvider = 
-      					new HistoricalRawQuoteProvider();
-        
+      this.historicalQuoteProvider = new HistoricalRawQuoteProvider();
     }
-    		
-    public override void Run()
+    
+    protected override void run_addEventHandlers()
     {
-      run_initializeHistoricalQuoteProvider();
-      run_initializeEndOfDayTimer();
-      run_initializeAccount();
-      run_initializeEndOfDayTimerHandler();
-
       this.endOfDayTimer.MarketOpen +=
         new MarketOpenEventHandler(
         this.endOfDayTimerHandler.MarketOpenEventHandler);  
@@ -131,10 +124,14 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
       this.endOfDayTimer.OneHourAfterMarketClose +=
         new OneHourAfterMarketCloseEventHandler(
         this.endOfDayTimerHandler.OneHourAfterMarketCloseEventHandler );
-      
-      this.endOfDayTimer.Start();
-      
     }
     #endregion 
+    
+    //necessary far calling RunEfficientPortfolio.Run()
+    //in classes that inherit from this class
+    public override void Run()
+    {
+      base.Run();
+    }
 	}
 }

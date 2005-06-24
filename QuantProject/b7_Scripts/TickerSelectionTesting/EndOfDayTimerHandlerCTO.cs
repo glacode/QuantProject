@@ -43,13 +43,14 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
   [Serializable]
   public class EndOfDayTimerHandlerCTO : EndOfDayTimerHandler
   {
-    
+    protected int numDaysBetweenEachOptimization;
+    private int numDaysElapsedSinceLastOptimization;
     public EndOfDayTimerHandlerCTO(string tickerGroupID, int numberOfEligibleTickers, 
                                 int numberOfTickersToBeChosen, int numDaysForLiquidity, Account account,
                                 int generationNumberForGeneticOptimizer,
                                 int populationSizeForGeneticOptimizer,
                                 string benchmark, double targetReturn,
-                                PortfolioType portfolioType):
+                                PortfolioType portfolioType, int numDaysBetweenEachOptimization):
   															base(tickerGroupID, numberOfEligibleTickers, 
                                 numberOfTickersToBeChosen, numDaysForLiquidity, account,
                                 generationNumberForGeneticOptimizer,
@@ -57,31 +58,11 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
                                 benchmark, targetReturn,
                                 portfolioType)
     {
-      
+    	this.numDaysBetweenEachOptimization = numDaysBetweenEachOptimization;  
+    	this.numDaysElapsedSinceLastOptimization = 0;
     }
 		    
-    #region MarketOpenEventHandler
-        
-    protected void marketOpenEventHandler_orderChosenTickers_addToOrderList()
-    {
-      int idx = 0;
-      foreach ( string ticker in this.chosenTickers )
-      {
-        if(ticker != null)
-        {  
-          this.addOrderForTicker( ticker );
-          this.lastChosenTickers[idx] = 
-          		GenomeManagerForEfficientPortfolio.GetCleanTickerCode(ticker);
-        }
-        idx++;
-      }
-    }
-    
-    protected void marketOpenEventHandler_orderChosenTickers()
-    {
-      this.marketOpenEventHandler_orderChosenTickers_addToOrderList();
-    }
-    
+       
     /// <summary>
     /// Handles a "Market Open" event.
     /// </summary>
@@ -90,48 +71,17 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
     public override void MarketOpenEventHandler(
       Object sender , EndOfDayTimingEventArgs endOfDayTimingEventArgs )
     {
-      if(this.orders.Count == 0 && this.account.Transactions.Count == 0)
-        this.account.AddCash(17000);     
-      
-      this.marketOpenEventHandler_orderChosenTickers();
-      
-      foreach(object item in this.orders)
-      {
-        this.account.AddOrder((Order)item);
-      }
+    	this.openPositions();
     }
-		#endregion
-
-    #region MarketCloseEventHandler
-    
-    protected void marketCloseEventHandler_closePosition(
-      string ticker )
-    {
-      this.account.ClosePosition( ticker );
-    }
-    protected void marketCloseEventHandler_closePositions()
-    {
-      if(this.lastChosenTickers != null)
-      {
-        foreach( string ticker in this.lastChosenTickers)
-        {
-          for(int i = 0; i<this.account.Portfolio.Keys.Count; i++)
-          {
-            if(this.account.Portfolio[ticker]!=null)
-              marketCloseEventHandler_closePosition( ticker );
-          }
-        }
-      } 
-    }
-        
+		
+                
     public override void MarketCloseEventHandler(
       Object sender , EndOfDayTimingEventArgs endOfDayTimingEventArgs )
     {
-      
-      this.marketCloseEventHandler_closePositions();
+    	this.closePositions();
     }
     
-    #endregion
+    
 
 		#region OneHourAfterMarketCloseEventHandler
       
@@ -165,7 +115,13 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
       //	                                 false, currentDate.AddDays(-2),
       //	                                 currentDate, this.numberOfEligibleTickers/4);      	                                 
       //return winners.GetTableOfSelectedTickers();
-      return quotedAtEachMarketDayFromEligible.GetTableOfSelectedTickers();
+      SelectorByOpenCloseCorrelationToBenchmark lessCorrelated = 
+        new SelectorByOpenCloseCorrelationToBenchmark(quotedAtEachMarketDayFromEligible.GetTableOfSelectedTickers(),
+                                                      this.benchmark, true,
+                                                      currentDate.AddDays(-this.numDaysForLiquidity),
+                                                      currentDate, this.numberOfEligibleTickers/2);
+      //return quotedAtEachMarketDayFromEligible.GetTableOfSelectedTickers();
+      return lessCorrelated.GetTableOfSelectedTickers();
     }
     
     
@@ -215,10 +171,17 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
     public override void OneHourAfterMarketCloseEventHandler(
       Object sender , EndOfDayTimingEventArgs endOfDayTimingEventArgs )
     {
+    	this.orders.Clear();
+    	this.numDaysElapsedSinceLastOptimization++;
     	//this.oneHourAfterMarketCloseEventHandler_updatePrices();
-      this.setTickers(endOfDayTimingEventArgs.EndOfDayDateTime.DateTime);
-      //sets tickers to be chosen next Market Open event
-      this.orders.Clear();
+      if(this.numDaysElapsedSinceLastOptimization == 
+    	   this.numDaysBetweenEachOptimization)
+    	{
+    		this.setTickers(endOfDayTimingEventArgs.EndOfDayDateTime.DateTime);
+      	//sets tickers to be chosen next Market Open event
+      	this.numDaysElapsedSinceLastOptimization = 0;
+    	}
+    	
     }
 		   
     #endregion

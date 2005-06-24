@@ -83,8 +83,8 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
       this.numDaysForReturnCalculation = numDaysForReturnCalculation;
       this.maxAcceptableCloseToCloseDrawdown = maxAcceptableCloseToCloseDrawdown;
 		}
-    #region Run
-       
+
+    #region auxiliary overriden methods for Run
     
     protected override void run_initializeEndOfDayTimerHandler()
     {
@@ -103,16 +103,8 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
     	this.historicalQuoteProvider = new HistoricalAdjustedQuoteProvider();
     }
     
-    public override void Run()
+    protected override void run_addEventHandlers()
     {
-      //old script
-      //this.run_FindBestPortfolioForNextTrade();
-      run_initializeHistoricalQuoteProvider();
-      run_initializeEndOfDayTimer();
-      run_initializeAccount();
-      run_initializeEndOfDayTimerHandler();
-      
-      //run_initializeProgressHandlers();
       this.endOfDayTimer.MarketOpen +=
         new MarketOpenEventHandler(
         this.endOfDayTimerHandler.MarketOpenEventHandler);  
@@ -124,18 +116,9 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
       this.endOfDayTimer.MarketClose +=
         new MarketCloseEventHandler(
         this.checkDateForReport);
-      
-      //this.endOfDayTimer.OneHourAfterMarketClose +=
-        //new OneHourAfterMarketCloseEventHandler(
-        //this.endOfDayTimerHandler.OneHourAfterMarketCloseEventHandler );
-      //this.endOfDayTimer.OneHourAfterMarketClose +=
-        //new OneHourAfterMarketCloseEventHandler(
-        //this.oneHourAfterMarketCloseEventHandler );
-      
-      //this.progressBarForm.Show();
-      this.endOfDayTimer.Start();
-      
     }
+
+    
     #endregion 
 	}
 }

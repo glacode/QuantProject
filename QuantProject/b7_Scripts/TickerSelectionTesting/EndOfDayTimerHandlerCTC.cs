@@ -70,7 +70,7 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
     {
       this.numDaysOfPortfolioLife = numDaysOfPortfolioLife;
       this.numDaysForReturnCalculation = numDaysForReturnCalculation;
-      this.daysCounter = 0;
+      this.daysCounter = -1;
       this.maxAcceptableCloseToCloseDrawdown = maxAcceptableCloseToCloseDrawdown;
       this.stopLossConditionReached = false;
       this.currentAccountValue = 0.0;
@@ -117,7 +117,6 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
                                                     this.populationSizeForGeneticOptimizer, 
                                                     this.generationNumberForGeneticOptimizer);
         //GO.KeepOnRunningUntilConvergenceIsReached = true;
-        GO.GenerationNumber = this.generationNumberForGeneticOptimizer;
         GO.Run(false);
         this.chosenTickers = (string[])GO.BestGenome.Meaning;
       }
@@ -133,69 +132,22 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
     public override void MarketOpenEventHandler(
       Object sender , EndOfDayTimingEventArgs endOfDayTimingEventArgs )
     {
-      if(this.daysCounter == 0 || this.daysCounter == this.numDaysOfPortfolioLife - 1)
-      //at next close it will be time to open a new portfolio
+      this.updateStopLossCondition();
+      if(this.daysCounter == -1 || this.daysCounter == this.numDaysOfPortfolioLife - 1  ||
+          this.stopLossConditionReached )
+      //at the beginning, after num days of porfolio life has elasped,
+      //or when the stop loss condition is reached
       {
         this.setTickers(endOfDayTimingEventArgs.EndOfDayDateTime.DateTime);
-        //sets tickers to be chosen at next close
+        //it sets tickers to be chosen at next close
         this.orders.Clear();
       }
-      this.updateStopLossCondition();
     }
 		#endregion
 
     #region MarketCloseEventHandler
     
-    protected void marketCloseEventHandler_orderChosenTickers_addToOrderList()
-    {
-      int idx = 0;
-      foreach ( string ticker in this.chosenTickers )
-      {
-      	this.lastChosenTickers[idx] = 
-      			GenomeManagerForEfficientPortfolio.GetCleanTickerCode(ticker);
-        if(ticker != null)
-           this.addOrderForTicker( ticker );
-        idx++;
-      }
-    }
-    protected void marketCloseEventHandler_orderChosenTickers()
-    {
-      this.marketCloseEventHandler_orderChosenTickers_addToOrderList();
-    }
-
-
-    protected void marketCloseEventHandler_openPositions()
-    {
-      if(this.orders.Count == 0 && this.account.Transactions.Count == 0)
-        this.account.AddCash(17000);     
-      
-      this.marketCloseEventHandler_orderChosenTickers();
-      
-      foreach(object item in this.orders)
-      {
-        this.account.AddOrder((Order)item);
-      }
-    }
-
-    protected void marketCloseEventHandler_closePosition(
-      string ticker )
-    {
-      this.account.ClosePosition( ticker );
-    }
-    protected void marketCloseEventHandler_closePositions()
-    {
-      if(this.lastChosenTickers != null)
-      {
-        foreach( string ticker in this.lastChosenTickers)
-        {
-          for(int i = 0; i<this.account.Portfolio.Keys.Count; i++)
-          {
-            if(this.account.Portfolio[ticker]!=null)
-              marketCloseEventHandler_closePosition( ticker );
-          }
-        }
-      }
-    }
+   
     
     protected void updateStopLossCondition()
     {
@@ -215,14 +167,20 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
     public override void MarketCloseEventHandler(
       Object sender , EndOfDayTimingEventArgs endOfDayTimingEventArgs )
     {
-      this.daysCounter++;
-      if(this.daysCounter == this.numDaysOfPortfolioLife ||
+      if(this.daysCounter == -1 || 
+          this.daysCounter == this.numDaysOfPortfolioLife ||
           this.stopLossConditionReached)
-      //it's time to change portfolio
+      //it is the first day or num days of portfolio life or 
+      //max acceptable close to close draw down
+      //has been reached
       {
-        this.marketCloseEventHandler_closePositions();
-        this.marketCloseEventHandler_openPositions();
+        this.closePositions();
+        this.openPositions();
         this.daysCounter = 0;
+      }
+      else
+      {
+        this.daysCounter++;
       }
     }
     

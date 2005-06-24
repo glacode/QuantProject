@@ -51,22 +51,24 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
 	[Serializable]
   public class RunTestOptimizedCTOPorfolio : RunEfficientCTOPorfolio
 	{
-    	
+   
     public RunTestOptimizedCTOPorfolio(string tickerGroupID, int numberOfEligibleTickers, 
                                     int numberOfTickersToBeChosen, int numDaysForLiquidity, 
                                     int generationNumberForGeneticOptimizer,
                                     int populationSizeForGeneticOptimizer, string benchmark,
                                     DateTime startDate, DateTime endDate, double targetReturn,
-                                    PortfolioType portfolioType, double maxRunningHours):
+                                    PortfolioType portfolioType, double maxRunningHours, 
+                                   	int numDaysBetweenEachOptimization):
   																base(tickerGroupID, numberOfEligibleTickers, 
                                      numberOfTickersToBeChosen, numDaysForLiquidity, 
                                     generationNumberForGeneticOptimizer,
                                     populationSizeForGeneticOptimizer, benchmark,
                                     startDate, endDate, targetReturn,
-                                   	portfolioType, maxRunningHours)
+                                   	portfolioType, maxRunningHours,
+                                   	numDaysBetweenEachOptimization)
 		{
       this.ScriptName = "TestOptimizedCTOPortfolio";
-		}
+    }
   	
   	protected override void run_initializeEndOfDayTimerHandler()
     {
@@ -79,7 +81,8 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
                                                               this.populationSizeForGeneticOptimizer,
                                                               this.benchmark,
                                                               this.targetReturn,
-                                                              this.portfolioType);
+                                                              this.portfolioType,
+                                                             	this.numDaysBetweenEachOptimization);
        
     }
   	
@@ -87,7 +90,29 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
     {
   		base.Run();
       ((EndOfDayTimerHandlerCTOTest)this.endOfDayTimerHandler).Reset();
+      
+      Report report = new Report( this.account , this.historicalQuoteProvider );
+      report.Create( "Test optimization of OpenClose efficient portfolio", 1 ,
+        new EndOfDayDateTime( this.endDateTime.DateTime ,
+        EndOfDaySpecificTime.MarketClose ) ,
+        "^SPX" );
+      report.Show();
     }
+     
+    protected override void checkDateForReport(Object sender , EndOfDayTimingEventArgs endOfDayTimingEventArgs)
+    {
+      if(endOfDayTimingEventArgs.EndOfDayDateTime.DateTime>=this.endDateTime.DateTime ||
+        DateTime.Now >= this.startingTimeForScript.AddHours(this.maxRunningHours))
+        //last date is reached by the timer or maxRunning hours
+        //are elapsed from the time script started
+      {
+        this.endOfDayTimer.Stop();
+      }
+
+    }
+    
+    
+
         
 	}
 }

@@ -66,7 +66,10 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
     
     protected PortfolioType portfolioType;
     
-
+    public string[] LastChosenTickers
+    {
+      get { return this.chosenTickers; }
+    }
     public int NumberOfEligibleTickers
     {
       get { return this.numberOfEligibleTickers; }
@@ -99,6 +102,21 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
       this.portfolioType = portfolioType;
     }
 		
+    public EndOfDayTimerHandler(string[] chosenTickers,
+                                PortfolioType portfolioType,
+                                Account account,
+                                string benchmark)
+    {
+      
+      this.account = account;
+      this.benchmark = benchmark;
+      this.orders = new ArrayList();
+      this.chosenTickers = chosenTickers;
+      this.numberOfTickersToBeChosen = chosenTickers.Length;
+      this.lastChosenTickers = new string[chosenTickers.Length];
+      this.portfolioType = portfolioType;
+    }
+    
     protected virtual void addOrderForTicker(string ticker )
     {
     	string tickerCode = 
@@ -116,6 +134,57 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
       
       this.orders.Add(order);
     }
+    
+    protected virtual void closePosition(
+      string ticker )
+    {
+      this.account.ClosePosition( ticker );
+    }
+    
+    protected virtual void closePositions()
+    {
+      if(this.lastChosenTickers != null)
+      {
+        foreach( string ticker in this.lastChosenTickers)
+        {
+          for(int i = 0; i<this.account.Portfolio.Keys.Count; i++)
+          {
+            if(this.account.Portfolio[ticker]!=null)
+              closePosition( ticker );
+          }
+        }
+      } 
+    }
+    
+    protected virtual void addChosenTickersToOrderList()
+    {
+      int idx = 0;
+      foreach ( string ticker in this.chosenTickers )
+      {
+        if(ticker != null)
+        {  
+          this.addOrderForTicker( ticker );
+          this.lastChosenTickers[idx] = 
+          		GenomeManagerForEfficientPortfolio.GetCleanTickerCode(ticker);
+        }
+        idx++;
+      }
+    }
+    protected virtual void openPositions()
+    {
+      //add cash first
+    	if(this.orders.Count == 0 && this.account.Transactions.Count == 0)
+        this.account.AddCash(17000);     
+      
+      this.addChosenTickersToOrderList();
+      
+      //execute orders actually
+      foreach(object item in this.orders)
+      {
+        this.account.AddOrder((Order)item);
+      }
+    }
+    
     
     public virtual void MarketOpenEventHandler(
       Object sender , EndOfDayTimingEventArgs endOfDayTimingEventArgs )

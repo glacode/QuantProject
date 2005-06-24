@@ -49,13 +49,13 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
                                 int generationNumberForGeneticOptimizer,
                                 int populationSizeForGeneticOptimizer,
                                 string benchmark, double targetReturn,
-                                PortfolioType portfolioType):
+                                PortfolioType portfolioType, int numDaysBetweenEachOptimization):
   															base(tickerGroupID, numberOfEligibleTickers, 
                                 numberOfTickersToBeChosen, numDaysForLiquidity, account,
                                 generationNumberForGeneticOptimizer,
                                 populationSizeForGeneticOptimizer,
                                 benchmark, targetReturn,
-                                portfolioType)
+                                portfolioType, numDaysBetweenEachOptimization)
     {
       
     }

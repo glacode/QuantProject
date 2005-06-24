@@ -47,8 +47,10 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
     protected DateTime lastQuoteDate;
     protected double targetPerformance;
     protected double variance;
+    protected double lowerPartialMoment;
     protected double rateOfReturn;
     protected PortfolioType portfolioType;
+    protected double[] portfolioRatesOfReturn;
     
     static public string GetCleanTickerCode(string tickerModifiedCode)
     {
@@ -188,12 +190,12 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
       double returnValue = 0;
       //OLD IMPLEMENTATION double portfolioRateOfReturn = this.getPortfolioRateOfReturn(genome.Genes());
       //OLD IMPLEMENTATION double portfolioVariance = this.getPortfolioVariance(genome.Genes());
-      double[] portfolioRatesOfReturn = this.getPortfolioRatesOfReturn(genome.Genes());
+      this.portfolioRatesOfReturn = this.getPortfolioRatesOfReturn(genome.Genes());
       double averagePortfolioRateOfReturn = 
-            BasicFunctions.SimpleAverage(portfolioRatesOfReturn);
+            BasicFunctions.SimpleAverage(this.portfolioRatesOfReturn);
         
       double portfolioVariance = 
-            BasicFunctions.Variance(portfolioRatesOfReturn);
+            BasicFunctions.Variance(this.portfolioRatesOfReturn);
 
       if(!Double.IsInfinity(portfolioVariance) &&
          !Double.IsInfinity(averagePortfolioRateOfReturn) &&
@@ -214,7 +216,9 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
     
     public Genome[] GetChilds(Genome parent1, Genome parent2)
     {
-      return GenomeManagement.MixGenesWithoutDuplicates(parent1, parent2);
+      return 
+      	GenomeManagement.MixGenesWithoutDuplicates(parent1, parent2,
+      	                                           this.originalNumOfTickers);
     }
     
     public int GetNewGeneValue(Genome genome)
@@ -224,7 +228,8 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
       int returnValue = GenomeManagement.RandomGenerator.Next(genome.MinValueForGenes,
         genome.MaxValueForGenes + 1);
       while(genome.HasGene(returnValue) ||
-            genome.HasGene(returnValue + this.originalNumOfTickers))
+            genome.HasGene(returnValue + this.originalNumOfTickers) ||
+            genome.HasGene(returnValue - this.originalNumOfTickers) )
       //the portfolio can't have a long position and a short position
       // for the same ticker
       {
@@ -244,8 +249,10 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
         genome.MaxValueForGenes +1);
       int genePositionToBeMutated = GenomeManagement.RandomGenerator.Next(genome.Size); 
       while(genome.HasGene(newValueForGene) || 
-            genome.HasGene(newValueForGene + this.originalNumOfTickers))
-        //the portfolio can't have a long position and a short position
+            genome.HasGene(newValueForGene + this.originalNumOfTickers) ||
+            genome.HasGene(newValueForGene - this.originalNumOfTickers) )
+        //the efficient portfolio, in this implementation, 
+        // can't have a long position and a short position
         // for the same ticker
       {
         newValueForGene = GenomeManagement.RandomGenerator.Next(genome.MinValueForGenes,

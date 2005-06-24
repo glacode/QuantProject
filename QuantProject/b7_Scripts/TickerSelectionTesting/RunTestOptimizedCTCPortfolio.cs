@@ -100,6 +100,24 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
     {
     	base.Run();
       ((EndOfDayTimerHandlerCTCTest)this.endOfDayTimerHandler).Reset();
+       Report report = new Report( this.account , this.historicalQuoteProvider );
+      report.Create( "Test optimization of Close to close efficient portfolio", 1 ,
+        new EndOfDayDateTime( this.endDateTime.DateTime ,
+        EndOfDaySpecificTime.MarketClose ) ,
+        "^SPX" );
+      report.Show();
+    }
+    
+    protected override void checkDateForReport(Object sender , EndOfDayTimingEventArgs endOfDayTimingEventArgs)
+    {
+      if(endOfDayTimingEventArgs.EndOfDayDateTime.DateTime>=this.endDateTime.DateTime ||
+        DateTime.Now >= this.startingTimeForScript.AddHours(this.maxRunningHours))
+        //last date is reached by the timer or maxRunning hours
+        //are elapsed from the time script started
+      {
+        this.endOfDayTimer.Stop();
+      }
+
     }
    
 	}

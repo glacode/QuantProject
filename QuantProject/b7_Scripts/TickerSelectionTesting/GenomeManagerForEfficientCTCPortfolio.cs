@@ -97,7 +97,35 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
 
       return ratesOfReturns;
     }
-    
+   	/*
+    protected override double getFitnessValue_calculate()
+    {
+      double returnValue = 0;                                            
+      
+      double a, b, c;
+      a = 0.002; b = 2.0; c = 2.0;
+      
+      //returnValue = Math.Pow((a/this.Variance),b) *
+      //                 Math.Pow((this.rateOfReturn - this.targetPerformance),
+      //                          c);
+      //this.lowerPartialMoment = AdvancedFunctions.LowerPartialMoment(this.portfolioRatesOfReturn,
+      //                                                      BasicFunctions.SimpleAverage(this.portfolioRatesOfReturn),
+      //                                                      3.0);
+      this.lowerPartialMoment = AdvancedFunctions.NegativeSemiVariance(this.portfolioRatesOfReturn);
+      a = 1.0;
+      returnValue = Math.Pow((a/this.lowerPartialMoment),b) *
+        Math.Pow((this.rateOfReturn - this.targetPerformance),
+        c);
+      
+      if(this.portfolioType == PortfolioType.OnlyShort)
+        returnValue = - returnValue; 
+      
+      if(Double.IsInfinity(returnValue) || Double.IsNaN(returnValue))
+        throw new Exception("Fitness value not computed correctly!");
+      
+      return returnValue;
+    }
+		*/
   }
 
 }

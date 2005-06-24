@@ -188,6 +188,11 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "TickerSelectionTesting\EndOfDayTimerHandlerLastChosenPortfolio.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "TickerSelectionTesting\GenomeManagerForEfficientCTCPortfolio.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
@@ -219,6 +224,11 @@
                 />
                 <File
                     RelPath = "TickerSelectionTesting\RunEfficientPortfolio.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "TickerSelectionTesting\RunLastChosenPortfolioOutOfSample.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
