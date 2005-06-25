@@ -48,14 +48,15 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
 {
 	/// <summary>
 	/// Class for running a test based on last chosen tickers of a given
-	/// RunEfficientPortfolio - normally, one with optimization purposes -
-	/// , after it has been executed
+	/// PortfolioType
 	/// </summary>
 	[Serializable]
 	public class RunLastChosenPortfolioOutOfSample : RunEfficientPorfolio
 	{
-    RunEfficientPorfolio testEfficientPortfolio;
-    public RunLastChosenPortfolioOutOfSample(RunEfficientPorfolio testEfficientPortfolio,
+		private string[] tickers;
+		private PortfolioType typeOfPortfolio;
+    public RunLastChosenPortfolioOutOfSample(string[] chosenTickers,
+                                             PortfolioType typeOfPortfolio, 
 		                                         string benchmark,
                                 						 DateTime startDate,
                                 						 DateTime endDate,
@@ -63,24 +64,25 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
 																						base(benchmark,
                                 						 		 startDate,
                                 						     endDate,
-                                						     testEfficientPortfolio.TypeOfPortfolio,
+                                						     typeOfPortfolio,
                                 						     maxRunningHours)
 		{
-      this.startDateTime = new EndOfDayDateTime(
+      this.tickers = chosenTickers;
+      this.typeOfPortfolio = typeOfPortfolio;
+			this.startDateTime = new EndOfDayDateTime(
         startDate, EndOfDaySpecificTime.MarketOpen );
     	this.endDateTime = new EndOfDayDateTime(
         endDate, EndOfDaySpecificTime.MarketClose );
     	this.ScriptName = "LastChosenPortfolioOutOfSample";
-    	this.testEfficientPortfolio = testEfficientPortfolio;
-    	
+    	    	
 		}
     #region Run
  
     protected override void run_initializeEndOfDayTimerHandler()
     {
     	this.endOfDayTimerHandler =
-    		new EndOfDayTimerHandlerLastChosenPortfolio(this.testEfficientPortfolio.LastChosenTickers,
-    		                                            this.testEfficientPortfolio.TypeOfPortfolio,
+    		new EndOfDayTimerHandlerLastChosenPortfolio(this.tickers,
+    		                                            this.typeOfPortfolio,
     		                                            this.account,
     		                                            this.benchmark,
     		                                           	this.startDateTime,
@@ -95,7 +97,8 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
     
     protected override void run_initializeHistoricalQuoteProvider()
     {
-     	this.historicalQuoteProvider = this.testEfficientPortfolio.HistoricalQuoteProvider; 
+    	this.historicalQuoteProvider = new HistoricalAdjustedQuoteProvider();
+     		
     }
     protected override void run_initializeAccount()
     {

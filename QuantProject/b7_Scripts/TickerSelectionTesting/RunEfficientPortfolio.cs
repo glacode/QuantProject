@@ -95,11 +95,7 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
     {
       get { return this.portfolioType; }
     }
-    
-    public IHistoricalQuoteProvider HistoricalQuoteProvider
-    {
-      get { return this.historicalQuoteProvider; }
-    }
+       
     public virtual string ScriptName
     {
     	get{return this.scriptName;}

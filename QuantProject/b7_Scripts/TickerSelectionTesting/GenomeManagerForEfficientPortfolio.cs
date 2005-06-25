@@ -51,6 +51,7 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
     protected double rateOfReturn;
     protected PortfolioType portfolioType;
     protected double[] portfolioRatesOfReturn;
+    protected int numberOfExaminedReturns;
     
     static public string GetCleanTickerCode(string tickerModifiedCode)
     {
@@ -61,7 +62,6 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
     		return tickerModifiedCode.Substring(1,tickerModifiedCode.Length -1);
     	else
     		return tickerModifiedCode;
-    		
     }
     
     //IGenomeManager implementation for properties 
@@ -149,6 +149,8 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
             this.maxValueForGenes = this.setOfTickers.Rows.Count*2 - 1;
     }
     
+    
+    
     protected float getCoefficient(string ticker)
     {
     	float returnValue;
@@ -188,8 +190,6 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
     public double GetFitnessValue(Genome genome)
     {
       double returnValue = 0;
-      //OLD IMPLEMENTATION double portfolioRateOfReturn = this.getPortfolioRateOfReturn(genome.Genes());
-      //OLD IMPLEMENTATION double portfolioVariance = this.getPortfolioVariance(genome.Genes());
       this.portfolioRatesOfReturn = this.getPortfolioRatesOfReturn(genome.Genes());
       double averagePortfolioRateOfReturn = 
             BasicFunctions.SimpleAverage(this.portfolioRatesOfReturn);
@@ -277,6 +277,8 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
     }
     // end of implementation of IGenomeManager
 
+    #region old implementation for variance computation
+    
     protected double getPortfolioVariance(int[] tickerIdx)
     {
       double sumOfVariances = this.getWeightedSumOfVariances(tickerIdx);
@@ -319,62 +321,52 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
       return returnValue;
     }
 
+    #endregion
+    
+    
     protected void retrieveData()
     {
       foreach(DataRow row in this.setOfTickers.Rows)
       {
         //
         float[] arrayOfRatesOfReturn = this.getArrayOfRatesOfReturn((string)row[0]);
-        row["ArrayOfRatesOfReturn"] = arrayOfRatesOfReturn;
+        if(arrayOfRatesOfReturn == null)
+        	row["ArrayOfRatesOfReturn"] = DBNull.Value;
+        else
+        	row["ArrayOfRatesOfReturn"] = arrayOfRatesOfReturn;
       }
     }
     
-    //this protected method can be overriden by inherited classes
-    //which can specify the type of rates of return
-    
-    //in this basic implementation rates of returns
-    //are based on daily close to close
+    //this protected method must be overriden by inherited classes
+    //specifing the type of rates of return that have to 
+    //be analyzed
+
     protected virtual float[] getArrayOfRatesOfReturn(string ticker)
     {
-      Quotes tickerQuotes = new Quotes(ticker, this.firstQuoteDate, this.lastQuoteDate);
-      float[] allAdjValues = ExtendedDataTable.GetArrayOfFloatFromColumn(tickerQuotes, "quAdjustedClose");
-      float[] ratesOfReturns = new float[allAdjValues.Length];
-      int i = 0; //index for ratesOfReturns array
-      
-      for(int idx = 0; idx < allAdjValues.Length; idx++)
-      {
-        ratesOfReturns[i] = allAdjValues[idx+1]/
-          allAdjValues[idx] - 1;
-        i++;
-      }
-      
-      return ratesOfReturns;
+    	float[] returnValue = null;
+    	return returnValue;
     }
    
-    protected double getPortfolioRateOfReturn(int[] tickerIdx)
-    {
-      double returnValue = 0;
-      foreach(int idx in tickerIdx)
-      {
-        returnValue += 
-        		BasicFunctions.SimpleAverage((float[])this.setOfTickers.Rows[idx]["ArrayOfRatesOfReturn"]);
-      }
-      //the investment is assumed to be equally divided
-      return (returnValue/this.GenomeSize);
-      
-    }
-    
+        
     protected double[] getPortfolioRatesOfReturn(int[] tickerIdx)
     {
-      int numberOfExaminedReturns = 
-          ((float[])this.setOfTickers.Rows[tickerIdx[0]]["ArrayOfRatesOfReturn"]).Length;
-      double[] returnValue = new double[numberOfExaminedReturns];
+      double[] returnValue = new double[this.numberOfExaminedReturns];
+      float[] tickerRatesOfReturn;
       for(int i = 0; i<returnValue.Length; i++)    
       {  
         foreach(int idx in tickerIdx)
         {
-          float[] tickerRatesOfReturn = (float[])this.setOfTickers.Rows[idx]["ArrayOfRatesOfReturn"];
-          returnValue[i] += tickerRatesOfReturn[i]/this.genomeSize; 
+        	if(this.setOfTickers.Rows[idx]["ArrayOfRatesOfReturn"] is System.DBNull)
+          //the idx points to a ticker for which short returns are
+          //to be examined
+        		tickerRatesOfReturn =
+        					(float[])this.setOfTickers.Rows[idx - this.originalNumOfTickers]["ArrayOfRatesOfReturn"];
+        	else
+        		tickerRatesOfReturn = (float[])this.setOfTickers.Rows[idx]["ArrayOfRatesOfReturn"];
+          
+          returnValue[i] += 
+          		this.getCoefficient((string)this.setOfTickers.Rows[idx][0])*
+          		tickerRatesOfReturn[i]/this.genomeSize;
           //the investment is assumed to be equally divided for each ticker
         }
       }

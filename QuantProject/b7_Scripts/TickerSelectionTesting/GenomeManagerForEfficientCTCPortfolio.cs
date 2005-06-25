@@ -81,21 +81,25 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
   
     protected override float[] getArrayOfRatesOfReturn(string ticker)
     {
-      float coefficient = this.getCoefficient(ticker);
-      string tickerCode = GenomeManagerForEfficientPortfolio.GetCleanTickerCode(ticker);
-    	Quotes tickerQuotes = new Quotes(tickerCode, this.firstQuoteDate, this.lastQuoteDate);
-      float[] allAdjValues = ExtendedDataTable.GetArrayOfFloatFromColumn(tickerQuotes, "quAdjustedClose");
-      float[] ratesOfReturns = new float[allAdjValues.Length/this.numDaysForReturnCalculation + 1];
-      int i = 0; //index for ratesOfReturns array
-      
-      for(int idx = 0; idx + this.numDaysForReturnCalculation < allAdjValues.Length; idx += this.numDaysForReturnCalculation )
+      float[] returnValue = null;
+      if(!ticker.StartsWith("-"))
       {
-        ratesOfReturns[i] = (allAdjValues[idx+this.numDaysForReturnCalculation]/
-      	                     allAdjValues[idx] - 1)*coefficient;
-        i++;
+      	string tickerCode = GenomeManagerForEfficientPortfolio.GetCleanTickerCode(ticker);
+      	Quotes tickerQuotes = new Quotes(tickerCode, this.firstQuoteDate, this.lastQuoteDate);
+      	float[] allAdjValues = ExtendedDataTable.GetArrayOfFloatFromColumn(tickerQuotes, "quAdjustedClose");
+       	returnValue = new float[allAdjValues.Length/this.numDaysForReturnCalculation + 1];
+      	int i = 0; //index for ratesOfReturns array
+      
+	      for(int idx = 0; idx + this.numDaysForReturnCalculation < allAdjValues.Length; idx += this.numDaysForReturnCalculation )
+	      {
+	        returnValue[i] = (allAdjValues[idx+this.numDaysForReturnCalculation]/
+	      	                     allAdjValues[idx] - 1);
+	        i++;
+	      }	
+       	this.numberOfExaminedReturns = returnValue.Length;
       }
-
-      return ratesOfReturns;
+      return returnValue;
+    	
     }
    	/*
     protected override double getFitnessValue_calculate()

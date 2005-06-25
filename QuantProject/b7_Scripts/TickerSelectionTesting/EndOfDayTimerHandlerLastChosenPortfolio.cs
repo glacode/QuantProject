@@ -80,7 +80,7 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
     	
     	//if(endOfDayTimingEventArgs.EndOfDayDateTime.CompareTo(this.lastDate) == 0)
       //	this.closePositions();
-      if(endOfDayTimingEventArgs.EndOfDayDateTime.DateTime.CompareTo(this.firstDate.DateTime) == 0)
+      if(endOfDayTimingEventArgs.EndOfDayDateTime.DateTime.CompareTo(this.lastDate.DateTime.AddDays(-1)) == 0)
       		this.closePositions();
     }
     
