@@ -160,7 +160,33 @@ namespace QuantProject.ADT
       return arrayOfFloat;
       
     }
-    
+    /// <summary>
+    /// Get an array of float corresponding to the rates of return
+    ///  of columnA with respect to columnB
+    /// </summary>
+    public static float[] GetRatesOfReturnsFromColumns(DataTable table,
+                                                       string columnAName, string columnBName)
+    {
+      int numRows = table.Rows.Count;
+      float[] arrayOfFloat = new float[numRows];
+      int index = 0;
+      try
+      {
+        for(; index!= numRows; index++)
+        {
+          arrayOfFloat[index] = (float) table.Rows[index][columnAName] / 
+        	                       (float) table.Rows[index][columnBName] - 1;
+        }
+
+      }
+      catch(Exception ex)
+      {
+        MessageBox.Show(ex.ToString());
+        index = numRows; //for getting out of the for block
+      }
+      return arrayOfFloat;
+      
+    }
     /// <summary>
 	  /// It returns a hashtable containing the common values in two
 	  /// columns of two given Data tables (the two columns must contain unique values!)
