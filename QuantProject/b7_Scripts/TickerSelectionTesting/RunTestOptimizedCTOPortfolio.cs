@@ -95,7 +95,7 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
       report.Create( "Test optimization of OpenClose efficient portfolio", 1 ,
         new EndOfDayDateTime( this.endDateTime.DateTime ,
         EndOfDaySpecificTime.MarketClose ) ,
-        "^SPX" );
+        "^NDX" );
       report.Show();
     }
      

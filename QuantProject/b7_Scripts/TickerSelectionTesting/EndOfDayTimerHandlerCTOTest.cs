@@ -64,7 +64,7 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
     {
     	if(!EndOfDayTimerHandlerCTOTest.optimized)
     	{
-    		base.setTickers(currentDate);
+        base.setTickers(currentDate.AddDays(this.numDaysForLiquidity));
 	      EndOfDayTimerHandlerCTOTest.optimized = true;
 	   	}
     }
