@@ -243,6 +243,36 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "WalkForwardTesting\LinearCombination\MainForm.cs"
+                    SubType = "Form"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "WalkForwardTesting\LinearCombination\MainForm.resx"
+                    DependentUpon = "MainForm.cs"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "WalkForwardTesting\LinearCombination\RunBestLinearCombination.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "WalkForwardTesting\LinearCombination\TestDisplayer.cs"
+                    SubType = "Form"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "WalkForwardTesting\LinearCombination\TestDisplayer.resx"
+                    DependentUpon = "TestDisplayer.cs"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "WalkForwardTesting\LinearCombination\VisualObjectArchiver.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "WalkForwardTesting\MSFTwalkForward\TsMSFTwalkForward.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
