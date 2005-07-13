@@ -26,13 +26,17 @@ using QuantProject.ADT.Optimizing.Genetic;
 
 namespace QuantProject.ADT.Optimizing.Genetic
 {
-  /// <summary>
+	public delegate void NewGenerationEventHandler(
+	Object sender , NewGenerationEventArgs eventArgs );
+
+	/// <summary>
   /// The class needs to be initialized by an object implementing
   /// IGenomeManager interface 
   /// Default GO parameters: crossoverRate = 0.85, mutationRate = 0.02, elitismRate = 0.01,
   /// populationSize = 1000, generationNumber = 100
   /// keepOnRunningUntilConvergenceIsReached = false, minConvergenceRate = 0.80 
   /// </summary>
+  [Serializable]
 	public class GeneticOptimizer
 	{
     #region fields  
@@ -123,6 +127,8 @@ namespace QuantProject.ADT.Optimizing.Genetic
       get{return this.worstGenome;}
     }
     #endregion
+
+		public event NewGenerationEventHandler NewGeneration;
     
     /// <summary>
     /// The class needs to be initialized by an object implementing
@@ -227,6 +233,7 @@ namespace QuantProject.ADT.Optimizing.Genetic
         throw new IndexOutOfRangeException("Genome size not set");
       this.createGenomes();
       this.currentGeneration.Sort(this.genomeComparer);
+			this.NewGeneration( this , new NewGenerationEventArgs( this.currentGeneration ) );
       this.calculateTotalFitness();
       this.updateCumulativeFitnessList();
       this.setInitialBestAndWorstGenomes();
@@ -377,7 +384,8 @@ namespace QuantProject.ADT.Optimizing.Genetic
       this.calculateFitnessAndMeaningForAllGenomes(this.nextGeneration);
       this.nextGeneration.Sort(this.genomeComparer);
       this.updateCurrentGeneration();
-      this.currentGeneration.Sort(this.genomeComparer); 
+      this.currentGeneration.Sort(this.genomeComparer);
+			this.NewGeneration( this , new NewGenerationEventArgs( this.currentGeneration ) );
       this.calculateTotalFitness();
       this.updateCumulativeFitnessList();
       
