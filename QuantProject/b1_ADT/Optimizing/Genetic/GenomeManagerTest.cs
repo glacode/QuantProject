@@ -30,6 +30,7 @@ namespace QuantProject.ADT.Optimizing.Genetic
 	/// Create a simple class implementing IGenomeManager, in order to test the
 	/// behaviour of the genetic optimizer
 	/// </summary>
+	[Serializable]
   public class GenomeManagerTest : IGenomeManager
   {
     private int genomeSize;

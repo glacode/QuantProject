@@ -30,6 +30,7 @@ namespace QuantProject.ADT.Optimizing.Genetic
 	/// Representation of an individual through features
 	/// provided by biology
 	/// </summary>
+	[Serializable]
 	public class Genome : IComparable
 	{
 	  private int[] genes;

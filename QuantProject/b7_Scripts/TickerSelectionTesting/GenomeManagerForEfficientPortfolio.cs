@@ -35,6 +35,7 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
   /// This is the base class implementing IGenomeManager, in order to find
   /// efficient portfolios using the GeneticOptimizer
   /// </summary>
+  [Serializable]
   public class GenomeManagerForEfficientPortfolio : IGenomeManager
   {
     protected int genomeSize;

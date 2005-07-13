@@ -28,6 +28,7 @@ namespace QuantProject.ADT.Optimizing.Genetic
 	/// <summary>
 	/// Compares genomes by fitness
 	/// </summary>
+	[Serializable]
 	public sealed class GenomeComparer : IComparer
 	{
 		public GenomeComparer()

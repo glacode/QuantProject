@@ -36,6 +36,7 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
 	/// portfolios based on tickers' CloseToOpen rates, using the
 	/// GeneticOptimizer
 	/// </summary>
+	[Serializable]
   public class GenomeManagerForEfficientCTOPortfolio : GenomeManagerForEfficientPortfolio
   {
     

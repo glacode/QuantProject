@@ -36,6 +36,7 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
 	/// portfolios based on tickers' CloseToClose rates (adjusted values),
 	/// using the GeneticOptimizer
 	/// </summary>
+	[Serializable]
   public class GenomeManagerForEfficientCTCPortfolio : GenomeManagerForEfficientPortfolio
   {
     private int numDaysOfPortfolioLife;

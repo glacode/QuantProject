@@ -31,6 +31,7 @@ namespace QuantProject.ADT.Optimizing.Genetic
 	/// Class providing static methods to manage Genomes
 	/// (crossovering, mutating, etc.)
 	/// </summary>
+	[Serializable]
   public sealed class GenomeManagement 
 	{
 		
