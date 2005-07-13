@@ -212,6 +212,11 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "Optimizing\Genetic\NewGenerationEventArgs.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "Statistics\AdvancedFunctions.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
