@@ -243,6 +243,16 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "WalkForwardTesting\LinearCombination\GenomeRepresentation.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "WalkForwardTesting\LinearCombination\LinearCombinationTest.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "WalkForwardTesting\LinearCombination\MainForm.cs"
                     SubType = "Form"
                     BuildAction = "Compile"
@@ -251,6 +261,11 @@
                     RelPath = "WalkForwardTesting\LinearCombination\MainForm.resx"
                     DependentUpon = "MainForm.cs"
                     BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "WalkForwardTesting\LinearCombination\OptimizationOutput.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
                 />
                 <File
                     RelPath = "WalkForwardTesting\LinearCombination\RunBestLinearCombination.cs"
