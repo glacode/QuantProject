@@ -233,7 +233,8 @@ namespace QuantProject.ADT.Optimizing.Genetic
         throw new IndexOutOfRangeException("Genome size not set");
       this.createGenomes();
       this.currentGeneration.Sort(this.genomeComparer);
-			this.NewGeneration( this , new NewGenerationEventArgs( this.currentGeneration ) );
+			this.NewGeneration( this , new NewGenerationEventArgs(
+				this.currentGeneration , this.generationCounter , this.generationNumber ) );
       this.calculateTotalFitness();
       this.updateCumulativeFitnessList();
       this.setInitialBestAndWorstGenomes();
@@ -385,7 +386,8 @@ namespace QuantProject.ADT.Optimizing.Genetic
       this.nextGeneration.Sort(this.genomeComparer);
       this.updateCurrentGeneration();
       this.currentGeneration.Sort(this.genomeComparer);
-			this.NewGeneration( this , new NewGenerationEventArgs( this.currentGeneration ) );
+			this.NewGeneration( this , new NewGenerationEventArgs(
+				this.currentGeneration , this.generationCounter , this.generationNumber ) );
       this.calculateTotalFitness();
       this.updateCumulativeFitnessList();
       
