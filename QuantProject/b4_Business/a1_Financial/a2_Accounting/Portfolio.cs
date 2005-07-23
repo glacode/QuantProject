@@ -38,6 +38,10 @@ namespace QuantProject.Business.Financial.Accounting
   [Serializable]
   public class Portfolio : Hashtable
   {
+		public ICollection Positions
+		{
+			get { return this.Values; }
+		}
     public Portfolio() : base()
     {
     }
