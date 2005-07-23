@@ -32,15 +32,41 @@ namespace QuantProject.ADT.Optimizing.Genetic
 	public class NewGenerationEventArgs
 	{
 		private ArrayList generation;
+		private int generationNumber;
+		private int generationCounter;
 
+		/// <summary>
+		/// Current generation
+		/// </summary>
 		public ArrayList Generation
 		{
 			get { return this.generation; }
+		}
+		/// <summary>
+		/// Total number of generations to be created
+		/// </summary>
+		public int GenerationNumber
+		{
+			get { return this.generationNumber; }
+		}
+		/// <summary>
+		/// Number of the current generation
+		/// </summary>
+		public int GenerationCounter
+		{
+			get { return this.generationCounter; }
 		}
 
 		public NewGenerationEventArgs( ArrayList generation )
 		{
 			this.generation = generation;
+		}
+		public NewGenerationEventArgs( ArrayList generation ,
+			int generationCounter , int generationNumber )
+		{
+			this.generation = generation;
+			this.generationCounter = generationCounter;
+			this.generationNumber = generationNumber;
 		}
 	}
 }
