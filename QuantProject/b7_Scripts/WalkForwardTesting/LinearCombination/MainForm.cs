@@ -1,8 +1,9 @@
 using System;
-using System.Data;
-using System.Drawing;
 using System.Collections;
 using System.ComponentModel;
+using System.Data;
+using System.Drawing;
+using System.Threading;
 using System.Windows.Forms;
 
 using QuantProject.ADT;
@@ -32,7 +33,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.LinearCombination
 	public class MainForm : System.Windows.Forms.Form
 	{
 
-		private int numberOfTickersToBeSavedFromEachGeneration = 5;
+//		private int numberOfTickersToBeSavedFromEachGeneration = 5;
 
 		private string tickerGroupID;
 		private int numberOfEligibleTickers;
@@ -45,6 +46,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.LinearCombination
 		private DateTime lastDate;
 		private double targetReturn;
 		private PortfolioType portfolioType;
+		private GeneticOptimizer GO;
 
 		/// <summary>
 		/// bestGenomes[ i ] contains an array list with the best genomes
@@ -170,31 +172,57 @@ namespace QuantProject.Scripts.WalkForwardTesting.LinearCombination
 				this.lastDate, this.numberOfEligibleTickers, this.benchmark);
 			return quotedAtEachMarketDayFromEligible.GetTableOfSelectedTickers();
 		}
+		private void newGenerationEventHandler_updateProgressBar(
+			NewGenerationEventArgs newGenerationEventArgs )
+		{
+//			if ( ( newGenerationEventArgs.GenerationCounter == 1 ) ||
+//				( newGenerationEventArgs.GenerationCounter /	100 * 100 ==
+//				newGenerationEventArgs.GenerationCounter ) )
+				Console.WriteLine(
+					newGenerationEventArgs.GenerationCounter.ToString() + " / " +
+					newGenerationEventArgs.GenerationNumber.ToString() +
+					" - " + DateTime.Now.ToString() );
+		}
 		private void newGenerationEventHandler( object sender ,
 			NewGenerationEventArgs newGenerationEventArgs )
 		{
-			ArrayList newGenerationBestGenomes = new ArrayList();
+			newGenerationEventHandler_updateProgressBar( newGenerationEventArgs );
 			ArrayList generation = newGenerationEventArgs.Generation;
-			for ( int i = generation.Count - 1 ;
-				i > generation.Count - 1 - this.numberOfTickersToBeSavedFromEachGeneration ;
-				i-- )
-				this.bestGenomes.Add( generation[ i ] );
+			if ( this.bestGenomes.Count == 0 )
+				// this is the first generation created and this.bestGenomes is still empty
+				this.bestGenomes.Add( new GenomeRepresentation(
+					(Genome)generation[ generation.Count - 1 ]  ) );
+			for ( int i=0 ; i < generation.Count ; i++ )
+				if ( ((Genome)generation[ i ]).Fitness >
+					((GenomeRepresentation)this.bestGenomes[
+					this.bestGenomes.Count - 1 ]).Fitness )
+					// generation[ i ] is a genome better than the best already stored
+					this.bestGenomes.Add( new GenomeRepresentation(
+						(Genome)generation[ i ]  ) );
 		}
 		private void writeOptimizedGenomesToDisk()
 		{
 			VisualObjectArchiver visualObjectArchiver =
 				new VisualObjectArchiver();
-			visualObjectArchiver.Save( this.bestGenomes , "bgn" ,
+			OptimizationOutput optimizationOutput =
+				new OptimizationOutput( this.firstDate , this.lastDate ,
+				this.bestGenomes );
+			visualObjectArchiver.Save( optimizationOutput , "bgn" ,
 				"Save best genomes" );
 		}
 
+		private void createOptimizedGenomes_go()
+		{
+		}
 		private void createOptimizedGenomes()
 		{
 			this.bestGenomes = new ArrayList();
 			//			DataTable setOfTickersToBeOptimized =
 			//				this.getSetOfTickersToBeOptimized_quickly();
 			DataTable setOfTickersToBeOptimized =
-				this.getSetOfTickersToBeOptimized();
+				this.getSetOfTickersToBeOptimized_quickly();
+//			DataTable setOfTickersToBeOptimized =
+//				this.getSetOfTickersToBeOptimized();
 			GenomeManagerForEfficientCTOPortfolio genManEfficientCTOPortfolio = 
 				new GenomeManagerForEfficientCTOPortfolio(setOfTickersToBeOptimized,
 				this.firstDate,
@@ -203,14 +231,18 @@ namespace QuantProject.Scripts.WalkForwardTesting.LinearCombination
 				this.targetReturn,
 				this.portfolioType);
         
-			GeneticOptimizer GO = new GeneticOptimizer(genManEfficientCTOPortfolio,
+			this.GO = new GeneticOptimizer(genManEfficientCTOPortfolio,
 				this.populationSizeForGeneticOptimizer,
 				this.generationNumberForGeneticOptimizer);
-			GO.NewGeneration += new NewGenerationEventHandler(
+			this.GO.NewGeneration += new NewGenerationEventHandler(
 				this.newGenerationEventHandler );
-        
+
+//			Thread thread = new Thread(new ThreadStart(this.createOptimizedGenomes_go));
+//			thread.IsBackground = true;
+//			thread.Start();
+
 			GO.Run(false);
-        
+       
 			this.writeOptimizedGenomesToDisk();
 		}
 		private void menuItem2_Click(object sender, System.EventArgs e)
@@ -227,13 +259,18 @@ namespace QuantProject.Scripts.WalkForwardTesting.LinearCombination
 			{
 				VisualObjectArchiver visualObjectArchiver =
 					new VisualObjectArchiver();
-				this.bestGenomes = (ArrayList)visualObjectArchiver.Load(
+				OptimizationOutput optimizationOutput =
+          (OptimizationOutput)visualObjectArchiver.Load(
 					"Load best genomes" , "bgn" , "Load Genomes");
+				this.firstDate = optimizationOutput.FirstDate;
+				this.lastDate = optimizationOutput.LastDate;
+				this.bestGenomes = optimizationOutput.BestGenomes;
 			}
 		}
 		private void testOptimizedGenomesActually()
 		{
-			TestDisplayer testDisplayer = new TestDisplayer( this.bestGenomes );
+			TestDisplayer testDisplayer = new TestDisplayer(
+				this.firstDate , this.lastDate , this.bestGenomes );
 			testDisplayer.ShowDialog();
 		}
 		private void testOptimizedGenomes()
