@@ -42,8 +42,12 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
     protected int minValueForGenes;
     protected int maxValueForGenes;
 
-    protected DataTable setOfTickers;
+    protected DataTable setOfTickers;//used only for keeping
+                                     //the same signature for 
+                                     //protected retrieveData() method
+    protected CandidateProperties[] setOfCandidates;
     protected int originalNumOfTickers;
+    protected int constToDiscoverDuplicateGenes;
     protected DateTime firstQuoteDate;
     protected DateTime lastQuoteDate;
     protected double targetPerformance;
@@ -54,15 +58,12 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
     protected double[] portfolioRatesOfReturn;
     protected int numberOfExaminedReturns;
     
-    static public string GetCleanTickerCode(string tickerModifiedCode)
+    static public string GetCleanTickerCode(string tickerCodeForLongOrShortTrade)
     {
-    	if(tickerModifiedCode.StartsWith("-"))
-    	//if the first char is "-"
-    	//each element of the array of rates of return is
-    	//multiplied by -1
-    		return tickerModifiedCode.Substring(1,tickerModifiedCode.Length -1);
+    	if(tickerCodeForLongOrShortTrade.StartsWith("-"))
+    		return tickerCodeForLongOrShortTrade.Substring(1,tickerCodeForLongOrShortTrade.Length -1);
     	else
-    		return tickerModifiedCode;
+    		return tickerCodeForLongOrShortTrade;
     }
     
     //IGenomeManager implementation for properties 
@@ -98,6 +99,9 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
       //set{this.portfolioType = value;}
     }
     
+    //setOfInitialTickers has to contain the
+    //ticker's symbol in the first column !
+
     public GenomeManagerForEfficientPortfolio(DataTable setOfInitialTickers,
 																				      DateTime firstQuoteDate,
 																				      DateTime lastQuoteDate,
@@ -106,67 +110,46 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
 																				      PortfolioType portfolioType)
                           
     {
-      this.setOfTickers = setOfInitialTickers;
- 			this.originalNumOfTickers = setOfInitialTickers.Rows.Count;
-      if(!this.setOfTickers.Columns.Contains("ArrayOfRatesOfReturn"))
-        this.setOfTickers.Columns.Add("ArrayOfRatesOfReturn", System.Type.GetType("System.Array"));
+ 			this.setOfTickers = setOfInitialTickers;
+      this.originalNumOfTickers = setOfInitialTickers.Rows.Count;
+      this.constToDiscoverDuplicateGenes = this.originalNumOfTickers + 1;
       this.firstQuoteDate = firstQuoteDate;
       this.lastQuoteDate = lastQuoteDate;
       this.targetPerformance = targetPerformance;
       this.genomeSize = numberOfTickersInPortfolio;
       this.portfolioType = portfolioType;
       this.setMinAndMaxValueForGenes();
-      this.set_SetOfInitialTickers();
-  
-    }
-    
-    
-    private void set_SetOfInitialTickers()
-    {
-      
-      if(this.portfolioType == PortfolioType.ShortAndLong)
-      {
-      	for(int i = 0;i<this.originalNumOfTickers;i++)
-      	{
-      		string ticker = (string)this.setOfTickers.Rows[i][0];
-      		DataRow newRow = this.setOfTickers.NewRow();
-      		newRow[0] = "-" + ticker;
-      		this.setOfTickers.Rows.Add(newRow);
-      		//so, if row[i][0]="TICKER" 
-      		//row[i+originalNumOfTickers][0]="-TICKER"
-      	}
-      }
     }
     
     private void setMinAndMaxValueForGenes()
     {
-      //each genes is the index for the setOfTickers table
       this.minValueForGenes = 0;
-      
-      if(this.portfolioType == PortfolioType.OnlyLong ||
-         this.portfolioType == PortfolioType.OnlyShort)
-            this.maxValueForGenes = this.setOfTickers.Rows.Count - 1;
-      else//ShortAndLong
-            this.maxValueForGenes = this.setOfTickers.Rows.Count*2 - 1;
+      this.maxValueForGenes = this.originalNumOfTickers - 1;
+           
+      if(this.portfolioType == PortfolioType.ShortAndLong)
+        this.minValueForGenes = - this.originalNumOfTickers;
+      //if gene g is negative, it refers to the ticker Abs(g+1) to be shorted
     }
     
-    
-    
-    protected float getCoefficient(string ticker)
+    //this protected method has to be called by inherited genome
+    //managers (open to close or close to close) 
+    //only after all initializations provided
+    //by their respective constructors
+    protected void retrieveData()
     {
-    	float returnValue;
-    	if(ticker.StartsWith("-"))
-    	//if the first char is "-"
-    	//each element of the array of rates of return is
-    	//multiplied by -1
-    		returnValue = -1;
-    	else
-    		returnValue = 1;
-    	
-    	return returnValue;
-    		
+      this.setOfCandidates = new CandidateProperties[setOfTickers.Rows.Count];
+      for(int i = 0; i<setOfTickers.Rows.Count; i++)
+      {
+        string ticker = (string)setOfTickers.Rows[i][0];
+        this.setOfCandidates[i] = new CandidateProperties(ticker,
+                                      this.getArrayOfRatesOfReturn(ticker));
+      }
     }
-    
+
+    //implementation of IGenomeManager
+  
+    #region GetFitnessValue
+
     protected virtual double getFitnessValue_calculate()
     {
       double returnValue = 0;                                            
@@ -215,11 +198,13 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
       return returnValue;
     }
     
+    #endregion
+
     public Genome[] GetChilds(Genome parent1, Genome parent2)
     {
       return 
       	GenomeManagement.MixGenesWithoutDuplicates(parent1, parent2,
-      	                                           this.originalNumOfTickers);
+      	                                           this.constToDiscoverDuplicateGenes);
     }
     
     public int GetNewGeneValue(Genome genome)
@@ -227,12 +212,11 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
       // in this implementation new gene values must be different from
       // the others already stored in the given genome
       int returnValue = GenomeManagement.RandomGenerator.Next(genome.MinValueForGenes,
-        genome.MaxValueForGenes + 1);
+                                                              genome.MaxValueForGenes + 1);
       while(genome.HasGene(returnValue) ||
-            genome.HasGene(returnValue + this.originalNumOfTickers) ||
-            genome.HasGene(returnValue - this.originalNumOfTickers) )
-      //the portfolio can't have a long position and a short position
-      // for the same ticker
+            genome.HasGene(returnValue + this.constToDiscoverDuplicateGenes) ||
+            genome.HasGene(returnValue - this.constToDiscoverDuplicateGenes) )
+      //the portfolio can't have a long position and a short one for the same ticker
       {
         returnValue = GenomeManagement.RandomGenerator.Next(genome.MinValueForGenes,
           genome.MaxValueForGenes + 1);
@@ -240,7 +224,6 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
 
       return returnValue;
     }
-    
         
     public void Mutate(Genome genome, double mutationRate)
     {
@@ -250,36 +233,51 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
         genome.MaxValueForGenes +1);
       int genePositionToBeMutated = GenomeManagement.RandomGenerator.Next(genome.Size); 
       while(genome.HasGene(newValueForGene) || 
-            genome.HasGene(newValueForGene + this.originalNumOfTickers) ||
-            genome.HasGene(newValueForGene - this.originalNumOfTickers) )
+            genome.HasGene(newValueForGene + this.constToDiscoverDuplicateGenes) ||
+            genome.HasGene(newValueForGene - this.constToDiscoverDuplicateGenes) )
         //the efficient portfolio, in this implementation, 
         // can't have a long position and a short position
         // for the same ticker
       {
         newValueForGene = GenomeManagement.RandomGenerator.Next(genome.MinValueForGenes,
-          genome.MaxValueForGenes +1);
+                                                         genome.MaxValueForGenes + 1);
       }
       GenomeManagement.MutateOneGene(genome, mutationRate,
-        genePositionToBeMutated, newValueForGene);
+                                     genePositionToBeMutated, newValueForGene);
     }
     
+    #region Decode
+
+    private string decode_getTickerCodeForLongOrShortTrade(int geneValue)
+    {
+      string initialCharForTickerCode = "";
+      int position = geneValue;
+      if(geneValue<0)
+      {
+        position = Math.Abs(geneValue + 1);
+        initialCharForTickerCode = "-";
+      }  
+      return initialCharForTickerCode + this.setOfCandidates[position].Ticker;
+    }
+
     public virtual object Decode(Genome genome)
     {
-      string sequenceOfTickers = ""; 
-      object returnValue;
-      foreach(int index in genome.Genes())
+      string[] arrayOfTickers = new string[genome.Genes().Length];
+      int indexOfTicker;
+      for(int index = 0; index < genome.Genes().Length; index++)
       {
-        sequenceOfTickers += (string)this.setOfTickers.Rows[index][0] + ";" ;
+        indexOfTicker = (int)genome.Genes().GetValue(index);
+        arrayOfTickers[index] = this.decode_getTickerCodeForLongOrShortTrade(indexOfTicker);
       }
-      returnValue = sequenceOfTickers;
-      returnValue += "(rate: " + this.RateOfReturn + " std: " +
-        System.Math.Sqrt(this.Variance) + ")";
-      return returnValue;
+      return arrayOfTickers;
+      
     }
+    #endregion
+
     // end of implementation of IGenomeManager
 
     #region old implementation for variance computation
-    
+    /*
     protected double getPortfolioVariance(int[] tickerIdx)
     {
       double sumOfVariances = this.getWeightedSumOfVariances(tickerIdx);
@@ -321,59 +319,56 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
       }
       return returnValue;
     }
-
+    */
     #endregion
-    
-    
-    protected void retrieveData()
-    {
-      foreach(DataRow row in this.setOfTickers.Rows)
-      {
-        //
-        float[] arrayOfRatesOfReturn = this.getArrayOfRatesOfReturn((string)row[0]);
-        if(arrayOfRatesOfReturn == null)
-        	row["ArrayOfRatesOfReturn"] = DBNull.Value;
-        else
-        	row["ArrayOfRatesOfReturn"] = arrayOfRatesOfReturn;
-      }
-    }
-    
+         
+   
     //this protected method must be overriden by inherited classes
     //specifing the type of rates of return that have to 
     //be analyzed
-
     protected virtual float[] getArrayOfRatesOfReturn(string ticker)
     {
     	float[] returnValue = null;
     	return returnValue;
     }
-   
-        
-    protected double[] getPortfolioRatesOfReturn(int[] tickerIdx)
+    
+    #region getPortfolioRatesOfReturn
+    
+    private int getPortfolioRatesOfReturn_getRateOfTickerToBeAddedToTheArray_getPositionInArray(int geneValueForTickerIdx)
+    {
+      int position = geneValueForTickerIdx;
+      if(geneValueForTickerIdx<0)
+        position = Math.Abs(geneValueForTickerIdx + 1);
+      return position;
+    }
+    
+    private float getPortfolioRatesOfReturn_getRateOfTickerToBeAddedToTheArray(int tickerIdx,
+                                                                               int arrayElementPosition)
+    {
+      bool longReturns = false;
+      if(tickerIdx > 0)
+        //the tickerIdx points to a ticker for which long returns are to be examined
+        longReturns = true;
+      int position = this.getPortfolioRatesOfReturn_getRateOfTickerToBeAddedToTheArray_getPositionInArray(tickerIdx);
+      this.setOfCandidates[position].LongRatesOfReturn = longReturns;
+      float[] arrayOfRatesOfReturn = this.setOfCandidates[position].ArrayOfRatesOfReturn;
+      return (arrayOfRatesOfReturn[arrayElementPosition]/this.GenomeSize);
+      //the investment is assumed to be equally divided for each ticker
+    }    
+    
+    protected double[] getPortfolioRatesOfReturn(int[] tickersIdx)
     {
       double[] returnValue = new double[this.numberOfExaminedReturns];
-      float[] tickerRatesOfReturn;
       for(int i = 0; i<returnValue.Length; i++)    
       {  
-        foreach(int idx in tickerIdx)
-        {
-        	if(this.setOfTickers.Rows[idx]["ArrayOfRatesOfReturn"] is System.DBNull)
-          //the idx points to a ticker for which short returns are
-          //to be examined
-        		tickerRatesOfReturn =
-        					(float[])this.setOfTickers.Rows[idx - this.originalNumOfTickers]["ArrayOfRatesOfReturn"];
-        	else
-        		tickerRatesOfReturn = (float[])this.setOfTickers.Rows[idx]["ArrayOfRatesOfReturn"];
-          
-          returnValue[i] += 
-          		this.getCoefficient((string)this.setOfTickers.Rows[idx][0])*
-          		tickerRatesOfReturn[i]/this.genomeSize;
-          //the investment is assumed to be equally divided for each ticker
-        }
+        foreach(int tickerIdx in tickersIdx)
+          returnValue[i] +=
+            this.getPortfolioRatesOfReturn_getRateOfTickerToBeAddedToTheArray(tickerIdx,i);
       }
       return returnValue;
-      
     }
+
+    #endregion
     
   }
 
