@@ -105,10 +105,7 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
     
     protected override void run_addEventHandlers()
     {
-      this.endOfDayTimer.MarketOpen +=
-        new MarketOpenEventHandler(
-        this.endOfDayTimerHandler.MarketOpenEventHandler);  
-      
+           
       this.endOfDayTimer.MarketClose +=
         new MarketCloseEventHandler(
         this.endOfDayTimerHandler.MarketCloseEventHandler);
@@ -116,6 +113,10 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
       this.endOfDayTimer.MarketClose +=
         new MarketCloseEventHandler(
         this.checkDateForReport);
+      
+      this.endOfDayTimer.OneHourAfterMarketClose += 
+      	new OneHourAfterMarketCloseEventHandler(
+      	   this.endOfDayTimerHandler.OneHourAfterMarketCloseEventHandler);
     }
 
     
