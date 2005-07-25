@@ -32,6 +32,7 @@
     <File name=".\IndexOfKeyOrPreviousException.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
     <File name=".\Statistics\AdvancedFunctions.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
     <File name=".\EstimatedObject.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
+    <File name=".\Optimizing\Genetic\NewGenerationEventArgs.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
   </Contents>
   <References />
   <DeploymentInformation target="" script="" strategy="File" />
