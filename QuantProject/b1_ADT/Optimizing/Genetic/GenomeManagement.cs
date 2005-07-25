@@ -42,8 +42,8 @@ namespace QuantProject.ADT.Optimizing.Genetic
     
     static GenomeManagement()
     {
-	  		RandomGenerator = new Random((int)DateTime.Now.Ticks);
-		    childs = new Genome[2];  	
+	  	RandomGenerator = new Random((int)DateTime.Now.Ticks);
+		  childs = new Genome[2];  	
 		}
     
     private static void initializeStaticMembers(Genome parent1, Genome parent2)
@@ -63,7 +63,19 @@ namespace QuantProject.ADT.Optimizing.Genetic
         child.CalculateFitness();
       }
     }
-  	/// <summary>
+    
+    /// <summary>
+    /// It sets randomGenerator used by all other public methods
+    /// provided by the class.
+    /// If random generation process has to be controlled,
+    /// it needs to be called before all the other public methods
+    /// </summary>
+    public static void SetRandomGenerator(int seedForRandomGenerator)
+    {
+      GenomeManagement.RandomGenerator = new Random(seedForRandomGenerator);
+    }
+    
+    /// <summary>
 		/// Returns an array of genome (length = 2) based 
 		/// on classical one point crossover genes recombination
 		/// </summary>
