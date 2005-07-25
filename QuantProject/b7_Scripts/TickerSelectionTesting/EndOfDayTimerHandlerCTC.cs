@@ -50,7 +50,7 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
     protected bool stopLossConditionReached;
     protected double currentAccountValue;
     protected double previousAccountValue;
-
+    
     public EndOfDayTimerHandlerCTC(string tickerGroupID, int numberOfEligibleTickers, 
                                 int numberOfTickersToBeChosen, int numDaysForLiquidity,
                                 Account account,                                
@@ -70,14 +70,67 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
     {
       this.numDaysOfPortfolioLife = numDaysOfPortfolioLife;
       this.numDaysForReturnCalculation = numDaysForReturnCalculation;
-      this.daysCounter = -1;
+      this.daysCounter = 0;
       this.maxAcceptableCloseToCloseDrawdown = maxAcceptableCloseToCloseDrawdown;
       this.stopLossConditionReached = false;
       this.currentAccountValue = 0.0;
       this.previousAccountValue = 0.0;
     }
-		    
-    #region MarketOpenEventHandler
+	
+
+    #region MarketCloseEventHandler
+    
+   
+    
+    protected void updateStopLossCondition()
+    {
+      this.previousAccountValue = this.currentAccountValue;
+      this.currentAccountValue = this.account.GetMarketValue();
+      if((this.currentAccountValue - this.previousAccountValue)
+           /this.previousAccountValue < -this.maxAcceptableCloseToCloseDrawdown)
+      {
+        this.stopLossConditionReached = true;
+      }
+      else
+      {
+        this.stopLossConditionReached = false;
+      }
+    }    
+    
+    public override void MarketCloseEventHandler(
+      Object sender , EndOfDayTimingEventArgs endOfDayTimingEventArgs )
+    {
+      bool positionsJustClosed = false;
+      this.updateStopLossCondition();
+      if(this.account.Portfolio.Count > 0)
+      //portfolio is not empty
+      {
+        this.daysCounter++;
+        if(this.daysCounter == this.numDaysOfPortfolioLife ||
+           this.stopLossConditionReached)
+        //num days of portfolio life or 
+        //max acceptable close to close drawdown reached
+        {
+          this.closePositions();
+          this.daysCounter = 0;
+          positionsJustClosed = true;
+        }
+      }
+      
+      if(this.account.Portfolio.Count == 0 &&
+         !positionsJustClosed)
+        //portfolio is empty but it has not been closed
+        //at the current close
+      {
+        this.openPositions();
+        this.daysCounter = 0;
+      }
+    }
+    
+    #endregion
+    
+    #region OneHourAfterMarketCloseEventHandler
+    
     protected DataTable getSetOfTickersToBeOptimized(DateTime currentDate)
     {
       SelectorByLiquidity mostLiquid = new SelectorByLiquidity(this.tickerGroupID,false,
@@ -124,68 +177,23 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
       //that's it the actual chosenTickers member
     }
 
+    
     /// <summary>
-    /// Handles a "Market Open" event.
+    /// Handles a "One hour after market close" event.
     /// </summary>
     /// <param name="sender"></param>
     /// <param name="eventArgs"></param>
-    public override void MarketOpenEventHandler(
+    public override void OneHourAfterMarketCloseEventHandler(
       Object sender , EndOfDayTimingEventArgs endOfDayTimingEventArgs )
     {
-      this.updateStopLossCondition();
-      if(this.daysCounter == -1 || this.daysCounter == this.numDaysOfPortfolioLife - 1  ||
-          this.stopLossConditionReached )
-      //at the beginning, after num days of porfolio life has elasped,
-      //or when the stop loss condition is reached
+     
+      if(this.account.Portfolio.Count == 0 )
       {
+        this.orders.Clear();
         this.setTickers(endOfDayTimingEventArgs.EndOfDayDateTime.DateTime);
         //it sets tickers to be chosen at next close
-        this.orders.Clear();
       }
     }
 		#endregion
-
-    #region MarketCloseEventHandler
-    
-   
-    
-    protected void updateStopLossCondition()
-    {
-      this.previousAccountValue = this.currentAccountValue;
-      this.currentAccountValue = this.account.GetMarketValue();
-      if((this.currentAccountValue - this.previousAccountValue)
-           /this.previousAccountValue < -this.maxAcceptableCloseToCloseDrawdown)
-      {
-        this.stopLossConditionReached = true;
-      }
-      else
-      {
-        this.stopLossConditionReached = false;
-      }
-    }    
-    
-    public override void MarketCloseEventHandler(
-      Object sender , EndOfDayTimingEventArgs endOfDayTimingEventArgs )
-    {
-      if(this.daysCounter == -1 || 
-          this.daysCounter == this.numDaysOfPortfolioLife ||
-          this.stopLossConditionReached)
-      //it is the first day or num days of portfolio life or 
-      //max acceptable close to close draw down
-      //has been reached
-      {
-        this.closePositions();
-        this.openPositions();
-        this.daysCounter = 0;
-      }
-      else
-      {
-        this.daysCounter++;
-      }
-    }
-    
-    #endregion
-
-		
   }
 }
