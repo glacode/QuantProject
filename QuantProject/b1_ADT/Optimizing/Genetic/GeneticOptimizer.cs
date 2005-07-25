@@ -40,7 +40,7 @@ namespace QuantProject.ADT.Optimizing.Genetic
 	public class GeneticOptimizer
 	{
     #region fields  
-    private static Random random = new Random((int)DateTime.Now.Ticks);
+    private Random random;
     
     private double mutationRate;
     private double crossoverRate;
@@ -142,7 +142,7 @@ namespace QuantProject.ADT.Optimizing.Genetic
       this.genomeManager = genomeManager;
       this.populationSize = populationSize;
       this.generationNumber = generationNumber;
-      
+      this.random = new Random((int)DateTime.Now.Ticks);
       this.commonInitialization();
     }
     
@@ -157,7 +157,21 @@ namespace QuantProject.ADT.Optimizing.Genetic
       this.populationSize = populationSize;
       this.generationNumber = generationNumber;
       this.genomeManager = genomeManager;
-      
+      this.random = new Random((int)DateTime.Now.Ticks);
+      this.commonInitialization();
+    }
+    
+    public GeneticOptimizer(double crossoverRate, double mutationRate, double elitismRate, 
+                            int populationSize, int generationNumber,
+                            IGenomeManager genomeManager, int seedForRandomGenerator)
+    {
+      this.crossoverRate = crossoverRate;
+      this.mutationRate = mutationRate;
+      this.elitismRate = elitismRate;
+      this.populationSize = populationSize;
+      this.generationNumber = generationNumber;
+      this.genomeManager = genomeManager;
+      this.random = new Random(seedForRandomGenerator);
       this.commonInitialization();
     }
 
@@ -233,8 +247,9 @@ namespace QuantProject.ADT.Optimizing.Genetic
         throw new IndexOutOfRangeException("Genome size not set");
       this.createGenomes();
       this.currentGeneration.Sort(this.genomeComparer);
-			this.NewGeneration( this , new NewGenerationEventArgs(
-				this.currentGeneration , this.generationCounter , this.generationNumber ) );
+      if(this.NewGeneration != null)
+			  this.NewGeneration( this , new NewGenerationEventArgs(
+				  this.currentGeneration , this.generationCounter , this.generationNumber ) );
       this.calculateTotalFitness();
       this.updateCumulativeFitnessList();
       this.setInitialBestAndWorstGenomes();
@@ -262,7 +277,7 @@ namespace QuantProject.ADT.Optimizing.Genetic
     /// </summary>
     private int rouletteSelection()
     {
-      double randomFitness = this.totalFitness *(double)GeneticOptimizer.random.Next(1,1001)/1000;
+      double randomFitness = this.totalFitness *(double)this.random.Next(1,1001)/1000;
       int idx = -1;
       int first = 0;
       int last = this.populationSize -1;
@@ -293,12 +308,10 @@ namespace QuantProject.ADT.Optimizing.Genetic
     private void calculateTotalFitness()
     {
       this.totalFitness = 0.0;
-      for (int i = 0; i < this.populationSize; i++)
-      {
-        Genome g = ((Genome) this.currentGeneration[i]);
-        this.totalFitness += g.Fitness;
-      }
       
+      foreach(Genome g in this.currentGeneration)
+        this.totalFitness += g.Fitness;
+            
     }
     
     /// <summary>
@@ -363,7 +376,7 @@ namespace QuantProject.ADT.Optimizing.Genetic
       	Genome[] childs;
         parent1 = ((Genome) this.currentGeneration[indexForParent1]);
         parent2 = ((Genome) this.currentGeneration[indexForParent2]);
-        if ((double)GeneticOptimizer.random.Next(1,1001)/1000 < this.crossoverRate)
+        if ((double)this.random.Next(1,1001)/1000 < this.crossoverRate)
         {
           childs = this.genomeManager.GetChilds(parent1, parent2);
          }
@@ -386,8 +399,9 @@ namespace QuantProject.ADT.Optimizing.Genetic
       this.nextGeneration.Sort(this.genomeComparer);
       this.updateCurrentGeneration();
       this.currentGeneration.Sort(this.genomeComparer);
-			this.NewGeneration( this , new NewGenerationEventArgs(
-				this.currentGeneration , this.generationCounter , this.generationNumber ) );
+			if(this.NewGeneration != null)
+			  this.NewGeneration( this , new NewGenerationEventArgs(
+				  this.currentGeneration , this.generationCounter , this.generationNumber ) );
       this.calculateTotalFitness();
       this.updateCumulativeFitnessList();
       
