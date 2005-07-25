@@ -71,14 +71,21 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
     public override void MarketOpenEventHandler(
       Object sender , EndOfDayTimingEventArgs endOfDayTimingEventArgs )
     {
-    	this.openPositions();
+    	//temporarily the if condition
+    	//if(this.numDaysElapsedSinceLastOptimization == 0)
+    		this.openPositions();
     }
 		
                 
     public override void MarketCloseEventHandler(
       Object sender , EndOfDayTimingEventArgs endOfDayTimingEventArgs )
     {
-    	this.closePositions();
+    	
+    	//temporarily
+    	//if(this.numDaysElapsedSinceLastOptimization ==
+    	//   this.numDaysBetweenEachOptimization)
+    	 		this.closePositions();
+    	  	
     }
     
     
@@ -115,13 +122,13 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
       //	                                 false, currentDate.AddDays(-2),
       //	                                 currentDate, this.numberOfEligibleTickers/4);      	                                 
       //return winners.GetTableOfSelectedTickers();
-      SelectorByOpenCloseCorrelationToBenchmark lessCorrelated = 
-        new SelectorByOpenCloseCorrelationToBenchmark(quotedAtEachMarketDayFromEligible.GetTableOfSelectedTickers(),
-                                                      this.benchmark, true,
-                                                      currentDate.AddDays(-this.numDaysForLiquidity),
-                                                      currentDate, this.numberOfEligibleTickers/2);
-      //return quotedAtEachMarketDayFromEligible.GetTableOfSelectedTickers();
-      return lessCorrelated.GetTableOfSelectedTickers();
+      //SelectorByOpenCloseCorrelationToBenchmark lessCorrelated = 
+      //  new SelectorByOpenCloseCorrelationToBenchmark(quotedAtEachMarketDayFromEligible.GetTableOfSelectedTickers(),
+      //                                                this.benchmark, true,
+      //                                                currentDate.AddDays(-this.numDaysForLiquidity),
+      //                                                currentDate, this.numberOfEligibleTickers/2);
+      return quotedAtEachMarketDayFromEligible.GetTableOfSelectedTickers();
+      //return lessCorrelated.GetTableOfSelectedTickers();
     }
     
     
@@ -172,7 +179,6 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
       Object sender , EndOfDayTimingEventArgs endOfDayTimingEventArgs )
     {
     	this.orders.Clear();
-    	this.numDaysElapsedSinceLastOptimization++;
     	//this.oneHourAfterMarketCloseEventHandler_updatePrices();
       if(this.numDaysElapsedSinceLastOptimization == 
     	   this.numDaysBetweenEachOptimization)
@@ -181,6 +187,10 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
       	//sets tickers to be chosen next Market Open event
       	this.numDaysElapsedSinceLastOptimization = 0;
     	}
+      else
+      {
+        this.numDaysElapsedSinceLastOptimization++;
+      }
     	
     }
 		   

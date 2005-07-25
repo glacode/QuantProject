@@ -220,7 +220,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.LinearCombination
 			//			DataTable setOfTickersToBeOptimized =
 			//				this.getSetOfTickersToBeOptimized_quickly();
 			DataTable setOfTickersToBeOptimized =
-				this.getSetOfTickersToBeOptimized_quickly();
+				this.getSetOfTickersToBeOptimized();
 //			DataTable setOfTickersToBeOptimized =
 //				this.getSetOfTickersToBeOptimized();
 			GenomeManagerForEfficientCTOPortfolio genManEfficientCTOPortfolio = 
