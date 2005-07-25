@@ -54,46 +54,16 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
                                      portfolioType)
                           
     {
-      this.retrieveData(); 
+      this.retrieveData();
     }
     
-    
-    public override object Decode(Genome genome)
-    {
-      
-      string[] arrayOfTickers = new string[genome.Genes().Length];
-      int indexOfTicker;
-      for(int index = 0; index < genome.Genes().Length; index++)
-      {
-        indexOfTicker = (int)genome.Genes().GetValue(index);
-        arrayOfTickers[index] = (string)this.setOfTickers.Rows[indexOfTicker][0];
-      }
-      return arrayOfTickers;
-      
-      /*old implementation, to be used for output to console
-      string sequenceOfTickers = ""; 
-      object returnValue;
-      foreach(int index in genome.Genes())
-      {
-        sequenceOfTickers += (string)this.setOfTickers.Rows[index][0] + ";" ;
-      }
-      returnValue = sequenceOfTickers;
-      returnValue += "(rate: " + this.RateOfReturn + " std: " +
-                        System.Math.Sqrt(this.Variance) + ")";
-      return returnValue;
-      */
-    }
-  
     protected override float[] getArrayOfRatesOfReturn(string ticker)
     {
       float[] returnValue = null;
-      if(!ticker.StartsWith("-"))
-      {
-      	string tickerCode = GenomeManagerForEfficientPortfolio.GetCleanTickerCode(ticker);
-      	Quotes tickerQuotes = new Quotes(tickerCode, this.firstQuoteDate, this.lastQuoteDate);
-      	returnValue = ExtendedDataTable.GetRatesOfReturnsFromColumns(tickerQuotes, "quClose", "quOpen");
-      	this.numberOfExaminedReturns = returnValue.Length;
-      }
+      Quotes tickerQuotes = new Quotes(ticker, this.firstQuoteDate, this.lastQuoteDate);
+      returnValue = ExtendedDataTable.GetRatesOfReturnsFromColumns(tickerQuotes, "quClose", "quOpen");
+      this.numberOfExaminedReturns = returnValue.Length;
+      
       return returnValue;
     }
     /*

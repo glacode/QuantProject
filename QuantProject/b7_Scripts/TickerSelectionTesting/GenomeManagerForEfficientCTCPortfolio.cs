@@ -65,42 +65,22 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
       this.retrieveData();
     }
     
-    
-    public override object Decode(Genome genome)
-    {
-      
-      string[] arrayOfTickers = new string[genome.Genes().Length];
-      int indexOfTicker;
-      for(int index = 0; index < genome.Genes().Length; index++)
-      {
-        indexOfTicker = (int)genome.Genes().GetValue(index);
-        arrayOfTickers[index] = (string)this.setOfTickers.Rows[indexOfTicker][0];
-      }
-      return arrayOfTickers;
-      
-    }
-  
     protected override float[] getArrayOfRatesOfReturn(string ticker)
     {
       float[] returnValue = null;
-      if(!ticker.StartsWith("-"))
-      {
-      	string tickerCode = GenomeManagerForEfficientPortfolio.GetCleanTickerCode(ticker);
-      	Quotes tickerQuotes = new Quotes(tickerCode, this.firstQuoteDate, this.lastQuoteDate);
-      	float[] allAdjValues = ExtendedDataTable.GetArrayOfFloatFromColumn(tickerQuotes, "quAdjustedClose");
-       	returnValue = new float[allAdjValues.Length/this.numDaysForReturnCalculation + 1];
-      	int i = 0; //index for ratesOfReturns array
+      Quotes tickerQuotes = new Quotes(ticker, this.firstQuoteDate, this.lastQuoteDate);
+      float[] allAdjValues = ExtendedDataTable.GetArrayOfFloatFromColumn(tickerQuotes, "quAdjustedClose");
+      returnValue = new float[allAdjValues.Length/this.numDaysForReturnCalculation + 1];
+      int i = 0; //index for ratesOfReturns array
+	    for(int idx = 0; idx + this.numDaysForReturnCalculation < allAdjValues.Length; idx += this.numDaysForReturnCalculation )
+	    {
+	      returnValue[i] = (allAdjValues[idx+this.numDaysForReturnCalculation]/
+	      	                    allAdjValues[idx] - 1);
+	      i++;
+	    }	
+      this.numberOfExaminedReturns = returnValue.Length;
       
-	      for(int idx = 0; idx + this.numDaysForReturnCalculation < allAdjValues.Length; idx += this.numDaysForReturnCalculation )
-	      {
-	        returnValue[i] = (allAdjValues[idx+this.numDaysForReturnCalculation]/
-	      	                     allAdjValues[idx] - 1);
-	        i++;
-	      }	
-       	this.numberOfExaminedReturns = returnValue.Length;
-      }
       return returnValue;
-    	
     }
    	/*
     protected override double getFitnessValue_calculate()
