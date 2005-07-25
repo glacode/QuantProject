@@ -56,14 +56,14 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
                                     int numberOfTickersToBeChosen, int numDaysForLiquidity, 
                                     int generationNumberForGeneticOptimizer,
                                     int populationSizeForGeneticOptimizer, string benchmark,
-                                    DateTime startDate, DateTime endDate, double targetReturn,
+                                    DateTime endDate, double targetReturn,
                                     PortfolioType portfolioType, double maxRunningHours, 
                                    	int numDaysBetweenEachOptimization):
   																base(tickerGroupID, numberOfEligibleTickers, 
                                      numberOfTickersToBeChosen, numDaysForLiquidity, 
                                     generationNumberForGeneticOptimizer,
                                     populationSizeForGeneticOptimizer, benchmark,
-                                    startDate, endDate, targetReturn,
+                                    endDate.AddDays(-numDaysForLiquidity), endDate, targetReturn,
                                    	portfolioType, maxRunningHours,
                                    	numDaysBetweenEachOptimization)
 		{
@@ -92,10 +92,10 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
       ((EndOfDayTimerHandlerCTOTest)this.endOfDayTimerHandler).Reset();
       
       Report report = new Report( this.account , this.historicalQuoteProvider );
-      report.Create( "Test optimization of OpenClose efficient portfolio", 1 ,
+      report.Create( "TestOptimizationOpenToCloseEfficientPortfolio", 1 ,
         new EndOfDayDateTime( this.endDateTime.DateTime ,
         EndOfDaySpecificTime.MarketClose ) ,
-        "^NDX" );
+        this.benchmark );
       report.Show();
     }
      

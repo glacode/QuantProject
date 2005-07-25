@@ -63,7 +63,7 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
                                     int numberOfTickersToBeChosen, int numDaysForLiquidity, 
                                     int generationNumberForGeneticOptimizer,
                                     int populationSizeForGeneticOptimizer, string benchmark,
-                                    DateTime startDate, DateTime endDate,
+                                    DateTime endDate,
                                    	int numDaysOfPortfolioLife, int numDaysForReturnCalculation, 
                                    	double targetReturn,
                                     PortfolioType portfolioType, double maxAcceptableCloseToCloseDrawdown, 
@@ -72,8 +72,8 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
                                     numberOfTickersToBeChosen, numDaysForLiquidity, 
                                     generationNumberForGeneticOptimizer,
                                     populationSizeForGeneticOptimizer, benchmark,
-                                    startDate, endDate,
-                                   	numDaysOfPortfolioLife, numDaysForReturnCalculation, 
+                                    endDate.AddDays(-numDaysForLiquidity), endDate,
+                                   	numDaysOfPortfolioLife - 1, numDaysForReturnCalculation, 
                                    	targetReturn,
                                     portfolioType, maxAcceptableCloseToCloseDrawdown, 
                                     maxRunningHours)
@@ -101,10 +101,10 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
     	base.Run();
       ((EndOfDayTimerHandlerCTCTest)this.endOfDayTimerHandler).Reset();
        Report report = new Report( this.account , this.historicalQuoteProvider );
-      report.Create( "Test optimization of Close to close efficient portfolio", 1 ,
+      report.Create( "TestOptimizationCTCPortfolio", 1 ,
         new EndOfDayDateTime( this.endDateTime.DateTime ,
         EndOfDaySpecificTime.MarketClose ) ,
-        "^SPX" );
+        this.benchmark );
       report.Show();
     }
     
