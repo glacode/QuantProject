@@ -31,5 +31,7 @@ namespace QuantProject.ADT
 		public static DateTime MinQuoteDateTime = new DateTime( 1950 , 1 , 1 );
 		public static int CachePages = 1000;
 		public static int PagesToBeRemovedFromCache = 500; // for Garbage Collection
+		public static int SeedForRandomGenerator = 333; // for GeneticOptimizer and
+																										// GenomeManagement
 	}
 }
