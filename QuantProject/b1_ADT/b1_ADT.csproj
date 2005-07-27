@@ -197,6 +197,11 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "Optimizing\Genetic\GenomeCounter.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "Optimizing\Genetic\GenomeManagement.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
