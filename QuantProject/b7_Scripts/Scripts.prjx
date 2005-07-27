@@ -44,6 +44,8 @@
     <File name=".\WalkForwardTesting\LinearCombination\OptimizationOutput.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
     <File name=".\WalkForwardTesting\LinearCombination\RunBestLinearCombination.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
     <File name=".\WalkForwardTesting\LinearCombination\TestDisplayer.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
+    <File name=".\TickerSelectionTesting\EndOfDayTimerHandlerCTCWeekly.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
+    <File name=".\TickerSelectionTesting\RunEfficientCTCWeeklyPortfolio.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
   </Contents>
   <References>
     <Reference type="Project" refto="b1_ADT" localcopy="True" />
