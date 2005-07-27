@@ -126,6 +126,10 @@ namespace QuantProject.ADT.Optimizing.Genetic
     {
       get{return this.worstGenome;}
     }
+    public ArrayList CurrentGeneration
+    {
+      get{return this.currentGeneration;}
+    }
     #endregion
 
 		public event NewGenerationEventHandler NewGeneration;
@@ -146,6 +150,15 @@ namespace QuantProject.ADT.Optimizing.Genetic
       this.commonInitialization();
     }
     
+    public GeneticOptimizer(IGenomeManager genomeManager, int populationSize,
+                            int generationNumber, int seedForRandomGenerator)
+    {
+      this.genomeManager = genomeManager;
+      this.populationSize = populationSize;
+      this.generationNumber = generationNumber;
+      this.random = new Random(seedForRandomGenerator);
+      this.commonInitialization();
+    }
     
     public GeneticOptimizer(double crossoverRate, double mutationRate, double elitismRate, 
                             int populationSize, int generationNumber,
@@ -177,9 +190,9 @@ namespace QuantProject.ADT.Optimizing.Genetic
 
     private void commonInitialization()
     {
-      this.mutationRate = 0.02;
+      this.mutationRate = 0.10;
    		this.crossoverRate = 0.85;
-    	this.elitismRate = 0.01;
+    	this.elitismRate = 0.0;
     	this.minConvergenceRate = 0.80;
     	this.keepOnRunningUntilConvergenceIsReached = false;
     	this.genomeSize = this.genomeManager.GenomeSize;
