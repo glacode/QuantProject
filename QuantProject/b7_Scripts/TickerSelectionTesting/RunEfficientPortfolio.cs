@@ -1,7 +1,7 @@
 /*
 QuantProject - Quantitative Finance Library
 
-RunEfficientPorfolio.cs
+RunEfficientPortfolio.cs
 Copyright (C) 2003 
 Marco Milletti
 
@@ -50,7 +50,7 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
 	/// Base class for running efficient portfolio tests using genetic optimizer
 	/// </summary>
 	[Serializable]
-  public class RunEfficientPorfolio
+  public class RunEfficientPortfolio
 	{
     protected string tickerGroupID;
     protected int numberOfEligibleTickers;
@@ -107,7 +107,7 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
     	get{return this.endOfDayTimer.GetCurrentTime().DateTime ;}
     }	
 	
-		public RunEfficientPorfolio(string benchmark,
+		public RunEfficientPortfolio(string benchmark,
                                 DateTime startDate, DateTime endDate, 
                                 PortfolioType portfolioType, 
                                 double maxRunningHours)
@@ -125,7 +125,7 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
       //this.numIntervalDays = 3;
 		}
     
-    public RunEfficientPorfolio(string tickerGroupID, int numberOfEligibleTickers,
+    public RunEfficientPortfolio(string tickerGroupID, int numberOfEligibleTickers,
                                 int numberOfTickersToBeChosen, int numDaysForLiquidity, 
                                 int generationNumberForGeneticOptimizer,
                                 int populationSizeForGeneticOptimizer, string benchmark,
@@ -154,6 +154,18 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
       this.maxRunningHours = maxRunningHours;
       //this.numIntervalDays = 3;
 		}
+    
+    protected string getGenomeCounterInfo()
+    {
+      string returnValue = "";
+      if(this.endOfDayTimerHandler.GenomeCounter != null)
+        returnValue = "Total generated genomes: " +
+                      this.endOfDayTimerHandler.GenomeCounter.TotalEvaluatedGenomes.ToString() + 
+                      "; Current fitness: " +
+                      this.endOfDayTimerHandler.GenomeCounter.BestFitness.ToString();
+      return returnValue;
+    }
+
     #region Run
  		
     protected virtual void run_initializeEndOfDayTimer()

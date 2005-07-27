@@ -146,7 +146,8 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
     }
     
     
-    protected virtual void setTickers(DateTime currentDate)
+    protected virtual void setTickers(DateTime currentDate,
+                                      bool setGenomeCounter)
     {
       DataTable setOfTickersToBeOptimized = this.getSetOfTickersToBeOptimized(currentDate);
       if(setOfTickersToBeOptimized.Rows.Count > this.chosenTickers.Length*2)
@@ -163,13 +164,16 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
           new GenomeManagerForEfficientCTCPortfolio(setOfTickersToBeOptimized,
           currentDate.AddDays(-this.numDaysForLiquidity), 
           currentDate, this.numberOfTickersToBeChosen,
-          this.numDaysOfPortfolioLife, this.numDaysForReturnCalculation,
+          this.numDaysForReturnCalculation,
           this.targetReturn,
          	this.portfolioType);
         GeneticOptimizer GO = new GeneticOptimizer(genManEfficientCTCPortfolio,
                                                     this.populationSizeForGeneticOptimizer, 
-                                                    this.generationNumberForGeneticOptimizer);
-        //GO.KeepOnRunningUntilConvergenceIsReached = true;
+                                                    this.generationNumberForGeneticOptimizer,
+                                                   ConstantsProvider.SeedForRandomGenerator);
+        if(setGenomeCounter)
+          this.genomeCounter = new GenomeCounter(GO);
+        
         GO.Run(false);
         this.chosenTickers = (string[])GO.BestGenome.Meaning;
       }
@@ -190,7 +194,7 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
       if(this.account.Portfolio.Count == 0 )
       {
         this.orders.Clear();
-        this.setTickers(endOfDayTimingEventArgs.EndOfDayDateTime.DateTime);
+        this.setTickers(endOfDayTimingEventArgs.EndOfDayDateTime.DateTime, false);
         //it sets tickers to be chosen at next close
       }
     }

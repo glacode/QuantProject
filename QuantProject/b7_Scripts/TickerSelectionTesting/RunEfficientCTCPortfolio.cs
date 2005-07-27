@@ -56,13 +56,13 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
 	/// - choose the most efficient portfolio among these tickers
 	/// </summary>
 	[Serializable]
-	public class RunEfficientCTCPorfolio : RunEfficientPorfolio
+	public class RunEfficientCTCPortfolio : RunEfficientPortfolio
 	{
     protected int numDayOfPortfolioLife;
     protected int numDaysForReturnCalculation;
     protected double maxAcceptableCloseToCloseDrawdown;
 		
-    public RunEfficientCTCPorfolio(string tickerGroupID, int numberOfEligibleTickers, 
+    public RunEfficientCTCPortfolio(string tickerGroupID, int numberOfEligibleTickers, 
                                     int numberOfTickersToBeChosen, int numDaysForLiquidity, 
                                     int generationNumberForGeneticOptimizer,
                                     int populationSizeForGeneticOptimizer, string benchmark,

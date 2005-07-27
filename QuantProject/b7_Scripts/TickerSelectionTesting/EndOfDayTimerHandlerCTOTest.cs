@@ -44,6 +44,7 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
   public class EndOfDayTimerHandlerCTOTest : EndOfDayTimerHandlerCTO
   {
     private static bool optimized;
+       
     public EndOfDayTimerHandlerCTOTest(string tickerGroupID, int numberOfEligibleTickers, 
                                 int numberOfTickersToBeChosen, int numDaysForLiquidity, Account account,
                                 int generationNumberForGeneticOptimizer,
@@ -60,11 +61,15 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
       
     }
     
-    protected override void setTickers(DateTime currentDate)
+    protected override void setTickers(DateTime currentDate, 
+                                      bool setGenomeCounter)
     {
-    	if(!EndOfDayTimerHandlerCTOTest.optimized)
+    	//setGenomeCounter never used; it is necessary for overriding 
+      
+      if(!EndOfDayTimerHandlerCTOTest.optimized)
     	{
-        base.setTickers(currentDate.AddDays(this.numDaysForLiquidity));
+        base.setTickers(currentDate.AddDays(this.numDaysForLiquidity),
+                        true);
 	      EndOfDayTimerHandlerCTOTest.optimized = true;
 	   	}
     }

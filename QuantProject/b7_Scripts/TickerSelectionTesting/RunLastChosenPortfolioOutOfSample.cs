@@ -51,7 +51,7 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
 	/// PortfolioType
 	/// </summary>
 	[Serializable]
-	public class RunLastChosenPortfolioOutOfSample : RunEfficientPorfolio
+	public class RunLastChosenPortfolioOutOfSample : RunEfficientPortfolio
 	{
 		private string[] tickers;
 		private PortfolioType typeOfPortfolio;

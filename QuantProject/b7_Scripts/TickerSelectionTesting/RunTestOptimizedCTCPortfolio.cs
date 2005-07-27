@@ -56,7 +56,7 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
 	/// - choose the most efficient portfolio among these tickers
 	/// </summary>
 	[Serializable]
-	public class RunTestOptimizedCTCPortfolio : RunEfficientCTCPorfolio
+	public class RunTestOptimizedCTCPortfolio : RunEfficientCTCPortfolio
 	{
    
     public RunTestOptimizedCTCPortfolio(string tickerGroupID, int numberOfEligibleTickers, 
@@ -106,6 +106,7 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
         EndOfDaySpecificTime.MarketClose ) ,
         this.benchmark );
       report.Show();
+      report.Text = this.getGenomeCounterInfo();
     }
     
     protected override void checkDateForReport(Object sender , EndOfDayTimingEventArgs endOfDayTimingEventArgs)

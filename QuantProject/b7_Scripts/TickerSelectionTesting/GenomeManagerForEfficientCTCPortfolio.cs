@@ -39,14 +39,12 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
 	[Serializable]
   public class GenomeManagerForEfficientCTCPortfolio : GenomeManagerForEfficientPortfolio
   {
-    private int numDaysOfPortfolioLife;
     private int numDaysForReturnCalculation;
     
     public GenomeManagerForEfficientCTCPortfolio(DataTable setOfInitialTickers,
                                                  DateTime firstQuoteDate,
                                                  DateTime lastQuoteDate,
                                                  int numberOfTickersInPortfolio,
-                                                 int numDaysOfPortfolioLife,
                                                  int numDaysForReturnCalculation,
                                                  double targetPerformance,
                                                  PortfolioType portfolioType)
@@ -60,7 +58,6 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
                                 
                           
     {
-      this.numDaysOfPortfolioLife = numDaysOfPortfolioLife;
       this.numDaysForReturnCalculation = numDaysForReturnCalculation;
       this.retrieveData();
     }

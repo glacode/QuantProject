@@ -119,6 +119,7 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
       this.genomeSize = numberOfTickersInPortfolio;
       this.portfolioType = portfolioType;
       this.setMinAndMaxValueForGenes();
+      GenomeManagement.SetRandomGenerator(QuantProject.ADT.ConstantsProvider.SeedForRandomGenerator);
     }
     
     private void setMinAndMaxValueForGenes()
@@ -202,7 +203,7 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
 
     public Genome[] GetChilds(Genome parent1, Genome parent2)
     {
-      return 
+      return
       	GenomeManagement.MixGenesWithoutDuplicates(parent1, parent2,
       	                                           this.constToDiscoverDuplicateGenes);
     }

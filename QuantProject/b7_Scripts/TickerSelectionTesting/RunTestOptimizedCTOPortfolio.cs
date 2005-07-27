@@ -49,10 +49,10 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
 	/// in choosing the best open/close portfolio
 	/// </summary>
 	[Serializable]
-  public class RunTestOptimizedCTOPorfolio : RunEfficientCTOPorfolio
+  public class RunTestOptimizedCTOPortfolio : RunEfficientCTOPortfolio
 	{
    
-    public RunTestOptimizedCTOPorfolio(string tickerGroupID, int numberOfEligibleTickers, 
+    public RunTestOptimizedCTOPortfolio(string tickerGroupID, int numberOfEligibleTickers, 
                                     int numberOfTickersToBeChosen, int numDaysForLiquidity, 
                                     int generationNumberForGeneticOptimizer,
                                     int populationSizeForGeneticOptimizer, string benchmark,
@@ -97,6 +97,7 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
         EndOfDaySpecificTime.MarketClose ) ,
         this.benchmark );
       report.Show();
+      report.Text = this.getGenomeCounterInfo();
     }
      
     protected override void checkDateForReport(Object sender , EndOfDayTimingEventArgs endOfDayTimingEventArgs)

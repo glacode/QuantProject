@@ -45,6 +45,7 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
   {
     protected int numDaysBetweenEachOptimization;
     private int numDaysElapsedSinceLastOptimization;
+    
     public EndOfDayTimerHandlerCTO(string tickerGroupID, int numberOfEligibleTickers, 
                                 int numberOfTickersToBeChosen, int numDaysForLiquidity, Account account,
                                 int generationNumberForGeneticOptimizer,
@@ -131,8 +132,8 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
       //return lessCorrelated.GetTableOfSelectedTickers();
     }
     
-    
-    protected virtual void setTickers(DateTime currentDate)
+    protected virtual void setTickers(DateTime currentDate,
+                                     	bool setGenomeCounter)
     {
       
       DataTable setOfTickersToBeOptimized = this.getSetOfTickersToBeOptimized(currentDate);
@@ -151,7 +152,10 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
         
         GeneticOptimizer GO = new GeneticOptimizer(genManEfficientCTOPortfolio,
                                                     this.populationSizeForGeneticOptimizer,
-                                                    this.generationNumberForGeneticOptimizer);
+                                                    this.generationNumberForGeneticOptimizer,
+                                                   ConstantsProvider.SeedForRandomGenerator);
+        if(setGenomeCounter)
+        	this.genomeCounter = new GenomeCounter(GO);
         
         GO.Run(false);
         
@@ -183,7 +187,7 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
       if(this.numDaysElapsedSinceLastOptimization == 
     	   this.numDaysBetweenEachOptimization)
     	{
-    		this.setTickers(endOfDayTimingEventArgs.EndOfDayDateTime.DateTime);
+    		this.setTickers(endOfDayTimingEventArgs.EndOfDayDateTime.DateTime, false);
       	//sets tickers to be chosen next Market Open event
       	this.numDaysElapsedSinceLastOptimization = 0;
     	}

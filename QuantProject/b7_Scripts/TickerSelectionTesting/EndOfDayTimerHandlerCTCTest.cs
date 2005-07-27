@@ -70,11 +70,14 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
      
     }
 		    
-    protected override void setTickers(DateTime currentDate)
+    protected override void setTickers(DateTime currentDate,
+                                        bool setGenomeCounter)
     {
+      //setGenomeCounter never used; it is necessary for overriding 
       if(!EndOfDayTimerHandlerCTCTest.optimized)
       {
-      	base.setTickers(currentDate.AddDays(this.numDaysForLiquidity));
+      	base.setTickers(currentDate.AddDays(this.numDaysForLiquidity),
+                        true);
       	EndOfDayTimerHandlerCTCTest.optimized = true;
       }
     }

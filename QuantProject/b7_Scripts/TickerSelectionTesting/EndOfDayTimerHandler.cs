@@ -65,6 +65,12 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
     protected double targetReturn;
     
     protected PortfolioType portfolioType;
+
+    protected GenomeCounter genomeCounter;
+    public GenomeCounter GenomeCounter
+    {
+      get{return this.genomeCounter;}
+    }
     
     public string[] LastChosenTickers
     {
