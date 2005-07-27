@@ -183,6 +183,11 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "TickerSelectionTesting\EndOfDayTimerHandlerCTCWeekly.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "TickerSelectionTesting\EndOfDayTimerHandlerCTO.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
@@ -219,6 +224,11 @@
                 />
                 <File
                     RelPath = "TickerSelectionTesting\RunEfficientCTCPortfolio.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "TickerSelectionTesting\RunEfficientCTCWeeklyPortfolio.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
