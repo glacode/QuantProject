@@ -30,8 +30,8 @@ namespace QuantProject.Data.DataTables
 	/// <summary>
 	/// The DataTable to work with tickers inside a given group.
 	/// </summary>
-	
-  public class Tickers_tickerGroups : DataTable
+	[Serializable]
+	public class Tickers_tickerGroups : DataTable
 	{
     // these static fields provide field name in the database table
     // They are intended to be used through intellisense when necessary
