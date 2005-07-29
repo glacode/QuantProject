@@ -44,6 +44,8 @@ namespace QuantProject.Scripts.WalkForwardTesting.LinearCombination
 
 		// Glauco code
 		private ArrayList bestGenomes;
+		private System.Windows.Forms.Label label1;
+		private GenomeRepresentation lastSelectedGenomeRepresentation;
 
 		private void testdisplayer()
 		{
@@ -52,14 +54,21 @@ namespace QuantProject.Scripts.WalkForwardTesting.LinearCombination
 		public TestDisplayer( DateTime firstDate , DateTime lastDate ,
 			ArrayList bestGenomes )
 		{
+			if ( bestGenomes.Count == 0 )
+				throw new Exception( "bestGenomes is empty! It should contain " +
+					"a genome, at least." );
 			//
 			// Required for Windows Form Designer support
 			//
 			InitializeComponent();
 
 			// Glauco code
-			this.dtpFirstDate.Value = firstDate;
-			this.dtpLastDate.Value = lastDate;
+			this.lastSelectedGenomeRepresentation =
+				((GenomeRepresentation)bestGenomes[0]);
+			this.dtpFirstDate.Value =
+				this.lastSelectedGenomeRepresentation.FirstOptimizationDate;
+			this.dtpLastDate.Value =
+				this.lastSelectedGenomeRepresentation.LastOptimizationDate;
       this.bestGenomes = bestGenomes;
 			this.testdisplayer();
 		}
@@ -89,6 +98,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.LinearCombination
 			this.dgBestGenomes = new System.Windows.Forms.DataGrid();
 			this.dtpFirstDate = new System.Windows.Forms.DateTimePicker();
 			this.dtpLastDate = new System.Windows.Forms.DateTimePicker();
+			this.label1 = new System.Windows.Forms.Label();
 			((System.ComponentModel.ISupportInitialize)(this.dgBestGenomes)).BeginInit();
 			this.SuspendLayout();
 			// 
@@ -97,9 +107,9 @@ namespace QuantProject.Scripts.WalkForwardTesting.LinearCombination
 			this.dgBestGenomes.DataMember = "";
 			this.dgBestGenomes.Dock = System.Windows.Forms.DockStyle.Bottom;
 			this.dgBestGenomes.HeaderForeColor = System.Drawing.SystemColors.ControlText;
-			this.dgBestGenomes.Location = new System.Drawing.Point(0, 93);
+			this.dgBestGenomes.Location = new System.Drawing.Point(0, 117);
 			this.dgBestGenomes.Name = "dgBestGenomes";
-			this.dgBestGenomes.Size = new System.Drawing.Size(496, 248);
+			this.dgBestGenomes.Size = new System.Drawing.Size(496, 224);
 			this.dgBestGenomes.TabIndex = 0;
 			this.dgBestGenomes.MouseUp += new System.Windows.Forms.MouseEventHandler(this.dgBestGenomes_MouseUp);
 			// 
@@ -116,11 +126,21 @@ namespace QuantProject.Scripts.WalkForwardTesting.LinearCombination
 			this.dtpLastDate.Size = new System.Drawing.Size(208, 20);
 			this.dtpLastDate.TabIndex = 2;
 			// 
+			// label1
+			// 
+			this.label1.Location = new System.Drawing.Point(32, 64);
+			this.label1.Name = "label1";
+			this.label1.Size = new System.Drawing.Size(400, 40);
+			this.label1.TabIndex = 3;
+			this.label1.Text = "Left click data grid rows to reset dates to the optimization period. Right click " +
+				"to preserve date displacements and backtest.";
+			// 
 			// TestDisplayer
 			// 
 			this.AutoScaleBaseSize = new System.Drawing.Size(5, 13);
 			this.ClientSize = new System.Drawing.Size(496, 341);
 			this.Controls.AddRange(new System.Windows.Forms.Control[] {
+																																	this.label1,
 																																	this.dtpLastDate,
 																																	this.dtpFirstDate,
 																																	this.dgBestGenomes});
@@ -132,26 +152,81 @@ namespace QuantProject.Scripts.WalkForwardTesting.LinearCombination
 		}
 		#endregion
 
-		private void dgBestGenomes_MouseUp_actually(object sender, System.Windows.Forms.MouseEventArgs e)
+		private bool aRowHasBeenClicked(
+			object sender, System.Windows.Forms.MouseEventArgs e )
 		{
 			DataGrid dataGrid = (DataGrid)sender;
 			Point point = new Point( e.X , e.Y );
 			DataGrid.HitTestInfo hitTestInfo = dataGrid.HitTest( point );
+			return hitTestInfo.Row>=0;
+		}
+		private GenomeRepresentation dgBestGenomes_MouseUp_getClickedGenomeRepresentation(
+			object sender, System.Windows.Forms.MouseEventArgs e )
+		{
+			GenomeRepresentation genomeRepresentation = null;
+			DataGrid dataGrid = (DataGrid)sender;
+			Point point = new Point( e.X , e.Y );
+			DataGrid.HitTestInfo hitTestInfo = dataGrid.HitTest( point );
 			ArrayList bestGenomes = (ArrayList)dataGrid.DataSource;
-//			DataRow dataRow = dataTable.Rows[ hitTestInfo.Row ];
-			GenomeRepresentation genomeRepresentation =
+			//			DataRow dataRow = dataTable.Rows[ hitTestInfo.Row ];
+			if ( hitTestInfo.Row >= 0 )
+				// a grid row has been clicked, not the header
+				genomeRepresentation =
 				(GenomeRepresentation)bestGenomes[ hitTestInfo.Row ];
+			return genomeRepresentation;
+		}
+		private void dgBestGenomes_MouseUp_rightButton_updateDates(
+			GenomeRepresentation newSelectedGenomeRepresentation )
+		{
+			TimeSpan currentFirstDateDisplacement =
+				( this.dtpFirstDate.Value -
+				this.lastSelectedGenomeRepresentation.FirstOptimizationDate );
+			TimeSpan currentLastDateDisplacement =
+				( this.dtpLastDate.Value -
+				this.lastSelectedGenomeRepresentation.LastOptimizationDate );
+			this.dtpFirstDate.Value = newSelectedGenomeRepresentation.FirstOptimizationDate +
+				currentFirstDateDisplacement;
+			this.dtpLastDate.Value = newSelectedGenomeRepresentation.LastOptimizationDate +
+				currentLastDateDisplacement;
+		}
+		private void dgBestGenomes_MouseUp_rightButton(object sender, System.Windows.Forms.MouseEventArgs e)
+		{
+			GenomeRepresentation genomeRepresentation =
+				this.dgBestGenomes_MouseUp_getClickedGenomeRepresentation( sender , e );
+			dgBestGenomes_MouseUp_rightButton_updateDates( genomeRepresentation );
 			string[] signedTickers = GenomeRepresentation.GetSignedTickers(
 				genomeRepresentation.SignedTickers );
 			LinearCombinationTest linearCombinationTest =
 				new LinearCombinationTest( this.dtpFirstDate.Value ,
 				this.dtpLastDate.Value , signedTickers );
 			linearCombinationTest.Run();
+			this.lastSelectedGenomeRepresentation = genomeRepresentation;
+		}
+		private void dgBestGenomes_MouseUp_leftButton_updateDates(
+			GenomeRepresentation newSelectedGenomeRepresentation )
+		{
+			this.dtpFirstDate.Value =
+				newSelectedGenomeRepresentation.FirstOptimizationDate;
+			this.dtpLastDate.Value =
+				newSelectedGenomeRepresentation.LastOptimizationDate;
+		}
+		private void dgBestGenomes_MouseUp_leftButton(object sender, System.Windows.Forms.MouseEventArgs e)
+		{
+			if ( aRowHasBeenClicked( sender , e ) )
+				// a grid row has been clicked, not the header
+			{
+				GenomeRepresentation newSelectedGenomeRepresentation =
+					this.dgBestGenomes_MouseUp_getClickedGenomeRepresentation( sender , e );
+				dgBestGenomes_MouseUp_leftButton_updateDates( newSelectedGenomeRepresentation );
+				this.lastSelectedGenomeRepresentation = newSelectedGenomeRepresentation;
+			}
 		}
 		private void dgBestGenomes_MouseUp(object sender, System.Windows.Forms.MouseEventArgs e)
 		{
 			if ( e.Button == MouseButtons.Right )
-				this.dgBestGenomes_MouseUp_actually( sender , e );
+				this.dgBestGenomes_MouseUp_rightButton( sender , e );
+			if ( e.Button == MouseButtons.Left )
+				this.dgBestGenomes_MouseUp_leftButton( sender , e );
 		}
 	}
 }
