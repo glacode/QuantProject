@@ -154,9 +154,9 @@ namespace QuantProject.Scripts.WalkForwardTesting.LinearCombination
 		#region createOptimizedGenomes
 		protected DataTable getSetOfTickersToBeOptimized_quickly()
 		{
-			DataTable returnValue =
-				new QuantProject.Data.DataTables.Tickers_tickerGroups( "test" );
-			returnValue.Columns[ 0 ].ColumnName = "tiTicker";
+			SelectorByGroup selectorByGroup =
+				new SelectorByGroup( "20020106" );
+			DataTable returnValue = selectorByGroup.GetTableOfSelectedTickers();
 			return returnValue;
 		}
 		protected DataTable getSetOfTickersToBeOptimized()
@@ -191,14 +191,20 @@ namespace QuantProject.Scripts.WalkForwardTesting.LinearCombination
 			if ( this.bestGenomes.Count == 0 )
 				// this is the first generation created and this.bestGenomes is still empty
 				this.bestGenomes.Add( new GenomeRepresentation(
-					(Genome)generation[ generation.Count - 1 ]  ) );
+					(Genome)generation[ generation.Count - 1 ] ,
+					this.firstDate ,
+					this.lastDate ,
+					newGenerationEventArgs.GenerationCounter ) );
 			for ( int i=0 ; i < generation.Count ; i++ )
 				if ( ((Genome)generation[ i ]).Fitness >
 					((GenomeRepresentation)this.bestGenomes[
 					this.bestGenomes.Count - 1 ]).Fitness )
 					// generation[ i ] is a genome better than the best already stored
 					this.bestGenomes.Add( new GenomeRepresentation(
-						(Genome)generation[ i ]  ) );
+						(Genome)generation[ i ] ,
+						this.firstDate ,
+						this.lastDate ,
+						newGenerationEventArgs.GenerationCounter ) );
 		}
 		private void writeOptimizedGenomesToDisk()
 		{
@@ -217,10 +223,8 @@ namespace QuantProject.Scripts.WalkForwardTesting.LinearCombination
 		private void createOptimizedGenomes()
 		{
 			this.bestGenomes = new ArrayList();
-			//			DataTable setOfTickersToBeOptimized =
-			//				this.getSetOfTickersToBeOptimized_quickly();
 			DataTable setOfTickersToBeOptimized =
-				this.getSetOfTickersToBeOptimized();
+				this.getSetOfTickersToBeOptimized_quickly();
 //			DataTable setOfTickersToBeOptimized =
 //				this.getSetOfTickersToBeOptimized();
 			GenomeManagerForEfficientCTOPortfolio genManEfficientCTOPortfolio = 
