@@ -287,6 +287,11 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "Selectors\SelectorByGroup.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "Selectors\SelectorByLiquidity.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
