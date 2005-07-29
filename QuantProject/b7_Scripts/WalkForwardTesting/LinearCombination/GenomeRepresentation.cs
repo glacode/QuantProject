@@ -33,23 +33,37 @@ namespace QuantProject.Scripts.WalkForwardTesting.LinearCombination
 	[Serializable]
 	public class GenomeRepresentation
 	{
-		private Genome genome;
+		private double fitness;
+		private string signedTickers;
+		private int generationCounter;
+		private DateTime firstOptimizationDate;
+		private DateTime lastOptimizationDate;
 
 		public string SignedTickers
 		{
 			get
 			{
-				string signedTickers = "";
-				foreach ( string geneValue in (string[])genome.Meaning )
-					signedTickers += geneValue + ";";
-				signedTickers = signedTickers.Substring( 0 ,
-					signedTickers.Length - 1 );
-				return signedTickers;
+				return this.signedTickers;
 			}
 		}
 		public double Fitness
 		{
-			get { return this.genome.Fitness; }
+			get { return this.fitness; }
+		}
+		public DateTime FirstOptimizationDate
+		{
+			get { return this.firstOptimizationDate; }
+		}
+		public DateTime LastOptimizationDate
+		{
+			get { return this.lastOptimizationDate; }
+		}
+		/// <summary>
+		/// Number of the first generation containing the genome
+		/// </summary>
+		public int GenerationCounter
+		{
+			get { return this.generationCounter; }
 		}
 
 		public static string[] GetSignedTickers( string signedTickers )
@@ -75,9 +89,37 @@ namespace QuantProject.Scripts.WalkForwardTesting.LinearCombination
 				returnValue = signedTicker;
 			return returnValue;
 		}
-		public GenomeRepresentation( Genome genome )
+		private string getSignedTickers( Genome genome )
 		{
-			this.genome = genome;
+			string signedTickers = "";
+			foreach ( string geneValue in (string[])genome.Meaning )
+				signedTickers += geneValue + ";";
+			signedTickers = signedTickers.Substring( 0 ,
+				signedTickers.Length - 1 );
+			return signedTickers;
+		}
+		private void genomeRepresentation( Genome genome ,
+			DateTime firstOptimizationDate , DateTime lastOptimizationDate ,
+			int generationCounter )
+		{
+			this.fitness = genome.Fitness;
+			this.signedTickers = this.getSignedTickers( genome );
+			this.firstOptimizationDate = firstOptimizationDate;
+			this.lastOptimizationDate = lastOptimizationDate;
+			this.generationCounter = generationCounter;
+		}
+		public GenomeRepresentation( Genome genome ,
+			DateTime firstOptimizationDate , DateTime lastOptimizationDate )
+		{
+			this.genomeRepresentation( genome ,
+				firstOptimizationDate , lastOptimizationDate , -1 );
+		}
+		public GenomeRepresentation( Genome genome ,
+			DateTime firstOptimizationDate , DateTime lastOptimizationDate ,
+			int generationCounter )
+		{
+			this.genomeRepresentation( genome , firstOptimizationDate ,
+				lastOptimizationDate , generationCounter );
 		}
 	}
 }
