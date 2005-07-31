@@ -56,10 +56,10 @@ namespace QuantProject.ADT.Optimizing.Genetic
     	this.geneticOptimizer = geneticOptimizer;
     	this.fitnessCollector = new Hashtable();
     	this.geneticOptimizer.NewGeneration += 
-    		new NewGenerationEventHandler(this.newGenerationEventHandler);
+    		new NewGenerationEventHandler(this.addNewGenome);
     }
 		
-    private void newGenerationEventHandler(Object sender,
+    private void addNewGenome(Object sender,
                           NewGenerationEventArgs newGenerationEventArgs)
     {
     	foreach(Genome genome in this.geneticOptimizer.CurrentGeneration)
