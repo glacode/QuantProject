@@ -59,7 +59,9 @@ namespace QuantProject.Business.Financial.Accounting
 		private ICommissionManager commissionManager;
 		private ArrayList activeOrders;
 		private AccountReport accountReport;
+    private object optimizationOutput = null;
 
+    
 		public Portfolio Portfolio = new Portfolio();
 		//public AccountReport accountReport;
 
@@ -91,8 +93,17 @@ namespace QuantProject.Business.Financial.Accounting
 			get { return accountStrategy; }
 			set { accountStrategy = value; }
 		}
-
-		public TransactionHistory Transactions = new TransactionHistory();
+    /// <summary>
+    /// the object contain a representation of the 
+    /// optimization working of the script
+    /// </summary>
+    public object OptimizationOutput
+    {
+      get { return this.optimizationOutput; }
+      set { this.optimizationOutput = value; }
+    }
+		
+    public TransactionHistory Transactions = new TransactionHistory();
 
 		public Account( string accountName ) : base ( accountName )
 		{
