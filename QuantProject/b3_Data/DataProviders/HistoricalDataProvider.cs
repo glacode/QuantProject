@@ -213,7 +213,7 @@ namespace QuantProject.Data.DataProviders
 //			return GetMarketValue( instrumentKey , new ExtendedDateTime( dateTime , barComponent ) );
 //		}
 //
-		private static double getQuote( string instrumentKey , DateTime dateTime , QuoteField quoteField )
+		/*private static double getQuote( string instrumentKey , DateTime dateTime , QuoteField quoteField )
 		{
 			double returnValue;
 			if ( !cachedHistories.ContainsKey( instrumentKey ) ||
@@ -227,7 +227,7 @@ namespace QuantProject.Data.DataProviders
 				( (History) ((Hashtable) cachedHistories[ instrumentKey ])[ quoteField ]
 				).IndexOfKeyOrPrevious( dateTime ) ) );
 			return returnValue;
-		}
+		}*/
 		/// <summary>
 		/// Returns the adjusted market value for the given ticker, at the given ExtendedDateTime
 		/// </summary>
@@ -262,11 +262,11 @@ namespace QuantProject.Data.DataProviders
 		{
 			double returnValue;
 			if ( extendedDateTime.BarComponent == BarComponent.Close )
-				returnValue = getQuote( instrumentKey ,
+				returnValue = privateCache.GetQuote( instrumentKey ,
 					extendedDateTime.DateTime , QuoteField.Close );
 			else
 				// extendedDateTime.BarComponent is equal to BarComponent.Open
-				returnValue = getQuote( instrumentKey ,
+				returnValue = privateCache.GetQuote( instrumentKey ,
 					extendedDateTime.DateTime , QuoteField.Open );
 			return returnValue;
 		}
