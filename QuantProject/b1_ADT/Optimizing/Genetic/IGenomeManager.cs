@@ -42,6 +42,7 @@ namespace QuantProject.ADT.Optimizing.Genetic
     int GenomeSize{get;}
     int MinValueForGenes{get;}
     int MaxValueForGenes{get;}
+    GeneticOptimizer CurrentGeneticOptimizer{get;set;}
     
     int GetNewGeneValue(Genome genome); // Used in generation of genes
     																    //  by the Genome parameter

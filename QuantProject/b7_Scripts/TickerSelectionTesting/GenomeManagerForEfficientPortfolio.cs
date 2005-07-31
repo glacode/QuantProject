@@ -47,7 +47,6 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
                                      //protected retrieveData() method
     protected CandidateProperties[] setOfCandidates;
     protected int originalNumOfTickers;
-    protected int constToDiscoverDuplicateGenes;
     protected DateTime firstQuoteDate;
     protected DateTime lastQuoteDate;
     protected double targetPerformance;
@@ -57,6 +56,7 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
     protected PortfolioType portfolioType;
     protected double[] portfolioRatesOfReturn;
     protected int numberOfExaminedReturns;
+    protected GeneticOptimizer currentGeneticOptimizer;
     
     static public string GetCleanTickerCode(string tickerCodeForLongOrShortTrade)
     {
@@ -99,6 +99,12 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
       //set{this.portfolioType = value;}
     }
     
+    public GeneticOptimizer CurrentGeneticOptimizer
+    {
+      get{return this.currentGeneticOptimizer;}
+      set{this.currentGeneticOptimizer = value;}
+    }
+    
     //setOfInitialTickers has to contain the
     //ticker's symbol in the first column !
 
@@ -112,7 +118,6 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
     {
  			this.setOfTickers = setOfInitialTickers;
       this.originalNumOfTickers = setOfInitialTickers.Rows.Count;
-      this.constToDiscoverDuplicateGenes = this.originalNumOfTickers + 1;
       this.firstQuoteDate = firstQuoteDate;
       this.lastQuoteDate = lastQuoteDate;
       this.targetPerformance = targetPerformance;
@@ -129,7 +134,7 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
            
       if(this.portfolioType == PortfolioType.ShortAndLong)
         this.minValueForGenes = - this.originalNumOfTickers;
-      //if gene g is negative, it refers to the ticker Abs(g+1) to be shorted
+      //if gene g is negative, it refers to the ticker |g|-1 to be shorted
     }
     
     //this protected method has to be called by inherited genome
@@ -167,7 +172,18 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
       else//only short orders are permitted
         //returnValue = normal.GetProbability(-this.targetPerformance*1.25,-this.targetPerformance*0.75);
         returnValue = normal.GetProbability(-this.targetPerformance);
-
+      /*the following code has to be tested
+      if(this.currentGeneticOptimizer.AverageRandomFitness != 0.0 &&
+         this.currentGeneticOptimizer.StandardDeviationOfRandomFitness != 0.0)
+      //the two properties remain equal to 0.0 for the GeneticOptimizer
+      //instance created in the Run method: the two properties are updated
+      //effectively only for the GO instance calling the Run method
+        returnValue = (returnValue - this.CurrentGeneticOptimizer.AverageRandomFitness)/
+                      this.CurrentGeneticOptimizer.StandardDeviationOfRandomFitness;
+      if(returnValue < 0.0)
+        returnValue = 0.0;
+      //fitness should be now pure positive number
+      */
       return returnValue;
       
     }
@@ -204,8 +220,7 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
     public Genome[] GetChilds(Genome parent1, Genome parent2)
     {
       return
-      	GenomeManagement.MixGenesWithoutDuplicates(parent1, parent2,
-      	                                           this.constToDiscoverDuplicateGenes);
+      	GenomeManipulator.MixGenesWithoutDuplicates(parent1, parent2);
     }
     
     public int GetNewGeneValue(Genome genome)
@@ -215,8 +230,8 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
       int returnValue = GenomeManagement.RandomGenerator.Next(genome.MinValueForGenes,
                                                               genome.MaxValueForGenes + 1);
       while(genome.HasGene(returnValue) ||
-            genome.HasGene(returnValue + this.constToDiscoverDuplicateGenes) ||
-            genome.HasGene(returnValue - this.constToDiscoverDuplicateGenes) )
+            genome.HasGene(Math.Abs(returnValue) - 1 ) ||
+            genome.HasGene(- Math.Abs(returnValue) - 1) )
       //the portfolio can't have a long position and a short one for the same ticker
       {
         returnValue = GenomeManagement.RandomGenerator.Next(genome.MinValueForGenes,
@@ -231,11 +246,11 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
       // in this implementation only one gene is mutated
       // the new value has to be different from all the other genes of the genome
       int newValueForGene = GenomeManagement.RandomGenerator.Next(genome.MinValueForGenes,
-        genome.MaxValueForGenes +1);
+                                                                  genome.MaxValueForGenes +1);
       int genePositionToBeMutated = GenomeManagement.RandomGenerator.Next(genome.Size); 
       while(genome.HasGene(newValueForGene) || 
-            genome.HasGene(newValueForGene + this.constToDiscoverDuplicateGenes) ||
-            genome.HasGene(newValueForGene - this.constToDiscoverDuplicateGenes) )
+            genome.HasGene(Math.Abs(newValueForGene) - 1 ) ||
+            genome.HasGene(- Math.Abs(newValueForGene) - 1) )
         //the efficient portfolio, in this implementation, 
         // can't have a long position and a short position
         // for the same ticker
@@ -255,7 +270,7 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
       int position = geneValue;
       if(geneValue<0)
       {
-        position = Math.Abs(geneValue + 1);
+        position = Math.Abs(geneValue) - 1;
         initialCharForTickerCode = "-";
       }  
       return initialCharForTickerCode + this.setOfCandidates[position].Ticker;

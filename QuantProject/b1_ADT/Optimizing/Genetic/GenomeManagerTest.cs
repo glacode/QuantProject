@@ -36,6 +36,7 @@ namespace QuantProject.ADT.Optimizing.Genetic
     private int genomeSize;
     private int minValueForGenes;
     private int maxValueForGenes;
+    private GeneticOptimizer currentGeneticOptimizer;
      
     public int GenomeSize
     {
@@ -52,6 +53,11 @@ namespace QuantProject.ADT.Optimizing.Genetic
       get{return this.maxValueForGenes;}
     }
     
+    public GeneticOptimizer CurrentGeneticOptimizer
+    {
+      get{return this.currentGeneticOptimizer;}
+      set{this.currentGeneticOptimizer = value;}
+    }
     public GenomeManagerTest(int genomeSize, int minValueForGenes,
                              int maxValueForGenes)
                           

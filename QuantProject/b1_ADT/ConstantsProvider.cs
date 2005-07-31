@@ -33,5 +33,10 @@ namespace QuantProject.ADT
 		public static int PagesToBeRemovedFromCache = 500; // for Garbage Collection
 		public static int SeedForRandomGenerator = 333; // for GeneticOptimizer and
 																										// GenomeManagement
+    public static int NumGenomesForRandomFitnessComputation = 100;
+    // for GeneticOptimizer (used by CalculateRandomFitness() in order
+    //to update averageRandomFitness and standardDeviationOfRandomFitness properties
+                                                        
+    
 	}
 }
