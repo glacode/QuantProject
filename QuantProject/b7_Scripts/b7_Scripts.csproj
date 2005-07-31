@@ -218,6 +218,11 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "TickerSelectionTesting\GenomeManipulator.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "TickerSelectionTesting\PortfolioType.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
