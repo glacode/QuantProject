@@ -158,7 +158,8 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
         	this.genomeCounter = new GenomeCounter(GO);
         
         GO.Run(false);
-        
+        this.addGenomeToBestGenomes(GO.BestGenome,currentDate.AddDays(-this.numDaysForLiquidity),
+                                    currentDate);
         this.chosenTickers = (string[])GO.BestGenome.Meaning;
       }
       //else it will be buyed again the previous optimized portfolio

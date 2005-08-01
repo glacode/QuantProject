@@ -42,6 +42,7 @@ using QuantProject.Data.DataProviders;
 using QuantProject.Data.Selectors; 
 using QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios;
 using QuantProject.Presentation.Reporting.WindowsForm;
+using QuantProject.Scripts.WalkForwardTesting.LinearCombination;
 
 
 namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
@@ -224,6 +225,8 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
                          								"\\" + this.ScriptName + "\\";
       string dirNameWhereToSaveTransactions = System.Configuration.ConfigurationSettings.AppSettings["TransactionsArchive"] +
                        									"\\" + this.ScriptName + "\\";
+      string dirNameWhereToSaveBestGenomes = System.Configuration.ConfigurationSettings.AppSettings["GenomesArchive"] +
+                                        "\\" + this.ScriptName + "\\";
       //default report with numIntervalDays = 1
       AccountReport accountReport = this.account.CreateReport(fileName,1,
                                     		this.endOfDayTimer.GetCurrentTime(),
@@ -233,11 +236,20 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
       ObjectArchiver.Archive(accountReport,
                              dirNameWhereToSaveReports + 
                              fileName + ".qPr");
+      //
       this.checkDateForReport_createDirIfNotPresent(dirNameWhereToSaveTransactions);
       ObjectArchiver.Archive(this.account.Transactions,
                              dirNameWhereToSaveTransactions +
                              fileName + ".qPt");
-      
+      //
+      this.checkDateForReport_createDirIfNotPresent(dirNameWhereToSaveBestGenomes);
+      this.account.OptimizationOutput = (object) new OptimizationOutput(this.startDateTime.DateTime,
+                                                    this.endDateTime.DateTime,
+                                                    this.endOfDayTimerHandler.BestGenomes);
+      ObjectArchiver.Archive((OptimizationOutput)this.account.OptimizationOutput,
+                              dirNameWhereToSaveBestGenomes + 
+                              fileName + ".bgn");
+      //this.account.BestGenomes = this.endOfDayTimerHandler.BestGenomes;
       this.endOfDayTimer.Stop();
        
     }

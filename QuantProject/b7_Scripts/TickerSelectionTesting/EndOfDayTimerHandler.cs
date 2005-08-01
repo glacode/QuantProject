@@ -31,6 +31,7 @@ using QuantProject.Business.Timing;
 using QuantProject.Data.DataProviders;
 using QuantProject.Data.Selectors;
 using QuantProject.ADT.Optimizing.Genetic;
+using QuantProject.Scripts.WalkForwardTesting.LinearCombination;
 
 namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
 {
@@ -65,7 +66,7 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
     protected double targetReturn;
     
     protected PortfolioType portfolioType;
-
+    
     protected GenomeCounter genomeCounter;
     public GenomeCounter GenomeCounter
     {
@@ -86,6 +87,15 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
       get { return this.account; }
     }
 		
+    /// <summary>
+    /// bestGenomes[ i ] contains an array list with the best genomes
+    /// for generation i
+    /// </summary>
+    protected ArrayList bestGenomes;
+    public ArrayList BestGenomes
+    {
+      get { return this.bestGenomes; }
+    }
     public EndOfDayTimerHandler(string tickerGroupID, int numberOfEligibleTickers, 
                                 int numberOfTickersToBeChosen, int numDaysForLiquidity, Account account,
                                 int generationNumberForGeneticOptimizer,
@@ -106,6 +116,7 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
       this.lastChosenTickers = new string[numberOfTickersToBeChosen];
       this.targetReturn = targetReturn;
       this.portfolioType = portfolioType;
+      
     }
 		
     public EndOfDayTimerHandler(string[] chosenTickers,
@@ -191,6 +202,17 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
       }
     }
     
+    protected void addGenomeToBestGenomes(Genome genome,
+                                                  DateTime firstOptimizationDate,
+                                                  DateTime secondOptimizationDate)
+    {
+      if(this.bestGenomes == null)
+        this.bestGenomes = new ArrayList();
+      
+      this.bestGenomes.Add(new GenomeRepresentation(genome,
+                                                    firstOptimizationDate,
+                                                    secondOptimizationDate));
+    }
     
     public virtual void MarketOpenEventHandler(
       Object sender , EndOfDayTimingEventArgs endOfDayTimingEventArgs )

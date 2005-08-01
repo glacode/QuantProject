@@ -39,6 +39,7 @@ using QuantProject.Data.Selectors;
 using QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios;
 using QuantProject.Presentation.Reporting.WindowsForm;
 using QuantProject.ADT.FileManaging;
+using QuantProject.Scripts.WalkForwardTesting.LinearCombination;
 
 
 
@@ -117,6 +118,9 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
         //are elapsed from the time script started
       {
         this.endOfDayTimer.Stop();
+        this.account.OptimizationOutput = (object) new OptimizationOutput(this.startDateTime.DateTime,
+                                                      this.endDateTime.DateTime,
+                                                      this.endOfDayTimerHandler.BestGenomes); 
       }
 
     }
