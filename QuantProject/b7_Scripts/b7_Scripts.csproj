@@ -283,6 +283,16 @@
                     BuildAction = "EmbeddedResource"
                 />
                 <File
+                    RelPath = "WalkForwardTesting\LinearCombination\OpenToCloseDailyStrategy.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "WalkForwardTesting\LinearCombination\OpenToCloseWeeklyStrategy.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "WalkForwardTesting\LinearCombination\OptimizationOutput.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
@@ -296,6 +306,11 @@
                     RelPath = "WalkForwardTesting\LinearCombination\TestDisplayer.cs"
                     SubType = "Form"
                     BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "WalkForwardTesting\LinearCombination\TestDisplayer.resx"
+                    DependentUpon = "TestDisplayer.cs"
+                    BuildAction = "EmbeddedResource"
                 />
                 <File
                     RelPath = "WalkForwardTesting\LinearCombination\VisualObjectArchiver.cs"
