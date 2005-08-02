@@ -537,6 +537,11 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "a2_Strategies\IEndOfDayStrategy.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "a2_Strategies\Signal.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
