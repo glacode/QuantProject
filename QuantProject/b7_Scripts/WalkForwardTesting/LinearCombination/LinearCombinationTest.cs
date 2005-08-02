@@ -27,6 +27,7 @@ using QuantProject.Business.DataProviders;
 using QuantProject.Business.Financial.Accounting;
 using QuantProject.Business.Financial.Instruments;
 using QuantProject.Business.Financial.Ordering;
+using QuantProject.Business.Strategies;
 using QuantProject.Business.Timing;
 using QuantProject.Presentation.Reporting.WindowsForm;
 
@@ -42,67 +43,22 @@ namespace QuantProject.Scripts.WalkForwardTesting.LinearCombination
 		private DateTime firstDate;
 		private DateTime lastDate;
 		private string[] signedTickers;
+		private bool openToCloseDaily;
 
-		private HistoricalRawQuoteProvider historicalQuoteProvider;
+		private IHistoricalQuoteProvider historicalQuoteProvider;
 		private HistoricalEndOfDayTimer historicalEndOfDayTimer;
 		private Account account;
+		private IEndOfDayStrategy endOfDayStrategy;
 
 		public LinearCombinationTest( DateTime firstDate , DateTime lastDate ,
-			string[] signedTickers )
+			string[] signedTickers , bool openToCloseDaily )
 		{
 			this.firstDate = firstDate;
 			this.lastDate = lastDate;
 			this.signedTickers = signedTickers;
-		}
-		private long marketOpenEventHandler_addOrder_getQuantity(
-			string ticker )
-		{
-			double accountValue = this.account.GetMarketValue();
-			double currentTickerAsk =
-				this.account.DataStreamer.GetCurrentAsk( ticker );
-			double maxPositionValueForThisTicker =
-				accountValue/this.signedTickers.Length;
-			long quantity = Convert.ToInt64(	Math.Floor(
-				maxPositionValueForThisTicker /	currentTickerAsk ) );
-			return quantity;
-		}
-		private void marketOpenEventHandler_addOrder( string signedTicker )
-		{
-			OrderType orderType = GenomeRepresentation.GetOrderType( signedTicker );
-			string ticker = GenomeRepresentation.GetTicker( signedTicker );
-			long quantity = marketOpenEventHandler_addOrder_getQuantity( ticker );
-			Order order = new Order( orderType , new Instrument( ticker ) ,
-				quantity );
-			this.account.AddOrder( order );
-		}
-		private void marketOpenEventHandler_addOrders()
-		{
-			foreach ( string signedTicker in this.signedTickers )
-				marketOpenEventHandler_addOrder( signedTicker );
-		}
-		private void marketOpenEventHandler(
-			Object sender , EndOfDayTimingEventArgs endOfDayTimingEventArgs )
-		{
-			if ( ( this.account.CashAmount == 0 ) &&
-				( this.account.Transactions.Count == 0 ) )
-				// cash has not been added yet
-				this.account.AddCash( 30000 );
-			marketOpenEventHandler_addOrders();
+			this.openToCloseDaily = openToCloseDaily;
 		}
 
-		private void fiveMinutesBeforeMarketCloseEventHandler_closePositions()
-		{
-			ArrayList tickers = new ArrayList();
-			foreach ( Position position in this.account.Portfolio.Positions )
-				tickers.Add( position.Instrument.Key );
-			foreach ( string ticker in tickers )
-				this.account.ClosePosition( ticker );
-		}
-		private void fiveMinutesBeforeMarketCloseEventHandler( Object sender ,
-			EndOfDayTimingEventArgs endOfDayTimingEventArgs)
-		{
-			fiveMinutesBeforeMarketCloseEventHandler_closePositions();
-		}
 		private void oneHourAfterMarketCloseEventHandler( Object sender ,
 			EndOfDayTimingEventArgs endOfDayTimingEventArgs )
 		{
@@ -111,27 +67,43 @@ namespace QuantProject.Scripts.WalkForwardTesting.LinearCombination
 				this.account.EndOfDayTimer.Stop();
 		}
 
+		private void run_setHistoricalQuoteProvider()
+		{
+			if ( this.openToCloseDaily )
+				this.historicalQuoteProvider = new HistoricalRawQuoteProvider();
+			else
+				this.historicalQuoteProvider = new HistoricalAdjustedQuoteProvider();
+		}
+		private void run_setStrategy()
+		{
+			if ( this.openToCloseDaily )
+				this.endOfDayStrategy = new OpenToCloseDailyStrategy(
+					this.account , this.signedTickers );
+			else
+				this.endOfDayStrategy = new OpenToCloseWeeklyStrategy(
+					this.account , this.signedTickers );
+		}
 		public void Run()
 		{
 			this.historicalEndOfDayTimer =
 				new IndexBasedEndOfDayTimer(
 				new EndOfDayDateTime( this.firstDate ,
 				EndOfDaySpecificTime.MarketOpen ) , "DYN" );
-			this.historicalQuoteProvider =
-				new HistoricalRawQuoteProvider();
+			run_setHistoricalQuoteProvider();
 			this.account = new Account( "LinearCombination" , historicalEndOfDayTimer ,
 				new HistoricalEndOfDayDataStreamer( historicalEndOfDayTimer ,
 				this.historicalQuoteProvider ) ,
 				new HistoricalEndOfDayOrderExecutor( historicalEndOfDayTimer ,
 				this.historicalQuoteProvider ) );
+			run_setStrategy();
 //			OneRank oneRank = new OneRank( account ,
 //				this.endDateTime );
 			this.historicalEndOfDayTimer.MarketOpen +=
 				new MarketOpenEventHandler(
-				this.marketOpenEventHandler );
+				this.endOfDayStrategy.MarketOpenEventHandler );
 			this.historicalEndOfDayTimer.FiveMinutesBeforeMarketClose +=
 				new FiveMinutesBeforeMarketCloseEventHandler(
-				this.fiveMinutesBeforeMarketCloseEventHandler );
+				this.endOfDayStrategy.FiveMinutesBeforeMarketCloseEventHandler );
 			this.historicalEndOfDayTimer.OneHourAfterMarketClose +=
 				new OneHourAfterMarketCloseEventHandler(
 				this.oneHourAfterMarketCloseEventHandler );
