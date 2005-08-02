@@ -45,6 +45,8 @@ namespace QuantProject.Scripts.WalkForwardTesting.LinearCombination
 		// Glauco code
 		private ArrayList bestGenomes;
 		private System.Windows.Forms.Label label1;
+		private System.Windows.Forms.RadioButton radioButtonOpenToCloseDaily;
+		private System.Windows.Forms.RadioButton radioButtonOpenToCloseWeekly;
 		private GenomeRepresentation lastSelectedGenomeRepresentation;
 
 		private void testdisplayer()
@@ -99,6 +101,8 @@ namespace QuantProject.Scripts.WalkForwardTesting.LinearCombination
 			this.dtpFirstDate = new System.Windows.Forms.DateTimePicker();
 			this.dtpLastDate = new System.Windows.Forms.DateTimePicker();
 			this.label1 = new System.Windows.Forms.Label();
+			this.radioButtonOpenToCloseDaily = new System.Windows.Forms.RadioButton();
+			this.radioButtonOpenToCloseWeekly = new System.Windows.Forms.RadioButton();
 			((System.ComponentModel.ISupportInitialize)(this.dgBestGenomes)).BeginInit();
 			this.SuspendLayout();
 			// 
@@ -107,9 +111,9 @@ namespace QuantProject.Scripts.WalkForwardTesting.LinearCombination
 			this.dgBestGenomes.DataMember = "";
 			this.dgBestGenomes.Dock = System.Windows.Forms.DockStyle.Bottom;
 			this.dgBestGenomes.HeaderForeColor = System.Drawing.SystemColors.ControlText;
-			this.dgBestGenomes.Location = new System.Drawing.Point(0, 117);
+			this.dgBestGenomes.Location = new System.Drawing.Point(0, 125);
 			this.dgBestGenomes.Name = "dgBestGenomes";
-			this.dgBestGenomes.Size = new System.Drawing.Size(496, 224);
+			this.dgBestGenomes.Size = new System.Drawing.Size(520, 248);
 			this.dgBestGenomes.TabIndex = 0;
 			this.dgBestGenomes.MouseUp += new System.Windows.Forms.MouseEventHandler(this.dgBestGenomes_MouseUp);
 			// 
@@ -135,11 +139,31 @@ namespace QuantProject.Scripts.WalkForwardTesting.LinearCombination
 			this.label1.Text = "Left click data grid rows to reset dates to the optimization period. Right click " +
 				"to preserve date displacements and backtest.";
 			// 
+			// radioButtonOpenToCloseDaily
+			// 
+			this.radioButtonOpenToCloseDaily.Checked = true;
+			this.radioButtonOpenToCloseDaily.Location = new System.Drawing.Point(64, 96);
+			this.radioButtonOpenToCloseDaily.Name = "radioButtonOpenToCloseDaily";
+			this.radioButtonOpenToCloseDaily.Size = new System.Drawing.Size(144, 24);
+			this.radioButtonOpenToCloseDaily.TabIndex = 4;
+			this.radioButtonOpenToCloseDaily.TabStop = true;
+			this.radioButtonOpenToCloseDaily.Text = "Open To Close Daily";
+			// 
+			// radioButtonOpenToCloseWeekly
+			// 
+			this.radioButtonOpenToCloseWeekly.Location = new System.Drawing.Point(224, 96);
+			this.radioButtonOpenToCloseWeekly.Name = "radioButtonOpenToCloseWeekly";
+			this.radioButtonOpenToCloseWeekly.Size = new System.Drawing.Size(144, 24);
+			this.radioButtonOpenToCloseWeekly.TabIndex = 5;
+			this.radioButtonOpenToCloseWeekly.Text = "Open To Close Weekly";
+			// 
 			// TestDisplayer
 			// 
 			this.AutoScaleBaseSize = new System.Drawing.Size(5, 13);
-			this.ClientSize = new System.Drawing.Size(496, 341);
+			this.ClientSize = new System.Drawing.Size(520, 373);
 			this.Controls.AddRange(new System.Windows.Forms.Control[] {
+																																	this.radioButtonOpenToCloseWeekly,
+																																	this.radioButtonOpenToCloseDaily,
 																																	this.label1,
 																																	this.dtpLastDate,
 																																	this.dtpFirstDate,
@@ -198,7 +222,8 @@ namespace QuantProject.Scripts.WalkForwardTesting.LinearCombination
 				genomeRepresentation.SignedTickers );
 			LinearCombinationTest linearCombinationTest =
 				new LinearCombinationTest( this.dtpFirstDate.Value ,
-				this.dtpLastDate.Value , signedTickers );
+				this.dtpLastDate.Value , signedTickers ,
+				this.radioButtonOpenToCloseDaily.Checked );
 			linearCombinationTest.Run();
 			this.lastSelectedGenomeRepresentation = genomeRepresentation;
 		}
