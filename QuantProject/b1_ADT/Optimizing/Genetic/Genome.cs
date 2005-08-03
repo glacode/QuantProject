@@ -39,9 +39,26 @@ namespace QuantProject.ADT.Optimizing.Genetic
     private int size;
     private double fitness;
     private object meaning;
-
+    private bool hasBeenCloned;
+    private bool hasBeenChanged;
+    
     IGenomeManager genomeManager;
 		
+    public bool HasBeenCloned
+    {
+      get{return this.hasBeenCloned;}
+      //set{this.hasBeenCloned = value;}
+    }
+    
+    /// <summary>
+    /// Returns true if a gene has been set
+    /// by calling SetGeneValue
+    /// </summary>
+    public bool HasBeenChanged
+    {
+      get{return this.hasBeenChanged;}
+    }
+    
     public double Fitness
     {
       get{return this.fitness;}
@@ -119,6 +136,7 @@ namespace QuantProject.ADT.Optimizing.Genetic
       returnValue.CopyValuesInGenes(this.genes);
       returnValue.Fitness = this.Fitness;
       returnValue.Meaning = this.Meaning;
+      returnValue.hasBeenCloned = true;
       
       return returnValue;
     }
@@ -140,6 +158,7 @@ namespace QuantProject.ADT.Optimizing.Genetic
         throw new IndexOutOfRangeException("Gene position not valid for the genome! ");
       
       this.genes[genePosition] = geneValue;
+      this.hasBeenChanged = true;
     }
     
     public int GetGeneValue(int genePosition)
