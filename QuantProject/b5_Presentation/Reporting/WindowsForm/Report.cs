@@ -46,7 +46,6 @@ namespace QuantProject.Presentation.Reporting.WindowsForm
 		private System.Windows.Forms.MenuItem saveAccount;
 		private System.Windows.Forms.MenuItem saveReport;
     private System.Windows.Forms.MenuItem saveTransactions;
-    private System.Windows.Forms.MenuItem saveGenomes;
     private SaveFileDialog saveFileDialog;
 
 		public AccountReport AccountReport
@@ -91,9 +90,6 @@ namespace QuantProject.Presentation.Reporting.WindowsForm
       this.saveTransactions = new MenuItem();
       this.saveTransactions.Text = "Save Transactions";
 			
-      this.saveGenomes = new MenuItem();
-      this.saveGenomes.Text = "Save Genomes";
-
 			this.file = new MenuItem();
 			this.file.Text = "File";
 			this.mainMenu.MenuItems.AddRange(new MenuItem[]
@@ -102,13 +98,11 @@ namespace QuantProject.Presentation.Reporting.WindowsForm
 			this.file.MenuItems.AddRange(new MenuItem[] 
 			                             {this.saveAccount,
 			                             	this.saveReport,
-                                    this.saveTransactions,
-                                    this.saveGenomes});
+                                    this.saveTransactions});
 			this.Menu = this.mainMenu;
 			this.saveAccount.Click += new System.EventHandler(this.saveAccount_Click);
 			this.saveReport.Click += new System.EventHandler(this.saveReport_Click);
 			this.saveTransactions.Click += new System.EventHandler(this.saveTransactions_Click);
-		  this.saveGenomes.Click += new System.EventHandler(this.saveGenomes_Click);
 		}
 		
 		/// <summary>
@@ -176,7 +170,7 @@ namespace QuantProject.Presentation.Reporting.WindowsForm
       return (DateTime)returnValue;
     }
 		
-    #region save account or report or transactions or genomes
+    #region save account or report or transactions
     
     private void saveAccount_Click(object sender, System.EventArgs e)
     {
@@ -190,11 +184,6 @@ namespace QuantProject.Presentation.Reporting.WindowsForm
 	  }
     
     private void saveTransactions_Click(object sender, System.EventArgs e)
-    {
-      this.saveObject((MenuItem)sender);
-    }
-    
-    private void saveGenomes_Click(object sender, System.EventArgs e)
     {
       this.saveObject((MenuItem)sender);
     }
@@ -224,13 +213,7 @@ namespace QuantProject.Presentation.Reporting.WindowsForm
       { 
         this.saveFileDialog.DefaultExt = "qPt";
       }
-      else if(sender.Text.EndsWith("Genomes"))
-        //else the text property of the menu item sender contains at the end
-        // the word "Genomes"; so it will be saved an OptimizationOutput
-        //containing a GenomeRepresentation
-      { 
-        this.saveFileDialog.DefaultExt = "bgn";
-      }
+      
       this.saveFileDialog.AddExtension = true;
       this.saveFileDialog.CreatePrompt = true;
       this.saveFileDialog.OverwritePrompt = true;
@@ -258,9 +241,6 @@ namespace QuantProject.Presentation.Reporting.WindowsForm
       else if(((SaveFileDialog)sender).Title.EndsWith("Transactions"))
         QuantProject.ADT.FileManaging.ObjectArchiver.Archive(this.account.Transactions,
           this.saveFileDialog.FileName);
-      else if(((SaveFileDialog)sender).Title.EndsWith("Genomes"))
-        QuantProject.ADT.FileManaging.ObjectArchiver.Archive(this.account.OptimizationOutput,
-                                                             this.saveFileDialog.FileName);
     }
 
 
