@@ -37,6 +37,7 @@
     <File name=".\DataProviders\Caching\EarlyDateException.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
     <File name=".\DataProviders\Caching\CachePage.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
     <File name=".\DataProviders\Caching\MissingQuoteException.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
+    <File name=".\Selectors\SelectorByGroup.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
   </Contents>
   <References>
     <Reference type="Project" refto="b2_DataAccess" localcopy="True" />
