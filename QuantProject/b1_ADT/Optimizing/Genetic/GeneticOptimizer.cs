@@ -480,7 +480,7 @@ namespace QuantProject.ADT.Optimizing.Genetic
     {
       foreach(Genome g in populationOfGenomes)
       {
-        if(g != null)
+        //if(g != null)
            this.genomeManager.Mutate(g, this.MutationRate);
       }
     }
@@ -490,7 +490,10 @@ namespace QuantProject.ADT.Optimizing.Genetic
     {
       foreach(Genome g in populationOfGenomes)
       {
-        if(g != null)
+        if(!g.HasBeenCloned || g.HasBeenChanged)
+        //if it has been cloned and it has not been changed,
+        //it's useless 
+        //to calculate again fitness and meaning
         {
           g.CalculateFitness();
           g.AssignMeaning();
