@@ -52,8 +52,14 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
       genomeSize = parent1.Size;
       childs[0] = parent1.Clone();
       childs[1] = parent2.Clone();
-      //the two childs now points to their parents
+      //the two childs now points to their parents,
+      //and so do maskForChilds
       maskForChilds = new int[childs.Length, genomeSize];
+      for(int i = 0; i<genomeSize; i++)
+      {
+      	maskForChilds[0,i]=1;
+      	maskForChilds[1,i]=2;
+      }
     }
 
     private static void assignFitnessAndMeaningToChilds()
@@ -145,38 +151,33 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
       return returnValue;
     }
     
-    private static bool setMaskForChildsForMixingWithoutDuplicates(Genome parent1, Genome parent2)
+    private static void setMaskForChildsForMixingWithoutDuplicates(Genome parent1, Genome parent2)
 		                                                           
     {
-      bool returnValue = false;
       int[] genePlacesOfParent1NotPresentInParent2 = 
         genePositionsOfParent1NotPresentInParent2(parent1, parent2);
       int[] genePlacesOfParent2NotPresentInParent1 = 
         genePositionsOfParent1NotPresentInParent2(parent2, parent1);
-      for(int i = 0; i<genePlacesOfParent1NotPresentInParent2.Length; i++)
+      for(int i = 0;i<parent1.Size;i++)
       {
-        for(int genePos = 0 ; genePos < GenomeManipulator.genomeSize ; genePos++)
-        {
-          if(genePos == genePlacesOfParent1NotPresentInParent2[i])
-          {  
-            maskForChilds[0, genePos] = 1;
-            returnValue = true;
-          }
-          else
-            maskForChilds[0, genePos] = 2;
-            
-          if(genePos == genePlacesOfParent2NotPresentInParent1[i])
-          {
-            maskForChilds[1, genePos] = 2;
-            returnValue = true;
-          }
-          else
-            maskForChilds[1, genePos] = 1;
+        if(i%2 == 0)
+        //genes are ex-changed only at even positions
+        {  
+        	if(genePlacesOfParent2NotPresentInParent1[i]!= - 1)
+        	{
+        		maskForChilds[0, i] = 2;//the change between genes
+        		maskForChilds[1, i] = 1;//creates a child different from parents
+        	}
+        	else if(genePlacesOfParent1NotPresentInParent2[i]!= - 1) //see 1st if
+        	{
+        		maskForChilds[0, i] = 1;
+        		maskForChilds[1, i] = 2;
+        	}
         }
       }
-      return returnValue;
     }
-		private static void setChildsUsingMaskForChilds(Genome parent1,
+		
+    private static void setChildsUsingMaskForChilds(Genome parent1,
 		                                                Genome parent2)
 		{
       for(int childIndex = 0; childIndex < 2; childIndex++)
@@ -237,8 +238,8 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
       if(parent1.Size != parent2.Size)
 				throw new Exception("Genomes must have the same size!");	
       
-      if(setMaskForChildsForMixingWithoutDuplicates(parent1, parent2))
-     	  setChildsUsingMaskForChilds(parent1, parent2);
+      setMaskForChildsForMixingWithoutDuplicates(parent1, parent2);
+      setChildsUsingMaskForChilds(parent1, parent2);
       //throwExcIfAChildHasDuplicateGenes(); //just for debugging purposes
       return childs;
     }
