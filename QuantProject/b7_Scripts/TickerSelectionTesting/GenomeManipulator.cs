@@ -30,7 +30,7 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
 {
 	/// <summary>
 	/// Class providing static methods for manipulating Genomes
-	/// (used by th IGenomeManagerForEfficientPortfolio)
+	/// (used by IGenomeManagerForEfficientPortfolio)
 	/// </summary>
 	[Serializable]
   public sealed class GenomeManipulator 
@@ -50,83 +50,18 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
     private static void initializeStaticMembers(Genome parent1, Genome parent2)
     {
       genomeSize = parent1.Size;
-      childs[0] = parent1.Clone();
-      childs[1] = parent2.Clone();
-      //the two childs now points to their parents,
-      //and so do maskForChilds
+      childs[0]=parent1.Clone();
+      childs[1]=parent2.Clone();
       maskForChilds = new int[childs.Length, genomeSize];
       for(int i = 0; i<genomeSize; i++)
       {
       	maskForChilds[0,i]=1;
       	maskForChilds[1,i]=2;
       }
+      //maskForChilds has been set in order to re-create
+      //a copy of parents by using setChildsUsingMaskForChilds()
     }
 
-    private static void assignFitnessAndMeaningToChilds()
-    {
-      foreach(Genome child in childs)
-      {
-        child.AssignMeaning();
-        child.CalculateFitness();
-      }
-    }
-
-    /*old
-    private static int firstGenePositionOfParent1NotPresentInParent2(Genome parent1,
-                                                                    Genome parent2)
-    {
-      int returnValue = -1;
-      for(int genePos = 0 ;
-          genePos < GenomeManipulator.genomeSize && returnValue == -1;
-          genePos++)
-      {
-      	int geneValue = parent1.GetGeneValue(genePos);
-      	if(geneValue >= 0)
-        {
-          if(!parent2.HasGene(geneValue) &&
-             !parent2.HasGene(-Math.Abs(geneValue) - 1))
-               returnValue = genePos;
-        }
-        else
-        {
-          if(!parent2.HasGene(geneValue) &&
-             !parent2.HasGene(Math.Abs(geneValue) - 1))
-               returnValue = genePos;
-        }
-      }    
-      return returnValue;
-    }
-    */
-		/* old	
-    private static bool setMaskForChildsForMixingWithoutDuplicates(Genome parent1, Genome parent2)
-		                                                           
-		{
-			bool returnValue = false;
-      int firstGenePosOfParent1NotPresentInParent2 = 
-        firstGenePositionOfParent1NotPresentInParent2(parent1, parent2);
-      int firstGenePosOfParent2NotPresentInParent1 = 
-        firstGenePositionOfParent1NotPresentInParent2(parent2, parent1);
-      if(firstGenePosOfParent1NotPresentInParent2 > -1 &&
-         firstGenePosOfParent2NotPresentInParent1 > -1 )
-        //there is at least a gene in parent1 not present in parent2 and viceversa
-      {
-          for(int genePos = 0 ; genePos < GenomeManipulator.genomeSize ; genePos++)
-          {
-            if(genePos == firstGenePosOfParent1NotPresentInParent2)
-                maskForChilds[0, genePos] = 1;
-            else
-                maskForChilds[0, genePos] = 2;
-            
-            if(genePos == firstGenePosOfParent2NotPresentInParent1)
-              maskForChilds[1, genePos] = 2;
-            else
-              maskForChilds[1, genePos] = 1;
-          }
-          returnValue = true;
-      }
-      return returnValue;
-		}
-    */
     private static int[] genePositionsOfParent1NotPresentInParent2(Genome parent1,
                                                                    Genome parent2)
     {
@@ -158,22 +93,29 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
         genePositionsOfParent1NotPresentInParent2(parent1, parent2);
       int[] genePlacesOfParent2NotPresentInParent1 = 
         genePositionsOfParent1NotPresentInParent2(parent2, parent1);
+      bool justExchangedAtPreviousPosition = false;
       for(int i = 0;i<parent1.Size;i++)
       {
-        if(i%2 == 0)
-        //genes are ex-changed only at even positions
+        if(!justExchangedAtPreviousPosition)
+        //exchanges between genes of parents in childs
+        //must follow an alternate pattern, in order to
+        //avoid plain copy of parents in childs
         {  
         	if(genePlacesOfParent2NotPresentInParent1[i]!= - 1)
         	{
         		maskForChilds[0, i] = 2;//the change between genes
         		maskForChilds[1, i] = 1;//creates a child different from parents
+            justExchangedAtPreviousPosition = true;
         	}
         	else if(genePlacesOfParent1NotPresentInParent2[i]!= - 1) //see 1st if
         	{
         		maskForChilds[0, i] = 1;
         		maskForChilds[1, i] = 2;
+            justExchangedAtPreviousPosition = true;
         	}
         }
+        else
+          justExchangedAtPreviousPosition = false;
       }
     }
 		
