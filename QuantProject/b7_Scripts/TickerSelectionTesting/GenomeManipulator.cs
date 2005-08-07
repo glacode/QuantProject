@@ -85,7 +85,7 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
       }
       return returnValue;
     }
-    
+    /*old
     private static void setMaskForChildsForMixingWithoutDuplicates(Genome parent1, Genome parent2)
 		                                                           
     {
@@ -118,7 +118,38 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
           justExchangedAtPreviousPosition = false;
       }
     }
-		
+		*/
+    private static void setMaskForChildsForMixingWithoutDuplicates(Genome parent1, Genome parent2)
+		                                                           
+    {
+      int[] genePlacesOfParent1NotPresentInParent2 = 
+        genePositionsOfParent1NotPresentInParent2(parent1, parent2);
+      int[] genePlacesOfParent2NotPresentInParent1 = 
+        genePositionsOfParent1NotPresentInParent2(parent2, parent1);
+      bool justExchangedAtPreviousPosition = false;
+      for(int i = 0;i<parent1.Size;i++)
+      {
+        if(!justExchangedAtPreviousPosition)
+          //exchanges between genes of parents in childs
+          //must follow an alternate pattern, in order to
+          //avoid plain copy of parents in childs when all genes
+          //of the first parent are not in the second one (and viceversa)
+        {  
+          if(genePlacesOfParent2NotPresentInParent1[i]!= - 1)
+          {
+            maskForChilds[0, i] = 2;
+            justExchangedAtPreviousPosition = true;
+          }
+          if(genePlacesOfParent1NotPresentInParent2[i]!= - 1)
+          {
+            maskForChilds[1, i] = 1;
+            justExchangedAtPreviousPosition = true;
+          }
+        }
+        else
+          justExchangedAtPreviousPosition = false;
+      }
+    }
     private static void setChildsUsingMaskForChilds(Genome parent1,
 		                                                Genome parent2)
 		{

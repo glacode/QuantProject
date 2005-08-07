@@ -55,15 +55,6 @@ namespace QuantProject.ADT.Optimizing.Genetic
       maskForChilds = new int[childs.Length, genomeSize];
     }
 
-    private static void assignFitnessAndMeaningToChilds()
-    {
-      foreach(Genome child in childs)
-      {
-        child.AssignMeaning();
-        child.CalculateFitness();
-      }
-    }
-    
     private static void setChildsUsingMaskForChilds(Genome parent1,
       Genome parent2)
     {
@@ -113,7 +104,6 @@ namespace QuantProject.ADT.Optimizing.Genetic
 					childs[1].SetGeneValue(parent1.GetGeneValue(i), i);
 				}
 			}
-			GenomeManagement.assignFitnessAndMeaningToChilds();
       return GenomeManagement.childs;
 		}
 		
