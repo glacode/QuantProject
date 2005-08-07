@@ -230,8 +230,8 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
       int returnValue = GenomeManagement.RandomGenerator.Next(genome.MinValueForGenes,
                                                               genome.MaxValueForGenes + 1);
       while(genome.HasGene(returnValue) ||
-            genome.HasGene(Math.Abs(returnValue) - 1 ) ||
-            genome.HasGene(- Math.Abs(returnValue) - 1) )
+            ( returnValue<0 && genome.HasGene(Math.Abs(returnValue) - 1 ) )||
+            (returnValue>0 && genome.HasGene(- Math.Abs(returnValue) - 1)) )
       //the portfolio can't have a long position and a short one for the same ticker
       {
         returnValue = GenomeManagement.RandomGenerator.Next(genome.MinValueForGenes,
@@ -248,9 +248,9 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
       int newValueForGene = GenomeManagement.RandomGenerator.Next(genome.MinValueForGenes,
                                                                   genome.MaxValueForGenes +1);
       int genePositionToBeMutated = GenomeManagement.RandomGenerator.Next(genome.Size); 
-      while(genome.HasGene(newValueForGene) || 
-            genome.HasGene(Math.Abs(newValueForGene) - 1 ) ||
-            genome.HasGene(- Math.Abs(newValueForGene) - 1) )
+      while(genome.HasGene(returnValue) ||
+            ( returnValue<0 && genome.HasGene(Math.Abs(returnValue) - 1 ) )||
+            (returnValue>0 && genome.HasGene(- Math.Abs(returnValue) - 1)) )
         //the efficient portfolio, in this implementation, 
         // can't have a long position and a short position
         // for the same ticker
