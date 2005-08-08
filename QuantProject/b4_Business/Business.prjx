@@ -90,6 +90,7 @@
     <File name=".\a1_Financial\a2_Accounting\h5_Reporting\SummaryRows\DoubleSummaryRow.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
     <File name=".\a1_Financial\a2_Accounting\h5_Reporting\SummaryRows\IntegerSummaryRow.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
     <File name=".\a1_Financial\a2_Accounting\h5_Reporting\SummaryRows\PercentageSummaryRow.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
+    <File name=".\a2_Strategies\IEndOfDayStrategy.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
   </Contents>
   <References>
     <Reference type="Project" refto="b1_ADT" localcopy="True" />

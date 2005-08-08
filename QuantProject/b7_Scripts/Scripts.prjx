@@ -47,6 +47,8 @@
     <File name=".\TickerSelectionTesting\EndOfDayTimerHandlerCTCWeekly.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
     <File name=".\TickerSelectionTesting\RunEfficientCTCWeeklyPortfolio.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
     <File name=".\TickerSelectionTesting\GenomeManipulator.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
+    <File name=".\WalkForwardTesting\LinearCombination\OpenToCloseWeeklyStrategy.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
+    <File name=".\WalkForwardTesting\LinearCombination\OpenToCloseDailyStrategy.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
   </Contents>
   <References>
     <Reference type="Project" refto="b1_ADT" localcopy="True" />
