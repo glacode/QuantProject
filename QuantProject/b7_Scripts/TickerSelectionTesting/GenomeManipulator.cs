@@ -216,6 +216,25 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
       //throwExcIfAChildHasDuplicateGenes(); //just for debugging purposes
       return childs;
     }
+		
+    /// <summary>
+		/// Returns true if a given gene, when decoded by the
+		/// GenomeManagerForEfficientPortfolio, refers to a
+		/// ticker already contained in a given genome 
+		/// </summary> 
+		/// <param name="geneCorrespondingToATicker">Gene, corresponding to a certain ticker, that has to be checked</param>
+    /// <param name="genome">Genome containing or not the ticker geneCorrespondingToATicker refers to</param>
+    public static bool IsTickerContainedInGenome(int geneCorrespondingToATicker,
+                                                 Genome genome)
+    {
+      return(
+    		genome.HasGene(geneCorrespondingToATicker) ||
+        	(geneCorrespondingToATicker<0 && 
+          	genome.HasGene(Math.Abs(geneCorrespondingToATicker)-1)) ||
+        	(geneCorrespondingToATicker>0 && genome.HasGene(- Math.Abs(geneCorrespondingToATicker)- 1))
+      );
+      
+    }
 
 	}
 }
