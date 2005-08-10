@@ -44,7 +44,11 @@ namespace QuantProject.DataAccess
 			{
 				this.dataBaseType = fileExtension;
 				//it looks for the file in the application directory
-				if (!File.Exists("DataBase.xml"))
+//				if (!File.Exists("DataBase.xml"))
+				string xmlPath = Application.ExecutablePath.Substring(0,
+					Application.ExecutablePath.LastIndexOf('\\') )
+					+ @"\DataBase.xml";
+				if (!File.Exists( xmlPath ))
 					createXmlFile();
 						
 				this.stream = new StreamReader(Application.ExecutablePath.Substring(0, Application.ExecutablePath.LastIndexOf('\\'))
