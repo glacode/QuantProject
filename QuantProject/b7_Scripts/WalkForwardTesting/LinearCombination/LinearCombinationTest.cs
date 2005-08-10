@@ -42,7 +42,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.LinearCombination
 	{
 		private DateTime firstDate;
 		private DateTime lastDate;
-		private string[] signedTickers;
+		private GenomeRepresentation genomeRepresentation;
 		private bool openToCloseDaily;
 
 		private IHistoricalQuoteProvider historicalQuoteProvider;
@@ -51,11 +51,11 @@ namespace QuantProject.Scripts.WalkForwardTesting.LinearCombination
 		private IEndOfDayStrategy endOfDayStrategy;
 
 		public LinearCombinationTest( DateTime firstDate , DateTime lastDate ,
-			string[] signedTickers , bool openToCloseDaily )
+			GenomeRepresentation genomeRepresentation , bool openToCloseDaily )
 		{
 			this.firstDate = firstDate;
 			this.lastDate = lastDate;
-			this.signedTickers = signedTickers;
+			this.genomeRepresentation = genomeRepresentation;
 			this.openToCloseDaily = openToCloseDaily;
 		}
 
@@ -76,12 +76,33 @@ namespace QuantProject.Scripts.WalkForwardTesting.LinearCombination
 		}
 		private void run_setStrategy()
 		{
+			string[] signedTickers = GenomeRepresentation.GetSignedTickers(
+				this.genomeRepresentation.SignedTickers );
 			if ( this.openToCloseDaily )
 				this.endOfDayStrategy = new OpenToCloseDailyStrategy(
-					this.account , this.signedTickers );
+					this.account , signedTickers );
 			else
 				this.endOfDayStrategy = new OpenToCloseWeeklyStrategy(
-					this.account , this.signedTickers );
+					this.account , signedTickers );
+		}
+		private string getDateString( DateTime dateTime )
+		{
+			string returnValue = dateTime.ToString( "yy-MM-dd" );
+			return returnValue;
+		}
+		private string run_getReportTitle()
+		{
+			string returnValue = "Fitness:" +
+				this.genomeRepresentation.Fitness.ToString() +
+				" | Tickers:" +
+				this.genomeRepresentation.SignedTickers  + " - " +
+				"from " + this.getDateString( this.firstDate ) +
+				" to " + this.getDateString( this.lastDate ) +
+				" opt. in sample from " + this.getDateString(
+				this.genomeRepresentation.FirstOptimizationDate ) +
+				" to " + this.getDateString(
+				this.genomeRepresentation.LastOptimizationDate );
+			return returnValue;
 		}
 		public void Run()
 		{
@@ -96,8 +117,8 @@ namespace QuantProject.Scripts.WalkForwardTesting.LinearCombination
 				new HistoricalEndOfDayOrderExecutor( historicalEndOfDayTimer ,
 				this.historicalQuoteProvider ) );
 			run_setStrategy();
-//			OneRank oneRank = new OneRank( account ,
-//				this.endDateTime );
+			//			OneRank oneRank = new OneRank( account ,
+			//				this.endDateTime );
 			this.historicalEndOfDayTimer.MarketOpen +=
 				new MarketOpenEventHandler(
 				this.endOfDayStrategy.MarketOpenEventHandler );
@@ -115,6 +136,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.LinearCombination
 				"^SPX" );
 			//			ObjectArchiver.Archive( report.AccountReport ,
 			//				@"C:\Documents and Settings\Glauco\Desktop\reports\runOneRank.qPr" );
+			report.Text = this.run_getReportTitle();
 			report.Show();
 		}
 	}
