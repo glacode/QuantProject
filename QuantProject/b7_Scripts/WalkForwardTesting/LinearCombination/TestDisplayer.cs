@@ -222,7 +222,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.LinearCombination
 				genomeRepresentation.SignedTickers );
 			LinearCombinationTest linearCombinationTest =
 				new LinearCombinationTest( this.dtpFirstDate.Value ,
-				this.dtpLastDate.Value , signedTickers ,
+				this.dtpLastDate.Value , genomeRepresentation ,
 				this.radioButtonOpenToCloseDaily.Checked );
 			linearCombinationTest.Run();
 			this.lastSelectedGenomeRepresentation = genomeRepresentation;
