@@ -223,10 +223,10 @@ namespace QuantProject.Scripts.WalkForwardTesting.LinearCombination
 		private void createOptimizedGenomes()
 		{
 			this.bestGenomes = new ArrayList();
-			DataTable setOfTickersToBeOptimized =
-				this.getSetOfTickersToBeOptimized_quickly();
 //			DataTable setOfTickersToBeOptimized =
-//				this.getSetOfTickersToBeOptimized();
+//				this.getSetOfTickersToBeOptimized_quickly();
+			DataTable setOfTickersToBeOptimized =
+				this.getSetOfTickersToBeOptimized();
 			GenomeManagerForEfficientCTOPortfolio genManEfficientCTOPortfolio = 
 				new GenomeManagerForEfficientCTOPortfolio(setOfTickersToBeOptimized,
 				this.firstDate,
@@ -275,7 +275,8 @@ namespace QuantProject.Scripts.WalkForwardTesting.LinearCombination
 		{
 			TestDisplayer testDisplayer = new TestDisplayer(
 				this.firstDate , this.lastDate , this.bestGenomes );
-			testDisplayer.ShowDialog();
+			this.bestGenomes = null;
+			testDisplayer.Show();
 		}
 		private void testOptimizedGenomes()
 		{
