@@ -117,6 +117,8 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
                           
     {
  			this.setOfTickers = setOfInitialTickers;
+			if ( setOfInitialTickers.Rows.Count == 0 )
+				throw new Exception( "setOfInitialTickers cannot be empty!" );
       this.originalNumOfTickers = setOfInitialTickers.Rows.Count;
       this.firstQuoteDate = firstQuoteDate;
       this.lastQuoteDate = lastQuoteDate;
