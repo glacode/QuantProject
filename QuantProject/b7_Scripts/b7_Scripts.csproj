@@ -318,6 +318,16 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "WalkForwardTesting\LinearCombination\WalkForwardTest\RunWalkForwardLinearCombination.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "WalkForwardTesting\LinearCombination\WalkForwardTest\WalkForwardOpenToCloseDailyStrategy.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "WalkForwardTesting\MSFTwalkForward\TsMSFTwalkForward.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
