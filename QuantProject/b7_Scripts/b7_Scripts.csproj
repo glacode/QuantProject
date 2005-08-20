@@ -121,6 +121,16 @@
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
+                <File
+                    RelPath = "EvaluatingOptimizationTechnique\OptimizationTechniqueEvaluator.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "EvaluatingOptimizationTechnique\EfficientPortfolio\RunTestingOptimizationOpenToClose.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
                 <Folder RelPath = "MultiTesting\MultiTestOneRank\" />
                 <File
                     RelPath = "SimpleTesting\MSFTsimpleTest\TsMSFTsimpleTest.cs"
@@ -306,11 +316,6 @@
                     RelPath = "WalkForwardTesting\LinearCombination\TestDisplayer.cs"
                     SubType = "Form"
                     BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "WalkForwardTesting\LinearCombination\TestDisplayer.resx"
-                    DependentUpon = "TestDisplayer.cs"
-                    BuildAction = "EmbeddedResource"
                 />
                 <File
                     RelPath = "WalkForwardTesting\LinearCombination\VisualObjectArchiver.cs"
