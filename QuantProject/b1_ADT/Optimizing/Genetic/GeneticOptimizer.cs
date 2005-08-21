@@ -210,8 +210,8 @@ namespace QuantProject.ADT.Optimizing.Genetic
 
     private void commonInitialization()
     {
-      this.mutationRate = 0.10;
-   		this.crossoverRate = 0.85;
+      this.mutationRate = 0.20;
+   		this.crossoverRate = 0.99;
     	this.elitismRate = 0.0;
     	this.minConvergenceRate = 0.80;
     	this.keepOnRunningUntilConvergenceIsReached = false;
