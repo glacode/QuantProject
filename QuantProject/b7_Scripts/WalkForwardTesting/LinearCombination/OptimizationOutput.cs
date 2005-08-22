@@ -30,29 +30,22 @@ namespace QuantProject.Scripts.WalkForwardTesting.LinearCombination
 	/// optimization process.
 	/// </summary>
 	[Serializable]
-	public class OptimizationOutput
+	public class OptimizationOutput : ArrayList
 	{
-		private DateTime firstDate;
-		public DateTime FirstDate
+//		public ArrayList BestGenomes
+//		{
+//			get { return this.bestGenomes; }
+//		}
+		public OptimizationOutput()
 		{
-			get { return this.firstDate; }
 		}
-		private DateTime lastDate;
-		public DateTime LastDate
+		/// <summary>
+		/// Adds a genome representation
+		/// </summary>
+		/// <param name="genomeRepresentation"></param>
+		public void Add( GenomeRepresentation genomeRepresentation )
 		{
-			get { return this.lastDate; }
-		}
-		private ArrayList bestGenomes;
-		public ArrayList BestGenomes
-		{
-			get { return this.bestGenomes; }
-		}
-		public OptimizationOutput( DateTime firstDate ,
-			DateTime lastDate , ArrayList bestGenomes )
-		{
-			this.firstDate = firstDate;
-			this.lastDate = lastDate;
-			this.bestGenomes = bestGenomes;
+			base.Add( genomeRepresentation );
 		}
 	}
 }
