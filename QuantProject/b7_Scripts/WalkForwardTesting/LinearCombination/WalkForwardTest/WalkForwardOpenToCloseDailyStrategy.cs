@@ -55,6 +55,14 @@ namespace QuantProject.Scripts.WalkForwardTesting.LinearCombination
 		private string[] signedTickersFromLastOptimization;
 		private GeneticOptimizer geneticOptimizer;
 
+		private OptimizationOutput optimizationOutput;
+
+		/// best genomes, one for each optimization process
+		public OptimizationOutput OptimizationOutput
+		{
+			get { return this.optimizationOutput; }
+		}
+
 		public WalkForwardOpenToCloseDailyStrategy( Account account ,
 			string tickerGroupID , int numDaysForInSampleOptimization ,
 			int numberOfEligibleTickers ,
@@ -152,6 +160,17 @@ namespace QuantProject.Scripts.WalkForwardTesting.LinearCombination
 				newGenerationEventArgs.GenerationNumber.ToString() +
 				" - " + DateTime.Now.ToString() );
 		}
+		private void addGenomeToBestGenomes( Genome genome,
+			DateTime firstOptimizationDate ,
+			DateTime lastOptimizationDate )
+		{
+			if( this.optimizationOutput == null)
+				this.optimizationOutput = new OptimizationOutput();
+      
+			this.optimizationOutput.Add( new GenomeRepresentation( genome ,
+				firstOptimizationDate ,
+				lastOptimizationDate ) );
+		}
 		private void oneHourAfterMarketCloseEventHandler_set_signedTickersFromLastOptimization(
 			DateTime currentDate )
 		{
@@ -164,10 +183,12 @@ namespace QuantProject.Scripts.WalkForwardTesting.LinearCombination
 			DataTable setOfTickersToBeOptimized =
 				this.getSetOfTickersToBeOptimized( optimizationFirstDate ,
 				optimizationLastDate );
+			Console.WriteLine( "Number of tickers to be optimized: " +
+				setOfTickersToBeOptimized.Rows.Count.ToString() );
 			GenomeManagerForEfficientCTOPortfolio genManEfficientCTOPortfolio = 
 				new GenomeManagerForEfficientCTOPortfolio(
 				setOfTickersToBeOptimized ,
-				currentDate.AddDays( this.numDaysForInSampleOptimization - 1 ) ,
+				currentDate.AddDays( -this.numDaysForInSampleOptimization + 1 ) ,
 				currentDate ,
 				this.numberOfTickersToBeChosen ,
 				this.targetReturn ,
@@ -187,7 +208,8 @@ namespace QuantProject.Scripts.WalkForwardTesting.LinearCombination
 
 			this.signedTickersFromLastOptimization =
 				(string[])this.geneticOptimizer.BestGenome.Meaning;
-       
+			this.addGenomeToBestGenomes( geneticOptimizer.BestGenome ,
+				optimizationFirstDate , optimizationLastDate );
 		}
 		public void OneHourAfterMarketCloseEventHandler( Object sender ,
 			EndOfDayTimingEventArgs endOfDayTimingEventArgs)
