@@ -61,7 +61,10 @@ namespace QuantProject.Scripts.WalkForwardTesting.LinearCombination
 			this.obj = obj;
 			this.saveFileDialog = new SaveFileDialog();
 			this.saveFileDialog.DefaultExt = suffix;
+			this.saveFileDialog.Filter = suffix + " files (*."+
+				suffix + ")|*." + suffix;
 			this.saveFileDialog.Title = title;
+			this.saveFileDialog.FileName = title;
 			this.saveFileDialog.InitialDirectory = initialDirectory;
 			this.saveFileDialog.AddExtension = true;
 			this.saveFileDialog.CreatePrompt = true;
@@ -84,10 +87,12 @@ namespace QuantProject.Scripts.WalkForwardTesting.LinearCombination
 			this.Save( obj , suffix , title ,
 				System.Configuration.ConfigurationSettings.AppSettings["ReportsArchive"] );
 		}
-		private string getPath( string title )
+		private string getPath( string title , string suffix )
 		{
 			OpenFileDialog openFileDialog = new OpenFileDialog();
 			openFileDialog.Title = title;
+			openFileDialog.Filter = suffix + " files (*."+
+				suffix + ")|*." + suffix;
 			openFileDialog.Multiselect = false;
 			openFileDialog.CheckFileExists = true;
 			openFileDialog.ShowDialog();
@@ -96,7 +101,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.LinearCombination
 		private object load( object obj , string suffix ,
 			string title , string initialDirectory )
 		{
-			string chosenPath = this.getPath( title );
+			string chosenPath = this.getPath( title , suffix );
 			return ObjectArchiver.Extract( chosenPath );
 		}
 		public object Load( object obj , string suffix , string title )
