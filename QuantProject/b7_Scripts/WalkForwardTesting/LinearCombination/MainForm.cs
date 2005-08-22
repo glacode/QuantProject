@@ -48,11 +48,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.LinearCombination
 		private PortfolioType portfolioType;
 		private GeneticOptimizer GO;
 
-		/// <summary>
-		/// bestGenomes[ i ] contains an array list with the best genomes
-		/// for generation i
-		/// </summary>
-		private ArrayList bestGenomes;
+		private OptimizationOutput optimizationOutput;
 
 		private System.Windows.Forms.MainMenu mainMenu1;
 		private System.Windows.Forms.MenuItem menuItem1;
@@ -188,19 +184,19 @@ namespace QuantProject.Scripts.WalkForwardTesting.LinearCombination
 		{
 			newGenerationEventHandler_updateProgressBar( newGenerationEventArgs );
 			ArrayList generation = newGenerationEventArgs.Generation;
-			if ( this.bestGenomes.Count == 0 )
+			if ( this.optimizationOutput.Count == 0 )
 				// this is the first generation created and this.bestGenomes is still empty
-				this.bestGenomes.Add( new GenomeRepresentation(
+				this.optimizationOutput.Add( new GenomeRepresentation(
 					(Genome)generation[ generation.Count - 1 ] ,
 					this.firstDate ,
 					this.lastDate ,
 					newGenerationEventArgs.GenerationCounter ) );
 			for ( int i=0 ; i < generation.Count ; i++ )
 				if ( ((Genome)generation[ i ]).Fitness >
-					((GenomeRepresentation)this.bestGenomes[
-					this.bestGenomes.Count - 1 ]).Fitness )
+					((GenomeRepresentation)this.optimizationOutput[
+					this.optimizationOutput.Count - 1 ]).Fitness )
 					// generation[ i ] is a genome better than the best already stored
-					this.bestGenomes.Add( new GenomeRepresentation(
+					this.optimizationOutput.Add( new GenomeRepresentation(
 						(Genome)generation[ i ] ,
 						this.firstDate ,
 						this.lastDate ,
@@ -211,8 +207,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.LinearCombination
 			VisualObjectArchiver visualObjectArchiver =
 				new VisualObjectArchiver();
 			OptimizationOutput optimizationOutput =
-				new OptimizationOutput( this.firstDate , this.lastDate ,
-				this.bestGenomes );
+				new OptimizationOutput();
 			visualObjectArchiver.Save( optimizationOutput , "bgn" ,
 				"Save best genomes" );
 		}
@@ -222,7 +217,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.LinearCombination
 		}
 		private void createOptimizedGenomes()
 		{
-			this.bestGenomes = new ArrayList();
+			this.optimizationOutput = new OptimizationOutput();
 //			DataTable setOfTickersToBeOptimized =
 //				this.getSetOfTickersToBeOptimized_quickly();
 			DataTable setOfTickersToBeOptimized =
@@ -259,23 +254,26 @@ namespace QuantProject.Scripts.WalkForwardTesting.LinearCombination
 		#region testOptimizedGenomes
 		private void loadBestGenomesFromDisk()
 		{
-			if ( this.bestGenomes == null )
+			if ( this.optimizationOutput == null )
 			{
 				VisualObjectArchiver visualObjectArchiver =
 					new VisualObjectArchiver();
-				OptimizationOutput optimizationOutput =
+				this.optimizationOutput =
           (OptimizationOutput)visualObjectArchiver.Load(
 					"Load best genomes" , "bgn" , "Load Genomes");
-				this.firstDate = optimizationOutput.FirstDate;
-				this.lastDate = optimizationOutput.LastDate;
-				this.bestGenomes = optimizationOutput.BestGenomes;
+				if ( this.optimizationOutput.Count == 0 )
+					throw new Exception( "The loaded optimization output contains no element!" );
+				this.firstDate = ((GenomeRepresentation)(
+					this.optimizationOutput[ 0 ])).FirstOptimizationDate;
+				this.lastDate = ((GenomeRepresentation)(
+					this.optimizationOutput[ 0 ])).LastOptimizationDate;
 			}
 		}
 		private void testOptimizedGenomesActually()
 		{
 			TestDisplayer testDisplayer = new TestDisplayer(
-				this.firstDate , this.lastDate , this.bestGenomes );
-			this.bestGenomes = null;
+				this.firstDate , this.lastDate , this.optimizationOutput );
+			this.optimizationOutput = null;
 			testDisplayer.Show();
 		}
 		private void testOptimizedGenomes()
