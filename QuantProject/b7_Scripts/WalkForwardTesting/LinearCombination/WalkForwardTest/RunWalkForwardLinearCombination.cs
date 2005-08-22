@@ -58,7 +58,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.LinearCombination
 		private IHistoricalQuoteProvider historicalQuoteProvider;
 		private HistoricalEndOfDayTimer historicalEndOfDayTimer;
 		private Account account;
-		private IEndOfDayStrategy endOfDayStrategy;
+		private WalkForwardOpenToCloseDailyStrategy endOfDayStrategy;
 
 		public RunWalkForwardLinearCombination(string tickerGroupID,
 			int numDaysForInSampleOptimization ,
@@ -154,6 +154,20 @@ namespace QuantProject.Scripts.WalkForwardTesting.LinearCombination
 			//			ObjectArchiver.Archive( report.AccountReport ,
 			//				@"C:\Documents and Settings\Glauco\Desktop\reports\runOneRank.qPr" );
 			report.Show();
+			string title = DateTime.Now.Year.ToString() + "_" +
+				DateTime.Now.Month.ToString() + "_" +
+				DateTime.Now.Day.ToString() + "_" +
+				DateTime.Now.Hour.ToString() + "_" +
+				DateTime.Now.Minute.ToString() + "_" +
+				DateTime.Now.Second.ToString() + "_" +
+				"numDayInSample" + this.numDaysForInSampleOptimization +
+				"_numEligTick" + this.numberOfEligibleTickers +
+				"_numDayLiq" + this.numDaysForLiquidity +
+				"_numTickInPortfolio" + this.numberOfTickersToBeChosen;
+			VisualObjectArchiver visualObjectArchiver =
+				new VisualObjectArchiver();
+			visualObjectArchiver.Save( this.endOfDayStrategy.OptimizationOutput ,
+				"bgn" , title );
 		}
 	}
 }
