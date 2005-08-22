@@ -243,9 +243,7 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
                              fileName + ".qPt");
       //
       this.checkDateForReport_createDirIfNotPresent(dirNameWhereToSaveBestGenomes);
-        ObjectArchiver.Archive(new OptimizationOutput(this.startDateTime.DateTime,
-                                                      this.endDateTime.DateTime,
-                                              this.endOfDayTimerHandler.BestGenomes),
+        ObjectArchiver.Archive(new OptimizationOutput(),
                               dirNameWhereToSaveBestGenomes + 
                               fileName + ".bgn");
       this.endOfDayTimer.Stop();
