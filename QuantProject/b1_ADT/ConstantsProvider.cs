@@ -36,6 +36,8 @@ namespace QuantProject.ADT
     public static int NumGenomesForRandomFitnessComputation = 100;
     // for GeneticOptimizer (used by CalculateRandomFitness() in order
     //to update averageRandomFitness and standardDeviationOfRandomFitness properties
+    public static DateTime DefaultDateForTickersAddedToGroups = new DateTime(1980,1,1);
+    //conventional date for new tickers added to groups 
                                                         
     
 	}

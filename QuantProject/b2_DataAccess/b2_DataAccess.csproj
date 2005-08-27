@@ -137,6 +137,11 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "Tables\EventType.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "Tables\FaultyTickers.cs"
                     SubType = "Code"
                     BuildAction = "Compile"

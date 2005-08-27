@@ -30,20 +30,43 @@ using QuantProject.Data.DataTables;
 namespace QuantProject.Data.Selectors
 {
 	/// <summary>
-	/// Class for selection on tickers by groupId
+	/// Class for selection on tickers by groupId only or groupId and date
 	/// </summary>
 	public class SelectorByGroup : ITickerSelector 
 	{
     private string groupID;
-
+    private DateTime date = new DateTime(1900,1,1);
+    
+    /// <summary>
+    /// Creates an new instance of SelectorByGroup, in order
+    /// to get tickers contained in the given group
+    /// </summary>
+    /// <param name="groupID">Group's code for which tickers are to be selected</param>
 		public SelectorByGroup( string groupID )
 		{
 			this.groupID = groupID;
-		}
+   	}
+    
+    /// <summary>
+    /// Creates an new instance of SelectorByGroup, in order
+    /// to get tickers contained in the given group
+    /// </summary>
+    /// <param name="groupID">Group's code for which tickers are to be selected</param>
+    /// <param name="date">The date at which tickers to be selected belong effectively
+    ///                           to the given group</param>
+    public SelectorByGroup( string groupID, DateTime date )
+    {
+      this.groupID = groupID;
+      this.date = date;
+    }
 
 		public DataTable GetTableOfSelectedTickers()
 		{
-			return QuantProject.DataAccess.Tables.Tickers_tickerGroups.GetTickers( this.groupID );        
+			if(this.date.CompareTo(new DateTime(1900,1,1)) == 0)
+      //date has not be set by the user because it is still equal to default value
+        return QuantProject.DataAccess.Tables.Tickers_tickerGroups.GetTickers( this.groupID );
+      else
+        return QuantProject.DataAccess.Tables.Tickers_tickerGroups.GetTickers( this.groupID, this.date );
 		}
 		public void SelectAllTickers()
 		{

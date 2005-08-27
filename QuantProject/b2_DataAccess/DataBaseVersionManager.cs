@@ -25,6 +25,7 @@ using System.Windows.Forms;
 using System.Data.OleDb;
 using System.Data;
 using System.Collections;
+using QuantProject.ADT;
 
 
 namespace QuantProject.DataAccess
@@ -65,10 +66,12 @@ namespace QuantProject.DataAccess
 		this.updatingMethods.Add(new updatingMethodHandler(this.createDatabase));
 		this.updatingMethods.Add(new updatingMethodHandler(this.createTables));
 		this.updatingMethods.Add(new updatingMethodHandler(this.alterTablesAddPrimaryKeys));
-		this.updatingMethods.Add(new updatingMethodHandler(this.alterTablesAddForeignKeys));
-		this.updatingMethods.Add(new updatingMethodHandler(this.alterTablesAddIndexes));
+		this.updatingMethods.Add(new updatingMethodHandler(this.alterTablesRemovePrimaryKeys));
+    this.updatingMethods.Add(new updatingMethodHandler(this.alterTablesAddForeignKeys));
+    this.updatingMethods.Add(new updatingMethodHandler(this.alterTablesAddIndexes));
 		this.updatingMethods.Add(new updatingMethodHandler(this.alterTablesAddColumns));
 		this.updatingMethods.Add(new updatingMethodHandler(this.dropTables));
+		this.updatingMethods.Add(new updatingMethodHandler(this.updateTables));
 		
     }
 		public DataBaseVersionManager(OleDbConnection oleDbConnection)
@@ -159,9 +162,14 @@ namespace QuantProject.DataAccess
 								"PRIMARY KEY (quTicker, quDate)");
 			this.executeCommand("ALTER TABLE tickerGroups ADD CONSTRAINT PKtgId PRIMARY KEY (tgId)");
 			this.executeCommand("ALTER TABLE validatedTickers ADD CONSTRAINT myKey PRIMARY KEY ( vtTicker )");
-			this.executeCommand("ALTER TABLE tickers_tickerGroups " + 
-								"ADD CONSTRAINT PKttTgId_ttTiId PRIMARY KEY ( ttTgId, ttTiId)");
+			//this.executeCommand("ALTER TABLE tickers_tickerGroups " + 
+			//					"ADD CONSTRAINT PKttTgId_ttTiId PRIMARY KEY ( ttTgId, ttTiId)");
 	}
+
+  private void alterTablesRemovePrimaryKeys()
+  {
+    this.executeCommand("DROP INDEX PKttTgId_ttTiId ON tickers_tickerGroups");
+  }
 	private void alterTablesAddForeignKeys()
 	{
 		// add code here for adding foreign keys to existing tables;
@@ -176,16 +184,38 @@ namespace QuantProject.DataAccess
       "ADD COLUMN vtHashValue TEXT(50)");
     this.executeCommand("ALTER TABLE validatedTickers " +
       "ADD COLUMN vtEditDate DATETIME");
+    this.executeCommand("ALTER TABLE tickers_tickerGroups " + 
+      "ADD COLUMN ttEventType TEXT(1) NOT NULL");
+    this.executeCommand("ALTER TABLE tickers_tickerGroups " +
+      "ADD COLUMN ttEventDate DATETIME NOT NULL");
 	}
 	private void alterTablesAddIndexes()
 	{
 		//add code here for adding indexes to existing tables;
+    this.executeCommand("CREATE INDEX " + 
+                        "PK_ttTgId_ttTiId_ttEventDate_ttEventDate " +
+                        "ON tickers_tickerGroups " + 
+                        "(ttTgId, ttTiId, ttEventType, ttEventDate) "+
+                       	"WITH PRIMARY");
 	}
 
 	private void dropTables()
 	{
 		this.executeCommand("DROP TABLE version");
 		this.executeCommand("DROP TABLE visuallyValidatedTickers");
+	}
+	
+	//inserts new rows or updates 
+	//existing rows in tables after structure's modifications
+	private void updateTables()
+	{
+		this.executeCommand("UPDATE tickers_tickerGroups " +
+		                    "SET tickers_tickerGroups.ttEventType ='I', " +
+		                    "tickers_tickerGroups.ttEventDate =" + 
+                        SQLBuilder.GetDateConstant(ConstantsProvider.DefaultDateForTickersAddedToGroups) + " " +
+		                    "WHERE tickers_tickerGroups.ttEventType Is Null " +
+		                    "AND tickers_tickerGroups.ttEventDate Is Null");
+		
 	}	
 	private void executeCommand(string commandToBeExecuted)
 	{

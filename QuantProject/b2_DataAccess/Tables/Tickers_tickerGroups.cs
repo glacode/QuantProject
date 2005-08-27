@@ -39,6 +39,8 @@ namespace QuantProject.DataAccess.Tables
     // They are intended to be used through intellisense when necessary
     public static string GroupID = "ttTgId";
     public static string Ticker = "ttTiId";
+    public static string EventTypeFieldName = "ttEventType";
+    public static string EventDate = "ttEventDate";
 
     public Tickers_tickerGroups()
     {
@@ -79,6 +81,31 @@ namespace QuantProject.DataAccess.Tables
         MessageBox.Show(ex.ToString());
       }
     }
+    
+    private static string insert_getEventTypeCode(EventType eventType)
+    {
+      string returnValue = "I";//default value for Exit eventType
+      switch (eventType)
+      {
+        case EventType.Exit:
+          returnValue = "O";
+          break;
+      }
+      return returnValue;
+      
+    }
+    
+    /// <summary>
+    /// Adds a new row into tickers_tickerGroups 
+    /// </summary>
+    public static void Add( string ticker, string groupId, EventType eventType,
+                                DateTime eventDate)
+    {
+      string eventTypeCode = insert_getEventTypeCode(eventType);
+      SqlExecutor.ExecuteNonQuery("INSERT INTO tickers_tickerGroups(ttTiId, ttTgId, ttEventType, ttEventDate) " +
+        "VALUES('" + ticker + "','" + groupId + "','" + eventTypeCode +
+        "'," + SQLBuilder.GetDateConstant(eventDate)+ ")");
+    }
 
     /// <summary>
     /// It provides deletion of an entire group of tickers
@@ -103,9 +130,56 @@ namespace QuantProject.DataAccess.Tables
     public static DataTable GetTickers( string groupID)
     {
       /// TO DO use a join in order to return a table with tiTicker and company name  
-      return SqlExecutor.GetDataTable("SELECT " + Tickers_tickerGroups.Ticker + " FROM tickers_tickerGroups " +
+      return SqlExecutor.GetDataTable("SELECT DISTINCT " + Tickers_tickerGroups.Ticker + " FROM tickers_tickerGroups " +
           "WHERE " + Tickers_tickerGroups.GroupID + "='" +
           groupID + "'");
+    }
+    
+    private static void getTickers_createView(string viewName,
+                                              string sqlStatement)
+    {
+      try
+      {	
+      	string sqlForViewCreation = "CREATE VIEW " + viewName + " AS " + sqlStatement;
+      	SqlExecutor.ExecuteNonQuery(sqlForViewCreation);
+      }
+      catch(Exception ex)
+      {
+      	ex = ex;
+      }
+    }
+    
+    /// <summary>
+    /// It returns a table containing tickers effectively contained
+    /// in the given group at the given Date
+    /// </summary>
+    public static DataTable GetTickers( string groupID, DateTime date)
+    {
+      
+      string sqlLastEntries = "SELECT tickers_tickerGroups.ttTgId AS GroupIDEntries, " +
+                              "tickers_tickerGroups.ttTiId AS TickerIDEntries, Max(tickers_tickerGroups.ttEventDate) " +
+                               "AS MaxEntryDate FROM tickers_tickerGroups WHERE " +
+                              "tickers_tickerGroups.ttEventType='I' " +
+                              "GROUP BY tickers_tickerGroups.ttTgId, tickers_tickerGroups.ttTiId";
+      getTickers_createView("Entries", sqlLastEntries);
+      
+      string sqlLastExits = "SELECT tickers_tickerGroups.ttTgId AS GroupIDExits, " +
+                            "tickers_tickerGroups.ttTiId AS TickerIDExits, Max(tickers_tickerGroups.ttEventDate) " +
+                            "AS MaxExitDate FROM tickers_tickerGroups WHERE " +
+                            "tickers_tickerGroups.ttEventType='O' " +
+                            "GROUP BY tickers_tickerGroups.ttTgId, tickers_tickerGroups.ttTiId";
+      
+      getTickers_createView("Exits", sqlLastExits);
+      
+      string sqlTickersAtTheGivenDate = "SELECT GroupIDEntries, " +
+      									"TickerIDEntries FROM Entries LEFT JOIN Exits " + 
+      									"ON (Entries.GroupIDEntries = Exits.GroupIDExits) AND " +
+      									"(Entries.TickerIDEntries = Exits.TickerIDExits) WHERE " +
+      									"GroupIDEntries ='" + groupID + "' AND " +
+      									"MaxEntryDate<=" + SQLBuilder.GetDateConstant(date) + " AND " +
+      									"(MaxExitDate Is Null OR MaxEntryDate>Exits.MaxExitDate)";
+     
+      return SqlExecutor.GetDataTable(sqlTickersAtTheGivenDate);
     }
     /*
     /// <summary>
