@@ -31,6 +31,7 @@ using QuantProject.DataAccess;
 using QuantProject.DataAccess.Tables;
 using QuantProject.Data.DataTables;
 using QuantProject.Data.Selectors;
+using QuantProject.ADT;
 
 namespace QuantProject.Applications.Downloader.TickerSelectors
 {
@@ -538,7 +539,7 @@ namespace QuantProject.Applications.Downloader.TickerSelectors
 				if(this.oleDbConnection.State != ConnectionState.Open)
 					this.oleDbConnection.Open();
 				this.oleDbDataAdapter.SelectCommand.CommandText = 
-					"SELECT ttTiId, tiCompanyName, ttTgId FROM tickers INNER JOIN " +
+					"SELECT DISTINCT ttTiId, tiCompanyName, ttTgId FROM tickers INNER JOIN " +
 					"tickers_tickerGroups ON tickers.tiTicker = tickers_tickerGroups.ttTiId WHERE ttTgId ='" +
 					(string)selectedNode.Tag + "'";
 				DataTable tickers = new DataTable();
@@ -759,29 +760,12 @@ namespace QuantProject.Applications.Downloader.TickerSelectors
 			groupEditor.Show();
 		}
 
-		private bool isRowInsertedInDataBase(DataRow row)
+		private void insertRow(DataRow row)
 		{
-			try
-			{
-				this.oleDbDataAdapter.InsertCommand = 
-				new OleDbCommand("INSERT INTO tickers_tickerGroups(ttTiId, ttTgId) " +
-					"VALUES('" + (string)row[0] + "','" +
-					(string)this.treeViewGroups.SelectedNode.Tag  + "')", this.oleDbConnection);
-				if(this.oleDbDataAdapter.InsertCommand.ExecuteNonQuery()>0)
-				{
-					return true;
-				}
-				else 
-				{
-					return false;
-				}	
-			}	
-			catch(Exception ex)
-			{
-				string neverUsed = ex.ToString();
-				return false;
-			}
-			
+        QuantProject.DataAccess.Tables.Tickers_tickerGroups.Add((string)row[0],
+                                                              (string)this.treeViewGroups.SelectedNode.Tag,
+                                                              EventType.Entry,
+                                                              ConstantsProvider.DefaultDateForTickersAddedToGroups);
 		}
 		
 
@@ -830,18 +814,9 @@ namespace QuantProject.Applications.Downloader.TickerSelectors
           Cursor.Current = Cursors.WaitCursor;
           if(this.oleDbConnection.State != ConnectionState.Open)
             this.oleDbConnection.Open();
-          int numRowsInserted = 0;
           foreach (DataRow row in tickers.Rows)
-          {
-              if(this.isRowInsertedInDataBase(row))
-                numRowsInserted ++;
-          }
-          if(numRowsInserted != tickers.Rows.Count)
-              MessageBox.Show("Some selected tickers have not been added",
-                      "Warning after paste operation", MessageBoxButtons.OK,
-                      MessageBoxIcon.Exclamation); 
+            this.insertRow(row);
           this.updateListView(this.treeViewGroups.SelectedNode);
-  		
         }	
         catch(Exception ex)
         {
