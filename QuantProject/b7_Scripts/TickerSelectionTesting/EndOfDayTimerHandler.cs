@@ -211,7 +211,8 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
       
       this.bestGenomes.Add(new GenomeRepresentation(genome,
                                                     firstOptimizationDate,
-                                                    secondOptimizationDate));
+                                                    secondOptimizationDate,
+                                                    genome.Generation));
     }
     
     public virtual void MarketOpenEventHandler(

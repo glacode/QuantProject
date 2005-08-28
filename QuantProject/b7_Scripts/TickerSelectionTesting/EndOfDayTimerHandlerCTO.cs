@@ -183,10 +183,11 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
     public override void OneHourAfterMarketCloseEventHandler(
       Object sender , EndOfDayTimingEventArgs endOfDayTimingEventArgs )
     {
+    	ConstantsProvider.SeedForRandomGenerator++;
     	this.orders.Clear();
     	//this.oneHourAfterMarketCloseEventHandler_updatePrices();
       if(this.numDaysElapsedSinceLastOptimization == 
-    	   this.numDaysBetweenEachOptimization)
+    	   this.numDaysBetweenEachOptimization - 1)
     	{
     		this.setTickers(endOfDayTimingEventArgs.EndOfDayDateTime.DateTime, false);
       	//sets tickers to be chosen next Market Open event

@@ -192,7 +192,7 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
     public override void OneHourAfterMarketCloseEventHandler(
       Object sender , EndOfDayTimingEventArgs endOfDayTimingEventArgs )
     {
-     
+      ConstantsProvider.SeedForRandomGenerator++;
       if(this.account.Portfolio.Count == 0 )
       {
         this.orders.Clear();
