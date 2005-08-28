@@ -49,6 +49,8 @@
     <File name=".\TickerSelectionTesting\GenomeManipulator.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
     <File name=".\WalkForwardTesting\LinearCombination\OpenToCloseWeeklyStrategy.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
     <File name=".\WalkForwardTesting\LinearCombination\OpenToCloseDailyStrategy.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
+    <File name=".\WalkForwardTesting\LinearCombination\WalkForwardTest\RunWalkForwardLinearCombination.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
+    <File name=".\WalkForwardTesting\LinearCombination\WalkForwardTest\WalkForwardOpenToCloseDailyStrategy.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
     <File name=".\EvaluatingOptimizationTechnique" subtype="Directory" buildaction="Compile" dependson="" data="" />
     <File name=".\EvaluatingOptimizationTechnique\EfficientPortfolio" subtype="Directory" buildaction="Compile" dependson="" data="" />
     <File name=".\EvaluatingOptimizationTechnique\OptimizationTechniqueEvaluator.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
