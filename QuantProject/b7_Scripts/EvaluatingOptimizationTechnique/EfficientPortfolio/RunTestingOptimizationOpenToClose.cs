@@ -22,6 +22,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 using System;
 using System.Data;
+using System.IO;
 
 using QuantProject.ADT;
 using QuantProject.ADT.Optimizing.Genetic;
@@ -45,33 +46,42 @@ namespace QuantProject.Scripts.EvaluatingOptimizationTechnique.EfficientPortfoli
     private int numberOfTickersToBeChosen;
     private int numDaysForLiquidity;
     private int populationSizeForGeneticOptimizer;
+    private int generationNumberForGeneticOptimizer;
   	private string benchmark;
   	private DateTime marketDate;
   	private double targetReturn;
   	private PortfolioType portfolioType;
   	private int numDaysAfterLastOptimizationDay;
   	private int numberOfSubsets;
+  	private Genome[] genomesToTestOutOfSample;
+  	private int numberOfGenomesToTest;
   	
     public RunTestingOptimizationOpenToClose(string tickerGroupID, int numberOfEligibleTickers,
-      				int numberOfTickersToBeChosen, int numDaysForLiquidity, 
-      				int populationSizeForGeneticOptimizer, string benchmark,
+      				int numberOfTickersToBeChosen, int numDaysForLiquidity,
+      				int generationNumberForGeneticOptimizer, int populationSizeForGeneticOptimizer, 
+      				string benchmark,
       				DateTime marketDate, double targetReturn,
-      				PortfolioType portfolioType, int numDaysAfterLastOptimizationDay)
+      				PortfolioType portfolioType, int numDaysAfterLastOptimizationDay,
+      				int numberOfSubsets, int numberOfGenomesToTest)
     {
-  		this.fitnessesInSample = new double[populationSizeForGeneticOptimizer];
-  		this.fitnessesOutOfSample = new double[populationSizeForGeneticOptimizer];
+  		this.numberOfGenomesToTest = numberOfGenomesToTest;
+  		this.genomesToTestOutOfSample = new Genome[numberOfGenomesToTest];
+  		this.fitnessesInSample = new double[numberOfGenomesToTest];
+  		this.fitnessesOutOfSample = new double[numberOfGenomesToTest];
   		this.tickerGroupID = tickerGroupID;
   		this.numberOfEligibleTickers = numberOfEligibleTickers;
   		this.numberOfTickersToBeChosen = numberOfTickersToBeChosen;
   		this.numDaysForLiquidity = numDaysForLiquidity;
   		this.populationSizeForGeneticOptimizer = populationSizeForGeneticOptimizer;
+  		this.generationNumberForGeneticOptimizer = generationNumberForGeneticOptimizer;
   		this.benchmark = benchmark;
   		this.marketDate = marketDate;
   		this.targetReturn = targetReturn;
   		this.portfolioType = portfolioType;
   		this.numDaysAfterLastOptimizationDay = numDaysAfterLastOptimizationDay;
-  		this.numberOfSubsets = 5;
-    }
+  		this.numberOfSubsets = numberOfSubsets;
+  		
+  	}
     
   	private DataTable getSetOfTickersToBeOptimized(DateTime date)
     {
@@ -137,15 +147,26 @@ namespace QuantProject.Scripts.EvaluatingOptimizationTechnique.EfficientPortfoli
       
     }
   	
+  	private void setFitnesses_setFitnessesActually_setGenomesToTestOutOfSample(GeneticOptimizer GO)
+  		
+    {
+  		Random random = new Random(10);
+  		for(int i = 0; i<this.numberOfGenomesToTest; i++)
+  		{
+  			this.genomesToTestOutOfSample[i]=
+  				(Genome)GO.CurrentGeneration[random.Next(this.populationSizeForGeneticOptimizer)];
+  		}
+  		Array.Sort(this.genomesToTestOutOfSample);
+    }
   	private void setFitnesses_setFitnessesActually(GeneticOptimizer GO)
   		
     {
-  		
-  		for(int i = 0; i<GO.CurrentGeneration.Count; i++)
+  		this.setFitnesses_setFitnessesActually_setGenomesToTestOutOfSample(GO);
+  		for(int i = 0; i<this.numberOfGenomesToTest; i++)
   		{
-  			this.fitnessesInSample[i]=((Genome)GO.CurrentGeneration[i]).Fitness;
+  			this.fitnessesInSample[i]=(this.genomesToTestOutOfSample[i]).Fitness;
   			this.fitnessesOutOfSample[i]= 
-  				this.setFitnesses_setFitnessesActually_getFitnessOutOfSample((Genome)GO.CurrentGeneration[i]);
+  				this.setFitnesses_setFitnessesActually_getFitnessOutOfSample(this.genomesToTestOutOfSample[i]);
   		}
       
     }
@@ -166,7 +187,7 @@ namespace QuantProject.Scripts.EvaluatingOptimizationTechnique.EfficientPortfoli
       
       GeneticOptimizer GO = new GeneticOptimizer(genManEfficientCTOPortfolio,
                                                   this.populationSizeForGeneticOptimizer,
-                                                  0,
+                                                  this.generationNumberForGeneticOptimizer,
                                                  ConstantsProvider.SeedForRandomGenerator);
           
       GO.Run(false);
@@ -180,11 +201,45 @@ namespace QuantProject.Scripts.EvaluatingOptimizationTechnique.EfficientPortfoli
     	OptimizationTechniqueEvaluator evaluator = 
     		new OptimizationTechniqueEvaluator(this.fitnessesInSample,
     		                                   this.fitnessesOutOfSample);
+    	this.run_writeToLogFile(evaluator);
+    }
+    
+    private void run_writeToLogFile(OptimizationTechniqueEvaluator evaluator)
+    {
     	double[] averagesInSample = 
     		evaluator.GetAveragesOfSubsetsInSample(this.numberOfSubsets);
     	double[] averagesOutOfSample = 
     		evaluator.GetAveragesOfSubsetsOutOfSample(this.numberOfSubsets);
     	double r = evaluator.GetCorrelationBetweenFitnesses();
-    }
+    	GenomeCounter genomeCounter = new GenomeCounter(this.genomesToTestOutOfSample);
+    	int differentEvaluatedGenomes = genomeCounter.TotalEvaluatedGenomes;
+     	string pathFile = System.Configuration.ConfigurationSettings.AppSettings["GenericArchive"] +
+                    "\\OpenToCloseOptimizationEvaluation.txt";
+  	  StreamWriter w = File.AppendText(pathFile);
+  	  w.WriteLine ("\n----------------------------------------------\r\n");
+  	  w.Write("\r\nNew Test for Evaluation of Open To Close Optimization {0}\r", DateTime.Now.Date.ToLongDateString());
+  	  w.WriteLine ("\n----------------------------------------------");
+  	  w.Write("\r\nFitnesses compared: {0}\r", this.fitnessesInSample.Length.ToString());
+  	  w.Write("\r\nDifferent evaluated genomes: {0}\r", differentEvaluatedGenomes.ToString());
+      w.Write("\r\nAverages of the {0} sub sets of fitnesses In Sample:\r",
+  	          this.numberOfSubsets);
+      //
+      for(int i = 0; i<averagesInSample.Length; i++)
+        	w.WriteLine("\n{0}-->{1}", i.ToString(), averagesInSample[i].ToString());
+      
+      w.WriteLine ("\n\n----------------------------------------------");
+      w.Write("\r\nAverages of the {0} sub sets of fitnesses Out of Sample:\r",
+  	          this.numberOfSubsets);
+      //
+      for(int i = 0; i<averagesOutOfSample.Length; i++)
+        	w.WriteLine("\n{0}-->{1}", i.ToString(), averagesOutOfSample[i].ToString());	
+      w.WriteLine ("\n\n----------------------------------------------");
+      //
+      w.Write("\r\nCorrelation coefficient between fitnesses: {0}\r", r.ToString());
+      w.WriteLine ("\n-----------------End of Test------------------\r\n");
+      // Update the underlying file.
+      w.Flush();
+      w.Close();
+    }	
 	}
 }
