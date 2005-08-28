@@ -59,6 +59,19 @@ namespace QuantProject.ADT.Optimizing.Genetic
     		new NewGenerationEventHandler(this.addNewGenome);
     }
 		
+    public GenomeCounter(Genome[] genomesToBeCounted)
+		{
+    	this.geneticOptimizer = null;
+    	this.fitnessCollector = new Hashtable();
+    	foreach(Genome genome in genomesToBeCounted)
+    	{
+    		if(!this.fitnessCollector.ContainsKey(genome.Fitness))
+    		//the hashtable fitnessCollector doesn't contain the
+    		//current genome's fitness, yet
+    			this.fitnessCollector.Add(genome.Fitness, null);
+    	}
+    }
+    
     private void addNewGenome(Object sender,
                           NewGenerationEventArgs newGenerationEventArgs)
     {
