@@ -86,6 +86,16 @@ namespace QuantProject.ADT.Optimizing.Genetic
       get{return this.maxValueForGenes;}
     }
 		
+    /// <summary>
+    /// Returns the generation at which 
+    /// the current genome has been generated
+    /// by the Genetic Optimizer
+    /// </summary>
+    public int Generation
+    {
+      get{return this.genomeManager.CurrentGeneticOptimizer.GenerationCounter;}
+    }
+    
     //implementation of IComparable interface
     public int CompareTo(object obj) {
         if(obj is Genome) {
