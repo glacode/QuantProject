@@ -21,6 +21,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
 using System;
+using System.Collections;
 
 namespace QuantProject.ADT.Statistics
 {
@@ -115,6 +116,13 @@ namespace QuantProject.ADT.Statistics
       //negative semivariance is a special case of Lower partial moment
     }
 
+		public static double GetSharpeRatio( ICollection returns )
+		{
+			double sharpeRatio =
+				BasicFunctions.GetSimpleAverage( returns ) /
+				BasicFunctions.GetStdDev( returns );
+			return sharpeRatio;
+		}
   }
   
 
