@@ -21,7 +21,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
 using System;
-using QuantProject.ADT.Statistics;
+using System.Collections;
 
 namespace QuantProject.ADT.Statistics
 {
@@ -49,7 +49,7 @@ namespace QuantProject.ADT.Statistics
       return	sum;
     }
 		
-    static public  double Sum( float[] data ) 
+		static public  double Sum( float[] data ) 
 		{
 			double sum = 0;
 			for( int i = 0; i < data.Length ; i ++ ) 
@@ -58,7 +58,26 @@ namespace QuantProject.ADT.Statistics
 			}
 			return	sum;
 		}
-    static public  double SumOfSquares( double[] data ) 
+		static public double GetSum( ICollection data ) 
+		{
+			double sum = 0;
+			foreach( object obj in data ) 
+			{
+				double valueToBeAdded;
+				try
+				{
+					valueToBeAdded =	Convert.ToDouble( obj );
+				}
+				catch
+				{
+					throw new Exception( "The data collection contains " +
+						"a data that cannot be converted to double!" );
+				}
+				sum += valueToBeAdded;
+			}
+			return sum;
+		}
+		static public  double SumOfSquares( double[] data ) 
     {
       double sumOfSquares = 0;
       for( int i = 0; i < data.Length ; i ++ ) 
@@ -78,16 +97,20 @@ namespace QuantProject.ADT.Statistics
 			return	sumOfSquares;
 		}
     
-    static public double SimpleAverage( double[] data ) 
-    {
-      return	BasicFunctions.Sum(data)/data.Length;
-    }
+		static public double SimpleAverage( double[] data ) 
+		{
+			return	BasicFunctions.Sum(data)/data.Length;
+		}
 		
     static public double SimpleAverage( float[] data ) 
 		{
 			return	BasicFunctions.Sum(data)/data.Length;
 		}
-    static public double Variance( double[] data ) 
+		static public double GetSimpleAverage( ICollection data ) 
+		{
+			return BasicFunctions.GetSum( data )/data.Count;
+		}
+		static public double Variance( double[] data ) 
     {
       double sum = BasicFunctions.Sum(data);
       double sumOfSquares = BasicFunctions.SumOfSquares(data);
@@ -100,7 +123,17 @@ namespace QuantProject.ADT.Statistics
 			return	(sumOfSquares - sum*sum/data.Length)/data.Length;
 		}
 
-    static public double CoVariance( double[] firstDataVariable,
+		static public double GetVariance( ICollection data ) 
+		{
+			double simpleAverage = BasicFunctions.GetSimpleAverage(data);
+			double sum = 0;
+			foreach ( object obj in data )
+				sum += ( Convert.ToDouble( obj ) - simpleAverage ) * 
+					( Convert.ToDouble( obj ) - simpleAverage );
+			return sum / ( data.Count - 1 );
+		}
+
+		static public double CoVariance( double[] firstDataVariable,
                                       double[] secondDataVariable ) 
     {
       BasicFunctions.checkLengthOfDataVariables(firstDataVariable, secondDataVariable);
@@ -129,6 +162,10 @@ namespace QuantProject.ADT.Statistics
 		static public double StdDev( float[] data ) 
 		{
 			return	System.Math.Sqrt(BasicFunctions.Variance(data));
+		}
+		static public double GetStdDev( ICollection data ) 
+		{
+			return	System.Math.Sqrt( BasicFunctions.GetVariance( data ) );
 		}
     
     static public double PearsonCorrelationCoefficient( double[] firstDataVariable,
