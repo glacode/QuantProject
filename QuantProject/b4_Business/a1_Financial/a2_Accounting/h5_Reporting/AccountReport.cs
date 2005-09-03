@@ -252,13 +252,34 @@ namespace QuantProject.Business.Financial.Accounting.Reporting
 			this.benchmarkEquityLine = benchmarkQuotes.Select( this.EquityHistory );
 			this.benchmarkEquityLine.Interpolate( this.EquityHistory.Keys , new PreviousInterpolator() );
 		}
-    public AccountReport Create( string reportName , long numDaysForInterval ,
-      EndOfDayDateTime endDateTime , string benchmark )
-    {
-      this.reportName = reportName;
-      this.endDateTime = endDateTime;
+		private void setDetailedDataTable( long numDaysForInterval )
+		{
+			if ( this.detailedDataTable == null )
+				// the detailedDataTable has not been computed yet
+				this.detailedDataTable =
+					this.getDetailedDataTable( numDaysForInterval );
+		}
+		/// <summary>
+		/// Creates the equity line in a faster way than if it is created
+		/// by the Create method
+		/// </summary>
+		/// <param name="numDaysForInterval"></param>
+		/// <param name="endDateTime"></param>
+		/// <returns></returns>
+		public void SetEquityLine( long numDaysForInterval ,
+			EndOfDayDateTime endDateTime )
+		{
+			this.endDateTime = endDateTime;
+			this.setDetailedDataTable( numDaysForInterval );
+			this.equity = new Tables.Equity( reportName , detailedDataTable );
+		}
+		public AccountReport Create( string reportName , long numDaysForInterval ,
+			EndOfDayDateTime endDateTime , string benchmark )
+		{
+			this.reportName = reportName;
+			this.endDateTime = endDateTime;
       this.benchmark = benchmark;
-      detailedDataTable = getDetailedDataTable( numDaysForInterval );
+			this.setDetailedDataTable( numDaysForInterval );
       this.transactionTable = new Tables.Transactions( reportName , detailedDataTable );
 //      this.transactionTable = getTransactionTable( reportName , detailedDataTable );
       this.roundTrades = new Tables.RoundTrades( reportName , this.transactionTable );
