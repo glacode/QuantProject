@@ -135,20 +135,6 @@ namespace QuantProject.DataAccess.Tables
           groupID + "'");
     }
     
-    private static void getTickers_createView(string viewName,
-                                              string sqlStatement)
-    {
-      try
-      {	
-      	string sqlForViewCreation = "CREATE VIEW " + viewName + " AS " + sqlStatement;
-      	SqlExecutor.ExecuteNonQuery(sqlForViewCreation);
-      }
-      catch(Exception ex)
-      {
-      	ex = ex;
-      }
-    }
-    
     /// <summary>
     /// It returns a table containing tickers effectively contained
     /// in the given group at the given Date
@@ -156,28 +142,14 @@ namespace QuantProject.DataAccess.Tables
     public static DataTable GetTickers( string groupID, DateTime date)
     {
       
-      string sqlLastEntries = "SELECT tickers_tickerGroups.ttTgId AS GroupIDEntries, " +
-                              "tickers_tickerGroups.ttTiId AS TickerIDEntries, Max(tickers_tickerGroups.ttEventDate) " +
-                               "AS MaxEntryDate FROM tickers_tickerGroups WHERE " +
-                              "tickers_tickerGroups.ttEventType='I' " +
-                              "GROUP BY tickers_tickerGroups.ttTgId, tickers_tickerGroups.ttTiId";
-      getTickers_createView("Entries", sqlLastEntries);
-      
-      string sqlLastExits = "SELECT tickers_tickerGroups.ttTgId AS GroupIDExits, " +
-                            "tickers_tickerGroups.ttTiId AS TickerIDExits, Max(tickers_tickerGroups.ttEventDate) " +
-                            "AS MaxExitDate FROM tickers_tickerGroups WHERE " +
-                            "tickers_tickerGroups.ttEventType='O' " +
-                            "GROUP BY tickers_tickerGroups.ttTgId, tickers_tickerGroups.ttTiId";
-      
-      getTickers_createView("Exits", sqlLastExits);
-      
-      string sqlTickersAtTheGivenDate = "SELECT GroupIDEntries, " +
-      									"TickerIDEntries FROM Entries LEFT JOIN Exits " + 
-      									"ON (Entries.GroupIDEntries = Exits.GroupIDExits) AND " +
-      									"(Entries.TickerIDEntries = Exits.TickerIDExits) WHERE " +
-      									"GroupIDEntries ='" + groupID + "' AND " +
-      									"MaxEntryDate<=" + SQLBuilder.GetDateConstant(date) + " AND " +
-      									"(MaxExitDate Is Null OR MaxEntryDate>Exits.MaxExitDate)";
+      string sqlTickersAtTheGivenDate = "SELECT ttTiId AS TickerID FROM tickers_tickerGroups " +
+      																	"WHERE ttTgId='" + groupID + "' AND " +
+      																	"ttEventDate<=" + SQLBuilder.GetDateConstant(date) + " " +
+      																	"GROUP BY ttTiId " + 
+      																	"HAVING Right(Max(Year([ttEventDate]) & " +
+      																	"IIf(Month([ttEventDate])<10,'0' & Month([ttEventDate]),Month([ttEventDate])) & " +
+      																	"IIf(Day([ttEventDate])<10,'0' & Day([ttEventDate]),Day([ttEventDate])) & " +
+      																	"[ttEventType]),1)='I'";
      
       return SqlExecutor.GetDataTable(sqlTickersAtTheGivenDate);
     }
