@@ -17,6 +17,7 @@
     <File name=".\Tables\Tickers_tickerGroups.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
     <File name=".\Tables\ValidatedTickers.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
     <File name=".\Tables\VisuallyValidatedQuotes.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
+    <File name=".\Tables\EventType.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
   </Contents>
   <References>
     <Reference type="Project" refto="b1_ADT" localcopy="True" />
