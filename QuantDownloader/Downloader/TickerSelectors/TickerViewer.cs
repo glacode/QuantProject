@@ -31,6 +31,7 @@ using QuantProject.DataAccess;
 using QuantProject.DataAccess.Tables;
 using QuantProject.Data.DataTables;
 using QuantProject.Data.Selectors;
+using QuantProject.ADT;
 
 namespace QuantProject.Applications.Downloader.TickerSelectors
 {
@@ -63,15 +64,19 @@ namespace QuantProject.Applications.Downloader.TickerSelectors
 		private DataTable tableTickers;
     private System.Windows.Forms.Button buttonViewFaultyTickers;
     private System.Windows.Forms.Label label4;
+    private System.Windows.Forms.Label label8;
+    private System.Windows.Forms.ComboBox comboBoxBelongingGroup;
     private bool skipRowChangedEvent;// event must be launched only by
                                      // user's changes
-		public TickerViewer()
+   		
+    public TickerViewer()
 		{
 			InitializeComponent();
       this.dataGrid1.ContextMenu = new TickerViewerMenu(this);
       this.tableTickers = new DataTable("tickers");
       this.dataGrid1.DataSource = this.tableTickers;
       this.AcceptButton = this.buttonFindTickers;
+      
   	}
 
 		/// <summary>
@@ -105,7 +110,11 @@ namespace QuantProject.Applications.Downloader.TickerSelectors
       this.label3 = new System.Windows.Forms.Label();
       this.label2 = new System.Windows.Forms.Label();
       this.panel2 = new System.Windows.Forms.Panel();
+      this.label4 = new System.Windows.Forms.Label();
+      this.buttonViewFaultyTickers = new System.Windows.Forms.Button();
       this.groupBoxDateQuoteFilter = new System.Windows.Forms.GroupBox();
+      this.comboBoxBelongingGroup = new System.Windows.Forms.ComboBox();
+      this.label8 = new System.Windows.Forms.Label();
       this.comboBoxSecondOperator = new System.Windows.Forms.ComboBox();
       this.comboBoxFirstOperator = new System.Windows.Forms.ComboBox();
       this.label7 = new System.Windows.Forms.Label();
@@ -116,8 +125,6 @@ namespace QuantProject.Applications.Downloader.TickerSelectors
       this.radioButtonDateQuoteFilter = new System.Windows.Forms.RadioButton();
       this.radioButtonAnyTicker = new System.Windows.Forms.RadioButton();
       this.splitter1 = new System.Windows.Forms.Splitter();
-      this.buttonViewFaultyTickers = new System.Windows.Forms.Button();
-      this.label4 = new System.Windows.Forms.Label();
       ((System.ComponentModel.ISupportInitialize)(this.dataGrid1)).BeginInit();
       this.panel2.SuspendLayout();
       this.groupBoxDateQuoteFilter.SuspendLayout();
@@ -163,7 +170,7 @@ namespace QuantProject.Applications.Downloader.TickerSelectors
       // 
       // buttonFindTickers
       // 
-      this.buttonFindTickers.Location = new System.Drawing.Point(152, 224);
+      this.buttonFindTickers.Location = new System.Drawing.Point(152, 264);
       this.buttonFindTickers.Name = "buttonFindTickers";
       this.buttonFindTickers.Size = new System.Drawing.Size(104, 24);
       this.buttonFindTickers.TabIndex = 0;
@@ -206,9 +213,29 @@ namespace QuantProject.Applications.Downloader.TickerSelectors
       this.panel2.Size = new System.Drawing.Size(400, 478);
       this.panel2.TabIndex = 7;
       // 
+      // label4
+      // 
+      this.label4.Location = new System.Drawing.Point(24, 304);
+      this.label4.Name = "label4";
+      this.label4.Size = new System.Drawing.Size(352, 16);
+      this.label4.TabIndex = 16;
+      this.label4.Text = "________________________________________";
+      this.label4.TextAlign = System.Drawing.ContentAlignment.TopCenter;
+      // 
+      // buttonViewFaultyTickers
+      // 
+      this.buttonViewFaultyTickers.Location = new System.Drawing.Point(144, 336);
+      this.buttonViewFaultyTickers.Name = "buttonViewFaultyTickers";
+      this.buttonViewFaultyTickers.Size = new System.Drawing.Size(120, 24);
+      this.buttonViewFaultyTickers.TabIndex = 15;
+      this.buttonViewFaultyTickers.Text = "&View faulty Tickers";
+      this.buttonViewFaultyTickers.Click += new System.EventHandler(this.buttonViewFaultyTickers_Click);
+      // 
       // groupBoxDateQuoteFilter
       // 
       this.groupBoxDateQuoteFilter.Controls.AddRange(new System.Windows.Forms.Control[] {
+                                                                                          this.comboBoxBelongingGroup,
+                                                                                          this.label8,
                                                                                           this.comboBoxSecondOperator,
                                                                                           this.comboBoxFirstOperator,
                                                                                           this.label7,
@@ -220,34 +247,54 @@ namespace QuantProject.Applications.Downloader.TickerSelectors
                                                                                           this.radioButtonAnyTicker});
       this.groupBoxDateQuoteFilter.Location = new System.Drawing.Point(8, 80);
       this.groupBoxDateQuoteFilter.Name = "groupBoxDateQuoteFilter";
-      this.groupBoxDateQuoteFilter.Size = new System.Drawing.Size(384, 136);
+      this.groupBoxDateQuoteFilter.Size = new System.Drawing.Size(384, 168);
       this.groupBoxDateQuoteFilter.TabIndex = 14;
       this.groupBoxDateQuoteFilter.TabStop = false;
       this.groupBoxDateQuoteFilter.Text = "Quote filter";
+      // 
+      // comboBoxBelongingGroup
+      // 
+      this.comboBoxBelongingGroup.Enabled = false;
+      this.comboBoxBelongingGroup.Location = new System.Drawing.Point(200, 128);
+      this.comboBoxBelongingGroup.Name = "comboBoxBelongingGroup";
+      this.comboBoxBelongingGroup.Size = new System.Drawing.Size(176, 21);
+      this.comboBoxBelongingGroup.TabIndex = 24;
+      this.comboBoxBelongingGroup.Text = "comboBox1";
+      // 
+      // label8
+      // 
+      this.label8.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((System.Byte)(0)));
+      this.label8.Location = new System.Drawing.Point(24, 136);
+      this.label8.Name = "label8";
+      this.label8.Size = new System.Drawing.Size(120, 16);
+      this.label8.TabIndex = 23;
+      this.label8.Text = "belonging to group";
       // 
       // comboBoxSecondOperator
       // 
       this.comboBoxSecondOperator.Enabled = false;
       this.comboBoxSecondOperator.Items.AddRange(new object[] {
+                                                                "",
                                                                 "<=",
                                                                 ">="});
       this.comboBoxSecondOperator.Location = new System.Drawing.Point(200, 96);
       this.comboBoxSecondOperator.Name = "comboBoxSecondOperator";
       this.comboBoxSecondOperator.Size = new System.Drawing.Size(48, 21);
       this.comboBoxSecondOperator.TabIndex = 22;
-      this.comboBoxSecondOperator.Text = "<=";
+      this.comboBoxSecondOperator.SelectedValueChanged += new System.EventHandler(this.comboBoxSecondOperator_SelectedValueChanged);
       // 
       // comboBoxFirstOperator
       // 
       this.comboBoxFirstOperator.Enabled = false;
       this.comboBoxFirstOperator.Items.AddRange(new object[] {
+                                                               "",
                                                                "<=",
                                                                ">="});
       this.comboBoxFirstOperator.Location = new System.Drawing.Point(200, 64);
       this.comboBoxFirstOperator.Name = "comboBoxFirstOperator";
       this.comboBoxFirstOperator.Size = new System.Drawing.Size(48, 21);
       this.comboBoxFirstOperator.TabIndex = 21;
-      this.comboBoxFirstOperator.Text = ">=";
+      this.comboBoxFirstOperator.SelectedValueChanged += new System.EventHandler(this.comboBoxFirstOperator_SelectedValueChanged);
       // 
       // label7
       // 
@@ -319,24 +366,6 @@ namespace QuantProject.Applications.Downloader.TickerSelectors
       this.splitter1.Size = new System.Drawing.Size(3, 478);
       this.splitter1.TabIndex = 8;
       this.splitter1.TabStop = false;
-      // 
-      // buttonViewFaultyTickers
-      // 
-      this.buttonViewFaultyTickers.Location = new System.Drawing.Point(144, 296);
-      this.buttonViewFaultyTickers.Name = "buttonViewFaultyTickers";
-      this.buttonViewFaultyTickers.Size = new System.Drawing.Size(120, 24);
-      this.buttonViewFaultyTickers.TabIndex = 15;
-      this.buttonViewFaultyTickers.Text = "&View faulty Tickers";
-      this.buttonViewFaultyTickers.Click += new System.EventHandler(this.buttonViewFaultyTickers_Click);
-      // 
-      // label4
-      // 
-      this.label4.Location = new System.Drawing.Point(24, 264);
-      this.label4.Name = "label4";
-      this.label4.Size = new System.Drawing.Size(352, 16);
-      this.label4.TabIndex = 16;
-      this.label4.Text = "________________________________________";
-      this.label4.TextAlign = System.Drawing.ContentAlignment.TopCenter;
       // 
       // TickerViewer
       // 
@@ -495,13 +524,24 @@ namespace QuantProject.Applications.Downloader.TickerSelectors
         }
         else
         //all tickers with first date quote and last date quote within a specified interval
+        //(and, if specified, belonging to a given group)
         {
-          this.tableTickers = Tickers.GetTableOfFilteredTickers(this.textBoxStringToFind.Text,
+          if(((string)this.comboBoxBelongingGroup.SelectedValue).Length == 0)
+          //no group has been selected
+            this.tableTickers = Tickers.GetTableOfFilteredTickers(this.textBoxStringToFind.Text,
                                                                 this.textBoxStringToFindInName.Text,
                                                                 this.comboBoxFirstOperator.Text,
                                                                 this.dateTimePickerFirstDate.Value,
                                                                 this.comboBoxSecondOperator.Text,
                                                                 this.dateTimePickerLastDate.Value);
+          else
+            this.tableTickers = Tickers.GetTableOfFilteredTickers(this.textBoxStringToFind.Text,
+                                                                this.textBoxStringToFindInName.Text,
+                                                                this.comboBoxFirstOperator.Text,
+                                                                this.dateTimePickerFirstDate.Value,
+                                                                this.comboBoxSecondOperator.Text,
+                                                                this.dateTimePickerLastDate.Value,
+                                                                (string)this.comboBoxBelongingGroup.SelectedValue);
           this.dataGrid1.DataSource = this.tableTickers;
           this.setStyle_dataGridWithQuoteInfo();
           this.dataGrid1.ReadOnly = true;
@@ -551,15 +591,35 @@ namespace QuantProject.Applications.Downloader.TickerSelectors
         indexOfRow++;
       }
     }    
+    private void radioButtonDateQuoteFilter_checkedChanged_fillComboBoxBelongingGroup()
+    {
+      if(this.comboBoxBelongingGroup.DataSource == null)
+        //data source not set yet
+      {
+        DataTable groups = SqlExecutor.GetDataTable("SELECT tgId AS GroupID, tgDescription AS GroupDescription FROM tickerGroups " +
+                                                    "UNION " +
+                                                    "SELECT '' AS GroupID, '' AS GroupDescription FROM tickerGroups " +
+                                                    "ORDER BY GroupDescription");
+        this.comboBoxBelongingGroup.DataSource = groups;
+        this.comboBoxBelongingGroup.DisplayMember = "GroupDescription";
+        this.comboBoxBelongingGroup.ValueMember = "GroupID";
 
+      }
+      
+    }
     private void radioButtonDateQuoteFilter_CheckedChanged(object sender, System.EventArgs e)
     {
       if(this.radioButtonDateQuoteFilter.Checked == true)
       {
-        this.dateTimePickerFirstDate.Enabled = true;
-        this.dateTimePickerLastDate.Enabled = true;
         this.comboBoxFirstOperator.Enabled = true;
+        this.comboBoxFirstOperator.Text = "";
         this.comboBoxSecondOperator.Enabled = true;
+        this.comboBoxSecondOperator.Text = "";
+        this.comboBoxBelongingGroup.Enabled = true;
+        this.radioButtonDateQuoteFilter_checkedChanged_fillComboBoxBelongingGroup();
+        this.comboBoxBelongingGroup.Text = "";
+        
+  
       }
       else
       {
@@ -567,6 +627,7 @@ namespace QuantProject.Applications.Downloader.TickerSelectors
         this.dateTimePickerLastDate.Enabled = false;
         this.comboBoxFirstOperator.Enabled = false;
         this.comboBoxSecondOperator.Enabled = false;
+        this.comboBoxBelongingGroup.Enabled = false;
       }
     }
         
@@ -655,6 +716,22 @@ namespace QuantProject.Applications.Downloader.TickerSelectors
         Cursor.Current = Cursors.Default;
       }
     
+    }
+
+    private void comboBoxFirstOperator_SelectedValueChanged(object sender, System.EventArgs e)
+    {
+      if(this.comboBoxFirstOperator.Text.Length > 0)
+        this.dateTimePickerFirstDate.Enabled = true;
+      else
+        this.dateTimePickerFirstDate.Enabled = false;
+    }
+
+    private void comboBoxSecondOperator_SelectedValueChanged(object sender, System.EventArgs e)
+    {
+      if(this.comboBoxSecondOperator.Text.Length > 0)
+        this.dateTimePickerLastDate.Enabled = true;
+      else
+        this.dateTimePickerLastDate.Enabled = false;
     }
 
 
