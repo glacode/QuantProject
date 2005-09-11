@@ -82,6 +82,25 @@ namespace QuantProject.DataAccess.Tables
       return SqlExecutor.GetDataTable(sqlSelectString);
     }
 
+    public static DataTable GetTableOfFilteredTickers(string tickerSymbolIsLike,
+                                                      string tickerCompanyNameIsLike,
+                                                      string firstOperatorInHavingStatement,
+                                                      DateTime firstQuoteDate,
+                                                      string secondOperatorInHavingStatement,
+                                                      DateTime lastQuoteDate,
+                                                      string groupID)
+    {
+      string sqlSelectString = Tickers.buildSqlSelectString(tickerSymbolIsLike,
+                                                            tickerCompanyNameIsLike,
+                                                            firstOperatorInHavingStatement,
+                                                            firstQuoteDate,
+                                                            secondOperatorInHavingStatement,
+                                                            lastQuoteDate,
+                                                            groupID);
+      return SqlExecutor.GetDataTable(sqlSelectString);
+    }
+
+
     #region buildSqlSelectString
     private static string buildSqlSelectString(string tickerSymbolIsLike,
                                                string tickerCompanyNameIsLike)
@@ -96,6 +115,35 @@ namespace QuantProject.DataAccess.Tables
       return sqlSelectString;
     }
 
+    private static string buildSqlSelectString_getHavingStatement(string firstOperatorInHavingStatement,
+                                                                  string secondOperatorInHavingStatement,
+                                                                  DateTime firstQuoteDate,
+                                                                  DateTime lastQuoteDate)
+    {
+      string returnValue;
+      if(firstOperatorInHavingStatement == "" &&
+        secondOperatorInHavingStatement == "")
+        returnValue = "";
+      else if(firstOperatorInHavingStatement == "" &&
+        secondOperatorInHavingStatement != "")
+        returnValue = "HAVING Max(quotes.quDate)" + secondOperatorInHavingStatement + 
+          SQLBuilder.GetDateConstant(lastQuoteDate);
+      else if(firstOperatorInHavingStatement != "" &&
+        secondOperatorInHavingStatement == "")
+        returnValue = "HAVING Min(quotes.quDate)" + firstOperatorInHavingStatement + 
+          SQLBuilder.GetDateConstant(firstQuoteDate);
+      else
+      {  
+        if(firstQuoteDate.CompareTo(lastQuoteDate)>0)
+          throw new Exception("Last Date can't be previous of First date!");
+        returnValue = "HAVING Min(quotes.quDate)" + firstOperatorInHavingStatement + 
+          SQLBuilder.GetDateConstant(firstQuoteDate) +
+          "AND Max(quotes.quDate)" + secondOperatorInHavingStatement + 
+          SQLBuilder.GetDateConstant(lastQuoteDate);
+      }
+      return returnValue;
+    }
+
     private static string buildSqlSelectString(string tickerSymbolIsLike,
                                                string tickerCompanyNameIsLike,
                                                string firstOperatorInHavingStatement,
@@ -104,8 +152,7 @@ namespace QuantProject.DataAccess.Tables
                                                DateTime lastQuoteDate)
     {
       string sqlSelectString = "";
-      if(firstQuoteDate.CompareTo(lastQuoteDate)>0)
-        throw new Exception("Last Date can't be previous of First date!");
+      
       sqlSelectString = "SELECT tiTicker, tiCompanyName, " + 
       "Min(quotes.quDate) AS FirstQuote, Max(quotes.quDate) AS LastQuote, Count(quotes.quDate) AS NumberOfQuotes " +
       "FROM quotes INNER JOIN tickers ON quotes.quTicker = tickers.tiTicker " +
@@ -114,14 +161,49 @@ namespace QuantProject.DataAccess.Tables
       "AND tiCompanyName LIKE '" +
       tickerCompanyNameIsLike + "' " + 
       "GROUP BY tickers.tiTicker, tickers.tiCompanyName " +
-      "HAVING Min(quotes.quDate)" + firstOperatorInHavingStatement + 
-      SQLBuilder.GetDateConstant(firstQuoteDate) +
-      "AND Max(quotes.quDate)" + secondOperatorInHavingStatement + 
-      SQLBuilder.GetDateConstant(lastQuoteDate);
+      buildSqlSelectString_getHavingStatement(firstOperatorInHavingStatement,
+                                              secondOperatorInHavingStatement,
+                                              firstQuoteDate, lastQuoteDate);
       
       return sqlSelectString;
     }
-
+    private static string buildSqlSelectString(string tickerSymbolIsLike,
+                                              string tickerCompanyNameIsLike,
+                                              string firstOperatorInHavingStatement,
+                                              DateTime firstQuoteDate,
+                                              string secondOperatorInHavingStatement,
+                                              DateTime lastQuoteDate,
+                                              string groupID)
+    {
+      string sqlSelectString = "";
+      if(groupID == "")
+        //no group has been selected
+      {
+        sqlSelectString = buildSqlSelectString(tickerSymbolIsLike,
+          tickerCompanyNameIsLike,
+          firstOperatorInHavingStatement,
+          firstQuoteDate,
+          secondOperatorInHavingStatement,
+          lastQuoteDate);
+      }
+      else
+      {    
+        sqlSelectString = "SELECT tiTicker, tiCompanyName, " + 
+          "Min(quotes.quDate) AS FirstQuote, Max(quotes.quDate) AS LastQuote, Count(quotes.quDate) AS NumberOfQuotes " +
+          "FROM (tickers_tickerGroups LEFT JOIN tickers ON tickers_tickerGroups.ttTiId = tickers.tiTicker) LEFT JOIN quotes ON tickers.tiTicker = quotes.quTicker " +
+          "WHERE tiTicker LIKE '" +
+          tickerSymbolIsLike + "' " +
+          "AND tiCompanyName LIKE '" +
+          tickerCompanyNameIsLike + "' " + 
+          "AND ttTgId ='" +
+          groupID + "' " +
+          "GROUP BY tickers.tiTicker, tickers.tiCompanyName " +
+          buildSqlSelectString_getHavingStatement(firstOperatorInHavingStatement,
+          secondOperatorInHavingStatement,
+          firstQuoteDate, lastQuoteDate);
+      }
+      return sqlSelectString;
+    }
 
     #endregion
   }
