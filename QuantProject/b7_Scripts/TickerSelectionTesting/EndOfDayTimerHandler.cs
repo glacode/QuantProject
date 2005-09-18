@@ -30,6 +30,7 @@ using QuantProject.Business.Financial.Ordering;
 using QuantProject.Business.Timing;
 using QuantProject.Data.DataProviders;
 using QuantProject.Data.Selectors;
+using QuantProject.Data.DataTables;
 using QuantProject.ADT.Optimizing.Genetic;
 using QuantProject.Scripts.WalkForwardTesting.LinearCombination;
 
@@ -44,12 +45,12 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
   {
     protected DataTable eligibleTickers;
     protected string[] chosenTickers;
-    protected string[] lastChosenTickers;
+    protected string[] lastOrderedTickers;
     
     protected string tickerGroupID;
     protected int numberOfEligibleTickers;
     protected int numberOfTickersToBeChosen;
-    protected int numDaysForLiquidity;
+    protected int numDaysForOptimizationPeriod;
     protected int generationNumberForGeneticOptimizer;
     protected int populationSizeForGeneticOptimizer;
 		
@@ -73,9 +74,9 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
       get{return this.genomeCounter;}
     }
     
-    public string[] LastChosenTickers
+    public string[] LastOrderedTickers
     {
-      get { return this.chosenTickers; }
+      get { return this.lastOrderedTickers; }
     }
     public int NumberOfEligibleTickers
     {
@@ -97,7 +98,7 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
       get { return this.bestGenomes; }
     }
     public EndOfDayTimerHandler(string tickerGroupID, int numberOfEligibleTickers, 
-                                int numberOfTickersToBeChosen, int numDaysForLiquidity, Account account,
+                                int numberOfTickersToBeChosen, int numDaysForOptimizationPeriod, Account account,
                                 int generationNumberForGeneticOptimizer,
                                 int populationSizeForGeneticOptimizer,
                                 string benchmark, double targetReturn,
@@ -106,14 +107,14 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
       this.tickerGroupID = tickerGroupID;
       this.numberOfEligibleTickers = numberOfEligibleTickers;
       this.numberOfTickersToBeChosen = numberOfTickersToBeChosen;
-      this.numDaysForLiquidity = numDaysForLiquidity;
+      this.numDaysForOptimizationPeriod = numDaysForOptimizationPeriod;
       this.account = account;
       this.generationNumberForGeneticOptimizer = generationNumberForGeneticOptimizer;
       this.populationSizeForGeneticOptimizer = populationSizeForGeneticOptimizer;
       this.benchmark = benchmark;
       this.orders = new ArrayList();
       this.chosenTickers = new string[numberOfTickersToBeChosen];
-      this.lastChosenTickers = new string[numberOfTickersToBeChosen];
+      this.lastOrderedTickers = new string[numberOfTickersToBeChosen];
       this.targetReturn = targetReturn;
       this.portfolioType = portfolioType;
       
@@ -130,7 +131,7 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
       this.orders = new ArrayList();
       this.chosenTickers = chosenTickers;
       this.numberOfTickersToBeChosen = chosenTickers.Length;
-      this.lastChosenTickers = new string[chosenTickers.Length];
+      this.lastOrderedTickers = new string[chosenTickers.Length];
       this.portfolioType = portfolioType;
     }
     
@@ -160,9 +161,10 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
     
     protected virtual void closePositions()
     {
-      if(this.lastChosenTickers != null)
+      
+      if(this.lastOrderedTickers != null)
       {
-        foreach( string ticker in this.lastChosenTickers)
+        foreach( string ticker in this.lastOrderedTickers)
         {
           for(int i = 0; i<this.account.Portfolio.Keys.Count; i++)
           {
@@ -170,7 +172,9 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
               closePosition( ticker );
           }
         }
-      } 
+      }
+      
+      
     }
     
     protected virtual void addChosenTickersToOrderList()
@@ -181,24 +185,43 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
         if(ticker != null)
         {  
           this.addOrderForTicker( ticker );
-          this.lastChosenTickers[idx] = 
+          this.lastOrderedTickers[idx] = 
           		GenomeManagerForEfficientPortfolio.GetCleanTickerCode(ticker);
         }
         idx++;
       }
     }
+    
+    protected bool openPositions_allChosenTickersQuotedAtCurrentDate()
+    {
+      bool returnValue = true;
+      DateTime currentDate = this.Account.EndOfDayTimer.GetCurrentTime().DateTime;
+      foreach(string ticker in this.chosenTickers)
+      {
+        if(ticker != null)
+        {
+          Quotes tickerQuotes = new Quotes(GenomeManagerForEfficientPortfolio.GetCleanTickerCode(ticker),
+                                          currentDate, currentDate);
+          if(tickerQuotes.Rows.Count == 0)
+          //no quote available for the current ticker
+            returnValue = false;
+        }                       
+      }
+      return returnValue;
+    }
+    
     protected virtual void openPositions()
     {
       //add cash first
     	if(this.orders.Count == 0 && this.account.Transactions.Count == 0)
         this.account.AddCash(17000);     
-      
-      this.addChosenTickersToOrderList();
-      
-      //execute orders actually
-      foreach(object item in this.orders)
+      if(this.openPositions_allChosenTickersQuotedAtCurrentDate())
+        //all tickers have quotes at the current date, so orders can be filled
       {
-        this.account.AddOrder((Order)item);
+        this.addChosenTickersToOrderList();
+        //execute orders actually
+        foreach(object item in this.orders)
+          this.account.AddOrder((Order)item);
       }
     }
     

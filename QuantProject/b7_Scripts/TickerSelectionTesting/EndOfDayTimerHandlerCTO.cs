@@ -45,15 +45,16 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
   {
     protected int numDaysBetweenEachOptimization;
     private int numDaysElapsedSinceLastOptimization;
+    protected int seedForRandomGenerator;
     
     public EndOfDayTimerHandlerCTO(string tickerGroupID, int numberOfEligibleTickers, 
-                                int numberOfTickersToBeChosen, int numDaysForLiquidity, Account account,
+                                int numberOfTickersToBeChosen, int numDaysForOptimizationPeriod, Account account,
                                 int generationNumberForGeneticOptimizer,
                                 int populationSizeForGeneticOptimizer,
                                 string benchmark, double targetReturn,
                                 PortfolioType portfolioType, int numDaysBetweenEachOptimization):
   															base(tickerGroupID, numberOfEligibleTickers, 
-                                numberOfTickersToBeChosen, numDaysForLiquidity, account,
+                                numberOfTickersToBeChosen, numDaysForOptimizationPeriod, account,
                                 generationNumberForGeneticOptimizer,
                                 populationSizeForGeneticOptimizer,
                                 benchmark, targetReturn,
@@ -61,6 +62,7 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
     {
     	this.numDaysBetweenEachOptimization = numDaysBetweenEachOptimization;  
     	this.numDaysElapsedSinceLastOptimization = 0;
+    	this.seedForRandomGenerator = ConstantsProvider.SeedForRandomGenerator;
     }
 		    
        
@@ -104,19 +106,18 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
       DataTable tickersByPrice = selectorByOpenPrice.GetTableOfSelectedTickers();
       */
      	
-     	SelectorByLiquidity mostLiquid = new SelectorByLiquidity(this.tickerGroupID, false,
-                                      currentDate.AddDays(-this.numDaysForLiquidity), currentDate,
-                                      this.numberOfEligibleTickers);
-      /*SelectorByOpenToCloseVolatility lessVolatile = 
-      	new SelectorByOpenToCloseVolatility(mostLiquid.GetTableOfSelectedTickers(),
-      	                                    true, currentDate.AddDays(-5),
-      	                                    currentDate,
-      	                                    this.numberOfEligibleTickers/2);*/
+     	SelectorByGroup temporizedGroup = new SelectorByGroup(this.tickerGroupID, currentDate);
+      SelectorByOpenCloseCorrelationToBenchmark lessCorrelatedFromTemporizedGroup = 
+      	new SelectorByOpenCloseCorrelationToBenchmark(temporizedGroup.GetTableOfSelectedTickers(),
+      	                                              this.benchmark,true,
+      	                                              currentDate.AddDays(-this.numDaysForOptimizationPeriod ),
+      	                                    					currentDate,
+      	                                    					this.numberOfEligibleTickers);
       
-      this.eligibleTickers = mostLiquid.GetTableOfSelectedTickers();
+      this.eligibleTickers = lessCorrelatedFromTemporizedGroup.GetTableOfSelectedTickers();
       SelectorByQuotationAtEachMarketDay quotedAtEachMarketDayFromEligible = 
         new SelectorByQuotationAtEachMarketDay( this.eligibleTickers,
-                                   false, currentDate.AddDays(-this.numDaysForLiquidity),
+                                   false, currentDate.AddDays(-this.numDaysForOptimizationPeriod),
                                     currentDate, this.numberOfEligibleTickers, this.benchmark);
       //SelectorByWinningOpenToClose winners =
       //	new SelectorByWinningOpenToClose(quotedAtEachMarketDayFromMostLiquid.GetTableOfSelectedTickers(),
@@ -144,7 +145,7 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
       {
         IGenomeManager genManEfficientCTOPortfolio = 
           new GenomeManagerForEfficientCTOPortfolio(setOfTickersToBeOptimized,
-        	                                          currentDate.AddDays(-this.numDaysForLiquidity),
+        	                                          currentDate.AddDays(-this.numDaysForOptimizationPeriod),
         	                                          currentDate,
         	                                          this.numberOfTickersToBeChosen,
         	                                          this.targetReturn,
@@ -153,12 +154,12 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
         GeneticOptimizer GO = new GeneticOptimizer(genManEfficientCTOPortfolio,
                                                     this.populationSizeForGeneticOptimizer,
                                                     this.generationNumberForGeneticOptimizer,
-                                                   ConstantsProvider.SeedForRandomGenerator);
+                                                   this.seedForRandomGenerator);
         if(setGenomeCounter)
         	this.genomeCounter = new GenomeCounter(GO);
         
         GO.Run(false);
-        this.addGenomeToBestGenomes(GO.BestGenome,currentDate.AddDays(-this.numDaysForLiquidity),
+        this.addGenomeToBestGenomes(GO.BestGenome,currentDate.AddDays(-this.numDaysForOptimizationPeriod),
                                     currentDate);
         this.chosenTickers = (string[])GO.BestGenome.Meaning;
       }
@@ -183,7 +184,7 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
     public override void OneHourAfterMarketCloseEventHandler(
       Object sender , EndOfDayTimingEventArgs endOfDayTimingEventArgs )
     {
-    	ConstantsProvider.SeedForRandomGenerator++;
+    	this.seedForRandomGenerator++;
     	this.orders.Clear();
     	//this.oneHourAfterMarketCloseEventHandler_updatePrices();
       if(this.numDaysElapsedSinceLastOptimization == 

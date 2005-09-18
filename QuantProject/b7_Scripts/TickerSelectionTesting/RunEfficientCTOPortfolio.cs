@@ -57,14 +57,14 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
   {
     protected int numDaysBetweenEachOptimization;	
     public RunEfficientCTOPortfolio(string tickerGroupID, int numberOfEligibleTickers, 
-      int numberOfTickersToBeChosen, int numDaysForLiquidity, 
+      int numberOfTickersToBeChosen, int numDaysForOptimizationPeriod, 
       int generationNumberForGeneticOptimizer,
       int populationSizeForGeneticOptimizer, string benchmark,
       DateTime startDate, DateTime endDate, double targetReturn,
       PortfolioType portfolioType, double maxRunningHours,
      	int numDaysBetweenEachOptimization):
       base(tickerGroupID, numberOfEligibleTickers, 
-      numberOfTickersToBeChosen, numDaysForLiquidity, 
+      numberOfTickersToBeChosen, numDaysForOptimizationPeriod, 
       generationNumberForGeneticOptimizer,
       populationSizeForGeneticOptimizer, benchmark,
       startDate, endDate, targetReturn,
@@ -93,7 +93,7 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
       this.endOfDayTimerHandler = new EndOfDayTimerHandlerCTO(this.tickerGroupID,
         this.numberOfEligibleTickers,
         this.numberOfTickersToBeChosen,
-        this.numDaysForLiquidity,
+        this.numDaysForOptimizationPeriod,
         this.account,
         this.generationNumberForGeneticOptimizer, 
         this.populationSizeForGeneticOptimizer,
@@ -105,6 +105,7 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
     protected override void run_initializeHistoricalQuoteProvider()
     {
       this.historicalQuoteProvider = new HistoricalRawQuoteProvider();
+      //this.historicalQuoteProvider = new HistoricalAdjustedQuoteProvider();
     }
     
     protected override void run_addEventHandlers()

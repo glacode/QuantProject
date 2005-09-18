@@ -61,7 +61,7 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
 	{
    
     public RunTestOptimizedCTCPortfolio(string tickerGroupID, int numberOfEligibleTickers, 
-                                    int numberOfTickersToBeChosen, int numDaysForLiquidity, 
+                                    int numberOfTickersToBeChosen, int numDaysForOptimizationPeriod, 
                                     int generationNumberForGeneticOptimizer,
                                     int populationSizeForGeneticOptimizer, string benchmark,
                                     DateTime endDate,
@@ -70,10 +70,10 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
                                     PortfolioType portfolioType, double maxAcceptableCloseToCloseDrawdown, 
                                     double maxRunningHours):
 																base(tickerGroupID, numberOfEligibleTickers, 
-                                    numberOfTickersToBeChosen, numDaysForLiquidity, 
+                                    numberOfTickersToBeChosen, numDaysForOptimizationPeriod, 
                                     generationNumberForGeneticOptimizer,
                                     populationSizeForGeneticOptimizer, benchmark,
-                                    endDate.AddDays(-numDaysForLiquidity), endDate,
+                                    endDate.AddDays(-numDaysForOptimizationPeriod), endDate,
                                    	numDaysOfPortfolioLife - 1, numDaysForReturnCalculation, 
                                    	targetReturn,
                                     portfolioType, maxAcceptableCloseToCloseDrawdown, 
@@ -86,7 +86,7 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
     protected override void run_initializeEndOfDayTimerHandler()
     {
       this.endOfDayTimerHandler = new EndOfDayTimerHandlerCTCTest(this.tickerGroupID, this.numberOfEligibleTickers,
-    	                                                        this.numberOfTickersToBeChosen, this.numDaysForLiquidity,
+    	                                                        this.numberOfTickersToBeChosen, this.numDaysForOptimizationPeriod,
     	                                                        this.account,
     	                                                        this.generationNumberForGeneticOptimizer,
     	                                                        this.populationSizeForGeneticOptimizer, this.benchmark,

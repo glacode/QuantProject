@@ -56,7 +56,7 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
     protected string tickerGroupID;
     protected int numberOfEligibleTickers;
     protected int numberOfTickersToBeChosen;
-    protected int numDaysForLiquidity;
+    protected int numDaysForOptimizationPeriod;
     protected int generationNumberForGeneticOptimizer;
     protected int populationSizeForGeneticOptimizer;
 
@@ -88,9 +88,9 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
     //if MaxNumberOfHoursForScript has elapsed and the script
     //is still running, it will be stopped.
     
-    public string[] LastChosenTickers
+    public string[] LastOrderedTickers
     {
-      get { return this.endOfDayTimerHandler.LastChosenTickers; }
+      get { return this.endOfDayTimerHandler.LastOrderedTickers; }
     }
     public PortfolioType TypeOfPortfolio
     {
@@ -127,7 +127,7 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
 		}
     
     public RunEfficientPortfolio(string tickerGroupID, int numberOfEligibleTickers,
-                                int numberOfTickersToBeChosen, int numDaysForLiquidity, 
+                                int numberOfTickersToBeChosen, int numDaysForOptimizationPeriod, 
                                 int generationNumberForGeneticOptimizer,
                                 int populationSizeForGeneticOptimizer, string benchmark,
                                 DateTime startDate, DateTime endDate, 
@@ -139,7 +139,7 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
       this.tickerGroupID = tickerGroupID;
       this.numberOfEligibleTickers = numberOfEligibleTickers;
       this.numberOfTickersToBeChosen = numberOfTickersToBeChosen;
-      this.numDaysForLiquidity = numDaysForLiquidity;
+      this.numDaysForOptimizationPeriod = numDaysForOptimizationPeriod;
       this.generationNumberForGeneticOptimizer = generationNumberForGeneticOptimizer;
       this.populationSizeForGeneticOptimizer = populationSizeForGeneticOptimizer;
       this.reportTable = new ReportTable( "Summary_Reports" );
@@ -215,7 +215,7 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
     public virtual void SaveScriptResults()
     {
       string fileName = "From"+this.numberOfEligibleTickers +
-                      "LiqDays" + this.numDaysForLiquidity + "Portfolio" +
+                      "OptDays" + this.numDaysForOptimizationPeriod + "Portfolio" +
                       this.numberOfTickersToBeChosen + "GenNum" + 
                       this.generationNumberForGeneticOptimizer +
                       "PopSize" + this.populationSizeForGeneticOptimizer +

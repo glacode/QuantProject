@@ -63,7 +63,7 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
     protected double maxAcceptableCloseToCloseDrawdown;
 		
     public RunEfficientCTCPortfolio(string tickerGroupID, int numberOfEligibleTickers, 
-                                    int numberOfTickersToBeChosen, int numDaysForLiquidity, 
+                                    int numberOfTickersToBeChosen, int numDaysForOptimizationPeriod, 
                                     int generationNumberForGeneticOptimizer,
                                     int populationSizeForGeneticOptimizer, string benchmark,
                                     DateTime startDate, DateTime endDate,
@@ -72,7 +72,7 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
                                     PortfolioType portfolioType, double maxAcceptableCloseToCloseDrawdown, 
                                     double maxRunningHours):
 																base(tickerGroupID, numberOfEligibleTickers, 
-                                    numberOfTickersToBeChosen, numDaysForLiquidity, 
+                                    numberOfTickersToBeChosen, numDaysForOptimizationPeriod, 
                                     generationNumberForGeneticOptimizer,
                                     populationSizeForGeneticOptimizer, benchmark,
                                     startDate, endDate, targetReturn,
@@ -89,7 +89,7 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
     protected override void run_initializeEndOfDayTimerHandler()
     {
       this.endOfDayTimerHandler = new EndOfDayTimerHandlerCTC(this.tickerGroupID, this.numberOfEligibleTickers,
-    	                                                        this.numberOfTickersToBeChosen, this.numDaysForLiquidity,
+    	                                                        this.numberOfTickersToBeChosen, this.numDaysForOptimizationPeriod,
     	                                                        this.account,
     	                                                        this.generationNumberForGeneticOptimizer,
     	                                                        this.populationSizeForGeneticOptimizer, this.benchmark,

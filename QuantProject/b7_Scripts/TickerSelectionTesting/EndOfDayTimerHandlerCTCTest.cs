@@ -47,7 +47,7 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
     private static bool optimized;
 
     public EndOfDayTimerHandlerCTCTest(string tickerGroupID, int numberOfEligibleTickers, 
-                                int numberOfTickersToBeChosen, int numDaysForLiquidity,
+                                int numberOfTickersToBeChosen, int numDaysForOptimizationPeriod,
                                 Account account,                                
                                 int generationNumberForGeneticOptimizer,
                                 int populationSizeForGeneticOptimizer,
@@ -57,7 +57,7 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
                                 double targetReturn,
                                	PortfolioType portfolioType, double maxAcceptableCloseToCloseDrawdown):
     														base(tickerGroupID, numberOfEligibleTickers, 
-                                numberOfTickersToBeChosen, numDaysForLiquidity,
+                                numberOfTickersToBeChosen, numDaysForOptimizationPeriod,
                                 account,                                
                                 generationNumberForGeneticOptimizer,
                                 populationSizeForGeneticOptimizer,
@@ -76,7 +76,7 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
       //setGenomeCounter never used; it is necessary for overriding 
       if(!EndOfDayTimerHandlerCTCTest.optimized)
       {
-      	base.setTickers(currentDate.AddDays(this.numDaysForLiquidity),
+      	base.setTickers(currentDate.AddDays(this.numDaysForOptimizationPeriod),
                         true);
       	EndOfDayTimerHandlerCTCTest.optimized = true;
       }

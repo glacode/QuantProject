@@ -50,7 +50,7 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
     protected double previousAccountValue;
     
     public EndOfDayTimerHandlerCTCWeekly(string tickerGroupID, int numberOfEligibleTickers, 
-                                int numberOfTickersToBeChosen, int numDaysForLiquidity,
+                                int numberOfTickersToBeChosen, int numDaysForOptimizationPeriod,
                                 Account account,                                
                                 int generationNumberForGeneticOptimizer,
                                 int populationSizeForGeneticOptimizer,
@@ -59,7 +59,7 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
                                 double targetReturn,
                                	PortfolioType portfolioType, double maxAcceptableCloseToCloseDrawdown):
     														base(tickerGroupID, numberOfEligibleTickers, 
-                                numberOfTickersToBeChosen, numDaysForLiquidity, account,
+                                numberOfTickersToBeChosen, numDaysForOptimizationPeriod, account,
                                 generationNumberForGeneticOptimizer,
                                 populationSizeForGeneticOptimizer,
                                 benchmark, targetReturn,
@@ -114,16 +114,15 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
     
     protected DataTable getSetOfTickersToBeOptimized(DateTime currentDate)
     {
-      SelectorByLiquidity mostLiquid = new SelectorByLiquidity(this.tickerGroupID,false,
-                                      currentDate.AddDays(-this.numDaysForLiquidity),
-                                      currentDate,
-                                      this.numberOfEligibleTickers);
-      this.eligibleTickers = mostLiquid.GetTableOfSelectedTickers();
-      SelectorByQuotationAtEachMarketDay quotedAtEachMarketDayFromMostLiquid = 
+      SelectorByGroup temporizedGroup = new SelectorByGroup(this.tickerGroupID,
+    	                                                      currentDate);
+                                      
+      this.eligibleTickers = temporizedGroup.GetTableOfSelectedTickers();
+      SelectorByQuotationAtEachMarketDay quotedAtEachMarketDayFromEligible = 
         new SelectorByQuotationAtEachMarketDay(this.eligibleTickers,
-                                  false, currentDate.AddDays(-this.numDaysForLiquidity),currentDate,
+                                  false, currentDate.AddDays(-this.numDaysForOptimizationPeriod),currentDate,
                                   this.numberOfEligibleTickers, this.benchmark);
-      return quotedAtEachMarketDayFromMostLiquid.GetTableOfSelectedTickers();
+      return quotedAtEachMarketDayFromEligible.GetTableOfSelectedTickers();
     }
     
     
@@ -142,7 +141,7 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
       	//(with no commissions and bid-ask spreads)
       	IGenomeManager genManEfficientCTCPortfolio =
           new GenomeManagerForEfficientCTCPortfolio(setOfTickersToBeOptimized,
-          currentDate.AddDays(-this.numDaysForLiquidity), 
+          currentDate.AddDays(-this.numDaysForOptimizationPeriod), 
           currentDate, this.numberOfTickersToBeChosen,
           this.numDaysForReturnCalculation,
           this.targetReturn,

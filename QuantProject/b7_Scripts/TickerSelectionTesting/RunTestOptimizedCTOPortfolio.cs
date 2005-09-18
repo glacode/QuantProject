@@ -54,17 +54,17 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
 	{
    
     public RunTestOptimizedCTOPortfolio(string tickerGroupID, int numberOfEligibleTickers, 
-                                    int numberOfTickersToBeChosen, int numDaysForLiquidity, 
+                                    int numberOfTickersToBeChosen, int numDaysForOptimizationPeriod, 
                                     int generationNumberForGeneticOptimizer,
                                     int populationSizeForGeneticOptimizer, string benchmark,
                                     DateTime endDate, double targetReturn,
                                     PortfolioType portfolioType, double maxRunningHours, 
                                    	int numDaysBetweenEachOptimization):
   																base(tickerGroupID, numberOfEligibleTickers, 
-                                     numberOfTickersToBeChosen, numDaysForLiquidity, 
+                                     numberOfTickersToBeChosen, numDaysForOptimizationPeriod, 
                                     generationNumberForGeneticOptimizer,
                                     populationSizeForGeneticOptimizer, benchmark,
-                                    endDate.AddDays(-numDaysForLiquidity), endDate, targetReturn,
+                                    endDate.AddDays(-numDaysForOptimizationPeriod), endDate, targetReturn,
                                    	portfolioType, maxRunningHours,
                                    	numDaysBetweenEachOptimization)
 		{
@@ -76,7 +76,7 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
       this.endOfDayTimerHandler = new EndOfDayTimerHandlerCTOTest(this.tickerGroupID,
                                                               this.numberOfEligibleTickers,
                                                               this.numberOfTickersToBeChosen,
-                                                              this.numDaysForLiquidity,
+                                                              this.numDaysForOptimizationPeriod,
                                                               this.account,
                                                               this.generationNumberForGeneticOptimizer, 
                                                               this.populationSizeForGeneticOptimizer,
