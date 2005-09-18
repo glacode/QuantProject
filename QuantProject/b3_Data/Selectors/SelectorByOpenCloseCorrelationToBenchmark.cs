@@ -30,7 +30,7 @@ using QuantProject.Data.DataTables;
 namespace QuantProject.Data.Selectors
 {
   /// <summary>
-  /// Class for selection on tickers by open close correlation to 
+  /// Class for selection on tickers by open close absolute correlation to 
   /// a given benchmark
   /// </summary>
    public class SelectorByOpenCloseCorrelationToBenchmark : TickerSelector, ITickerSelector
