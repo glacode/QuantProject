@@ -42,8 +42,9 @@ namespace QuantProject.ADT.Optimizing.Genetic
     private bool hasBeenCloned;
     private bool hasBeenChanged;
     
-    IGenomeManager genomeManager;
-		
+    private IGenomeManager genomeManager;
+		private int generation;
+    
     public bool HasBeenCloned
     {
       get{return this.hasBeenCloned;}
@@ -93,7 +94,8 @@ namespace QuantProject.ADT.Optimizing.Genetic
     /// </summary>
     public int Generation
     {
-      get{return this.genomeManager.CurrentGeneticOptimizer.GenerationCounter;}
+      get{return this.generation;}
+      //set{this.generation = value;}
     }
     
     //implementation of IComparable interface
@@ -129,6 +131,9 @@ namespace QuantProject.ADT.Optimizing.Genetic
 		{
 			for (int i = 0 ; i < this.size ; i++)
 				this.genes[i] = this.genomeManager.GetNewGeneValue(this);
+			//whenever at least one gene has been written,
+			//the current generation number is stored
+			this.generation = this.genomeManager.CurrentGeneticOptimizer.GenerationCounter;
 		}
     
     public void CalculateFitness()
@@ -160,6 +165,9 @@ namespace QuantProject.ADT.Optimizing.Genetic
 		{
 			for (int i = 0 ; i < this.size ; i++)
 				this.genes[i] = valuesToBeCopied[i];
+			//whenever at least one gene has been written,
+			//the current generation number is stored
+			this.generation = this.genomeManager.CurrentGeneticOptimizer.GenerationCounter;
 		}
     
     public void SetGeneValue(int geneValue, int genePosition)
@@ -168,6 +176,9 @@ namespace QuantProject.ADT.Optimizing.Genetic
         throw new IndexOutOfRangeException("Gene position not valid for the genome! ");
       
       this.genes[genePosition] = geneValue;
+      //whenever at least one gene has been written,
+			//the current generation number is stored
+      this.generation = this.genomeManager.CurrentGeneticOptimizer.GenerationCounter;
       this.hasBeenChanged = true;
     }
     
@@ -189,6 +200,21 @@ namespace QuantProject.ADT.Optimizing.Genetic
       {
         if( geneValue == gene )
               returnValue = true;
+      }
+      return returnValue;
+    }
+
+    /// <summary>
+    /// It returns true if the current instance shares no gene with the given
+    /// genome
+    /// </summary>
+    public bool SharesNoGeneWith(Genome genomeToBeCompared)
+    {
+      bool returnValue = true;
+      foreach(int gene in this.Genes())
+      {
+        if( genomeToBeCompared.HasGene(gene) )
+          return false;
       }
       return returnValue;
     }
