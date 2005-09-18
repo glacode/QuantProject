@@ -35,32 +35,34 @@ namespace QuantProject.Data.Selectors
   /// </summary>
    public class SelectorByWinningOpenToClose : TickerSelector, ITickerSelector 
   {
-    
+    private bool onlyTickersWithAtLeastOneWinningDay;
     public SelectorByWinningOpenToClose(DataTable setOfTickersToBeSelected, 
                                bool orderInASCmode, DateTime firstQuoteDate,
                                DateTime lastQuoteDate,
-                               long maxNumOfReturnedTickers):
+                               long maxNumOfReturnedTickers,
+                                bool onlyTickersWithAtLeastOneWinningDay):
                                     base(setOfTickersToBeSelected, 
                                          orderInASCmode,
                                          firstQuoteDate,
                                          lastQuoteDate,
                                          maxNumOfReturnedTickers)
     {
-      
+      this.onlyTickersWithAtLeastOneWinningDay = onlyTickersWithAtLeastOneWinningDay;
     }
     
     public SelectorByWinningOpenToClose(string groupID,
                                 bool orderInASCmode,
                                 DateTime firstQuoteDate,
                                 DateTime lastQuoteDate,
-                                long maxNumOfReturnedTickers):
+                                long maxNumOfReturnedTickers,
+                                bool onlyTickersWithAtLeastOneWinningDay):
                                   base(groupID, 
                                       orderInASCmode,
                                       firstQuoteDate,
                                       lastQuoteDate,
                                       maxNumOfReturnedTickers)
     {
-    	
+    	this.onlyTickersWithAtLeastOneWinningDay = onlyTickersWithAtLeastOneWinningDay;
     }
 
 
@@ -68,11 +70,13 @@ namespace QuantProject.Data.Selectors
     {
    
       if(this.setOfTickersToBeSelected == null)
-        return QuantProject.DataAccess.Tables.Quotes.GetTickersByOpenToCloseWinningDays(this.isOrderedInASCMode,
-                  this.groupID, this.firstQuoteDate, this.lastQuoteDate, this.maxNumOfReturnedTickers);        
+        return QuantProject.Data.DataTables.Quotes.GetTickersByOpenToCloseWinningDays(this.isOrderedInASCMode,
+                  this.groupID, this.firstQuoteDate, this.lastQuoteDate, this.maxNumOfReturnedTickers,
+                  this.onlyTickersWithAtLeastOneWinningDay);        
       else
       	return QuantProject.Data.DataTables.Quotes.GetTickersByOpenToCloseWinningDays(this.isOrderedInASCMode,
-                  this.setOfTickersToBeSelected, this.firstQuoteDate, this.lastQuoteDate, this.maxNumOfReturnedTickers); 
+                  this.setOfTickersToBeSelected, this.firstQuoteDate, this.lastQuoteDate, this.maxNumOfReturnedTickers,
+                  this.onlyTickersWithAtLeastOneWinningDay); 
     }
     public void SelectAllTickers()
     {

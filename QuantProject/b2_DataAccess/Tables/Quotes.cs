@@ -589,17 +589,18 @@ namespace QuantProject.DataAccess.Tables
       sql = sql + sortDirection;
       return SqlExecutor.GetDataTable( sql );
     }
-
+    /*moved to Quotes inside data layer
     /// <summary>
     /// returns tickers counting how many times raw close is greater than raw open 
     /// for the given interval of days (within the given group of tickers).
-    /// Tickers are ordered by the number of days  raw open is greater than raw close
+    /// Tickers are ordered by the number of days raw open is greater than raw close
     /// </summary>
     public static DataTable GetTickersByOpenToCloseWinningDays( bool orderInASCMode, string groupID,
                                                     DateTime firstQuoteDate,
                                											DateTime lastQuoteDate,
                                                     long maxNumOfReturnedTickers)
     {
+      
       string sql = "SELECT TOP " + maxNumOfReturnedTickers + " quotes.quTicker, tickers.tiCompanyName, " +
                   "Count(quotes.quClose) AS CloseToOpenWinningDays " +
       						"FROM (quotes INNER JOIN tickers ON quotes.quTicker=tickers.tiTicker) " +
@@ -616,7 +617,7 @@ namespace QuantProject.DataAccess.Tables
       sql = sql + sortDirection;
       return SqlExecutor.GetDataTable( sql );
     }
-    
+    */
     /// <summary>
     /// returns the average traded value for the given ticker in the specified interval
     /// </summary>
@@ -810,7 +811,7 @@ namespace QuantProject.DataAccess.Tables
     {
       DataTable dt;
       int returnValue = 0;
-    	string sql = "SELECT Count(quotes.quClose) AS CloseToOpenWinningDays " +
+    	string sql = "SELECT Count(*) AS CloseToOpenWinningDays " +
       						"FROM quotes WHERE " + 
     							"quotes.quDate Between " + SQLBuilder.GetDateConstant(firstQuoteDate) + " " +
                   "AND " + SQLBuilder.GetDateConstant(lastQuoteDate) + " " +

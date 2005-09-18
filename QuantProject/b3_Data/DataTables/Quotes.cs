@@ -349,7 +349,8 @@ namespace QuantProject.Data.DataTables
                                                   DataTable setOfTickers,
                                                   DateTime firstQuoteDate,
                                                   DateTime lastQuoteDate,
-                                                  long maxNumOfReturnedTickers)
+                                                  long maxNumOfReturnedTickers,
+                                                  bool onlyTickersWithAtLeastOneWinningDay)
     {
       if(!setOfTickers.Columns.Contains("NumOpenCloseWinningDays"))
         setOfTickers.Columns.Add("NumOpenCloseWinningDays", System.Type.GetType("System.Double"));
@@ -359,9 +360,35 @@ namespace QuantProject.Data.DataTables
             QuantProject.DataAccess.Tables.Quotes.GetNumberOfOpenToCloseWinningDays((string)row[0],
         	                                                                        firstQuoteDate, lastQuoteDate);
       }
-      DataTable returnValue = ExtendedDataTable.CopyAndSort(setOfTickers,"NumOpenCloseWinningDays", orderByASC);
+      string filter_onlyTickersWithAtLeastOneWinningDay = "";
+      if(onlyTickersWithAtLeastOneWinningDay)
+        filter_onlyTickersWithAtLeastOneWinningDay = "NumOpenCloseWinningDays>0";
+      DataTable returnValue = 
+          ExtendedDataTable.CopyAndSort(setOfTickers,
+                                        filter_onlyTickersWithAtLeastOneWinningDay,
+                                        "NumOpenCloseWinningDays", orderByASC);
       ExtendedDataTable.DeleteRows(returnValue, maxNumOfReturnedTickers);
       return returnValue;
+    }
+    /// <summary>
+    /// returns tickers counting how many times raw close is greater than raw open 
+    /// for the given interval of days (within the given table of tickers).
+    /// Tickers are ordered by the number of days raw open is greater than raw close
+    /// </summary>
+    public static DataTable GetTickersByOpenToCloseWinningDays( bool orderByASC,
+                                                                string groupID,
+                                                                DateTime firstQuoteDate,
+                                                                DateTime lastQuoteDate,
+                                                                long maxNumOfReturnedTickers,
+                                                                bool onlyTickersWithAtLeastOneWinningDay)
+    {
+      return 
+        GetTickersByOpenToCloseWinningDays(orderByASC,
+                                           QuantProject.DataAccess.Tables.Tickers_tickerGroups.GetTickers(groupID),
+                                           firstQuoteDate,
+                                            lastQuoteDate,
+                                           maxNumOfReturnedTickers,
+                                            onlyTickersWithAtLeastOneWinningDay);
     }
     
     private static float[] getArrayOfCloseToOpenRatios(string ticker,
@@ -410,12 +437,12 @@ namespace QuantProject.Data.DataTables
           firstQuoteDate, lastQuoteDate);
       	if(tickerRatios.Length == benchmarkRatios.Length)
       		row["OpenCloseCorrelationToBenchmark"] =
-          	BasicFunctions.PearsonCorrelationCoefficient(benchmarkRatios, tickerRatios);
+          	Math.Abs(BasicFunctions.PearsonCorrelationCoefficient(benchmarkRatios, tickerRatios));
       }
       DataTable tableToReturn = ExtendedDataTable.CopyAndSort(setOfTickers,
-                                                            "OpenCloseCorrelationToBenchmark > 0",
-                                                            "OpenCloseCorrelationToBenchmark",
-                                                            orderByASC);
+                                                              "OpenCloseCorrelationToBenchmark>=0.0",
+                                                              "OpenCloseCorrelationToBenchmark",
+                                                              orderByASC);
       ExtendedDataTable.DeleteRows(tableToReturn, maxNumOfReturnedTickers);
       return tableToReturn;
     }
