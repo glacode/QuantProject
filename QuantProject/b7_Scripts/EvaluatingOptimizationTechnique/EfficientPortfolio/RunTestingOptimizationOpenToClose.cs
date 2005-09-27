@@ -44,7 +44,7 @@ namespace QuantProject.Scripts.EvaluatingOptimizationTechnique.EfficientPortfoli
   	private string tickerGroupID;
     private int numberOfEligibleTickers;
     private int numberOfTickersToBeChosen;
-    private int numDaysForLiquidity;
+    private int numDaysForOptimization;
     private int populationSizeForGeneticOptimizer;
     private int generationNumberForGeneticOptimizer;
   	private string benchmark;
@@ -55,9 +55,9 @@ namespace QuantProject.Scripts.EvaluatingOptimizationTechnique.EfficientPortfoli
   	private int numberOfSubsets;
   	private Genome[] genomesToTestOutOfSample;
   	private int numberOfGenomesToTest;
-  	
+      	
     public RunTestingOptimizationOpenToClose(string tickerGroupID, int numberOfEligibleTickers,
-      				int numberOfTickersToBeChosen, int numDaysForLiquidity,
+      				int numberOfTickersToBeChosen, int numDaysForOptimization,
       				int generationNumberForGeneticOptimizer, int populationSizeForGeneticOptimizer, 
       				string benchmark,
       				DateTime marketDate, double targetReturn,
@@ -71,7 +71,7 @@ namespace QuantProject.Scripts.EvaluatingOptimizationTechnique.EfficientPortfoli
   		this.tickerGroupID = tickerGroupID;
   		this.numberOfEligibleTickers = numberOfEligibleTickers;
   		this.numberOfTickersToBeChosen = numberOfTickersToBeChosen;
-  		this.numDaysForLiquidity = numDaysForLiquidity;
+  		this.numDaysForOptimization = numDaysForOptimization;
   		this.populationSizeForGeneticOptimizer = populationSizeForGeneticOptimizer;
   		this.generationNumberForGeneticOptimizer = generationNumberForGeneticOptimizer;
   		this.benchmark = benchmark;
@@ -80,98 +80,162 @@ namespace QuantProject.Scripts.EvaluatingOptimizationTechnique.EfficientPortfoli
   		this.portfolioType = portfolioType;
   		this.numDaysAfterLastOptimizationDay = numDaysAfterLastOptimizationDay;
   		this.numberOfSubsets = numberOfSubsets;
-  		
-  	}
+   	}
     
   	private DataTable getSetOfTickersToBeOptimized(DateTime date)
     {
       /*
       SelectorByAverageRawOpenPrice selectorByOpenPrice = 
                   new SelectorByAverageRawOpenPrice(this.tickerGroupID, false,
-                          currentDate.AddDays(-this.numDaysForLiquidity), currentDate,
+                          currentDate.AddDays(-this.numDaysForOptimization), currentDate,
                           this.numberOfEligibleTickers, this.minPriceForMinimumCommission,
                           this.maxPriceForMinimumCommission, 0, 2);
       DataTable tickersByPrice = selectorByOpenPrice.GetTableOfSelectedTickers();
       */
      	
-     	SelectorByLiquidity mostLiquid = new SelectorByLiquidity(this.tickerGroupID, false,
-                                      date.AddDays(-this.numDaysForLiquidity), date,
-                                      this.numberOfEligibleTickers);
-      /*SelectorByOpenToCloseVolatility lessVolatile = 
-      	new SelectorByOpenToCloseVolatility(mostLiquid.GetTableOfSelectedTickers(),
-      	                                    true, currentDate.AddDays(-5),
-      	                                    currentDate,
-      	                                    this.numberOfEligibleTickers/2);*/
+     	SelectorByGroup temporizedGroup = new SelectorByGroup(this.tickerGroupID,
+      	                                                    date);
+      
+      SelectorByOpenCloseCorrelationToBenchmark lessCorrelatedFromTemporizedGroup = 
+        new SelectorByOpenCloseCorrelationToBenchmark(temporizedGroup.GetTableOfSelectedTickers(),
+                                          this.benchmark,true,
+                                          date.AddDays(-this.numDaysForOptimization ),
+                                          date,
+                                         this.numberOfEligibleTickers);
+      
       DataTable eligibleTickers;
-      eligibleTickers = mostLiquid.GetTableOfSelectedTickers();
+      eligibleTickers = lessCorrelatedFromTemporizedGroup.GetTableOfSelectedTickers();
+      //eligibleTickers = temporizedGroup.GetTableOfSelectedTickers();
       SelectorByQuotationAtEachMarketDay quotedAtEachMarketDayFromEligible = 
         new SelectorByQuotationAtEachMarketDay( eligibleTickers,
-                                   false, date.AddDays(-this.numDaysForLiquidity),
+                                   false, date.AddDays(-this.numDaysForOptimization),
                                     date, this.numberOfEligibleTickers, this.benchmark);
       //SelectorByWinningOpenToClose winners =
-      //	new SelectorByWinningOpenToClose(quotedAtEachMarketDayFromMostLiquid.GetTableOfSelectedTickers(),
-      //	                                 false, currentDate.AddDays(-2),
-      //	                                 currentDate, this.numberOfEligibleTickers/4);      	                                 
+      	//new SelectorByWinningOpenToClose(quotedAtEachMarketDayFromEligible.GetTableOfSelectedTickers(),
+      	  //                               false, date.AddDays(-1),
+      	    //                             date.AddDays(-1), this.numberOfEligibleTickers/2,
+              //                            true);      	                                 
       //return winners.GetTableOfSelectedTickers();
-      //SelectorByOpenCloseCorrelationToBenchmark lessCorrelated = 
-      //  new SelectorByOpenCloseCorrelationToBenchmark(quotedAtEachMarketDayFromEligible.GetTableOfSelectedTickers(),
-      //                                                this.benchmark, true,
-      //                                                currentDate.AddDays(-this.numDaysForLiquidity),
-      //                                                currentDate, this.numberOfEligibleTickers/2);
+     
       return quotedAtEachMarketDayFromEligible.GetTableOfSelectedTickers();
       //return lessCorrelated.GetTableOfSelectedTickers();
     }
   	
-  	private double setFitnesses_setFitnessesActually_getFitnessOutOfSample(Genome genome)
+    private double setFitnesses_setFitnessesActually_getFitnessOutOfSample(Genome genome)
   		
     {
- 			double returnValue = 0;
- 			foreach(string tickerCode in (string[])genome.Meaning)
- 			{
- 				double coefficient = 1.0;
- 				string ticker = tickerCode;
- 				if(ticker.StartsWith("-"))
- 				{
- 					ticker = ticker.Substring(1,ticker.Length -1);
- 					coefficient = -1.0;
- 				}
- 				DateTime dateOutOfSample = this.marketDate.AddDays(this.numDaysAfterLastOptimizationDay);
- 				Quotes tickerQuotes = new Quotes(ticker, dateOutOfSample,
- 				                                 dateOutOfSample);
- 				returnValue += 
- 					(tickerQuotes.GetFirstValidRawClose(dateOutOfSample)/
- 					 tickerQuotes.GetFirstValidRawOpen(dateOutOfSample) - 1.0)*coefficient;
+      double returnValue = 0;
+      foreach(string tickerCode in (string[])genome.Meaning)
+      {
+        double coefficient = 1.0;
+        string ticker = tickerCode;
+        if(ticker.StartsWith("-"))
+        {
+          ticker = ticker.Substring(1,ticker.Length -1);
+          coefficient = -1.0;
+        }
+        DateTime dateOutOfSample = this.marketDate.AddDays(this.numDaysAfterLastOptimizationDay);
+        Quotes tickerQuotes = new Quotes(ticker, dateOutOfSample,
+          dateOutOfSample);
+        returnValue += 
+          (tickerQuotes.GetFirstValidRawClose(dateOutOfSample)/
+          tickerQuotes.GetFirstValidRawOpen(dateOutOfSample) - 1.0)*coefficient;
 	 			
- 			}
- 			return returnValue/genome.Size;
+      }
+      return returnValue/genome.Size;
       
     }
-  	
-  	private void setFitnesses_setFitnessesActually_setGenomesToTestOutOfSample(GeneticOptimizer GO)
+    
+    private bool setFitnesses_setFitnessesActually_setGenomesToTestOutOfSample_addGenomes_sharesNoGeneWithGenomesAlreadyAdded(Genome genomeToBeAdded,
+                                                                                                                              bool addWorstGenomes)
   		
     {
-  		Random random = new Random(10);
-  		for(int i = 0; i<this.numberOfGenomesToTest; i++)
-  		{
-  			this.genomesToTestOutOfSample[i]=
-  				(Genome)GO.CurrentGeneration[random.Next(this.populationSizeForGeneticOptimizer)];
-  		}
-  		Array.Sort(this.genomesToTestOutOfSample);
+      bool returnValue = true;
+      if(addWorstGenomes)
+      //the first half containing the worst genomes has to be checked
+      {
+        for(int i = 0; i<this.numberOfGenomesToTest/2; i++)
+        {
+          if(this.genomesToTestOutOfSample[i]==null)
+            return true;
+          if(!genomeToBeAdded.SharesNoGeneWith(this.genomesToTestOutOfSample[i]))
+            return false;
+        }
+      }
+      else
+      //the second half containing the best genomes has to be checked
+      {
+        for(int i = 0; i<this.numberOfGenomesToTest/2; i++)
+        {
+          if(this.genomesToTestOutOfSample[this.numberOfGenomesToTest-1-i]==null)
+            return true;
+          if(!genomeToBeAdded.SharesNoGeneWith(this.genomesToTestOutOfSample[this.numberOfGenomesToTest-1-i]))
+            return false;
+        }
+      }
+      return returnValue;
     }
-  	private void setFitnesses_setFitnessesActually(GeneticOptimizer GO)
+    private void setFitnesses_setFitnessesActually_setGenomesToTestOutOfSample_addGenomes(GeneticOptimizer optimizer,
+                                                                                      bool addWorstGenomes)
   		
     {
-  		this.setFitnesses_setFitnessesActually_setGenomesToTestOutOfSample(GO);
-  		for(int i = 0; i<this.numberOfGenomesToTest; i++)
-  		{
-  			this.fitnessesInSample[i]=(this.genomesToTestOutOfSample[i]).Fitness;
-  			this.fitnessesOutOfSample[i]= 
-  				this.setFitnesses_setFitnessesActually_getFitnessOutOfSample(this.genomesToTestOutOfSample[i]);
-  		}
+      Genome currentGenome;
+      Genome previousGenome = null;
+      int numOfDifferentGenomesFound = 0;
+      for(int j = 0;
+        j<this.populationSizeForGeneticOptimizer && numOfDifferentGenomesFound<this.numberOfGenomesToTest/2;
+        j++)
+      {
+        if(addWorstGenomes == true)
+          currentGenome = (Genome)optimizer.CurrentGeneration[j];
+        else
+          currentGenome = (Genome)optimizer.CurrentGeneration[this.populationSizeForGeneticOptimizer-j-1];
+
+        if(this.setFitnesses_setFitnessesActually_setGenomesToTestOutOfSample_addGenomes_sharesNoGeneWithGenomesAlreadyAdded(currentGenome, addWorstGenomes))
+        //no genes of the current genome are present in the relative half
+        {
+          if(this.genomesToTestOutOfSample[numOfDifferentGenomesFound]!= null)
+          //the first half of the array has already been filled
+            this.genomesToTestOutOfSample[this.numberOfGenomesToTest-1-numOfDifferentGenomesFound]=currentGenome;
+          else//the first half is still empty
+            this.genomesToTestOutOfSample[numOfDifferentGenomesFound] = currentGenome;
+          previousGenome = currentGenome;
+          numOfDifferentGenomesFound++;
+        }
+        
+      }
+     
+    }
+  	
+    private void setFitnesses_setFitnessesActually_setGenomesToTestOutOfSample(IGenomeManager genomeManager)
+  		
+    {
+      GeneticOptimizer optimizer = new GeneticOptimizer(genomeManager,
+                                              this.populationSizeForGeneticOptimizer,
+                                              this.generationNumberForGeneticOptimizer,
+                                              ConstantsProvider.SeedForRandomGenerator);
+      optimizer.Run(false);
+      this.setFitnesses_setFitnessesActually_setGenomesToTestOutOfSample_addGenomes(optimizer,
+                                                                                 true);
+      this.setFitnesses_setFitnessesActually_setGenomesToTestOutOfSample_addGenomes(optimizer,
+                                                                                false);
+      Array.Sort(this.genomesToTestOutOfSample);
+    }
+    
+    private void setFitnesses_setFitnessesActually(IGenomeManager genomeManager)
+  		
+    {
+      this.setFitnesses_setFitnessesActually_setGenomesToTestOutOfSample(genomeManager);
+      for(int i = 0; i<this.numberOfGenomesToTest; i++)
+      {
+        this.fitnessesInSample[i]=(this.genomesToTestOutOfSample[i]).Fitness;
+        this.fitnessesOutOfSample[i]= 
+          this.setFitnesses_setFitnessesActually_getFitnessOutOfSample(this.genomesToTestOutOfSample[i]);
+      }
       
     }
-  	
-  	private void setFitnesses()
+
+    private void setFitnesses()
   		
     {
       
@@ -179,29 +243,30 @@ namespace QuantProject.Scripts.EvaluatingOptimizationTechnique.EfficientPortfoli
       	this.getSetOfTickersToBeOptimized(this.marketDate);
        IGenomeManager genManEfficientCTOPortfolio = 
         new GenomeManagerForEfficientCTOPortfolio(setOfTickersToBeOptimized,
-      	                                          this.marketDate.AddDays(-this.numDaysForLiquidity),
+      	                                          this.marketDate.AddDays(-this.numDaysForOptimization),
       	                                          this.marketDate,
       	                                          this.numberOfTickersToBeChosen,
       	                                          this.targetReturn,
       	                                         	this.portfolioType);
-      
-      GeneticOptimizer GO = new GeneticOptimizer(genManEfficientCTOPortfolio,
-                                                  this.populationSizeForGeneticOptimizer,
-                                                  this.generationNumberForGeneticOptimizer,
-                                                 ConstantsProvider.SeedForRandomGenerator);
-          
-      GO.Run(false);
-      this.setFitnesses_setFitnessesActually(GO);
+    
+      this.setFitnesses_setFitnessesActually(genManEfficientCTOPortfolio);
       
     }
   	
     public void Run()
     {
-    	this.setFitnesses();
-    	OptimizationTechniqueEvaluator evaluator = 
-    		new OptimizationTechniqueEvaluator(this.fitnessesInSample,
-    		                                   this.fitnessesOutOfSample);
-    	this.run_writeToLogFile(evaluator);
+      try
+      {
+        this.setFitnesses();
+        OptimizationTechniqueEvaluator evaluator = 
+          new OptimizationTechniqueEvaluator(this.fitnessesInSample,
+          this.fitnessesOutOfSample);
+        this.run_writeToLogFile(evaluator);
+      }
+      catch(Exception ex)
+      {
+        ex = ex;
+      }
     }
     
     private void run_writeToLogFile(OptimizationTechniqueEvaluator evaluator)
@@ -217,8 +282,13 @@ namespace QuantProject.Scripts.EvaluatingOptimizationTechnique.EfficientPortfoli
                     "\\OpenToCloseOptimizationEvaluation.txt";
   	  StreamWriter w = File.AppendText(pathFile);
   	  w.WriteLine ("\n----------------------------------------------\r\n");
-  	  w.Write("\r\nNew Test for Evaluation of Open To Close Optimization {0}\r", DateTime.Now.Date.ToLongDateString());
-  	  w.WriteLine ("\n----------------------------------------------");
+  	  w.Write("\r\nNew Test for Evaluation of Open To Close Optimization {0}\r", DateTime.Now.ToLongDateString()+ " " +DateTime.Now.ToLongTimeString());
+  	  w.Write("\r\nNum days for optimization {0}\r", this.numDaysForOptimization.ToString());
+      w.Write("\r\nOptimizing market date {0}\r", this.marketDate.ToLongDateString());
+      w.Write("\r\nMarket date for test (out of sample){0}\r",
+                        this.marketDate.AddDays(this.numDaysAfterLastOptimizationDay).ToLongDateString());
+      w.Write("\r\nNumber of tickers: {0}\r", this.numberOfTickersToBeChosen.ToString());
+      w.WriteLine ("\n----------------------------------------------");
   	  w.Write("\r\nFitnesses compared: {0}\r", this.fitnessesInSample.Length.ToString());
   	  w.Write("\r\nDifferent evaluated genomes: {0}\r", differentEvaluatedGenomes.ToString());
       w.Write("\r\nAverages of the {0} sub sets of fitnesses In Sample:\r",
