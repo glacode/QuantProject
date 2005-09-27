@@ -197,7 +197,7 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
      	//always needs specific implementation in inherited classes; 
     }
     
-    private void checkDateForReport_createDirIfNotPresent(string dirPath)
+    protected void checkDateForReport_createDirIfNotPresent(string dirPath)
     {
     	if(!Directory.Exists(dirPath))
     		Directory.CreateDirectory(dirPath);
