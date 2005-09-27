@@ -55,6 +55,8 @@
     <File name=".\EvaluatingOptimizationTechnique\EfficientPortfolio" subtype="Directory" buildaction="Compile" dependson="" data="" />
     <File name=".\EvaluatingOptimizationTechnique\OptimizationTechniqueEvaluator.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
     <File name=".\EvaluatingOptimizationTechnique\EfficientPortfolio\RunTestingOptimizationOpenToClose.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
+    <File name=".\TickerSelectionTesting\EndOfDayTimerHandlerCTOMultiAccount.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
+    <File name=".\TickerSelectionTesting\RunEfficientCTOPortfolioMultiAccount.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
   </Contents>
   <References>
     <Reference type="Project" refto="b1_ADT" localcopy="True" />
