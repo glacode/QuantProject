@@ -324,10 +324,10 @@ namespace QuantProject.Applications.Downloader
         if(this.getResponseForRepeatedChecks(ConstantsProvider.NumberOfCheckToPerformOnAdjustedValues))
         {
           this.updateCurrentStatusAdjustedClose("Changed!");
-          if (this.p_myForm.IsCheckCloseToCloseSelected && 
-              Quotes.IsAdjustedCloseToCloseRatioChanged(this.p_quTicker, 
+          if (Quotes.IsAdjustedCloseToCloseRatioChanged(this.p_quTicker, 
               this.getTableOfDownloadedValues(Quotes.GetStartDate(this.p_quTicker),
-                                               Quotes.GetEndDate(this.p_quTicker))))
+                                               Quotes.GetEndDate(this.p_quTicker))) && 
+              this.p_myForm.IsCheckCloseToCloseSelected)
           {
                this.updateCurrentStatusAdjustedCloseToCloseRatio("Changed at " + 
                                                                   Quotes.DateWithDifferentCloseToClose);
