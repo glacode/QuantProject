@@ -68,8 +68,9 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardOneRank
 			{
 				string ticker = (string)bestPerformingTickers[ index ];
 				if ( account.DataStreamer.IsExchanged( ticker ) )
-					setTickers_build_handleTicker( ticker ,
-						account );
+//					setTickers_build_handleTicker( ticker ,
+//						account );
+					this.Add( ticker , ticker );
 				index++;
 			}
 		}
