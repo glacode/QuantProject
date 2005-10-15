@@ -21,6 +21,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 using System;
 
+using QuantProject.ADT.Statistics;
 using QuantProject.Business.DataProviders;
 using QuantProject.Business.Financial.Accounting;
 using QuantProject.Business.Financial.Accounting.Reporting;
@@ -36,9 +37,9 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardOneRank
 	[Serializable]
 	public class ComparableAccount : Account
 	{
-    private double maxAcceptableDrawDown = 30;
+//    private double maxAcceptableDrawDown = 30;
 
-		private double minAcceptableWinningPeriods = 52;
+//		private double minAcceptableWinningPeriods = 52;
 
 		private IHistoricalQuoteProvider historicalQuoteProvider =
 			new HistoricalAdjustedQuoteProvider();
@@ -62,33 +63,44 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardOneRank
 		}
 		private double goodness()
 		{
-			double returnValue;
+			double returnValue = Double.MinValue;
 			if ( this.accountReport == null )
-				this.accountReport = this.CreateReport( this.Key , 1 ,
-					this.EndOfDayTimer.GetCurrentTime() , this.Key ,
-					this.historicalQuoteProvider );
+			{
+				this.accountReport = new AccountReport(
+					this , this.historicalQuoteProvider );
+				this.accountReport.SetEquityLine( 1 ,
+					this.EndOfDayTimer.GetCurrentTime() );
+				returnValue = AdvancedFunctions.GetSharpeRatio(
+					this.accountReport.EquityLine.GetReturns().Values );
+			}
 
 			// old goodness computation
-			if ( ( (double)this.accountReport.Summary.MaxEquityDrawDown.Value >=
-				this.maxAcceptableDrawDown )
-				|| ( this.accountReport.Summary.TotalPnl <=
-				(double)this.accountReport.Summary.BenchmarkPercentageReturn.Value ) )
-				returnValue = Double.MinValue;
-			else
-				// max draw down is acceptable and the strategy is better than buy and hold
-				returnValue = (double)this.accountReport.Summary.ReturnOnAccount.Value -
-					(double)this.accountReport.Summary.BenchmarkPercentageReturn.Value;
+//			if ( this.accountReport == null )
+//				this.accountReport = this.CreateReport( this.Key , 1 ,
+//					this.EndOfDayTimer.GetCurrentTime() , this.Key ,
+//					this.historicalQuoteProvider );
+
+			// very old goodness computation
+//			if ( ( (double)this.accountReport.Summary.MaxEquityDrawDown.Value >=
+//				this.maxAcceptableDrawDown )
+//				|| ( this.accountReport.Summary.TotalPnl <=
+//				(double)this.accountReport.Summary.BenchmarkPercentageReturn.Value ) )
+//				returnValue = Double.MinValue;
+//			else
+//				// max draw down is acceptable and the strategy is better than buy and hold
+//				returnValue = (double)this.accountReport.Summary.ReturnOnAccount.Value -
+//					(double)this.accountReport.Summary.BenchmarkPercentageReturn.Value;
 
 			// new goodness computation
 //			if ( this.accountReport.Summary.NumberWinningPeriods < this.minAcceptableWinningPeriods )
 //				returnValue = Double.MinValue;
 //			else
 //				returnValue = Convert.ToDouble( this.accountReport.Summary.PercentageWinningPeriods );
-			if ( (double)this.accountReport.Summary.PercentageWinningPeriods.Value <
-				this.minAcceptableWinningPeriods )
-				returnValue = Double.MinValue;
-			else
-				returnValue = Convert.ToDouble( - (double)this.accountReport.Summary.MaxEquityDrawDown.Value );
+//			if ( (double)this.accountReport.Summary.PercentageWinningPeriods.Value <
+//				this.minAcceptableWinningPeriods )
+//				returnValue = Double.MinValue;
+//			else
+//				returnValue = Convert.ToDouble( - (double)this.accountReport.Summary.MaxEquityDrawDown.Value );
 
 			return returnValue;
 		}
