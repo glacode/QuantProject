@@ -47,7 +47,23 @@ namespace QuantProject.Business.Financial.Accounting
       set { quantity = value; }
     }
 
-    public Position( Instrument instrument , long quantity )
+		public PositionType Type
+		{
+			get
+			{
+				if ( this.Quantity == 0 )
+					throw new Exception( "Position Type cannot be requested " +
+						"when no position is held!" );
+				PositionType positionType;
+				if ( this.Quantity > 0 )
+					positionType = PositionType.Long;
+				else
+					// this.Quantity < 0
+					positionType = PositionType.Short;
+				return positionType;
+			}
+		}
+		public Position( Instrument instrument , long quantity )
 		{
 			this.instrument = instrument;
       this.quantity = quantity;
