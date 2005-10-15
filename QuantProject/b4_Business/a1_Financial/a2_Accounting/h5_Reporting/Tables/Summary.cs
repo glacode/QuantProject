@@ -257,7 +257,7 @@ namespace QuantProject.Business.Financial.Accounting.Reporting.Tables
 			this.totalNetProfit = new TotalNetProfit( this );
 			this.annualSystemPercentageReturn = new AnnualSystemPercentageReturn( this );
 			this.maxEquityDrawDown = new MaxEquityDrawDown( this );
-			this.sharpeRatio = new SharpeRatio( this.accountReport.EquityHistory );
+			this.sharpeRatio = new SharpeRatio( this.accountReport.EquityLine );
 			this.totalNumberOfTrades = new TotalNumberOfTrades( this );
 			this.numberWinningTrades = new NumberWinningTrades( this );
 			this.averageTradePercentageReturn = new AverageTradePercentageReturn( this );
