@@ -34,7 +34,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardOneRank
 	{
 		private int numberEligibleTickersToBeChosen;
 		private int numberDaysForPerformanceCalculation;
-		private int numDaysToComputeLiquidity = 10;
+//		private int numDaysToComputeLiquidity = 10;
 
 		public EligibleTickers( int numberEligibleTickersToBeChosen ,
 			int numberDaysForPerformanceCalculation )
@@ -46,13 +46,20 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardOneRank
 		#region SetTickers
 		private DataTable setTickers_build_getSelectedTickers( DateTime dateTime )
 		{
-			SelectorByLiquidity mostLiquid =
-				new SelectorByLiquidity("Test", false ,	dateTime.AddDays( - this.numDaysToComputeLiquidity ) , dateTime ,
-				this.numberEligibleTickersToBeChosen );
-			DataTable mostLiquidTickers =
-				mostLiquid.GetTableOfSelectedTickers();
+			SelectorByGroup selectorByGroup =
+				new SelectorByGroup( "SP500" , dateTime );
+			// use the following for fast test
+//			SelectorByGroup selectorByGroup =
+//				new SelectorByGroup( "millo" , dateTime );
+			DataTable eligibleTickers = selectorByGroup.GetTableOfSelectedTickers();
+			
+//			SelectorByLiquidity mostLiquid =
+//				new SelectorByLiquidity("Test", false ,	dateTime.AddDays( - this.numDaysToComputeLiquidity ) , dateTime ,
+//				this.numberEligibleTickersToBeChosen );
+//			DataTable mostLiquidTickers =
+//				mostLiquid.GetTableOfSelectedTickers();
 			SelectorByQuotationAtEachMarketDay quotedInEachMarketDayFromMostLiquid = 
-				new SelectorByQuotationAtEachMarketDay( mostLiquidTickers,
+				new SelectorByQuotationAtEachMarketDay( eligibleTickers,
 				false,	dateTime.AddDays( - this.numberDaysForPerformanceCalculation ) ,
 				dateTime, this.numberEligibleTickersToBeChosen,"^SPX");
 			return quotedInEachMarketDayFromMostLiquid.GetTableOfSelectedTickers();
@@ -72,8 +79,8 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardOneRank
 //			DataTable selectedTickers = setTickers_buildQuickly_getSelectedTickers();
 
 			foreach ( DataRow dataRow in selectedTickers.Rows )
-				this.Add( dataRow[ "tiTicker" ].ToString() ,
-					dataRow[ "tiTicker" ].ToString() );
+				this.Add( dataRow[ "TickerId" ].ToString() ,
+					dataRow[ "TickerId" ].ToString() );
 		}
 		/// <summary>
 		/// Populates the collection of eligible tickers
