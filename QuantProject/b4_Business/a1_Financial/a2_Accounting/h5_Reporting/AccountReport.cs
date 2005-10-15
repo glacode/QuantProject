@@ -54,7 +54,7 @@ namespace QuantProject.Business.Financial.Accounting.Reporting
     private Tables.Transactions transactionTable;
     private ReportTable roundTrades;
     private ReportTable equity;
-		private History equityHistory;
+		private EquityLine equityLine;
     private Tables.Summary summary;
 
     public string Name
@@ -97,19 +97,19 @@ namespace QuantProject.Business.Financial.Accounting.Reporting
 		{
 			get { return equity; }
 		}
-		public History EquityHistory
+		public EquityLine EquityLine
 		{
 			get
 			{
-				if ( this.equityHistory == null )
+				if ( this.equityLine == null )
 					// this.equityHistory has not been imported yet
 				{
-					this.equityHistory = new History();
-					this.equityHistory.Import( this.Equity.DataTable ,
+					this.equityLine = new EquityLine();
+					this.equityLine.Import( this.Equity.DataTable ,
 						QuantProject.Business.Financial.Accounting.Reporting.Tables.Equity.Date ,
 						QuantProject.Business.Financial.Accounting.Reporting.Tables.Equity.AccountValue );
 				}
-				return this.equityHistory;
+				return this.equityLine;
 			}
 		}
 		public Tables.Summary Summary
@@ -247,10 +247,10 @@ namespace QuantProject.Business.Financial.Accounting.Reporting
 		private void setBenchmarkEquityLine()
 		{
 			History benchmarkQuotes = HistoricalDataProvider.GetAdjustedCloseHistory(
-				this.benchmark , (DateTime)this.EquityHistory.GetKey( 0 ) ,
-				(DateTime)this.EquityHistory.GetKey( this.EquityHistory.Count - 1 ) );
-			this.benchmarkEquityLine = benchmarkQuotes.Select( this.EquityHistory );
-			this.benchmarkEquityLine.Interpolate( this.EquityHistory.Keys , new PreviousInterpolator() );
+				this.benchmark , (DateTime)this.EquityLine.GetKey( 0 ) ,
+				(DateTime)this.EquityLine.GetKey( this.EquityLine.Count - 1 ) );
+			this.benchmarkEquityLine = benchmarkQuotes.Select( this.EquityLine );
+			this.benchmarkEquityLine.Interpolate( this.EquityLine.Keys , new PreviousInterpolator() );
 		}
 		private void setDetailedDataTable( long numDaysForInterval )
 		{
