@@ -23,6 +23,7 @@ using System;
 using System.Collections;
 
 using QuantProject.ADT;
+using QuantProject.Business.DataProviders;
 using QuantProject.Business.Financial.Accounting;
 using QuantProject.Business.Financial.Instruments;
 using QuantProject.Business.Financial.Ordering;
@@ -53,6 +54,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardOneRank
 
 		private Account account;
 
+		private HistoricalAdjustedQuoteProvider historicalAdjustedQuoteProvider;
 
 		public event InSampleNewProgressEventHandler InSampleNewProgress;
 
@@ -97,6 +99,9 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardOneRank
 			this.bestPerformingTickers.NewProgress +=
 				new NewProgressEventHandler( this.bestPerformingNewProgress );
 			this.chosenTickers = new ChosenTickers( this.numberOfTickersToBeChosen );
+
+			this.historicalAdjustedQuoteProvider =
+				new HistoricalAdjustedQuoteProvider();
 		}
 		private void bestPerformingNewProgress(
 			Object sender , NewProgressEventArgs eventArgs )
@@ -171,14 +176,37 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardOneRank
 			foreach ( string ticker in tickers )
 				fiveMinutesBeforeMarketCloseEventHandler_closePosition( ticker );
 		}
+		private bool todayHigherThanYesterday( string ticker )
+		{
+			double todayMarketValueAtClose =
+				this.account.DataStreamer.GetCurrentBid( ticker );
+			EndOfDayDateTime yesterdayAtClose = new
+				EndOfDayDateTime(
+				this.account.EndOfDayTimer.GetCurrentTime().DateTime.AddDays( - 1 ) ,
+				EndOfDaySpecificTime.MarketClose );
+			double yesterdayMarketValueAtClose =
+				this.historicalAdjustedQuoteProvider.GetMarketValue(
+				ticker , yesterdayAtClose );
+			bool returnValue =
+				( todayMarketValueAtClose > yesterdayMarketValueAtClose );
+			return returnValue;
+		}
 		private void fiveMinutesBeforeMarketCloseEventHandler_openPosition(
 			string ticker )
 		{
 			double maxPositionValue = this.account.GetMarketValue() / this.numberOfTickersToBeChosen;
-			long sharesToBeBought = OneRank.MaxBuyableShares( ticker ,
+			long sharesToBeTraded = OneRank.MaxBuyableShares( ticker ,
 				maxPositionValue , this.account.DataStreamer );
-			this.account.AddOrder( new Order( OrderType.MarketBuy ,
-				new Instrument( ticker ) , sharesToBeBought ) );
+			if ( this.todayHigherThanYesterday( ticker ) )
+				// today close value for ticker is higher than yesterday
+				// close for ticker
+				this.account.AddOrder( new Order( OrderType.MarketBuy ,
+					new Instrument( ticker ) , sharesToBeTraded ) );
+			else
+				// today close value for ticker is not higher than yesterday
+				// close for ticker
+				this.account.AddOrder( new Order( OrderType.MarketSellShort ,
+					new Instrument( ticker ) , sharesToBeTraded ) );
 		}
 		private void fiveMinutesBeforeMarketCloseEventHandler_openPositions()
 		{
