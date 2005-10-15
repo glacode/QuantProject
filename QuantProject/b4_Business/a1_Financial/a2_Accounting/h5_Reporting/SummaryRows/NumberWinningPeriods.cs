@@ -43,9 +43,9 @@ namespace QuantProject.Business.Financial.Accounting.Reporting.SummaryRows
 		private void setWinningLosingAndEvenPeriods_forPeriod( int i )
 		{
 			double equityHistoryGain =
-				( (double)this.summary.AccountReport.EquityHistory.GetByIndex( i + 1 ) -
-				(double)this.summary.AccountReport.EquityHistory.GetByIndex( i ) ) /
-				(double)this.summary.AccountReport.EquityHistory.GetByIndex( i );
+				( (double)this.summary.AccountReport.EquityLine.GetByIndex( i + 1 ) -
+				(double)this.summary.AccountReport.EquityLine.GetByIndex( i ) ) /
+				(double)this.summary.AccountReport.EquityLine.GetByIndex( i );
 			double benchmarkGain =
 				( Convert.ToDouble( this.summary.AccountReport.BenchmarkEquityLine.GetByIndex( i + 1 ) ) -
 				Convert.ToDouble( this.summary.AccountReport.BenchmarkEquityLine.GetByIndex( i ) ) ) /
@@ -66,7 +66,7 @@ namespace QuantProject.Business.Financial.Accounting.Reporting.SummaryRows
 			this.numberWinningPeriods = 0;
 			this.numberLosingPeriods = 0;
 			this.numberEvenPeriods = 0;
-			for ( int i=0; i<this.summary.AccountReport.EquityHistory.Count - 1 ; i++ )
+			for ( int i=0; i<this.summary.AccountReport.EquityLine.Count - 1 ; i++ )
 				this.setWinningLosingAndEvenPeriods_forPeriod( i );
 		}
 		public NumberWinningPeriods( Summary summary ) : base()
