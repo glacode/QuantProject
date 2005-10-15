@@ -49,9 +49,9 @@ namespace QuantProject.Presentation.Reporting.WindowsForm
 		private History getBenchmark()
 		{
 			DateTime firstDate =
-				(DateTime)this.accountReport.EquityHistory.GetKey( 0 );
+				(DateTime)this.accountReport.EquityLine.GetKey( 0 );
 			double normalizingFactor =
-				( double )this.accountReport.EquityHistory[ firstDate ] /
+				( double )this.accountReport.EquityLine[ firstDate ] /
 				Convert.ToDouble( this.accountReport.BenchmarkEquityLine[ firstDate ] );
 			return this.accountReport.BenchmarkEquityLine.MultiplyBy( normalizingFactor );
 		}
@@ -61,7 +61,7 @@ namespace QuantProject.Presentation.Reporting.WindowsForm
 			this.accountReport = accountReport;
 			this.equityChart = new Chart();
 			this.equityChart.Dock = DockStyle.Fill;
-			this.equityChart.Add( accountReport.EquityHistory , Color.Red );
+			this.equityChart.Add( accountReport.EquityLine , Color.Red );
 			this.benchmark = this.getBenchmark();
 //			this.equityChart.Add( benchmark , Color.Blue ,
 //				(DateTime)this.accountReport.EquityHistory.GetKey( 0 ) ,
