@@ -272,12 +272,22 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "a1_Financial\a2_Accounting\EquityLine.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "a1_Financial\a2_Accounting\Portfolio.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
                 <File
                     RelPath = "a1_Financial\a2_Accounting\Position.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "a1_Financial\a2_Accounting\PositionType.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
