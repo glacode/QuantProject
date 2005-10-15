@@ -29,11 +29,20 @@ namespace QuantProject.Data.DataProviders.Caching
 	/// </summary>
 	public class MissingQuoteException : Exception
 	{
+		private string ticker;
+		private DateTime dateTime;
+		public override string Message
+		{
+			get
+			{
+				return "Missing quote for ticker " +
+					this.ticker + " for date " + this.dateTime.ToString();
+			}
+		}
 		public MissingQuoteException( string ticker , DateTime dateTime )
 		{
-			//
-			// TODO: Add constructor logic here
-			//
+			this.ticker = ticker;
+			this.dateTime = dateTime;
 		}
 	}
 }
