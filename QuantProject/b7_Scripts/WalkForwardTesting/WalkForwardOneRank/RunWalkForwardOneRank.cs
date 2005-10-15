@@ -72,10 +72,10 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardOneRank
 		{
 			this.reportTable = new ReportTable( "Summary_Reports" );
 			this.startDateTime = new EndOfDayDateTime(
-				new DateTime( 1998 , 1 , 1 ) , EndOfDaySpecificTime.MarketOpen );
+				new DateTime( 2002 , 1 , 1 ) , EndOfDaySpecificTime.MarketOpen );
 			this.endDateTime = new EndOfDayDateTime(
-				new DateTime( 1998 , 12 , 31 ) , EndOfDaySpecificTime.OneHourAfterMarketClose );
-			this.numberDaysForPerformanceCalculation = 1800;
+				new DateTime( 2002 , 12 , 31 ) , EndOfDaySpecificTime.OneHourAfterMarketClose );
+			this.numberDaysForPerformanceCalculation = 120;
 			this.numIntervalDays = 1;
 		}
 
@@ -98,7 +98,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardOneRank
 		}
 		private void run_initializeEndOfDayTimerHandler()
 		{
-			this.endOfDayTimerHandler = new EndOfDayTimerHandler( 200 , 20 , 5 ,
+			this.endOfDayTimerHandler = new EndOfDayTimerHandler( 400 , 20 , 5 ,
 				this.numberDaysForPerformanceCalculation , 30 ,
 				this.account );
 //			this.endOfDayTimerHandler = new EndOfDayTimerHandler( 4 , 3 , 2 , 100 , 30 ,
