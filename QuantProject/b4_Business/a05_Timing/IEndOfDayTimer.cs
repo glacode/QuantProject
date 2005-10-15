@@ -52,6 +52,9 @@ namespace QuantProject.Business.Timing
 		/// The timer is instructed to begin to fire timing events
 		/// </summary>
 		void Start();
+		/// <summary>
+		/// The timer is instructed to stop to fire timing events
+		/// </summary>
 		void Stop();
 	}
 }
