@@ -368,12 +368,12 @@
                     BuildAction = "Compile"
                 />
                 <File
-                    RelPath = "WalkForwardTesting\WalkForwardOneRank\EndOfDayTimerHandler.cs"
+                    RelPath = "WalkForwardTesting\WalkForwardOneRank\IWalkForwardProgressNotifier.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
                 <File
-                    RelPath = "WalkForwardTesting\WalkForwardOneRank\IWalkForwardProgressNotifier.cs"
+                    RelPath = "WalkForwardTesting\WalkForwardOneRank\MyEndOfDayTimerHandler.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
