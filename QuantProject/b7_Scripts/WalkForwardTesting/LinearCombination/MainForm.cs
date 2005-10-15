@@ -157,11 +157,15 @@ namespace QuantProject.Scripts.WalkForwardTesting.LinearCombination
 		}
 		protected DataTable getSetOfTickersToBeOptimized()
 		{
-			SelectorByLiquidity mostLiquid = new SelectorByLiquidity(this.tickerGroupID, false,
-				this.firstDate, this.lastDate,
-				this.numberOfEligibleTickers);
-      
-			DataTable eligibleTickers = mostLiquid.GetTableOfSelectedTickers();
+//			SelectorByLiquidity mostLiquid = new SelectorByLiquidity(this.tickerGroupID, false,
+//				this.firstDate, this.lastDate,
+//				this.numberOfEligibleTickers);
+//			DataTable eligibleTickers = mostLiquid.GetTableOfSelectedTickers();
+
+			
+			SelectorByGroup selectorByGroup =
+				new SelectorByGroup( "SP500" , this.lastDate );
+			DataTable eligibleTickers = selectorByGroup.GetTableOfSelectedTickers();
 			SelectorByQuotationAtEachMarketDay quotedAtEachMarketDayFromEligible = 
 				new SelectorByQuotationAtEachMarketDay( eligibleTickers,
 				false, this.firstDate,
