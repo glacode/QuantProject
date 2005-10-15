@@ -56,10 +56,28 @@ namespace QuantProject.Scripts.SimpleTesting
 				( this.account.Transactions.Count == 0 ) )
 				// cash has not been added yet
 				this.account.AddCash( 10000 );
+			if ( endOfDayTimingEventArgs.EndOfDayDateTime.DateTime >
+				this.lastDateTime )
+				this.account.EndOfDayTimer.Stop();
+		}
+		private void buyLongTicker()
+		{
+			long sharesToBeBought;
+			sharesToBeBought = MaxBuyableShares( this.account.Key ,
+				this.account.CashAmount , this.account.DataStreamer );
+			this.account.AddOrder( new Order( OrderType.MarketBuy ,
+				new Instrument( this.account.Key ) , sharesToBeBought ) );
+		}
+		private void sellShortTicker()
+		{
+			long sharesToBeSold;
+			sharesToBeSold = MaxBuyableShares( this.account.Key ,
+				this.account.CashAmount , this.account.DataStreamer );
+			this.account.AddOrder( new Order( OrderType.MarketSellShort ,
+				new Instrument( this.account.Key ) , sharesToBeSold ) );
 		}
 		private void fiveMinutesBeforeMarketCloseEventHandler_withTickerExchangedNow()
 		{
-			long sharesToBeBought;
 			double todayMarketValueAtClose = this.account.DataStreamer.GetCurrentBid(
 				this.account.Key );
 			EndOfDayDateTime yesterdayAtClose = new
@@ -67,22 +85,46 @@ namespace QuantProject.Scripts.SimpleTesting
 				EndOfDaySpecificTime.MarketClose );
 			double yesterdayMarketValueAtClose = this.historicalQuoteProvider.GetMarketValue(
 				this.account.Key , yesterdayAtClose );
-			if ( ( todayMarketValueAtClose > yesterdayMarketValueAtClose ) &&
-				( !this.account.Contains( this.account.Key ) ) )
+			if ( ( todayMarketValueAtClose > yesterdayMarketValueAtClose ) )
 			{
-				// today close is higher than yesterday close and no position
-				// is kept in portfolio, yet
-				sharesToBeBought = MaxBuyableShares( this.account.Key ,
-					this.account.CashAmount , this.account.DataStreamer );
-				this.account.AddOrder( new Order( OrderType.MarketBuy ,
-					new Instrument( this.account.Key ) , sharesToBeBought ) );
+				if ( this.account.Contains( this.account.Key ) )
+				{
+					// today close is higher than yesterday close and
+					// a position is already kept in portfolio
+					if ( this.account.Portfolio.GetPosition(
+						this.account.Key ).Type == PositionType.Short )
+						// today close is higher than yesterday close and
+						// a short position is kept in portfolio
+					{
+						this.account.ClosePosition( this.account.Key );
+						this.buyLongTicker();
+					}
+				}				
+				else
+					// today close is higher than yesterday close and
+					// no position is kept in portfolio
+					this.buyLongTicker();
 			}
-			if ( ( todayMarketValueAtClose < yesterdayMarketValueAtClose ) &&
-				( this.account.Contains( this.account.Key ) ) )
-				this.account.ClosePosition( this.account.Key );
-			if ( this.account.EndOfDayTimer.GetCurrentTime().DateTime >
-				this.lastDateTime )
-				this.account.EndOfDayTimer.Stop();
+			if ( ( todayMarketValueAtClose < yesterdayMarketValueAtClose ) )
+			{
+				if ( this.account.Contains( this.account.Key ) )
+				{
+					// today close is lower than yesterday close and
+					// a position is already kept in portfolio
+					if ( this.account.Portfolio.GetPosition(
+						this.account.Key ).Type == PositionType.Long )
+						// today close is lower than yesterday close and
+						// a long position is kept in portfolio
+					{
+						this.account.ClosePosition( this.account.Key );
+						this.sellShortTicker();
+					}
+				}
+				else
+					// today close is lower than yesterday close and
+					// no position is kept in portfolio
+					this.sellShortTicker();
+			}
 		}
 		private void fiveMinutesBeforeMarketCloseEventHandler(
 			Object sender , EndOfDayTimingEventArgs endOfDayTimingEventArgs )
