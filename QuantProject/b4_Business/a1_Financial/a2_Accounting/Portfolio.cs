@@ -50,10 +50,16 @@ namespace QuantProject.Business.Financial.Accounting
     {
     }
 
-    public Position GetPosition( Instrument instrument )
-    {
-      return ((Position)this[ instrument.Key ]);
-    }
+
+		public Position GetPosition( string ticker )
+		{
+			return ((Position)this[ ticker ]);
+		}
+
+		public Position GetPosition( Instrument instrument )
+		{
+			return this.GetPosition( instrument.Key );
+		}
 
 		public bool Contains( Instrument instrument )
 		{
