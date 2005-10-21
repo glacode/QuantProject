@@ -400,8 +400,8 @@ namespace QuantProject.ADT.Optimizing.Genetic
       {
         Genome g = new Genome(this.genomeManager);
         g.CreateGenes();
-        g.AssignMeaning();
         g.CalculateFitness();
+        g.AssignMeaning();
         this.currentGeneration.Add(g);
       }
     }
