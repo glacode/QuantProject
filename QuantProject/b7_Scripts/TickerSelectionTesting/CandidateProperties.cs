@@ -28,22 +28,23 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
 {
   /// <summary>
   /// This is the class containing basic information
-  /// for each candidate to be evaluated in order
-  /// to discover the efficient frontier
+  /// for each candidate to be evaluated 
   /// </summary>
   [Serializable]
-  public class CandidateProperties
+  public class CandidateProperties : IComparable
   {
-    private string ticker;
-    private float[] arrayOfRatesOfReturn;
-    private float[] oppositeArrayOfRatesOfReturn;
-    private bool longRatesOfReturn;
+    protected string ticker;
+    protected float[] arrayOfRatesOfReturn;
+    protected float[] oppositeArrayOfRatesOfReturn;
+    protected bool longRatesOfReturn;
+    protected double fitness;
 
     public CandidateProperties(string ticker, float[] arrayOfRatesOfReturn)
     {
       this.ticker = ticker;
       this.longRatesOfReturn = true;
       this.arrayOfRatesOfReturn = arrayOfRatesOfReturn;
+      this.fitness = 0.0;
     }
 
     private float[] arrayOfRatesOfReturn_getOppositeArrayOfRatesOfReturn()
@@ -57,7 +58,20 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
       }  
       return this.oppositeArrayOfRatesOfReturn;
     }
+    //implementation of IComparable interface
+    public int CompareTo(object obj) 
+    {
+      if(obj is CandidateProperties) 
+      {
+        CandidateProperties candidate = (CandidateProperties)obj;
 
+        return this.Fitness.CompareTo(candidate.Fitness);
+      }
+        
+      throw new ArgumentException("Object is not of CandidateProperties type!");    
+    }
+    //end of implementation of IComparable interface
+    
     public float[] ArrayOfRatesOfReturn
     {
       get
@@ -79,7 +93,16 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
     {
       get{return this.ticker;}
     }
-
+    
+    public virtual double Fitness
+    {
+      get{return this.fitness;}
+    }
+    
+    public virtual void setFitness()
+    {
+      this.fitness = 0.0;
+    }
   }
 
 }
