@@ -151,7 +151,7 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
                                                     this.generationNumberForGeneticOptimizer);
         //GO.KeepOnRunningUntilConvergenceIsReached = true;
         GO.Run(false);
-        this.chosenTickers = (string[])GO.BestGenome.Meaning;
+        this.chosenTickers = ((MeaningForGenome)GO.BestGenome.Meaning).Tickers;
       }
       //else it will be buyed again the previous optimized portfolio
       //that's it the actual chosenTickers member

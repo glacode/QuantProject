@@ -125,7 +125,7 @@ namespace QuantProject.Scripts.EvaluatingOptimizationTechnique.EfficientPortfoli
   		
     {
       double returnValue = 0;
-      foreach(string tickerCode in (string[])genome.Meaning)
+      foreach(string tickerCode in ((MeaningForGenome)genome.Meaning).Tickers)
       {
         double coefficient = 1.0;
         string ticker = tickerCode;
