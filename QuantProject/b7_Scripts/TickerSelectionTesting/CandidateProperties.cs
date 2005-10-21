@@ -39,14 +39,21 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
     protected bool longRatesOfReturn;
     protected double fitness;
 
-    public CandidateProperties(string ticker, float[] arrayOfRatesOfReturn)
+    public CandidateProperties(string ticker, float[] arrayOfRatesOfReturn):
+                    this(ticker,arrayOfRatesOfReturn,0.0)
+    {
+      
+    }
+    
+    public CandidateProperties(string ticker, float[] arrayOfRatesOfReturn,
+                               double fitness)
     {
       this.ticker = ticker;
       this.longRatesOfReturn = true;
       this.arrayOfRatesOfReturn = arrayOfRatesOfReturn;
-      this.fitness = 0.0;
+      this.fitness = fitness;
     }
-
+    
     private float[] arrayOfRatesOfReturn_getOppositeArrayOfRatesOfReturn()
     {
       if(this.oppositeArrayOfRatesOfReturn == null)
