@@ -104,6 +104,10 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
       get{return this.currentGeneticOptimizer;}
       set{this.currentGeneticOptimizer = value;}
     }
+    public double[] PortfolioRatesOfReturn
+    {
+      get{return this.portfolioRatesOfReturn;}
+    }
     
     //setOfInitialTickers has to contain the
     //ticker's symbol in the first column !
@@ -278,14 +282,19 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
 
     public virtual object Decode(Genome genome)
     {
-      string[] arrayOfTickers = new string[genome.Genes().Length];
+    	
+    	string[] arrayOfTickers = new string[genome.Genes().Length];
       int indexOfTicker;
       for(int index = 0; index < genome.Genes().Length; index++)
       {
         indexOfTicker = (int)genome.Genes().GetValue(index);
         arrayOfTickers[index] = this.decode_getTickerCodeForLongOrShortTrade(indexOfTicker);
       }
-      return arrayOfTickers;
+      MeaningForGenome meaning = new MeaningForGenome(arrayOfTickers,
+                                                      this.PortfolioRatesOfReturn[this.portfolioRatesOfReturn.Length - 1],
+                                                      this.RateOfReturn,
+                                                      this.Variance);
+      return meaning;
       
     }
     #endregion

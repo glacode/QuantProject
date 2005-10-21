@@ -24,6 +24,7 @@ using System;
 
 using QuantProject.ADT.Optimizing.Genetic;
 using QuantProject.Business.Financial.Ordering;
+using QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios;
 
 namespace QuantProject.Scripts.WalkForwardTesting.LinearCombination
 {
@@ -92,7 +93,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.LinearCombination
 		private string getSignedTickers( Genome genome )
 		{
 			string signedTickers = "";
-			foreach ( string geneValue in (string[])genome.Meaning )
+			foreach ( string geneValue in ((MeaningForGenome)genome.Meaning).Tickers )
 				signedTickers += geneValue + ";";
 			signedTickers = signedTickers.Substring( 0 ,
 				signedTickers.Length - 1 );
