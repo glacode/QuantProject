@@ -132,19 +132,25 @@ namespace QuantProject.Scripts.TickerSelectionTesting.SimpleSelection
       		new CandidateProperties[this.setOfCandidates.Length * 2];
       int numOfTickers = this.setOfCandidates.Length;
       this.setSetOfCandidates(true);
-      for(int i = 0; i<numOfTickers; i++)
+      int i = 0;
+      for(; i<numOfTickers; i++)
        	allTickersShortOrLong[i] = 
       		new CandidateProperties(this.setOfCandidates[i].Ticker,
-      		                        this.setOfCandidates[i].ArrayOfRatesOfReturn);
+      		                        this.setOfCandidates[i].ArrayOfRatesOfReturn,
+                                  this.setOfCandidates[i].Fitness);
       
  			this.setSetOfCandidates(false);
-      for(int i = numOfTickers; i<numOfTickers*2; i++)
-       	allTickersShortOrLong[i] = 
-      		new CandidateProperties("-" + this.setOfCandidates[i].Ticker,
-      		                        this.setOfCandidates[i].ArrayOfRatesOfReturn); 
+      for(int j = 0; j<numOfTickers; j++)
+      {
+        allTickersShortOrLong[i] = 
+          new CandidateProperties("-" + this.setOfCandidates[j].Ticker,
+          this.setOfCandidates[j].ArrayOfRatesOfReturn,
+          this.setOfCandidates[j].Fitness);
+        i++;
+      }
       Array.Sort(allTickersShortOrLong);
-      for(int i = 0; i<returnValue.Length; i++)
-        returnValue[i] = allTickersShortOrLong[i].Ticker;
+      for(int t = 0; t<returnValue.Length; t++)
+        returnValue[t] = allTickersShortOrLong[t].Ticker;
       
     }
     /// <summary>
