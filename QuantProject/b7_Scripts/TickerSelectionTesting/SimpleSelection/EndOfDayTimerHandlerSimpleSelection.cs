@@ -1,0 +1,209 @@
+/*
+QuantProject - Quantitative Finance Library
+
+EndOfDayTimerHandlerSimpleSelection.cs
+Copyright (C) 2003 
+Marco Milletti
+
+This program is free software; you can redistribute it and/or
+modify it under the terms of the GNU General Public License
+as published by the Free Software Foundation; either version 2
+of the License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program; if not, write to the Free Software
+Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+*/
+using System;
+using System.Data;
+using System.Collections;
+
+using QuantProject.ADT;
+using QuantProject.Business.Financial.Accounting;
+using QuantProject.Business.Financial.Instruments;
+using QuantProject.Business.Financial.Ordering;
+using QuantProject.Business.Timing;
+using QuantProject.Data.DataProviders;
+using QuantProject.Data.Selectors;
+using QuantProject.Data.DataTables;
+using QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios;
+
+namespace QuantProject.Scripts.TickerSelectionTesting.SimpleSelection
+{
+	
+  /// <summary>
+  /// Base class for EndOfDayTimerHandlers for simple selection
+  /// </summary>
+  [Serializable]
+  public class EndOfDayTimerHandlerSimpleSelection
+  {
+    protected DataTable eligibleTickers;
+    protected string[] chosenTickers;
+    protected string[] lastOrderedTickers;
+    
+    protected string tickerGroupID;
+    protected int numberOfEligibleTickers;
+    protected int numberOfTickersToBeChosen;
+    protected int numDaysForOptimizationPeriod;
+    		
+    protected Account account;
+    protected ArrayList orders;
+
+    protected string benchmark;
+    //these two values have to be updated during
+    //backtest, for minimizing commission amount,
+    //according to broker's commission scheme 
+    protected double minPriceForMinimumCommission = 0;
+    protected double maxPriceForMinimumCommission = 500;
+    
+    protected double targetReturn;
+    
+    protected PortfolioType portfolioType;
+    
+    public string[] LastOrderedTickers
+    {
+      get { return this.lastOrderedTickers; }
+    }
+    public int NumberOfEligibleTickers
+    {
+      get { return this.numberOfEligibleTickers; }
+    }
+		
+    public Account Account
+    {
+      get { return this.account; }
+    }
+		
+   
+    public EndOfDayTimerHandlerSimpleSelection(string tickerGroupID, int numberOfEligibleTickers, 
+                                int numberOfTickersToBeChosen, int numDaysForOptimizationPeriod, Account account,
+                                string benchmark, double targetReturn,
+                                PortfolioType portfolioType)
+    {
+      this.tickerGroupID = tickerGroupID;
+      this.numberOfEligibleTickers = numberOfEligibleTickers;
+      this.numberOfTickersToBeChosen = numberOfTickersToBeChosen;
+      this.numDaysForOptimizationPeriod = numDaysForOptimizationPeriod;
+      this.account = account;
+      this.benchmark = benchmark;
+      this.orders = new ArrayList();
+      this.chosenTickers = new string[numberOfTickersToBeChosen];
+      this.lastOrderedTickers = new string[numberOfTickersToBeChosen];
+      this.targetReturn = targetReturn;
+      this.portfolioType = portfolioType;
+      
+    }
+		
+    
+    protected virtual void addOrderForTicker(string ticker )
+    {
+    	string tickerCode = 
+    			GenomeManagerForEfficientPortfolio.GetCleanTickerCode(ticker);
+      double cashForSinglePosition = this.account.CashAmount / this.numberOfTickersToBeChosen;
+      long quantity =
+        Convert.ToInt64( Math.Floor( cashForSinglePosition / this.account.DataStreamer.GetCurrentBid( tickerCode ) ) );
+      Order order;
+      if(this.portfolioType == PortfolioType.OnlyShort ||
+         		(this.portfolioType == PortfolioType.ShortAndLong &&
+              ticker != tickerCode))
+        order = new Order( OrderType.MarketSellShort, new Instrument( tickerCode ) , quantity );  
+      else      		
+      	order = new Order( OrderType.MarketBuy, new Instrument( tickerCode ) , quantity );
+      
+      this.orders.Add(order);
+    }
+    
+    protected virtual void closePosition(
+      string ticker )
+    {
+      this.account.ClosePosition( ticker );
+    }
+    
+    protected virtual void closePositions()
+    {
+      
+      if(this.lastOrderedTickers != null)
+      {
+        foreach( string ticker in this.lastOrderedTickers)
+        {
+          for(int i = 0; i<this.account.Portfolio.Keys.Count; i++)
+          {
+            if(this.account.Portfolio[ticker]!=null)
+              closePosition( ticker );
+          }
+        }
+      }
+      
+      
+    }
+    
+    protected virtual void addChosenTickersToOrderList()
+    {
+      int idx = 0;
+      foreach ( string ticker in this.chosenTickers )
+      {
+        if(ticker != null)
+        {  
+          this.addOrderForTicker( ticker );
+          this.lastOrderedTickers[idx] = 
+          		GenomeManagerForEfficientPortfolio.GetCleanTickerCode(ticker);
+        }
+        idx++;
+      }
+    }
+    
+    protected bool openPositions_allChosenTickersQuotedAtCurrentDate()
+    {
+      bool returnValue = true;
+      DateTime currentDate = this.Account.EndOfDayTimer.GetCurrentTime().DateTime;
+      foreach(string ticker in this.chosenTickers)
+      {
+        if(ticker != null)
+        {
+          Quotes tickerQuotes = new Quotes(GenomeManagerForEfficientPortfolio.GetCleanTickerCode(ticker),
+                                          currentDate, currentDate);
+          if(tickerQuotes.Rows.Count == 0)
+          //no quote available for the current ticker
+            returnValue = false;
+        }                       
+      }
+      return returnValue;
+    }
+    
+    protected virtual void openPositions()
+    {
+      //add cash first
+    	if(this.orders.Count == 0 && this.account.Transactions.Count == 0)
+        this.account.AddCash(17000);     
+      if(this.openPositions_allChosenTickersQuotedAtCurrentDate())
+        //all tickers have quotes at the current date, so orders can be filled
+      {
+        this.addChosenTickersToOrderList();
+        //execute orders actually
+        foreach(object item in this.orders)
+          this.account.AddOrder((Order)item);
+      }
+    }
+    
+    public virtual void MarketOpenEventHandler(
+      Object sender , EndOfDayTimingEventArgs endOfDayTimingEventArgs )
+    {
+      ;
+    }
+    public virtual void MarketCloseEventHandler(
+      Object sender , EndOfDayTimingEventArgs endOfDayTimingEventArgs )
+    {
+      ;
+    }
+    public virtual void OneHourAfterMarketCloseEventHandler(
+      Object sender , EndOfDayTimingEventArgs endOfDayTimingEventArgs )
+    {
+      ;
+    }
+  } // end of class
+}
