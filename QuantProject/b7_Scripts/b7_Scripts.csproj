@@ -218,6 +218,16 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "TickerSelectionTesting\EndOfDayTimerHandlerOTCCTO.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "TickerSelectionTesting\EndOfDayTimerHandlerOTCMultiday.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "TickerSelectionTesting\GenomeManagerForEfficientCTCPortfolio.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
@@ -234,6 +244,11 @@
                 />
                 <File
                     RelPath = "TickerSelectionTesting\GenomeManipulator.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "TickerSelectionTesting\MeaningForGenome.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
@@ -263,6 +278,16 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "TickerSelectionTesting\RunEfficientOTCCTOPortfolio.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "TickerSelectionTesting\RunEfficientOTCPortfolioMultiday.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "TickerSelectionTesting\RunEfficientPortfolio.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
@@ -279,6 +304,41 @@
                 />
                 <File
                     RelPath = "TickerSelectionTesting\RunTestOptimizedCTOPortfolio.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "TickerSelectionTesting\SimpleSelection\BestTickersScreener.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "TickerSelectionTesting\SimpleSelection\BestTickersScreenerOpenToClose.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "TickerSelectionTesting\SimpleSelection\CandidatePropertiesForSimpleSelection.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "TickerSelectionTesting\SimpleSelection\EndOfDayTimerHandlerSimpleSelection.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "TickerSelectionTesting\SimpleSelection\EndOfDayTimerHandlerSimpleSelectionOpenToClose.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "TickerSelectionTesting\SimpleSelection\RunSimpleSelection.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "TickerSelectionTesting\SimpleSelection\RunSimpleSelectionOpenToClose.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />

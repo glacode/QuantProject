@@ -22,7 +22,6 @@
     <File name=".\WalkForwardTesting\WalkForwardOneRank\ChosenTickers.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
     <File name=".\WalkForwardTesting\WalkForwardOneRank\ComparableAccount.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
     <File name=".\WalkForwardTesting\WalkForwardOneRank\EligibleTickers.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
-    <File name=".\WalkForwardTesting\WalkForwardOneRank\EndOfDayTimerHandler.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
     <File name=".\WalkForwardTesting\WalkForwardOneRank\ProgressBarForm.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
     <File name=".\WalkForwardTesting\WalkForwardOneRank\RunWalkForwardOneRank.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
     <File name=".\TickerSelectionTesting\EndOfDayTimerHandler.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
@@ -57,6 +56,20 @@
     <File name=".\EvaluatingOptimizationTechnique\EfficientPortfolio\RunTestingOptimizationOpenToClose.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
     <File name=".\TickerSelectionTesting\EndOfDayTimerHandlerCTOMultiAccount.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
     <File name=".\TickerSelectionTesting\RunEfficientCTOPortfolioMultiAccount.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
+    <File name=".\TickerSelectionTesting\EndOfDayTimerHandlerOTCCTO.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
+    <File name=".\TickerSelectionTesting\RunEfficientOTCCTOPortfolio.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
+    <File name=".\TickerSelectionTesting\RunEfficientOTCPortfolioMultiday.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
+    <File name=".\TickerSelectionTesting\EndOfDayTimerHandlerOTCMultiday.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
+    <File name=".\TickerSelectionTesting\SimpleSelection" subtype="Directory" buildaction="Compile" dependson="" data="" />
+    <File name=".\TickerSelectionTesting\SimpleSelection\RunSimpleSelectionOpenToClose.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
+    <File name=".\TickerSelectionTesting\SimpleSelection\BestTickersScreener.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
+    <File name=".\TickerSelectionTesting\SimpleSelection\BestTickersScreenerOpenToClose.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
+    <File name=".\TickerSelectionTesting\SimpleSelection\CandidatePropertiesForSimpleSelection.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
+    <File name=".\TickerSelectionTesting\SimpleSelection\EndOfDayTimerHandlerSimpleSelection.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
+    <File name=".\TickerSelectionTesting\SimpleSelection\EndOfDayTimerHandlerSimpleSelectionOpenToClose.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
+    <File name=".\TickerSelectionTesting\SimpleSelection\RunSimpleSelection.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
+    <File name=".\WalkForwardTesting\WalkForwardOneRank\MyEndOfDayTimerHandler.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
+    <File name=".\TickerSelectionTesting\MeaningForGenome.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
   </Contents>
   <References>
     <Reference type="Project" refto="b1_ADT" localcopy="True" />
