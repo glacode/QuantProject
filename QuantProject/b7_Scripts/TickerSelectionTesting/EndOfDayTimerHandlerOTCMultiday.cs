@@ -136,16 +136,16 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
     private string[] setTickers_getBestTickersLosingAtLastDay(IGenomeManager genomeManager)
     {
     	string[] returnValue =
-    		((MeaningForGenome)genomeManager.CurrentGeneticOptimizer.BestGenome.Meaning).Tickers;
+    		((GenomeMeaning)genomeManager.CurrentGeneticOptimizer.BestGenome.Meaning).Tickers;
     	int numOfGenomes = genomeManager.CurrentGeneticOptimizer.CurrentGeneration.Count;
     	int i;
     	for(i = 0;i<numOfGenomes; i++)
     	{
-    		if(((MeaningForGenome)((Genome)genomeManager.CurrentGeneticOptimizer.CurrentGeneration[numOfGenomes - i - 1]).Meaning).ReturnAtLastDayInSample < 0)
+    		if(((GenomeMeaning)((Genome)genomeManager.CurrentGeneticOptimizer.CurrentGeneration[numOfGenomes - i - 1]).Meaning).ReturnAtLastDayInSample < 0)
     		//the current portfolio has a negative return at the last day in sample
     		{
     			returnValue =
-    					((MeaningForGenome)((Genome)genomeManager.CurrentGeneticOptimizer.CurrentGeneration[numOfGenomes - i - 1]).Meaning).Tickers;
+    					((GenomeMeaning)((Genome)genomeManager.CurrentGeneticOptimizer.CurrentGeneration[numOfGenomes - i - 1]).Meaning).Tickers;
     			i = numOfGenomes;
     		}
     	}

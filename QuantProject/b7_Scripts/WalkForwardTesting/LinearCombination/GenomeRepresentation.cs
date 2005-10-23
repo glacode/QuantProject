@@ -93,7 +93,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.LinearCombination
 		private string getSignedTickers( Genome genome )
 		{
 			string signedTickers = "";
-			foreach ( string geneValue in ((MeaningForGenome)genome.Meaning).Tickers )
+			foreach ( string geneValue in ((GenomeMeaning)genome.Meaning).Tickers )
 				signedTickers += geneValue + ";";
 			signedTickers = signedTickers.Substring( 0 ,
 				signedTickers.Length - 1 );

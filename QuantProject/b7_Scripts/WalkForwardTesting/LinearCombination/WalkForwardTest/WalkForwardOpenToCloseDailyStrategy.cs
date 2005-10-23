@@ -207,7 +207,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.LinearCombination
 			this.geneticOptimizer.Run(false);
 
 			this.signedTickersFromLastOptimization =
-				((MeaningForGenome)this.geneticOptimizer.BestGenome.Meaning).Tickers;
+				((GenomeMeaning)this.geneticOptimizer.BestGenome.Meaning).Tickers;
 			this.addGenomeToBestGenomes( geneticOptimizer.BestGenome ,
 				optimizationFirstDate , optimizationLastDate );
 		}

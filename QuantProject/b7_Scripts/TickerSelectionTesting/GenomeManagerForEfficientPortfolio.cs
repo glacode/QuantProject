@@ -290,7 +290,7 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
         indexOfTicker = (int)genome.Genes().GetValue(index);
         arrayOfTickers[index] = this.decode_getTickerCodeForLongOrShortTrade(indexOfTicker);
       }
-      MeaningForGenome meaning = new MeaningForGenome(arrayOfTickers,
+      GenomeMeaning meaning = new GenomeMeaning(arrayOfTickers,
                                                       this.PortfolioRatesOfReturn[this.portfolioRatesOfReturn.Length - 1],
                                                       this.RateOfReturn,
                                                       this.Variance);

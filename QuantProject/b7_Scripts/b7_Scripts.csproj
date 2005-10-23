@@ -248,7 +248,7 @@
                     BuildAction = "Compile"
                 />
                 <File
-                    RelPath = "TickerSelectionTesting\MeaningForGenome.cs"
+                    RelPath = "TickerSelectionTesting\GenomeMeaning.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
