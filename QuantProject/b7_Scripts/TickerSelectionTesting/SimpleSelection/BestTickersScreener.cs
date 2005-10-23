@@ -150,7 +150,7 @@ namespace QuantProject.Scripts.TickerSelectionTesting.SimpleSelection
       }
       Array.Sort(allTickersShortOrLong);
       for(int t = 0; t<returnValue.Length; t++)
-        returnValue[t] = allTickersShortOrLong[t].Ticker;
+        returnValue[t] = allTickersShortOrLong[allTickersShortOrLong.Length - t -1].Ticker;
       
     }
     /// <summary>
