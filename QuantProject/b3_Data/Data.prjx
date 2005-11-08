@@ -31,7 +31,6 @@
     <File name=".\Selectors\SelectorByQuotationAtEachMarketDay.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
     <File name=".\Selectors\SelectorByAverageRawOpenPrice.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
     <File name=".\Selectors\TickerSelector.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
-    <File name=".\QuantProject.Applications.Downloader.TickerSelectors.TickerSelectorForm.resources" subtype="Code" buildaction="EmbedAsResource" dependson="" data="" />
     <File name=".\Selectors\SelectorByWinningOpenToClose.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
     <File name=".\Selectors\SelectorByOpenCloseCorrelationToBenchmark.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
     <File name=".\DataProviders\Caching\EarlyDateException.cs" subtype="Code" buildaction="Compile" dependson="" data="" />

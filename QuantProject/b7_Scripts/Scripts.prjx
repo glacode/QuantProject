@@ -69,7 +69,8 @@
     <File name=".\TickerSelectionTesting\SimpleSelection\EndOfDayTimerHandlerSimpleSelectionOpenToClose.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
     <File name=".\TickerSelectionTesting\SimpleSelection\RunSimpleSelection.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
     <File name=".\WalkForwardTesting\WalkForwardOneRank\MyEndOfDayTimerHandler.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
-    <File name=".\TickerSelectionTesting\MeaningForGenome.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
+    <File name=".\TickerSelectionTesting\GenomeMeaning.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
+    <File name=".\TickerSelectionTesting\GenomeManagerForWeightedEfficientPortfolio.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
   </Contents>
   <References>
     <Reference type="Project" refto="b1_ADT" localcopy="True" />
