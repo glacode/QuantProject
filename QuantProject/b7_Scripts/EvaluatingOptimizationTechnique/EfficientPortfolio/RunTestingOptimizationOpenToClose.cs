@@ -135,12 +135,30 @@ namespace QuantProject.Scripts.EvaluatingOptimizationTechnique.EfficientPortfoli
           coefficient = -1.0;
         }
         DateTime dateOutOfSample = this.marketDate.AddDays(this.numDaysAfterLastOptimizationDay);
-        Quotes tickerQuotes = new Quotes(ticker, dateOutOfSample,
-          dateOutOfSample);
-        returnValue += 
-          (tickerQuotes.GetFirstValidRawClose(dateOutOfSample)/
-          tickerQuotes.GetFirstValidRawOpen(dateOutOfSample) - 1.0)*coefficient;
-	 			
+        //returnValue is the single return for the numDaysAfterLastOptimizationDay - th day
+        //after the given market date
+        
+        //Quotes tickerQuotes = new Quotes(ticker, dateOutOfSample,
+        //  															 dateOutOfSample);
+        
+        //returnValue +=
+        //  (tickerQuotes.GetFirstValidRawClose(dateOutOfSample)/
+        //  tickerQuotes.GetFirstValidRawOpen(dateOutOfSample) - 1.0)*coefficient;
+	 			//
+        //returnValue is the average return for the interval between
+	 			//the given market date and the numDaysAfterLastOptimizationDay - th
+	 			//day after the given market date
+	 			Quotes tickerQuotes = new Quotes(ticker, this.marketDate,
+          															 dateOutOfSample);
+        double close, open;
+	 			for(int i = 0; i<this.numDaysAfterLastOptimizationDay; i++)
+	 			{
+		      close = tickerQuotes.GetFirstValidRawClose(this.marketDate.AddDays(i));
+		      open = tickerQuotes.GetFirstValidRawOpen(this.marketDate.AddDays(i));
+	 				returnValue +=
+		      	(close/open - 1.0)*coefficient/this.numDaysAfterLastOptimizationDay;
+		      	
+	 			}
       }
       return returnValue/genome.Size;
       
