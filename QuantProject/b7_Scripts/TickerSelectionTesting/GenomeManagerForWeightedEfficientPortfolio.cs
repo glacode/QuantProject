@@ -1,0 +1,174 @@
+/*
+QuantProject - Quantitative Finance Library
+
+GenomeManagerForWeightedEfficientPortfolio.cs
+Copyright (C) 2003 
+Marco Milletti
+
+This program is free software; you can redistribute it and/or
+modify it under the terms of the GNU General Public License
+as published by the Free Software Foundation; either version 2
+of the License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program; if not, write to the Free Software
+Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+*/
+
+using System;
+using System.Data;
+using System.Collections;
+using QuantProject.ADT;
+using QuantProject.ADT.Statistics;
+using QuantProject.ADT.Optimizing.Genetic;
+using QuantProject.Data;
+using QuantProject.Data.DataTables;
+using QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios;
+
+namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
+{
+  /// <summary>
+  /// This is the base class implementing IGenomeManager, in order to find
+  /// efficient portfolios in which tickers are weighted differently
+  /// </summary>
+  [Serializable]
+  public class GenomeManagerForWeightedEfficientPortfolio : GenomeManagerForEfficientPortfolio
+  {
+    public GenomeManagerForWeightedEfficientPortfolio(DataTable setOfInitialTickers,
+      DateTime firstQuoteDate,
+      DateTime lastQuoteDate,
+      int numberOfTickersInPortfolio,
+      double targetPerformance,
+      PortfolioType portfolioType):base(setOfInitialTickers,
+                                        firstQuoteDate,
+                                        lastQuoteDate,
+                                        numberOfTickersInPortfolio,
+                                        targetPerformance,
+                                        portfolioType)
+                          
+    {
+      this.genomeSize = 2*this.genomeSize;
+      //at even position the gene is used for finding
+      //the coefficient for the ticker represented at the next odd position
+    }
+    
+    #region override getPortfolioRatesOfReturn
+    
+    protected override double getTickerWeight(int[] genes, int tickerPositionInGenes)
+    {
+      double totalReturnedByWeights = 
+        (1.0-ConstantsProvider.MinimumPortfolioWeightForTicker*genes.Length/2)/ConstantsProvider.MinimumPortfolioWeightForTicker;
+      int totalOfAbsoluteValuesForWeightsInGenes = 0;
+      for(int j = 0; j<genes.Length; j++)
+      {
+        if(j%2==0)
+          //ticker weight is contained in genes at even position
+          totalOfAbsoluteValuesForWeightsInGenes += (int)Math.Abs(genes[j]);
+      }
+      double min = ConstantsProvider.MinimumPortfolioWeightForTicker;
+
+      return min*(1.0 + totalReturnedByWeights * Math.Abs(genes[tickerPositionInGenes-1])/totalOfAbsoluteValuesForWeightsInGenes);
+    }
+ 
+    protected override double[] getPortfolioRatesOfReturn(int[] genes)
+    {
+      double[] returnValue = new double[this.numberOfExaminedReturns];
+      for(int i = 0; i<returnValue.Length; i++)    
+      {  
+        for(int j = 0; j<genes.Length; j++)
+        {
+        	if(j%2==1)
+        	//ticker ID is contained in genes at odd position
+	        	returnValue[i] +=
+	        	this.getPortfolioRatesOfReturn_getRateOfTickerToBeAddedToTheArray(genes,j,i);
+        }
+      }
+      return returnValue;
+    }
+
+    #endregion
+
+    #region override Decode
+
+    public override object Decode(Genome genome)
+    {
+      string[] arrayOfTickers = new string[genome.Genes().Length/2];
+      double[] arrayOfTickersWeights = new double[genome.Genes().Length/2];
+      int indexOfTicker;
+      int i = 0;//for the arrayOfTickers
+      for(int index = 0; index < genome.Genes().Length; index++)
+      {
+        if(index%2==1)
+          //indexForTicker is contained in genes at odd position
+        {
+          indexOfTicker = (int)genome.Genes().GetValue(index);
+          arrayOfTickers[i] = this.decode_getTickerCodeForLongOrShortTrade(indexOfTicker);
+          arrayOfTickersWeights[i] = this.getTickerWeight(genome.Genes(), index);
+          i++;
+        }
+      }
+      GenomeMeaning meaning = new GenomeMeaning(arrayOfTickers,
+																				        arrayOfTickersWeights,
+																				        this.PortfolioRatesOfReturn[this.portfolioRatesOfReturn.Length - 1],
+																				        this.RateOfReturn,
+																				        this.Variance);
+      return meaning;
+      
+    }
+    #endregion
+
+    public override Genome[] GetChilds(Genome parent1, Genome parent2)
+    {
+      return
+        GenomeManipulator.MixGenesWithoutDuplicates(parent1, parent2);
+    }
+    
+    public override int GetNewGeneValue(Genome genome, int genePosition)
+    {
+      // in this implementation only new gene values pointing to tickers
+      // must be different from the others already stored (in odd positions of genome)
+      int returnValue = GenomeManagement.RandomGenerator.Next(genome.MinValueForGenes,
+        																											genome.MaxValueForGenes + 1);
+      while(genePosition%2 == 1 
+            && GenomeManipulator.IsTickerContainedInGenome(returnValue,genome))
+      //while in the given position has to be stored
+      //a new gene pointing to a ticker and
+      //the proposed returnValue points to a ticker
+      //already stored in the given genome
+      {
+        // a new returnValue has to be generated
+      	returnValue = GenomeManagement.RandomGenerator.Next(genome.MinValueForGenes,
+          genome.MaxValueForGenes + 1);
+      }
+
+      return returnValue;
+    }
+        
+    public override void Mutate(Genome genome, double mutationRate)
+    {
+      // in this implementation only one gene is mutated
+      int newValueForGene = GenomeManagement.RandomGenerator.Next(genome.MinValueForGenes,
+        genome.MaxValueForGenes +1);
+      int genePositionToBeMutated = GenomeManagement.RandomGenerator.Next(genome.Size); 
+      while(genePositionToBeMutated%2 == 1 &&
+            GenomeManipulator.IsTickerContainedInGenome(newValueForGene,genome))
+      //while in the proposed genePositionToBeMutated has to be stored
+      //a new gene pointing to a ticker and
+      //the proposed newValueForGene points to a ticker
+      //already stored in the given genome
+      {
+        newValueForGene = GenomeManagement.RandomGenerator.Next(genome.MinValueForGenes,
+          genome.MaxValueForGenes + 1);
+      }
+      GenomeManagement.MutateOneGene(genome, mutationRate,
+        genePositionToBeMutated, newValueForGene);
+    }
+
+  }
+
+}
