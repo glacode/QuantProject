@@ -21,13 +21,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
 using System;
-using System.Data;
-using System.Collections;
-using QuantProject.ADT.Statistics;
-using QuantProject.ADT.Optimizing.Genetic;
-using QuantProject.Data;
-using QuantProject.Data.DataTables;
-using QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios;
 
 namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
 {
@@ -38,6 +31,7 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
   public class GenomeMeaning
   {
   	private string[] tickers;
+  	private double[] tickersPortfolioWeights;
   	private double returnAtLastDayInSample;
   	private double averageReturnInSample;
   	private double varianceReturnInSample;
@@ -61,10 +55,29 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
     {
       get{return this.varianceReturnInSample;}
     }
-   
+    
+    public double[] TickersPortfolioWeights
+    {
+      get{return this.tickersPortfolioWeights;}
+    }
+    
+    private void setDefaultTickersPortfolioWeights()
+    {
+    	this.tickersPortfolioWeights = new double[this.tickers.Length];
+    	for(int i = 0;i<this.tickers.Length;i++)
+    		this.tickersPortfolioWeights[i]=1.0/this.tickers.Length;
+		}
+    
     public GenomeMeaning(string[] tickers)
     {
  			this.tickers = tickers;
+ 			this.setDefaultTickersPortfolioWeights();
+		}
+    
+    public GenomeMeaning(string[] tickers, double[] tickersPortfolioWeights)
+    {
+ 			this.tickers = tickers;
+ 			this.tickersPortfolioWeights = tickersPortfolioWeights;
 		}
     
     public GenomeMeaning(string[] tickers,
@@ -76,8 +89,21 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
  			this.returnAtLastDayInSample = returnAtLastDayInSample;
  			this.averageReturnInSample = averageReturnInSample;
  			this.varianceReturnInSample = varianceReturnInSample;
+ 			this.setDefaultTickersPortfolioWeights();
 		}
     
+    public GenomeMeaning(string[] tickers,
+                         double[] tickersPortfolioWeights,
+                            double returnAtLastDayInSample, 
+  													 double averageReturnInSample,
+  													 double varianceReturnInSample)
+    {
+ 			this.tickers = tickers;
+ 			this.tickersPortfolioWeights = tickersPortfolioWeights;
+ 			this.returnAtLastDayInSample = returnAtLastDayInSample;
+ 			this.averageReturnInSample = averageReturnInSample;
+ 			this.varianceReturnInSample = varianceReturnInSample;
+		}
     
   }
 
