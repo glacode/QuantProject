@@ -67,7 +67,7 @@ namespace QuantProject.ADT.Optimizing.Genetic
       this.maxValueForGenes = maxValueForGenes;
     }
     
-    public int GetNewGeneValue(Genome genome)
+    public int GetNewGeneValue(Genome genome, int genePosition)
     {
       return GenomeManagement.RandomGenerator.Next(genome.MinValueForGenes,
                                             genome.MaxValueForGenes + 1);

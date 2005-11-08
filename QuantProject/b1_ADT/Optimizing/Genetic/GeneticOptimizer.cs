@@ -479,10 +479,7 @@ namespace QuantProject.ADT.Optimizing.Genetic
     private void mutateGenomes(ArrayList populationOfGenomes)
     {
       foreach(Genome g in populationOfGenomes)
-      {
-        //if(g != null)
-           this.genomeManager.Mutate(g, this.MutationRate);
-      }
+         this.genomeManager.Mutate(g,this.MutationRate);
     }
     
     //calculate Fitness and Meaning for each genome in populationOfGenomes

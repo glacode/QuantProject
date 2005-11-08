@@ -51,7 +51,7 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
     protected DateTime lastQuoteDate;
     protected double targetPerformance;
     protected double variance;
-    protected double lowerPartialMoment;
+    //protected double lowerPartialMoment;
     protected double rateOfReturn;
     protected PortfolioType portfolioType;
     protected double[] portfolioRatesOfReturn;
@@ -223,16 +223,18 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
     
     #endregion
 
-    public Genome[] GetChilds(Genome parent1, Genome parent2)
+    public virtual Genome[] GetChilds(Genome parent1, Genome parent2)
     {
       return
       	GenomeManipulator.MixGenesWithoutDuplicates(parent1, parent2);
     }
     
-    public int GetNewGeneValue(Genome genome)
+    public virtual int GetNewGeneValue(Genome genome, int genePosition)
     {
       // in this implementation new gene values must be different from
       // the others already stored in the given genome
+      // the generation of new genes doesn't depend on gene's position
+      // within the genome
       int returnValue = GenomeManagement.RandomGenerator.Next(genome.MinValueForGenes,
                                                               genome.MaxValueForGenes + 1);
       while(GenomeManipulator.IsTickerContainedInGenome(returnValue,
@@ -246,7 +248,7 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
       return returnValue;
     }
         
-    public void Mutate(Genome genome, double mutationRate)
+    public virtual void Mutate(Genome genome, double mutationRate)
     {
       // in this implementation only one gene is mutated
       // the new value has to be different from all the other genes of the genome
@@ -268,7 +270,7 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
     
     #region Decode
 
-    private string decode_getTickerCodeForLongOrShortTrade(int geneValue)
+    protected string decode_getTickerCodeForLongOrShortTrade(int geneValue)
     {
       string initialCharForTickerCode = "";
       int position = geneValue;
@@ -354,12 +356,20 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
     protected virtual float[] getArrayOfRatesOfReturn(string ticker)
     {
     	float[] returnValue = null;
+    	this.numberOfExaminedReturns = returnValue.Length;
     	return returnValue;
+    	
+    }
+    
+    protected virtual double getTickerWeight(int[] genes, int tickerPositionInGenes)
+    {
+      return 1.0/genes.Length;
+      //weights for tickers are all the same in this implementation
     }
     
     #region getPortfolioRatesOfReturn
     
-    private int getPortfolioRatesOfReturn_getRateOfTickerToBeAddedToTheArray_getPositionInArray(int geneValueForTickerIdx)
+    protected int getPortfolioRatesOfReturn_getRateOfTickerToBeAddedToTheArray_getPositionInArray(int geneValueForTickerIdx)
     {
       int position = geneValueForTickerIdx;
       if(geneValueForTickerIdx<0)
@@ -367,28 +377,29 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
       return position;
     }
     
-    private float getPortfolioRatesOfReturn_getRateOfTickerToBeAddedToTheArray(int tickerIdx,
+    protected float getPortfolioRatesOfReturn_getRateOfTickerToBeAddedToTheArray(int[] genes,
+                                                                               int tickerPositionInGenes,
                                                                                int arrayElementPosition)
     {
       bool longReturns = false;
-      if(tickerIdx > 0)
-        //the tickerIdx points to a ticker for which long returns are to be examined
+      if(genes[tickerPositionInGenes] > 0)
+        //genes[tickerPositionInGenes], the code for ticker, points to a ticker for which long returns are to be examined
         longReturns = true;
-      int position = this.getPortfolioRatesOfReturn_getRateOfTickerToBeAddedToTheArray_getPositionInArray(tickerIdx);
+      int position = this.getPortfolioRatesOfReturn_getRateOfTickerToBeAddedToTheArray_getPositionInArray(genes[tickerPositionInGenes]);
       this.setOfCandidates[position].LongRatesOfReturn = longReturns;
       float[] arrayOfRatesOfReturn = this.setOfCandidates[position].ArrayOfRatesOfReturn;
-      return (arrayOfRatesOfReturn[arrayElementPosition]/this.GenomeSize);
-      //the investment is assumed to be equally divided for each ticker
+      double tickerWeight = this.getTickerWeight(genes,tickerPositionInGenes);
+      return (arrayOfRatesOfReturn[arrayElementPosition]*(float)tickerWeight);
     }    
     
-    protected double[] getPortfolioRatesOfReturn(int[] tickersIdx)
+    protected virtual double[] getPortfolioRatesOfReturn(int[] genes)
     {
       double[] returnValue = new double[this.numberOfExaminedReturns];
       for(int i = 0; i<returnValue.Length; i++)    
       {  
-        foreach(int tickerIdx in tickersIdx)
+        for(int j=0; j<genes.Length; j++)
           returnValue[i] +=
-            this.getPortfolioRatesOfReturn_getRateOfTickerToBeAddedToTheArray(tickerIdx,i);
+            this.getPortfolioRatesOfReturn_getRateOfTickerToBeAddedToTheArray(genes,j,i);
       }
       return returnValue;
     }

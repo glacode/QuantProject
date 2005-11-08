@@ -130,7 +130,7 @@ namespace QuantProject.ADT.Optimizing.Genetic
 		public void CreateGenes()
 		{
 			for (int i = 0 ; i < this.size ; i++)
-				this.genes[i] = this.genomeManager.GetNewGeneValue(this);
+				this.genes[i] = this.genomeManager.GetNewGeneValue(this,i);
 			//whenever at least one gene has been written,
 			//the current generation number is stored
 			this.generation = this.genomeManager.CurrentGeneticOptimizer.GenerationCounter;
