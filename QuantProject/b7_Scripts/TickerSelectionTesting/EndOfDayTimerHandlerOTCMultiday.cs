@@ -181,9 +181,10 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
         GO.Run(false);
         this.addGenomeToBestGenomes(GO.BestGenome,currentDate.AddDays(-this.numDaysForOptimizationPeriod),
                                     currentDate);
-        //this.chosenTickers = ((MeaningForGenome)GO.BestGenome.Meaning).Tickers;
-        this.chosenTickers =
-        	this.setTickers_getBestTickersLosingAtLastDay(genManEfficientCTOPortfolio);
+        this.chosenTickers = ((GenomeMeaning)GO.BestGenome.Meaning).Tickers;
+        this.chosenTickersPortfolioWeights = ((GenomeMeaning)GO.BestGenome.Meaning).TickersPortfolioWeights;
+        //this.chosenTickers =
+        //	this.setTickers_getBestTickersLosingAtLastDay(genManEfficientCTOPortfolio);
       }
       //else it will be buyed again the previous optimized portfolio
       //that's it the actual chosenTickers member

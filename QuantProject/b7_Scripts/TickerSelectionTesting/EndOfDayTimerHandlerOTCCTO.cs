@@ -105,7 +105,7 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
       this.orders.Clear();
       this.reverseSignOfChosenTickers();
       this.openPositions();
-
+      this.reverseSignOfChosenTickers();
     }
     
     
@@ -178,7 +178,7 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
         GO.Run(false);
         this.addGenomeToBestGenomes(GO.BestGenome,currentDate.AddDays(-this.numDaysForOptimizationPeriod),
                                     currentDate);
-        this.chosenTickers = (string[])GO.BestGenome.Meaning;
+        this.chosenTickers = ((GenomeMeaning)GO.BestGenome.Meaning).Tickers;
       }
       //else it will be buyed again the previous optimized portfolio
       //that's it the actual chosenTickers member

@@ -70,7 +70,8 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
       startDate, endDate, targetReturn,
       portfolioType, maxRunningHours)
     {
-      this.ScriptName = "OpenCloseScripts";
+      this.ScriptName = "OpenCloseScriptsSharpeRatioWithCoeff";
+      //this.ScriptName = "OpenCloseScriptsSharpeRatio";
       this.numDaysBetweenEachOptimization = numDaysBetweenEachOptimization;
     }
     
@@ -104,8 +105,8 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
     
     protected override void run_initializeHistoricalQuoteProvider()
     {
-      this.historicalQuoteProvider = new HistoricalRawQuoteProvider();
-      //this.historicalQuoteProvider = new HistoricalAdjustedQuoteProvider();
+      //this.historicalQuoteProvider = new HistoricalRawQuoteProvider();
+      this.historicalQuoteProvider = new HistoricalAdjustedQuoteProvider();
     }
     
     protected override void run_addEventHandlers()

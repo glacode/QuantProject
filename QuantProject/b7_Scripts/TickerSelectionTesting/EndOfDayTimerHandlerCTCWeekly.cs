@@ -152,6 +152,7 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
         //GO.KeepOnRunningUntilConvergenceIsReached = true;
         GO.Run(false);
         this.chosenTickers = ((GenomeMeaning)GO.BestGenome.Meaning).Tickers;
+        this.chosenTickersPortfolioWeights = ((GenomeMeaning)GO.BestGenome.Meaning).TickersPortfolioWeights;
       }
       //else it will be buyed again the previous optimized portfolio
       //that's it the actual chosenTickers member

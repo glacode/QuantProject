@@ -108,6 +108,14 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
       return returnValue;
     }
 		*/
+		
+		//sharpe ratio as fitness
+		/*
+		protected override double getFitnessValue_calculate()
+    {
+			return this.RateOfReturn/Math.Sqrt(this.Variance);
+    }
+		*/
   }
 
 }

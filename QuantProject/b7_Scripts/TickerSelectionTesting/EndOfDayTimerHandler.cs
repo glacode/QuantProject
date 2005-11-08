@@ -45,6 +45,7 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
   {
     protected DataTable eligibleTickers;
     protected string[] chosenTickers;
+    protected double[] chosenTickersPortfolioWeights;
     protected string[] lastOrderedTickers;
     
     protected string tickerGroupID;
@@ -117,6 +118,7 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
       this.lastOrderedTickers = new string[numberOfTickersToBeChosen];
       this.targetReturn = targetReturn;
       this.portfolioType = portfolioType;
+      this.setDefaultChosenTickersPortfolioWeights();
       
     }
 		
@@ -133,19 +135,28 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
       this.numberOfTickersToBeChosen = chosenTickers.Length;
       this.lastOrderedTickers = new string[chosenTickers.Length];
       this.portfolioType = portfolioType;
+      this.setDefaultChosenTickersPortfolioWeights();
     }
     
-    protected virtual void addOrderForTicker(string ticker )
+    private void setDefaultChosenTickersPortfolioWeights()
+    {
+    	this.chosenTickersPortfolioWeights = new double[this.chosenTickers.Length];
+    	for(int i = 0;i<this.chosenTickers.Length;i++)
+    		this.chosenTickersPortfolioWeights[i]=1.0/this.chosenTickers.Length;
+		}
+     
+    protected virtual void addOrderForTicker(int tickerPosition )
     {
     	string tickerCode = 
-    			GenomeManagerForEfficientPortfolio.GetCleanTickerCode(ticker);
-      double cashForSinglePosition = this.account.CashAmount / this.numberOfTickersToBeChosen;
+    		GenomeManagerForEfficientPortfolio.GetCleanTickerCode(this.chosenTickers[tickerPosition]);
+      double cashForSinglePosition = 
+      	this.account.CashAmount * this.chosenTickersPortfolioWeights[tickerPosition];
       long quantity =
         Convert.ToInt64( Math.Floor( cashForSinglePosition / this.account.DataStreamer.GetCurrentBid( tickerCode ) ) );
       Order order;
       if(this.portfolioType == PortfolioType.OnlyShort ||
          		(this.portfolioType == PortfolioType.ShortAndLong &&
-              ticker != tickerCode))
+          this.chosenTickers[tickerPosition] != tickerCode))
         order = new Order( OrderType.MarketSellShort, new Instrument( tickerCode ) , quantity );  
       else      		
       	order = new Order( OrderType.MarketBuy, new Instrument( tickerCode ) , quantity );
@@ -179,16 +190,14 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
     
     protected virtual void addChosenTickersToOrderList()
     {
-      int idx = 0;
-      foreach ( string ticker in this.chosenTickers )
+      for( int i = 0; i<this.chosenTickers.Length; i++)
       {
-        if(ticker != null)
+      	if(this.chosenTickers[i] != null)
         {  
-          this.addOrderForTicker( ticker );
-          this.lastOrderedTickers[idx] = 
-          		GenomeManagerForEfficientPortfolio.GetCleanTickerCode(ticker);
+          this.addOrderForTicker( i );
+          this.lastOrderedTickers[i] = 
+          	GenomeManagerForEfficientPortfolio.GetCleanTickerCode(this.chosenTickers[i]);
         }
-        idx++;
       }
     }
     
