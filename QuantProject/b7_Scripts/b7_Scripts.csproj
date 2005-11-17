@@ -348,11 +348,6 @@
                     BuildAction = "Compile"
                 />
                 <File
-                    RelPath = "WalkForwardTesting\IWalkForwardProgressNotifier.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
                     RelPath = "WalkForwardTesting\LinearCombination\GenomeRepresentation.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
@@ -459,6 +454,11 @@
                 />
                 <File
                     RelPath = "WalkForwardTesting\WalkForwardOneRank\EligibleTickers.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "WalkForwardTesting\WalkForwardOneRank\IWalkForwardProgressNotifier.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
