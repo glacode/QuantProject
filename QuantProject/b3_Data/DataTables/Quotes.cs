@@ -447,6 +447,83 @@ namespace QuantProject.Data.DataTables
       return tableToReturn;
     }
     
+    public static float[] GetArrayOfCloseToCloseRatios(string ticker,
+                                                      DateTime firstQuoteDate,
+                                                      DateTime lastQuoteDate,
+                                                     	int numDaysBetweenEachClose)
+    {
+      float[] returnValue = null;
+      Quotes tickerQuotes = new Quotes(ticker, firstQuoteDate, lastQuoteDate);
+      float[] allAdjValues = ExtendedDataTable.GetArrayOfFloatFromColumn(tickerQuotes, "quAdjustedClose");
+      returnValue = new float[allAdjValues.Length/(numDaysBetweenEachClose + 1)];
+      int i = 0; //index for ratesOfReturns array
+      int lastIdxAccessed = 0;
+      for(int idx = 0;
+          (idx + numDaysBetweenEachClose) < allAdjValues.Length;
+          idx += numDaysBetweenEachClose )
+      {
+        if(idx-lastIdxAccessed>numDaysBetweenEachClose || idx == 0)
+          //there is a discontinuity, as wanted
+        {
+          returnValue[i] = (allAdjValues[idx+numDaysBetweenEachClose]/
+            allAdjValues[idx] - 1);
+          lastIdxAccessed = idx;
+          i++;
+        }
+      }	
+      return returnValue;
+    }
+    
+    /// <summary>
+    /// returns tickers of a given set of tickers ordered by close to close 
+    /// correlation to a given benchmark
+    /// </summary>
+    public static DataTable GetTickersByCloseToCloseCorrelationToBenchmark( bool orderByASC,
+      DataTable setOfTickers, string benchmark,
+      DateTime firstQuoteDate,
+      DateTime lastQuoteDate,
+      long maxNumOfReturnedTickers, int numDaysBetweenEachClose)
+    {
+      if(!setOfTickers.Columns.Contains("CloseToCloseCorrelationToBenchmark"))
+        setOfTickers.Columns.Add("CloseToCloseCorrelationToBenchmark", System.Type.GetType("System.Double"));
+      float[] benchmarkRatios = GetArrayOfCloseToCloseRatios(benchmark, firstQuoteDate, lastQuoteDate, numDaysBetweenEachClose);
+      foreach(DataRow row in setOfTickers.Rows)
+      {
+        float[] tickerRatios = GetArrayOfCloseToCloseRatios((string)row[0], 
+          firstQuoteDate, lastQuoteDate, numDaysBetweenEachClose );
+      	if(tickerRatios.Length == benchmarkRatios.Length)
+      		row["CloseToCloseCorrelationToBenchmark"] =
+          	Math.Abs(BasicFunctions.PearsonCorrelationCoefficient(benchmarkRatios, tickerRatios));
+      }
+      DataTable tableToReturn = ExtendedDataTable.CopyAndSort(setOfTickers,
+                                                              "CloseToCloseCorrelationToBenchmark>=0.0",
+                                                              "CloseToCloseCorrelationToBenchmark",
+                                                              orderByASC);
+      ExtendedDataTable.DeleteRows(tableToReturn, maxNumOfReturnedTickers);
+      return tableToReturn;
+    }
+    
+    /// <summary>
+    /// returns tickers of a given set of tickers ordered by close to close 
+    /// correlation to a given benchmark
+    /// </summary>
+    public static DataTable GetTickersByCloseToCloseCorrelationToBenchmark( bool orderByASC,
+																					      string groupID, string benchmark,
+																					      DateTime firstQuoteDate,
+																					      DateTime lastQuoteDate,
+																					      long maxNumOfReturnedTickers,
+																					      int numDaysBetweenEachClose)
+    {
+      DataTable tickersOfGroup = new Tickers_tickerGroups(groupID);
+      return GetTickersByCloseToCloseCorrelationToBenchmark(orderByASC,
+																					      tickersOfGroup, benchmark,
+																					      firstQuoteDate,
+																					      lastQuoteDate,
+																					      maxNumOfReturnedTickers,
+																					      numDaysBetweenEachClose);
+    }
+    
+    
     private History history;
 
 		/// <summary>

@@ -277,6 +277,11 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "Selectors\SelectorByCloseToCloseCorrelationToBenchmark.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "Selectors\SelectorByCloseToCloseLinearCorrelation.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
