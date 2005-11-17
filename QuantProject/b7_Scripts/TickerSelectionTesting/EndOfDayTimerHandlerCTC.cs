@@ -46,10 +46,13 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
     protected int numDaysOfPortfolioLife;
     protected int numDaysForReturnCalculation;
     protected int daysCounter;
+    protected int daysWithNoPositions;
     protected double maxAcceptableCloseToCloseDrawdown;
     protected bool stopLossConditionReached;
     protected double currentAccountValue;
     protected double previousAccountValue;
+    protected int numDaysBetweenEachOptimization;
+    private int numDaysElapsedSinceLastOptimization;
     
     public EndOfDayTimerHandlerCTC(string tickerGroupID, int numberOfEligibleTickers, 
                                 int numberOfTickersToBeChosen, int numDaysForOptimizationPeriod,
@@ -60,7 +63,8 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
                                 int numDaysOfPortfolioLife,
                                 int numDaysForReturnCalculation,
                                 double targetReturn,
-                               	PortfolioType portfolioType, double maxAcceptableCloseToCloseDrawdown):
+                               	PortfolioType portfolioType, double maxAcceptableCloseToCloseDrawdown,
+                                int numDaysBetweenEachOptimization):
     														base(tickerGroupID, numberOfEligibleTickers, 
                                 numberOfTickersToBeChosen, numDaysForOptimizationPeriod, account,
                                 generationNumberForGeneticOptimizer,
@@ -75,6 +79,7 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
       this.stopLossConditionReached = false;
       this.currentAccountValue = 0.0;
       this.previousAccountValue = 0.0;
+      this.numDaysBetweenEachOptimization = numDaysBetweenEachOptimization;
     }
 	
 
@@ -100,7 +105,7 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
     public override void MarketCloseEventHandler(
       Object sender , EndOfDayTimingEventArgs endOfDayTimingEventArgs )
     {
-      bool positionsJustClosed = false;
+      //bool positionsJustClosed = false;
       this.updateStopLossCondition();
       if(this.account.Portfolio.Count > 0)
       //portfolio is not empty
@@ -113,18 +118,29 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
         {
           this.closePositions();
           this.daysCounter = 0;
-          positionsJustClosed = true;
+          //positionsJustClosed = true;
         }
       }
-      
-      if(this.account.Portfolio.Count == 0 &&
-         !positionsJustClosed)
-        //portfolio is empty but it has not been closed
-        //at the current close
+//old      
+//      if(this.account.Portfolio.Count == 0 &&
+//         !positionsJustClosed)
+//        //portfolio is empty but it has not been closed
+//        //at the current close
+//      {
+//        this.openPositions();
+//        this.daysCounter = 0;
+//      }
+            
+			if(this.account.Portfolio.Count == 0)
+        //portfolio is empty
       {
-        this.openPositions();
-        this.daysCounter = 0;
-      }
+				this.daysWithNoPositions++;
+				if(this.daysWithNoPositions>this.numDaysOfPortfolioLife)
+				{
+					this.openPositions();
+        	this.daysWithNoPositions = 0;
+				}
+			}
     }
     
     #endregion
@@ -135,8 +151,19 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
     {
       SelectorByGroup temporizedGroup = new SelectorByGroup(this.tickerGroupID,
     	                                                      currentDate);
-                                      
-      this.eligibleTickers = temporizedGroup.GetTableOfSelectedTickers();
+      
+    	SelectorByCloseToCloseCorrelationToBenchmark lessCorrelatedFromTemporized = 
+    		new SelectorByCloseToCloseCorrelationToBenchmark(temporizedGroup.GetTableOfSelectedTickers(),
+      	                                              this.benchmark,true,
+      	                                              currentDate.AddDays(-this.numDaysForOptimizationPeriod ),
+      	                                    					currentDate,
+      	                                    					this.numberOfEligibleTickers,
+      	                                    					this.numDaysForReturnCalculation);
+    	
+    		                                                 
+    		                                                 
+    		                                                 
+      this.eligibleTickers = lessCorrelatedFromTemporized.GetTableOfSelectedTickers();
       SelectorByQuotationAtEachMarketDay quotedAtEachMarketDayFromEligible = 
         new SelectorByQuotationAtEachMarketDay(this.eligibleTickers,
                                   false, currentDate.AddDays(-this.numDaysForOptimizationPeriod),currentDate,
@@ -193,11 +220,25 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
       Object sender , EndOfDayTimingEventArgs endOfDayTimingEventArgs )
     {
       ConstantsProvider.SeedForRandomGenerator++;
-      if(this.account.Portfolio.Count == 0 )
+//old
+//      if(this.account.Portfolio.Count == 0 )
+//      {
+//        this.orders.Clear();
+//        this.setTickers(endOfDayTimingEventArgs.EndOfDayDateTime.DateTime, false);
+//        //it sets tickers to be chosen at next close
+//      }
+      this.orders.Clear();
+      //this.oneHourAfterMarketCloseEventHandler_updatePrices();
+      if(this.numDaysElapsedSinceLastOptimization == 
+        this.numDaysBetweenEachOptimization - 1)
       {
-        this.orders.Clear();
         this.setTickers(endOfDayTimingEventArgs.EndOfDayDateTime.DateTime, false);
-        //it sets tickers to be chosen at next close
+        //sets tickers to be chosen next Market Open event
+        this.numDaysElapsedSinceLastOptimization = 0;
+      }
+      else
+      {
+        this.numDaysElapsedSinceLastOptimization++;
       }
     }
 		#endregion

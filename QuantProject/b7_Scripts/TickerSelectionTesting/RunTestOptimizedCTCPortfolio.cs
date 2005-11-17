@@ -68,7 +68,7 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
                                    	int numDaysOfPortfolioLife, int numDaysForReturnCalculation, 
                                    	double targetReturn,
                                     PortfolioType portfolioType, double maxAcceptableCloseToCloseDrawdown, 
-                                    double maxRunningHours):
+                                    double maxRunningHours, int numDaysBetweenEachOptimization):
 																base(tickerGroupID, numberOfEligibleTickers, 
                                     numberOfTickersToBeChosen, numDaysForOptimizationPeriod, 
                                     generationNumberForGeneticOptimizer,
@@ -77,7 +77,7 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
                                    	numDaysOfPortfolioLife - 1, numDaysForReturnCalculation, 
                                    	targetReturn,
                                     portfolioType, maxAcceptableCloseToCloseDrawdown, 
-                                    maxRunningHours)
+                                    maxRunningHours, numDaysBetweenEachOptimization)
 		{
       this.ScriptName = "TestOptimizedCTCPortfolio";
       
@@ -93,7 +93,8 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
     	                                                        this.numDayOfPortfolioLife, 
     	                                                        this.numDaysForReturnCalculation,
     	                                                        this.targetReturn,
-    	                                                       	this.portfolioType, this.maxAcceptableCloseToCloseDrawdown);
+    	                                                       	this.portfolioType, this.maxAcceptableCloseToCloseDrawdown,
+                                                              this.numDaysBetweenEachOptimization);
     }
     
         

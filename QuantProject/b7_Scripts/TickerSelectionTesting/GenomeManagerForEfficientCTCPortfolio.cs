@@ -61,25 +61,72 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
       this.numDaysForReturnCalculation = numDaysForReturnCalculation;
       this.retrieveData();
     }
+// old implementation, where a "continuos" adjusted close to close ratio,
+// based on a particular fixed interval of days, is considered
+// In this case, there is no discontinuity between the returned ratesOfReturn
+//
+//    protected override float[] getArrayOfRatesOfReturn(string ticker)
+//    {
+//      float[] returnValue = null;
+//      Quotes tickerQuotes = new Quotes(ticker, this.firstQuoteDate, this.lastQuoteDate);
+//      float[] allAdjValues = ExtendedDataTable.GetArrayOfFloatFromColumn(tickerQuotes, "quAdjustedClose");
+//      returnValue = new float[allAdjValues.Length/this.numDaysForReturnCalculation + 1];
+//      int i = 0; //index for ratesOfReturns array
+//	    for(int idx = 0; idx + this.numDaysForReturnCalculation < allAdjValues.Length; idx += this.numDaysForReturnCalculation )
+//	    {
+//	      returnValue[i] = (allAdjValues[idx+this.numDaysForReturnCalculation]/
+//	      	                    allAdjValues[idx] - 1);
+//	      i++;
+//	    }	
+//      this.numberOfExaminedReturns = returnValue.Length;
+//      
+//      return returnValue;
+//    }
     
+    // new implementation, where a "discontinuos" adjusted close to close ratio,
+    // based on a particular fixed interval of days, is considered
+    // In this case, there is a discontinuity between each pair of ratesOfReturn,
+    // equal to the given interval of days
     protected override float[] getArrayOfRatesOfReturn(string ticker)
     {
-      float[] returnValue = null;
+      /*
+    	float[] returnValue = null;
       Quotes tickerQuotes = new Quotes(ticker, this.firstQuoteDate, this.lastQuoteDate);
       float[] allAdjValues = ExtendedDataTable.GetArrayOfFloatFromColumn(tickerQuotes, "quAdjustedClose");
       returnValue = new float[allAdjValues.Length/this.numDaysForReturnCalculation + 1];
       int i = 0; //index for ratesOfReturns array
-	    for(int idx = 0; idx + this.numDaysForReturnCalculation < allAdjValues.Length; idx += this.numDaysForReturnCalculation )
-	    {
-	      returnValue[i] = (allAdjValues[idx+this.numDaysForReturnCalculation]/
-	      	                    allAdjValues[idx] - 1);
-	      i++;
-	    }	
+      int lastIdxAccessed = 0;
+      for(int idx = 0;
+          (idx + this.numDaysForReturnCalculation) < allAdjValues.Length;
+          idx += this.numDaysForReturnCalculation )
+      {
+        if(idx-lastIdxAccessed>numDaysForReturnCalculation || idx == 0)
+          //there is a discontinuity, as wanted
+        {
+          returnValue[i] = (allAdjValues[idx+this.numDaysForReturnCalculation]/
+            allAdjValues[idx] - 1);
+          lastIdxAccessed = idx;
+          i++;
+        }
+      }	
       this.numberOfExaminedReturns = returnValue.Length;
       
       return returnValue;
+      */
+      float[] returnValue = null;
+      returnValue = 
+      	QuantProject.Data.DataTables.Quotes.GetArrayOfCloseToCloseRatios(ticker,
+                                                            this.firstQuoteDate,
+                                                            this.lastQuoteDate,
+                                                            this.numDaysForReturnCalculation);
+      	
+      this.numberOfExaminedReturns = returnValue.Length;
+      
+      return returnValue;
+                                                                        
     }
-   	/*
+    
+    /*LPM as fitness
     protected override double getFitnessValue_calculate()
     {
       double returnValue = 0;                                            

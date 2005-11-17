@@ -122,12 +122,6 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
     }
     #endregion
 
-    public override Genome[] GetChilds(Genome parent1, Genome parent2)
-    {
-      return
-        GenomeManipulator.MixGenesWithoutDuplicates(parent1, parent2);
-    }
-    
     public override int GetNewGeneValue(Genome genome, int genePosition)
     {
       // in this implementation only new gene values pointing to tickers
