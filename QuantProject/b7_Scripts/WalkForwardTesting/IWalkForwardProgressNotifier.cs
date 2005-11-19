@@ -24,7 +24,7 @@ using System;
 
 using QuantProject.ADT;
 
-namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardOneRank
+namespace QuantProject.Scripts.WalkForwardTesting
 {
 	/// <summary>
 	/// Interface to be implemented by time consuming walk forwarding scripts
