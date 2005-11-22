@@ -348,6 +348,11 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "WalkForwardTesting\IWalkForwardProgressNotifier.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "WalkForwardTesting\LinearCombination\GenomeRepresentation.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
@@ -438,6 +443,21 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "WalkForwardTesting\WalkForwardMultiOneRank\ReportDebugger\WFMultiOneRankDebugEndOfDayTimerHandler.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "WalkForwardTesting\WalkForwardMultiOneRank\ReportDebugger\WFMultiOneRankDebugInSample.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "WalkForwardTesting\WalkForwardMultiOneRank\ReportDebugger\WFMultiOneRankReportDebugger.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "WalkForwardTesting\WalkForwardOneRank\BestPerformingTickers.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
@@ -454,11 +474,6 @@
                 />
                 <File
                     RelPath = "WalkForwardTesting\WalkForwardOneRank\EligibleTickers.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "WalkForwardTesting\WalkForwardOneRank\IWalkForwardProgressNotifier.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
