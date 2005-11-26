@@ -194,8 +194,22 @@ namespace QuantProject.Business.Financial.Accounting
 				moneyAmount );
 		}
 
+		private void addOrder_throwExceptions( Order order )
+		{
+			if  ( ( ( order.Type == OrderType.MarketSell ) ||
+				( order.Type == OrderType.LimitSell ) ) &&
+				( !this.Portfolio.IsLong( order.Instrument.Key ) ) )
+				throw new Exception( "A sell order has been submitted, but this " +
+					"account doesn't contain a long position for this ticker" );
+			if  ( ( ( order.Type == OrderType.MarketCover ) ||
+				( order.Type == OrderType.LimitCover ) ) &&
+				( !this.Portfolio.IsShort( order.Instrument.Key ) ) )
+				throw new Exception( "A cover order has been submitted, but this " +
+					"account doesn't contain a short position for this ticker" );
+		}
 		public void AddOrder( Order order )
 		{
+			this.addOrder_throwExceptions( order );
 			this.orderExecutor.Execute( order );
 		}
 		public bool Contains( Instrument instrument )
