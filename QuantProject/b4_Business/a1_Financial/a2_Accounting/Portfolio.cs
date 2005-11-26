@@ -77,15 +77,23 @@ namespace QuantProject.Business.Financial.Accounting
 			return this.ContainsKey( ticker );
 		}
 
-    public bool IsLong( Instrument instrument )
-    {
-      return this.Contains( instrument ) && (((Position)this[ instrument.Key ]).Quantity > 0);
-    }
+		public bool IsLong( string ticker )
+		{
+			return this.Contains( ticker ) && (((Position)this[ ticker ]).Quantity > 0);
+		}
+		public bool IsLong( Instrument instrument )
+		{
+			return IsLong( instrument.Key );
+		}
 
-    public bool IsShort( Instrument instrument )
-    {
-      return this.Contains( instrument ) && (((Position)this[ instrument.Key ]).Quantity < 0);
-    }
+		public bool IsShort( string ticker )
+		{
+			return this.Contains( ticker ) && (((Position)this[ ticker ]).Quantity < 0);
+		}
+		public bool IsShort( Instrument instrument )
+		{
+			return this.IsShort( instrument.Key );
+		}
 
 
     #region "Update"
