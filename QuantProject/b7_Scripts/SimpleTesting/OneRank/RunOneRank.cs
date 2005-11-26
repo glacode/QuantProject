@@ -43,7 +43,7 @@ namespace QuantProject.Scripts.SimpleTesting
 	/// </summary>
 	public class RunOneRank : Script
 	{
-		private DateTime startDateTime = new DateTime( 1993 , 1 , 1 );
+		private DateTime startDateTime = new DateTime( 2003 , 1 , 1 );
 		private DateTime endDateTime = new DateTime( 2003 , 12 , 31 );
 		private Account account;
 		private IHistoricalQuoteProvider historicalQuoteProvider =
@@ -83,7 +83,7 @@ namespace QuantProject.Scripts.SimpleTesting
 			HistoricalEndOfDayTimer historicalEndOfDayTimer =
 				new IndexBasedEndOfDayTimer(
 				new EndOfDayDateTime( this.startDateTime ,
-				EndOfDaySpecificTime.MarketOpen ) , "MSFT" );
+				EndOfDaySpecificTime.MarketOpen ) , "^spx" );
 
 //			with IB commission
 //			this.account = new Account( "MSFT" , historicalEndOfDayTimer ,
