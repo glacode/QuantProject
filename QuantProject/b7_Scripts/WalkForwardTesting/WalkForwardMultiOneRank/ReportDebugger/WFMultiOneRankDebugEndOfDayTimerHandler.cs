@@ -66,7 +66,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardMultiOneRank
 		{
 			OrderType returnValue = OrderType.MarketBuy;
 			if ( signedTicker.StartsWith( "-" ) )
-				returnValue = OrderType.MarketSell;
+				returnValue = OrderType.MarketSellShort;
 			return returnValue;
 		}
 		private void fiveMinutesBeforeMarketCloseEventHandler_closePosition(
@@ -125,9 +125,9 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardMultiOneRank
 				this.getTicker( signedTicker ) ).Type;
 			OrderType orderType = this.getOrderType( signedTicker );
 			bool returnValue = ( ( ( orderType ==
-				OrderType.MarketBuy ) && ( positionType == PositionType.Long ) ) ||
+				OrderType.MarketBuy ) && ( positionType == PositionType.Short ) ) ||
 				( orderType ==	OrderType.MarketSellShort ) &&
-				( positionType == PositionType.Short ) );
+				( positionType == PositionType.Long ) );
 			return returnValue;
 		}
 		private bool isCurrentlyReversed()
@@ -183,7 +183,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardMultiOneRank
 		}
 		private bool fiveMinutesBeforeMarketCloseEventHandler_arePositionsToBeClosed()
 		{
-			bool returnValue =
+			bool returnValue = ( this.account.Portfolio.Count > 0 ) &&
 				(	( this.isLinearCombinationTodayValueHigherThanYesterday() &&
 				this.isCurrentlyReversed() ) ||
 				( !this.isLinearCombinationTodayValueHigherThanYesterday() &&
@@ -192,8 +192,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardMultiOneRank
 		}
 		private bool fiveMinutesBeforeMarketCloseEventHandler_arePositionsToBeOpened()
 		{
-			bool returnValue =
-				this.fiveMinutesBeforeMarketCloseEventHandler_arePositionsToBeClosed();
+			bool returnValue = ( this.account.Portfolio.Count == 0 );
 			return returnValue;
 		}
 		public void FiveMinutesBeforeMarketCloseEventHandler(
