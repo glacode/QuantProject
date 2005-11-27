@@ -42,11 +42,11 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardMultiOneRank
 	/// </summary>
 	public class WFMultiOneRankEndOfDayTimerHandler
 	{
-    private WFMultiOneRankEligibleTickers eligibleTickers;
+		private WFMultiOneRankEligibleTickers eligibleTickers;
 		private WFMultiOneRankChosenTickers chosenTickers;
 
 		private string tickerGroupID;
-    private int numberEligibleTickers;
+		private int numberEligibleTickers;
 		private int numberOfPositionsToBeChosen;
 		private int inSampleWindowDays;
 		private int outOfSampleWindowDays;
@@ -130,39 +130,6 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardMultiOneRank
 		{
 			this.InSampleNewProgress( sender , eventArgs );
 		}
-//		#region OneHourAfterMarketCloseEventHandler
-//		private void oneHourAfterMarketCloseEventHandler_orderChosenTickers_closePositions(
-//			IEndOfDayTimer endOfDayTimer )
-//		{
-//			foreach ( Position position in this.account.Portfolio )
-//				if ( this.chosenTickers.Contains( position.Instrument.Key ) )
-//				{
-//					this.account.ClosePosition( position );
-//				}
-//		}
-//		private void oneHourAfterMarketCloseEventHandler_orderChosenTickers_openPositions_forTicker(
-//			string ticker )
-//		{
-//			double cashForSinglePosition = this.account.CashAmount / this.numberOfTickersToBeChosen;
-//			long quantity =
-//				Convert.ToInt64( Math.Floor( cashForSinglePosition / this.account.DataStreamer.GetCurrentBid( ticker ) ) );
-//			Order order = new Order( OrderType.MarketBuy , new Instrument( ticker ) , quantity );
-//			this.account.AddOrder( order );
-//		}
-//		private void oneHourAfterMarketCloseEventHandler_orderChosenTickers_openPositions()
-//		{
-//			foreach ( string ticker in this.chosenTickers.Keys )
-//				if ( !this.account.Contains( ticker ) )
-//				{
-//					oneHourAfterMarketCloseEventHandler_orderChosenTickers_openPositions_forTicker( ticker );
-//				}
-//		}
-//		private void oneHourAfterMarketCloseEventHandler_orderChosenTickers(
-//			IEndOfDayTimer endOfDayTimer )
-//		{
-//			this.oneHourAfterMarketCloseEventHandler_orderChosenTickers_closePositions( endOfDayTimer );
-//			this.oneHourAfterMarketCloseEventHandler_orderChosenTickers_openPositions();
-//		}
 		private bool areBestTickersToBeChosen()
 		{
 			bool returnValue =
@@ -185,29 +152,34 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardMultiOneRank
 				// either the lastOptimizationDate has not been set yet
 				// or outOfSampleWindowDays elapsed since last optimization
 			{
-//				this.eligibleTickers.SetTickers( endOfDayTimingEventArgs.EndOfDayDateTime.DateTime );
+				//				this.eligibleTickers.SetTickers( endOfDayTimingEventArgs.EndOfDayDateTime.DateTime );
 				this.eligibleTickers.SetTickers();
 				this.chosenTickers.SetTickers( this.eligibleTickers );
 				this.lastOptimizationDate = this.now().DateTime;
 			}
-//			oneHourAfterMarketCloseEventHandler_orderChosenTickers( ( IEndOfDayTimer ) sender );
+			//			oneHourAfterMarketCloseEventHandler_orderChosenTickers( ( IEndOfDayTimer ) sender );
 		}
-//		#endregion
+		//		#endregion
 		#region FiveMinutesBeforeMarketCloseEventHandler
-		private void fiveMinutesBeforeMarketCloseEventHandler_closePosition(
-			string ticker )
+		private string getTicker( string signedTicker )
 		{
-			this.account.ClosePosition( ticker );
+			string returnValue;
+			if ( signedTicker.IndexOf( "-" ) == 0 )
+				returnValue = signedTicker.Substring( 1 , signedTicker.Length - 1 );
+			else
+				returnValue = signedTicker;
+			return returnValue;
 		}
-		private void fiveMinutesBeforeMarketCloseEventHandler_closePositions()
+		private int getReturnMultiplier( string signedTicker )
 		{
-      ArrayList tickers = new ArrayList();
-			foreach ( string ticker in this.account.Portfolio.Keys )
-				tickers.Add( ticker );
-			foreach ( string ticker in tickers )
-				fiveMinutesBeforeMarketCloseEventHandler_closePosition( ticker );
+			int returnValue;
+			if ( signedTicker.IndexOf( "-" ) == 0 )
+				returnValue = -1;
+			else
+				returnValue = 1;
+			return returnValue;
 		}
-		private bool todayHigherThanYesterday( string ticker )
+		private double getTodayReturnForTicker( string ticker )
 		{
 			double todayMarketValueAtClose =
 				this.account.DataStreamer.GetCurrentBid( ticker );
@@ -218,48 +190,113 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardMultiOneRank
 			double yesterdayMarketValueAtClose =
 				this.historicalAdjustedQuoteProvider.GetMarketValue(
 				ticker , yesterdayAtClose );
-			bool returnValue =
-				( todayMarketValueAtClose > yesterdayMarketValueAtClose );
+			double returnValue =
+				( todayMarketValueAtClose - yesterdayMarketValueAtClose ) /
+				yesterdayMarketValueAtClose ;
 			return returnValue;
 		}
-		private void fiveMinutesBeforeMarketCloseEventHandler_openPosition(
-			string ticker )
+		private double getTodayReturnForSignedTicker( string signedTicker )
 		{
+			double todayReturnForTicker = this.getTodayReturnForTicker(
+				this.getTicker( signedTicker ) );
+			int returnMultiplier = this.getReturnMultiplier( signedTicker );
+			return todayReturnForTicker * returnMultiplier;
+		}
+		/// <summary>
+		/// true iff chosen tickers linear combination daily return is down today
+		/// </summary>
+		/// <returns></returns>
+		private bool isToReverse()
+		{
+			double totalReturn = 0;
+			foreach ( string signedTicker in this.chosenTickers.Keys )
+				totalReturn += this.getTodayReturnForSignedTicker( signedTicker );
+			return totalReturn < 0;
+		}
+		private OrderType fiveMinutesBeforeMarketCloseEventHandler_openPosition_getOrderType(
+			string signedTicker , bool isToReverse )
+		{
+			OrderType orderType = OrderType.MarketBuy;
+			if ( ( signedTicker.StartsWith( "-" ) && !isToReverse ) ||
+				( !signedTicker.StartsWith( "-" ) && isToReverse ) )
+				orderType = OrderType.MarketSellShort;
+			return orderType;
+		}
+		private void fiveMinutesBeforeMarketCloseEventHandler_openPosition(
+			string signedTicker , bool isToReverse )
+		{
+			string ticker = this.getTicker( signedTicker );
+			OrderType orderType =
+				this.fiveMinutesBeforeMarketCloseEventHandler_openPosition_getOrderType(
+				signedTicker , isToReverse );
 			double maxPositionValue = this.account.GetMarketValue() /
 				this.numberOfPositionsToBeChosen;
 			long sharesToBeTraded = OneRank.MaxBuyableShares( ticker ,
 				maxPositionValue , this.account.DataStreamer );
-			if ( this.todayHigherThanYesterday( ticker ) )
-				// today close value for ticker is higher than yesterday
-				// close for ticker
-				this.account.AddOrder( new Order( OrderType.MarketBuy ,
-					new Instrument( ticker ) , sharesToBeTraded ) );
-			else
-				// today close value for ticker is not higher than yesterday
-				// close for ticker
-				this.account.AddOrder( new Order( OrderType.MarketSellShort ,
-					new Instrument( ticker ) , sharesToBeTraded ) );
-		}
-		private string getTicker( string signedTicker )
-		{
-			string returnValue;
-			if ( signedTicker.IndexOf( "-" ) == 0 )
-				returnValue = signedTicker.Substring( 1 , signedTicker.Length - 1 );
-			else
-				returnValue = signedTicker;
-			return returnValue;
+			this.account.AddOrder( new Order( orderType ,
+				new Instrument( ticker ) , sharesToBeTraded ) );
 		}
 		private void fiveMinutesBeforeMarketCloseEventHandler_openPositions()
 		{
+			bool isToReverse = this.isToReverse();
 			foreach ( string signedTicker in this.chosenTickers.Keys )
 				this.fiveMinutesBeforeMarketCloseEventHandler_openPosition( 
-					this.getTicker( signedTicker ) );
+					signedTicker , isToReverse );
+		}
+		private void fiveMinutesBeforeMarketCloseEventHandler_closePosition(
+			string ticker )
+		{
+			this.account.ClosePosition( ticker );
+		}
+		private double getTodayReturnForPosition( Position position )
+		{
+			string signedTicker = position.Instrument.Key;
+			double returnValue;
+			if ( position.Type == PositionType.Short )
+				signedTicker = "-" + signedTicker;
+			returnValue =
+				this.getTodayReturnForSignedTicker( signedTicker );
+			return returnValue;
+		}
+		private double getTodayReturnForPortfolioPositions()
+		{
+			double totalReturn = 0;
+			foreach ( Position position in this.account.Portfolio.Positions )
+				totalReturn += this.getTodayReturnForPosition( position );
+			return totalReturn;
+		}
+		private bool arePositionsToBeClosed()
+		{
+			double todayReturnForPortfolioPositions =
+				this.getTodayReturnForPortfolioPositions();
+			return todayReturnForPortfolioPositions < 0;
+		}
+		private void fiveMinutesBeforeMarketCloseEventHandler_closePositions_actually()
+		{
+			ArrayList tickers = new ArrayList();
+			foreach ( string ticker in this.account.Portfolio.Keys )
+				tickers.Add( ticker );
+			foreach ( string ticker in tickers )
+				fiveMinutesBeforeMarketCloseEventHandler_closePosition( ticker );
+		}
+		private void fiveMinutesBeforeMarketCloseEventHandler_closePositions()
+		{
+			if ( this.arePositionsToBeClosed() )
+				this.fiveMinutesBeforeMarketCloseEventHandler_closePositions_actually();
 		}
 		public void FiveMinutesBeforeMarketCloseEventHandler(
 			Object sender , EndOfDayTimingEventArgs endOfDayTimingEventArgs )
 		{
-			this.fiveMinutesBeforeMarketCloseEventHandler_closePositions();
-			fiveMinutesBeforeMarketCloseEventHandler_openPositions();
+			if ( this.account.Portfolio.Count == 0 )
+				fiveMinutesBeforeMarketCloseEventHandler_openPositions();
+			else
+			{
+				if ( this.arePositionsToBeClosed() )
+				{
+					this.fiveMinutesBeforeMarketCloseEventHandler_closePositions();
+					this.fiveMinutesBeforeMarketCloseEventHandler_openPositions();
+				}
+			}
 		}
 		#endregion
 	}
