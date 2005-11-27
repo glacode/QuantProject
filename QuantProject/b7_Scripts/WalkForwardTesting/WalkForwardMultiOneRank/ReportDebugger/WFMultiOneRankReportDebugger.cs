@@ -107,8 +107,8 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardMultiOneRank
 				rightClickEventHandler_withDataRow_getSignedTickers_getFirstRowNumberForTheGroup(
 				dataTable , rowNumber );
 			int currentRowIndex = firstRowNumberForTheGroup;
-			while ( dataTable.Rows[ currentRowIndex ][ "DateTime" ]
-				== dataTable.Rows[ rowNumber ][ "DateTime" ] )
+			while ( (DateTime)dataTable.Rows[ currentRowIndex ][ "DateTime" ]
+				== (DateTime)dataTable.Rows[ rowNumber ][ "DateTime" ] )
 			{
 				// the current row is still in the group
 				signedTickers[ currentRowIndex - firstRowNumberForTheGroup ] =
