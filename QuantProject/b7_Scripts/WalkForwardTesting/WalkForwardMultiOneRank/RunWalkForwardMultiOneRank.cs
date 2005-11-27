@@ -55,7 +55,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardMultiOneRank
 
 		private string tickerGroupID;
 		private int numberEligibleTickers;
-		private int numberOfPositionsToBeChosen;
+		private int numberOfPortfolioPositions;
 		private int numberDaysForInSampleOptimization;
 		private int numDaysBetweenEachOptimization;
 		private int generationNumberForGeneticOptimizer;
@@ -74,7 +74,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardMultiOneRank
 		public RunWalkForwardMultiOneRank(
 			string tickerGroupID ,
 			int numberEligibleTickers ,
-			int numberOfPositionsToBeChosen ,
+			int numberOfPortfolioPositions ,
 			int numberDaysForInSampleOptimization ,
 			int numDaysBetweenEachOptimization ,
 			int generationNumberForGeneticOptimizer ,
@@ -86,7 +86,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardMultiOneRank
 		{
 			this.tickerGroupID = tickerGroupID;
 			this.numberEligibleTickers = numberEligibleTickers;
-			this.numberOfPositionsToBeChosen = numberOfPositionsToBeChosen;
+			this.numberOfPortfolioPositions = numberOfPortfolioPositions;
 			this.numberDaysForInSampleOptimization = numberDaysForInSampleOptimization;
 			this.numDaysBetweenEachOptimization = numDaysBetweenEachOptimization;
 			this.generationNumberForGeneticOptimizer = generationNumberForGeneticOptimizer;
@@ -132,7 +132,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardMultiOneRank
 				new WFMultiOneRankEndOfDayTimerHandler(
 				this.tickerGroupID ,
 				this.numberEligibleTickers ,
-				this.numberOfPositionsToBeChosen ,
+				this.numberOfPortfolioPositions ,
 				this.numberDaysForInSampleOptimization ,
 				this.numDaysBetweenEachOptimization ,
 				this.account ,
@@ -152,40 +152,12 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardMultiOneRank
 				" - " +
 				DateTime.Now.ToString() );
 		}
-//		private void run_initializeProgressBar_newThread()
-//		{
-//			this.progressBarForm = new ProgressBarForm( this );
-//			this.progressBarForm.ShowDialog();
-//		}
-//		private void run_initializeProgressBar()
-//		{
-//			Thread thread = new Thread(new ThreadStart(run_initializeProgressBar_newThread));
-////			thread.IsBackground = true;
-//			thread.Start();
-//		}
 		private void run_initializeProgressHandlers()
 		{
 			this.endOfDayTimerHandler.InSampleNewProgress +=
 				new InSampleNewProgressEventHandler( this.inSampleNewProgressEventHandler );
 		}
 		#region oneHourAfterMarketCloseEventHandler
-		//		private void oneHourAfterMarketCloseEventHandler_handleProgessBarForm(
-		//			IEndOfDayTimer endOfDayTimer )
-		//		{
-		//			long elapsedDays = Convert.ToInt64( ((TimeSpan)( endOfDayTimer.GetCurrentTime().DateTime - 
-		//				this.startDateTime.DateTime )).TotalDays );
-		//			double totalDays = Convert.ToDouble( ((TimeSpan)( this.endDateTime.DateTime - 
-		//				this.startDateTime.DateTime )).TotalDays + 1);
-		//			if ( Math.Floor( elapsedDays / totalDays * 100 ) >
-		//				Math.Floor( ( elapsedDays - 1 ) / totalDays * 100 ) )
-		//			{
-		//				// a new out of sample time percentage point has been elapsed
-		//				int currentProgress = Convert.ToInt16( Math.Floor( elapsedDays / totalDays * 100 ) );
-		//				NewProgressEventArgs newProgressEventArgs =
-		//					new NewProgressEventArgs( currentProgress , 100 );
-		//				this.OutOfSampleNewProgress( this , newProgressEventArgs );
-		//			}
-		//		}
 		private void oneHourAfterMarketCloseEventHandler_handleProgessBarForm(
 			IEndOfDayTimer endOfDayTimer )
 		{
@@ -201,31 +173,6 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardMultiOneRank
 			if ( this.account.Transactions.Count == 0 )
 				this.account.AddCash( 30000 );
 		}
-		#region oneHourAfterMarketCloseEventHandler
-		private void showOneRankForm( object sender ,
-			MouseEventArgs eventArgs )
-		{
-			DataGrid dataGrid = (DataGrid)sender;
-			Point point = new Point( eventArgs.X , eventArgs.Y );
-			DataGrid.HitTestInfo hitTestInfo = dataGrid.HitTest( point );
-			DataTable dataTable = (DataTable)dataGrid.DataSource;
-			DataRow dataRow = dataTable.Rows[ hitTestInfo.Row ];
-			//			MessageBox.Show( dataRow[ "DateTime" ].ToString() );
-			DateTime rowDateTime = (DateTime)dataRow[ "DateTime" ];
-			string rowTicker = (string)dataRow[ "InstrumentKey"];
-			OneRankForm oneRankForm = new OneRankForm();
-			oneRankForm.FirstDateTime =
-				rowDateTime.AddDays( -this.numberDaysForInSampleOptimization );
-			oneRankForm.LastDateTime = rowDateTime;
-			oneRankForm.Ticker = rowTicker;
-			oneRankForm.Show();
-		}
-		private void mouseEventHandler( object sender , MouseEventArgs eventArgs )
-		{
-			if ( eventArgs.Button == MouseButtons.Right )
-				this.showOneRankForm( sender , eventArgs );
-		}
-		#endregion
 		public void oneHourAfterMarketCloseEventHandler(
 			Object sender , EndOfDayTimingEventArgs endOfDayTimingEventArgs )
 		{
@@ -242,8 +189,12 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardMultiOneRank
 					new EndOfDayDateTime( this.lastDateTime ,
 					EndOfDaySpecificTime.OneHourAfterMarketClose ) ,
 					this.benchmark );
+				WFMultiOneRankReportDebugger wFMultiOneRankReportDebugger =
+					new WFMultiOneRankReportDebugger( this.numberOfPortfolioPositions ,
+					this.numberDaysForInSampleOptimization , this.benchmark );
 				report.TransactionGrid.MouseUp +=
-					new MouseEventHandler( this.mouseEventHandler );
+					new MouseEventHandler(
+					wFMultiOneRankReportDebugger.MouseClickEventHandler );
 				report.Show();
 			}
 			else
