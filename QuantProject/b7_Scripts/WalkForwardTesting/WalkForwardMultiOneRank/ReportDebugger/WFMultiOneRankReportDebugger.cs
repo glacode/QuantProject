@@ -132,15 +132,20 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardMultiOneRank
 			int rowNumber )
 		{
 			string[] signedTickers;
-			DateTime dateTime;
-
+      DateTime lastDateTime;
 			rightClickEventHandler_withDataRow_getNeededDataFromGrid(
-				dataGrid , rowNumber , out signedTickers , out dateTime );
-			WFMultiOneRankDebugInSample wFMultiOneRankDebugInSample =
-				new WFMultiOneRankDebugInSample( signedTickers , dateTime ,
-				this.numberDaysForInSampleOptimization ,
-				this.benchmark );
-			wFMultiOneRankDebugInSample.Run();
+				dataGrid , rowNumber , out signedTickers , out lastDateTime );
+			DateTime firstDateTime = lastDateTime.AddDays(
+				-this.numberDaysForInSampleOptimization - 1 );
+			WFMultiOneRankDebugInSampleForm wFMultiOneRankDebugInSampleForm =
+				new WFMultiOneRankDebugInSampleForm( signedTickers ,
+				firstDateTime , lastDateTime , this.benchmark );
+			wFMultiOneRankDebugInSampleForm.Show();
+//			WFMultiOneRankDebugInSample wFMultiOneRankDebugInSample =
+//				new WFMultiOneRankDebugInSample( signedTickers , firstDateTime ,
+//				lastDateTime ,
+//				this.benchmark );
+//			wFMultiOneRankDebugInSample.Run();
 		}
 		private void rightClickEventHandler( object sender ,
 			MouseEventArgs eventArgs )
