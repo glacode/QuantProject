@@ -110,6 +110,15 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
     {
       this.fitness = 0.0;
     }
+		public float GetReturn( int arrayElementPosition ,
+			bool isLong )
+		{
+			float returnValue = this.arrayOfRatesOfReturn[ arrayElementPosition ];
+			if ( !isLong )
+				// a reverse position return is requested
+				returnValue = -returnValue;
+			return returnValue;
+		}
   }
 
 }
