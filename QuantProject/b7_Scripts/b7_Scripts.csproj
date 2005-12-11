@@ -398,9 +398,9 @@
                     BuildAction = "Compile"
                 />
                 <File
-                    RelPath = "WalkForwardTesting\LinearCombination\VisualObjectArchiver.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
+                    RelPath = "WalkForwardTesting\LinearCombination\TestDisplayer.resx"
+                    DependentUpon = "TestDisplayer.cs"
+                    BuildAction = "EmbeddedResource"
                 />
                 <File
                     RelPath = "WalkForwardTesting\LinearCombination\WalkForwardTest\RunWalkForwardLinearCombination.cs"
@@ -453,7 +453,22 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "WalkForwardTesting\WalkForwardMultiOneRank\ReportDebugger\WFMultiOneRankDebugInSampleForm.cs"
+                    SubType = "Form"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "WalkForwardTesting\WalkForwardMultiOneRank\ReportDebugger\WFMultiOneRankDebugInSampleForm.resx"
+                    DependentUpon = "WFMultiOneRankDebugInSampleForm.cs"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
                     RelPath = "WalkForwardTesting\WalkForwardMultiOneRank\ReportDebugger\WFMultiOneRankReportDebugger.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "WalkForwardTesting\WalkForwardMultiOneRank\ReportDebugger\WFMultiOneRankRunInSampleDebug.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
