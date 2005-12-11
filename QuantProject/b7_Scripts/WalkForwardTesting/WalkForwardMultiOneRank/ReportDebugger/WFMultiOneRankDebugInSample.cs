@@ -36,11 +36,11 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardMultiOneRank
 	public class WFMultiOneRankDebugInSample
 	{
 		private string[] signedTickers;
-		private DateTime dateTime;
+		private DateTime firstDateTime;
+		private DateTime lastDateTime;
 		private int numberDaysForInSampleOptimization;
 		private string benchmark;
 
-		private DateTime startDateTime;
 		private IHistoricalQuoteProvider historicalQuoteProvider;
 		private IndexBasedEndOfDayTimer endOfDayTimer;
 		private Account account;
@@ -48,17 +48,18 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardMultiOneRank
 			endOfDayTimerHandler;
 
 		public WFMultiOneRankDebugInSample( string[] signedTickers ,
-			DateTime dateTime , int numberDaysForInSampleOptimization ,
+			DateTime firstDateTime , DateTime lastDateTime ,
 			string benchmark )
 		{
 			this.signedTickers = signedTickers;
-			this.dateTime = dateTime;
+			this.firstDateTime = firstDateTime;
+			this.lastDateTime = lastDateTime;
 			this.numberDaysForInSampleOptimization =
 				numberDaysForInSampleOptimization;
 			this.benchmark = benchmark;
 
-			this.startDateTime = this.dateTime.AddDays(
-				-this.numberDaysForInSampleOptimization - 1 );
+//			this.startDateTime = this.dateTime.AddDays(
+//				-this.numberDaysForInSampleOptimization - 1 );
 			this.historicalQuoteProvider =
 				new HistoricalAdjustedQuoteProvider();
 		}
@@ -67,7 +68,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardMultiOneRank
 		{
 			this.endOfDayTimer =
 				new IndexBasedEndOfDayTimer(
-				new EndOfDayDateTime( this.startDateTime ,
+				new EndOfDayDateTime( this.firstDateTime ,
 				EndOfDaySpecificTime.MarketOpen ), this.benchmark );
 		}
 		private void run_initializeAccount()
@@ -95,13 +96,13 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardMultiOneRank
 			Object sender , EndOfDayTimingEventArgs endOfDayTimingEventArgs )
 		{
 			if ( ( ( IEndOfDayTimer )sender ).GetCurrentTime().DateTime >
-				this.dateTime )
+				this.lastDateTime )
 			{
 				// the simulation has reached the ending date
 				this.account.EndOfDayTimer.Stop();
 				Report report = new Report( this.account , this.historicalQuoteProvider );
 				report.Create( "WFT One Rank" , 1 ,
-					new EndOfDayDateTime( this.dateTime , EndOfDaySpecificTime.OneHourAfterMarketClose ) , "^SPX" );
+					new EndOfDayDateTime( this.lastDateTime , EndOfDaySpecificTime.OneHourAfterMarketClose ) , "^SPX" );
 				report.Show();
 			}
 		}
