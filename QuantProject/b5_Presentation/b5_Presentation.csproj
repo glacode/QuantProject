@@ -157,6 +157,11 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "VisualObjectArchiver.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "Charting\CharPlot.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
