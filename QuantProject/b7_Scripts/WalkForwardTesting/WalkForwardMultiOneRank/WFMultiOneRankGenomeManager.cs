@@ -136,10 +136,12 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardMultiOneRank
 			int position =
 				this.getPortfolioRatesOfReturn_getRateOfTickerToBeAddedToTheArray_getPositionInArray(tickerIdx);
 			//			this.setOfCandidates[position].LongRatesOfReturn = longReturns;
-			float[] arrayOfRatesOfReturn =
-				this.setOfCandidates[ position ].ArrayOfRatesOfReturn;
+//			float[] arrayOfRatesOfReturn =
+//				this.setOfCandidates[ position ].ArrayOfRatesOfReturn;
+			float currentReturn = this.setOfCandidates[ position ].GetReturn(
+				arrayElementPosition , tickerIdx > 0 );
 			//the investment is assumed to be equally divided for each ticker
-			return ( arrayOfRatesOfReturn[ arrayElementPosition ] / this.GenomeSize );
+			return ( currentReturn / this.GenomeSize );
 		}    
     
 		private double[] getFitnessValue_getLinearCombinationReturns( int[] tickersIdx )
