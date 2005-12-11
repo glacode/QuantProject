@@ -22,7 +22,9 @@ using QuantProject.Business.Financial.Accounting.Commissions;
 using QuantProject.Data.DataProviders;
 using QuantProject.Data.Selectors; 
 using QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios;
+using QuantProject.Presentation;
 using QuantProject.Presentation.Reporting.WindowsForm;
+
 
 
 namespace QuantProject.Scripts.WalkForwardTesting.LinearCombination

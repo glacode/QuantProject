@@ -29,6 +29,7 @@ using QuantProject.Business.Financial.Instruments;
 using QuantProject.Business.Financial.Ordering;
 using QuantProject.Business.Strategies;
 using QuantProject.Business.Timing;
+using QuantProject.Presentation;
 using QuantProject.Presentation.Reporting.WindowsForm;
 using QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios;
 
