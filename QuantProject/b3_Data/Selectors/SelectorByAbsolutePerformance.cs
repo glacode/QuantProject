@@ -34,8 +34,9 @@ namespace QuantProject.Data.Selectors
   /// </summary>
    public class SelectorByAbsolutePerformance : TickerSelector, ITickerSelector 
   {
-        
-    
+    private float minAbsoluteSimpleReturn = -1;  
+    private float maxAbsoluteSimpleReturn = -1;
+
     public SelectorByAbsolutePerformance(DataTable setOfTickersToBeSelected, 
                                bool orderInASCmode,
                                DateTime firstQuoteDate,
@@ -62,7 +63,38 @@ namespace QuantProject.Data.Selectors
      {
      
      }
-
+     public SelectorByAbsolutePerformance(DataTable setOfTickersToBeSelected, 
+                                          bool orderInASCmode,
+                                          DateTime firstQuoteDate,
+                                          DateTime lastQuoteDate,
+                                          long maxNumOfReturnedTickers, 
+                                          float minAbsoluteSimpleReturn,
+                                          float maxAbsoluteSimpleReturn):
+                                          base(setOfTickersToBeSelected, 
+                                          orderInASCmode,
+                                          firstQuoteDate,
+                                          lastQuoteDate,
+                                          maxNumOfReturnedTickers)
+     {
+        this.minAbsoluteSimpleReturn = minAbsoluteSimpleReturn;
+        this.maxAbsoluteSimpleReturn = maxAbsoluteSimpleReturn; 
+     }
+     public SelectorByAbsolutePerformance(string groupID, 
+                                          bool orderInASCmode,
+                                          DateTime firstQuoteDate,
+                                          DateTime lastQuoteDate,
+                                          long maxNumOfReturnedTickers,
+                                          float minAbsoluteSimpleReturn,
+                                          float maxAbsoluteSimpleReturn):
+                                          base(groupID, 
+                                          orderInASCmode,
+                                          firstQuoteDate,
+                                          lastQuoteDate,
+                                          maxNumOfReturnedTickers)
+     {
+       this.minAbsoluteSimpleReturn = minAbsoluteSimpleReturn;
+       this.maxAbsoluteSimpleReturn = maxAbsoluteSimpleReturn;
+     }
 
     public DataTable GetTableOfSelectedTickers()
     {
@@ -71,13 +103,17 @@ namespace QuantProject.Data.Selectors
           this.groupID, 
           this.firstQuoteDate,
           this.lastQuoteDate,
-          this.maxNumOfReturnedTickers);
+          this.maxNumOfReturnedTickers,
+          this.minAbsoluteSimpleReturn,
+          this.maxAbsoluteSimpleReturn);
       else
         return TickerDataTable.GetTickersByPerformance(this.isOrderedInASCMode,
           this.setOfTickersToBeSelected,
           this.firstQuoteDate,
           this.lastQuoteDate,
-          this.maxNumOfReturnedTickers);
+          this.maxNumOfReturnedTickers,
+          this.minAbsoluteSimpleReturn,
+          this.maxAbsoluteSimpleReturn);
     }
     
     public void SelectAllTickers()
