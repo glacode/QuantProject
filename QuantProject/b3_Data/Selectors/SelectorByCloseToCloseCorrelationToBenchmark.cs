@@ -32,12 +32,28 @@ namespace QuantProject.Data.Selectors
   /// <summary>
   /// Class for selection on tickers by close to close absolute correlation to 
   /// a given benchmark
+  /// NOTE that
+  /// close values are grouped in pairs and the first close value in each group is 
+  /// not the last close in the previous group. There is, in other words, a discontinuity
+  /// between each group, with length equal to the group's length
   /// </summary>
    public class SelectorByCloseToCloseCorrelationToBenchmark : TickerSelector, ITickerSelector
   {
     private string benchmark;
     private int numDaysBetweenEachClose;
-    
+    /// <summary>
+    /// Creates a new instance of the selector
+    /// </summary>
+    /// <param name="setOfTickersToBeSelected">The data table containing in the first column the tickers that have to be ordered</param>
+    /// <param name="benchmark">Benchmark code</param>
+    /// <param name="orderInASCmode">Ordering mode</param>
+    /// <param name="firstQuoteDate">The first date for the interval</param>
+    /// <param name="lastQuoteDate">The last date for the interval</param>
+    /// <param name="maxNumOfReturnedTickers">Max number of tickers to be returned</param>
+    /// <param name="numDaysBetweenEachClose">Number of days between closes to be studied. NOTE that
+    /// close values are grouped in pairs and the first close value in each group is 
+    /// not the last close in the previous group. There is, in other words, a discontinuity
+    /// between each group, with length equal to the group's length </param>
     public SelectorByCloseToCloseCorrelationToBenchmark(DataTable setOfTickersToBeSelected,
                                string benchmark,
                                bool orderInASCmode,
@@ -54,6 +70,20 @@ namespace QuantProject.Data.Selectors
       this.benchmark = benchmark;
       this.numDaysBetweenEachClose = numDaysBetweenEachClose;
     }
+     
+     /// <summary>
+     /// Creates a new instance of the selector
+     /// </summary>
+     /// <param name="groupID">The group ID containing the tickers that have to be ordered</param>
+     /// <param name="benchmark">Benchmark code</param>
+     /// <param name="orderInASCmode">Ordering mode</param>
+     /// <param name="firstQuoteDate">The first date for the interval</param>
+     /// <param name="lastQuoteDate">The last date for the interval</param>
+     /// <param name="maxNumOfReturnedTickers">Max number of tickers to be returned</param>
+     /// <param name="numDaysBetweenEachClose">Number of days between closes to be studied. NOTE that
+     /// close values are grouped in pairs and the first close value in each group is 
+     /// not the last close in the previous group. There is, in other words, a discontinuity
+     /// between each group, with length equal to the group's length </param>
      public SelectorByCloseToCloseCorrelationToBenchmark(string groupID, 
                                 string benchmark,
                                 bool orderInASCmode,
