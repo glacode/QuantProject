@@ -25,6 +25,7 @@ using System.Data;
 using QuantProject.ADT;
 using QuantProject.DataAccess.Tables;
 
+
 namespace QuantProject.Data.DataTables
 {
 	/// <summary>
@@ -58,16 +59,49 @@ namespace QuantProject.Data.DataTables
 			}
     }
     
+    #region GetTickersByPerformance
+
+    private static void addColumnsForPerformanceAnalysis(DataTable tableToAnalyze)
+    {
+      if(!tableToAnalyze.Columns.Contains("SimpleReturn"))
+        tableToAnalyze.Columns.Add("SimpleReturn", System.Type.GetType("System.Double"));
+      if(!tableToAnalyze.Columns.Contains("PeriodForSimpleReturn"))
+        tableToAnalyze.Columns.Add("PeriodForSimpleReturn", System.Type.GetType("System.String"));
+    }
+
+    private static string getTickersByPerformance_getFilterExpression(float minAbsoluteSimpleReturn,
+      float maxAbsoluteSimpleReturn)
+    {
+      string returnValue = "";
+      if(minAbsoluteSimpleReturn > 0 &&
+        maxAbsoluteSimpleReturn > 0)
+        //both limits have to be greater than zero
+      {
+        returnValue = "(" + minAbsoluteSimpleReturn.ToString("#.##") + 
+                      "<=SimpleReturn AND " +
+                      maxAbsoluteSimpleReturn.ToString("#.##") + 
+                      ">=SimpleReturn)" +
+                      " OR " +
+                      "(" + "-" + maxAbsoluteSimpleReturn.ToString("#.##") +
+                      "<SimpleReturn AND " +
+                      "-" + minAbsoluteSimpleReturn.ToString("#.##") +
+                      ">SimpleReturn)";
+      }
+      return returnValue;              
+    }
+
     public static DataTable GetTickersByPerformance(bool orderByASC, string groupID,
-                                                      DateTime firstQuoteDate,
-                                                      DateTime lastQuoteDate,
-                                                      long maxNumOfReturnedTickers)
+                                                    DateTime firstQuoteDate,
+                                                    DateTime lastQuoteDate,
+                                                    long maxNumOfReturnedTickers,
+                                                    float minAbsoluteSimpleReturn,
+                                                    float maxAbsoluteSimpleReturn)
     {
       DataTable groupOfTicker = QuantProject.DataAccess.Tables.Tickers_tickerGroups.GetTickers(groupID);
-      //also possible, but slower:
-      //return TickerDataTable.GetBestPerformingTickers(orderByASC, groupOfTicker, firstQuoteDate,
-      //                                                lastQuoteDate, maxNumOfReturnedTickers);
-
+      
+      //return TickerDataTable.GetTickersByPerformance(orderByASC, groupOfTicker, firstQuoteDate,
+      //  lastQuoteDate, maxNumOfReturnedTickers, minAbsoluteSimpleReturn, maxAbsoluteSimpleReturn);
+            
       TickerDataTable.addColumnsForPerformanceAnalysis(groupOfTicker);
       DateTime firstAvailableQuoteDate, lastAvailableQuoteDate;
       double firstQuote, lastQuote;
@@ -86,17 +120,36 @@ namespace QuantProject.Data.DataTables
           row["PeriodForSimpleReturn"] = "From " + firstAvailableQuoteDate.ToShortDateString() + " to " + lastAvailableQuoteDate.ToShortDateString();
         }
       }
-      ExtendedDataTable.Sort(groupOfTicker, "SimpleReturn", orderByASC);
+      string filterExpression = 
+            getTickersByPerformance_getFilterExpression(minAbsoluteSimpleReturn,
+                                                        maxAbsoluteSimpleReturn);
+      ExtendedDataTable.CopyAndSort(groupOfTicker, filterExpression, 
+                                    "SimpleReturn", orderByASC);
       ExtendedDataTable.DeleteRows(groupOfTicker, maxNumOfReturnedTickers);
       return groupOfTicker;              
-      
     }
+
+    public static DataTable GetTickersByPerformance(bool orderByASC, string groupID,
+                                                      DateTime firstQuoteDate,
+                                                      DateTime lastQuoteDate,
+                                                      long maxNumOfReturnedTickers)
+    {
+      
+      return TickerDataTable.GetTickersByPerformance(orderByASC, groupID, firstQuoteDate,
+                                                    lastQuoteDate, maxNumOfReturnedTickers,
+                                                    -1, -1);
+    
+    }
+    
     
     public static DataTable GetTickersByPerformance(bool orderByASC, DataTable setOfTickers,
                                                     DateTime firstQuoteDate,
                                                     DateTime lastQuoteDate,
-                                                    long maxNumOfReturnedTickers)
+                                                    long maxNumOfReturnedTickers,
+                                                    float minAbsoluteSimpleReturn,
+                                                    float maxAbsoluteSimpleReturn)
     {
+      DataTable returnValue;
       TickerDataTable.addColumnsForPerformanceAnalysis(setOfTickers);
       DateTime firstAvailableQuoteDate, lastAvailableQuoteDate;
       double firstQuote, lastQuote;
@@ -114,18 +167,27 @@ namespace QuantProject.Data.DataTables
           row["PeriodForSimpleReturn"] = "From " + firstAvailableQuoteDate.ToShortDateString() + " to " + lastAvailableQuoteDate.ToShortDateString();
         }
       }
-      ExtendedDataTable.Sort(setOfTickers, "SimpleReturn", orderByASC);
-      ExtendedDataTable.DeleteRows(setOfTickers, maxNumOfReturnedTickers);
-      return setOfTickers;              
+      string filterExpression = 
+      	getTickersByPerformance_getFilterExpression(minAbsoluteSimpleReturn,
+      	                                           	maxAbsoluteSimpleReturn);
+      returnValue = ExtendedDataTable.CopyAndSort(setOfTickers,
+                                                  filterExpression,
+                                                  "SimpleReturn",
+                                                  orderByASC);
+      ExtendedDataTable.DeleteRows(returnValue, maxNumOfReturnedTickers);
+      return returnValue;              
     }
-
-    private static void addColumnsForPerformanceAnalysis(DataTable tableToAnalyze)
+    
+    public static DataTable GetTickersByPerformance(bool orderByASC, DataTable setOfTickers,
+      DateTime firstQuoteDate,
+      DateTime lastQuoteDate,
+      long maxNumOfReturnedTickers)
     {
-      if(!tableToAnalyze.Columns.Contains("SimpleReturn"))
-        tableToAnalyze.Columns.Add("SimpleReturn", System.Type.GetType("System.Double"));
-      if(!tableToAnalyze.Columns.Contains("PeriodForSimpleReturn"))
-        tableToAnalyze.Columns.Add("PeriodForSimpleReturn", System.Type.GetType("System.String"));
+      return GetTickersByPerformance(orderByASC, setOfTickers, firstQuoteDate,lastQuoteDate,
+        maxNumOfReturnedTickers, -1, -1);              
     }
+    #endregion
+
     
     private static void addColumnNumberOfQuotes(DataTable tableToAnalyze)
     {
