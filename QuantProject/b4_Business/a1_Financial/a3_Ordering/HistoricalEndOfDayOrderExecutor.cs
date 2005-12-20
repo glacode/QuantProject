@@ -28,6 +28,7 @@ using QuantProject.Business.DataProviders;
 using QuantProject.Business.Financial.Accounting;
 using QuantProject.Business.Financial.Accounting.Transactions;
 using QuantProject.Business.Timing;
+using QuantProject.Business.Financial.Accounting.Slippage;
 
 
 namespace QuantProject.Business.Financial.Ordering
@@ -40,24 +41,36 @@ namespace QuantProject.Business.Financial.Ordering
 	{
 		private IEndOfDayTimer timer;
 		private IHistoricalQuoteProvider historicalQuoteProvider;
+    private ISlippageManager slippageManager;
 
 		public HistoricalEndOfDayOrderExecutor( IEndOfDayTimer timer ,
 			IHistoricalQuoteProvider historicalQuoteProvider )
 		{
 			this.timer = timer;
 			this.historicalQuoteProvider = historicalQuoteProvider;
+      this.slippageManager = new ZeroSlippageManager();
 		}
+    public HistoricalEndOfDayOrderExecutor( IEndOfDayTimer timer ,
+      IHistoricalQuoteProvider historicalQuoteProvider, ISlippageManager slippageManager )
+    {
+      this.timer = timer;
+      this.historicalQuoteProvider = historicalQuoteProvider;
+      this.slippageManager = slippageManager;
+    }
     [field:NonSerialized]
 		public event OrderFilledEventHandler OrderFilled;
 
 		// Tries to execute the order
 		public void Execute( Order order )
 		{
-			double instrumentPrice = this.historicalQuoteProvider.GetMarketValue( order.Instrument.Key ,
-				this.timer.GetCurrentTime() );
-			EndOfDayTransaction endOfDayTransaction = new EndOfDayTransaction(
+			double instrumentMarketPrice = 
+          this.historicalQuoteProvider.GetMarketValue(order.Instrument.Key ,
+				                                          this.timer.GetCurrentTime());
+      double instrumentPriceWithSlippage = instrumentMarketPrice + 
+                                           this.slippageManager.GetSlippage(order);
+      EndOfDayTransaction endOfDayTransaction = new EndOfDayTransaction(
 				TimedTransaction.GetTransactionType( order.Type ) , order.Instrument ,
-				order.Quantity , instrumentPrice ,
+				order.Quantity , instrumentPriceWithSlippage ,
 				new EndOfDayDateTime( this.timer.GetCurrentTime().DateTime ,
 				this.timer.GetCurrentTime().EndOfDaySpecificTime ) );
 			OrderFilled( this , new OrderFilledEventArgs( order , endOfDayTransaction ) );
