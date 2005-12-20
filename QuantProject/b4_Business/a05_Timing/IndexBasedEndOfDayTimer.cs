@@ -83,7 +83,13 @@ namespace QuantProject.Business.Timing
       }
       this.currentTime.EndOfDaySpecificTime = nextSpecificTime;
     }
-
+    /// <summary>
+    /// Gets the previous index based date time
+    /// </summary>
+    public DateTime GetPreviousDateTime()
+    {
+      return this.indexQuotes.GetPrecedingDate(this.currentTime.DateTime,1);
+    }
 
 	}
 }
