@@ -327,16 +327,24 @@ namespace QuantProject.Data.DataTables
                                                                   double minStdDeviation,
                                                                   double maxStdDeviation)
     {
-      int numRows = setOfTickers.Rows.Count;
-      for(int i = 0; i<numRows; i++)
+      int currentNumRows = setOfTickers.Rows.Count;
+      for(int i = 0;i<currentNumRows;i++)
       {
-      	double averagePrice = (double)setOfTickers.Rows[i]["AverageRawOpenPrice"];
-      	double stdDeviation = (double)setOfTickers.Rows[i]["RawOpenPriceStdDev"];
-      	if (averagePrice < minPrice || averagePrice > maxPrice ||
-      	    stdDeviation < minStdDeviation || stdDeviation > maxStdDeviation)
-       	//values of rows DON'T respect given criteria
-      		setOfTickers.Rows[i].Delete();
-      	
+        if(setOfTickers.Rows[i].RowState != DataRowState.Deleted)
+        {
+          double averagePrice = (double)setOfTickers.Rows[i]["AverageRawOpenPrice"];
+          double stdDeviation = (double)setOfTickers.Rows[i]["RawOpenPriceStdDev"];
+          if (averagePrice < minPrice || averagePrice > maxPrice ||
+            stdDeviation < minStdDeviation || stdDeviation > maxStdDeviation)
+            //values of rows DON'T respect given criteria
+          {
+            setOfTickers.Rows[i].Delete();
+            currentNumRows = setOfTickers.Rows.Count;
+            i--;//deletion causes the new ID row
+            //of the next row to be the ID row of the deleted Row
+            //so, only in this way, all the rows are checked
+          }
+        }
       }
     }
 		
@@ -446,27 +454,42 @@ namespace QuantProject.Data.DataTables
       ExtendedDataTable.DeleteRows(tableToReturn, maxNumOfReturnedTickers);
       return tableToReturn;
     }
-    
+    /// <summary>
+    /// Gets an array containing close to close ratios
+    /// </summary>
+    /// <param name="ticker"></param>
+    /// <param name="firstQuoteDate"></param>
+    /// <param name="lastQuoteDate"></param>
+    /// <param name="numDaysBetweenEachClose">Num of days the close to close ratio refers to</param>
+    /// <param name="numOfInitialMarketDaysToJump">Num of initial market days that has not to be
+    ///                                       considered in the calculation</param>
+    /// <returns></returns>
     public static float[] GetArrayOfCloseToCloseRatios(string ticker,
                                                       DateTime firstQuoteDate,
                                                       DateTime lastQuoteDate,
-                                                     	int numDaysBetweenEachClose)
+                                                     	int numDaysBetweenEachClose,
+                                                      int numOfInitialMarketDaysToJump)
     {
       float[] returnValue = null;
       Quotes tickerQuotes = new Quotes(ticker, firstQuoteDate, lastQuoteDate);
       float[] allAdjValues = ExtendedDataTable.GetArrayOfFloatFromColumn(tickerQuotes, "quAdjustedClose");
-      returnValue = new float[allAdjValues.Length/(numDaysBetweenEachClose + 1)];
+      float[] adjValuesMinusInitialMarketDays = new float[allAdjValues.Length - numOfInitialMarketDaysToJump]; 
+      for(int k = 0;k<allAdjValues.Length - numOfInitialMarketDaysToJump;k++)
+            adjValuesMinusInitialMarketDays[k] = 
+              allAdjValues[k + numOfInitialMarketDaysToJump]; 
+   
+      returnValue = new float[adjValuesMinusInitialMarketDays.Length/(numDaysBetweenEachClose + 1)];
       int i = 0; //index for ratesOfReturns array
       int lastIdxAccessed = 0;
       for(int idx = 0;
-          (idx + numDaysBetweenEachClose) < allAdjValues.Length;
+          (idx + numDaysBetweenEachClose) < adjValuesMinusInitialMarketDays.Length;
           idx += numDaysBetweenEachClose )
       {
         if(idx-lastIdxAccessed>numDaysBetweenEachClose || idx == 0)
           //there is a discontinuity, as wanted
         {
-          returnValue[i] = (allAdjValues[idx+numDaysBetweenEachClose]/
-            allAdjValues[idx] - 1);
+          returnValue[i] = (adjValuesMinusInitialMarketDays[idx+numDaysBetweenEachClose]/
+            adjValuesMinusInitialMarketDays[idx] - 1);
           lastIdxAccessed = idx;
           i++;
         }
@@ -474,6 +497,14 @@ namespace QuantProject.Data.DataTables
       return returnValue;
     }
     
+    public static float[] GetArrayOfCloseToCloseRatios(string ticker,
+                                                        DateTime firstQuoteDate,
+                                                        DateTime lastQuoteDate,
+                                                        int numDaysBetweenEachClose)
+    {
+      return GetArrayOfCloseToCloseRatios(ticker, firstQuoteDate, lastQuoteDate, numDaysBetweenEachClose,
+                                          0);
+    }
     /// <summary>
     /// returns tickers of a given set of tickers ordered by close to close 
     /// correlation to a given benchmark
