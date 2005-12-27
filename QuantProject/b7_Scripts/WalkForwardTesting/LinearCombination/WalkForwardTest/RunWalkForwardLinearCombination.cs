@@ -55,6 +55,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.LinearCombination
 		private PortfolioType portfolioType;
 
 		private bool openToCloseDaily;
+		private DateTime deadlineForScript;
 
 		private IHistoricalQuoteProvider historicalQuoteProvider;
 		private HistoricalEndOfDayTimer historicalEndOfDayTimer;
@@ -69,7 +70,8 @@ namespace QuantProject.Scripts.WalkForwardTesting.LinearCombination
 			int populationSizeForGeneticOptimizer, string benchmark,
 			DateTime firstDate, DateTime lastDate, double targetReturn,
 			PortfolioType portfolioType ,
-			bool openToCloseDaily )
+			bool openToCloseDaily ,
+			double maxRunningHours )
 		{
 			this.tickerGroupID = tickerGroupID;
 			this.numDaysForInSampleOptimization = numDaysForInSampleOptimization;
@@ -86,13 +88,15 @@ namespace QuantProject.Scripts.WalkForwardTesting.LinearCombination
 			this.targetReturn = targetReturn;
 			this.portfolioType = portfolioType;
 			this.openToCloseDaily = openToCloseDaily;
+			this.deadlineForScript = DateTime.Now.AddHours( maxRunningHours );
 		}
 
 		private void oneHourAfterMarketCloseEventHandler( Object sender ,
 			EndOfDayTimingEventArgs endOfDayTimingEventArgs )
 		{
-			if ( this.account.EndOfDayTimer.GetCurrentTime().DateTime >=
-				this.lastDate )
+			if ( ( this.account.EndOfDayTimer.GetCurrentTime().DateTime >=
+				this.lastDate ) ||
+				( DateTime.Now > this.deadlineForScript ) )
 				this.account.EndOfDayTimer.Stop();
 		}
 
@@ -124,7 +128,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.LinearCombination
 			this.historicalEndOfDayTimer =
 				new IndexBasedEndOfDayTimer(
 				new EndOfDayDateTime( this.firstDate ,
-				EndOfDaySpecificTime.MarketOpen ) , "DYN" );
+				EndOfDaySpecificTime.MarketOpen ) , "MSFT" );
 			run_setHistoricalQuoteProvider();
 			this.account = new Account( "LinearCombination" , historicalEndOfDayTimer ,
 				new HistoricalEndOfDayDataStreamer( historicalEndOfDayTimer ,
