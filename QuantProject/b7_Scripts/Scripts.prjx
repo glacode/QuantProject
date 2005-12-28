@@ -81,6 +81,8 @@
     <File name=".\WalkForwardTesting\IWalkForwardProgressNotifier.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
     <File name=".\WalkForwardTesting\WalkForwardMultiOneRank\ReportDebugger\WFMultiOneRankDebugInSampleForm.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
     <File name=".\WalkForwardTesting\WalkForwardMultiOneRank\ReportDebugger\WFMultiOneRankRunInSampleDebug.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
+    <File name=".\TickerSelectionTesting\TestingOTCTypes\EndOfDayTimerHandlerOTCTypes.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
+    <File name=".\TickerSelectionTesting\TestingOTCTypes\RunEfficientOTCTypes.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
   </Contents>
   <References>
     <Reference type="Project" refto="b1_ADT" localcopy="True" />
