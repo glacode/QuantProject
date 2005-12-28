@@ -187,11 +187,26 @@ namespace QuantProject.Data.DataTables
       ExtendedDataTable.DeleteRows(tableToReturn, maxNumOfReturnedTickers);
       return tableToReturn;
     }
+    
+    private static void getTickersByAdjCloseToClosePearsonCorrelationCoefficient_setTickersReturns(out float[][]
+      tickersReturns, DataTable setOfTickers, DateTime firstQuoteDate, DateTime lastQuoteDate) 
+                                                              
+    {
+      tickersReturns = new float[setOfTickers.Rows.Count][];
+      for(int i = 0; i<setOfTickers.Rows.Count; i++)
+      {
+        DataTable tickerQuoteTable = 
+          QuantProject.DataAccess.Tables.Quotes.GetTickerQuotes((string)setOfTickers.Rows[i][0],
+                                                                firstQuoteDate,
+                                                                lastQuoteDate);
+        tickersReturns[i] =
+          ExtendedDataTable.GetArrayOfFloatFromColumn(tickerQuoteTable,"quAdjustedClose"); 
 
-
+      }
+    }
 
     /// <summary>
-    /// Returns a table containing the Pearson correlation coefficient of the adjusted close to close ratios
+    /// Returns a table containing the Pearson correlation coefficient for the adjusted close values
     /// for any possible couple of tickers contained in the given table, for the specified interval
     /// </summary>
     public static DataTable GetTickersByAdjCloseToClosePearsonCorrelationCoefficient( bool orderByASC,
@@ -205,37 +220,58 @@ namespace QuantProject.Data.DataTables
       if(!setOfTickers.Columns.Contains("PearsonCorrelationCoefficient"))
         setOfTickers.Columns.Add("PearsonCorrelationCoefficient", System.Type.GetType("System.Double"));
       int initialNumberOfRows = setOfTickers.Rows.Count;
+      float[][] tickersReturns;
+      getTickersByAdjCloseToClosePearsonCorrelationCoefficient_setTickersReturns(out tickersReturns, setOfTickers, firstQuoteDate, lastQuoteDate);
       for(int j=0; j!= initialNumberOfRows; j++)
       {
         string firstTicker = (string)setOfTickers.Rows[j][0];
         for(int i = j+1; i!= initialNumberOfRows; i++)
         {
           string secondTicker = (string)setOfTickers.Rows[i][0];
-          DataTable dtFirstTicker = QuantProject.DataAccess.Tables.Quotes.GetTickerQuotes(firstTicker,
-                                                                              firstQuoteDate,
-                                                                              lastQuoteDate);
-          DataTable dtSecondTicker = QuantProject.DataAccess.Tables.Quotes.GetTickerQuotes(secondTicker,
-                                                                                    firstQuoteDate,
-                                                                                    lastQuoteDate);
           DataRow rowToAdd = setOfTickers.NewRow();
           rowToAdd[0] = firstTicker;
+          rowToAdd["PearsonCorrelationCoefficient"] = -2.0;
+          //unassigned value for this column
           rowToAdd["CorrelatedTicker"] = secondTicker;
           try
           {
             rowToAdd["PearsonCorrelationCoefficient"] = 
               QuantProject.ADT.Statistics.BasicFunctions.PearsonCorrelationCoefficient(
-              ExtendedDataTable.GetArrayOfFloatFromColumn(dtFirstTicker, "quAdjustedCloseToCloseRatio"),
-              ExtendedDataTable.GetArrayOfFloatFromColumn(dtSecondTicker, "quAdjustedCloseToCloseRatio"));
-            setOfTickers.Rows.Add(rowToAdd);
+              tickersReturns[j],tickersReturns[i]);
           }
           catch(Exception ex)
           {
-            string notUsed = ex.ToString();
+            ex = ex;
+          }
+          finally
+          {
+            setOfTickers.Rows.Add(rowToAdd);
           }
         }
       }
       ExtendedDataTable.DeleteRows(setOfTickers, 0, initialNumberOfRows - 1);
-      return ExtendedDataTable.CopyAndSort(setOfTickers,"PearsonCorrelationCoefficient", orderByASC);
+      //delete initial rows that don't contain correlated ticker and Pearson coeff.
+      return ExtendedDataTable.CopyAndSort(setOfTickers,"PearsonCorrelationCoefficient>-2.0",
+                                          "PearsonCorrelationCoefficient", orderByASC);
+    }
+
+    /// <summary>
+    /// Returns a table containing the Pearson correlation coefficient for the adjusted close values
+    /// for any possible couple of tickers contained in the given group of tickers,
+    /// for the specified interval
+    /// </summary>
+    public static DataTable GetTickersByAdjCloseToClosePearsonCorrelationCoefficient( bool orderByASC,
+                                                      string groupID,
+                                                      DateTime firstQuoteDate,
+                                                      DateTime lastQuoteDate)
+                                                              
+    {
+      
+      DataTable tickersOfGroup = new Tickers_tickerGroups(groupID);
+      return GetTickersByAdjCloseToClosePearsonCorrelationCoefficient(orderByASC,
+                                                                tickersOfGroup,
+                                                                firstQuoteDate,
+                                                                lastQuoteDate);
     }
 
     /// <summary>
@@ -243,9 +279,9 @@ namespace QuantProject.Data.DataTables
     /// for any possible couple of tickers contained in the given table, for the specified interval
     /// </summary>
     public static DataTable GetTickersByCloseToOpenPearsonCorrelationCoefficient( bool orderByASC,
-      DataTable setOfTickers,
-      DateTime firstQuoteDate,
-      DateTime lastQuoteDate)
+                                                              DataTable setOfTickers,
+                                                              DateTime firstQuoteDate,
+                                                              DateTime lastQuoteDate)
                                                               
     {
       if(!setOfTickers.Columns.Contains("CorrelatedTicker"))

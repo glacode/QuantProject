@@ -66,20 +66,19 @@ namespace QuantProject.Data.Selectors
 
     public DataTable GetTableOfSelectedTickers()
     {
-      this.launchExceptionIfGroupIDIsNotEmpty();
-      return QuantProject.Data.DataTables.Quotes.GetTickersByAdjCloseToClosePearsonCorrelationCoefficient(this.isOrderedInASCMode,
-        this.setOfTickersToBeSelected,
-        this.firstQuoteDate,
-        this.lastQuoteDate);
+      if(this.setOfTickersToBeSelected == null)
+        return QuantProject.Data.DataTables.Quotes.GetTickersByAdjCloseToClosePearsonCorrelationCoefficient(this.isOrderedInASCMode,
+                                                    this.groupID,
+                                                    this.firstQuoteDate,
+                                                    this.lastQuoteDate); 
+      else
+        return QuantProject.Data.DataTables.Quotes.GetTickersByAdjCloseToClosePearsonCorrelationCoefficient(this.isOrderedInASCMode,
+                                                    this.setOfTickersToBeSelected,
+                                                    this.firstQuoteDate,
+                                                    this.lastQuoteDate);
     }
     
-    private void launchExceptionIfGroupIDIsNotEmpty()
-    {
-      if(this.groupID!="")
-      {
-        throw new Exception("Not implemented: this type of selection works only with few tickers, at the moment");
-      }
-    }
+    
     public void SelectAllTickers()
     {
       ;
