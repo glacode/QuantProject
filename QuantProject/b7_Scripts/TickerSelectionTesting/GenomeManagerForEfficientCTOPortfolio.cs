@@ -95,12 +95,12 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
       return returnValue;
     }
     */
-    
-//    protected override double getFitnessValue_calculate()
-//    {
-//      return this.RateOfReturn/Math.Sqrt(this.Variance);
-//    }
-    
+    /*
+    protected override double getFitnessValue_calculate()
+    {
+      return this.RateOfReturn/Math.Sqrt(this.Variance);
+    }
+    */
     
   }
 

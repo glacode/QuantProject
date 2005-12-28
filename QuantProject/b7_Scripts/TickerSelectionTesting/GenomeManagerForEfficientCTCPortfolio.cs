@@ -40,7 +40,20 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
   public class GenomeManagerForEfficientCTCPortfolio : GenomeManagerForEfficientPortfolio
   {
     private int numDaysForReturnCalculation;
+    private double shiftedPortfolioRateOfReturn;
+    private float[] shiftedPortfolioRatesOfReturn;
+    //private double shiftedPortfolioVariance;
+    //rate of return and variance of portfolio 
+    //shifted ahead of numDaysForReturnCalculation
     
+    /// <summary>
+    /// Rates of returns of the portfolio shifted ahead of numDaysForReturnCalculation
+    /// </summary>
+    public float[] ShiftedPortfolioRatesOfReturn
+    {
+      get{return this.shiftedPortfolioRatesOfReturn;}
+    }
+
     public GenomeManagerForEfficientCTCPortfolio(DataTable setOfInitialTickers,
                                                  DateTime firstQuoteDate,
                                                  DateTime lastQuoteDate,
@@ -89,30 +102,8 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
     // equal to the given interval of days
     protected override float[] getArrayOfRatesOfReturn(string ticker)
     {
-      /*
-    	float[] returnValue = null;
-      Quotes tickerQuotes = new Quotes(ticker, this.firstQuoteDate, this.lastQuoteDate);
-      float[] allAdjValues = ExtendedDataTable.GetArrayOfFloatFromColumn(tickerQuotes, "quAdjustedClose");
-      returnValue = new float[allAdjValues.Length/this.numDaysForReturnCalculation + 1];
-      int i = 0; //index for ratesOfReturns array
-      int lastIdxAccessed = 0;
-      for(int idx = 0;
-          (idx + this.numDaysForReturnCalculation) < allAdjValues.Length;
-          idx += this.numDaysForReturnCalculation )
-      {
-        if(idx-lastIdxAccessed>numDaysForReturnCalculation || idx == 0)
-          //there is a discontinuity, as wanted
-        {
-          returnValue[i] = (allAdjValues[idx+this.numDaysForReturnCalculation]/
-            allAdjValues[idx] - 1);
-          lastIdxAccessed = idx;
-          i++;
-        }
-      }	
-      this.numberOfExaminedReturns = returnValue.Length;
-      
-      return returnValue;
-      */
+      this.calculateShiftedRateOfReturn(ticker);
+
       float[] returnValue = null;
       returnValue = 
       	QuantProject.Data.DataTables.Quotes.GetArrayOfCloseToCloseRatios(ticker,
@@ -155,14 +146,33 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
       return returnValue;
     }
 		*/
+    private void calculateShiftedRateOfReturn(string ticker)
+    {
+      try
+      {
+        float[] closeToCloseRatios = Quotes.GetArrayOfCloseToCloseRatios(ticker, this.firstQuoteDate,
+                                        this.lastQuoteDate,
+                                        this.numDaysForReturnCalculation,
+                                        this.numDaysForReturnCalculation);
+        this.shiftedPortfolioRatesOfReturn = closeToCloseRatios;
+        this.shiftedPortfolioRateOfReturn =
+            BasicFunctions.SimpleAverage(closeToCloseRatios);
+        //this.shiftedPortfolioVariance = 
+          //BasicFunctions.Variance(closeToCloseRatios);
+      }
+      catch(Exception ex)
+      {
+        ex = ex;
+      }
+    }
 		
-		//sharpe ratio as fitness
-		/*
 		protected override double getFitnessValue_calculate()
     {
-			return this.RateOfReturn/Math.Sqrt(this.Variance);
+			return (this.RateOfReturn/Math.Sqrt(this.Variance))*
+              -this.shiftedPortfolioRateOfReturn * 
+              -this.ShiftedPortfolioRatesOfReturn[this.ShiftedPortfolioRatesOfReturn.Length -1];
     }
-		*/
+		
   }
 
 }

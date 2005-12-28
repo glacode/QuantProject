@@ -62,7 +62,7 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
     //these two values have to be updated during
     //backtest, for minimizing commission amount,
     //according to broker's commission scheme 
-    protected double minPriceForMinimumCommission = 0;
+    protected double minPriceForMinimumCommission = 30;
     protected double maxPriceForMinimumCommission = 500;
     
     protected double targetReturn;
@@ -223,7 +223,7 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
     {
       //add cash first
     	if(this.orders.Count == 0 && this.account.Transactions.Count == 0)
-        this.account.AddCash(17000);     
+        this.account.AddCash(30000);     
       if(this.openPositions_allChosenTickersQuotedAtCurrentDate())
         //all tickers have quotes at the current date, so orders can be filled
       {

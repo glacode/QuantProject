@@ -68,7 +68,8 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
                                    	portfolioType, maxRunningHours,
                                    	numDaysBetweenEachOptimization)
 		{
-      this.ScriptName = "TestOptimizedCTOPortfolio";
+      //this.ScriptName = "TestOptimizedCTOPortfolio";
+      this.ScriptName = "TestOptimizedCTOWeightedPortfolio";
     }
   	
   	protected override void run_initializeEndOfDayTimerHandler()

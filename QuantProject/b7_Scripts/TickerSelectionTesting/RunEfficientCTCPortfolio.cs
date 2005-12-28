@@ -59,6 +59,7 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
 	public class RunEfficientCTCPortfolio : RunEfficientPortfolio
 	{
     protected int numDayOfPortfolioLife;
+    protected int numDaysWithNoPositions;
     protected int numDaysForReturnCalculation;
     protected double maxAcceptableCloseToCloseDrawdown;
     protected int numDaysBetweenEachOptimization;
@@ -68,7 +69,8 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
                                     int generationNumberForGeneticOptimizer,
                                     int populationSizeForGeneticOptimizer, string benchmark,
                                     DateTime startDate, DateTime endDate,
-                                   	int numDaysOfPortfolioLife, int numDaysForReturnCalculation, 
+                                   	int numDaysOfPortfolioLife, int numDaysForReturnCalculation,
+                                    int numDaysWithNoPositions,
                                    	double targetReturn,
                                     PortfolioType portfolioType, double maxAcceptableCloseToCloseDrawdown, 
                                     double maxRunningHours, int numDaysBetweenEachOptimization):
@@ -79,10 +81,11 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
                                     startDate, endDate, targetReturn,
                                    	portfolioType, maxRunningHours)
 		{
-      this.ScriptName = "CloseToCloseScriptsDiscontinuos";
+      this.ScriptName = "CloseToCloseScriptsDiscontinuosWithSharpe";
       //this.ScriptName = "CloseToCloseScriptsDiscontinuosWithCoeff";
       this.numDayOfPortfolioLife = numDaysOfPortfolioLife;
       this.numDaysForReturnCalculation = numDaysForReturnCalculation;
+      this.numDaysWithNoPositions = numDaysWithNoPositions;
       this.maxAcceptableCloseToCloseDrawdown = maxAcceptableCloseToCloseDrawdown;
       this.numDaysBetweenEachOptimization = numDaysBetweenEachOptimization;
 		}
@@ -97,6 +100,7 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
     	                                                        this.generationNumberForGeneticOptimizer,
     	                                                        this.populationSizeForGeneticOptimizer, this.benchmark,
     	                                                        this.numDayOfPortfolioLife, this.numDaysForReturnCalculation,
+                                                              this.numDaysWithNoPositions,
     	                                                        this.targetReturn,
     	                                                       	this.portfolioType, this.maxAcceptableCloseToCloseDrawdown,
                                                               this.numDaysBetweenEachOptimization);

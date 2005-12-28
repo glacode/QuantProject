@@ -64,7 +64,48 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
     	this.numDaysElapsedSinceLastOptimization = 0;
     	this.seedForRandomGenerator = ConstantsProvider.SeedForRandomGenerator;
     }
-		    
+    
+    private double marketOpenEventHandler_currCombinationHasLost_getValue(ExtendedDateTime extendedDateTime)
+    {
+      double returnValue = 0.0;
+      string signedTicker;
+      string unsignedTicker;
+      double tickerMarketValue;
+      for(int i = 0; i<this.chosenTickers.Length; i++)
+      {
+        signedTicker = this.chosenTickers[i];
+        unsignedTicker = 
+            GenomeManagerForEfficientPortfolio.GetCleanTickerCode(signedTicker);
+        tickerMarketValue = 
+          HistoricalDataProvider.GetAdjustedMarketValue(unsignedTicker,extendedDateTime);
+        if(signedTicker == unsignedTicker)
+        //long position for the ticker
+          returnValue += this.chosenTickersPortfolioWeights[i]*tickerMarketValue;
+        else//short position for the ticker
+          returnValue -= this.chosenTickersPortfolioWeights[i]*tickerMarketValue;
+      }
+      return returnValue;
+      
+    }
+    
+    private bool marketOpenEventHandler_currCombinationHasLost()
+    {
+      bool returnValue = false;
+      IndexBasedEndOfDayTimer currentTimer = (IndexBasedEndOfDayTimer)this.account.EndOfDayTimer;
+      ExtendedDateTime now = 
+        new ExtendedDateTime(currentTimer.GetCurrentTime().DateTime,
+                             BarComponent.Open);
+      ExtendedDateTime previousClose =
+        new ExtendedDateTime(currentTimer.GetPreviousDateTime(),
+                             BarComponent.Close);
+      double currentCombinationValue_Now = 
+          this.marketOpenEventHandler_currCombinationHasLost_getValue(now);
+      double currentCombinationValue_AtPreviousMarketClose = 
+          this.marketOpenEventHandler_currCombinationHasLost_getValue(previousClose);
+      if(currentCombinationValue_Now < currentCombinationValue_AtPreviousMarketClose)
+        returnValue = true;
+      return returnValue;
+    }
        
     /// <summary>
     /// Handles a "Market Open" event.
@@ -74,21 +115,24 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
     public override void MarketOpenEventHandler(
       Object sender , EndOfDayTimingEventArgs endOfDayTimingEventArgs )
     {
-    	//temporarily the if condition
-    	//if(this.numDaysElapsedSinceLastOptimization == 0)
-    		this.openPositions();
+      if(this.orders.Count == 0 && this.account.Transactions.Count == 0)
+          this.account.AddCash(30000);
+      bool allTickerHasBeenChosen = true;
+      for( int i = 0; i<this.chosenTickers.Length; i++)
+      {
+        if(this.chosenTickers[i] == null)
+            allTickerHasBeenChosen = false;
+      }
+      if(allTickerHasBeenChosen && 
+         this.marketOpenEventHandler_currCombinationHasLost())
+          this.openPositions();
     }
 		
                 
     public override void MarketCloseEventHandler(
       Object sender , EndOfDayTimingEventArgs endOfDayTimingEventArgs )
     {
-    	
-    	//temporarily
-    	//if(this.numDaysElapsedSinceLastOptimization ==
-    	//   this.numDaysBetweenEachOptimization)
-    	 		this.closePositions();
-    	  	
+    	this.closePositions();
     }
     
     
@@ -97,28 +141,33 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
       
     protected DataTable getSetOfTickersToBeOptimized(DateTime currentDate)
     {
-      /*
-      SelectorByAverageRawOpenPrice selectorByOpenPrice = 
-                  new SelectorByAverageRawOpenPrice(this.tickerGroupID, false,
-                          currentDate.AddDays(-this.numDaysForLiquidity), currentDate,
-                          this.numberOfEligibleTickers, this.minPriceForMinimumCommission,
-                          this.maxPriceForMinimumCommission, 0, 2);
-      DataTable tickersByPrice = selectorByOpenPrice.GetTableOfSelectedTickers();
-      */
      	
      	SelectorByGroup temporizedGroup = new SelectorByGroup(this.tickerGroupID, currentDate);
-      SelectorByOpenCloseCorrelationToBenchmark lessCorrelatedFromTemporizedGroup = 
-      	new SelectorByOpenCloseCorrelationToBenchmark(temporizedGroup.GetTableOfSelectedTickers(),
+      
+      SelectorByLiquidity mostLiquidFromTemporized =
+        new SelectorByLiquidity(temporizedGroup.GetTableOfSelectedTickers(),
+                                false, currentDate.AddDays(-this.numDaysForOptimizationPeriod),
+                                currentDate, this.numberOfEligibleTickers);
+      
+      SelectorByAverageRawOpenPrice selectorByOpenPriceFromMostLiquid =
+      	      new SelectorByAverageRawOpenPrice(mostLiquidFromTemporized.GetTableOfSelectedTickers(), false,
+                                currentDate.AddDays(-10), currentDate,
+                                this.numberOfEligibleTickers, this.minPriceForMinimumCommission,
+                                this.maxPriceForMinimumCommission, 0, 10);
+      
+      SelectorByOpenCloseCorrelationToBenchmark lessCorrelatedFromSelectedByPrice = 
+      	new SelectorByOpenCloseCorrelationToBenchmark(selectorByOpenPriceFromMostLiquid.GetTableOfSelectedTickers(),
       	                                              this.benchmark,true,
       	                                              currentDate.AddDays(-this.numDaysForOptimizationPeriod ),
       	                                    					currentDate,
-      	                                    					this.numberOfEligibleTickers);
+      	                                    					this.numberOfEligibleTickers/2);
       
-      this.eligibleTickers = lessCorrelatedFromTemporizedGroup.GetTableOfSelectedTickers();
+      this.eligibleTickers = lessCorrelatedFromSelectedByPrice.GetTableOfSelectedTickers();
       SelectorByQuotationAtEachMarketDay quotedAtEachMarketDayFromEligible = 
         new SelectorByQuotationAtEachMarketDay( this.eligibleTickers,
                                    false, currentDate.AddDays(-this.numDaysForOptimizationPeriod),
-                                    currentDate, this.numberOfEligibleTickers, this.benchmark);
+                                    currentDate, this.numberOfEligibleTickers/2, this.benchmark);
+                  
       //SelectorByWinningOpenToClose winners =
       //	new SelectorByWinningOpenToClose(quotedAtEachMarketDayFromMostLiquid.GetTableOfSelectedTickers(),
       //	                                 false, currentDate.AddDays(-2),
@@ -130,7 +179,9 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
       //                                                currentDate.AddDays(-this.numDaysForLiquidity),
       //                                                currentDate, this.numberOfEligibleTickers/2);
       return quotedAtEachMarketDayFromEligible.GetTableOfSelectedTickers();
+      //return mostLiquidFromQuotedAtEachMarketDay.GetTableOfSelectedTickers();
       //return lessCorrelated.GetTableOfSelectedTickers();
+      //return selectorByOpenPriceFromMostLiquid.GetTableOfSelectedTickers();
     }
     
     protected virtual void setTickers(DateTime currentDate,

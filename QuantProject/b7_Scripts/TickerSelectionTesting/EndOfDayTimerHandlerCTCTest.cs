@@ -54,6 +54,7 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
                                 string benchmark,
                                 int numDaysOfPortfolioLife,
                                 int numDaysForReturnCalculation,
+                                int numDaysWithNoPositions,
                                 double targetReturn,
                                	PortfolioType portfolioType, double maxAcceptableCloseToCloseDrawdown,
                                 int numDaysBetweenEachOptimization):
@@ -65,6 +66,7 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
                                 benchmark,
                                 numDaysOfPortfolioLife,
                                 numDaysForReturnCalculation,
+                                numDaysWithNoPositions,
                                 targetReturn,
                                	portfolioType, maxAcceptableCloseToCloseDrawdown,
                                 numDaysBetweenEachOptimization)

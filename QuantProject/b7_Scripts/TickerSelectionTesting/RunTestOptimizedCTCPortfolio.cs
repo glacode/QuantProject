@@ -65,7 +65,8 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
                                     int generationNumberForGeneticOptimizer,
                                     int populationSizeForGeneticOptimizer, string benchmark,
                                     DateTime endDate,
-                                   	int numDaysOfPortfolioLife, int numDaysForReturnCalculation, 
+                                   	int numDaysOfPortfolioLife, int numDaysForReturnCalculation,
+                                    int numDaysWithNoPositions,
                                    	double targetReturn,
                                     PortfolioType portfolioType, double maxAcceptableCloseToCloseDrawdown, 
                                     double maxRunningHours, int numDaysBetweenEachOptimization):
@@ -74,7 +75,8 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
                                     generationNumberForGeneticOptimizer,
                                     populationSizeForGeneticOptimizer, benchmark,
                                     endDate.AddDays(-numDaysForOptimizationPeriod), endDate,
-                                   	numDaysOfPortfolioLife - 1, numDaysForReturnCalculation, 
+                                   	numDaysOfPortfolioLife, numDaysForReturnCalculation,
+                                    numDaysWithNoPositions,
                                    	targetReturn,
                                     portfolioType, maxAcceptableCloseToCloseDrawdown, 
                                     maxRunningHours, numDaysBetweenEachOptimization)
@@ -82,7 +84,7 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
       this.ScriptName = "TestOptimizedCTCPortfolio";
       
 		}
-  
+    
     protected override void run_initializeEndOfDayTimerHandler()
     {
       this.endOfDayTimerHandler = new EndOfDayTimerHandlerCTCTest(this.tickerGroupID, this.numberOfEligibleTickers,
@@ -92,6 +94,7 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
     	                                                        this.populationSizeForGeneticOptimizer, this.benchmark,
     	                                                        this.numDayOfPortfolioLife, 
     	                                                        this.numDaysForReturnCalculation,
+                                                              this.numDaysWithNoPositions,
     	                                                        this.targetReturn,
     	                                                       	this.portfolioType, this.maxAcceptableCloseToCloseDrawdown,
                                                               this.numDaysBetweenEachOptimization);

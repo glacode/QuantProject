@@ -36,6 +36,7 @@ using QuantProject.Business.Strategies;
 using QuantProject.Business.Testing;
 using QuantProject.Business.Timing;
 using QuantProject.Business.Financial.Accounting.Commissions;
+using QuantProject.Business.Financial.Accounting.Slippage;
 using QuantProject.Data.DataProviders;
 using QuantProject.Data.Selectors; 
 using QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios;
@@ -73,22 +74,27 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
       //this.ScriptName = "OpenCloseScriptsSharpeRatioWithCoeff";
       //this.ScriptName = "OpenCloseScriptsSharpeRatio";
       this.ScriptName = "OpenCloseScriptsWithCoeff";
+      //this.ScriptName = "OpenCloseScripts";
       this.numDaysBetweenEachOptimization = numDaysBetweenEachOptimization;
     }
     
-    #region auxiliary overriden methods for Run
         
-    /* delete remark delimitations for having ib commission
+    // delete remark delimitations for having ib commission 
+    // and a fixed percentage calculation of slippage
     protected override void run_initializeAccount()
     {
-      this.account = new Account( this.ScriptName , this.endOfDayTimer ,
-        new HistoricalEndOfDayDataStreamer( this.endOfDayTimer ,
-          this.historicalQuoteProvider ) ,
-        new HistoricalEndOfDayOrderExecutor( this.endOfDayTimer ,
-          this.historicalQuoteProvider ), new IBCommissionManager());
+      this.account = new Account(this.ScriptName,
+                                 this.endOfDayTimer ,
+                                 new HistoricalEndOfDayDataStreamer(this.endOfDayTimer ,
+                                                                    this.historicalQuoteProvider ) ,
+                                 new HistoricalEndOfDayOrderExecutor(this.endOfDayTimer ,
+                                                                     this.historicalQuoteProvider,
+                                                                     new FixedPercentageSlippageManager(this.historicalQuoteProvider,
+                                                                                                        this.endOfDayTimer,0.08)),
+                                 new IBCommissionManager());
      
     }
-    */
+    
     
     protected override void run_initializeEndOfDayTimerHandler()
     {
@@ -128,7 +134,8 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
         new OneHourAfterMarketCloseEventHandler(
         this.endOfDayTimerHandler.OneHourAfterMarketCloseEventHandler );
     }
-    #endregion 
+    
+    
     
     //necessary far calling RunEfficientPortfolio.Run()
     //in classes that inherit from this class

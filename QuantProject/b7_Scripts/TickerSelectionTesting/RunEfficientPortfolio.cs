@@ -179,7 +179,7 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
     
     protected virtual void run_initializeAccount()
     {
-      //default account with no commissions
+      //default account with no commissions and no slippage calculation
     	this.account = new Account( this.scriptName , this.endOfDayTimer ,
         new HistoricalEndOfDayDataStreamer( this.endOfDayTimer ,
 					this.historicalQuoteProvider ) ,
