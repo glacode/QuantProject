@@ -348,6 +348,16 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "TickerSelectionTesting\TestingOTCTypes\EndOfDayTimerHandlerOTCTypes.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "TickerSelectionTesting\TestingOTCTypes\RunEfficientOTCTypes.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "WalkForwardTesting\IWalkForwardProgressNotifier.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
