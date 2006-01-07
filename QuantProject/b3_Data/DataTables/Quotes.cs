@@ -116,34 +116,66 @@ namespace QuantProject.Data.DataTables
     }
 
     /// <summary>
-    /// returns tickers ordered by volatility computed with Standard deviation of adjusted 
-    /// close to open ratio, within the given set of tickers
+    /// returns tickers ordered by volatility computed with Standard deviation of  
+    /// open to close ratio, within the given set of tickers
     /// </summary>
-    public static DataTable GetTickersByCloseToOpenVolatility( bool orderByASC,
+    public static DataTable GetTickersByOpenToCloseVolatility( bool orderByASC,
       DataTable setOfTickers,
       DateTime firstQuoteDate,
       DateTime lastQuoteDate,
       long maxNumOfReturnedTickers)
     {
-      if(!setOfTickers.Columns.Contains("CloseToOpenStandDev"))
-        setOfTickers.Columns.Add("CloseToOpenStandDev", System.Type.GetType("System.Double"));
+      if(!setOfTickers.Columns.Contains("OpenToCloseStandDev"))
+        setOfTickers.Columns.Add("OpenToCloseStandDev", System.Type.GetType("System.Double"));
       foreach(DataRow row in setOfTickers.Rows)
       {
-        row["CloseToOpenStandDev"] = 
-          QuantProject.DataAccess.Tables.Quotes.GetCloseToOpenStandardDeviation((string)row[0],
-          firstQuoteDate,
-          lastQuoteDate);
+        try
+        {
+          row["OpenToCloseStandDev"] = -1000000.0;
+          row["OpenToCloseStandDev"] = 
+            QuantProject.DataAccess.Tables.Quotes.GetOpenToCloseStandardDeviation((string)row[0],
+            firstQuoteDate,
+            lastQuoteDate);
+        }
+        catch(Exception ex)
+        {ex=ex;}
       }
-      DataTable getTickersByVolatility = ExtendedDataTable.CopyAndSort(setOfTickers,"CloseToOpenStandDev", orderByASC);
+      DataTable getTickersByVolatility = ExtendedDataTable.CopyAndSort(setOfTickers,
+                                                    "OpenToCloseStandDev>-1000000.0",
+                                                    "OpenToCloseStandDev",
+                                                    orderByASC);
       ExtendedDataTable.DeleteRows(getTickersByVolatility, maxNumOfReturnedTickers);
       return getTickersByVolatility;
     }
+
+//    /// <summary>
+//    /// returns tickers ordered by volatility computed with Standard deviation of adjusted 
+//    /// close to open ratio, within the given set of tickers
+//    /// </summary>
+//    public static DataTable GetTickersByCloseToOpenVolatility( bool orderByASC,
+//      DataTable setOfTickers,
+//      DateTime firstQuoteDate,
+//      DateTime lastQuoteDate,
+//      long maxNumOfReturnedTickers)
+//    {
+//      if(!setOfTickers.Columns.Contains("CloseToOpenStandDev"))
+//        setOfTickers.Columns.Add("CloseToOpenStandDev", System.Type.GetType("System.Double"));
+//      foreach(DataRow row in setOfTickers.Rows)
+//      {
+//        row["CloseToOpenStandDev"] = 
+//          QuantProject.DataAccess.Tables.Quotes.GetCloseToOpenStandardDeviation((string)row[0],
+//          firstQuoteDate,
+//          lastQuoteDate);
+//      }
+//      DataTable getTickersByVolatility = ExtendedDataTable.CopyAndSort(setOfTickers,"CloseToOpenStandDev", orderByASC);
+//      ExtendedDataTable.DeleteRows(getTickersByVolatility, maxNumOfReturnedTickers);
+//      return getTickersByVolatility;
+//    }
 
 
     /// <summary>
     /// returns tickers by average close to close performance within the given set of tickers
     /// </summary>
-
     public static DataTable GetTickersByAverageCloseToClosePerformance( bool orderByASC,
       DataTable setOfTickers,
       DateTime firstQuoteDate,
@@ -165,25 +197,35 @@ namespace QuantProject.Data.DataTables
     }
 
     /// <summary>
-    /// returns tickers by average close to open performance within the given set of tickers
+    /// returns tickers by average open to close performance
+    /// within the given set of tickers
     /// </summary>
 
-    public static DataTable GetTickersByAverageCloseToOpenPerformance( bool orderByASC,
+    public static DataTable GetTickersByAverageOpenToClosePerformance( bool orderByASC,
       DataTable setOfTickers,
       DateTime firstQuoteDate,
       DateTime lastQuoteDate,
       long maxNumOfReturnedTickers)
     {
-      if(!setOfTickers.Columns.Contains("AverageCloseToOpenPerformance"))
-        setOfTickers.Columns.Add("AverageCloseToOpenPerformance", System.Type.GetType("System.Double"));
+      if(!setOfTickers.Columns.Contains("AverageOpenToClosePerformance"))
+        setOfTickers.Columns.Add("AverageOpenToClosePerformance", System.Type.GetType("System.Double"));
       foreach(DataRow row in setOfTickers.Rows)
       {
-        row["AverageCloseToOpenPerformance"] = 
-          QuantProject.DataAccess.Tables.Quotes.GetAverageCloseToOpenPerformance((string)row[0],
-          firstQuoteDate,
-          lastQuoteDate);
+        try
+        {
+          row["AverageOpenToClosePerformance"] = -1000000.0;
+          row["AverageOpenToClosePerformance"] = 
+            QuantProject.DataAccess.Tables.Quotes.GetAverageOpenToClosePerformance((string)row[0],
+            firstQuoteDate,
+            lastQuoteDate);
+        }
+        catch(Exception ex)
+        {ex=ex;}
       }
-      DataTable tableToReturn = ExtendedDataTable.CopyAndSort(setOfTickers,"AverageCloseToOpenPerformance", orderByASC);
+      DataTable tableToReturn = ExtendedDataTable.CopyAndSort(setOfTickers,
+                                                              "AverageOpenToClosePerformance>-1000000.0",
+                                                              "AverageOpenToClosePerformance",
+                                                              orderByASC);
       ExtendedDataTable.DeleteRows(tableToReturn, maxNumOfReturnedTickers);
       return tableToReturn;
     }

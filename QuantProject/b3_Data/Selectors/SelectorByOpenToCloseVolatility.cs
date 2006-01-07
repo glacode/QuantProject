@@ -67,14 +67,14 @@ namespace QuantProject.Data.Selectors
     public DataTable GetTableOfSelectedTickers()
     {
       if(this.setOfTickersToBeSelected == null)
-        return QuantProject.DataAccess.Tables.Quotes.GetTickersByCloseToOpenVolatility(this.isOrderedInASCMode,
+        return QuantProject.DataAccess.Tables.Quotes.GetTickersByOpenToCloseVolatility(this.isOrderedInASCMode,
           this.groupID,
           this.firstQuoteDate,
           this.lastQuoteDate,
           this.maxNumOfReturnedTickers);        
 
       else
-        return QuantProject.Data.DataTables.Quotes.GetTickersByCloseToOpenVolatility(this.isOrderedInASCMode,
+        return QuantProject.Data.DataTables.Quotes.GetTickersByOpenToCloseVolatility(this.isOrderedInASCMode,
           this.setOfTickersToBeSelected, 
           this.firstQuoteDate,
           this.lastQuoteDate,
