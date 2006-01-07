@@ -58,7 +58,7 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
                                 PortfolioType portfolioType, int numDaysBetweenEachOptimization,
                                 Account[] accounts):
                                 base(tickerGroupID, numberOfEligibleTickers, 
-                                numberOfTickersToBeChosen, numDaysForOptimizationPeriod, accounts[0],
+                                numberOfTickersToBeChosen, numDaysForOptimizationPeriod,
                                 generationNumberForGeneticOptimizer,
                                 populationSizeForGeneticOptimizer,
                                 benchmark, targetReturn,
@@ -103,9 +103,40 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
       }
     }
 
+    protected void addOrderForTickerForTheGivenAccount(int tickerPosition,
+                                                       int accountNumber )
+    {
+    	string tickerCode = 
+    		GenomeManagerForEfficientPortfolio.GetCleanTickerCode(this.chosenTickers[tickerPosition]);
+      double cashForSinglePosition = 
+      	this.accounts[accountNumber].CashAmount * this.chosenTickersPortfolioWeights[tickerPosition];
+      long quantity =
+      	Convert.ToInt64( Math.Floor( cashForSinglePosition / this.accounts[accountNumber].DataStreamer.GetCurrentBid( tickerCode ) ) );
+      Order order;
+      if(this.portfolioType == PortfolioType.OnlyShort ||
+         		(this.portfolioType == PortfolioType.ShortAndLong &&
+          this.chosenTickers[tickerPosition] != tickerCode))
+        order = new Order( OrderType.MarketSellShort, new Instrument( tickerCode ) , quantity );  
+      else      		
+      	order = new Order( OrderType.MarketBuy, new Instrument( tickerCode ) , quantity );
+      
+      this.orders.Add(order);
+    }
+    protected void addChosenTickersToOrderListForTheGivenAccount(int accountNumber)
+    {
+      for( int i = 0; i<this.chosenTickers.Length; i++)
+      {
+      	if(this.chosenTickers[i] != null)
+        {  
+          this.addOrderForTickerForTheGivenAccount( i, accountNumber );
+          this.lastOrderedTickers[i] = 
+          	GenomeManagerForEfficientPortfolio.GetCleanTickerCode(this.chosenTickers[i]);
+        }
+      }
+    }
     protected override void openPositions()
     {
-      this.addChosenTickersToOrderList();
+      
       for(int i = 0; i<this.accounts.Length; i++)
       {
         //add cash first for each account
@@ -113,14 +144,21 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
               this.accounts[i].AddCash(30000);  
         
         if(i<=1)//daily classical, and multiday
-          this.openPositions_openWhenPortfolioIsEmpty(i);
-        else if(i==2)//for the CTO OTC
         {
-          this.closePositions_close(i);	
+        	this.orders.Clear();
+        	this.addChosenTickersToOrderListForTheGivenAccount(i);
+        	this.openPositions_openWhenPortfolioIsEmpty(i);
+        }
+        	else if(i==2)//for the CTO OTC
+        {
+          this.closePositions_close(i);
+          this.orders.Clear();
+          this.addChosenTickersToOrderListForTheGivenAccount(i);
           foreach(object item in this.orders)
             this.accounts[i].AddOrder((Order)item);
         }
-        else if(i==3)//for the CTO, only at night
+        else if(i==3)//for the CTO, no position is opened
+        	//at market open. Any open position is closed, instead
         {
           this.closePositions_close(i);	
         }
@@ -168,7 +206,7 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
           {
             this.reverseSignOfChosenTickers();
             this.orders.Clear();
-            this.addChosenTickersToOrderList();
+            this.addChosenTickersToOrderListForTheGivenAccount(i);
             this.openPositions_openWhenPortfolioIsEmpty(i);
             this.reverseSignOfChosenTickers();
             this.orders.Clear();
@@ -183,7 +221,7 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
           {
             this.reverseSignOfChosenTickers();
             this.orders.Clear();
-            this.addChosenTickersToOrderList();
+            this.addChosenTickersToOrderListForTheGivenAccount(i);
             this.openPositions_openWhenPortfolioIsEmpty(i);
             this.reverseSignOfChosenTickers();
             this.orders.Clear();
@@ -283,15 +321,15 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
         //as large as the number of tickers to be chosen                     
       
       {
-        IGenomeManager genManEfficientCTOPortfolio = 
-          new GenomeManagerForEfficientCTOPortfolio(setOfTickersToBeOptimized,
+        IGenomeManager genManEfficientOTCTypes = 
+          new GenomeManagerForEfficientOTCTypes(setOfTickersToBeOptimized,
         	                                          currentDate.AddDays(-this.numDaysForOptimizationPeriod),
         	                                          currentDate,
         	                                          this.numberOfTickersToBeChosen,
         	                                          this.targetReturn,
         	                                         	this.portfolioType);
         
-        GeneticOptimizer GO = new GeneticOptimizer(genManEfficientCTOPortfolio,
+        GeneticOptimizer GO = new GeneticOptimizer(genManEfficientOTCTypes,
                                                     this.populationSizeForGeneticOptimizer,
                                                     this.generationNumberForGeneticOptimizer,
                                                    this.seedForRandomGenerator);
