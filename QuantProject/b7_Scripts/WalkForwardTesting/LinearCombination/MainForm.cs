@@ -228,15 +228,15 @@ namespace QuantProject.Scripts.WalkForwardTesting.LinearCombination
 //				this.getSetOfTickersToBeOptimized_quickly();
 			DataTable setOfTickersToBeOptimized =
 				this.getSetOfTickersToBeOptimized();
-			GenomeManagerForEfficientCTOPortfolio genManEfficientCTOPortfolio = 
-				new GenomeManagerForEfficientCTOPortfolio(setOfTickersToBeOptimized,
+			GenomeManagerForEfficientOTCPortfolio genManEfficientOTCPortfolio = 
+				new GenomeManagerForEfficientOTCPortfolio(setOfTickersToBeOptimized,
 				this.firstDate,
 				this.lastDate,
 				this.numberOfTickersToBeChosen,
 				this.targetReturn,
 				this.portfolioType);
         
-			this.GO = new GeneticOptimizer(genManEfficientCTOPortfolio,
+			this.GO = new GeneticOptimizer(genManEfficientOTCPortfolio,
 				this.populationSizeForGeneticOptimizer,
 				this.generationNumberForGeneticOptimizer);
 			this.GO.NewGeneration += new NewGenerationEventHandler(

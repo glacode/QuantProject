@@ -185,8 +185,8 @@ namespace QuantProject.Scripts.WalkForwardTesting.LinearCombination
 				optimizationLastDate );
 			Console.WriteLine( "Number of tickers to be optimized: " +
 				setOfTickersToBeOptimized.Rows.Count.ToString() );
-			GenomeManagerForEfficientCTOPortfolio genManEfficientCTOPortfolio = 
-				new GenomeManagerForEfficientCTOPortfolio(
+			GenomeManagerForEfficientOTCPortfolio genManEfficientOTCPortfolio = 
+				new GenomeManagerForEfficientOTCPortfolio(
 				setOfTickersToBeOptimized ,
 				currentDate.AddDays( -this.numDaysForInSampleOptimization + 1 ) ,
 				currentDate ,
@@ -194,7 +194,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.LinearCombination
 				this.targetReturn ,
 				this.portfolioType );
         
-			this.geneticOptimizer = new GeneticOptimizer(genManEfficientCTOPortfolio,
+			this.geneticOptimizer = new GeneticOptimizer(genManEfficientOTCPortfolio,
 				this.populationSizeForGeneticOptimizer,
 				this.generationNumberForGeneticOptimizer);
 			this.geneticOptimizer.NewGeneration += new NewGenerationEventHandler(
