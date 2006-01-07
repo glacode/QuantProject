@@ -163,15 +163,15 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
         //as large as the number of tickers to be chosen                     
       
       {
-        IGenomeManager genManEfficientCTOPortfolio = 
-          new GenomeManagerForEfficientCTOPortfolio(setOfTickersToBeOptimized,
+        IGenomeManager genManEfficientOTCPortfolio = 
+          new GenomeManagerForEfficientOTCPortfolio(setOfTickersToBeOptimized,
         	                                          currentDate.AddDays(-this.numDaysForOptimizationPeriod),
         	                                          currentDate,
         	                                          this.numberOfTickersToBeChosen,
         	                                          this.targetReturn,
         	                                         	this.portfolioType);
         
-        GeneticOptimizer GO = new GeneticOptimizer(genManEfficientCTOPortfolio,
+        GeneticOptimizer GO = new GeneticOptimizer(genManEfficientOTCPortfolio,
                                                     this.populationSizeForGeneticOptimizer,
                                                     this.generationNumberForGeneticOptimizer,
                                                    this.seedForRandomGenerator);

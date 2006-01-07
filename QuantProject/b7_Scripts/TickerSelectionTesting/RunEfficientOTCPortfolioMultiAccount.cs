@@ -1,7 +1,7 @@
 /*
 QuantProject - Quantitative Finance Library
 
-RunEfficientCTOPorfolio.cs
+RunEfficientOTCPorfolioMultiAccount.cs
 Copyright (C) 2003 
 Marco Milletti
 
@@ -36,7 +36,6 @@ using QuantProject.Business.Strategies;
 using QuantProject.Business.Testing;
 using QuantProject.Business.Timing;
 using QuantProject.Business.Financial.Accounting.Commissions;
-using QuantProject.Business.Financial.Accounting.Slippage;
 using QuantProject.Data.DataProviders;
 using QuantProject.Data.Selectors; 
 using QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios;
@@ -45,21 +44,26 @@ using QuantProject.Presentation.Reporting.WindowsForm;
 
 namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
 {
-	/// <summary>
+	
+  /// <summary>
 	/// Script to buy at open and sell at close 
-	/// the efficient close to open daily portfolio
+	/// the efficient open to close daily portfolio
 	/// </summary>
   [Serializable]
-  public class RunEfficientCTOPortfolio : RunEfficientPortfolio
+  public class RunEfficientOTCPorfolioMultiAccount : RunEfficientPortfolio
   {
-    protected int numDaysBetweenEachOptimization;	
-    public RunEfficientCTOPortfolio(string tickerGroupID, int numberOfEligibleTickers, 
+    protected int numDaysBetweenEachOptimization;
+    private int distanceBetweenEachGenomeToTest;
+    private int numberOfAccounts;
+    private Account[] accounts;
+  
+    public RunEfficientOTCPorfolioMultiAccount(string tickerGroupID, int numberOfEligibleTickers, 
       int numberOfTickersToBeChosen, int numDaysForOptimizationPeriod, 
       int generationNumberForGeneticOptimizer,
       int populationSizeForGeneticOptimizer, string benchmark,
       DateTime startDate, DateTime endDate, double targetReturn,
       PortfolioType portfolioType, double maxRunningHours,
-     	int numDaysBetweenEachOptimization):
+     	int numDaysBetweenEachOptimization, int numberOfAccounts, int distanceBetweenEachGenomeToTest):
       base(tickerGroupID, numberOfEligibleTickers, 
       numberOfTickersToBeChosen, numDaysForOptimizationPeriod, 
       generationNumberForGeneticOptimizer,
@@ -67,54 +71,57 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
       startDate, endDate, targetReturn,
       portfolioType, maxRunningHours)
     {
-      this.ScriptName = "CloseToOpenScriptsNoCoeff";
+      this.ScriptName = "MultiAccountOpenCloseScripts";
       this.numDaysBetweenEachOptimization = numDaysBetweenEachOptimization;
+      this.distanceBetweenEachGenomeToTest = distanceBetweenEachGenomeToTest;
+      this.numberOfAccounts = numberOfAccounts;
+      this.accounts = new Account[numberOfAccounts];
     }
     
+    #region auxiliary overriden methods for Run
         
-    // delete remark delimitations for having ib commission 
-    // and a fixed percentage calculation of slippage
+    
     protected override void run_initializeAccount()
     {
-      this.account = new Account(this.ScriptName,
-                                 this.endOfDayTimer ,
-                                 new HistoricalEndOfDayDataStreamer(this.endOfDayTimer ,
-                                                                    this.historicalQuoteProvider ) ,
-                                 new HistoricalEndOfDayOrderExecutor(this.endOfDayTimer ,
-                                                                     this.historicalQuoteProvider));
-                                                                    //, new FixedPercentageSlippageManager(this.historicalQuoteProvider,
-                                                                                                       // this.endOfDayTimer,0.08)),
-                                 //new IBCommissionManager());
+      for(int i = 0; i<this.accounts.Length; i++)
+      {
+        this.accounts[i] = new Account( this.ScriptName , this.endOfDayTimer ,
+                          new HistoricalEndOfDayDataStreamer( this.endOfDayTimer ,
+                            this.historicalQuoteProvider ) ,
+                          new HistoricalEndOfDayOrderExecutor( this.endOfDayTimer ,
+                            this.historicalQuoteProvider ));
+      }
      
     }
     
     
     protected override void run_initializeEndOfDayTimerHandler()
     {
-      this.endOfDayTimerHandler = new EndOfDayTimerHandlerCTO(this.tickerGroupID,
-                                          this.numberOfEligibleTickers,
-                                          this.numberOfTickersToBeChosen,
-                                          this.numDaysForOptimizationPeriod,
-                                          this.account,
-                                          this.generationNumberForGeneticOptimizer, 
-                                          this.populationSizeForGeneticOptimizer,
-                                          this.benchmark,
-                                          this.targetReturn,
-                                          this.portfolioType,
-                                          this.numDaysBetweenEachOptimization);
+      this.endOfDayTimerHandler = new EndOfDayTimerHandlerOTCMultiAccount(this.tickerGroupID,
+        this.numberOfEligibleTickers,
+        this.numberOfTickersToBeChosen,
+        this.numDaysForOptimizationPeriod,
+        this.accounts,
+        this.generationNumberForGeneticOptimizer, 
+        this.populationSizeForGeneticOptimizer,
+        this.benchmark,
+        this.targetReturn,
+        this.portfolioType, this.numDaysBetweenEachOptimization,this.numberOfAccounts,
+        this.distanceBetweenEachGenomeToTest);
     }
     
     protected override void run_initializeHistoricalQuoteProvider()
     {
-      this.historicalQuoteProvider = new HistoricalAdjustedQuoteProvider();
+      this.historicalQuoteProvider = new HistoricalRawQuoteProvider();
+      //this.historicalQuoteProvider = new HistoricalAdjustedQuoteProvider();
     }
     
     protected override void run_addEventHandlers()
     {
       this.endOfDayTimer.MarketOpen +=
         new MarketOpenEventHandler(
-        this.endOfDayTimerHandler.MarketOpenEventHandler);
-
+        this.endOfDayTimerHandler.MarketOpenEventHandler);  
+      
       this.endOfDayTimer.MarketClose +=
         new MarketCloseEventHandler(
         this.endOfDayTimerHandler.MarketCloseEventHandler);
@@ -127,14 +134,32 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
         new OneHourAfterMarketCloseEventHandler(
         this.endOfDayTimerHandler.OneHourAfterMarketCloseEventHandler );
     }
-    
-    
+    #endregion 
     
     //necessary far calling RunEfficientPortfolio.Run()
     //in classes that inherit from this class
     public override void Run()
     {
       base.Run();
+    }
+    public override void SaveScriptResults()
+    {
+      string fileName = "From"+this.numberOfEligibleTickers +
+        "OptDays" + this.numDaysForOptimizationPeriod + "Portfolio" +
+        this.numberOfTickersToBeChosen + "GenNum" + 
+        this.generationNumberForGeneticOptimizer +
+        "PopSize" + this.populationSizeForGeneticOptimizer +
+        "Target" + Convert.ToString(this.targetReturn) + 
+        Convert.ToString(this.portfolioType);
+      string dirNameWhereToSaveAccounts = System.Configuration.ConfigurationSettings.AppSettings["AccountsArchive"] +
+        "\\" + this.ScriptName + "\\";
+      
+      this.checkDateForReport_createDirIfNotPresent(dirNameWhereToSaveAccounts);
+      for(int i = 0; i<this.accounts.Length; i++)
+        ObjectArchiver.Archive(accounts[i],
+                                dirNameWhereToSaveAccounts +
+                                fileName + "#" + i.ToString() + ".qPa");
+      this.endOfDayTimer.Stop();
     }
 	}
 }

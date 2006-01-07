@@ -55,7 +55,7 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
     protected int generationNumberForGeneticOptimizer;
     protected int populationSizeForGeneticOptimizer;
 		
-    protected Account account;
+    protected Account account = null;
     protected ArrayList orders;
 
     protected string benchmark;
@@ -98,8 +98,9 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
     {
       get { return this.bestGenomes; }
     }
-    public EndOfDayTimerHandler(string tickerGroupID, int numberOfEligibleTickers, 
-                                int numberOfTickersToBeChosen, int numDaysForOptimizationPeriod, Account account,
+    
+    private void endOfDayTimerHandler_initializeBasic(string tickerGroupID, int numberOfEligibleTickers, 
+                                int numberOfTickersToBeChosen, int numDaysForOptimizationPeriod,
                                 int generationNumberForGeneticOptimizer,
                                 int populationSizeForGeneticOptimizer,
                                 string benchmark, double targetReturn,
@@ -109,7 +110,6 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
       this.numberOfEligibleTickers = numberOfEligibleTickers;
       this.numberOfTickersToBeChosen = numberOfTickersToBeChosen;
       this.numDaysForOptimizationPeriod = numDaysForOptimizationPeriod;
-      this.account = account;
       this.generationNumberForGeneticOptimizer = generationNumberForGeneticOptimizer;
       this.populationSizeForGeneticOptimizer = populationSizeForGeneticOptimizer;
       this.benchmark = benchmark;
@@ -121,7 +121,40 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
       this.setDefaultChosenTickersPortfolioWeights();
       
     }
-		
+    
+    public EndOfDayTimerHandler(string tickerGroupID, int numberOfEligibleTickers,
+                                int numberOfTickersToBeChosen, int numDaysForOptimizationPeriod, Account account,
+                                int generationNumberForGeneticOptimizer,
+                                int populationSizeForGeneticOptimizer,
+                                string benchmark, double targetReturn,
+                                PortfolioType portfolioType)
+    {
+      this.endOfDayTimerHandler_initializeBasic(tickerGroupID, numberOfEligibleTickers, 
+                                numberOfTickersToBeChosen, numDaysForOptimizationPeriod,
+                                generationNumberForGeneticOptimizer,
+                                populationSizeForGeneticOptimizer,
+                                benchmark, targetReturn,
+                                portfolioType);
+    	this.account = account;
+      
+    }
+		public EndOfDayTimerHandler(string tickerGroupID, int numberOfEligibleTickers,
+                                int numberOfTickersToBeChosen, int numDaysForOptimizationPeriod,
+                                int generationNumberForGeneticOptimizer,
+                                int populationSizeForGeneticOptimizer,
+                                string benchmark, double targetReturn,
+                                PortfolioType portfolioType)
+    {
+      this.endOfDayTimerHandler_initializeBasic(tickerGroupID, numberOfEligibleTickers, 
+                                numberOfTickersToBeChosen, numDaysForOptimizationPeriod,
+                                generationNumberForGeneticOptimizer,
+                                populationSizeForGeneticOptimizer,
+                                benchmark, targetReturn,
+                                portfolioType);
+    }
+    
+    
+    
     public EndOfDayTimerHandler(string[] chosenTickers,
                                 PortfolioType portfolioType,
                                 Account account,
@@ -137,7 +170,7 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
       this.portfolioType = portfolioType;
       this.setDefaultChosenTickersPortfolioWeights();
     }
-    
+           
     private void setDefaultChosenTickersPortfolioWeights()
     {
     	this.chosenTickersPortfolioWeights = new double[this.chosenTickers.Length];

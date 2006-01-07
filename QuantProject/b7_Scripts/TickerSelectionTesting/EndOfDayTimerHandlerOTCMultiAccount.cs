@@ -1,7 +1,7 @@
 /*
 QuantProject - Quantitative Finance Library
 
-EndOfDayTimerHandlerOTCCTO.cs
+EndOfDayTimerHandlerOTCMultiAccount.cs
 Copyright (C) 2003 
 Marco Milletti
 
@@ -38,23 +38,30 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
   /// <summary>
   /// Implements MarketOpenEventHandler,
   /// TwoMinutesBeforeMarketCloseEventHandler and OneHourAfterMarketCloseEventHandler
-  /// These handlers contain the core strategy for the efficient close to open portfolio!
+  /// These handlers contain the core strategy for the efficient open to close portfolio!
   /// </summary>
   [Serializable]
-  public class EndOfDayTimerHandlerOTCCTO : EndOfDayTimerHandler
+  public class EndOfDayTimerHandlerOTCMultiAccount : EndOfDayTimerHandler
   {
     protected int numDaysBetweenEachOptimization;
     private int numDaysElapsedSinceLastOptimization;
     protected int seedForRandomGenerator;
+    private string[,] chosenTickersForAccounts;
+    private int distanceForEachGenomeToTest;
+    private Account[] accounts;
+    private ArrayList[] ordersForAccounts;
+    private string[,] lastOrderedTickersForAccounts;
     
-    public EndOfDayTimerHandlerOTCCTO(string tickerGroupID, int numberOfEligibleTickers, 
-                                int numberOfTickersToBeChosen, int numDaysForOptimizationPeriod, Account account,
+    public EndOfDayTimerHandlerOTCMultiAccount(string tickerGroupID, int numberOfEligibleTickers, 
+                                int numberOfTickersToBeChosen, int numDaysForOptimizationPeriod,
+                                Account[] accounts,
                                 int generationNumberForGeneticOptimizer,
                                 int populationSizeForGeneticOptimizer,
                                 string benchmark, double targetReturn,
-                                PortfolioType portfolioType, int numDaysBetweenEachOptimization):
+                                PortfolioType portfolioType, int numDaysBetweenEachOptimization, int numberOfAccounts,
+                                int distanceForEachGenomeToTest):
   															base(tickerGroupID, numberOfEligibleTickers, 
-                                numberOfTickersToBeChosen, numDaysForOptimizationPeriod, account,
+                                numberOfTickersToBeChosen, numDaysForOptimizationPeriod, accounts[0],
                                 generationNumberForGeneticOptimizer,
                                 populationSizeForGeneticOptimizer,
                                 benchmark, targetReturn,
@@ -63,9 +70,93 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
     	this.numDaysBetweenEachOptimization = numDaysBetweenEachOptimization;  
     	this.numDaysElapsedSinceLastOptimization = 0;
     	this.seedForRandomGenerator = ConstantsProvider.SeedForRandomGenerator;
+      this.chosenTickersForAccounts = new string[numberOfAccounts,numberOfTickersToBeChosen];
+      this.lastOrderedTickersForAccounts = new string[numberOfAccounts,numberOfTickersToBeChosen];
+      this.ordersForAccounts = new ArrayList[numberOfAccounts];
+      for(int i = 0; i<numberOfAccounts;i++)
+        ordersForAccounts[i] = new ArrayList();
+      this.distanceForEachGenomeToTest = distanceForEachGenomeToTest;
+      this.accounts = accounts;
     }
-		    
+		
+    private void addOrderForTickerForEachAccount(int accountNumber, string ticker )
+    {
+      string tickerCode = 
+        GenomeManagerForEfficientPortfolio.GetCleanTickerCode(ticker);
+      double cashForSinglePosition = this.accounts[accountNumber].CashAmount / this.numberOfTickersToBeChosen;
+      long quantity =
+        Convert.ToInt64( Math.Floor( cashForSinglePosition / this.accounts[accountNumber].DataStreamer.GetCurrentBid( tickerCode ) ) );
+      Order order;
+      if(this.portfolioType == PortfolioType.OnlyShort ||
+        (this.portfolioType == PortfolioType.ShortAndLong &&
+        ticker != tickerCode))
+        order = new Order( OrderType.MarketSellShort, new Instrument( tickerCode ) , quantity );  
+      else      		
+        order = new Order( OrderType.MarketBuy, new Instrument( tickerCode ) , quantity );
+      
+      this.ordersForAccounts[accountNumber].Add(order);
+    }
+
+    protected override void addChosenTickersToOrderList()
+    {
+      for(int i = 0; i<this.accounts.Length; i++)
+      {
+        for(int j = 0; j<this.numberOfTickersToBeChosen; j++) 
+        {
+          string ticker = this.chosenTickersForAccounts[i,j];
+          if( ticker != null)
+          {  
+            this.addOrderForTickerForEachAccount(i, ticker );
+            this.lastOrderedTickersForAccounts[i,j] = 
+              GenomeManagerForEfficientPortfolio.GetCleanTickerCode(ticker);
+          }
+        }
+      }
+    }
+
+
+    protected override void openPositions()
+    {
+      //add cash first
+      for(int i = 0; i<this.accounts.Length; i++)
+      {
+        if(this.ordersForAccounts[i].Count == 0 && this.accounts[i].Transactions.Count == 0)
+              this.accounts[i].AddCash(17000);  
+      }
+
+      this.addChosenTickersToOrderList();
+      //execute orders actually
+      for(int i = 0; i<this.accounts.Length; i++)
+      {
+        foreach(object item in this.ordersForAccounts[i])
+           this.accounts[i].AddOrder((Order)item);
+      }
        
+    }
+    
+    private void closePositions_closePositionForAccount(int accountNumber,
+                                                        string ticker)
+    {
+      this.accounts[accountNumber].ClosePosition(ticker);   
+    }
+    protected override void closePositions()
+    {
+      string ticker;
+      for(int i = 0; i<this.accounts.Length; i++)
+      {
+        for(int j = 0; j<this.numberOfTickersToBeChosen; j++)
+        {
+          ticker = this.lastOrderedTickersForAccounts[i,j];
+          if( ticker != null)
+          {
+            if(this.accounts[i].Portfolio[ticker]!=null)
+                closePositions_closePositionForAccount(i, ticker );
+          }
+        }
+      }
+    }
+
+
     /// <summary>
     /// Handles a "Market Open" event.
     /// </summary>
@@ -76,23 +167,9 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
     {
     	//temporarily the if condition
     	//if(this.numDaysElapsedSinceLastOptimization == 0)
-    	this.closePositions();	
-      this.openPositions();
+    		this.openPositions();
     }
-    private void reverseSignOfChosenTickers()
-    {
-      for(int i = 0; i<this.chosenTickers.Length; i++)
-      {
-        if(this.chosenTickers[i] != null)
-        {
-          if(this.chosenTickers[i].StartsWith("-"))
-            this.chosenTickers[i] =
-              GenomeManagerForEfficientPortfolio.GetCleanTickerCode(this.chosenTickers[i]);
-          else
-            this.chosenTickers[i] = "-" + this.chosenTickers[i];
-        }
-      }
-    }
+		
                 
     public override void MarketCloseEventHandler(
       Object sender , EndOfDayTimingEventArgs endOfDayTimingEventArgs )
@@ -101,11 +178,8 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
     	//temporarily
     	//if(this.numDaysElapsedSinceLastOptimization ==
     	//   this.numDaysBetweenEachOptimization)
-    	this.closePositions();
-      this.orders.Clear();
-      this.reverseSignOfChosenTickers();
-      this.openPositions();
-      this.reverseSignOfChosenTickers();
+    	 		this.closePositions();
+    	  	
     }
     
     
@@ -176,9 +250,15 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
         	this.genomeCounter = new GenomeCounter(GO);
         
         GO.Run(false);
-        this.addGenomeToBestGenomes(GO.BestGenome,currentDate.AddDays(-this.numDaysForOptimizationPeriod),
-                                    currentDate);
-        this.chosenTickers = ((GenomeMeaning)GO.BestGenome.Meaning).Tickers;
+        //this.addGenomeToBestGenomes(GO.BestGenome,currentDate.AddDays(-this.numDaysForOptimizationPeriod),
+        //                            currentDate);
+        for(int i = 0; i<this.accounts.Length; i++)
+        {
+          for(int j = 0; j<this.numberOfTickersToBeChosen; j++)
+            this.chosenTickersForAccounts[i,j] =
+                ((string[])((Genome)GO.CurrentGeneration[GO.CurrentGeneration.Count - 1 -i*this.distanceForEachGenomeToTest]).Meaning)[j];
+        }
+        
       }
       //else it will be buyed again the previous optimized portfolio
       //that's it the actual chosenTickers member
@@ -202,7 +282,8 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
       Object sender , EndOfDayTimingEventArgs endOfDayTimingEventArgs )
     {
     	this.seedForRandomGenerator++;
-    	this.orders.Clear();
+    	foreach(ArrayList arrayList in this.ordersForAccounts)
+        arrayList.Clear();
     	//this.oneHourAfterMarketCloseEventHandler_updatePrices();
       if(this.numDaysElapsedSinceLastOptimization == 
     	   this.numDaysBetweenEachOptimization - 1)

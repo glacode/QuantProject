@@ -1,7 +1,7 @@
 /*
 QuantProject - Quantitative Finance Library
 
-RunEfficientCTOPorfolio.cs
+RunEfficientOTCPortfolio.cs
 Copyright (C) 2003 
 Marco Milletti
 
@@ -47,13 +47,13 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
 {
 	/// <summary>
 	/// Script to buy at open and sell at close 
-	/// the efficient close to open daily portfolio
+	/// the efficient open to close daily portfolio
 	/// </summary>
   [Serializable]
-  public class RunEfficientCTOPortfolio : RunEfficientPortfolio
+  public class RunEfficientOTCPortfolio : RunEfficientPortfolio
   {
     protected int numDaysBetweenEachOptimization;	
-    public RunEfficientCTOPortfolio(string tickerGroupID, int numberOfEligibleTickers, 
+    public RunEfficientOTCPortfolio(string tickerGroupID, int numberOfEligibleTickers, 
       int numberOfTickersToBeChosen, int numDaysForOptimizationPeriod, 
       int generationNumberForGeneticOptimizer,
       int populationSizeForGeneticOptimizer, string benchmark,
@@ -67,7 +67,10 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
       startDate, endDate, targetReturn,
       portfolioType, maxRunningHours)
     {
-      this.ScriptName = "CloseToOpenScriptsNoCoeff";
+      //this.ScriptName = "OpenCloseScriptsSharpeRatioWithCoeff";
+      //this.ScriptName = "OpenCloseScriptsSharpeRatio";
+      this.ScriptName = "OpenCloseScriptsWithCoeff";
+      //this.ScriptName = "OpenCloseScripts";
       this.numDaysBetweenEachOptimization = numDaysBetweenEachOptimization;
     }
     
@@ -81,31 +84,31 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
                                  new HistoricalEndOfDayDataStreamer(this.endOfDayTimer ,
                                                                     this.historicalQuoteProvider ) ,
                                  new HistoricalEndOfDayOrderExecutor(this.endOfDayTimer ,
-                                                                     this.historicalQuoteProvider));
-                                                                    //, new FixedPercentageSlippageManager(this.historicalQuoteProvider,
-                                                                                                       // this.endOfDayTimer,0.08)),
-                                 //new IBCommissionManager());
+                                                                     this.historicalQuoteProvider,
+                                                                     new FixedPercentageSlippageManager(this.historicalQuoteProvider,
+                                                                                                        this.endOfDayTimer,0.08)),
+                                 new IBCommissionManager());
      
     }
     
     
     protected override void run_initializeEndOfDayTimerHandler()
     {
-      this.endOfDayTimerHandler = new EndOfDayTimerHandlerCTO(this.tickerGroupID,
-                                          this.numberOfEligibleTickers,
-                                          this.numberOfTickersToBeChosen,
-                                          this.numDaysForOptimizationPeriod,
-                                          this.account,
-                                          this.generationNumberForGeneticOptimizer, 
-                                          this.populationSizeForGeneticOptimizer,
-                                          this.benchmark,
-                                          this.targetReturn,
-                                          this.portfolioType,
-                                          this.numDaysBetweenEachOptimization);
+      this.endOfDayTimerHandler = new EndOfDayTimerHandlerOTC(this.tickerGroupID,
+        this.numberOfEligibleTickers,
+        this.numberOfTickersToBeChosen,
+        this.numDaysForOptimizationPeriod,
+        this.account,
+        this.generationNumberForGeneticOptimizer, 
+        this.populationSizeForGeneticOptimizer,
+        this.benchmark,
+        this.targetReturn,
+        this.portfolioType, this.numDaysBetweenEachOptimization);
     }
     
     protected override void run_initializeHistoricalQuoteProvider()
     {
+      //this.historicalQuoteProvider = new HistoricalRawQuoteProvider();
       this.historicalQuoteProvider = new HistoricalAdjustedQuoteProvider();
     }
     
@@ -113,8 +116,8 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
     {
       this.endOfDayTimer.MarketOpen +=
         new MarketOpenEventHandler(
-        this.endOfDayTimerHandler.MarketOpenEventHandler);
-
+        this.endOfDayTimerHandler.MarketOpenEventHandler);  
+      
       this.endOfDayTimer.MarketClose +=
         new MarketCloseEventHandler(
         this.endOfDayTimerHandler.MarketCloseEventHandler);

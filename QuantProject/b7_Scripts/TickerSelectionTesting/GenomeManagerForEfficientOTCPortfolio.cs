@@ -1,7 +1,7 @@
 /*
 QuantProject - Quantitative Finance Library
 
-GenomeManagerForEfficientCTOPortfolio.cs
+GenomeManagerForEfficientOTCPortfolio.cs
 Copyright (C) 2003 
 Marco Milletti
 
@@ -33,14 +33,14 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
 {
 	/// <summary>
 	/// This class implements IGenomeManager, in order to find efficient 
-	/// portfolios based on tickers' CloseToOpen rates, using the
+	/// portfolios based on tickers' OpenToClose rates, using the
 	/// GeneticOptimizer
 	/// </summary>
 	[Serializable]
-  public class GenomeManagerForEfficientCTOPortfolio : GenomeManagerForEfficientPortfolio
+  public class GenomeManagerForEfficientOTCPortfolio : GenomeManagerForWeightedEfficientPortfolio
   {
     
-    public GenomeManagerForEfficientCTOPortfolio(DataTable setOfInitialTickers,
+    public GenomeManagerForEfficientOTCPortfolio(DataTable setOfInitialTickers,
                                                  DateTime firstQuoteDate,
                                                  DateTime lastQuoteDate,
                                                  int numberOfTickersInPortfolio,
@@ -56,24 +56,12 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
     {
       this.retrieveData();
     }
-    private float[] getArrayOfRatesOfReturn_getCloseToOpenRates(Quotes tickerQuotes)
-    {
-      float[] returnValue = new float[tickerQuotes.Rows.Count - 1];
-      for(int i = 0;i<tickerQuotes.Rows.Count - 1; i++)
-      {
-        returnValue[i] = 
-          ( (float)tickerQuotes.Rows[i+1]["quOpen"]*
-             (float)tickerQuotes.Rows[i+1]["quAdjustedClose"]/
-              (float)tickerQuotes.Rows[i+1]["quClose"] )
-          /(float)tickerQuotes.Rows[i]["quAdjustedClose"] - 1;
-      }
-      return returnValue;
-    }
+    
     protected override float[] getArrayOfRatesOfReturn(string ticker)
     {
       float[] returnValue = null;
       Quotes tickerQuotes = new Quotes(ticker, this.firstQuoteDate, this.lastQuoteDate);
-      returnValue = this.getArrayOfRatesOfReturn_getCloseToOpenRates(tickerQuotes);
+      returnValue = ExtendedDataTable.GetRatesOfReturnsFromColumns(tickerQuotes, "quClose", "quOpen");
       this.numberOfExaminedReturns = returnValue.Length;
       
       return returnValue;
@@ -107,12 +95,12 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
       return returnValue;
     }
     */
-    
+    /*
     protected override double getFitnessValue_calculate()
     {
       return this.RateOfReturn/Math.Sqrt(this.Variance);
     }
-    
+    */
     
   }
 

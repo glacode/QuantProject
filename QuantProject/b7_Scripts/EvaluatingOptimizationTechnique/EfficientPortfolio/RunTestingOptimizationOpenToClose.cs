@@ -259,15 +259,15 @@ namespace QuantProject.Scripts.EvaluatingOptimizationTechnique.EfficientPortfoli
       
       DataTable setOfTickersToBeOptimized = 
       	this.getSetOfTickersToBeOptimized(this.marketDate);
-       IGenomeManager genManEfficientCTOPortfolio = 
-        new GenomeManagerForEfficientCTOPortfolio(setOfTickersToBeOptimized,
+       IGenomeManager genManEfficientOTCPortfolio = 
+        new GenomeManagerForEfficientOTCPortfolio(setOfTickersToBeOptimized,
       	                                          this.marketDate.AddDays(-this.numDaysForOptimization),
       	                                          this.marketDate,
       	                                          this.numberOfTickersToBeChosen,
       	                                          this.targetReturn,
       	                                         	this.portfolioType);
     
-      this.setFitnesses_setFitnessesActually(genManEfficientCTOPortfolio);
+      this.setFitnesses_setFitnessesActually(genManEfficientOTCPortfolio);
       
     }
   	
