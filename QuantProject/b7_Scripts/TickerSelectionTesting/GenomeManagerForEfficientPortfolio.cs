@@ -194,7 +194,7 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
       
     }
     
-    public double GetFitnessValue(Genome genome)
+    public virtual double GetFitnessValue(Genome genome)
     {
       double returnValue = 0;
       this.portfolioRatesOfReturn = this.getPortfolioRatesOfReturn(genome.Genes());
