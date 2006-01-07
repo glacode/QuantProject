@@ -68,6 +68,8 @@ namespace QuantProject.Applications.Downloader.TickerSelectors
 		private System.Windows.Forms.TextBox textBoxMaxPrice;
 		private System.Windows.Forms.Splitter splitter1;
     private System.Windows.Forms.CheckBox checkBoxOnlyWithAtLeastOneWinningDay;
+    private System.Windows.Forms.TextBox textBoxNumDaysBetweenEachClose;
+    private System.Windows.Forms.Label labelNumDaysBetweenEachClose;
     private DataTable tableOfSelectedTickers;
 
 		public TickerSelectorForm()
@@ -81,15 +83,18 @@ namespace QuantProject.Applications.Downloader.TickerSelectors
       this.comboBoxAvailableSelectionRules.Items.Add("Liquidity");
       this.comboBoxAvailableSelectionRules.Items.Add("Performance");
       this.comboBoxAvailableSelectionRules.Items.Add("CloseToCloseVolatility");
+      this.comboBoxAvailableSelectionRules.Items.Add("OpenToCloseVolatility");
       this.comboBoxAvailableSelectionRules.Items.Add("CloseToOpenVolatility");
       this.comboBoxAvailableSelectionRules.Items.Add("AverageCloseToClosePerformance");
       this.comboBoxAvailableSelectionRules.Items.Add("CloseToCloseLinearCorrelation");
-      this.comboBoxAvailableSelectionRules.Items.Add("CloseToOpenLinearCorrelation");
+      this.comboBoxAvailableSelectionRules.Items.Add("OpenToCloseLinearCorrelation");
+      this.comboBoxAvailableSelectionRules.Items.Add("AverageOpenToClosePerformance");
       this.comboBoxAvailableSelectionRules.Items.Add("AverageCloseToOpenPerformance");
       this.comboBoxAvailableSelectionRules.Items.Add("QuotedAtEachMarketDay");
       this.comboBoxAvailableSelectionRules.Items.Add("AverageRawOpenPrice");
       this.comboBoxAvailableSelectionRules.Items.Add("WinningOpenToClose");
-      this.comboBoxAvailableSelectionRules.Items.Add("OpenCloseCorrelationToBenchmark");
+      this.comboBoxAvailableSelectionRules.Items.Add("OpenToCloseCorrelationToBenchmark");
+      this.comboBoxAvailableSelectionRules.Items.Add("CloseToCloseCorrelationToBenchmark");
 
   	}
     public TickerSelectorForm(string groupID) : this()
@@ -135,6 +140,7 @@ namespace QuantProject.Applications.Downloader.TickerSelectors
       this.textBoxMaxNumOfReturnedTickers = new System.Windows.Forms.TextBox();
       this.panel2 = new System.Windows.Forms.Panel();
       this.groupBoxSelectionRule = new System.Windows.Forms.GroupBox();
+      this.checkBoxOnlyWithAtLeastOneWinningDay = new System.Windows.Forms.CheckBox();
       this.textBoxMaxStdDev = new System.Windows.Forms.TextBox();
       this.labelMinStdDev = new System.Windows.Forms.Label();
       this.textBoxMinStdDev = new System.Windows.Forms.TextBox();
@@ -153,7 +159,8 @@ namespace QuantProject.Applications.Downloader.TickerSelectors
       this.buttonSelectTickers = new System.Windows.Forms.Button();
       this.dataGrid1 = new System.Windows.Forms.DataGrid();
       this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
-      this.checkBoxOnlyWithAtLeastOneWinningDay = new System.Windows.Forms.CheckBox();
+      this.textBoxNumDaysBetweenEachClose = new System.Windows.Forms.TextBox();
+      this.labelNumDaysBetweenEachClose = new System.Windows.Forms.Label();
       this.panel2.SuspendLayout();
       this.groupBoxSelectionRule.SuspendLayout();
       ((System.ComponentModel.ISupportInitialize)(this.dataGrid1)).BeginInit();
@@ -234,6 +241,8 @@ namespace QuantProject.Applications.Downloader.TickerSelectors
       // groupBoxSelectionRule
       // 
       this.groupBoxSelectionRule.Controls.AddRange(new System.Windows.Forms.Control[] {
+                                                                                        this.labelNumDaysBetweenEachClose,
+                                                                                        this.textBoxNumDaysBetweenEachClose,
                                                                                         this.checkBoxOnlyWithAtLeastOneWinningDay,
                                                                                         this.labelMaxStdDev,
                                                                                         this.textBoxMaxStdDev,
@@ -262,6 +271,16 @@ namespace QuantProject.Applications.Downloader.TickerSelectors
       this.groupBoxSelectionRule.TabIndex = 14;
       this.groupBoxSelectionRule.TabStop = false;
       this.groupBoxSelectionRule.Text = "Single Selection rule";
+      // 
+      // checkBoxOnlyWithAtLeastOneWinningDay
+      // 
+      this.checkBoxOnlyWithAtLeastOneWinningDay.Enabled = false;
+      this.checkBoxOnlyWithAtLeastOneWinningDay.Location = new System.Drawing.Point(192, 144);
+      this.checkBoxOnlyWithAtLeastOneWinningDay.Name = "checkBoxOnlyWithAtLeastOneWinningDay";
+      this.checkBoxOnlyWithAtLeastOneWinningDay.Size = new System.Drawing.Size(152, 24);
+      this.checkBoxOnlyWithAtLeastOneWinningDay.TabIndex = 38;
+      this.checkBoxOnlyWithAtLeastOneWinningDay.Text = "Exclude \"pure\" losers";
+      this.toolTip1.SetToolTip(this.checkBoxOnlyWithAtLeastOneWinningDay, "Check if you want to filter only tickers with at least one winning day");
       // 
       // textBoxMaxStdDev
       // 
@@ -310,7 +329,7 @@ namespace QuantProject.Applications.Downloader.TickerSelectors
       // 
       // labelMarketIndexKey
       // 
-      this.labelMarketIndexKey.Location = new System.Drawing.Point(88, 208);
+      this.labelMarketIndexKey.Location = new System.Drawing.Point(16, 208);
       this.labelMarketIndexKey.Name = "labelMarketIndexKey";
       this.labelMarketIndexKey.Size = new System.Drawing.Size(96, 23);
       this.labelMarketIndexKey.TabIndex = 29;
@@ -319,9 +338,9 @@ namespace QuantProject.Applications.Downloader.TickerSelectors
       // 
       // textBoxMarketIndex
       // 
-      this.textBoxMarketIndex.Location = new System.Drawing.Point(192, 208);
+      this.textBoxMarketIndex.Location = new System.Drawing.Point(120, 208);
       this.textBoxMarketIndex.Name = "textBoxMarketIndex";
-      this.textBoxMarketIndex.Size = new System.Drawing.Size(88, 20);
+      this.textBoxMarketIndex.Size = new System.Drawing.Size(56, 20);
       this.textBoxMarketIndex.TabIndex = 28;
       this.textBoxMarketIndex.Text = "";
       this.textBoxMarketIndex.Visible = false;
@@ -411,15 +430,23 @@ namespace QuantProject.Applications.Downloader.TickerSelectors
       this.dataGrid1.Size = new System.Drawing.Size(432, 478);
       this.dataGrid1.TabIndex = 2;
       // 
-      // checkBoxOnlyWithAtLeastOneWinningDay
+      // textBoxNumDaysBetweenEachClose
       // 
-      this.checkBoxOnlyWithAtLeastOneWinningDay.Enabled = false;
-      this.checkBoxOnlyWithAtLeastOneWinningDay.Location = new System.Drawing.Point(192, 144);
-      this.checkBoxOnlyWithAtLeastOneWinningDay.Name = "checkBoxOnlyWithAtLeastOneWinningDay";
-      this.checkBoxOnlyWithAtLeastOneWinningDay.Size = new System.Drawing.Size(152, 24);
-      this.checkBoxOnlyWithAtLeastOneWinningDay.TabIndex = 38;
-      this.checkBoxOnlyWithAtLeastOneWinningDay.Text = "Exclude \"pure\" losers";
-      this.toolTip1.SetToolTip(this.checkBoxOnlyWithAtLeastOneWinningDay, "Check if you want to filter only tickers with at least one winning day");
+      this.textBoxNumDaysBetweenEachClose.Location = new System.Drawing.Point(328, 208);
+      this.textBoxNumDaysBetweenEachClose.Name = "textBoxNumDaysBetweenEachClose";
+      this.textBoxNumDaysBetweenEachClose.Size = new System.Drawing.Size(32, 20);
+      this.textBoxNumDaysBetweenEachClose.TabIndex = 39;
+      this.textBoxNumDaysBetweenEachClose.Text = "";
+      this.textBoxNumDaysBetweenEachClose.Visible = false;
+      // 
+      // labelNumDaysBetweenEachClose
+      // 
+      this.labelNumDaysBetweenEachClose.Location = new System.Drawing.Point(184, 208);
+      this.labelNumDaysBetweenEachClose.Name = "labelNumDaysBetweenEachClose";
+      this.labelNumDaysBetweenEachClose.Size = new System.Drawing.Size(144, 23);
+      this.labelNumDaysBetweenEachClose.TabIndex = 40;
+      this.labelNumDaysBetweenEachClose.Text = "Num days betw. each close";
+      this.labelNumDaysBetweenEachClose.Visible = false;
       // 
       // TickerSelectorForm
       // 
@@ -515,7 +542,7 @@ namespace QuantProject.Applications.Downloader.TickerSelectors
             this.checkBoxASCMode.Checked, this.dateTimePickerFirstDate.Value,
             this.dateTimePickerLastDate.Value, Int32.Parse(this.textBoxMaxNumOfReturnedTickers.Text));
       }            
-      else if (this.comboBoxAvailableSelectionRules.Text == "CloseToOpenVolatility")
+      else if (this.comboBoxAvailableSelectionRules.Text == "OpenToCloseVolatility")
       { 
         if(this.textBoxGroupID.Text != "")
           returnValue = new SelectorByOpenToCloseVolatility (this.textBoxGroupID.Text,
@@ -525,7 +552,18 @@ namespace QuantProject.Applications.Downloader.TickerSelectors
           returnValue = new SelectorByOpenToCloseVolatility (this.tableOfSelectedTickers,
             this.checkBoxASCMode.Checked, this.dateTimePickerFirstDate.Value,
             this.dateTimePickerLastDate.Value, Int32.Parse(this.textBoxMaxNumOfReturnedTickers.Text));
-      }                  
+      }
+      else if (this.comboBoxAvailableSelectionRules.Text == "CloseToOpenVolatility")
+      { 
+        if(this.textBoxGroupID.Text != "")
+          returnValue = new SelectorByCloseToOpenVolatility (this.textBoxGroupID.Text,
+            this.checkBoxASCMode.Checked, this.dateTimePickerFirstDate.Value,
+            this.dateTimePickerLastDate.Value, Int32.Parse(this.textBoxMaxNumOfReturnedTickers.Text));
+        else
+          returnValue = new SelectorByCloseToOpenVolatility (this.tableOfSelectedTickers,
+            this.checkBoxASCMode.Checked, this.dateTimePickerFirstDate.Value,
+            this.dateTimePickerLastDate.Value, Int32.Parse(this.textBoxMaxNumOfReturnedTickers.Text));
+      }                   
       else if (this.comboBoxAvailableSelectionRules.Text == "AverageCloseToClosePerformance")
       { 
         if(this.textBoxGroupID.Text != "")
@@ -548,7 +586,7 @@ namespace QuantProject.Applications.Downloader.TickerSelectors
             this.checkBoxASCMode.Checked, this.dateTimePickerFirstDate.Value,
             this.dateTimePickerLastDate.Value, Int32.Parse(this.textBoxMaxNumOfReturnedTickers.Text));
       }                 
-      else if (this.comboBoxAvailableSelectionRules.Text == "CloseToOpenLinearCorrelation")
+      else if (this.comboBoxAvailableSelectionRules.Text == "OpenToCloseLinearCorrelation")
       { 
         if(this.textBoxGroupID.Text != "")
           returnValue = new SelectorByOpenToCloseLinearCorrelation  (this.textBoxGroupID.Text,
@@ -559,7 +597,7 @@ namespace QuantProject.Applications.Downloader.TickerSelectors
             this.checkBoxASCMode.Checked, this.dateTimePickerFirstDate.Value,
             this.dateTimePickerLastDate.Value, Int32.Parse(this.textBoxMaxNumOfReturnedTickers.Text));
       }                 
-      else if (this.comboBoxAvailableSelectionRules.Text == "AverageCloseToOpenPerformance")
+      else if (this.comboBoxAvailableSelectionRules.Text == "AverageOpenToClosePerformance")
       { 
         if(this.textBoxGroupID.Text != "")
           returnValue = new SelectorByAverageOpenToClosePerformance(this.textBoxGroupID.Text,
@@ -569,7 +607,18 @@ namespace QuantProject.Applications.Downloader.TickerSelectors
           returnValue = new SelectorByAverageOpenToClosePerformance(this.tableOfSelectedTickers,
             this.checkBoxASCMode.Checked, this.dateTimePickerFirstDate.Value,
             this.dateTimePickerLastDate.Value, Int32.Parse(this.textBoxMaxNumOfReturnedTickers.Text));
-      }                 
+      }
+      else if (this.comboBoxAvailableSelectionRules.Text == "AverageCloseToOpenPerformance")
+      { 
+        if(this.textBoxGroupID.Text != "")
+          returnValue = new SelectorByAverageCloseToOpenPerformance(this.textBoxGroupID.Text,
+            this.checkBoxASCMode.Checked, this.dateTimePickerFirstDate.Value,
+            this.dateTimePickerLastDate.Value, Int32.Parse(this.textBoxMaxNumOfReturnedTickers.Text));
+        else
+          returnValue = new SelectorByAverageCloseToOpenPerformance(this.tableOfSelectedTickers,
+            this.checkBoxASCMode.Checked, this.dateTimePickerFirstDate.Value,
+            this.dateTimePickerLastDate.Value, Int32.Parse(this.textBoxMaxNumOfReturnedTickers.Text));
+      }                      
       else if (this.comboBoxAvailableSelectionRules.Text == "QuotedAtEachMarketDay")
       { 
         if(this.textBoxGroupID.Text != "")
@@ -610,7 +659,7 @@ namespace QuantProject.Applications.Downloader.TickerSelectors
             this.dateTimePickerLastDate.Value, Int32.Parse(this.textBoxMaxNumOfReturnedTickers.Text),
             this.checkBoxOnlyWithAtLeastOneWinningDay.Checked);
       }
-      else if (this.comboBoxAvailableSelectionRules.Text == "OpenCloseCorrelationToBenchmark")
+      else if (this.comboBoxAvailableSelectionRules.Text == "OpenToCloseCorrelationToBenchmark")
       { 
         if(this.textBoxGroupID.Text != "")
           returnValue = new SelectorByOpenCloseCorrelationToBenchmark(this.textBoxGroupID.Text, this.textBoxMarketIndex.Text,
@@ -620,6 +669,19 @@ namespace QuantProject.Applications.Downloader.TickerSelectors
           returnValue = new SelectorByOpenCloseCorrelationToBenchmark(this.tableOfSelectedTickers, this.textBoxMarketIndex.Text,
                               this.checkBoxASCMode.Checked, this.dateTimePickerFirstDate.Value,
                               this.dateTimePickerLastDate.Value, Int32.Parse(this.textBoxMaxNumOfReturnedTickers.Text));
+      } 
+      else if (this.comboBoxAvailableSelectionRules.Text == "CloseToCloseCorrelationToBenchmark")
+      { 
+        if(this.textBoxGroupID.Text != "")
+          returnValue = new SelectorByCloseToCloseCorrelationToBenchmark(this.textBoxGroupID.Text, this.textBoxMarketIndex.Text,
+            this.checkBoxASCMode.Checked, this.dateTimePickerFirstDate.Value,
+            this.dateTimePickerLastDate.Value, Int32.Parse(this.textBoxMaxNumOfReturnedTickers.Text),
+            Int32.Parse(this.textBoxNumDaysBetweenEachClose.Text));
+        else
+          returnValue = new SelectorByCloseToCloseCorrelationToBenchmark(this.tableOfSelectedTickers, this.textBoxMarketIndex.Text,
+            this.checkBoxASCMode.Checked, this.dateTimePickerFirstDate.Value,
+            this.dateTimePickerLastDate.Value, Int32.Parse(this.textBoxMaxNumOfReturnedTickers.Text),
+            Int32.Parse(this.textBoxNumDaysBetweenEachClose.Text));
       } 
       return returnValue;  
     }
@@ -647,12 +709,22 @@ namespace QuantProject.Applications.Downloader.TickerSelectors
       this.textBoxMinStdDev.Visible = showControls;
       this.textBoxMaxStdDev.Visible = showControls;
       
-    }  
+    }
+  
+    private void setVisibilityForControls_NumDaysBetweenEachClose(bool showControls)
+    {
+      this.labelNumDaysBetweenEachClose.Visible = showControls;
+      this.textBoxNumDaysBetweenEachClose.Visible = showControls;
+      this.labelMarketIndexKey.Visible = showControls;
+      this.textBoxMarketIndex.Visible = showControls;
+    } 
+
     private void comboBoxAvailableSelectionRules_SelectedValueChanged(object sender, System.EventArgs e)
     {
       if(this.comboBoxAvailableSelectionRules.Text == "QuotedAtEachMarketDay" ||
-          this.comboBoxAvailableSelectionRules.Text == "OpenCloseCorrelationToBenchmark")
+          this.comboBoxAvailableSelectionRules.Text == "OpenToCloseCorrelationToBenchmark")
       {
+        this.setVisibilityForControls_NumDaysBetweenEachClose(false);
         this.setVisibilityForControls_AverageRawOpenPrice(false);
         this.setVisibilityForControls_WinningOpenToClose(false);
         this.setVisibilityForControls_QuotedAtEachMarketDay(true);
@@ -660,6 +732,7 @@ namespace QuantProject.Applications.Downloader.TickerSelectors
       else if(this.comboBoxAvailableSelectionRules.Text == "AverageRawOpenPrice")
       {
         this.textBoxMarketIndex.Text = "";
+        this.setVisibilityForControls_NumDaysBetweenEachClose(false);
         this.setVisibilityForControls_QuotedAtEachMarketDay(false);
         this.setVisibilityForControls_WinningOpenToClose(false);
         this.setVisibilityForControls_AverageRawOpenPrice(true);
@@ -667,9 +740,17 @@ namespace QuantProject.Applications.Downloader.TickerSelectors
       else if(this.comboBoxAvailableSelectionRules.Text == "WinningOpenToClose")
       {
         this.textBoxMarketIndex.Text = "";
+        this.setVisibilityForControls_NumDaysBetweenEachClose(false);
         this.setVisibilityForControls_QuotedAtEachMarketDay(false);
         this.setVisibilityForControls_AverageRawOpenPrice(false);
         this.setVisibilityForControls_WinningOpenToClose(true);
+      }
+      else if(this.comboBoxAvailableSelectionRules.Text == "CloseToCloseCorrelationToBenchmark")
+      {
+        this.setVisibilityForControls_QuotedAtEachMarketDay(false);
+        this.setVisibilityForControls_AverageRawOpenPrice(false);
+        this.setVisibilityForControls_WinningOpenToClose(false);
+        this.setVisibilityForControls_NumDaysBetweenEachClose(true);
       }
       else
       {
@@ -677,6 +758,7 @@ namespace QuantProject.Applications.Downloader.TickerSelectors
       	this.setVisibilityForControls_QuotedAtEachMarketDay(false);
         this.setVisibilityForControls_AverageRawOpenPrice(false);
         this.setVisibilityForControls_WinningOpenToClose(false);
+        this.setVisibilityForControls_NumDaysBetweenEachClose(false);
         this.checkBoxASCMode.Enabled = true;
       }
     }    
