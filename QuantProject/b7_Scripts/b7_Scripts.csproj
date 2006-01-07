@@ -203,17 +203,12 @@
                     BuildAction = "Compile"
                 />
                 <File
-                    RelPath = "TickerSelectionTesting\EndOfDayTimerHandlerCTOMultiAccount.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "TickerSelectionTesting\EndOfDayTimerHandlerCTOTest.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
                     RelPath = "TickerSelectionTesting\EndOfDayTimerHandlerLastChosenPortfolio.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "TickerSelectionTesting\EndOfDayTimerHandlerOTC.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
@@ -223,7 +218,17 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "TickerSelectionTesting\EndOfDayTimerHandlerOTCMultiAccount.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "TickerSelectionTesting\EndOfDayTimerHandlerOTCMultiday.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "TickerSelectionTesting\EndOfDayTimerHandlerOTCTest.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
@@ -234,6 +239,11 @@
                 />
                 <File
                     RelPath = "TickerSelectionTesting\GenomeManagerForEfficientCTOPortfolio.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "TickerSelectionTesting\GenomeManagerForEfficientOTCPortfolio.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
@@ -278,12 +288,17 @@
                     BuildAction = "Compile"
                 />
                 <File
-                    RelPath = "TickerSelectionTesting\RunEfficientCTOPortfolioMultiAccount.cs"
+                    RelPath = "TickerSelectionTesting\RunEfficientOTCCTOPortfolio.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
                 <File
-                    RelPath = "TickerSelectionTesting\RunEfficientOTCCTOPortfolio.cs"
+                    RelPath = "TickerSelectionTesting\RunEfficientOTCPortfolio.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "TickerSelectionTesting\RunEfficientOTCPortfolioMultiAccount.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
@@ -308,7 +323,7 @@
                     BuildAction = "Compile"
                 />
                 <File
-                    RelPath = "TickerSelectionTesting\RunTestOptimizedCTOPortfolio.cs"
+                    RelPath = "TickerSelectionTesting\RunTestOptimizedOTCPortfolio.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
@@ -349,6 +364,11 @@
                 />
                 <File
                     RelPath = "TickerSelectionTesting\TestingOTCTypes\EndOfDayTimerHandlerOTCTypes.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "TickerSelectionTesting\TestingOTCTypes\GenomeManagerForEfficientOTCTypes.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
