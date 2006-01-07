@@ -267,6 +267,11 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "Selectors\SelectorByAverageCloseToOpenPerformance.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "Selectors\SelectorByAverageOpenToClosePerformance.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
@@ -288,6 +293,11 @@
                 />
                 <File
                     RelPath = "Selectors\SelectorByCloseToCloseVolatility.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Selectors\SelectorByCloseToOpenVolatility.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
