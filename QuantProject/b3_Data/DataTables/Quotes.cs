@@ -869,6 +869,19 @@ namespace QuantProject.Data.DataTables
       return (float)foundRow[Quotes.Close]; 
     }
     /// <summary>
+    /// Gets the first valid adjusted close at the given date
+    /// </summary>
+    /// <returns></returns>
+    public float GetFirstValidAdjustedClose(DateTime date )
+    {
+      object[] keys = new object[1];
+      keys[0] = this.GetFirstValidQuoteDate(date.Date);
+      DataRow foundRow = this.Rows.Find(keys);
+      if(foundRow==null)
+        throw new Exception("No quote for such a date!");
+      return (float)foundRow[Quotes.AdjustedClose]; 
+    }
+    /// <summary>
     /// Gets the first valid raw (not adjusted) open at the given date
     /// </summary>
     /// <returns></returns>
@@ -880,6 +893,22 @@ namespace QuantProject.Data.DataTables
       if(foundRow==null)
         throw new Exception("No quote for such a date!");
       return (float)foundRow[Quotes.Open]; 
+    }
+
+    /// <summary>
+    /// Gets the first valid adjusted open at the given date
+    /// </summary>
+    /// <returns></returns>
+    public float GetFirstValidAdjustedOpen(DateTime date )
+    {
+      object[] keys = new object[1];
+      keys[0] = this.GetFirstValidQuoteDate(date.Date);
+      DataRow foundRow = this.Rows.Find(keys);
+      if(foundRow==null)
+        throw new Exception("No quote for such a date!");
+
+      return (float)foundRow[Quotes.Open]*((float)foundRow[Quotes.AdjustedClose]/
+                                           (float)foundRow[Quotes.Close]); 
     }
 
 //		public DateTime GetPrecedingDate( DateTime quoteDate , int precedingDays )
