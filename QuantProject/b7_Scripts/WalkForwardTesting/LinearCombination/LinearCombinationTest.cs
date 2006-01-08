@@ -43,7 +43,8 @@ namespace QuantProject.Scripts.WalkForwardTesting.LinearCombination
 		private DateTime firstDate;
 		private DateTime lastDate;
 		private GenomeRepresentation genomeRepresentation;
-		private bool openToCloseDaily;
+//		private bool openToCloseDaily;
+    private StrategyType strategyType;
 
 		private IHistoricalQuoteProvider historicalQuoteProvider;
 		private HistoricalEndOfDayTimer historicalEndOfDayTimer;
@@ -51,12 +52,13 @@ namespace QuantProject.Scripts.WalkForwardTesting.LinearCombination
 		private IEndOfDayStrategy endOfDayStrategy;
 
 		public LinearCombinationTest( DateTime firstDate , DateTime lastDate ,
-			GenomeRepresentation genomeRepresentation , bool openToCloseDaily )
+			GenomeRepresentation genomeRepresentation , StrategyType strategyType)
 		{
 			this.firstDate = firstDate;
 			this.lastDate = lastDate;
 			this.genomeRepresentation = genomeRepresentation;
-			this.openToCloseDaily = openToCloseDaily;
+//			this.openToCloseDaily = openToCloseDaily;
+      this.strategyType = strategyType;
 		}
 
 		private void oneHourAfterMarketCloseEventHandler( Object sender ,
@@ -69,7 +71,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.LinearCombination
 
 		private void run_setHistoricalQuoteProvider()
 		{
-			if ( this.openToCloseDaily )
+			if ( this.strategyType == StrategyType.OpenToCloseDaily )
 				this.historicalQuoteProvider = new HistoricalRawQuoteProvider();
 			else
 				this.historicalQuoteProvider = new HistoricalAdjustedQuoteProvider();
@@ -78,12 +80,21 @@ namespace QuantProject.Scripts.WalkForwardTesting.LinearCombination
 		{
 			string[] signedTickers = GenomeRepresentation.GetSignedTickers(
 				this.genomeRepresentation.SignedTickers );
-			if ( this.openToCloseDaily )
-				this.endOfDayStrategy = new OpenToCloseDailyStrategy(
-					this.account , signedTickers );
-			else
-				this.endOfDayStrategy = new OpenToCloseWeeklyStrategy(
-					this.account , signedTickers );
+      switch (this.strategyType)
+      {
+        case StrategyType.OpenToCloseDaily:
+          this.endOfDayStrategy = new OpenToCloseDailyStrategy(
+					                            this.account , signedTickers );
+          break;
+        case StrategyType.OpenToCloseWeekly:
+          this.endOfDayStrategy = new OpenToCloseWeeklyStrategy(
+                                      this.account , signedTickers );
+          break;
+        case StrategyType.CloseToOpenDaily:
+          this.endOfDayStrategy = new CloseToOpenDailyStrategy(
+                                      this.account , signedTickers );
+          break;
+      }
 		}
 		private string getDateString( DateTime dateTime )
 		{
@@ -125,6 +136,9 @@ namespace QuantProject.Scripts.WalkForwardTesting.LinearCombination
 			this.historicalEndOfDayTimer.FiveMinutesBeforeMarketClose +=
 				new FiveMinutesBeforeMarketCloseEventHandler(
 				this.endOfDayStrategy.FiveMinutesBeforeMarketCloseEventHandler );
+      this.historicalEndOfDayTimer.MarketClose +=
+        new MarketCloseEventHandler(
+        this.endOfDayStrategy.MarketCloseEventHandler );
 			this.historicalEndOfDayTimer.OneHourAfterMarketClose +=
 				new OneHourAfterMarketCloseEventHandler(
 				this.oneHourAfterMarketCloseEventHandler );

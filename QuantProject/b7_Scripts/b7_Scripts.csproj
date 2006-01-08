@@ -127,6 +127,11 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "EvaluatingOptimizationTechnique\EfficientPortfolio\RunTestingOptimizationCloseToOpen.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "EvaluatingOptimizationTechnique\EfficientPortfolio\RunTestingOptimizationOpenToClose.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
@@ -383,6 +388,11 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "WalkForwardTesting\LinearCombination\CloseToOpenDailyStrategy.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "WalkForwardTesting\LinearCombination\GenomeRepresentation.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
@@ -419,6 +429,11 @@
                 />
                 <File
                     RelPath = "WalkForwardTesting\LinearCombination\RunBestLinearCombination.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "WalkForwardTesting\LinearCombination\StrategyType.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
