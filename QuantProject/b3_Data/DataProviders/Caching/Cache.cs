@@ -31,7 +31,7 @@ namespace QuantProject.Data.DataProviders.Caching
 	/// <summary>
 	/// Handles quote cashing, from mass storage to main memory
 	/// </summary>
-	public class Cache : Hashtable
+	public class Cache : Hashtable,ICache
 	{
 		/// <summary>
 		/// number of pages currently cached
