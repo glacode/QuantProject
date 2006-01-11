@@ -36,7 +36,7 @@ namespace QuantProject.DataAccess
 	/// 
 	public class DataBase
 	{
-    private static OleDbConnection oleDbConnection = ConnectionProvider.OleDbConnection;
+		private static OleDbConnection oleDbConnection = ConnectionProvider.OleDbConnection;
 
 		public DataBase()
 		{
@@ -45,25 +45,25 @@ namespace QuantProject.DataAccess
 			//
 		}
 
-    /// <summary>
-    /// Returns the field name corresponding to the quote field
-    /// </summary>
-    /// <param name="quoteField">Discriminates among Open, High, Low and Closure</param>
-    /// <returns>Field name corresponding to the quote field</returns>
-    private static string getFieldName( QuoteField quoteField )
-    {
-      string fieldName = "";
-      switch ( quoteField )
-      {
-        case QuoteField.Open:
-          fieldName = "quOpen";
-          break;
-        case QuoteField.High:
-          fieldName = "quHigh";
-          break;
-        case QuoteField.Low:
-          fieldName = "quLow";
-          break;
+		/// <summary>
+		/// Returns the field name corresponding to the quote field
+		/// </summary>
+		/// <param name="quoteField">Discriminates among Open, High, Low and Closure</param>
+		/// <returns>Field name corresponding to the quote field</returns>
+		private static string getFieldName( QuoteField quoteField )
+		{
+			string fieldName = "";
+			switch ( quoteField )
+			{
+				case QuoteField.Open:
+					fieldName = "quOpen";
+					break;
+				case QuoteField.High:
+					fieldName = "quHigh";
+					break;
+				case QuoteField.Low:
+					fieldName = "quLow";
+					break;
 				case QuoteField.Close:
 					fieldName = "quClose";
 					break;
@@ -77,26 +77,26 @@ namespace QuantProject.DataAccess
 					fieldName = "quVolume";
 					break;
 				default:
-          break;
-      }
-      return fieldName;
-    }
+					break;
+			}
+			return fieldName;
+		}
 
     #region "GetHistory"
-    private static History getHistory_try( string instrumentKey , QuoteField quoteField ,
+		private static History getHistory_try( string instrumentKey , QuoteField quoteField ,
 			DateTime firstDate , DateTime lastDate )
-    {
-      History history = new History();
-      string commandString =
-        "select * from quotes where (quTicker='" + instrumentKey + "') " +
+		{
+			History history = new History();
+			string commandString =
+				"select * from quotes where (quTicker='" + instrumentKey + "') " +
 				"and (quDate>=" + SQLBuilder.GetDateConstant( firstDate ) + ") " +
 				"and (quDate<=" + SQLBuilder.GetDateConstant( lastDate ) + ")";
-      OleDbDataAdapter oleDbDataAdapter = new OleDbDataAdapter( commandString , oleDbConnection );
-      DataTable dataTable = new DataTable();
-      oleDbDataAdapter.Fill( dataTable );
-      history.Import( dataTable , "quDate" , getFieldName( quoteField ) );
-      return history;
-    }
+			OleDbDataAdapter oleDbDataAdapter = new OleDbDataAdapter( commandString , oleDbConnection );
+			DataTable dataTable = new DataTable();
+			oleDbDataAdapter.Fill( dataTable );
+			history.Import( dataTable , "quDate" , getFieldName( quoteField ) );
+			return history;
+		}
 		private static History getHistory_common( string instrumentKey , QuoteField quoteField ,
 			DateTime firstDate , DateTime lastDate )
 		{
@@ -139,5 +139,5 @@ namespace QuantProject.DataAccess
 			return getHistory_common( instrumentKey , quoteField , firstDate , lastDate );
 		}
 		#endregion
-  }
+	}
 }

@@ -156,7 +156,7 @@ namespace QuantProject.Business.Financial.Accounting.Reporting
     #region "setRows"
     private void addBalanceItems ( EndOfDayDateTime endOfDayDateTime ,  DataRow dataRow )
     {
-      dataRow[ "AccountCash" ] = this.accountCopy.CashAmount;
+			dataRow[ "AccountCash" ] = this.accountCopy.CashAmount;
       dataRow[ "PortfolioValue" ] = this.accountCopy.Portfolio.GetMarketValue(
         endOfDayDateTime , this.historicalQuoteProvider );
       dataRow[ "AccountValue" ] = (double)dataRow[ "AccountCash" ] +
@@ -164,7 +164,7 @@ namespace QuantProject.Business.Financial.Accounting.Reporting
       dataRow[ "PnL" ] = (double)dataRow[ "AccountValue" ] +
         this.accountCopy.Transactions.TotalWithdrawn -
         this.accountCopy.Transactions.TotalAddedCash;
-    }
+		}
     private void addTransactionRow( EndOfDayTransaction transaction ,
       System.Data.DataTable detailedDataTable )
     {
@@ -182,7 +182,7 @@ namespace QuantProject.Business.Financial.Accounting.Reporting
 			if ( transaction.Commission != null )
 				dataRow[ "Commission" ] = transaction.Commission.Value;
 			addBalanceItems( transaction.EndOfDayDateTime , dataRow );
-      detailedDataTable.Rows.Add( dataRow );
+			detailedDataTable.Rows.Add( dataRow );
     }
     private void addRowsForTransactions( DateTime currentDateTime ,
       System.Data.DataTable detailedDataTable )
@@ -191,9 +191,9 @@ namespace QuantProject.Business.Financial.Accounting.Reporting
         foreach ( EndOfDayTransaction transaction in
           (ArrayList)this.account.Transactions[ currentDateTime ] )
         {
-          this.accountCopy.Add( transaction );
+					this.accountCopy.Add( transaction );
           addTransactionRow( transaction , detailedDataTable );
-        }
+				}
     }
     private void addRowForPnl_actually( DateTime currentDate ,
       System.Data.DataTable detailedDataTable )
@@ -221,7 +221,7 @@ namespace QuantProject.Business.Financial.Accounting.Reporting
           //addTransactionsToAccountCopy( currentDate );
           addRowsForTransactions( currentDate , detailedDataTable );
           addRowForPnl( numDaysForInterval , currentDate , detailedDataTable );
-          currentDate = currentDate.AddDays( 1 );
+					currentDate = currentDate.AddDays( 1 );
         }
 //        foreach ( ArrayList transactionList in account.Transactions.Values )
 //          foreach ( TimedTransaction transaction in transactionList )
