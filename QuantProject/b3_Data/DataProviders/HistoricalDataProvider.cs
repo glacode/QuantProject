@@ -39,7 +39,8 @@ namespace QuantProject.Data.DataProviders
 	{
 		private static Hashtable cachedHistories = new Hashtable();
 
-		private static Cache privateCache = new Cache();
+//		private static Cache privateCache = new Cache();
+		private static ICache privateCache = new Cache();
 
 
 		private static DateTime minDate = DateTime.MinValue;
@@ -63,6 +64,18 @@ namespace QuantProject.Data.DataProviders
 			set { maxDate = value; }
 		}
 
+		/// <summary>
+		/// Caching class
+		/// </summary>
+		public static ICache Cache
+		{
+			get { return privateCache; }
+			set { privateCache = value; }
+		}
+
+		/// <summary>
+		/// Provides historical data
+		/// </summary>
 		public HistoricalDataProvider()
 		{
 			//
@@ -70,7 +83,7 @@ namespace QuantProject.Data.DataProviders
 			//
 		}
 
-    // to be deleted
+		// to be deleted
     public static void Add( string instrumentKey )
     {
       Hashtable barComponentHistories = new Hashtable();
@@ -237,8 +250,14 @@ namespace QuantProject.Data.DataProviders
 		public static double GetAdjustedMarketValue( string instrumentKey , ExtendedDateTime extendedDateTime )
 		{
 			double returnValue;
+			int firstSecond = DateTime.Now.Second;
+			int firstMillisecond = DateTime.Now.Millisecond;
 			double adjustedClose = privateCache.GetQuote( instrumentKey ,
 				extendedDateTime.DateTime , QuoteField.AdjustedClose );
+			int secondSecond = DateTime.Now.Second;
+			int secondMillisecond = DateTime.Now.Millisecond;
+			int elapsedMillisecond = ( secondSecond - firstSecond ) *
+				1000 + ( secondMillisecond - firstMillisecond );
 			if ( extendedDateTime.BarComponent == BarComponent.Close )
 				returnValue = adjustedClose;
 			else
