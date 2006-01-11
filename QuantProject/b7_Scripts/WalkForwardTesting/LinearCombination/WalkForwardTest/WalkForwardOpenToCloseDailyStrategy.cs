@@ -145,6 +145,9 @@ namespace QuantProject.Scripts.WalkForwardTesting.LinearCombination
 				this.numberOfEligibleTickers );
       
 			DataTable eligibleTickers = mostLiquid.GetTableOfSelectedTickers();
+//			SelectorByGroup selectorByGroup =
+//				new SelectorByGroup( "SP500" , optimizationLastDate );
+//			DataTable eligibleTickers = selectorByGroup.GetTableOfSelectedTickers();
 			SelectorByQuotationAtEachMarketDay quotedAtEachMarketDayFromEligible = 
 				new SelectorByQuotationAtEachMarketDay( eligibleTickers,
 				false , optimizationFirstDate ,
