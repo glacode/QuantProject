@@ -192,7 +192,17 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "DataProviders\Caching\ICache.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "DataProviders\Caching\MissingQuoteException.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "DataProviders\Caching\SimpleCache.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
