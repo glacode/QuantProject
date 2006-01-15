@@ -139,5 +139,47 @@ namespace QuantProject.DataAccess
 			return getHistory_common( instrumentKey , quoteField , firstDate , lastDate );
 		}
 		#endregion
+		public static double GetQuote( string ticker ,
+			QuoteField quoteField , DateTime dateTime )
+		{
+			double quote = Double.MinValue;
+			string sqlQuery =
+				"select " + getFieldName( quoteField ) + " " +
+				"from quotes where (quTicker='" + ticker + "') " +
+				"and (quDate=" + SQLBuilder.GetDateConstant( dateTime ) + ")";
+			DataTable quotes = new DataTable();
+			try
+			{
+				quotes = SqlExecutor.GetDataTable( sqlQuery );
+			}
+			catch (Exception ex)
+			{
+				MessageBox.Show( ex.ToString() );
+			}
+			if ( quotes.Rows.Count == 0 )
+				throw new MissingQuoteException( ticker , dateTime );
+			else
+				quote = (double)( quotes.Rows[ 0 ][ 0 ] );
+			return quote;
+		}
+		public static bool WasExchanged( string ticker ,
+			ExtendedDateTime extendedDateTime )
+		{
+			string sqlQuery =
+				"select * " +
+				"from quotes where (quTicker='" + ticker + "') " +
+				"and (quDate=" +
+				SQLBuilder.GetDateConstant( extendedDateTime.DateTime ) + ")";
+			DataTable quotes = new DataTable();
+			try
+			{
+				quotes = SqlExecutor.GetDataTable( sqlQuery );
+			}
+			catch (Exception ex)
+			{
+				MessageBox.Show( ex.ToString() );
+			}
+			return ( quotes.Rows.Count > 0 );
+		}
 	}
 }
