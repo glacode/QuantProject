@@ -201,7 +201,7 @@ namespace QuantProject.Applications.Downloader
         myRow[ "quHigh" ]=Double.Parse( LineIn[2] );
         myRow[ "quLow" ]=Double.Parse( LineIn[3] );
         myRow[ "quClose" ]=Double.Parse( LineIn[4] );
-        myRow[ "quVolume" ]=Double.Parse( LineIn[5] );
+        myRow[ "quVolume" ]=Math.Min(Double.Parse( LineIn[5]),Convert.ToDouble(Int32.MaxValue));
         myRow[ "quAdjustedClose" ]=Double.Parse( LineIn[6] );
 			  
         this.downloadedValuesFromSource.Rows.Add(myRow);
