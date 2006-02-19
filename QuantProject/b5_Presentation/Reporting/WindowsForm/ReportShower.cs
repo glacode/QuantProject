@@ -207,11 +207,13 @@ namespace QuantProject.Presentation.Reporting.WindowsForm
         if(this.benchmark.Text == "")
           throw new Exception("Benchmark symbol is requested!");
         this.report.Clear();
+				System.Console.WriteLine( DateTime.Now );
         this.report.Show(this.reportName.Text, (int)this.numDaysForEquityLine.Value,
                           new EndOfDayDateTime(this.endingDate.Value,
                                               EndOfDaySpecificTime.MarketClose),
                         this.benchmark.Text);
-      }
+				System.Console.WriteLine( DateTime.Now );
+			}
       
       catch(Exception ex)
       {
