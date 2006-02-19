@@ -33,7 +33,8 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardMultiOneRank
 	/// </summary>
 	public class WFMultiOneRankEligibleTickers
 	{
-		string tickerGroupID;
+		private string tickerGroupID;
+		private string benchmark;
 		private int numberEligibleTickersToBeChosen;
 		private int numberDaysForPerformanceCalculation;
 		private IEndOfDayTimer endOfDayTimer;
@@ -47,11 +48,13 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardMultiOneRank
 		}
 		public WFMultiOneRankEligibleTickers(
 			string tickerGroupID ,
+			string benchmark ,
 			int numberEligibleTickersToBeChosen ,
 			int numberDaysForPerformanceCalculation ,
 			IEndOfDayTimer endOfDayTimer )
 		{
 			this.tickerGroupID = tickerGroupID;
+			this.benchmark = benchmark;
 			this.numberEligibleTickersToBeChosen = numberEligibleTickersToBeChosen;
 			this.numberDaysForPerformanceCalculation = numberDaysForPerformanceCalculation;
 			this.endOfDayTimer = endOfDayTimer;
@@ -77,7 +80,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardMultiOneRank
 			SelectorByQuotationAtEachMarketDay quotedInEachMarketDay = 
 				new SelectorByQuotationAtEachMarketDay( eligibleTickers,
 				false,	dateTime.AddDays( - this.numberDaysForPerformanceCalculation ) ,
-				dateTime, this.numberEligibleTickersToBeChosen,"^SPX");
+				dateTime, this.numberEligibleTickersToBeChosen,this.benchmark );
 			return quotedInEachMarketDay.GetTableOfSelectedTickers();
 		}
 		private DataTable setTickers_buildQuickly_getSelectedTickers()

@@ -46,6 +46,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardMultiOneRank
 		private WFMultiOneRankChosenTickers chosenTickers;
 
 		private string tickerGroupID;
+		private string benchmark;
 		private int numberEligibleTickers;
 		private int numberOfPositionsToBeChosen;
 		private int inSampleWindowDays;
@@ -87,6 +88,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardMultiOneRank
 		/// best performing ticker calculation</param>
 		public WFMultiOneRankEndOfDayTimerHandler(
 			string tickerGroupID ,
+			string benchmark ,
 			int numberEligibleTickers ,
 			int numberOfPositionsToBeChosen ,
 			int inSampleWindowDays , int outOfSampleWindowDays ,
@@ -95,6 +97,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardMultiOneRank
 			int populationSizeForGeneticOptimizer )
 		{
 			this.tickerGroupID = tickerGroupID;
+			this.benchmark = benchmark;
 			this.numberEligibleTickers = numberEligibleTickers;
 			this.numberOfPositionsToBeChosen = numberOfPositionsToBeChosen;
 			this.inSampleWindowDays = inSampleWindowDays;
@@ -107,6 +110,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardMultiOneRank
 
 			this.eligibleTickers =
 				new WFMultiOneRankEligibleTickers( this.tickerGroupID ,
+				this.benchmark ,
 				numberEligibleTickers ,	inSampleWindowDays ,
 				this.account.EndOfDayTimer );
 			this.chosenTickers = new WFMultiOneRankChosenTickers(
@@ -154,6 +158,8 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardMultiOneRank
 			{
 				//				this.eligibleTickers.SetTickers( endOfDayTimingEventArgs.EndOfDayDateTime.DateTime );
 				this.eligibleTickers.SetTickers();
+				Console.WriteLine( "Number of Eligible tickers: " +
+					this.eligibleTickers.EligibleTickers.Rows.Count );
 				this.chosenTickers.SetTickers( this.eligibleTickers );
 				this.lastOptimizationDate = this.now().DateTime;
 			}
