@@ -766,9 +766,22 @@ namespace QuantProject.Data.DataTables
 		public DateTime GetFollowingDate( DateTime quoteDate , int followingDays )
 		{
 			setHistory();
-			return (DateTime) history.GetKey( Math.Max( 0 ,
-				history.IndexOfKeyOrPrevious( quoteDate ) +
-				followingDays ) );
+			int indexOfKeyOrPrevious =
+				history.IndexOfKeyOrPrevious( quoteDate );
+			DateTime followingDate;
+			try
+			{
+				followingDate =	(DateTime) history.GetKey( Math.Max( 0 ,
+					indexOfKeyOrPrevious + followingDays ) );
+			}
+			catch ( ArgumentOutOfRangeException exception )
+			{
+				string message = exception.Message;
+				throw new Exception( "Quotes.GetFollowingDate() error: there is not " +
+					"a date for quoteDate=" + quoteDate.ToString() +
+					" and followingDays=" + followingDays );
+			}
+			return followingDate;
 		}
     
     /// <summary>
