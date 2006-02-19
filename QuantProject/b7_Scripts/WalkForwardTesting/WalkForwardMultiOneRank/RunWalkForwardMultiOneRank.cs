@@ -66,10 +66,9 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardMultiOneRank
 		private double maxRunningHours;
 
 		private WFMultiOneRankEndOfDayTimerHandler endOfDayTimerHandler;
-
 		private Account account;
-		
 		private IEndOfDayTimer endOfDayTimer;
+		private DateTime startingTimeForScript;
 
 		public RunWalkForwardMultiOneRank(
 			string tickerGroupID ,
@@ -108,6 +107,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardMultiOneRank
 		{
 			this.historicalQuoteProvider =
 				new HistoricalAdjustedQuoteProvider();
+			this.startingTimeForScript = DateTime.Now;
 		}
 		private void run_initializeEndOfDayTimer()
 		{
@@ -131,6 +131,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardMultiOneRank
 			this.endOfDayTimerHandler =
 				new WFMultiOneRankEndOfDayTimerHandler(
 				this.tickerGroupID ,
+				this.benchmark ,
 				this.numberEligibleTickers ,
 				this.numberOfPortfolioPositions ,
 				this.numberDaysForInSampleOptimization ,
@@ -176,14 +177,21 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardMultiOneRank
 		public void oneHourAfterMarketCloseEventHandler(
 			Object sender , EndOfDayTimingEventArgs endOfDayTimingEventArgs )
 		{
-			if ( ( ( IEndOfDayTimer )sender ).GetCurrentTime().DateTime >
-				this.lastDateTime )
+			if ( ( ( ( IEndOfDayTimer )sender ).GetCurrentTime().DateTime >
+				this.lastDateTime ) ||
+				( DateTime.Now >=
+				this.startingTimeForScript.AddHours( this.maxRunningHours ) ) )
 			{
 				// the simulation has reached the ending date
 				this.account.EndOfDayTimer.Stop();
 //				this.progressBarForm.Close();
 //				ObjectArchiver.Archive( this.account ,
 //					@"C:\Documents and Settings\Glauco\Desktop\reports\final.qP" );
+				DateTime lastReportDateTime = this.lastDateTime;
+				if ( ( ( IEndOfDayTimer )sender ).GetCurrentTime().DateTime <
+					lastReportDateTime )
+					lastReportDateTime =
+						( ( IEndOfDayTimer )sender ).GetCurrentTime().DateTime;
 				Report report = new Report( this.account , this.historicalQuoteProvider );
 				report.Create( "WFT One Rank" , 1 ,
 					new EndOfDayDateTime( this.lastDateTime ,
