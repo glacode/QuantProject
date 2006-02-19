@@ -250,14 +250,8 @@ namespace QuantProject.Data.DataProviders
 		public static double GetAdjustedMarketValue( string instrumentKey , ExtendedDateTime extendedDateTime )
 		{
 			double returnValue;
-			int firstSecond = DateTime.Now.Second;
-			int firstMillisecond = DateTime.Now.Millisecond;
 			double adjustedClose = privateCache.GetQuote( instrumentKey ,
 				extendedDateTime.DateTime , QuoteField.AdjustedClose );
-			int secondSecond = DateTime.Now.Second;
-			int secondMillisecond = DateTime.Now.Millisecond;
-			int elapsedMillisecond = ( secondSecond - firstSecond ) *
-				1000 + ( secondMillisecond - firstMillisecond );
 			if ( extendedDateTime.BarComponent == BarComponent.Close )
 				returnValue = adjustedClose;
 			else
