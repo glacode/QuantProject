@@ -157,13 +157,15 @@ namespace QuantProject.Business.Financial.Accounting.Reporting
     private void addBalanceItems ( EndOfDayDateTime endOfDayDateTime ,  DataRow dataRow )
     {
 			dataRow[ "AccountCash" ] = this.accountCopy.CashAmount;
-      dataRow[ "PortfolioValue" ] = this.accountCopy.Portfolio.GetMarketValue(
-        endOfDayDateTime , this.historicalQuoteProvider );
-      dataRow[ "AccountValue" ] = (double)dataRow[ "AccountCash" ] +
+
+			dataRow[ "PortfolioValue" ] = this.accountCopy.Portfolio.GetMarketValue(
+				endOfDayDateTime , this.historicalQuoteProvider );
+
+			dataRow[ "AccountValue" ] = (double)dataRow[ "AccountCash" ] +
 				(double)dataRow[ "PortfolioValue" ];
-      dataRow[ "PnL" ] = (double)dataRow[ "AccountValue" ] +
-        this.accountCopy.Transactions.TotalWithdrawn -
-        this.accountCopy.Transactions.TotalAddedCash;
+			dataRow[ "PnL" ] = (double)dataRow[ "AccountValue" ] +
+				this.accountCopy.Transactions.TotalWithdrawn -
+				this.accountCopy.Transactions.TotalAddedCash;
 		}
     private void addTransactionRow( EndOfDayTransaction transaction ,
       System.Data.DataTable detailedDataTable )
