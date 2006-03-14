@@ -24,7 +24,9 @@ using System;
 using System.Runtime.Serialization;
 using System.Collections;
 using System.Diagnostics;
+
 using QuantProject.ADT;
+using QuantProject.ADT.Collections;
 using QuantProject.Business.DataProviders;
 using QuantProject.Business.Financial.Instruments;
 using QuantProject.Business.Timing;
@@ -36,7 +38,7 @@ namespace QuantProject.Business.Financial.Accounting
 	/// Summary description for Portfolio.
 	/// </summary>
   [Serializable]
-  public class Portfolio : Hashtable
+  public class Portfolio : QPHashtable
   {
 		public ICollection Positions
 		{
