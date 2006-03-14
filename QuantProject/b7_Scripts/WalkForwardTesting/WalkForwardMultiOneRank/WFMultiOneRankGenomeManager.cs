@@ -1,7 +1,7 @@
 /*
 QuantProject - Quantitative Finance Library
 
-WFMultiOneRankChosenTickers.cs
+WFMultiOneRankGenomeManager.cs
 Copyright (C) 2003 
 Glauco Siliprandi
 
@@ -142,14 +142,14 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardMultiOneRank
 				arrayElementPosition , tickerIdx > 0 );
 			//the investment is assumed to be equally divided for each ticker
 			return ( currentReturn / this.GenomeSize );
-		}    
+		}
     
 		private double[] getFitnessValue_getLinearCombinationReturns( int[] tickersIdx )
 		{
 			double[] returnValue =
 				new double[ this.setOfCandidates[ 0 ].ArrayOfRatesOfReturn.Length ];
-			for( int i = 0; i < returnValue.Length ; i++ )    
-			{  
+			for( int i = 0; i < returnValue.Length ; i++ ) 
+			{
 				foreach( int tickerIdx in tickersIdx )
 					returnValue[ i ] +=
 						this.getPortfolioRatesOfReturn_getRateOfTickerToBeAddedToTheArray(
@@ -158,6 +158,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardMultiOneRank
 			return returnValue;
 		}
 		#endregion
+
 		private double[] getFitnessValue_getStrategyReturnForCurrentCandidates(
 			double[] linearCombinationReturns )
 		{
