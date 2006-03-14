@@ -194,7 +194,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardMultiOneRank
 						( ( IEndOfDayTimer )sender ).GetCurrentTime().DateTime;
 				Report report = new Report( this.account , this.historicalQuoteProvider );
 				report.Create( "WFT One Rank" , 1 ,
-					new EndOfDayDateTime( this.lastDateTime ,
+					new EndOfDayDateTime( lastReportDateTime ,
 					EndOfDaySpecificTime.OneHourAfterMarketClose ) ,
 					this.benchmark );
 				WFMultiOneRankReportDebugger wFMultiOneRankReportDebugger =
