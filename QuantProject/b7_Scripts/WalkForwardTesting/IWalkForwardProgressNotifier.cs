@@ -26,6 +26,9 @@ using QuantProject.ADT;
 
 namespace QuantProject.Scripts.WalkForwardTesting
 {
+	public delegate void InSampleNewProgressEventHandler(
+	Object sender , NewProgressEventArgs eventArgs );
+
 	/// <summary>
 	/// Interface to be implemented by time consuming walk forwarding scripts
 	/// </summary>
