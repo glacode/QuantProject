@@ -33,9 +33,6 @@ using QuantProject.Scripts.SimpleTesting;
 
 namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardMultiOneRank
 {
-	public delegate void InSampleNewProgressEventHandler(
-	Object sender , NewProgressEventArgs eventArgs );
-
 	/// <summary>
 	/// Implements OneHourAfterMarketCloseEventHandler and FiveMinutesBeforeMarketCloseEventHandler.
 	/// This is the core strategy!
