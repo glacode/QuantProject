@@ -120,7 +120,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.LinearCombination
 			this.historicalEndOfDayTimer =
 				new IndexBasedEndOfDayTimer(
 				new EndOfDayDateTime( this.firstDate ,
-				EndOfDaySpecificTime.MarketOpen ) , "DYN" );
+				EndOfDaySpecificTime.MarketOpen ) , "MSFT" );
 			run_setHistoricalQuoteProvider();
 			this.account = new Account( "LinearCombination" , historicalEndOfDayTimer ,
 				new HistoricalEndOfDayDataStreamer( historicalEndOfDayTimer ,
@@ -147,7 +147,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.LinearCombination
 			Report report = new Report( this.account , this.historicalQuoteProvider );
 			report.Create( "Linear Combination" , 1 ,
 				new EndOfDayDateTime( this.lastDate , EndOfDaySpecificTime.MarketClose ) ,
-				"^SPX" );
+				"MSFT" );
 			//			ObjectArchiver.Archive( report.AccountReport ,
 			//				@"C:\Documents and Settings\Glauco\Desktop\reports\runOneRank.qPr" );
 			report.Text = this.run_getReportTitle();
