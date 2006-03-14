@@ -463,6 +463,41 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "WalkForwardTesting\WalkForwardLag\RunWalkForwardLag.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "WalkForwardTesting\WalkForwardLag\WFLagCandidates.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "WalkForwardTesting\WalkForwardLag\WFLagChosenTickers.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "WalkForwardTesting\WalkForwardLag\WFLagEligibleTickers.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "WalkForwardTesting\WalkForwardLag\WFLagEndOfDayTimerHandler.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "WalkForwardTesting\WalkForwardLag\WFLagGenomeManager.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "WalkForwardTesting\WalkForwardLag\WFLagSignedTickers.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "WalkForwardTesting\WalkForwardMultiOneRank\RunWalkForwardMultiOneRank.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
