@@ -231,7 +231,7 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
     		genome.HasGene(geneCorrespondingToATicker) ||
         	(geneCorrespondingToATicker<0 && 
           	genome.HasGene(Math.Abs(geneCorrespondingToATicker)-1)) ||
-        	(geneCorrespondingToATicker>0 && genome.HasGene(- Math.Abs(geneCorrespondingToATicker)- 1))
+        	(geneCorrespondingToATicker>=0 && genome.HasGene(- Math.Abs(geneCorrespondingToATicker)- 1))
       );
       
     }
