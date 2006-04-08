@@ -701,7 +701,7 @@ namespace QuantProject.Applications.Downloader.TickerSelectors
       {
         Cursor.Current = Cursors.WaitCursor;
       
-        this.tableTickers = new FaultyTickers().Table;
+        this.tableTickers = new FaultyTickers(true).Table;
 
         this.dataGrid1.DataSource = this.tableTickers;
         this.setStyle_faultyTickersDataGrid();
