@@ -75,7 +75,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag
 				QuantProject.Data.ExtendedDataTable.GetArrayOfFloatFromColumn(
 				tickerQuotes , "quAdjustedClose");
 			float[] closeToCloseTickerReturns =
-				new float[ tickerAdjustedCloses.Length ];
+				new float[ tickerAdjustedCloses.Length - 1 ];
 			int i = 0; //index for ratesOfReturns array
 			for( int idx = 0 ; idx < tickerAdjustedCloses.Length - 1 ; idx++ )
 			{
