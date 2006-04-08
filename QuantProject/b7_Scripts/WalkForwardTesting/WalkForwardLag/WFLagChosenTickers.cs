@@ -35,6 +35,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag
 	/// Best driving positions and tickers in portfolio,
 	/// with respect to the lag strategy
 	/// </summary>
+	[Serializable]
 	public class WFLagChosenTickers : IProgressNotifier
 	{
 		public event NewProgressEventHandler NewProgress;
@@ -49,6 +50,8 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag
 
 		private QPHashtable drivingPositions;
 		private QPHashtable portfolioPositions;
+		private DateTime firstOptimizationDate;
+		private DateTime lastOptimizationDate;
 
 		public QPHashtable DrivingPositions
 		{
@@ -62,6 +65,20 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag
 			get
 			{
 				return this.portfolioPositions;
+			}
+		}
+		public DateTime FirstOptimizationDate
+		{
+			get
+			{
+				return this.firstOptimizationDate;
+			}
+		}
+		public DateTime LastOptimizationDate
+		{
+			get
+			{
+				return this.lastOptimizationDate;
 			}
 		}
 		public WFLagChosenTickers(
@@ -109,15 +126,17 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag
 		{
 //			this.setSignedTickers_clearPositions();
 
-			DateTime firstDate =
+			this.firstOptimizationDate =
 				this.endOfDayTimer.GetCurrentTime().DateTime.AddDays(
 				-( this.inSampleDays - 1 ) );
+			this.lastOptimizationDate =
+				this.endOfDayTimer.GetCurrentTime().DateTime;
 
 			WFLagGenomeManager genomeManager = 
 				new WFLagGenomeManager(
 				eligibleTickers.EligibleTickers ,
-				firstDate ,
-				this.endOfDayTimer.GetCurrentTime().DateTime ,
+				firstOptimizationDate ,
+				this.lastOptimizationDate ,
 				this.numberOfDrivingPositions ,
 				this.numberOfPositionsToBeChosen );
 
