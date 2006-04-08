@@ -33,6 +33,9 @@ using QuantProject.Scripts.SimpleTesting;
 
 namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag
 {
+	public delegate void NewChosenTickersEventHandler(
+	Object sender , WFLagNewChosenTickersEventArgs eventArgs );
+
 	/// <summary>
 	/// Implements OneHourAfterMarketCloseEventHandler
 	/// and FiveMinutesBeforeMarketCloseEventHandler for the
@@ -59,6 +62,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag
 		private DateTime lastOptimizationDate;
 
 		public event InSampleNewProgressEventHandler InSampleNewProgress;
+		public event NewChosenTickersEventHandler NewChosenTickers;
 
 		public WFLagEndOfDayTimerHandler(
 			string tickerGroupID ,
@@ -361,6 +365,8 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag
 				Console.WriteLine( "Number of Eligible tickers: " +
 					this.eligibleTickers.EligibleTickers.Rows.Count );
 				this.chosenTickers.SetSignedTickers( this.eligibleTickers );
+				this.NewChosenTickers( this ,
+					new WFLagNewChosenTickersEventArgs( this.chosenTickers ) );
 				this.lastOptimizationDate = this.now().DateTime;
 			}
 			//			oneHourAfterMarketCloseEventHandler_orderChosenTickers( ( IEndOfDayTimer ) sender );
