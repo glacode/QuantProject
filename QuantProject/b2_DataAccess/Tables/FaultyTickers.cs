@@ -42,12 +42,39 @@ namespace QuantProject.DataAccess.Tables
     private DataTable faultyTickers;
     private int count;
     
-    public FaultyTickers()
+    private void faultyTickers_deleteRowsFromDatabaseTable()
     {
       this.faultyTickers = SqlExecutor.GetDataTable("SELECT * FROM faultyTickers");
+       
+      foreach(DataRow row in this.faultyTickers.Rows)
+      {
+        if(SqlExecutor.GetDataTable("SELECT * FROM quotes WHERE quTicker='" +
+                                    (string)row[0] + "' AND quDate>" +
+                                    SQLBuilder.GetDateConstant((DateTime)row[1])).Rows.Count>0)
+        //there are quotes with date > than last attempt date
+
+          SqlExecutor.ExecuteNonQuery("DELETE * FROM faultyTickers " +
+                                      "WHERE ftTicker='" + (string)row[0] + "'");
+            
+      }
+
+    }
+    
+    /// <summary>
+    /// Class to access the Faulty Tickers table (containing tickers not
+    /// downloaded because of some error). 
+    /// </summary>
+    /// <param name="deleteOldFaultyTickersRecords">If the parameter is set on true,
+    ///                 tickers are deleted from table if their lastAttemptDate is older than
+    ///                 last quote Date stored in the database</param>
+    public FaultyTickers(bool deleteOldFaultyTickersRecords)
+    {
+      if(deleteOldFaultyTickersRecords)
+        this.faultyTickers_deleteRowsFromDatabaseTable();
+      this.faultyTickers = SqlExecutor.GetDataTable("SELECT * FROM faultyTickers ORDER BY ftDate");
       this.count = this.faultyTickers.Rows.Count;
     }
-
+ 
     /// <summary>
     /// Number of tickers in FaultyTickers table
     /// </summary>
