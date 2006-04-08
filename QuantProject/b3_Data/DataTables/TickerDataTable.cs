@@ -212,6 +212,7 @@ namespace QuantProject.Data.DataTables
       newRow["NumberOfQuotes"] = numberOfTradingDays;
       tableToWhichRowIsToBeAdded.Rows.Add(newRow);
     }
+    
     public static DataTable GetTickersQuotedInEachMarketDay(string marketIndex, string groupID,
                                                             DateTime firstQuoteDate,
                                                             DateTime lastQuoteDate,
@@ -256,6 +257,63 @@ namespace QuantProject.Data.DataTables
       ExtendedDataTable.DeleteRows(returnValue, maxNumOfReturnedTickers);
       return returnValue;              
     }
+
+    private static void getTickersQuotedNotAtEachMarketDay_addRow(DataRow rowToBeAdded,
+                                                                  int numberOfTradingDays,
+                                                                  int numberOfMissingQuotes,
+                               																		DataTable tableToWhichRowIsToBeAdded)
+    {
+      DataRow newRow = tableToWhichRowIsToBeAdded.NewRow();
+      newRow[0]= rowToBeAdded[0];
+      newRow["NumberOfTradingDays"] = numberOfTradingDays;
+      newRow["NumberOfMissingQuotes"] = numberOfMissingQuotes;
+      tableToWhichRowIsToBeAdded.Rows.Add(newRow);
+    }
+    
+    private static void getTickersQuotedNotAtEachMarketDay_addColumns(DataTable tableToAnalyze)
+    {
+      if(!tableToAnalyze.Columns.Contains("NumberOfTradingDays"))
+        tableToAnalyze.Columns.Add("NumberOfTradingDays", System.Type.GetType("System.Int32"));
+      if(!tableToAnalyze.Columns.Contains("NumberOfMissingQuotes"))
+        tableToAnalyze.Columns.Add("NumberOfMissingQuotes", System.Type.GetType("System.Int32"));
+    }
+    
+    public static DataTable GetTickersNotQuotedAtEachMarketDay(string marketIndex, string groupID,
+                                                            DateTime firstQuoteDate,
+                                                            DateTime lastQuoteDate,
+                                                            long maxNumOfReturnedTickers)
+    {
+      
+      DataTable groupOfTickers = QuantProject.DataAccess.Tables.Tickers_tickerGroups.GetTickers(groupID);
+      
+      return GetTickersNotQuotedAtEachMarketDay(marketIndex,groupOfTickers,firstQuoteDate,lastQuoteDate,
+                                                maxNumOfReturnedTickers);
+    }
+    
+    public static DataTable GetTickersNotQuotedAtEachMarketDay(string marketIndex, DataTable setOfTickers,
+                                                            DateTime firstQuoteDate,
+                                                            DateTime lastQuoteDate,
+                                                            long maxNumOfReturnedTickers)
+    {
+			int marketDaysForTheGivenMarket = 
+                    TickerDataTable.getNumberOfTradingDays(marketIndex, firstQuoteDate, lastQuoteDate);
+      TickerDataTable.getTickersQuotedNotAtEachMarketDay_addColumns(setOfTickers);
+      DataTable returnValue = setOfTickers.Clone();
+      int numberOfMissingQuotes = 0;
+      foreach(DataRow row in setOfTickers.Rows)
+      {
+      	DataTable tickerQuotes = new Quotes((string)row[0],firstQuoteDate,lastQuoteDate);
+      	numberOfMissingQuotes = marketDaysForTheGivenMarket - tickerQuotes.Rows.Count;
+      	if( numberOfMissingQuotes > 0 )
+        //the current ticker has NOT been effectively traded at each market day
+          TickerDataTable.getTickersQuotedNotAtEachMarketDay_addRow(row, marketDaysForTheGivenMarket,
+        	                                                          numberOfMissingQuotes,
+                                                                 		returnValue);
+      }
+      ExtendedDataTable.DeleteRows(returnValue, maxNumOfReturnedTickers);
+      
+      return returnValue;
+   }
 
   }
 }
