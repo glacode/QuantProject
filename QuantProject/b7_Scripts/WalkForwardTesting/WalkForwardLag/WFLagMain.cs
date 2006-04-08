@@ -31,7 +31,9 @@ using QuantProject.Scripts.WalkForwardTesting.WalkForwardLag.WFLagDebugger;
 namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag
 {
 	/// <summary>
-	/// Summary description for WFLagMain.
+	/// Main form to test the walk forward lag strategy: you
+	/// can chose either to backtest the strategy or to
+	/// debug a previous backtest
 	/// </summary>
 	public class WFLagMain : System.Windows.Forms.Form
 	{
