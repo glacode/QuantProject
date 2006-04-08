@@ -599,7 +599,7 @@ namespace QuantProject.Applications.Downloader
       {
         this.DsTickerCurrentlyDownloaded.Tables.Add( "Tickers" );
         this.DsTickerCurrentlyDownloaded.Tables[ "Tickers" ].Columns.Add( 
-          new DataColumn( dt.Columns[ "tiTicker" ].ColumnName , dt.Columns[ "tiTicker" ].DataType ) );
+          new DataColumn( dt.Columns[0].ColumnName , dt.Columns[0].DataType ) );
         this.DsTickerCurrentlyDownloaded.Tables[ "Tickers" ].Columns.Add( "currentState" , System.Type.GetType( "System.String" ) );
         this.DsTickerCurrentlyDownloaded.Tables[ "Tickers" ].Columns.Add( "databaseUpdated" , System.Type.GetType( "System.String" ) );
         this.DsTickerCurrentlyDownloaded.Tables[ "Tickers" ].Columns.Add( "adjustedClose" , System.Type.GetType( "System.String" ) );
@@ -616,7 +616,7 @@ namespace QuantProject.Applications.Downloader
         {
           //if (this.dsTickerCurrentlyDownloaded.Tables[ "Tickers" ].Rows.Count>5)
           //  Monitor.Wait( this.dsTickerCurrentlyDownloaded.Tables[ "Tickers" ] );
-          TickerDownloader qd = new TickerDownloader( this , myRow , myRow["tiTicker"].ToString() , ds.Tables[0].Rows.Count );
+          TickerDownloader qd = new TickerDownloader( this , myRow , myRow[0].ToString() , ds.Tables[0].Rows.Count );
           //Thread newThread = new Thread( new ThreadStart( qd.downloadTicker));
           //newThread.Start();
           if(this.radioButtonAllAvailableUntilNowSinceStartingDate.Checked)

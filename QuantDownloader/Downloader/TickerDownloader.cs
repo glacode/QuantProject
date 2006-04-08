@@ -62,7 +62,8 @@ namespace QuantProject.Applications.Downloader
     {
       lock( p_myForm.DsTickerCurrentlyDownloaded.Tables[ "Tickers" ] )
       {
-        DataRow[] myRows = p_myForm.DsTickerCurrentlyDownloaded.Tables[ "Tickers" ].Select( "tiTicker='" + p_quTicker + "'" );
+        string columnName = p_myForm.DsTickerCurrentlyDownloaded.Tables["Tickers"].Columns[0].ColumnName;
+        DataRow[] myRows = p_myForm.DsTickerCurrentlyDownloaded.Tables[ "Tickers" ].Select( columnName + "='" + p_quTicker + "'" );
         myRows[ 0 ][ "currentState" ] = newState;
         p_myForm.dataGrid1.Refresh();
       }
@@ -72,7 +73,8 @@ namespace QuantProject.Applications.Downloader
     {
       lock( p_myForm.DsTickerCurrentlyDownloaded.Tables[ "Tickers" ] )
       {
-        DataRow[] myRows = p_myForm.DsTickerCurrentlyDownloaded.Tables[ "Tickers" ].Select( "tiTicker='" + p_quTicker + "'" );
+        string columnName = p_myForm.DsTickerCurrentlyDownloaded.Tables["Tickers"].Columns[0].ColumnName;
+        DataRow[] myRows = p_myForm.DsTickerCurrentlyDownloaded.Tables[ "Tickers" ].Select( columnName + "='" + p_quTicker + "'" );
         myRows[ 0 ][ "adjustedClose" ] = status;
         p_myForm.dataGrid1.Refresh();
       }
@@ -82,7 +84,8 @@ namespace QuantProject.Applications.Downloader
     {
       lock( p_myForm.DsTickerCurrentlyDownloaded.Tables[ "Tickers" ] )
       {
-        DataRow[] myRows = p_myForm.DsTickerCurrentlyDownloaded.Tables[ "Tickers" ].Select( "tiTicker='" + p_quTicker + "'" );
+        string columnName = p_myForm.DsTickerCurrentlyDownloaded.Tables["Tickers"].Columns[0].ColumnName;
+        DataRow[] myRows = p_myForm.DsTickerCurrentlyDownloaded.Tables[ "Tickers" ].Select(columnName + "='" + p_quTicker + "'" );
         myRows[ 0 ][ "adjCloseToCloseRatio" ] = status;
         p_myForm.dataGrid1.Refresh();
       }
@@ -92,7 +95,8 @@ namespace QuantProject.Applications.Downloader
     {
       lock( p_myForm.DsTickerCurrentlyDownloaded.Tables[ "Tickers" ] )
       {
-        DataRow[] myRows = p_myForm.DsTickerCurrentlyDownloaded.Tables[ "Tickers" ].Select( "tiTicker='" + p_quTicker + "'" );
+        string columnName = p_myForm.DsTickerCurrentlyDownloaded.Tables["Tickers"].Columns[0].ColumnName;
+        DataRow[] myRows = p_myForm.DsTickerCurrentlyDownloaded.Tables[ "Tickers" ].Select(columnName +  "='" + p_quTicker + "'" );
         myRows[ 0 ][ "databaseUpdated" ] = status;
         p_myForm.dataGrid1.Refresh();
       }
@@ -270,7 +274,7 @@ namespace QuantProject.Applications.Downloader
     private void addTickerTo_gridDataSet()
     {
       DataRow newRow = p_myForm.DsTickerCurrentlyDownloaded.Tables[ "Tickers" ].NewRow();
-      newRow[ "tiTicker" ] = p_quTicker;
+      newRow[ 0 ] = p_quTicker;
       newRow[ "currentState" ] = "Searching ...";
       newRow[ "databaseUpdated" ] = "No";
       newRow[ "adjustedClose"] = "...";
