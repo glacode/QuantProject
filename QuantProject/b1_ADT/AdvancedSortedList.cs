@@ -71,7 +71,7 @@ namespace QuantProject.ADT
 
 		/// <summary>
 		/// Returns the index for the given key. If the key is missing, it returns the
-		/// index for the next previous element.
+		/// index for the previous element.
 		/// </summary>
 		/// <param name="key"></param>
 		/// <returns></returns>
@@ -91,6 +91,12 @@ namespace QuantProject.ADT
     {
       return this.GetKey( this.IndexOfKeyOrPrevious( key ) );
     }
+		/// <summary>
+		/// Returns the value for the given key. If the key is missing,
+		/// it returns the value for the previous existent key
+		/// </summary>
+		/// <param name="key"></param>
+		/// <returns></returns>
 		public object GetByKeyOrPrevious( Object key )
 		{
 			return this[ this.GetKeyOrPrevious( key ) ];
