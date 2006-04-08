@@ -28,7 +28,9 @@ using QuantProject.Business.Financial.Accounting;
 using QuantProject.Business.Financial.Ordering;
 using QuantProject.Business.Scripting;
 using QuantProject.Business.Timing;
+using QuantProject.Presentation;
 using QuantProject.Presentation.Reporting.WindowsForm;
+using QuantProject.Scripts.WalkForwardTesting.WalkForwardLag.WFLagDebugger;
 
 namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag
 {
@@ -56,6 +58,8 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag
 		private DateTime startingTimeForScript;
 		private Account account;
 		private WFLagEndOfDayTimerHandler endOfDayTimerHandler;
+
+    private WFLagLog wFLagLog;
 
 		public event NewProgressEventHandler InSampleNewProgress;
 
@@ -86,6 +90,9 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag
 			this.lastDateTime = lastDateTime;
 
 			this.maxRunningHours = maxRunningHours;
+			this.wFLagLog =
+				new WFLagLog( this.numberDaysForInSampleOptimization ,
+				this.benchmark );
 		}
 
 		private void run_initializeHistoricalQuoteProvider()
@@ -147,6 +154,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag
 			if ( this.account.Transactions.Count == 0 )
 				this.account.AddCash( 30000 );
 		}
+		#region oneHourAfterMarketCloseEventHandler
 		private void oneHourAfterMarketCloseEventHandler_handleProgessBarForm(
 			IEndOfDayTimer endOfDayTimer )
 		{
@@ -156,7 +164,49 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag
 				"Last date:" + this.lastDateTime.ToString();
 			Console.WriteLine( progress );
 		}
-		public void oneHourAfterMarketCloseEventHandler(
+		private string nowToString()
+		{
+			string returnValue =
+				DateTime.Now.Year.ToString() + "_" +
+				DateTime.Now.Month.ToString() + "_" +
+				DateTime.Now.Day.ToString();
+			return returnValue;
+		}
+		private string getDefaultLogFileName()
+		{
+			string defaultFileName =
+				nowToString() + "_" +
+				"DrivingPositions_" + this.numberOfDrivingPositions + "_" +
+				"DrivingPositions_" + this.numberOfPortfolioPositions + "_" +
+				"From_" + this.nowToString() + "_" +
+				"To_" + this.nowToString();
+			return defaultFileName;
+		}
+		private void saveLog()
+		{
+			this.wFLagLog.TransactionHistory = this.account.Transactions;
+			string defaultFolderPath =
+				"C:\\Documents and Settings\\Glauco\\Desktop\\reports\\WalkForwardLag";
+			VisualObjectArchiver visualObjectArchiver =
+				new VisualObjectArchiver();
+			visualObjectArchiver.Save( this.wFLagLog , "qPWFLagLog" ,
+				this.getDefaultLogFileName() , defaultFolderPath );
+		}
+		private void showReport( object sender )
+		{
+			DateTime lastReportDateTime = this.lastDateTime;
+			if ( ( ( IEndOfDayTimer )sender ).GetCurrentTime().DateTime <
+				lastReportDateTime )
+				lastReportDateTime =
+					( ( IEndOfDayTimer )sender ).GetCurrentTime().DateTime;
+			Report report = new Report( this.account , this.historicalQuoteProvider );
+			report.Create( "Walk Forward Lag" , 1 ,
+				new EndOfDayDateTime( lastReportDateTime ,
+				EndOfDaySpecificTime.OneHourAfterMarketClose ) ,
+				this.benchmark );
+			report.Show();
+		}
+		private void oneHourAfterMarketCloseEventHandler(
 			Object sender , EndOfDayTimingEventArgs endOfDayTimingEventArgs )
 		{
 			if ( ( ( ( IEndOfDayTimer )sender ).GetCurrentTime().DateTime >
@@ -170,28 +220,28 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag
 				//				this.progressBarForm.Close();
 				//				ObjectArchiver.Archive( this.account ,
 				//					@"C:\Documents and Settings\Glauco\Desktop\reports\final.qP" );
-				DateTime lastReportDateTime = this.lastDateTime;
-				if ( ( ( IEndOfDayTimer )sender ).GetCurrentTime().DateTime <
-					lastReportDateTime )
-					lastReportDateTime =
-						( ( IEndOfDayTimer )sender ).GetCurrentTime().DateTime;
-				Report report = new Report( this.account , this.historicalQuoteProvider );
-				report.Create( "Walk Forward Lag" , 1 ,
-					new EndOfDayDateTime( lastReportDateTime ,
-					EndOfDaySpecificTime.OneHourAfterMarketClose ) ,
-					this.benchmark );
+				this.saveLog();
+				this.showReport( sender );
 //				WFMultiOneRankReportDebugger wFMultiOneRankReportDebugger =
 //					new WFMultiOneRankReportDebugger( this.numberOfPortfolioPositions ,
 //					this.numberDaysForInSampleOptimization , this.benchmark );
 //				report.TransactionGrid.MouseUp +=
 //					new MouseEventHandler(
 //					wFMultiOneRankReportDebugger.MouseClickEventHandler );
-				report.Show();
 			}
 			else
 				// the simulation has not reached the ending date, yet
 				this.oneHourAfterMarketCloseEventHandler_handleProgessBarForm(
 					( IEndOfDayTimer )sender );
+		}
+		#endregion
+		private void newChosenTickersEventHandler( object sender ,
+			WFLagNewChosenTickersEventArgs eventArgs )
+		{
+			WFLagChosenPositions wFLagChosenPositions =
+				new WFLagChosenPositions( eventArgs.WFLagChosenTickers ,
+				this.endOfDayTimer.GetCurrentTime().DateTime );
+			this.wFLagLog.Add( wFLagChosenPositions );
 		}
 		private void run_addEventHandlers()
 		{
@@ -206,8 +256,10 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag
 			this.endOfDayTimer.OneHourAfterMarketClose +=
 				new OneHourAfterMarketCloseEventHandler(
 				this.oneHourAfterMarketCloseEventHandler );
+			this.endOfDayTimerHandler.NewChosenTickers +=
+				new NewChosenTickersEventHandler(
+				this.newChosenTickersEventHandler	);
 		}
-
 		public override void Run()
 		{
 			this.startingTimeForScript = DateTime.Now;
