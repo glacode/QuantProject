@@ -337,6 +337,11 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "Selectors\SelectorByQuotationNotAtEachMarketDay.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "Selectors\SelectorByWinningOpenToClose.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
