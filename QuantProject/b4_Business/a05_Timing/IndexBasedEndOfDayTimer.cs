@@ -21,6 +21,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 using System;
 using System.Collections;
+using System.Data;
 using QuantProject.Data.DataTables;
 
 using QuantProject.ADT;
@@ -39,9 +40,20 @@ namespace QuantProject.Business.Timing
     {
       get	{	return this.marketIndex;	}
     }
+    
     private Quotes indexQuotes;
+    public Quotes IndexQuotes
+    {
+      get { return this.indexQuotes;  }
+    }
+		
+    private int currentDateArrayPosition;
+    public int CurrentDateArrayPosition
+    {
+      get { return this.currentDateArrayPosition ;  }
+    }
 
-		public IndexBasedEndOfDayTimer( EndOfDayDateTime startDateTime,
+    public IndexBasedEndOfDayTimer( EndOfDayDateTime startDateTime,
                                     string marketIndex): base(startDateTime)
 		{
 			this.marketIndex = marketIndex;
@@ -56,6 +68,7 @@ namespace QuantProject.Business.Timing
               new EndOfDayDateTime(this.indexQuotes.GetQuoteDateOrFollowing(this.StartDateTime.DateTime),
                                                                     EndOfDaySpecificTime.MarketOpen);
 			this.tickers = new Hashtable();
+      this.currentDateArrayPosition = 0;
 		}
 
 		/// <summary>
@@ -80,8 +93,10 @@ namespace QuantProject.Business.Timing
         // the current end of day specific time is the last end of day specific time in the day
         this.currentTime.DateTime =
                         this.indexQuotes.GetFollowingDate(this.currentTime.DateTime, 1);
+        this.currentDateArrayPosition++;
       }
       this.currentTime.EndOfDaySpecificTime = nextSpecificTime;
+      
     }
     /// <summary>
     /// Gets the previous index based date time
