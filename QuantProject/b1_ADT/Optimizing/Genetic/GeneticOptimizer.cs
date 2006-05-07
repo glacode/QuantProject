@@ -411,7 +411,7 @@ namespace QuantProject.ADT.Optimizing.Genetic
       this.currentEliteToTransmitToNextGeneration.Clear();
       
       for(int i = populationSize - 1;
-              i >=(populationSize - this.elitismRate*this.populationSize);
+              i >=(populationSize - this.elitismRate*this.populationSize - 1);
               i--)
       {
       	if(this.currentGeneration[i] is Genome)
@@ -520,8 +520,8 @@ namespace QuantProject.ADT.Optimizing.Genetic
     }
     private void setInitialBestAndWorstGenomes()
     {
-      this.bestGenome = (Genome)this.currentGeneration[this.populationSize-1];
-      this.worstGenome = (Genome)this.currentGeneration[0];
+      this.bestGenome = ((Genome)this.currentGeneration[this.populationSize-1]).Clone();
+      this.worstGenome = ((Genome)this.currentGeneration[0]).Clone();
     }
     
   }
