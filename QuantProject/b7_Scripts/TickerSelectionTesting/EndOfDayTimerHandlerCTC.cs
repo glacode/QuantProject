@@ -163,21 +163,23 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
       
       this.eligibleTickers = quotedAtEachMarketFromTemporized.GetTableOfSelectedTickers();
     	
-      SelectorByCloseToCloseCorrelationToBenchmark lessCorrelatedFromEligible = 
-    		new SelectorByCloseToCloseCorrelationToBenchmark(this.eligibleTickers,
-      	                                              this.benchmark,true,
-      	                                              currentDate.AddDays(-this.numDaysForOptimizationPeriod ),
-      	                                    					currentDate,
-      	                                    					this.numberOfEligibleTickers/2,
-      	                                    					this.numDaysForReturnCalculation);
-    	SelectorByAbsolutePerformance mostQuietFromLessCorrelated = 
-          new SelectorByAbsolutePerformance(lessCorrelatedFromEligible.GetTableOfSelectedTickers(),
-                                            true,currentDate.AddDays(-this.numDaysForOptimizationPeriod ),
-      	                                    currentDate,
-      	                                    this.numberOfEligibleTickers/4,
-      	                                    0.01f, 0.10f);
- 
-      return mostQuietFromLessCorrelated.GetTableOfSelectedTickers();
+//      SelectorByCloseToCloseCorrelationToBenchmark lessCorrelatedFromEligible = 
+//    		new SelectorByCloseToCloseCorrelationToBenchmark(this.eligibleTickers,
+//      	                                              this.benchmark,true,
+//      	                                              currentDate.AddDays(-this.numDaysForOptimizationPeriod ),
+//      	                                    					currentDate,
+//      	                                    					this.numberOfEligibleTickers/2,
+//      	                                    					this.numDaysForReturnCalculation);
+//    	SelectorByAbsolutePerformance mostQuietFromLessCorrelated = 
+//          new SelectorByAbsolutePerformance(lessCorrelatedFromEligible.GetTableOfSelectedTickers(),
+//                                            true,currentDate.AddDays(-this.numDaysForOptimizationPeriod ),
+//      	                                    currentDate,
+//      	                                    this.numberOfEligibleTickers/4,
+//      	                                    0.01f, 0.10f);
+// 
+//      return mostQuietFromLessCorrelated.GetTableOfSelectedTickers();
+			
+				return this.eligibleTickers;
     }
     
     
@@ -210,8 +212,8 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
           this.genomeCounter = new GenomeCounter(GO);
         
         GO.Run(false);
-        this.addGenomeToBestGenomes(GO.BestGenome,currentDate.AddDays(-this.numDaysForOptimizationPeriod),
-                                    currentDate);
+        this.addGenomeToBestGenomes(GO.BestGenome,((GenomeManagerForEfficientCTCPortfolio)genManEfficientCTCPortfolio).FirstQuoteDate,
+                                    ((GenomeManagerForEfficientCTCPortfolio)genManEfficientCTCPortfolio).LastQuoteDate);
         this.chosenTickers = ((GenomeMeaning)GO.BestGenome.Meaning).Tickers;
         this.chosenTickersPortfolioWeights = ((GenomeMeaning)GO.BestGenome.Meaning).TickersPortfolioWeights;
       }

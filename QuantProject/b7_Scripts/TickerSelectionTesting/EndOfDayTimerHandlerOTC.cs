@@ -141,7 +141,33 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
       
     protected DataTable getSetOfTickersToBeOptimized(DateTime currentDate)
     {
-     	
+     		SelectorByGroup temporizedGroup = new SelectorByGroup(this.tickerGroupID, currentDate);
+      SelectorByOpenCloseCorrelationToBenchmark lessCorrelatedFromTemporizedGroup = 
+      	new SelectorByOpenCloseCorrelationToBenchmark(temporizedGroup.GetTableOfSelectedTickers(),
+      	                                              this.benchmark,true,
+      	                                              currentDate.AddDays(-this.numDaysForOptimizationPeriod ),
+      	                                    					currentDate,
+      	                                    					this.numberOfEligibleTickers);
+      
+      this.eligibleTickers = lessCorrelatedFromTemporizedGroup.GetTableOfSelectedTickers();
+      SelectorByQuotationAtEachMarketDay quotedAtEachMarketDayFromEligible = 
+        new SelectorByQuotationAtEachMarketDay( this.eligibleTickers,
+                                   false, currentDate.AddDays(-this.numDaysForOptimizationPeriod),
+                                    currentDate, this.numberOfEligibleTickers, this.benchmark);
+      //SelectorByWinningOpenToClose winners =
+      //	new SelectorByWinningOpenToClose(quotedAtEachMarketDayFromMostLiquid.GetTableOfSelectedTickers(),
+      //	                                 false, currentDate.AddDays(-2),
+      //	                                 currentDate, this.numberOfEligibleTickers/4);      	                                 
+      //return winners.GetTableOfSelectedTickers();
+      //SelectorByOpenCloseCorrelationToBenchmark lessCorrelated = 
+      //  new SelectorByOpenCloseCorrelationToBenchmark(quotedAtEachMarketDayFromEligible.GetTableOfSelectedTickers(),
+      //                                                this.benchmark, true,
+      //                                                currentDate.AddDays(-this.numDaysForLiquidity),
+      //                                                currentDate, this.numberOfEligibleTickers/2);
+      return quotedAtEachMarketDayFromEligible.GetTableOfSelectedTickers();
+    	
+    	
+    	/*
      	SelectorByGroup temporizedGroup = new SelectorByGroup(this.tickerGroupID, currentDate);
       
       SelectorByLiquidity mostLiquidFromTemporized =
@@ -182,6 +208,7 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
       //return mostLiquidFromQuotedAtEachMarketDay.GetTableOfSelectedTickers();
       //return lessCorrelated.GetTableOfSelectedTickers();
       //return selectorByOpenPriceFromMostLiquid.GetTableOfSelectedTickers();
+      */
     }
     
     protected virtual void setTickers(DateTime currentDate,
@@ -195,13 +222,19 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
       
       {
         IGenomeManager genManEfficientOTCPortfolio = 
-          new GenomeManagerForEfficientOTCPortfolio(setOfTickersToBeOptimized,
-        	                                          currentDate.AddDays(-this.numDaysForOptimizationPeriod),
-        	                                          currentDate,
-        	                                          this.numberOfTickersToBeChosen,
-        	                                          this.targetReturn,
-        	                                         	this.portfolioType);
-        
+//          new GenomeManagerForEfficientOTCPortfolio(setOfTickersToBeOptimized,
+//        	                                          currentDate.AddDays(-this.numDaysForOptimizationPeriod),
+//        	                                          currentDate,
+//        	                                          this.numberOfTickersToBeChosen,
+//        	                                          this.targetReturn,
+//        	                                         	this.portfolioType);
+          new GenomeManagerForEfficientOTCTypes (setOfTickersToBeOptimized,
+                                                    currentDate.AddDays(-this.numDaysForOptimizationPeriod),
+                                                    currentDate,
+                                                    this.numberOfTickersToBeChosen,
+                                                    this.targetReturn,
+                                                    this.portfolioType);
+
         GeneticOptimizer GO = new GeneticOptimizer(genManEfficientOTCPortfolio,
                                                     this.populationSizeForGeneticOptimizer,
                                                     this.generationNumberForGeneticOptimizer,
