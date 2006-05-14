@@ -69,7 +69,7 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
     {
       //this.ScriptName = "OpenCloseScriptsSharpeRatioWithCoeff";
       //this.ScriptName = "OpenCloseScriptsSharpeRatio";
-      this.ScriptName = "OpenCloseScriptsWithCoeff";
+      this.ScriptName = "OpenCloseScriptsSharpeRatioNoCoeff";
       //this.ScriptName = "OpenCloseScripts";
       this.numDaysBetweenEachOptimization = numDaysBetweenEachOptimization;
     }
@@ -84,10 +84,11 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
                                  new HistoricalEndOfDayDataStreamer(this.endOfDayTimer ,
                                                                     this.historicalQuoteProvider ) ,
                                  new HistoricalEndOfDayOrderExecutor(this.endOfDayTimer ,
-                                                                     this.historicalQuoteProvider,
-                                                                     new FixedPercentageSlippageManager(this.historicalQuoteProvider,
-                                                                                                        this.endOfDayTimer,0.08)),
-                                 new IBCommissionManager());
+                                                                     this.historicalQuoteProvider)//,
+                                                                    // new FixedPercentageSlippageManager(this.historicalQuoteProvider,
+                                                                    // this.endOfDayTimer,0.08)), 
+                                 );                                    
+                                 //new IBCommissionManager());
      
     }
     

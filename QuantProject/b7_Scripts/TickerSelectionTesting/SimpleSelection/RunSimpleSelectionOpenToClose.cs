@@ -63,7 +63,7 @@ namespace QuantProject.Scripts.TickerSelectionTesting.SimpleSelection
       startDate, endDate, targetReturn,
       portfolioType, maxRunningHours)
     {
-      this.ScriptName = "SimpleSelectionOpenToClose";
+      this.ScriptName = "SimpleSelectionOpenToCloseSharpeRatio";
       this.numDaysBetweenEachOptimization = numDaysBetweenEachOptimization;
     }
     

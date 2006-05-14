@@ -67,7 +67,7 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
       startDate, endDate, targetReturn,
       portfolioType, maxRunningHours)
     {
-      this.ScriptName = "CloseToOpenScriptsNoCoeff";
+      this.ScriptName = "CloseToOpenScriptsNoCoeffSharpeRatioCombined";
       this.numDaysBetweenEachOptimization = numDaysBetweenEachOptimization;
     }
     
