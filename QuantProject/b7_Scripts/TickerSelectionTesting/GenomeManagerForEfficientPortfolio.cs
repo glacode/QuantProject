@@ -109,6 +109,15 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
       get{return this.portfolioRatesOfReturn;}
     }
     
+    public DateTime FirstQuoteDate
+    {
+      get{return this.firstQuoteDate;}
+    }
+
+    public DateTime LastQuoteDate
+    {
+      get{return this.lastQuoteDate;}
+    }
     //setOfInitialTickers has to contain the
     //ticker's symbol in the first column !
 
