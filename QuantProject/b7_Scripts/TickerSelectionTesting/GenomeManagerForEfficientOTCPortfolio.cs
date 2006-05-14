@@ -37,7 +37,7 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
 	/// GeneticOptimizer
 	/// </summary>
 	[Serializable]
-  public class GenomeManagerForEfficientOTCPortfolio : GenomeManagerForWeightedEfficientPortfolio
+  public class GenomeManagerForEfficientOTCPortfolio : GenomeManagerForEfficientPortfolio
   {
     
     public GenomeManagerForEfficientOTCPortfolio(DataTable setOfInitialTickers,
@@ -95,12 +95,12 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
       return returnValue;
     }
     */
-    /*
+    
     protected override double getFitnessValue_calculate()
     {
       return this.RateOfReturn/Math.Sqrt(this.Variance);
     }
-    */
+    
     
   }
 

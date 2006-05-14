@@ -37,9 +37,9 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
 	/// GeneticOptimizer
 	/// </summary>
 	[Serializable]
-  public class GenomeManagerForEfficientOTCTypes : GenomeManagerForWeightedEfficientPortfolio
+  public class GenomeManagerForEfficientOTCTypes : GenomeManagerForEfficientPortfolio
   {
-//    private GenomeManagerForEfficientCTOPortfolio genManCTO;
+    private GenomeManagerForEfficientCTOPortfolio genManCTO;
     public GenomeManagerForEfficientOTCTypes(DataTable setOfInitialTickers,
                                                  DateTime firstQuoteDate,
                                                  DateTime lastQuoteDate,
@@ -55,12 +55,12 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
                           
     {
       this.retrieveData();
-//      this.genManCTO = new GenomeManagerForEfficientCTOPortfolio(setOfInitialTickers,
-//                                     firstQuoteDate,
-//                                     lastQuoteDate,
-//                                     numberOfTickersInPortfolio,
-//                                     targetPerformance,
-//                                     portfolioType);
+      this.genManCTO = new GenomeManagerForEfficientCTOPortfolio(setOfInitialTickers,
+                                     firstQuoteDate,
+                                     lastQuoteDate,
+                                     numberOfTickersInPortfolio,
+                                     targetPerformance,
+                                     portfolioType);
     }
     //rate of return = rawClose/rawOpen - 1
     protected override float[] getArrayOfRatesOfReturn(string ticker)
@@ -94,9 +94,9 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
       {
         this.variance = portfolioVariance;
         this.rateOfReturn = averagePortfolioRateOfReturn;
-        returnValue = this.getFitnessValue_calculate();
-//        returnValue = this.getFitnessValue_calculate() -
-//                      this.genManCTO.GetFitnessValue(genome);
+        //returnValue = this.getFitnessValue_calculate();
+        returnValue = this.getFitnessValue_calculate() -
+                      this.genManCTO.GetFitnessValue(genome);
         
       }
       

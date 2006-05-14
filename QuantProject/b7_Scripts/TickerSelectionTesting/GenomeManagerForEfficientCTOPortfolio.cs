@@ -39,7 +39,7 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
 	[Serializable]
   public class GenomeManagerForEfficientCTOPortfolio : GenomeManagerForEfficientPortfolio
   {
-    
+    private GenomeManagerForEfficientOTCPortfolio genManOTC;
     public GenomeManagerForEfficientCTOPortfolio(DataTable setOfInitialTickers,
                                                  DateTime firstQuoteDate,
                                                  DateTime lastQuoteDate,
@@ -55,6 +55,12 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
                           
     {
       this.retrieveData();
+      this.genManOTC = new GenomeManagerForEfficientOTCPortfolio(setOfInitialTickers,
+                                     firstQuoteDate,
+                                     lastQuoteDate,
+                                     numberOfTickersInPortfolio,
+                                     targetPerformance,
+                                     portfolioType);
     }
     private float[] getArrayOfRatesOfReturn_getCloseToOpenRates(Quotes tickerQuotes)
     {
@@ -78,6 +84,37 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
       
       return returnValue;
     }
+    public override double GetFitnessValue(Genome genome)
+    {
+      double returnValue = 0;
+      this.portfolioRatesOfReturn = this.getPortfolioRatesOfReturn(genome.Genes());
+      double averagePortfolioRateOfReturn = 
+        BasicFunctions.SimpleAverage(this.portfolioRatesOfReturn);
+        
+      double portfolioVariance = 
+        BasicFunctions.Variance(this.portfolioRatesOfReturn);
+
+      if(!Double.IsInfinity(portfolioVariance) &&
+        !Double.IsInfinity(averagePortfolioRateOfReturn) &&
+        !Double.IsNaN(portfolioVariance) &&
+        !Double.IsNaN(averagePortfolioRateOfReturn) &&
+        portfolioVariance > 0.0)
+        //both variance and rate of return are 
+        //double values computed in the right way:
+        // so it's possible to assign fitness
+      {
+        this.variance = portfolioVariance;
+        this.rateOfReturn = averagePortfolioRateOfReturn;
+        //returnValue = this.getFitnessValue_calculate();
+        returnValue = this.getFitnessValue_calculate() -
+                      this.genManOTC.GetFitnessValue(genome);
+        
+      }
+      
+      return returnValue;
+    }
+
+    
     /*using LPM
     protected override double getFitnessValue_calculate()
     {

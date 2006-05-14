@@ -107,7 +107,7 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
       float[] returnValue = null;
       returnValue = 
       	QuantProject.Data.DataTables.Quotes.GetArrayOfCloseToCloseRatios(ticker,
-                                                            this.firstQuoteDate,
+                                                            ref this.firstQuoteDate,
                                                             this.lastQuoteDate,
                                                             this.numDaysForReturnCalculation);
       	
@@ -150,7 +150,7 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
     {
       try
       {
-        float[] closeToCloseRatios = Quotes.GetArrayOfCloseToCloseRatios(ticker, this.firstQuoteDate,
+        float[] closeToCloseRatios = Quotes.GetArrayOfCloseToCloseRatios(ticker, ref this.firstQuoteDate,
                                         this.lastQuoteDate,
                                         this.numDaysForReturnCalculation,
                                         this.numDaysForReturnCalculation);
@@ -168,9 +168,16 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
 		
 		protected override double getFitnessValue_calculate()
     {
-			return (this.RateOfReturn/Math.Sqrt(this.Variance))*
-              -this.shiftedPortfolioRateOfReturn * 
-              -this.ShiftedPortfolioRatesOfReturn[this.ShiftedPortfolioRatesOfReturn.Length -1];
+//			return (this.RateOfReturn/Math.Sqrt(this.Variance))*
+//              -this.shiftedPortfolioRateOfReturn * 
+//              -this.ShiftedPortfolioRatesOfReturn[this.ShiftedPortfolioRatesOfReturn.Length -1];
+				double sharpeRatioWaveUp = this.RateOfReturn/
+																	 Math.Sqrt(this.Variance);
+				double sharpeRatioWaveDown = this.shiftedPortfolioRateOfReturn/
+																		 Math.Sqrt(BasicFunctions.Variance(this.shiftedPortfolioRatesOfReturn));
+				
+				return sharpeRatioWaveUp - sharpeRatioWaveDown;
+				
     }
 		
   }
