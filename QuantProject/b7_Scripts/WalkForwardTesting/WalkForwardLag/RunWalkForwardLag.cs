@@ -42,8 +42,8 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag
 	{
 		private string tickerGroupID;
 		private int numberEligibleTickers;
-		private int numberOfPortfolioPositions;
 		private int numberOfDrivingPositions;
+		private int numberOfPortfolioPositions;
 		private int numberDaysForInSampleOptimization;
 		private int numDaysBetweenEachOptimization;
 		private int generationNumberForGeneticOptimizer;
@@ -66,8 +66,8 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag
 		public RunWalkForwardLag(
 			string tickerGroupID ,
 			int numberEligibleTickers ,
-			int numberOfPortfolioPositions ,
 			int numberOfDrivingPositions ,
+			int numberOfPortfolioPositions ,
 			int numberDaysForInSampleOptimization ,
 			int numDaysBetweenEachOptimization ,
 			int generationNumberForGeneticOptimizer ,
@@ -79,8 +79,8 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag
 		{
 			this.tickerGroupID = tickerGroupID;
 			this.numberEligibleTickers = numberEligibleTickers;
-			this.numberOfPortfolioPositions = numberOfPortfolioPositions;
 			this.numberOfDrivingPositions = numberOfDrivingPositions;
+			this.numberOfPortfolioPositions = numberOfPortfolioPositions;
 			this.numberDaysForInSampleOptimization = numberDaysForInSampleOptimization;
 			this.numDaysBetweenEachOptimization = numDaysBetweenEachOptimization;
 			this.generationNumberForGeneticOptimizer = generationNumberForGeneticOptimizer;
@@ -164,25 +164,42 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag
 				"Last date:" + this.lastDateTime.ToString();
 			Console.WriteLine( progress );
 		}
-		private string nowToString()
+		private string getLongStringForDateTime( DateTime dateTime )
 		{
-			string returnValue =
-				DateTime.Now.Year.ToString() + "_" +
-				DateTime.Now.Month.ToString() + "_" +
-				DateTime.Now.Day.ToString();
-			return returnValue;
+			string stringForFileName =
+				dateTime.Year.ToString() + "_" +
+				dateTime.Month.ToString().PadLeft( 2 , '0' ) + "_" +
+				dateTime.Day.ToString().PadLeft( 2 , '0' ) + "_" +
+				dateTime.Hour.ToString().PadLeft( 2 , '0' ) + "_" +
+				dateTime.Minute.ToString().PadLeft( 2 , '0' ) + "_" +
+				dateTime.Second.ToString().PadLeft( 2 , '0' );
+			return stringForFileName;
 		}
-		private string getDefaultLogFileName()
+		private string getShortStringForDateTime( DateTime dateTime )
+		{
+			string stringForFileName =
+				dateTime.Year.ToString() + "_" +
+				dateTime.Month.ToString().PadLeft( 2 , '0' ) + "_" +
+				dateTime.Day.ToString().PadLeft( 2 , '0' );
+			return stringForFileName;
+		}
+		private string getDefaultLogFileName( DateTime currentTime )
 		{
 			string defaultFileName =
-				nowToString() + "_" +
-				"DrivingPositions_" + this.numberOfDrivingPositions + "_" +
-				"DrivingPositions_" + this.numberOfPortfolioPositions + "_" +
-				"From_" + this.nowToString() + "_" +
-				"To_" + this.nowToString();
+				this.getLongStringForDateTime( DateTime.Now ) + "_" +
+				"Group_" + this.tickerGroupID + "_" +
+				"DrvPstns_" + this.numberOfDrivingPositions + "_" +
+				"PrtfPstns_" + this.numberOfPortfolioPositions + "_" +
+				"GenNum_" + this.generationNumberForGeneticOptimizer + "_" +
+				"PopSize_" + this.populationSizeForGeneticOptimizer + "_" +
+				"From_" + this.getShortStringForDateTime(
+				(DateTime)this.account.Transactions.GetKey( 0 ) ) + "_" +
+				"To_" + this.getShortStringForDateTime( currentTime ) + "_" +
+				"inSample_" + this.numberDaysForInSampleOptimization.ToString() + "_" +
+				"dysBtwnEachOptmzn_" + this.numDaysBetweenEachOptimization.ToString();
 			return defaultFileName;
 		}
-		private void saveLog()
+		private void saveLog( DateTime currentTime )
 		{
 			this.wFLagLog.TransactionHistory = this.account.Transactions;
 			string defaultFolderPath =
@@ -190,7 +207,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag
 			VisualObjectArchiver visualObjectArchiver =
 				new VisualObjectArchiver();
 			visualObjectArchiver.Save( this.wFLagLog , "qPWFLagLog" ,
-				this.getDefaultLogFileName() , defaultFolderPath );
+				this.getDefaultLogFileName( currentTime ) , defaultFolderPath );
 		}
 		private void showReport( object sender )
 		{
@@ -209,7 +226,9 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag
 		private void oneHourAfterMarketCloseEventHandler(
 			Object sender , EndOfDayTimingEventArgs endOfDayTimingEventArgs )
 		{
-			if ( ( ( ( IEndOfDayTimer )sender ).GetCurrentTime().DateTime >
+			DateTime currentTime =
+				( ( IEndOfDayTimer )sender ).GetCurrentTime().DateTime;
+			if ( ( currentTime >
 				this.lastDateTime ) ||
 				( DateTime.Now >=
 				this.startingTimeForScript.AddHours( this.maxRunningHours ) ) )
@@ -220,7 +239,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag
 				//				this.progressBarForm.Close();
 				//				ObjectArchiver.Archive( this.account ,
 				//					@"C:\Documents and Settings\Glauco\Desktop\reports\final.qP" );
-				this.saveLog();
+				this.saveLog( currentTime );
 				this.showReport( sender );
 //				WFMultiOneRankReportDebugger wFMultiOneRankReportDebugger =
 //					new WFMultiOneRankReportDebugger( this.numberOfPortfolioPositions ,
