@@ -628,6 +628,16 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "WalkForwardTesting\WalkForwardLag\WFLagDebugger\WFLagDebugGenome.cs"
+                    SubType = "Form"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "WalkForwardTesting\WalkForwardLag\WFLagDebugger\WFLagDebugGenome.resx"
+                    DependentUpon = "WFLagDebugGenome.cs"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
                     RelPath = "WalkForwardTesting\WalkForwardLag\WFLagDebugger\WFLagLog.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
