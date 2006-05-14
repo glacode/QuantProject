@@ -45,6 +45,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.LinearCombination
 		private GenomeRepresentation genomeRepresentation;
 //		private bool openToCloseDaily;
     private StrategyType strategyType;
+    private int numDaysForOscillatorStrategy;
 
 		private IHistoricalQuoteProvider historicalQuoteProvider;
 		private HistoricalEndOfDayTimer historicalEndOfDayTimer;
@@ -60,8 +61,20 @@ namespace QuantProject.Scripts.WalkForwardTesting.LinearCombination
 //			this.openToCloseDaily = openToCloseDaily;
       this.strategyType = strategyType;
 		}
-
-		private void oneHourAfterMarketCloseEventHandler( Object sender ,
+    
+    public LinearCombinationTest( DateTime firstDate , DateTime lastDate ,
+      GenomeRepresentation genomeRepresentation , StrategyType strategyType,
+      int numDaysForOscillatorStrategy)
+    {
+      this.firstDate = firstDate;
+      this.lastDate = lastDate;
+      this.genomeRepresentation = genomeRepresentation;
+      //			this.openToCloseDaily = openToCloseDaily;
+      this.strategyType = strategyType;
+      this.numDaysForOscillatorStrategy = numDaysForOscillatorStrategy;
+    }
+		
+    private void oneHourAfterMarketCloseEventHandler( Object sender ,
 			EndOfDayTimingEventArgs endOfDayTimingEventArgs )
 		{
 			if ( this.account.EndOfDayTimer.GetCurrentTime().DateTime >=
@@ -94,6 +107,16 @@ namespace QuantProject.Scripts.WalkForwardTesting.LinearCombination
           this.endOfDayStrategy = new CloseToOpenDailyStrategy(
                                       this.account , signedTickers );
           break;
+        
+        case StrategyType.FixedPeriodOscillator:
+          this.endOfDayStrategy = new FixedPeriodOscillatorStrategy(
+            this.account , signedTickers , this.numDaysForOscillatorStrategy , this.numDaysForOscillatorStrategy );
+          break;
+        
+        case StrategyType.ExtremeCounterTrend:
+          this.endOfDayStrategy = new ExtremeCounterTrendStrategy(
+            this.account , signedTickers , this.numDaysForOscillatorStrategy );
+          break;
       }
 		}
 		private string getDateString( DateTime dateTime )
@@ -120,7 +143,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.LinearCombination
 			this.historicalEndOfDayTimer =
 				new IndexBasedEndOfDayTimer(
 				new EndOfDayDateTime( this.firstDate ,
-				EndOfDaySpecificTime.MarketOpen ) , "MSFT" );
+				EndOfDaySpecificTime.MarketOpen ) , "^GSPC" );
 			run_setHistoricalQuoteProvider();
 			this.account = new Account( "LinearCombination" , historicalEndOfDayTimer ,
 				new HistoricalEndOfDayDataStreamer( historicalEndOfDayTimer ,
@@ -147,7 +170,8 @@ namespace QuantProject.Scripts.WalkForwardTesting.LinearCombination
 			Report report = new Report( this.account , this.historicalQuoteProvider );
 			report.Create( "Linear Combination" , 1 ,
 				new EndOfDayDateTime( this.lastDate , EndOfDaySpecificTime.MarketClose ) ,
-				"MSFT" );
+			"^GSPC");
+
 			//			ObjectArchiver.Archive( report.AccountReport ,
 			//				@"C:\Documents and Settings\Glauco\Desktop\reports\runOneRank.qPr" );
 			report.Text = this.run_getReportTitle();

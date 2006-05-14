@@ -34,20 +34,24 @@ namespace QuantProject.Scripts.WalkForwardTesting.LinearCombination
 	/// </summary>
 	public class TestDisplayer : System.Windows.Forms.Form
 	{
+		private System.Windows.Forms.Label labelDays;
+		private System.Windows.Forms.TextBox textBoxDaysFPOscillatorAndRevOneRank;
+		private System.Windows.Forms.Label label1;
+		private System.Windows.Forms.RadioButton radioButtonOpenToCloseDaily;
+		private System.Windows.Forms.RadioButton radioButtonReversalOneRank;
+		private System.Windows.Forms.DateTimePicker dtpLastDate;
+		private System.Windows.Forms.DateTimePicker dtpFirstDate;
+		private System.Windows.Forms.RadioButton radioButtonFixedPeriodOscillator;
+		private System.Windows.Forms.RadioButton radioButtonOpenToCloseWeekly;
+		private System.Windows.Forms.RadioButton radioButtonCloseToOpenDaily;
 		private System.Windows.Forms.DataGrid dgBestGenomes;
 		/// <summary>
 		/// Required designer variable.
 		/// </summary>
 		private System.ComponentModel.Container components = null;
-		private System.Windows.Forms.DateTimePicker dtpFirstDate;
-		private System.Windows.Forms.DateTimePicker dtpLastDate;
 
 		// Glauco code
 		private ArrayList bestGenomes;
-		private System.Windows.Forms.Label label1;
-		private System.Windows.Forms.RadioButton radioButtonOpenToCloseDaily;
-		private System.Windows.Forms.RadioButton radioButtonOpenToCloseWeekly;
-    private System.Windows.Forms.RadioButton radioButtonCloseToOpenDaily;
 		private GenomeRepresentation lastSelectedGenomeRepresentation;
     private StrategyType selectedStrategyType = StrategyType.OpenToCloseDaily;
 
@@ -97,98 +101,135 @@ namespace QuantProject.Scripts.WalkForwardTesting.LinearCombination
 		/// Required method for Designer support - do not modify
 		/// the contents of this method with the code editor.
 		/// </summary>
-		private void InitializeComponent()
-		{
-      this.dgBestGenomes = new System.Windows.Forms.DataGrid();
-      this.dtpFirstDate = new System.Windows.Forms.DateTimePicker();
-      this.dtpLastDate = new System.Windows.Forms.DateTimePicker();
-      this.label1 = new System.Windows.Forms.Label();
-      this.radioButtonOpenToCloseDaily = new System.Windows.Forms.RadioButton();
-      this.radioButtonOpenToCloseWeekly = new System.Windows.Forms.RadioButton();
-      this.radioButtonCloseToOpenDaily = new System.Windows.Forms.RadioButton();
-      ((System.ComponentModel.ISupportInitialize)(this.dgBestGenomes)).BeginInit();
-      this.SuspendLayout();
-      // 
-      // dgBestGenomes
-      // 
-      this.dgBestGenomes.DataMember = "";
-      this.dgBestGenomes.Dock = System.Windows.Forms.DockStyle.Bottom;
-      this.dgBestGenomes.HeaderForeColor = System.Drawing.SystemColors.ControlText;
-      this.dgBestGenomes.Location = new System.Drawing.Point(0, 157);
-      this.dgBestGenomes.Name = "dgBestGenomes";
-      this.dgBestGenomes.Size = new System.Drawing.Size(584, 216);
-      this.dgBestGenomes.TabIndex = 0;
-      this.dgBestGenomes.MouseUp += new System.Windows.Forms.MouseEventHandler(this.dgBestGenomes_MouseUp);
-      // 
-      // dtpFirstDate
-      // 
-      this.dtpFirstDate.Location = new System.Drawing.Point(16, 24);
-      this.dtpFirstDate.Name = "dtpFirstDate";
-      this.dtpFirstDate.TabIndex = 1;
-      // 
-      // dtpLastDate
-      // 
-      this.dtpLastDate.Location = new System.Drawing.Point(264, 24);
-      this.dtpLastDate.Name = "dtpLastDate";
-      this.dtpLastDate.Size = new System.Drawing.Size(208, 20);
-      this.dtpLastDate.TabIndex = 2;
-      // 
-      // label1
-      // 
-      this.label1.Location = new System.Drawing.Point(32, 64);
-      this.label1.Name = "label1";
-      this.label1.Size = new System.Drawing.Size(400, 40);
-      this.label1.TabIndex = 3;
-      this.label1.Text = "Left click data grid rows to reset dates to the optimization period. Right click " +
-        "to preserve date displacements and backtest.";
-      // 
-      // radioButtonOpenToCloseDaily
-      // 
-      this.radioButtonOpenToCloseDaily.Checked = true;
-      this.radioButtonOpenToCloseDaily.Location = new System.Drawing.Point(64, 96);
-      this.radioButtonOpenToCloseDaily.Name = "radioButtonOpenToCloseDaily";
-      this.radioButtonOpenToCloseDaily.Size = new System.Drawing.Size(144, 24);
-      this.radioButtonOpenToCloseDaily.TabIndex = 4;
-      this.radioButtonOpenToCloseDaily.TabStop = true;
-      this.radioButtonOpenToCloseDaily.Text = "Open To Close Daily";
-      this.radioButtonOpenToCloseDaily.CheckedChanged += new System.EventHandler(this.radioButtonOpenToCloseDaily_CheckedChanged);
-      // 
-      // radioButtonOpenToCloseWeekly
-      // 
-      this.radioButtonOpenToCloseWeekly.Location = new System.Drawing.Point(224, 96);
-      this.radioButtonOpenToCloseWeekly.Name = "radioButtonOpenToCloseWeekly";
-      this.radioButtonOpenToCloseWeekly.Size = new System.Drawing.Size(144, 24);
-      this.radioButtonOpenToCloseWeekly.TabIndex = 5;
-      this.radioButtonOpenToCloseWeekly.Text = "Open To Close Weekly";
-      this.radioButtonOpenToCloseWeekly.CheckedChanged += new System.EventHandler(this.radioButtonOpenToCloseWeekly_CheckedChanged);
-      // 
-      // radioButtonCloseToOpenDaily
-      // 
-      this.radioButtonCloseToOpenDaily.Location = new System.Drawing.Point(64, 128);
-      this.radioButtonCloseToOpenDaily.Name = "radioButtonCloseToOpenDaily";
-      this.radioButtonCloseToOpenDaily.Size = new System.Drawing.Size(144, 24);
-      this.radioButtonCloseToOpenDaily.TabIndex = 6;
-      this.radioButtonCloseToOpenDaily.Text = "Close To Open Daily";
-      this.radioButtonCloseToOpenDaily.CheckedChanged += new System.EventHandler(this.radioButtonCloseToOpenDaily_CheckedChanged);
-      // 
-      // TestDisplayer
-      // 
-      this.AutoScaleBaseSize = new System.Drawing.Size(5, 13);
-      this.ClientSize = new System.Drawing.Size(584, 373);
-      this.Controls.AddRange(new System.Windows.Forms.Control[] {
-                                                                  this.radioButtonCloseToOpenDaily,
-                                                                  this.radioButtonOpenToCloseWeekly,
-                                                                  this.radioButtonOpenToCloseDaily,
-                                                                  this.label1,
-                                                                  this.dtpLastDate,
-                                                                  this.dtpFirstDate,
-                                                                  this.dgBestGenomes});
-      this.Name = "TestDisplayer";
-      this.Text = "TestDisplayer";
-      ((System.ComponentModel.ISupportInitialize)(this.dgBestGenomes)).EndInit();
-      this.ResumeLayout(false);
-
-    }
+		private void InitializeComponent() {
+			this.dgBestGenomes = new System.Windows.Forms.DataGrid();
+			this.radioButtonCloseToOpenDaily = new System.Windows.Forms.RadioButton();
+			this.radioButtonOpenToCloseWeekly = new System.Windows.Forms.RadioButton();
+			this.radioButtonFixedPeriodOscillator = new System.Windows.Forms.RadioButton();
+			this.dtpFirstDate = new System.Windows.Forms.DateTimePicker();
+			this.dtpLastDate = new System.Windows.Forms.DateTimePicker();
+			this.radioButtonReversalOneRank = new System.Windows.Forms.RadioButton();
+			this.radioButtonOpenToCloseDaily = new System.Windows.Forms.RadioButton();
+			this.label1 = new System.Windows.Forms.Label();
+			this.textBoxDaysFPOscillatorAndRevOneRank = new System.Windows.Forms.TextBox();
+			this.labelDays = new System.Windows.Forms.Label();
+			((System.ComponentModel.ISupportInitialize)(this.dgBestGenomes)).BeginInit();
+			this.SuspendLayout();
+			// 
+			// dgBestGenomes
+			// 
+			this.dgBestGenomes.DataMember = "";
+			this.dgBestGenomes.Dock = System.Windows.Forms.DockStyle.Bottom;
+			this.dgBestGenomes.HeaderForeColor = System.Drawing.SystemColors.ControlText;
+			this.dgBestGenomes.Location = new System.Drawing.Point(0, 205);
+			this.dgBestGenomes.Name = "dgBestGenomes";
+			this.dgBestGenomes.Size = new System.Drawing.Size(584, 168);
+			this.dgBestGenomes.TabIndex = 0;
+			this.dgBestGenomes.MouseUp += new System.Windows.Forms.MouseEventHandler(this.dgBestGenomes_MouseUp);
+			// 
+			// radioButtonCloseToOpenDaily
+			// 
+			this.radioButtonCloseToOpenDaily.Location = new System.Drawing.Point(64, 120);
+			this.radioButtonCloseToOpenDaily.Name = "radioButtonCloseToOpenDaily";
+			this.radioButtonCloseToOpenDaily.Size = new System.Drawing.Size(144, 24);
+			this.radioButtonCloseToOpenDaily.TabIndex = 6;
+			this.radioButtonCloseToOpenDaily.Text = "Close To Open Daily";
+			this.radioButtonCloseToOpenDaily.CheckedChanged += new System.EventHandler(this.radioButtonCloseToOpenDaily_CheckedChanged);
+			// 
+			// radioButtonOpenToCloseWeekly
+			// 
+			this.radioButtonOpenToCloseWeekly.Location = new System.Drawing.Point(64, 144);
+			this.radioButtonOpenToCloseWeekly.Name = "radioButtonOpenToCloseWeekly";
+			this.radioButtonOpenToCloseWeekly.Size = new System.Drawing.Size(144, 24);
+			this.radioButtonOpenToCloseWeekly.TabIndex = 5;
+			this.radioButtonOpenToCloseWeekly.Text = "Open To Close Weekly";
+			this.radioButtonOpenToCloseWeekly.CheckedChanged += new System.EventHandler(this.radioButtonOpenToCloseWeekly_CheckedChanged);
+			// 
+			// radioButtonFixedPeriodOscillator
+			// 
+			this.radioButtonFixedPeriodOscillator.Location = new System.Drawing.Point(232, 96);
+			this.radioButtonFixedPeriodOscillator.Name = "radioButtonFixedPeriodOscillator";
+			this.radioButtonFixedPeriodOscillator.Size = new System.Drawing.Size(192, 24);
+			this.radioButtonFixedPeriodOscillator.TabIndex = 7;
+			this.radioButtonFixedPeriodOscillator.Text = "Fixed Period n-days oscillator";
+			this.radioButtonFixedPeriodOscillator.CheckedChanged += new System.EventHandler(this.radioButtonFixedPeriodOscillator_CheckedChanged);
+			// 
+			// dtpFirstDate
+			// 
+			this.dtpFirstDate.Location = new System.Drawing.Point(16, 24);
+			this.dtpFirstDate.Name = "dtpFirstDate";
+			this.dtpFirstDate.TabIndex = 1;
+			// 
+			// dtpLastDate
+			// 
+			this.dtpLastDate.Location = new System.Drawing.Point(264, 24);
+			this.dtpLastDate.Name = "dtpLastDate";
+			this.dtpLastDate.Size = new System.Drawing.Size(208, 21);
+			this.dtpLastDate.TabIndex = 2;
+			// 
+			// radioButtonReversalOneRank
+			// 
+			this.radioButtonReversalOneRank.Location = new System.Drawing.Point(232, 120);
+			this.radioButtonReversalOneRank.Name = "radioButtonReversalOneRank";
+			this.radioButtonReversalOneRank.Size = new System.Drawing.Size(192, 24);
+			this.radioButtonReversalOneRank.TabIndex = 10;
+			this.radioButtonReversalOneRank.Text = "Extreme counter trend";
+			this.radioButtonReversalOneRank.CheckedChanged += new System.EventHandler(this.radioButtonReversalOneRank_CheckedChanged);
+			// 
+			// radioButtonOpenToCloseDaily
+			// 
+			this.radioButtonOpenToCloseDaily.Location = new System.Drawing.Point(64, 96);
+			this.radioButtonOpenToCloseDaily.Name = "radioButtonOpenToCloseDaily";
+			this.radioButtonOpenToCloseDaily.Size = new System.Drawing.Size(144, 24);
+			this.radioButtonOpenToCloseDaily.TabIndex = 4;
+			this.radioButtonOpenToCloseDaily.Text = "Open To Close Daily";
+			this.radioButtonOpenToCloseDaily.CheckedChanged += new System.EventHandler(this.radioButtonOpenToCloseDaily_CheckedChanged);
+			// 
+			// label1
+			// 
+			this.label1.Location = new System.Drawing.Point(32, 64);
+			this.label1.Name = "label1";
+			this.label1.Size = new System.Drawing.Size(400, 40);
+			this.label1.TabIndex = 3;
+			this.label1.Text = "Left click data grid rows to reset dates to the optimization period. Right click " +
+"to preserve date displacements and backtest.";
+			// 
+			// textBoxDaysFPOscillatorAndRevOneRank
+			// 
+			this.textBoxDaysFPOscillatorAndRevOneRank.Location = new System.Drawing.Point(320, 152);
+			this.textBoxDaysFPOscillatorAndRevOneRank.Name = "textBoxDaysFPOscillatorAndRevOneRank";
+			this.textBoxDaysFPOscillatorAndRevOneRank.Size = new System.Drawing.Size(56, 21);
+			this.textBoxDaysFPOscillatorAndRevOneRank.TabIndex = 8;
+			this.textBoxDaysFPOscillatorAndRevOneRank.Text = "";
+			// 
+			// labelDays
+			// 
+			this.labelDays.Location = new System.Drawing.Point(272, 152);
+			this.labelDays.Name = "labelDays";
+			this.labelDays.Size = new System.Drawing.Size(40, 16);
+			this.labelDays.TabIndex = 9;
+			this.labelDays.Text = "days";
+			// 
+			// TestDisplayer
+			// 
+			this.AutoScaleBaseSize = new System.Drawing.Size(5, 14);
+			this.ClientSize = new System.Drawing.Size(584, 373);
+			this.Controls.Add(this.radioButtonReversalOneRank);
+			this.Controls.Add(this.labelDays);
+			this.Controls.Add(this.textBoxDaysFPOscillatorAndRevOneRank);
+			this.Controls.Add(this.radioButtonFixedPeriodOscillator);
+			this.Controls.Add(this.radioButtonCloseToOpenDaily);
+			this.Controls.Add(this.radioButtonOpenToCloseWeekly);
+			this.Controls.Add(this.radioButtonOpenToCloseDaily);
+			this.Controls.Add(this.label1);
+			this.Controls.Add(this.dtpLastDate);
+			this.Controls.Add(this.dtpFirstDate);
+			this.Controls.Add(this.dgBestGenomes);
+			this.Name = "TestDisplayer";
+			this.Text = "TestDisplayer";
+			((System.ComponentModel.ISupportInitialize)(this.dgBestGenomes)).EndInit();
+			this.ResumeLayout(false);
+		}
 		#endregion
 
 		private bool aRowHasBeenClicked(
@@ -238,7 +279,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.LinearCombination
 			LinearCombinationTest linearCombinationTest =
 				new LinearCombinationTest( this.dtpFirstDate.Value ,
 				this.dtpLastDate.Value , genomeRepresentation ,
-				this.selectedStrategyType);
+				this.selectedStrategyType, Convert.ToInt32(this.textBoxDaysFPOscillatorAndRevOneRank.Text));
 			linearCombinationTest.Run();
 			this.lastSelectedGenomeRepresentation = genomeRepresentation;
 		}
@@ -277,7 +318,12 @@ namespace QuantProject.Scripts.WalkForwardTesting.LinearCombination
         this.selectedStrategyType = StrategyType.OpenToCloseWeekly;
       else if(this.radioButtonCloseToOpenDaily.Checked)
         this.selectedStrategyType = StrategyType.CloseToOpenDaily;
+      else if(this.radioButtonFixedPeriodOscillator.Checked)
+        this.selectedStrategyType = StrategyType.FixedPeriodOscillator;
+      else if(this.radioButtonReversalOneRank.Checked)
+        this.selectedStrategyType = StrategyType.ExtremeCounterTrend;
     }
+    
     private void radioButtonOpenToCloseDaily_CheckedChanged(object sender, System.EventArgs e)
     {
       this.update_selectedStrategyType();
@@ -289,6 +335,16 @@ namespace QuantProject.Scripts.WalkForwardTesting.LinearCombination
     }
 
     private void radioButtonCloseToOpenDaily_CheckedChanged(object sender, System.EventArgs e)
+    {
+      this.update_selectedStrategyType();
+    }
+
+    private void radioButtonFixedPeriodOscillator_CheckedChanged(object sender, System.EventArgs e)
+    {
+      this.update_selectedStrategyType();
+    }
+
+    private void radioButtonReversalOneRank_CheckedChanged(object sender, System.EventArgs e)
     {
       this.update_selectedStrategyType();
     }
