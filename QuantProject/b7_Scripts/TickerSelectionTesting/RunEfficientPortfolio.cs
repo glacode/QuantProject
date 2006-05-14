@@ -173,7 +173,8 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
     {
       //default endOfDayTimer
     	this.endOfDayTimer =
-        new IndexBasedEndOfDayTimer( this.startDateTime, this.benchmark );
+        new IndexBasedEndOfDayTimer( this.startDateTime, this.endDateTime, 
+                                     this.benchmark );
     	
     }
     

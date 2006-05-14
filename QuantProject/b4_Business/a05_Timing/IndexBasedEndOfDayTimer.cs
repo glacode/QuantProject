@@ -53,25 +53,39 @@ namespace QuantProject.Business.Timing
       get { return this.currentDateArrayPosition ;  }
     }
 
+    private void indexBasedEndOfDayTimer( EndOfDayDateTime startDateTime,
+                                          string marketIndex)
+    {
+      this.marketIndex = marketIndex;
+      if ( this.indexQuotes.Rows.Count == 0 )
+      {
+        string errorMessage = "IndexBasedEndOfDayTimer error: the given " +
+          "index (" + marketIndex + ") has no quotes in the interval.";
+        throw new Exception( errorMessage );
+      }
+      this.StartDateTime = 
+        new EndOfDayDateTime(this.indexQuotes.GetQuoteDateOrFollowing(this.StartDateTime.DateTime),
+        EndOfDaySpecificTime.MarketOpen);
+      this.tickers = new Hashtable();
+      this.currentDateArrayPosition = 0;
+    }
+
     public IndexBasedEndOfDayTimer( EndOfDayDateTime startDateTime,
                                     string marketIndex): base(startDateTime)
 		{
-			this.marketIndex = marketIndex;
-      this.indexQuotes = new Quotes(marketIndex,startDateTime.DateTime,DateTime.Now);
-			if ( this.indexQuotes.Rows.Count == 0 )
-			{
-				string errorMessage = "IndexBasedEndOfDayTimer error: the given " +
-					"index (" + marketIndex + ") has no quotes in the interval.";
-				throw new Exception( errorMessage );
-			}
-      this.StartDateTime = 
-              new EndOfDayDateTime(this.indexQuotes.GetQuoteDateOrFollowing(this.StartDateTime.DateTime),
-                                                                    EndOfDaySpecificTime.MarketOpen);
-			this.tickers = new Hashtable();
-      this.currentDateArrayPosition = 0;
+			this.indexQuotes = new Quotes(marketIndex,startDateTime.DateTime,DateTime.Now);
+      this.indexBasedEndOfDayTimer(startDateTime, marketIndex);
 		}
-
-		/// <summary>
+    
+    public IndexBasedEndOfDayTimer( EndOfDayDateTime startDateTime,
+                                    EndOfDayDateTime endDateTime,
+                                    string marketIndex): base(startDateTime)
+    {
+      this.indexQuotes = new Quotes(marketIndex,startDateTime.DateTime,endDateTime.DateTime.AddDays(10));
+      this.indexBasedEndOfDayTimer(startDateTime, marketIndex);
+    }
+		
+    /// <summary>
 		/// Starts the time walking simulation, based on index's dates
 		/// </summary>
 		public override void Start()
