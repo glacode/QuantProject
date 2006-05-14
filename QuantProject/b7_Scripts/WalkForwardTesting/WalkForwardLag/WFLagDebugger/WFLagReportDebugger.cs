@@ -58,35 +58,41 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag.WFLagDebugger
 			DateTime dateTime = (DateTime)dataRow[ "DateTime" ];
 			return dateTime;
 		}
-		private void rightClickEventHandler_withRowNumber( DataGrid dataGrid ,
-			int rowNumber )
-		{
-			DateTime transactionDateTime =
-				this.getRowDateTime( dataGrid , rowNumber );
-			WFLagChosenPositions wFLagChosenPositions =
-				this.wFLagLog.GetChosenPositions( transactionDateTime );
-			WFLagDebugPositions wFLagDebugPositions =
-				new WFLagDebugPositions( wFLagChosenPositions ,
-				transactionDateTime , 30 ,
-				this.wFLagLog.InSampleDays , 30 ,
-				this.wFLagLog.Benchmark );
-			wFLagDebugPositions.Run();
-			//			WFMultiOneRankDebugInSample wFMultiOneRankDebugInSample =
-			//				new WFMultiOneRankDebugInSample( signedTickers , firstDateTime ,
-			//				lastDateTime ,
-			//				this.benchmark );
-			//			wFMultiOneRankDebugInSample.Run();
-		}
+//		private void rightClickEventHandler_withRowNumber( DataGrid dataGrid ,
+//			int rowNumber )
+//		{
+//			DateTime transactionDateTime =
+//				this.getRowDateTime( dataGrid , rowNumber );
+//			WFLagChosenPositions wFLagChosenPositions =
+//				this.wFLagLog.GetChosenPositions( transactionDateTime );
+//			WFLagDebugPositions wFLagDebugPositions =
+//				new WFLagDebugPositions( wFLagChosenPositions ,
+//				transactionDateTime , 30 ,
+//				this.wFLagLog.InSampleDays , 30 ,
+//				this.wFLagLog.Benchmark );
+//			wFLagDebugPositions.Run();
+//			//			WFMultiOneRankDebugInSample wFMultiOneRankDebugInSample =
+//			//				new WFMultiOneRankDebugInSample( signedTickers , firstDateTime ,
+//			//				lastDateTime ,
+//			//				this.benchmark );
+//			//			wFMultiOneRankDebugInSample.Run();
+//		}
 		private void rightClickEventHandler( object sender ,
 			MouseEventArgs eventArgs )
 		{
-//			rightClickEventHandler_checkExceptions( sender ,
-//				eventArgs );
+//			int rowNumber = rightClickEventHandler_getRowNumber(
+//				sender , eventArgs );
+//			rightClickEventHandler_withRowNumber(
+//				(DataGrid)sender , rowNumber );
+
 			int rowNumber = rightClickEventHandler_getRowNumber(
 				sender , eventArgs );
-			rightClickEventHandler_withRowNumber(
-				(DataGrid)sender , rowNumber );
-			//			MessageBox.Show( dataRow[ "DateTime" ].ToString() );
+			DateTime transactionDateTime =
+				this.getRowDateTime( (DataGrid)sender , rowNumber );
+			WFLagDebugGenome wFLagDebugGenome =
+				new WFLagDebugGenome( transactionDateTime ,
+				this.wFLagLog );
+			wFLagDebugGenome.Show();
 		}
 		public void MouseClickEventHandler( object sender ,
 			MouseEventArgs eventArgs )
