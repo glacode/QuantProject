@@ -90,42 +90,8 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag
 
 			this.wFLagCandidates = new WFLagCandidates( this.eligibleTickers ,
 				this.firstQuoteDate , this.lastQuoteDate );
-
-//			this.retrieveData();
 		}
 
-//		#region retrieveData
-//		private float[] getArrayOfRatesOfReturn( string ticker )
-//		{
-//			float[] returnValue = null;
-//			Quotes tickerQuotes =
-//				new Quotes( ticker , this.firstQuoteDate , this.lastQuoteDate );
-//			float[] allAdjValues =
-//				QuantProject.Data.ExtendedDataTable.GetArrayOfFloatFromColumn(
-//				tickerQuotes , "quAdjustedClose");
-//			returnValue =	new float[ allAdjValues.Length ];
-//			int i = 0; //index for ratesOfReturns array
-//			for( int idx = 0 ; idx < allAdjValues.Length - 1 ; idx++ )
-//			{
-//				returnValue[ i ] = allAdjValues[ idx + 1 ] /	allAdjValues[ idx ] - 1;
-//				i++;
-//			}	
-//			return returnValue;
-//		}
-//		private void retrieveData()
-//		{
-//			this.closeToCloseReturns =
-//				new double[ this.eligibleTickers.Rows.Count ];
-//			for(int i = 0; i<this.eligibleTickers.Rows.Count; i++)
-//			{
-//				string ticker = (string)this.eligibleTickers.Rows[i][0];
-//				this.closeToCloseReturns[i] = new WFLagCandidate( ticker,
-//					this.getArrayOfRatesOfReturn( ticker ) );
-////				this.closeToCloseReturns[i] = new CandidateProperties( ticker,
-////					this.getArrayOfRatesOfReturn( ticker ) );
-//			}
-//		}
-//		#endregion
 
 		public static string GetTicker( string signedTicker )
 		{
@@ -139,14 +105,22 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag
 
 		#region GetFitnessValue
 		#region getFitnessValue_getLinearCombinationReturns
-		private Hashtable getTickers( ICollection signedTickers )
+		private ArrayList getEnumeratedSignedTickers(
+			ICollection signedTickers )
 		{
-			Hashtable tickers = new Hashtable();
+			ArrayList enumeratedSignedTickers = new ArrayList();
 			foreach ( string signedTicker in signedTickers )
-				tickers.Add( WFLagGenomeManager.GetTicker( signedTicker ) , null );
+				enumeratedSignedTickers.Add( signedTicker );
+			return enumeratedSignedTickers;
+		}
+		private ArrayList getTickers( ICollection signedTickers )
+		{
+			ArrayList tickers = new ArrayList();
+			foreach ( string signedTicker in signedTickers )
+				tickers.Add( WFLagGenomeManager.GetTicker( signedTicker ) );
 			return tickers;
 		}
-		private float[] getMultipliers( ICollection signedTickers )
+		private float[] getMultipliers( ArrayList signedTickers )
 		{
 			float[] multipliers = new float[ signedTickers.Count ];
 			int i = 0;
@@ -163,12 +137,14 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag
 		private double[] getFitnessValue_getLinearCombinationReturns(
 			ICollection signedTickers )
 		{
-			int numberOfSignedTickers = signedTickers.Count;
-			Hashtable tickers = this.getTickers( signedTickers );
-			float[] multipliers = this.getMultipliers( signedTickers );
+			ArrayList enumeratedSignedTicker =
+				this.getEnumeratedSignedTickers( signedTickers );
+			int numberOfSignedTickers = enumeratedSignedTicker.Count;
+			ArrayList tickers = this.getTickers( enumeratedSignedTicker );
+			float[] multipliers = this.getMultipliers( enumeratedSignedTicker );
 			// arrays of close to close returns, one for each signed ticker
 			float[][] tickersReturns =
-				this.wFLagCandidates.GetTickersReturns( tickers.Keys );
+				this.wFLagCandidates.GetTickersReturns( tickers );
 			double[] linearCombinationReturns =
 				new double[ tickersReturns[ 0 ].Length ];
 			for( int i = 0; i < linearCombinationReturns.Length ; i++ )
@@ -211,6 +187,55 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag
 			return strategyReturns;
 
 		}
+		private double[] getFinalReturns( double[] strategyReturns ,
+			int finalLength )
+		{
+			double[] finalReturns = new double[ finalLength ];
+			for ( int i = strategyReturns.Length - finalLength ;
+				i < strategyReturns.Length ; i++ )
+				finalReturns[ i - ( strategyReturns.Length - finalLength ) ] =
+					strategyReturns[ i ];
+			return finalReturns;
+		}
+		private double getFitnessValue_sharpeRatio(
+			double[] returns )
+		{
+			double fitnessValue =
+				AdvancedFunctions.GetSharpeRatio(
+				returns );
+			return fitnessValue;
+		}
+		private double getFitnessValue_withGoodFinal(
+			double[] strategyReturns )
+		{
+			double[] secondHalfStrategyReturns =
+				this.getFinalReturns( strategyReturns ,
+				strategyReturns.Length/2 );
+			double[] fourthQuorterStrategyReturns =
+				this.getFinalReturns( strategyReturns ,
+				strategyReturns.Length/4 );
+			double fitnessValue =
+				this.getFitnessValue_sharpeRatio( strategyReturns ) *
+				this.getFitnessValue_sharpeRatio( secondHalfStrategyReturns ) *
+				this.getFitnessValue_sharpeRatio( fourthQuorterStrategyReturns );
+			return fitnessValue;
+		}
+
+		private double getFitnessValue( double[] strategyReturns )
+		{
+			double fitnessValue =
+				AdvancedFunctions.GetSharpeRatio(
+				strategyReturns );
+//			double fitnessValue =
+//				AdvancedFunctions.GetExpectancyScore(
+//				strategyReturns );
+			//			double fitnessValue =
+//				this.getFitnessValue_withGoodFinal( strategyReturns );
+			//			double fitnessValue =
+			//				BasicFunctions.GetSimpleAverage( strategyReturns ) /
+			//				( Math.Pow( BasicFunctions.GetStdDev( strategyReturns ) , 1.3 ) );
+			return fitnessValue;
+		}
 		private double getFitnessValue( WFLagSignedTickers wFLagSignedTickers )
 		{
 			double[] drivingPositionsReturns =
@@ -222,9 +247,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag
 			double[] strategyReturns =
 				this.getFitnessValue_getStrategyReturn(
 				drivingPositionsReturns , portfolioPositionsReturns );
-			double fitnessValue =
-				AdvancedFunctions.GetSharpeRatio(
-				strategyReturns );
+			double fitnessValue = this.getFitnessValue( strategyReturns );
 			return fitnessValue;
 		}
 		public double GetFitnessValue( Genome genome )
@@ -296,7 +319,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag
 			{
 				position = Math.Abs( geneValue ) - 1;
 				initialCharForTickerCode = "-";
-			}  
+			}
 			return initialCharForTickerCode +
 				( string )this.eligibleTickers.Rows[ position ][ 0 ];
 		}
