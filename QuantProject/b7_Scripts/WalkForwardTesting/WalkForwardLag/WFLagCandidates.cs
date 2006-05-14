@@ -52,7 +52,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag
 		/// </summary>
 		/// <param name="signedTickers">tickers</param>
 		/// <returns></returns>
-		public float[][] GetTickersReturns( ICollection tickers )
+		public float[][] GetTickersReturns( ArrayList tickers )
 		{
 			if ( this.closeToCloseReturns == null )
 				this.set_closeToCloseReturns();
