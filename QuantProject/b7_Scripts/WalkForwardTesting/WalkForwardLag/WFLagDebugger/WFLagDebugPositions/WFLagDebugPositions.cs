@@ -21,10 +21,13 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
 using System;
+using System.Collections;
 
 using QuantProject.Business.DataProviders;
 using QuantProject.Business.Financial.Accounting;
 using QuantProject.Business.Financial.Ordering;
+using QuantProject.Business.Financial.Accounting.Reporting;
+using QuantProject.Business.Strategies;
 using QuantProject.Business.Timing;
 using QuantProject.Presentation.Reporting.WindowsForm;
 
@@ -109,6 +112,69 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag.WFLagDebugger
 			if ( this.account.Transactions.Count == 0 )
 				this.account.AddCash( 30000 );
 		}
+		#region getEquityLineForDrivingPositions
+
+		/// <summary>
+		/// Returns a virtual amount of quantities for each virtual ticker.
+		/// Non integer values can be returned also, that's why we call
+		/// them virtual quantities
+		/// </summary>
+		/// <returns></returns>
+		private Hashtable getDrivingTickersVirtualQuantities(
+			DateTime dateTime )
+		{
+			Hashtable drivingTickersVirtualQuantities = new Hashtable();
+			double valueForEachPosition = 30000 /
+				this.wFLagChosenPositions.DrivingPositions.Count;
+			foreach( string signedTicker in
+				this.wFLagChosenPositions.DrivingPositions.Keys )
+			{
+				string ticker = SignedTicker.GetTicker( signedTicker );
+				EndOfDayDateTime endOfDayDateTime =
+					new EndOfDayDateTime( dateTime , EndOfDaySpecificTime.MarketClose );
+				double tickerQuote =
+					this.historicalQuoteProvider.GetMarketValue(
+					ticker , endOfDayDateTime );
+				double virtualQuantity = valueForEachPosition / tickerQuote;
+				drivingTickersVirtualQuantities.Add( ticker , virtualQuantity );
+			}
+			return drivingTickersVirtualQuantities;
+		}
+		private double getEquityLineForDrivingPositions( DateTime dateTime ,
+			Hashtable tickerVirtualQuantities )
+		{
+			double equityValueForDrivingPositions = 30000;
+			foreach( string ticker in tickerVirtualQuantities )
+			{
+				EndOfDayDateTime endOfDayDateTime =	new EndOfDayDateTime(
+					dateTime , EndOfDaySpecificTime.MarketClose );
+				double tickerQuote = this.historicalQuoteProvider.GetMarketValue(
+					ticker , endOfDayDateTime );
+				double virtualQuantity = (double)tickerVirtualQuantities[ ticker ];
+				equityValueForDrivingPositions +=	virtualQuantity * tickerQuote;
+			}
+			return equityValueForDrivingPositions;
+		}
+		private EquityLine getEquityLineForDrivingPositions(
+			Report report )
+		{
+			EquityLine equityLineForPortfolioPositions =
+				report.AccountReport.EquityLine;
+			EquityLine equityLineForDrivingPositions =
+				new EquityLine();
+			Hashtable drivingTickerQuantities =
+				this.getDrivingTickersVirtualQuantities(
+				(DateTime)equityLineForPortfolioPositions.GetKey( 0 ) );
+			foreach( DateTime dateTime in equityLineForPortfolioPositions )
+				equityLineForDrivingPositions.Add( dateTime ,
+					this.getEquityLineForDrivingPositions( dateTime ,
+					drivingTickerQuantities ) );
+//			double normalizingFactor =
+//				( double )equityLineForPortfolioPositions.GetByIndex( 0 ) /
+//				( double )equityLineForDrivingPositions.GetByIndex( 0 );
+			return equityLineForDrivingPositions;
+		}
+		#endregion
 		public void oneHourAfterMarketCloseEventHandler(
 			Object sender , EndOfDayTimingEventArgs endOfDayTimingEventArgs )
 		{
@@ -122,6 +188,9 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag.WFLagDebugger
 					new EndOfDayDateTime( this.postSampleLastDateTime ,
 					EndOfDaySpecificTime.OneHourAfterMarketClose ) ,
 					this.benchmark );
+				EquityLine equityLineForDrivingPositions =
+					this.getEquityLineForDrivingPositions( report );
+//				report.AddEquityLine( equityLineForDrivingPositions );
 				report.Show();
 			}
 		}
