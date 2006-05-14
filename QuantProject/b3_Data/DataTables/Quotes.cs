@@ -532,6 +532,28 @@ namespace QuantProject.Data.DataTables
       ExtendedDataTable.DeleteRows(tableToReturn, maxNumOfReturnedTickers);
       return tableToReturn;
     }
+    
+    private static float[] getArrayOfCloseToCloseRatios_getAdjustedValues(Quotes sourceQuotes,
+                                                                          int numDaysForHalfPeriod,
+                                                                          ref DateTime firstQuoteDate)
+    {
+      float[] returnValue = ExtendedDataTable.GetArrayOfFloatFromColumn(sourceQuotes, "quAdjustedClose");
+      //in order to be alligned at the following market day,
+      //allAdjValues has to be long n, where n is such that
+      //n%2 * hp + 1 = 2 * hp (hp = half period)
+      //if some quotes are deleted, first quote day has to be updated
+      while(returnValue.Length % (2*numDaysForHalfPeriod) + 1 != 2*numDaysForHalfPeriod)
+      {
+        float[] newReturnValue = new float[returnValue.Length - 1];
+        for(int k = 0;k<returnValue.Length - 1;k++)
+            newReturnValue[k] = returnValue[k + 1];
+        returnValue = newReturnValue;
+        firstQuoteDate = firstQuoteDate.AddDays(1);
+        firstQuoteDate = sourceQuotes.GetQuoteDateOrFollowing(firstQuoteDate);
+      }
+      return returnValue;
+    }
+    
     /// <summary>
     /// Gets an array containing close to close ratios
     /// </summary>
@@ -543,28 +565,31 @@ namespace QuantProject.Data.DataTables
     ///                                       considered in the calculation</param>
     /// <returns></returns>
     public static float[] GetArrayOfCloseToCloseRatios(string ticker,
-                                                      DateTime firstQuoteDate,
+                                                      ref DateTime firstQuoteDate,
                                                       DateTime lastQuoteDate,
                                                      	int numDaysBetweenEachClose,
                                                       int numOfInitialMarketDaysToJump)
     {
       float[] returnValue = null;
       Quotes tickerQuotes = new Quotes(ticker, firstQuoteDate, lastQuoteDate);
-      float[] allAdjValues = ExtendedDataTable.GetArrayOfFloatFromColumn(tickerQuotes, "quAdjustedClose");
+      //float[] allAdjValues = ExtendedDataTable.GetArrayOfFloatFromColumn(tickerQuotes, "quAdjustedClose");
+      float[] allAdjValues = getArrayOfCloseToCloseRatios_getAdjustedValues(tickerQuotes, numDaysBetweenEachClose, ref firstQuoteDate);
       float[] adjValuesMinusInitialMarketDays = new float[allAdjValues.Length - numOfInitialMarketDaysToJump]; 
+      //fill adjValuesMinusInitialMarketDays array
       for(int k = 0;k<allAdjValues.Length - numOfInitialMarketDaysToJump;k++)
             adjValuesMinusInitialMarketDays[k] = 
               allAdjValues[k + numOfInitialMarketDaysToJump]; 
-   
-      returnValue = new float[adjValuesMinusInitialMarketDays.Length/(numDaysBetweenEachClose + 1)];
+      //
+      returnValue = new float[adjValuesMinusInitialMarketDays.Length/(numDaysBetweenEachClose * 2)];
       int i = 0; //index for ratesOfReturns array
       int lastIdxAccessed = 0;
       for(int idx = 0;
-          (idx + numDaysBetweenEachClose) < adjValuesMinusInitialMarketDays.Length;
+          (idx + numDaysBetweenEachClose) < adjValuesMinusInitialMarketDays.Length && i<returnValue.Length;
           idx += numDaysBetweenEachClose )
       {
         if(idx-lastIdxAccessed>numDaysBetweenEachClose || idx == 0)
-          //there is a discontinuity, as wanted
+        //the current ratio is computed only if the first close, pointed by idx, is 
+        //not the second close of the previous ratio
         {
           returnValue[i] = (adjValuesMinusInitialMarketDays[idx+numDaysBetweenEachClose]/
             adjValuesMinusInitialMarketDays[idx] - 1);
@@ -576,11 +601,11 @@ namespace QuantProject.Data.DataTables
     }
     
     public static float[] GetArrayOfCloseToCloseRatios(string ticker,
-                                                        DateTime firstQuoteDate,
+                                                        ref DateTime firstQuoteDate,
                                                         DateTime lastQuoteDate,
                                                         int numDaysBetweenEachClose)
     {
-      return GetArrayOfCloseToCloseRatios(ticker, firstQuoteDate, lastQuoteDate, numDaysBetweenEachClose,
+      return GetArrayOfCloseToCloseRatios(ticker, ref firstQuoteDate, lastQuoteDate, numDaysBetweenEachClose,
                                           0);
     }
     /// <summary>
@@ -595,11 +620,11 @@ namespace QuantProject.Data.DataTables
     {
       if(!setOfTickers.Columns.Contains("CloseToCloseCorrelationToBenchmark"))
         setOfTickers.Columns.Add("CloseToCloseCorrelationToBenchmark", System.Type.GetType("System.Double"));
-      float[] benchmarkRatios = GetArrayOfCloseToCloseRatios(benchmark, firstQuoteDate, lastQuoteDate, numDaysBetweenEachClose);
+      float[] benchmarkRatios = GetArrayOfCloseToCloseRatios(benchmark, ref firstQuoteDate, lastQuoteDate, numDaysBetweenEachClose);
       foreach(DataRow row in setOfTickers.Rows)
       {
         float[] tickerRatios = GetArrayOfCloseToCloseRatios((string)row[0], 
-          firstQuoteDate, lastQuoteDate, numDaysBetweenEachClose );
+          ref firstQuoteDate, lastQuoteDate, numDaysBetweenEachClose );
       	if(tickerRatios.Length == benchmarkRatios.Length)
       		row["CloseToCloseCorrelationToBenchmark"] =
           	Math.Abs(BasicFunctions.PearsonCorrelationCoefficient(benchmarkRatios, tickerRatios));
