@@ -117,6 +117,71 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "ArbitrageTesting\PairTrading\PairTradingCandidate.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "ArbitrageTesting\PairTrading\RunPairTrading.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "ArbitrageTesting\PairTrading\SimplePairTrading\EndOfDayTimerHandlerSimplePT.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "ArbitrageTesting\PairTrading\SimplePairTrading\GenomeManagerForSimplePT.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "ArbitrageTesting\PairTrading\SimplePairTrading\GenomeMeaningSimplePT.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "ArbitrageTesting\PairTrading\SimplePairTrading\RunSimplePairTrading.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "ArbitrageTesting\PairTrading\SimplePairTrading\SimplePTGenomeManipulator.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "ArbitrageTesting\PairTrading\SimplePairTrading\InSample\EndOfDayTimerHandlerSimplePTIS.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "ArbitrageTesting\PairTrading\SimplePairTrading\InSample\GenomeRepresentation.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "ArbitrageTesting\PairTrading\SimplePairTrading\InSample\OptimizationOutput.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "ArbitrageTesting\PairTrading\SimplePairTrading\InSample\OutputDisplayer.cs"
+                    SubType = "Form"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "ArbitrageTesting\PairTrading\SimplePairTrading\InSample\OutputDisplayer.resx"
+                    DependentUpon = "OutputDisplayer.cs"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "ArbitrageTesting\PairTrading\SimplePairTrading\InSample\RunSimplePairTradingIS.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "CallingReportsForRunScripts\ShowReportFromFile.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
@@ -133,6 +198,11 @@
                 />
                 <File
                     RelPath = "EvaluatingOptimizationTechnique\EfficientPortfolio\RunTestingOptimizationOpenToClose.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "EvaluatingOptimizationTechnique\EfficientPortfolio\RunTestingOptimizationOpenToCloseFitnessCombined.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
@@ -174,6 +244,36 @@
                 />
                 <File
                     RelPath = "SimpleTesting\ShortTest\RunShortTest.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "TechnicalAnalysisTesting\Oscillators\ExtremeCounterTrend\EndOfDayTimerHandlerECT.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "TechnicalAnalysisTesting\Oscillators\ExtremeCounterTrend\GenomeManagerECT.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "TechnicalAnalysisTesting\Oscillators\ExtremeCounterTrend\RunExtremeCounterTrend.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "TechnicalAnalysisTesting\Oscillators\FixedPeriodOscillators\EndOfDayTimerHandlerFPOscillatorCTC.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "TechnicalAnalysisTesting\Oscillators\FixedPeriodOscillators\GenomeManagerForFPOscillatorCTC.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "TechnicalAnalysisTesting\Oscillators\FixedPeriodOscillators\RunFPOscillatorCTC.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
@@ -389,6 +489,16 @@
                 />
                 <File
                     RelPath = "WalkForwardTesting\LinearCombination\CloseToOpenDailyStrategy.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "WalkForwardTesting\LinearCombination\ExtremeCounterTrendStrategy.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "WalkForwardTesting\LinearCombination\FixedPeriodOscillatorStrategy.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
