@@ -26,6 +26,7 @@ using System.IO;
 
 using QuantProject.ADT;
 using QuantProject.ADT.Optimizing.Genetic;
+using QuantProject.ADT.Statistics;
 using QuantProject.Data.Selectors;
 using QuantProject.Data.DataTables;
 using QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios;
@@ -119,17 +120,32 @@ namespace QuantProject.Scripts.EvaluatingOptimizationTechnique.EfficientPortfoli
         //returnValue is the average return for the interval between
 	 			//the given market date and the numDaysAfterLastOptimizationDay - th
 	 			//day after the given market date
-	 			Quotes tickerQuotes = new Quotes(ticker, this.marketDate,
-          															 dateOutOfSample);
-        double close, open;
-	 			for(int i = 0; i<this.numDaysAfterLastOptimizationDay; i++)
-	 			{
-		      close = tickerQuotes.GetFirstValidAdjustedClose(this.marketDate.AddDays(i));
-		      open = tickerQuotes.GetFirstValidAdjustedOpen(this.marketDate.AddDays(i+1));
-	 				returnValue +=
-		      	(open/close - 1.0)*coefficient/this.numDaysAfterLastOptimizationDay;
+	 			//Quotes tickerQuotes = new Quotes(ticker, this.marketDate,
+        //  															 dateOutOfSample);
+        //double close, open;
+	 			//for(int i = 0; i<this.numDaysAfterLastOptimizationDay; i++)
+	 			//{
+		      //close = tickerQuotes.GetFirstValidAdjustedClose(this.marketDate.AddDays(i));
+		      //open = tickerQuotes.GetFirstValidAdjustedOpen(this.marketDate.AddDays(i+1));
+	 				//returnValue +=
+		      	//(open/close - 1.0)*coefficient/this.numDaysAfterLastOptimizationDay;
 		      	
-	 			}
+	 			//}
+        
+        //returnValue is the sharpe ratio for the interval between
+        //the given market date and the numDaysAfterLastOptimizationDay - th
+        //day after the given market date
+        Quotes tickerQuotes = new Quotes(ticker, this.marketDate,
+          dateOutOfSample);
+        double close, open;
+        double[] returns = new double[this.numDaysAfterLastOptimizationDay];
+        for(int i = 0; i<this.numDaysAfterLastOptimizationDay; i++)
+        {
+          close = tickerQuotes.GetFirstValidAdjustedClose(this.marketDate.AddDays(i));
+          open = tickerQuotes.GetFirstValidAdjustedOpen(this.marketDate.AddDays(i+1));
+          returns[i] = (open/close - 1.0)*coefficient;
+        }
+        returnValue += BasicFunctions.SimpleAverage(returns) / BasicFunctions.StdDev(returns);
       }
       return returnValue/genome.Size;
       
@@ -268,17 +284,17 @@ namespace QuantProject.Scripts.EvaluatingOptimizationTechnique.EfficientPortfoli
     	GenomeCounter genomeCounter = new GenomeCounter(this.genomesToTestOutOfSample);
     	int differentEvaluatedGenomes = genomeCounter.TotalEvaluatedGenomes;
      	string pathFile = System.Configuration.ConfigurationSettings.AppSettings["GenericArchive"] +
-                    "\\CloseToOpenOptimizationEvaluation.txt";
+                    "\\OptimizationEvaluation.txt";
   	  StreamWriter w = File.AppendText(pathFile);
   	  w.WriteLine ("\n----------------------------------------------\r\n");
   	  w.Write("\r\nNew Test for Evaluation of Close To Open Optimization {0}\r", DateTime.Now.ToLongDateString()+ " " +DateTime.Now.ToLongTimeString());
   	  w.Write("\r\nNum days for optimization {0}\r", this.numDaysForOptimization.ToString());
       w.Write("\r\nOptimizing market date {0}\r", this.marketDate.ToLongDateString());
-      w.Write("\r\nMarket date for test (out of sample){0}\r",
+      w.Write("\r\nMarket date for test out of sample (sharpe ratio as fitness OS){0}\r",
                         this.marketDate.AddDays(this.numDaysAfterLastOptimizationDay).ToLongDateString());
       w.Write("\r\nNumber of tickers: {0}\r", this.numberOfTickersToBeChosen.ToString());
       w.WriteLine ("\n----------------------------------------------");
-  	  w.Write("\r\nFitnesses compared: {0}\r", this.fitnessesInSample.Length.ToString());
+  	  w.Write("\r\nFitnesses compared (sharpe ratio CTO): {0}\r", this.fitnessesInSample.Length.ToString());
   	  w.Write("\r\nDifferent evaluated genomes: {0}\r", differentEvaluatedGenomes.ToString());
       w.Write("\r\nAverages of the {0} sub sets of fitnesses In Sample:\r",
   	          this.numberOfSubsets);
