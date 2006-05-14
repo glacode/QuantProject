@@ -116,15 +116,30 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag
 		private void NewBacktest_Click(object sender, System.EventArgs e)
 		{
 //			new RunWalkForwardLag( "millo" , 500 ,
-//				3 , 3 , 90 , 7 , 15 , 30000 , "MSFT" ,
+//				3 , 3 , 90 , 7 , 1 , 5000 , "MSFT" ,
 //				new DateTime( 2002 , 1 , 1 ) ,
-//				new DateTime( 2002 , 3 , 31 ) ,
-//				7 ).Run();
-			new RunWalkForwardLag( "SP500" , 500 ,
-				3 , 3 , 90 , 7 , 1 , 30000 , "MSFT" ,
-				new DateTime( 2002 , 1 , 30 ) ,
-				new DateTime( 2002 , 2 , 3 ) ,
-				1 ).Run();
+//				new DateTime( 2002 , 1 , 8 ) ,
+//				0.01 ).Run();
+			new RunWalkForwardLag( "ib_etf" , 500 ,
+				3 , 1 , 200 , 15 , 50 , 90000 , "EWQ" ,
+				new DateTime( 2003 , 1 , 1 ) ,
+				new DateTime( 2003 , 12 , 31 ) ,
+				13 ).Run();
+//			new RunWalkForwardLag( "ib_etf" , 500 ,
+//				4 , 4 , 250 , 2 , 15 , 30000 , "EWQ" ,
+//				new DateTime( 2003 , 1 , 1 ) ,
+//				new DateTime( 2003 , 12 , 31 ) ,
+//				13 ).Run();
+//						new RunWalkForwardLag( "SP500" , 500 ,
+//							4 , 4 , 400 , 2 , 15 , 30000 , "MSFT" ,
+//							new DateTime( 2002 , 6 , 30 ) ,
+//							new DateTime( 2003 , 6 , 30 ) ,
+//							8 ).Run();
+//						new RunWalkForwardLag( "SP500" , 500 ,
+//							1 , 1 , 400 , 2 , 5 , 5000 , "MSFT" ,
+//							new DateTime( 2002 , 6 , 30 ) ,
+//							new DateTime( 2003 , 6 , 30 ) ,
+//							3 ).Run();
 		}
 
 		private void debugOldBacktest_Click(object sender, System.EventArgs e)
