@@ -42,6 +42,7 @@
     <File name=".\DataProviders\Caching\ICache.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
     <File name=".\DataProviders\Caching\SimpleCache.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
     <File name=".\Selectors\SelectorByQuotationNotAtEachMarketDay.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
+    <File name=".\MissingQuotesException.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
   </Contents>
   <References>
     <Reference type="Project" refto="b2_DataAccess" localcopy="True" />
