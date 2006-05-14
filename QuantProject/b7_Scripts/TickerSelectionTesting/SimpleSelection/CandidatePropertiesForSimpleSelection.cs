@@ -43,12 +43,18 @@ namespace QuantProject.Scripts.TickerSelectionTesting.SimpleSelection
       this.targetPerformance = targetPerformance;
     }
   
+//    public override void setFitness()
+//    {
+//      NormalDistribution normal = 
+//         new NormalDistribution(BasicFunctions.SimpleAverage(this.ArrayOfRatesOfReturn),
+//                                BasicFunctions.StdDev(this.ArrayOfRatesOfReturn));
+//      this.fitness = 1-normal.GetProbability(this.targetPerformance);
+//    }
+    //sharpe ratio as fitness
     public override void setFitness()
     {
-      NormalDistribution normal = 
-         new NormalDistribution(BasicFunctions.SimpleAverage(this.ArrayOfRatesOfReturn),
-                                BasicFunctions.StdDev(this.ArrayOfRatesOfReturn));
-      this.fitness = 1-normal.GetProbability(this.targetPerformance);
+      this.fitness = BasicFunctions.SimpleAverage(this.ArrayOfRatesOfReturn)/
+                      BasicFunctions.StdDev(this.ArrayOfRatesOfReturn);
     }
   }
 
