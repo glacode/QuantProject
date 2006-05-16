@@ -123,14 +123,13 @@
     <File name=".\ArbitrageTesting\PairTrading\SimplePairTrading\InSample\EndOfDayTimerHandlerSimplePTIS.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
     <File name=".\ArbitrageTesting\PairTrading\SimplePairTrading\InSample\GenomeRepresentation.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
     <File name=".\ArbitrageTesting\PairTrading\SimplePairTrading\InSample\OptimizationOutput.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
-    <File name=".\QuantProject.Scripts.ArbitrageTesting.PairTrading.SimplePairTrading.InSample.OutputDisplayer.resources" subtype="Code" buildaction="EmbedAsResource" dependson="" data="" />
     <File name=".\TechnicalAnalysisTesting\Oscillators\ExtremeCounterTrend" subtype="Directory" buildaction="Compile" dependson="" data="" />
     <File name=".\TechnicalAnalysisTesting\Oscillators\ExtremeCounterTrend\RunExtremeCounterTrend.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
     <File name=".\TechnicalAnalysisTesting\Oscillators\ExtremeCounterTrend\EndOfDayTimerHandlerECT.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
     <File name=".\TechnicalAnalysisTesting\Oscillators\ExtremeCounterTrend\GenomeManagerECT.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
     <File name=".\WalkForwardTesting\LinearCombination\ExtremeCounterTrendStrategy.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
     <File name=".\WalkForwardTesting\LinearCombination\FixedPeriodOscillatorStrategy.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
-    <File name=".\QuantProject.Scripts.WalkForwardTesting.LinearCombination.TestDisplayer.resources" subtype="Code" buildaction="EmbedAsResource" dependson="" data="" />
+    <File name=".\WalkForwardTesting\WalkForwardLag\WFLagDebugger\WFLagDebugGenome.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
   </Contents>
   <References>
     <Reference type="Project" refto="b1_ADT" localcopy="True" />
