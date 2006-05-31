@@ -21,7 +21,9 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 using System;
 using System.Windows.Forms;
+
 using QuantProject.Business.Financial.Accounting.Reporting;
+using QuantProject.Presentation.Charting;
 
 namespace QuantProject.Presentation.Reporting.WindowsForm
 {
@@ -41,12 +43,24 @@ namespace QuantProject.Presentation.Reporting.WindowsForm
 		{
 			get { return this.transactions.ReportGrid; }
 		}
+		public Chart EquityChart
+		{
+			get { return this.equityChart.EquityChart; }
+		}
 
-		public ReportTabControl( AccountReport accountReport )
+		/// <summary>
+		/// Contains all tab pages of a visual report
+		/// </summary>
+		/// <param name="accountReport">data for the report to be shown</param>
+		/// <param name="showBenchmark">true iif the benchmark equity line
+		/// is to be shown</param>
+		public ReportTabControl( AccountReport accountReport ,
+			bool showBenchmark )
 		{
 			this.accountReport = accountReport;
 			this.Dock = DockStyle.Fill;
-			this.equityChart = new EquityChartTabPage( this.accountReport );
+			this.equityChart = new EquityChartTabPage( this.accountReport ,
+				showBenchmark );
 			this.Controls.Add( this.equityChart );
 			this.summary = new SummaryTabPage( this.accountReport );
 			this.Controls.Add( this.summary );
