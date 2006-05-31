@@ -20,7 +20,9 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 using System;
+using System.Drawing;
 using System.Windows.Forms;
+
 using QuantProject.ADT;
 using QuantProject.Business.DataProviders;
 using QuantProject.Business.Financial.Accounting;
@@ -71,10 +73,18 @@ namespace QuantProject.Presentation.Reporting.WindowsForm
 		}
 		public Report( AccountReport accountReport )
 		{
+			this.report( accountReport , true );
+		}
+		public Report( AccountReport accountReport , bool showBenchmark )
+		{
+			this.report( accountReport , showBenchmark );
+		}
+		private void report( AccountReport accountReport , bool showBenchmark )
+		{
 			this.accountReport = accountReport;
 			this.account = this.accountReport.Account;
 			this.initializeComponent();
-			this.create_populateForm();
+			this.create_populateForm( showBenchmark );
 		}
 		
 		private void initializeComponent()
@@ -116,12 +126,13 @@ namespace QuantProject.Presentation.Reporting.WindowsForm
 					numDaysForInterval , endDateTime , buyAndHoldTicker ,
 					this.historicalQuoteProvider );
 		}
-		private void create_populateForm()
+		private void create_populateForm( bool showBenchmark )
 		{
 			this.Location = new System.Drawing.Point( 1000,500);
 			this.Width = 700;
 			this.Height = 500;
-			this.reportTabControl = new ReportTabControl( this.accountReport );
+			this.reportTabControl = new ReportTabControl( this.accountReport ,
+				showBenchmark );
 			this.Controls.Add( this.reportTabControl );
 		}
 		/// <summary>
@@ -131,12 +142,18 @@ namespace QuantProject.Presentation.Reporting.WindowsForm
 		/// <param name="numDaysForInterval"></param>
 		/// <param name="endDateTime"></param>
 		/// <param name="benchmark"></param>
-		public void Create( string reportName ,
-			int numDaysForInterval , EndOfDayDateTime endDateTime , string benchmark )
+		public void Create( string reportName ,	int numDaysForInterval ,
+			EndOfDayDateTime endDateTime , string benchmark )
+		{
+			this.Create( reportName , numDaysForInterval , endDateTime ,
+				benchmark , true );
+		}
+		public void Create( string reportName ,	int numDaysForInterval ,
+			EndOfDayDateTime endDateTime , string benchmark , bool showBenchmark )
 		{
 			create_set_accountReport( reportName ,
 				numDaysForInterval , endDateTime , benchmark );
-			create_populateForm();
+			create_populateForm( showBenchmark );
 		}
 		public void Show( string reportName ,
 			int numDaysForInterval , EndOfDayDateTime endDateTime , string benchmark )
@@ -247,6 +264,11 @@ namespace QuantProject.Presentation.Reporting.WindowsForm
 
 
 		#endregion
+		public void AddEquityLine( EquityLine equityLine ,
+			Color color )
+		{
+			this.reportTabControl.EquityChart.Add( equityLine , color );
+		}
 		
 //    /// <summary>
 //    /// Imports an existing account report
