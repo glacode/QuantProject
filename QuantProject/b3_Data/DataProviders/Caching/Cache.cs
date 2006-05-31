@@ -161,7 +161,7 @@ namespace QuantProject.Data.DataProviders.Caching
 //				quotesForTickerAndYear.Add( quoteField , cachePage );
 //			}
 //		}
-		private void addPage( string ticker , int year , QuoteField quoteField )
+		private void addPage_actually( string ticker , int year , QuoteField quoteField )
 		{
 			if ( this.Count + 1 > this.maxNumPages )
 				this.removeUnusedPages();
@@ -169,6 +169,13 @@ namespace QuantProject.Data.DataProviders.Caching
 			cachePage.LoadData();
 			this.Add( this.getKey( ticker , year , quoteField ) , cachePage );
 			this.currentNumPages ++ ;
+		}
+		private void addPage( string ticker , int year , QuoteField quoteField )
+		{
+			if ( !this.ContainsKey( this.getKey( ticker , year , quoteField ) ) )
+				// ticker quotes have not been cached yet,
+				// for the given year
+				this.addPage_actually( ticker , year , quoteField );
 		}
 		private void addPage( string ticker , DateTime dateTime , QuoteField quoteField )
 		{
@@ -178,10 +185,8 @@ namespace QuantProject.Data.DataProviders.Caching
 		public double GetQuote( string ticker , DateTime dateTime , QuoteField quoteField )
 		{
 			double returnValue;
-//			this.getQuote_checkEarlyDateException( dateTime );
-			if ( !this.ContainsKey( this.getKey( ticker , dateTime.Year , quoteField ) ) )
-				// the instrument instrumentKey has not been cached yet, for the given bar component
-				this.addPage( ticker , dateTime , quoteField );
+			//			this.getQuote_checkEarlyDateException( dateTime );
+			this.addPage( ticker , dateTime , quoteField );
 			try
 			{
 				CachePage cachePage = this.getCachePage( ticker , dateTime , quoteField );
