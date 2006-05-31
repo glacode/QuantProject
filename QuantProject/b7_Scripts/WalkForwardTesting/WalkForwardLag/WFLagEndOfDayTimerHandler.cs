@@ -344,7 +344,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag
 			}
 		}
 		#endregion
-		private bool areBestTickersToBeChosen()
+		public bool AreBestTickersToBeChosen()
 		{
 			bool returnValue =
 				( ( ( this.account.Portfolio.Count == 0 )
@@ -356,7 +356,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag
 		public void OneHourAfterMarketCloseEventHandler(
 			Object sender , EndOfDayTimingEventArgs endOfDayTimingEventArgs )
 		{
-			if ( this.areBestTickersToBeChosen() )
+			if ( this.AreBestTickersToBeChosen() )
 				// the portfolio is empty and
 				// either the lastOptimizationDate has not been set yet
 				// or outOfSampleWindowDays elapsed since last optimization
