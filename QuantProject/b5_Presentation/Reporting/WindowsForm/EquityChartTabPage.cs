@@ -39,6 +39,17 @@ namespace QuantProject.Presentation.Reporting.WindowsForm
 		private AccountReport accountReport;
 		private Chart equityChart;
 		private History benchmark;
+//		private bool showBenchmark;
+
+		public Chart EquityChart
+		{
+			get { return this.equityChart; }
+		}
+//		public bool ShowBenchmark
+//		{
+//			get { return this.showBenchmark; }
+//			set { this.showBenchmark = value; }
+//		}
 		
 		/// <summary>
 		/// Returns the history for the BuyAndHoldTicker, normalized for
@@ -55,7 +66,8 @@ namespace QuantProject.Presentation.Reporting.WindowsForm
 				Convert.ToDouble( this.accountReport.BenchmarkEquityLine[ firstDate ] );
 			return this.accountReport.BenchmarkEquityLine.MultiplyBy( normalizingFactor );
 		}
-		public EquityChartTabPage( AccountReport accountReport )
+		public EquityChartTabPage( AccountReport accountReport ,
+			bool showBenchmark )
 		{
 			this.Text = "Equity Line";
 			this.accountReport = accountReport;
@@ -66,7 +78,8 @@ namespace QuantProject.Presentation.Reporting.WindowsForm
 //			this.equityChart.Add( benchmark , Color.Blue ,
 //				(DateTime)this.accountReport.EquityHistory.GetKey( 0 ) ,
 //				(DateTime)this.accountReport.EquityHistory.GetKey( this.accountReport.EquityHistory.Count - 1 ) );
-			this.equityChart.Add( benchmark , Color.Blue );
+			if ( showBenchmark )
+				this.equityChart.Add( benchmark , Color.Blue );
 			this.Controls.Add( this.equityChart );
 		}
 	}
