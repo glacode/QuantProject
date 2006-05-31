@@ -223,15 +223,23 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag
 				this.benchmark );
 			report.Show();
 		}
-		private void oneHourAfterMarketCloseEventHandler(
+		private bool isTimeToStop( DateTime currentTime )
+		{
+			DateTime maxEndingDateTimeForScript =
+				this.startingTimeForScript.AddHours( this.maxRunningHours );
+			bool scriptTimeElapsed = ( DateTime.Now >= maxEndingDateTimeForScript );
+			bool areBestTickersToBeChosen =
+				this.endOfDayTimerHandler.AreBestTickersToBeChosen();
+			return
+			( ( currentTime >	this.lastDateTime ) ||
+				( scriptTimeElapsed && areBestTickersToBeChosen ) );
+		}
+		private void marketCloseEventHandler(
 			Object sender , EndOfDayTimingEventArgs endOfDayTimingEventArgs )
 		{
 			DateTime currentTime =
 				( ( IEndOfDayTimer )sender ).GetCurrentTime().DateTime;
-			if ( ( currentTime >
-				this.lastDateTime ) ||
-				( DateTime.Now >=
-				this.startingTimeForScript.AddHours( this.maxRunningHours ) ) )
+			if ( this.isTimeToStop( currentTime ) )
 			{
 				// either the simulation has reached the ending date or
 				// too much time elapsed since the simulation started
@@ -272,9 +280,9 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag
 			this.endOfDayTimer.OneHourAfterMarketClose +=
 				new OneHourAfterMarketCloseEventHandler(
 				this.endOfDayTimerHandler.OneHourAfterMarketCloseEventHandler );
-			this.endOfDayTimer.OneHourAfterMarketClose +=
-				new OneHourAfterMarketCloseEventHandler(
-				this.oneHourAfterMarketCloseEventHandler );
+			this.endOfDayTimer.MarketClose +=
+				new MarketCloseEventHandler(
+				this.marketCloseEventHandler );
 			this.endOfDayTimerHandler.NewChosenTickers +=
 				new NewChosenTickersEventHandler(
 				this.newChosenTickersEventHandler	);
