@@ -116,15 +116,15 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag
 		private void NewBacktest_Click(object sender, System.EventArgs e)
 		{
 //			new RunWalkForwardLag( "millo" , 500 ,
-//				3 , 3 , 90 , 7 , 1 , 5000 , "MSFT" ,
+//				3 , 3 , 90 , 4 , 1 , 5000 , "MSFT" ,
 //				new DateTime( 2002 , 1 , 1 ) ,
 //				new DateTime( 2002 , 1 , 8 ) ,
 //				0.01 ).Run();
 			new RunWalkForwardLag( "ib_etf" , 500 ,
-				3 , 1 , 200 , 15 , 50 , 90000 , "EWQ" ,
-				new DateTime( 2003 , 1 , 1 ) ,
+				4 , 4 , 200 , 15 , 50 , 90000 , "EWQ" ,
+				new DateTime( 2003 , 8 , 13 ) ,
 				new DateTime( 2003 , 12 , 31 ) ,
-				13 ).Run();
+				7 ).Run();
 //			new RunWalkForwardLag( "ib_etf" , 500 ,
 //				4 , 4 , 250 , 2 , 15 , 30000 , "EWQ" ,
 //				new DateTime( 2003 , 1 , 1 ) ,
