@@ -123,7 +123,51 @@ namespace QuantProject.ADT.Statistics
 				BasicFunctions.GetStdDev( returns );
 			return sharpeRatio;
 		}
-  }
+		#region GetExpectancyScore
+		public static double GetExpectancyScore( ICollection returns )
+		{
+			double winningPeriods = 0;
+			double losingPeriods = 0;
+			double sumOfWinningReturns = 0;
+			double sumOfLosingReturns = 0;
+			double maxWinningReturn = Double.MinValue;
+			double averageWinningReturn;
+			double averageLosingReturn;
+			double probabilityOfWinning;
+			double probabilityOfLosing;
+			foreach ( double singleReturn in returns )
+			{
+				if ( singleReturn > 0 )
+				{
+					winningPeriods++;
+					sumOfWinningReturns += singleReturn;
+					if ( singleReturn > maxWinningReturn )
+						maxWinningReturn = singleReturn;
+				}
+				if ( singleReturn < 0 )
+				{
+					losingPeriods++;
+					sumOfLosingReturns += singleReturn;
+				}
+			}
+
+			averageWinningReturn = ( sumOfWinningReturns - maxWinningReturn )
+				/ ( winningPeriods - 1 );
+			averageLosingReturn = sumOfLosingReturns / losingPeriods;
+			probabilityOfWinning = ( winningPeriods - 1 ) /
+				( winningPeriods + losingPeriods - 1 );
+			probabilityOfLosing = losingPeriods /
+				( winningPeriods + losingPeriods - 1 );
+
+			double expectancyScore =
+				( averageWinningReturn * probabilityOfWinning +
+				averageLosingReturn * probabilityOfLosing ) /
+				Math.Abs( averageLosingReturn ) /
+        ( winningPeriods + losingPeriods - 1 );
+			return expectancyScore;
+		}
+		#endregion
+	}
   
 
 }		
