@@ -61,18 +61,17 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
     
     protected override double getTickerWeight(int[] genes, int tickerPositionInGenes)
     {
-      double totalReturnedByWeights = 
-        (1.0-ConstantsProvider.MinimumPortfolioWeightForTicker*genes.Length/2)/ConstantsProvider.MinimumPortfolioWeightForTicker;
-      int totalOfAbsoluteValuesForWeightsInGenes = 0;
+      double minimumWeight = ConstantsProvider.MinimumPortfolioWeightForTicker;
+      double totalOfValuesForWeightsInGenes = 0.0;
       for(int j = 0; j<genes.Length; j++)
       {
         if(j%2==0)
           //ticker weight is contained in genes at even position
-          totalOfAbsoluteValuesForWeightsInGenes += (int)Math.Abs(genes[j]);
+          totalOfValuesForWeightsInGenes += Math.Abs(genes[j]) + 1.0;
+        //0 has to be avoided !
       }
-      double min = ConstantsProvider.MinimumPortfolioWeightForTicker;
-
-      return min*(1.0 + totalReturnedByWeights * Math.Abs(genes[tickerPositionInGenes-1])/totalOfAbsoluteValuesForWeightsInGenes);
+      double freeWeight = (Math.Abs(genes[tickerPositionInGenes-1]) + 1.0)/totalOfValuesForWeightsInGenes;
+      return minimumWeight + freeWeight * (1.0 - minimumWeight * genes.Length / 2);
     }
  
     protected override double[] getPortfolioRatesOfReturn(int[] genes)
