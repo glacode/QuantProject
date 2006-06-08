@@ -37,7 +37,7 @@ namespace QuantProject.Presentation.Reporting.WindowsForm
 	public class SummaryTabPage : TabPage
 	{
 		// constant values for label's placement
-		private int labelRows = 10;
+		private int labelRows = 14;
 		private int xForLabels = 17;
 		private int textLabelsWidth = 180;
 		private int valueLablesWidth = 60;
