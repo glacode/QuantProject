@@ -115,7 +115,7 @@ namespace QuantProject.Presentation.Charting
 		}
 		protected override void OnPaint(System.Windows.Forms.PaintEventArgs e)
     {
-      Console.WriteLine( "Chart.OnPaint()" );
+//      Console.WriteLine( "Chart.OnPaint()" );
 //      foreach ( ChartPlot chartPlot in this.chartPlots )
 //        onPaint_addLinePlot_ok( chartPlot );
       base.OnPaint( e );
