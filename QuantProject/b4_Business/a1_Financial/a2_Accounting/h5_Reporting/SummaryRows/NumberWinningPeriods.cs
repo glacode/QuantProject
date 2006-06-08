@@ -39,6 +39,9 @@ namespace QuantProject.Business.Financial.Accounting.Reporting.SummaryRows
 		private double numberWinningPeriods;
 		private double numberLosingPeriods;
 		private double numberEvenPeriods;
+		private double numberPositivePeriods;
+		private double numberNegativePeriods;
+		private double numberZeroPeriods;
 
 		private void setWinningLosingAndEvenPeriods_forPeriod( int i )
 		{
@@ -59,20 +62,34 @@ namespace QuantProject.Business.Financial.Accounting.Reporting.SummaryRows
 				else
 					this.numberEvenPeriods++;
 			}
+			if ( equityHistoryGain < 0 )
+				this.numberNegativePeriods ++;
+			else
+			{
+				if ( equityHistoryGain > 0 )
+					this.numberPositivePeriods ++;
+				else
+					// equityHistoryGain == 0
+					this.numberZeroPeriods ++;
+			}
+
 		}
 
-		public void SetWinningLosingAndEvenPeriods()
+		public void SetWinningLosingPositiveAndNegativePeriods()
 		{
 			this.numberWinningPeriods = 0;
 			this.numberLosingPeriods = 0;
 			this.numberEvenPeriods = 0;
+			this.numberPositivePeriods = 0;
+			this.numberNegativePeriods = 0;
+			this.numberZeroPeriods = 0;
 			for ( int i=0; i<this.summary.AccountReport.EquityLine.Count - 1 ; i++ )
 				this.setWinningLosingAndEvenPeriods_forPeriod( i );
 		}
 		public NumberWinningPeriods( Summary summary ) : base()
 		{
 			this.summary = summary;
-			this.SetWinningLosingAndEvenPeriods();
+			this.SetWinningLosingPositiveAndNegativePeriods();
 			this.rowDescription = "# winning periods";
 			this.format = ConstantsProvider.FormatWithZeroDecimals;
 			this.rowValue = this.numberWinningPeriods;
@@ -80,6 +97,14 @@ namespace QuantProject.Business.Financial.Accounting.Reporting.SummaryRows
 		public double NumberLosingPeriods
 		{
 			get { return this.numberLosingPeriods; }
+		}
+		public double NumberPositivePeriods
+		{
+			get { return this.numberPositivePeriods; }
+		}
+		public double NumberNegativePeriods
+		{
+			get { return this.numberNegativePeriods; }
 		}
 	}
 }

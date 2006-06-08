@@ -28,6 +28,7 @@ namespace QuantProject.ADT
 		public static string FormatWithZeroDecimals = "#,#.";
 		public static string FormatWithOneDecimal = "#,#.0";
 		public static string FormatWithTwoDecimals = "#,#.00";
+		public static string FormatWithSixDecimals = "#,#.000000";
 		public static DateTime MinQuoteDateTime = new DateTime( 1950 , 1 , 1 );
 		public static int CachePages = 1000;
 		public static int PagesToBeRemovedFromCache = 500; // for Garbage Collection

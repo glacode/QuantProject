@@ -42,6 +42,9 @@ namespace QuantProject.Business.Financial.Accounting.Reporting.SummaryRows
 				case 2:   
 					this.format = ConstantsProvider.FormatWithTwoDecimals;
 					break;                  
+				case 6:   
+					this.format = ConstantsProvider.FormatWithSixDecimals;
+					break;                  
 			}
 		}
 	}
