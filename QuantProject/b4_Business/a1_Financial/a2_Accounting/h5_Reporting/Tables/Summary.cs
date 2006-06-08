@@ -25,6 +25,7 @@ namespace QuantProject.Business.Financial.Accounting.Reporting.Tables
 		private ReturnOnAccount returnOnAccount;
 		private MaxEquityDrawDown maxEquityDrawDown;
 		private SharpeRatio sharpeRatio;
+		private ExpectancyScore expectancyScore;
 		private TotalNumberOfTrades totalNumberOfTrades;
 		private NumberWinningTrades numberWinningTrades;
 		private AverageTradePercentageReturn averageTradePercentageReturn;
@@ -36,6 +37,9 @@ namespace QuantProject.Business.Financial.Accounting.Reporting.Tables
 		private TotalNumberOfLongTrades totalNumberOfLongTrades;
 		private TotalNumberOfShortTrades totalNumberOfShortTrades;
 		private TotalCommissionAmount totalCommissionAmount;
+		private NumberPositivePeriods numberPositivePeriods;
+		private NumberNegativePeriods numberNegativePeriods;
+		private PercentagePositivePeriods percentagePositivePeriods;
 		private NumberWinningPeriods numberWinningPeriods;
 		private NumberLosingPeriods numberLosingPeriods;
 		private PercentageWinningPeriods percentageWinningPeriods;
@@ -79,9 +83,28 @@ namespace QuantProject.Business.Financial.Accounting.Reporting.Tables
 		{
 			get { return this.sharpeRatio; }
 		}
+		public ExpectancyScore ExpectancyScore
+		{
+			get { return this.expectancyScore; }
+		}
 		public TotalCommissionAmount TotalCommissionAmount
 		{
 			get { return this.totalCommissionAmount; }
+		}
+		public NumberPositivePeriods NumberPositivePeriods
+		{
+			get { return this.numberPositivePeriods; }
+		}
+		public NumberNegativePeriods NumberNegativePeriods
+		{
+			get { return this.numberNegativePeriods; }
+		}
+		public PercentagePositivePeriods PercentagePositivePeriods
+		{
+			get
+			{
+				return this.percentagePositivePeriods;
+			}
 		}
 		public NumberWinningPeriods NumberWinningPeriods
 		{
@@ -145,8 +168,6 @@ namespace QuantProject.Business.Financial.Accounting.Reporting.Tables
 		private void summary( AccountReport accountReport )
 		{
 			this.accountReport = accountReport;
-			this.numberWinningPeriods =	new NumberWinningPeriods( this );
-			this.numberLosingPeriods = new NumberLosingPeriods( this );
 			this.getSummary();
 		}
 		public Summary( AccountReport accountReport ) :
@@ -167,76 +188,6 @@ namespace QuantProject.Business.Financial.Accounting.Reporting.Tables
       equityDataTable.Columns.Add( "Information"  , Type.GetType( "System.String" ) );
       equityDataTable.Columns.Add( "Value" , Type.GetType( "System.Double" ) );
     }
-    #region "getSummaryTable_setRows"
-//    private void getSummary_setRow( SummaryRow summaryRow , DataTable summaryDataTable )
-//    {
-//      if ( summaryRow.Value != null )
-//      {
-//        DataRow summary = summaryDataTable.NewRow();
-//        summary[ "Information" ] = summaryRow.Description;
-//        summary[ "Value" ] = summaryRow.Value;
-//        summaryDataTable.Rows.Add( summary );
-//      }
-//    }
-//    private void getSummaryTable_setRows( DataTable summaryDataTable )
-//    {
-////      getSummary_setRow( new TotalNetProfit( this ) , summaryDataTable );
-//			this.returnOnAccount = new ReturnOnAccount( this ); 
-////      getSummary_setRow( this.returnOnAccount , summaryDataTable );
-//			this.benchmarkPercentageReturn =
-//				new BenchmarkPercentageReturn( this , this.historicalQuoteProvider );
-////			getSummary_setRow( this.benchmarkPercentageReturn ,
-////				summaryDataTable );
-//			this.numberWinningPeriods = new NumberWinningPeriods( this );
-////			getSummary_setRow( this.numberWinningPeriods ,	summaryDataTable );
-//			this.numberLosingPeriods = new NumberLosingPeriods( this );
-////			getSummary_setRow( this.numberLosingPeriods ,	summaryDataTable );
-////			getSummary_setRow( new NumberEvenPeriods( this ) ,	summaryDataTable );
-//			this.percentageWinningPeriods = new PercentageWinningPeriods( this );
-////			getSummary_setRow( this.percentageWinningPeriods ,	summaryDataTable );
-//			//this.getSummary_setRows_forEquityVsBenchmarkComparison();
-//			this.totalNetProfit = new TotalNetProfit( this );
-//			this.annualSystemPercentageReturn = new AnnualSystemPercentageReturn( this );
-////			getSummary_setRow( this.annualSystemPercentageReturn , summaryDataTable );
-//			this.maxEquityDrawDown = new MaxEquityDrawDown( this );
-//			//      getSummary_setRow( this.maxEquityDrawDown , summaryDataTable );
-//			this.totalNumberOfTrades = new TotalNumberOfTrades( this );
-////      getSummary_setRow( this.totalNumberOfTrades , summaryDataTable );
-//			this.numberWinningTrades = new NumberWinningTrades( this );
-////      getSummary_setRow( this.numberWinningTrades , summaryDataTable );
-//			this.averageTradePercentageReturn = new AverageTradePercentageReturn( this );
-////      getSummary_setRow( this.averageTradePercentageReturn , summaryDataTable );
-//			this.largestWinningTradePercentage = new LargestWinningTradePercentage( this );
-////      getSummary_setRow( this.largestWinningTradePercentage , summaryDataTable );
-//			this.largestLosingTradePercentage = new LargestLosingTradePercentage( this );
-////      getSummary_setRow( this.largestLosingTradePercentage , summaryDataTable );
-//			this.totalNumberOfLongTrades = new TotalNumberOfLongTrades( this );
-////      getSummary_setRow( this.totalNumberOfLongTrades , summaryDataTable );
-//			this.numberWinningLongTrades = new NumberWinningLongTrades( this );
-////      getSummary_setRow( this.numberWinningLongTrades , summaryDataTable );
-//			this.averageLongTradePercentageReturn = new AverageLongTradePercentageReturn( this );
-////      getSummary_setRow( this.averageLongTradePercentageReturn , summaryDataTable );
-//			this.totalNumberOfShortTrades = new TotalNumberOfShortTrades( this );
-////      getSummary_setRow( this.totalNumberOfShortTrades , summaryDataTable );
-//			this.numberWinningShortTrades = new NumberWinningShortTrades( this );
-////			getSummary_setRow( this.numberWinningShortTrades , summaryDataTable );
-//			this.totalCommissionAmount = new TotalCommissionAmount( this );
-////			getSummary_setRow( this.totalCommissionAmount , summaryDataTable );
-//			//      getSummary_setRow( summaryDataTable ,
-////        new getSummaryTable_setRow( getSummaryTable_setRow_TotalNumberOfShortTrades ) );
-////      getSummary_setRow( summaryDataTable ,
-////        new getSummaryTable_setRow( getSummaryTable_setRow_NumberWinningShortTrades ) );
-////      getSummary_setRow( summaryDataTable ,
-////        new getSummaryTable_setRow( getSummaryTable_setRow_AverageShortTradePercentageReturn ) );
-//    }
-    #endregion
-//    private DataTable getSummaryDataTable()
-//    {
-//      DataTable summaryDataTable = new DataTable();
-//      getSummaryTable_setColumns( summaryDataTable );
-//      getSummaryTable_setRows( summaryDataTable );
-//      return summaryDataTable;
-//    }
     private void getSummary()
     {
 			if ( this.accountReport.Equity.DataTable.Rows.Count == 0 )
@@ -254,10 +205,14 @@ namespace QuantProject.Business.Financial.Accounting.Reporting.Tables
 			this.numberWinningPeriods = new NumberWinningPeriods( this );
 			this.numberLosingPeriods = new NumberLosingPeriods( this );
 			this.percentageWinningPeriods = new PercentageWinningPeriods( this );
+			this.numberPositivePeriods = new NumberPositivePeriods( this );
+			this.numberNegativePeriods = new NumberNegativePeriods( this );
+			this.percentagePositivePeriods = new PercentagePositivePeriods( this );
 			this.totalNetProfit = new TotalNetProfit( this );
 			this.annualSystemPercentageReturn = new AnnualSystemPercentageReturn( this );
 			this.maxEquityDrawDown = new MaxEquityDrawDown( this );
 			this.sharpeRatio = new SharpeRatio( this.accountReport.EquityLine );
+			this.expectancyScore = new ExpectancyScore( this.accountReport.EquityLine );
 			this.totalNumberOfTrades = new TotalNumberOfTrades( this );
 			this.numberWinningTrades = new NumberWinningTrades( this );
 			this.averageTradePercentageReturn = new AverageTradePercentageReturn( this );
