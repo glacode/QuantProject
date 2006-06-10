@@ -133,14 +133,14 @@
                     Package = "{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}"
                 />
                 <Reference
-                    Name = "NPlot"
-                    AssemblyName = "NPlot"
-                    HintPath = "..\b91_QuantProject\bin\Debug\NPlot.dll"
-                />
-                <Reference
                     Name = "b4_Business"
                     Project = "{6EE31501-376E-491B-869E-F06D5B7C9C30}"
                     Package = "{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}"
+                />
+                <Reference
+                    Name = "NPlot"
+                    AssemblyName = "NPlot"
+                    HintPath = "..\..\..\NPlot.dll"
                 />
             </References>
         </Build>
