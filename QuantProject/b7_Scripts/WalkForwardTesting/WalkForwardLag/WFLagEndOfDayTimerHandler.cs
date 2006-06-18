@@ -362,8 +362,11 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag
 				// or outOfSampleWindowDays elapsed since last optimization
 			{
 				this.eligibleTickers.SetTickers();
-				Console.WriteLine( "Number of Eligible tickers: " +
-					this.eligibleTickers.EligibleTickers.Rows.Count );
+				string outputMessage = "Number of Eligible tickers: " +
+					this.eligibleTickers.EligibleTickers.Rows.Count;
+				RunWalkForwardLag.WriteToTextLog( outputMessage );
+//				Console.WriteLine( "Number of Eligible tickers: " +
+//					this.eligibleTickers.EligibleTickers.Rows.Count );
 				this.chosenTickers.SetSignedTickers( this.eligibleTickers );
 				this.NewChosenTickers( this ,
 					new WFLagNewChosenTickersEventArgs( this.chosenTickers ) );
