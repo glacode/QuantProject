@@ -455,6 +455,43 @@ namespace QuantProject.DataAccess.Tables
       sql = sql + sortDirection;
       return SqlExecutor.GetDataTable( sql );
     }
+
+		/// <summary>
+		/// returns tickers ordered by liquidity, with a specified min volume
+		/// </summary>
+		/// <param name="orderInASCMode">true iff return must be ordered</param>
+		/// <param name="groupID"></param>
+		/// <param name="firstQuoteDate"></param>
+		/// <param name="lastQuoteDate"></param>
+		/// <param name="maxNumOfReturnedTickers"></param>
+		/// <param name="minVolume"></param>
+		/// <returns></returns>
+		public static DataTable GetTickersByLiquidity( bool orderInASCMode, string groupID,
+			DateTime firstQuoteDate,
+			DateTime lastQuoteDate,
+			long minVolume,
+			long maxNumOfReturnedTickers
+			)
+		{
+			string sql = "SELECT TOP " + maxNumOfReturnedTickers + " tickers.tiTicker, tickers.tiCompanyName, " +
+				"Avg([quVolume]) AS AverageTradedValue " +
+				"FROM quotes INNER JOIN (tickers INNER JOIN tickers_tickerGroups " +
+				"ON tickers.tiTicker = tickers_tickerGroups.ttTiId) " +
+				"ON quotes.quTicker = tickers_tickerGroups.ttTiId " +
+				"WHERE tickers_tickerGroups.ttTgId='" + groupID + "' " +
+				"AND quotes.quDate BETWEEN " +
+				SQLBuilder.GetDateConstant(firstQuoteDate) + " AND " +
+				SQLBuilder.GetDateConstant(lastQuoteDate) + 
+				"GROUP BY tickers.tiTicker, tickers.tiCompanyName " +
+				"HAVING Avg([quVolume])>=" + minVolume.ToString() + " " +
+				"ORDER BY Avg([quVolume])";
+			string sortDirection = " DESC";
+			if(orderInASCMode)
+				sortDirection = " ASC";
+			sql = sql + sortDirection;
+			return SqlExecutor.GetDataTable( sql );
+		}
+
     
 
     /// <summary>
