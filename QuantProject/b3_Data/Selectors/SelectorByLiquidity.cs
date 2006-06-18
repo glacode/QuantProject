@@ -34,6 +34,7 @@ namespace QuantProject.Data.Selectors
   /// </summary>
    public class SelectorByLiquidity : TickerSelector, ITickerSelector 
   {
+		 private long minVolume = long.MinValue;
         
     
     public SelectorByLiquidity(DataTable setOfTickersToBeSelected, 
@@ -43,47 +44,79 @@ namespace QuantProject.Data.Selectors
                                long maxNumOfReturnedTickers):
                                     base(setOfTickersToBeSelected, 
                                          orderInASCmode,
-                                         firstQuoteDate,
-                                         lastQuoteDate,
-                                         maxNumOfReturnedTickers)
-    {
+			firstQuoteDate,
+			lastQuoteDate,
+			maxNumOfReturnedTickers)
+		{
      
-    }
-     public SelectorByLiquidity(string groupID, 
-                                bool orderInASCmode,
-                                DateTime firstQuoteDate,
-                                DateTime lastQuoteDate,
-                                long maxNumOfReturnedTickers):
-                                  base(groupID, 
-                                      orderInASCmode,
-                                      firstQuoteDate,
-                                      lastQuoteDate,
-                                      maxNumOfReturnedTickers)
-     {
+		}
+		 public SelectorByLiquidity(string groupID, 
+			 bool orderInASCmode,
+			 DateTime firstQuoteDate,
+			 DateTime lastQuoteDate,
+			 long maxNumOfReturnedTickers):
+			 base(groupID, 
+			 orderInASCmode,
+			 firstQuoteDate,
+			 lastQuoteDate,
+			 maxNumOfReturnedTickers)
+		 {
      
-     }
+		 }
+
+		 public SelectorByLiquidity(string groupID, 
+			 bool orderInASCmode,
+			 DateTime firstQuoteDate,
+			 DateTime lastQuoteDate,
+			 long minVolume ,
+			 long maxNumOfReturnedTickers ):
+			 base(groupID, 
+			 orderInASCmode,
+			 firstQuoteDate,
+			 lastQuoteDate,
+			 maxNumOfReturnedTickers)
+		 {
+			 this.minVolume = minVolume;
+		 }
 
 
     public DataTable GetTableOfSelectedTickers()
     {
-      if(this.setOfTickersToBeSelected == null)
-        return QuantProject.DataAccess.Tables.Quotes.GetTickersByLiquidity(this.isOrderedInASCMode,
-          this.groupID,
-          this.firstQuoteDate,
-          this.lastQuoteDate,
-          this.maxNumOfReturnedTickers);        
+			DataTable returnTickers;
+			if(this.setOfTickersToBeSelected == null)
+			{
+				if ( this.minVolume > long.MinValue )
+					// a min volume value has been requested
+					returnTickers =
+						QuantProject.DataAccess.Tables.Quotes.GetTickersByLiquidity(this.isOrderedInASCMode,
+						this.groupID,
+						this.firstQuoteDate,
+						this.lastQuoteDate,
+						this.minVolume ,
+						this.maxNumOfReturnedTickers);
+				else
+					// a min volume value has not been requested
+					returnTickers =
+						QuantProject.DataAccess.Tables.Quotes.GetTickersByLiquidity(this.isOrderedInASCMode,
+						this.groupID,
+						this.firstQuoteDate,
+						this.lastQuoteDate,
+						this.maxNumOfReturnedTickers);
+			}
 
-      else
-        return QuantProject.Data.DataTables.Quotes.GetTickersByLiquidity(this.isOrderedInASCMode,
-          this.setOfTickersToBeSelected, 
-          this.firstQuoteDate,
-          this.lastQuoteDate,
-          this.maxNumOfReturnedTickers);
-    }
-    public void SelectAllTickers()
-    {
-      ;
-    }	
+			else
+				returnTickers =
+					QuantProject.Data.DataTables.Quotes.GetTickersByLiquidity(this.isOrderedInASCMode,
+					this.setOfTickersToBeSelected, 
+					this.firstQuoteDate,
+					this.lastQuoteDate,
+					this.maxNumOfReturnedTickers);
+			return returnTickers;
+		}
+		 public void SelectAllTickers()
+		 {
+			 ;
+		 }	
 
-	}
+	 }
 }
