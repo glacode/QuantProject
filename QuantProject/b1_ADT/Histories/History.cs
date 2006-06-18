@@ -203,8 +203,9 @@ namespace QuantProject.ADT.Histories
 				( ((IComparable)this.GetKey( currentHistoryIndex )).CompareTo( endDateTime ) <= 0 ) )
 			{
 			  
-				if (Math.Floor(currentHistoryIndex/onEachPeriodOf) == periodIndex &&
-					cursorThroughDataArray < onEachPeriodOf)
+				if ( Math.Floor( Convert.ToDouble(
+					currentHistoryIndex / onEachPeriodOf ) ) == periodIndex &&
+					cursorThroughDataArray < onEachPeriodOf )
 					//currentHistoryIndex belongs to the current period
 				{	
 					data[cursorThroughDataArray] = Convert.ToDouble(this.GetByIndex(currentHistoryIndex));
@@ -233,7 +234,8 @@ namespace QuantProject.ADT.Histories
 							break;
 					}
 				}
-				periodIndex = Math.Floor(currentHistoryIndex/onEachPeriodOf);
+				periodIndex = Math.Floor( Convert.ToDouble(
+					currentHistoryIndex/onEachPeriodOf ) );
 			}
 
 			return functionHistory;
