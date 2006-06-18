@@ -68,10 +68,16 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag
 		private DataTable setTickers_build_getSelectedTickers()
 		{
 			DateTime dateTime = this.endOfDayTimer.GetCurrentTime().DateTime;
-			SelectorByGroup selectorByGroup =
-				new SelectorByGroup( this.tickerGroupID , dateTime );
-			DataTable groupTickers = selectorByGroup.GetTableOfSelectedTickers();
-			
+//			SelectorByGroup selectorByGroup =
+//				new SelectorByGroup( this.tickerGroupID , dateTime );
+//			DataTable groupTickers = selectorByGroup.GetTableOfSelectedTickers();
+			SelectorByLiquidity mostLiquid =
+				new SelectorByLiquidity( this.tickerGroupID , true ,
+				dateTime.AddDays( - this.numberDaysForPerformanceCalculation ) ,
+				dateTime , 200000 , 99999 );
+			DataTable groupTickers = mostLiquid.GetTableOfSelectedTickers();
+
+		
 			//			SelectorByLiquidity mostLiquid =
 			//				new SelectorByLiquidity("Test", false ,	dateTime.AddDays( - this.numDaysToComputeLiquidity ) , dateTime ,
 			//				this.numberEligibleTickersToBeChosen );
