@@ -21,6 +21,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
 using System;
+using System.IO;
 
 using QuantProject.ADT;
 using QuantProject.Business.DataProviders;
@@ -132,12 +133,29 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag
 				this.generationNumberForGeneticOptimizer ,
 				this.populationSizeForGeneticOptimizer );
 		}
+		public static void WriteToTextLog( string message )
+		{
+			Console.WriteLine( message );
+
+//			FileStream fileStream = new FileStream( "WFLagLog.Txt" ,
+//				FileMode.OpenOrCreate );
+			StreamWriter streamWriter = new StreamWriter( "WFLagLog.Txt" ,
+				true );
+			streamWriter.WriteLine( message );
+			streamWriter.Close();
+//			fileStream.Close();
+		}
 		private  void inSampleNewProgressEventHandler(
 			Object sender , NewProgressEventArgs eventArgs )
 		{
 			if ( !(this.InSampleNewProgress == null) )
 				this.InSampleNewProgress( this , eventArgs );
-			Console.WriteLine(
+//			Console.WriteLine(
+//				eventArgs.CurrentProgress.ToString() + " / " +
+//				eventArgs.Goal.ToString() +
+//				" - " +
+//				DateTime.Now.ToString() );
+			RunWalkForwardLag.WriteToTextLog(
 				eventArgs.CurrentProgress.ToString() + " / " +
 				eventArgs.Goal.ToString() +
 				" - " +
@@ -162,7 +180,8 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag
 				endOfDayTimer.GetCurrentTime().DateTime.ToString() + " - " +
 				"First date:" + this.firstDateTime.ToString() + " - " +
 				"Last date:" + this.lastDateTime.ToString();
-			Console.WriteLine( progress );
+//			Console.WriteLine( progress );
+			RunWalkForwardLag.WriteToTextLog( progress );
 		}
 		private string getLongStringForDateTime( DateTime dateTime )
 		{
