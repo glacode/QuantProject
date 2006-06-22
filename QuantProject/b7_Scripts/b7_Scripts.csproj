@@ -172,11 +172,6 @@
                     BuildAction = "Compile"
                 />
                 <File
-                    RelPath = "ArbitrageTesting\PairTrading\SimplePairTrading\InSample\OutputDisplayer.resx"
-                    DependentUpon = "OutputDisplayer.cs"
-                    BuildAction = "EmbeddedResource"
-                />
-                <File
                     RelPath = "ArbitrageTesting\PairTrading\SimplePairTrading\InSample\RunSimplePairTradingIS.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
@@ -226,11 +221,6 @@
                     RelPath = "SimpleTesting\OneRank\OneRankForm.cs"
                     SubType = "Form"
                     BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "SimpleTesting\OneRank\OneRankForm.resx"
-                    DependentUpon = "OneRankForm.cs"
-                    BuildAction = "EmbeddedResource"
                 />
                 <File
                     RelPath = "SimpleTesting\OneRank\RunOneRank.cs"
@@ -633,11 +623,6 @@
                     BuildAction = "Compile"
                 />
                 <File
-                    RelPath = "WalkForwardTesting\WalkForwardLag\WFLagDebugger\WFLagDebugGenome.resx"
-                    DependentUpon = "WFLagDebugGenome.cs"
-                    BuildAction = "EmbeddedResource"
-                />
-                <File
                     RelPath = "WalkForwardTesting\WalkForwardLag\WFLagDebugger\WFLagLog.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
@@ -661,6 +646,31 @@
                     RelPath = "WalkForwardTesting\WalkForwardLag\WFLagDebugger\WFLagDebugPositions\WFLagDebugPositionsEndOfDayTimerHandler.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "WalkForwardTesting\WalkForwardLag\WFLagGenomesDebugger\WFLagDebugChosenPositionsCollection.cs"
+                    SubType = "Form"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "WalkForwardTesting\WalkForwardLag\WFLagGenomesDebugger\WFLagDebugChosenPositionsCollection.resx"
+                    DependentUpon = "WFLagDebugChosenPositionsCollection.cs"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "WalkForwardTesting\WalkForwardLag\WFLagGenomesDebugger\WFLagRunGenomesDebugger.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "WalkForwardTesting\WalkForwardLag\WFLagLogDebugger\WFLagLogDebugger.cs"
+                    SubType = "Form"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "WalkForwardTesting\WalkForwardLag\WFLagLogDebugger\WFLagLogDebugger.resx"
+                    DependentUpon = "WFLagLogDebugger.cs"
+                    BuildAction = "EmbeddedResource"
                 />
                 <File
                     RelPath = "WalkForwardTesting\WalkForwardMultiOneRank\RunWalkForwardMultiOneRank.cs"
@@ -701,11 +711,6 @@
                     RelPath = "WalkForwardTesting\WalkForwardMultiOneRank\ReportDebugger\WFMultiOneRankDebugInSampleForm.cs"
                     SubType = "Form"
                     BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "WalkForwardTesting\WalkForwardMultiOneRank\ReportDebugger\WFMultiOneRankDebugInSampleForm.resx"
-                    DependentUpon = "WFMultiOneRankDebugInSampleForm.cs"
-                    BuildAction = "EmbeddedResource"
                 />
                 <File
                     RelPath = "WalkForwardTesting\WalkForwardMultiOneRank\ReportDebugger\WFMultiOneRankReportDebugger.cs"
