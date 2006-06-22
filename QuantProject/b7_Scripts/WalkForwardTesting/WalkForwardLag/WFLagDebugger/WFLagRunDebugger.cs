@@ -27,7 +27,6 @@ using QuantProject.Business.DataProviders;
 using QuantProject.Business.Financial.Accounting;
 using QuantProject.Business.Financial.Accounting.Transactions;
 using QuantProject.Business.Timing;
-using QuantProject.Presentation;
 using QuantProject.Presentation.Reporting.WindowsForm;
 
 namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag.WFLagDebugger
@@ -43,13 +42,8 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag.WFLagDebugger
 			// TODO: Add constructor logic here
 			//
 		}
-		public void Run()
+		public void Run( WFLagLog wFLagLog )
 		{
-			VisualObjectArchiver visualObjectArchiver =
-				new VisualObjectArchiver();
-			WFLagLog wFLagLog =
-				( WFLagLog )visualObjectArchiver.Load(
-				"Load WFLag backtest log" , "qPWFLagLog" , "Load transactions" );
 			TransactionHistory transactionHistory =
 				wFLagLog.TransactionHistory;
 			DateTime lastDateTime =
