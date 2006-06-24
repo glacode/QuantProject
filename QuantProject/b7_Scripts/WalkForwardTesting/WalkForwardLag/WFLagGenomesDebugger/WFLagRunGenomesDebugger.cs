@@ -41,7 +41,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag.WFLagDebugger
 	{
 		private WFLagLog wFLagLog;
 		private ICollection chosenPositionsCollection;
-		private ArrayList additionalInfosList;
+		private ArrayList chosenPositionsDebugInfoList;
 
 		public WFLagRunGenomesDebugger()
 		{
@@ -56,27 +56,32 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag.WFLagDebugger
 			this.chosenPositionsCollection =
 				this.wFLagLog.ChosenPositionsHistory.Values;
     }
-		private void computeList_setAdditionalInfosList( WFLagChosenPositions wFLagChosenPositions )
+		private void computeList_setChosenPositionsDebugInfoList_addDebugInfo(
+			WFLagChosenPositions wFLagChosenPositions )
 		{
-			
+			WFLagChosenPositionsDebugInfo wFLagChosenPositionsDebugInfo =
+				new WFLagChosenPositionsDebugInfo( wFLagChosenPositions );
+			this.chosenPositionsDebugInfoList.Add( wFLagChosenPositionsDebugInfo );
 		}
-		private void computeList_setAdditionalInfosList()
+
+		private void computeList_setChosenPositionsDebugInfoList()
 		{
-			this.additionalInfosList = new ArrayList();
-			foreach ( WFLagChosenPositions wFLagChosenPositions
-									in this.chosenPositionsCollection )
-				this.computeList_setAdditionalInfosList( wFLagChosenPositions );
+			this.chosenPositionsDebugInfoList = new ArrayList();
+			foreach ( WFLagChosenPositions wFLagChosenPositions in
+				this.chosenPositionsCollection )
+				this.computeList_setChosenPositionsDebugInfoList_addDebugInfo(
+					wFLagChosenPositions );
 		}
 		private void computeList()
 		{
 			this.computeList_setChosenPositionsCollection();
-			this.computeList_setAdditionalInfosList();
+			this.computeList_setChosenPositionsDebugInfoList();
 		}
 		#endregion
 		private void showList()
 		{
 			WFLagDebugChosenPositionsCollection wFLagDebugChosenPositionsCollection =
-				new WFLagDebugChosenPositionsCollection( this.chosenPositionsCollection );
+				new WFLagDebugChosenPositionsCollection( this.chosenPositionsDebugInfoList );
 			wFLagDebugChosenPositionsCollection.ShowDialog();
 		}
 		public void Run( WFLagLog wFLagLog )
