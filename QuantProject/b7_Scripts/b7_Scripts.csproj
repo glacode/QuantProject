@@ -598,11 +598,6 @@
                     BuildAction = "Compile"
                 />
                 <File
-                    RelPath = "WalkForwardTesting\WalkForwardLag\WFLagMain.resx"
-                    DependentUpon = "WFLagMain.cs"
-                    BuildAction = "EmbeddedResource"
-                />
-                <File
                     RelPath = "WalkForwardTesting\WalkForwardLag\WFLagNewChosenTickersEventArgs.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
@@ -648,14 +643,14 @@
                     BuildAction = "Compile"
                 />
                 <File
-                    RelPath = "WalkForwardTesting\WalkForwardLag\WFLagGenomesDebugger\WFLagDebugChosenPositionsCollection.cs"
-                    SubType = "Form"
+                    RelPath = "WalkForwardTesting\WalkForwardLag\WFLagGenomesDebugger\WFLagChosenPositionsDebugInfo.cs"
+                    SubType = "Code"
                     BuildAction = "Compile"
                 />
                 <File
-                    RelPath = "WalkForwardTesting\WalkForwardLag\WFLagGenomesDebugger\WFLagDebugChosenPositionsCollection.resx"
-                    DependentUpon = "WFLagDebugChosenPositionsCollection.cs"
-                    BuildAction = "EmbeddedResource"
+                    RelPath = "WalkForwardTesting\WalkForwardLag\WFLagGenomesDebugger\WFLagDebugChosenPositionsCollection.cs"
+                    SubType = "Form"
+                    BuildAction = "Compile"
                 />
                 <File
                     RelPath = "WalkForwardTesting\WalkForwardLag\WFLagGenomesDebugger\WFLagRunGenomesDebugger.cs"
