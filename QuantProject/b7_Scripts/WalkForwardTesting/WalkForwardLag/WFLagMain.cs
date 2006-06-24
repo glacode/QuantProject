@@ -26,6 +26,7 @@ using System.Collections;
 using System.ComponentModel;
 using System.Windows.Forms;
 
+using QuantProject.Presentation;
 using QuantProject.Scripts.WalkForwardTesting.WalkForwardLag.WFLagDebugger;
 
 namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag
@@ -84,7 +85,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag
 			// 
 			// NewBacktest
 			// 
-			this.NewBacktest.Location = new System.Drawing.Point(64, 56);
+			this.NewBacktest.Location = new System.Drawing.Point(24, 56);
 			this.NewBacktest.Name = "NewBacktest";
 			this.NewBacktest.Size = new System.Drawing.Size(88, 23);
 			this.NewBacktest.TabIndex = 0;
@@ -93,7 +94,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag
 			// 
 			// debugOldBacktest
 			// 
-			this.debugOldBacktest.Location = new System.Drawing.Point(216, 56);
+			this.debugOldBacktest.Location = new System.Drawing.Point(200, 56);
 			this.debugOldBacktest.Name = "debugOldBacktest";
 			this.debugOldBacktest.TabIndex = 1;
 			this.debugOldBacktest.Text = "Debug Log";
@@ -102,7 +103,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag
 			// WFLagMain
 			// 
 			this.AutoScaleBaseSize = new System.Drawing.Size(5, 13);
-			this.ClientSize = new System.Drawing.Size(352, 149);
+			this.ClientSize = new System.Drawing.Size(312, 141);
 			this.Controls.AddRange(new System.Windows.Forms.Control[] {
 																																	this.debugOldBacktest,
 																																	this.NewBacktest});
@@ -115,16 +116,16 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag
 
 		private void NewBacktest_Click(object sender, System.EventArgs e)
 		{
-//			new RunWalkForwardLag( "millo" , 500 ,
-//				3 , 3 , 90 , 4 , 1 , 5000 , "MSFT" ,
-//				new DateTime( 2002 , 1 , 1 ) ,
-//				new DateTime( 2002 , 1 , 8 ) ,
-//				0.01 ).Run();
-			new RunWalkForwardLag( "ib_etf" , 500 ,
-				4 , 4 , 200 , 15 , 50 , 90000 , "EWQ" ,
-				new DateTime( 2003 , 8 , 13 ) ,
-				new DateTime( 2003 , 12 , 31 ) ,
-				7 ).Run();
+			new RunWalkForwardLag( "millo" , 500 ,
+				3 , 3 , 90 , 20 , 3 , 5000 , "MSFT" ,
+				new DateTime( 2003 , 1 , 1 ) ,
+				new DateTime( 2003 , 1 , 8 ) ,
+				1 ).Run();
+//			new RunWalkForwardLag( "ib_etf" , 500 ,
+//				4 , 4 , 200 , 14 , 50 , 90000 , "EWQ" ,
+//				new DateTime( 2003 , 8 , 13 ) ,
+//				new DateTime( 2003 , 12 , 31 ) ,
+//				7.4 ).Run();
 //			new RunWalkForwardLag( "ib_etf" , 500 ,
 //				4 , 4 , 250 , 2 , 15 , 30000 , "EWQ" ,
 //				new DateTime( 2003 , 1 , 1 ) ,
@@ -144,7 +145,19 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag
 
 		private void debugOldBacktest_Click(object sender, System.EventArgs e)
 		{
-			new WFLagRunDebugger().Run();
+			VisualObjectArchiver visualObjectArchiver =
+				new VisualObjectArchiver();
+			WFLagLog wFLagLog =
+				( WFLagLog )visualObjectArchiver.Load(
+				"Load WFLag backtest log" , "qPWFLagLog" , "Load transactions" );
+			WFLagLogDebugger wFLagLogDebugger = new WFLagLogDebugger( wFLagLog );
+			wFLagLogDebugger.ShowDialog();
+		}
+
+		private void debugOldGenomes_Click(object sender, System.EventArgs e)
+		{
+//			new WFLagGenomesDebugger.TestPerDeserializzazioneInAltraClasse();
+//			new WFLagRunGenomesDebugger().Run();
 		}
 	}
 }
