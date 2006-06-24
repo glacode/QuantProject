@@ -76,7 +76,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag.WFLagDebugger
 			this.buttonDebugLog.Name = "buttonDebugLog";
 			this.buttonDebugLog.Size = new System.Drawing.Size(104, 23);
 			this.buttonDebugLog.TabIndex = 1;
-			this.buttonDebugLog.Text = "Debug Log";
+			this.buttonDebugLog.Text = "Debug Genomes";
 			this.buttonDebugLog.Click += new System.EventHandler(this.buttonDebugLog_Click);
 			// 
 			// WFLagLogDebugger
