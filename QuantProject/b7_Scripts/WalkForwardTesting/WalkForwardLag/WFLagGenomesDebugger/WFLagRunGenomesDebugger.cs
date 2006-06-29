@@ -60,7 +60,8 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag.WFLagDebugger
 			WFLagChosenPositions wFLagChosenPositions )
 		{
 			WFLagChosenPositionsDebugInfo wFLagChosenPositionsDebugInfo =
-				new WFLagChosenPositionsDebugInfo( wFLagChosenPositions );
+				new WFLagChosenPositionsDebugInfo( wFLagChosenPositions ,
+				this.wFLagLog );
 			this.chosenPositionsDebugInfoList.Add( wFLagChosenPositionsDebugInfo );
 		}
 
