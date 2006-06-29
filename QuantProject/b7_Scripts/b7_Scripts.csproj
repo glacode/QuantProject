@@ -658,6 +658,11 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "WalkForwardTesting\WalkForwardLag\WFLagGenomesDebugger\WFLagSharpeRatioComputer.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "WalkForwardTesting\WalkForwardLag\WFLagLogDebugger\WFLagLogDebugger.cs"
                     SubType = "Form"
                     BuildAction = "Compile"
