@@ -657,6 +657,27 @@ namespace QuantProject.Data.DataTables
 																					      numDaysBetweenEachClose);
     }
     
+		/// <summary>
+		/// returns dates when the ticker was exchanged, within a given
+		/// date interval
+		/// </summary>
+		/// <param name="ticker"></param>
+		/// <param name="firstDate">begin interval</param>
+		/// <param name="lastDate">end interval</param>
+		/// <returns></returns>
+		public static DateTime[] GetMarketDays( string ticker ,
+			DateTime firstDate , DateTime lastDate )
+		{
+			Quotes quotes = new Quotes( ticker , firstDate , lastDate );
+			DateTime[] marketDays = new DateTime[ quotes.Rows.Count ];
+			int i = 0;
+			foreach ( DataRow dataRow in quotes.Rows )
+			{
+				marketDays[ i ] = (DateTime)dataRow[ Quotes.Date ];
+				i++;
+			}
+			return marketDays;
+		}
     
     private History history;
 
