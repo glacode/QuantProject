@@ -228,6 +228,7 @@
                 />
                 <File
                     RelPath = "Statistics\AdvancedFunctions.cs"
+                    SubType = "Code"
                     BuildAction = "Compile"
                 />
                 <File
