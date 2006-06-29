@@ -21,6 +21,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
 using System;
+using System.Collections;
 
 using QuantProject.Business.DataProviders;
 using QuantProject.Business.Financial.Accounting;
@@ -189,26 +190,111 @@ namespace QuantProject.Business.Strategies
       return returnValue;
     }
 		
-    /// <summary>
-    /// Gets portfolio's return for a given period, for given tickers
-    /// </summary>
-    /// <param name="signedTickers">Array of signed tickers that compose the portfolio (each ticker has the same weight)</param>
-    /// <param name="startDate">Start date for the period for which return has to be computed</param>
-    /// <param name="endDate">End date for the period for which return has to be computed</param>
-    public static double GetCloseToClosePortfolioReturn(string[] signedTickers,
-                                                        DateTime startDate,
-                                                        DateTime endDate )
-    {
-    	double[] tickersWeights = new double[signedTickers.Length];
-    	for(int i = 0; i<signedTickers.Length; i++)
-    		tickersWeights[i] = 1.0/signedTickers.Length;
+		/// <summary>
+		/// Gets portfolio's return for a given period, for given tickers
+		/// </summary>
+		/// <param name="signedTickers">Array of signed tickers that compose the portfolio (each ticker has the same weight)</param>
+		/// <param name="startDate">Start date for the period for which return has to be computed</param>
+		/// <param name="endDate">End date for the period for which return has to be computed</param>
+		public static double GetCloseToClosePortfolioReturn(string[] signedTickers,
+			DateTime startDate,
+			DateTime endDate )
+		{
+			double[] tickersWeights = new double[signedTickers.Length];
+			for(int i = 0; i<signedTickers.Length; i++)
+				tickersWeights[i] = 1.0/signedTickers.Length;
     	
-    	return GetCloseToClosePortfolioReturn(
-    	        signedTickers,tickersWeights, startDate, endDate);
+			return GetCloseToClosePortfolioReturn(
+				signedTickers,tickersWeights, startDate, endDate);
     	
-    }
+		}
     
-    /// <summary>
+		private static string[] getSignedTickersArray( ICollection signedTickers )
+		{
+			string[] signedTickersArray = new string[ signedTickers.Count ];
+			int i = 0;
+			foreach( string signedTicker in signedTickers )
+			{
+				signedTickersArray[ i ] = signedTicker;
+				i++;
+			}
+			return signedTickersArray;
+		}
+		private static string[] getSignedTickerArray ( ICollection signedTickers )
+		{
+			string[] signedTickerArray = new string[ signedTickers.Count ];
+			int i = 0;
+			foreach( string signedTicker in signedTickers )
+			{
+				signedTickerArray[ i ] = signedTicker;
+				i++;
+			}
+			return signedTickerArray;
+		}
+		#region GetCloseToClosePortfolioReturns
+		private static double getCloseToCloseReturn( string ticker ,
+			DateTime[] datesForReturnComputation , int i )
+		{
+			DateTime previousDate = datesForReturnComputation[ i ];
+			DateTime currentDate = datesForReturnComputation[ i + 1 ];
+			HistoricalAdjustedQuoteProvider historicalQuoteProvider =
+				new HistoricalAdjustedQuoteProvider();
+			double previousQuote = historicalQuoteProvider.GetMarketValue( ticker ,
+				new EndOfDayDateTime( previousDate , EndOfDaySpecificTime.MarketClose ) );
+			double currentQuote = historicalQuoteProvider.GetMarketValue( ticker ,
+				new EndOfDayDateTime( currentDate , EndOfDaySpecificTime.MarketClose ) );
+			double closeToCloseReturn = currentQuote / previousQuote - 1.0;
+			return closeToCloseReturn;
+		}
+		private static double getMultiplier( string signedTicker )
+		{
+			double multiplier = 1.0;
+			if ( IsShort( signedTicker ) )
+				multiplier = -multiplier;
+			return multiplier;
+		}
+		private static double getCloseToClosePortfolioReturn(
+			string[] signedTickers , DateTime[] datesForReturnComputation , int i )
+		{
+			double dailyReturn = 0.0;
+			foreach ( String signedTicker in signedTickers )
+				dailyReturn += getMultiplier( signedTicker ) *
+					getCloseToCloseReturn( GetTicker( signedTicker ) ,
+					datesForReturnComputation , i ) /
+					signedTickers.Length;  // every position is considered with same weight
+			return dailyReturn;
+		}
+		private static double[] getCloseToClosePortfolioReturns(
+			string[] signedTickers , DateTime[] datesForReturnComputation )
+		{
+			// the return for first DateTime cannot be computed so the returned
+			// array will have one element less the datesForReturnComputation
+			double[] closeToClosePortfolioReturns =
+				new double[ datesForReturnComputation.Length - 1 ];
+			for ( int i=0 ; i < closeToClosePortfolioReturns.Length ; i++ )
+				closeToClosePortfolioReturns[ i ] =	getCloseToClosePortfolioReturn(
+					signedTickers , datesForReturnComputation , i );
+			return closeToClosePortfolioReturns;
+		}
+		/// <summary>
+		/// Gets portfolio's return for a given period, for given tickers
+		/// </summary>
+		/// <param name="signedTickers">ICollection of signed tickers that compose the portfolio (each ticker has the same weight)</param>
+		/// <param name="startDate">Start date for the period for which return has to be computed</param>
+		/// <param name="endDate">End date for the period for which return has to be computed</param>
+		public static double[] GetCloseToClosePortfolioReturns(
+			ICollection signedTickers,	DateTime firstDate,	DateTime lastDate )
+		{
+			string[] signedTickerArray =
+				getSignedTickerArray( signedTickers );
+			DateTime[] datesForReturnComputation = Quotes.GetMarketDays(
+				GetTicker( signedTickerArray[ 0 ] ), firstDate , lastDate );
+			return getCloseToClosePortfolioReturns( signedTickerArray ,
+				datesForReturnComputation );
+		}
+		#endregion
+    
+		/// <summary>
     /// Changes sign of each ticker contained in the given 
     /// array of signed tickers
     /// </summary>
