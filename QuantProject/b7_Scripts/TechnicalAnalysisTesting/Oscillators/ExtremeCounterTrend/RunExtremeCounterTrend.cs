@@ -56,7 +56,7 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.ExtremeCount
     private double maxAcceptableCloseToCloseDrawdown;
     private int numDaysBetweenEachOptimization;
 		
-    public RunExtremeCounterTrend(string tickerGroupID, int numberOfEligibleTickers, 
+    public RunExtremeCounterTrend(string tickerGroupID, int maxNumOfEligibleTickersForOptimization, 
                                     int numberOfTickersToBeChosen, int numDaysForOptimizationPeriod, 
                                     int generationNumberForGeneticOptimizer,
                                     int populationSizeForGeneticOptimizer, string benchmark,
@@ -65,14 +65,14 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.ExtremeCount
                                    	int numDaysBetweenEachOptimization,
                                     PortfolioType portfolioType, double maxAcceptableCloseToCloseDrawdown, 
                                     double maxRunningHours):
-																base(tickerGroupID, numberOfEligibleTickers, 
+																base(tickerGroupID, maxNumOfEligibleTickersForOptimization, 
                                     numberOfTickersToBeChosen, numDaysForOptimizationPeriod, 
                                     generationNumberForGeneticOptimizer,
                                     populationSizeForGeneticOptimizer, benchmark,
                                     startDate, endDate, 0.0,
                                    	portfolioType, maxRunningHours)
 		{
-      this.ScriptName = "ExtremeCounterTrendScriptWithSharpe";
+      this.ScriptName = "ExtremeCounterTrendScriptWithExpScoreWeighted";
       this.numDaysForReturnCalculation = numDaysForReturnCalculation;
       this.maxAcceptableCloseToCloseDrawdown = maxAcceptableCloseToCloseDrawdown;
       this.numDaysBetweenEachOptimization = numDaysBetweenEachOptimization;
@@ -115,8 +115,8 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.ExtremeCount
 
     public override void SaveScriptResults()
     {
-      string fileName = "From"+this.numberOfEligibleTickers +
-                      "OptDays" + this.numDaysForOptimizationPeriod + "Portfolio" +
+      string fileName = "From"+ this.tickerGroupID + "_" + this.numberOfEligibleTickers +
+                      "_DaysForOpt" + this.numDaysForOptimizationPeriod + "Tickers" +
                       this.numberOfTickersToBeChosen + "GenNum" + 
                       this.generationNumberForGeneticOptimizer +
                       "PopSize" + this.populationSizeForGeneticOptimizer +
