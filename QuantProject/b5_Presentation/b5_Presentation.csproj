@@ -115,14 +115,6 @@
                     WrapperTool = "primary"
                 />
                 <Reference
-                    Name = "Microsoft.Office.Core"
-                    Guid = "{2DF8D04C-5BFA-101B-BDE5-00AA0044DE52}"
-                    VersionMajor = "2"
-                    VersionMinor = "3"
-                    Lcid = "0"
-                    WrapperTool = "primary"
-                />
-                <Reference
                     Name = "b3_Data"
                     Project = "{6AC0A2C1-B926-4921-A685-F5AA80E81C94}"
                     Package = "{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}"
@@ -137,13 +129,11 @@
                     Project = "{6EE31501-376E-491B-869E-F06D5B7C9C30}"
                     Package = "{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}"
                 />
-
                 <Reference
                     Name = "NPlot"
                     AssemblyName = "NPlot"
                     HintPath = "..\..\..\NPlot.dll"
                 />
-                
             </References>
         </Build>
         <Files>
