@@ -171,26 +171,60 @@ namespace QuantProject.ADT.Statistics
     static public double PearsonCorrelationCoefficient( double[] firstDataVariable,
                                                         double[] secondDataVariable ) 
     {
+//      BasicFunctions.checkLengthOfDataVariables(firstDataVariable, secondDataVariable);
+//      
+//      double stdDevOfFirst = BasicFunctions.StdDev(firstDataVariable);
+//      double stdDevOfSecond = BasicFunctions.StdDev(secondDataVariable);
+//      double coVariance = BasicFunctions.CoVariance(firstDataVariable,
+//                                                    secondDataVariable);
+//      
+//      return	(coVariance)/(stdDevOfFirst*stdDevOfSecond);
       BasicFunctions.checkLengthOfDataVariables(firstDataVariable, secondDataVariable);
-      
-      double stdDevOfFirst = BasicFunctions.StdDev(firstDataVariable);
-      double stdDevOfSecond = BasicFunctions.StdDev(secondDataVariable);
-      double coVariance = BasicFunctions.CoVariance(firstDataVariable,
-                                                    secondDataVariable);
-      
-      return	(coVariance)/(stdDevOfFirst*stdDevOfSecond);
+      int n = firstDataVariable.Length;
+      double sumOfProduct = 0.0, sumOfFirst = 0.0, sumOfSecond = 0.0,
+        sumOfSquaredFirst = 0.0, sumOfSquaredSecond = 0.0;
+      for(int i = 0; i < n; i++)
+      {
+        sumOfFirst += firstDataVariable[i];
+        sumOfSecond += secondDataVariable[i];
+        sumOfProduct += firstDataVariable[i]*secondDataVariable[i];
+        sumOfSquaredFirst += firstDataVariable[i]*firstDataVariable[i];
+        sumOfSquaredSecond += secondDataVariable[i]*secondDataVariable[i];
+      }
+      return (n*sumOfProduct - sumOfFirst*sumOfSecond)/
+        Math.Sqrt( (n*sumOfSquaredFirst - sumOfFirst*sumOfFirst)*
+        (n*sumOfSquaredSecond - sumOfSecond*sumOfSecond) ); 
+
     }
     static public double PearsonCorrelationCoefficient( float[] firstDataVariable,
                                                         float[] secondDataVariable ) 
     {
+//  OLD Computation way
+//      BasicFunctions.checkLengthOfDataVariables(firstDataVariable, secondDataVariable);
+//      
+//      double stdDevOfFirst = BasicFunctions.StdDev(firstDataVariable);
+//      double stdDevOfSecond = BasicFunctions.StdDev(secondDataVariable);
+//      double coVariance = BasicFunctions.CoVariance(firstDataVariable,
+//                                                    secondDataVariable);
+//      
+//      return	(coVariance)/(stdDevOfFirst*stdDevOfSecond);
       BasicFunctions.checkLengthOfDataVariables(firstDataVariable, secondDataVariable);
+      int n = firstDataVariable.Length;
+      double sumOfProduct = 0.0, sumOfFirst = 0.0, sumOfSecond = 0.0,
+             sumOfSquaredFirst = 0.0, sumOfSquaredSecond = 0.0;
+      for(int i = 0; i < n; i++)
+      {
+        sumOfFirst += firstDataVariable[i];
+        sumOfSecond += secondDataVariable[i];
+        sumOfProduct += firstDataVariable[i]*secondDataVariable[i];
+        sumOfSquaredFirst += firstDataVariable[i]*firstDataVariable[i];
+        sumOfSquaredSecond += secondDataVariable[i]*secondDataVariable[i];
+      }
+      return (n*sumOfProduct - sumOfFirst*sumOfSecond)/
+              Math.Sqrt( (n*sumOfSquaredFirst - sumOfFirst*sumOfFirst)*
+                         (n*sumOfSquaredSecond - sumOfSecond*sumOfSecond) );
       
-      double stdDevOfFirst = BasicFunctions.StdDev(firstDataVariable);
-      double stdDevOfSecond = BasicFunctions.StdDev(secondDataVariable);
-      double coVariance = BasicFunctions.CoVariance(firstDataVariable,
-                                                    secondDataVariable);
-      
-      return	(coVariance)/(stdDevOfFirst*stdDevOfSecond);
+
     }
 
     static public double SimpleAverageOfProduct( double[] firstDataVariable,
