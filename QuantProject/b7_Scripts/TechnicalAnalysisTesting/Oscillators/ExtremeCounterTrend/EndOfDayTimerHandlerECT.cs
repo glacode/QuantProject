@@ -181,15 +181,52 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.ExtremeCount
 
     protected DataTable getSetOfTickersToBeOptimized(DateTime currentDate)
     {
-      SelectorByGroup temporizedGroup = new SelectorByGroup(this.tickerGroupID,
-        currentDate);
+			SelectorByGroup temporizedGroup = new SelectorByGroup(this.tickerGroupID, currentDate);
+      DataTable tickersFromGroup = temporizedGroup.GetTableOfSelectedTickers();
       
-      SelectorByQuotationAtEachMarketDay quotedAtEachMarketFromTemporized = 
-        new SelectorByQuotationAtEachMarketDay(temporizedGroup.GetTableOfSelectedTickers(),
+      SelectorByAverageRawOpenPrice byPrice = 
+      		new SelectorByAverageRawOpenPrice(tickersFromGroup,false,currentDate,
+      	                                  currentDate.AddDays(-30),
+      	                                  tickersFromGroup.Rows.Count,
+      	                                  30,500, 0.0001,100);
+      	                                  
+      
+      SelectorByLiquidity mostLiquidSelector =
+      	new SelectorByLiquidity(byPrice.GetTableOfSelectedTickers(),
+        false,currentDate.AddDays(-this.numDaysForOptimizationPeriod), currentDate,
+        this.numberOfEligibleTickers);
+      
+      SelectorByQuotationAtEachMarketDay quotedAtEachMarketDayFromMostLiquid = 
+        new SelectorByQuotationAtEachMarketDay(mostLiquidSelector.GetTableOfSelectedTickers(),
         false, currentDate.AddDays(-this.numDaysForOptimizationPeriod), currentDate,
         this.numberOfEligibleTickers, this.benchmark);
-      
-      return quotedAtEachMarketFromTemporized.GetTableOfSelectedTickers();
+     
+      return quotedAtEachMarketDayFromMostLiquid.GetTableOfSelectedTickers();
+    	//OLD for etf
+    	//      SelectorByGroup temporizedGroup = new SelectorByGroup(this.tickerGroupID,
+//        																										currentDate);
+//      
+//      SelectorByQuotationAtEachMarketDay quotedAtEachMarketDayFromTemporized = 
+//        new SelectorByQuotationAtEachMarketDay(temporizedGroup.GetTableOfSelectedTickers(),
+//        false, currentDate.AddDays(-this.numDaysForOptimizationPeriod), currentDate,
+//        600, this.benchmark);
+//      // filter to be used with plain stocks
+//      DataTable tickersQuotedAtEachMarketDay = quotedAtEachMarketDayFromTemporized.GetTableOfSelectedTickers();
+//      SelectorByLiquidity mostLiquid =
+//      	new SelectorByLiquidity(tickersQuotedAtEachMarketDay,
+//      	                        false,currentDate.AddDays(-this.numDaysForOptimizationPeriod), currentDate,
+//      	                        tickersQuotedAtEachMarketDay.Rows.Count/2);
+//      
+//      DataTable mostLiquidTickers = mostLiquid.GetTableOfSelectedTickers();
+//      	                        
+//      SelectorByCloseToCloseVolatility lessVolatile =
+//      	new SelectorByCloseToCloseVolatility(mostLiquidTickers,
+//      	                                     true,currentDate.AddDays(-30), currentDate,
+//      	                                     Math.Min(this.numberOfEligibleTickers, mostLiquidTickers.Rows.Count/2));
+//////      return mostLiquid.GetTableOfSelectedTickers();
+//      return lessVolatile.GetTableOfSelectedTickers();
+//      //
+////      return quotedAtEachMarketDayFromTemporized.GetTableOfSelectedTickers();
     }
     
     

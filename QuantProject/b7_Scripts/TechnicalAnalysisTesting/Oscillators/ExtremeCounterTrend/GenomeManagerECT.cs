@@ -37,7 +37,7 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.ExtremeCount
 	/// the extreme counter trend strategy
 	/// </summary>
 	[Serializable]
-  public class GenomeManagerECT : GenomeManagerForEfficientPortfolio
+  public class GenomeManagerECT : GenomeManagerForWeightedEfficientPortfolio
   {
     private int numDaysForReturnCalculation;
     
@@ -75,19 +75,22 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.ExtremeCount
       return returnValue;
     }
 
-    public override object Decode(Genome genome)
-    {
-    	
-    	string[] arrayOfTickers = new string[genome.Genes().Length];
-      int indexOfTicker;
-      for(int index = 0; index < genome.Genes().Length; index++)
-      {
-        indexOfTicker = (int)genome.Genes().GetValue(index);
-        arrayOfTickers[index] = this.decode_getTickerCodeForLongOrShortTrade(indexOfTicker);
-      }
-      GenomeMeaning meaning = new GenomeMeaning(arrayOfTickers);
-      return meaning;
-    }
+//delete remarks if this object inherits from
+//simple genomeManagerForEfficientPortfolio (no coefficients)
+
+//    public override object Decode(Genome genome)
+//    {
+//    	
+//    	string[] arrayOfTickers = new string[genome.Genes().Length];
+//      int indexOfTicker;
+//      for(int index = 0; index < genome.Genes().Length; index++)
+//      {
+//        indexOfTicker = (int)genome.Genes().GetValue(index);
+//        arrayOfTickers[index] = this.decode_getTickerCodeForLongOrShortTrade(indexOfTicker);
+//      }
+//      GenomeMeaning meaning = new GenomeMeaning(arrayOfTickers);
+//      return meaning;
+//    }
   
 
 		//fitness is a sharpe-ratio based indicator for the equity line resulting
@@ -97,14 +100,20 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.ExtremeCount
       this.portfolioRatesOfReturn = this.getPortfolioRatesOfReturn(genome.Genes());
       
       double[] equityLine = this.getFitnessValue_getEquityLineRates();
-      double sharpeRatioAll = BasicFunctions.SimpleAverage(equityLine)/
-                              BasicFunctions.StdDev(equityLine);
+//      double sharpeRatioAll = BasicFunctions.SimpleAverage(equityLine)/
+//                              BasicFunctions.StdDev(equityLine);
+//      double modifiedSharpeRatioAll = BasicFunctions.SimpleAverage(equityLine)/
+//                                      Math.Pow(BasicFunctions.StdDev(equityLine),0.9);
+
 //      double[] equityLineSecondHalf = new double[equityLine.Length/2];
 //      for(int i = 0; i<equityLine.Length/2; i++)
 //        equityLineSecondHalf[i] = equityLine[i+equityLine.Length/2];
 //      double sharpeRatioSecondHalf = BasicFunctions.SimpleAverage(equityLineSecondHalf)/
 //                              Math.Pow(BasicFunctions.StdDev(equityLineSecondHalf),1.2);
-      return sharpeRatioAll;//*sharpeRatioSecondHalf; 
+//      return sharpeRatioAll;//*sharpeRatioSecondHalf; 
+//      return modifiedSharpeRatioAll;
+      return AdvancedFunctions.GetExpectancyScore(equityLine);
+
     }
     
     private double[] getFitnessValue_getEquityLineRates()
