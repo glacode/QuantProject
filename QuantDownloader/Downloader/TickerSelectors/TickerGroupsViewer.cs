@@ -464,7 +464,8 @@ namespace QuantProject.Applications.Downloader.TickerSelectors
 			finally
 			{
 				Cursor.Current = Cursors.Default;
-				this.oleDbConnection.Close();
+				if(this.oleDbConnection != null)
+					this.oleDbConnection.Close();
 			}
 		}
 
