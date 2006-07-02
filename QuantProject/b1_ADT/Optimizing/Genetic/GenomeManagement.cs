@@ -42,7 +42,7 @@ namespace QuantProject.ADT.Optimizing.Genetic
     
     static GenomeManagement()
     {
-	  	RandomGenerator = new Random((int)DateTime.Now.Ticks);
+	  	RandomGenerator = new Random(ConstantsProvider.SeedForRandomGenerator);
 		  childs = new Genome[2];  	
 		}
     
@@ -53,6 +53,13 @@ namespace QuantProject.ADT.Optimizing.Genetic
       childs[1] = parent2.Clone();
       //the two childs now points to their parents
       maskForChilds = new int[childs.Length, genomeSize];
+      for(int i = 0; i<genomeSize; i++)
+      {
+        maskForChilds[0,i]=1;
+        maskForChilds[1,i]=2;
+      }
+      //maskForChilds has been set in order to re-create
+      //a copy of parents by using setChildsUsingMaskForChilds()
     }
 
     private static void setChildsUsingMaskForChilds(Genome parent1,
@@ -189,5 +196,90 @@ namespace QuantProject.ADT.Optimizing.Genetic
               genome.SetGeneValue(newValueOfGene, genePosition);
 			
     }
+
+    #region MixGenesWithoutDuplicates
+
+    private static int[] genePositionsOfParent1NotPresentInParent2(Genome parent1,
+      Genome parent2)
+    {
+      int[] returnValue = new int[parent1.Size];
+      for(int i = 0; i < returnValue.Length; i++)
+      {
+        returnValue[i] = - 1;
+        int geneValue = parent1.GetGeneValue(i);
+        if(geneValue >= 0)
+        {
+          if(!parent2.HasGene(geneValue) &&
+            !parent2.HasGene(-Math.Abs(geneValue) - 1))
+            returnValue[i] = i;
+        }
+        else
+        {
+          if(!parent2.HasGene(geneValue) &&
+            !parent2.HasGene(Math.Abs(geneValue) - 1))
+            returnValue[i] = i;
+        }
+      }
+      return returnValue;
+    }
+
+    private static void setMaskForChildsForMixingWithoutDuplicates(Genome parent1, Genome parent2)
+		                                                           
+    {
+      int[] genePlacesOfParent1NotPresentInParent2 = 
+        genePositionsOfParent1NotPresentInParent2(parent1, parent2);
+      int[] genePlacesOfParent2NotPresentInParent1 = 
+        genePositionsOfParent1NotPresentInParent2(parent2, parent1);
+      bool justExchangedAtPreviousPosition = false;
+      for(int i = 0;i<parent1.Size;i++)
+      {
+        if(!justExchangedAtPreviousPosition)
+          //exchanges between genes of parents in childs
+          //must follow an alternate pattern, in order to
+          //avoid plain copy of parents in childs when all genes
+          //of the first parent are not in the second one (and viceversa)
+        {  
+          if(genePlacesOfParent2NotPresentInParent1[i]!= - 1)
+          {
+            maskForChilds[0, i] = 2;
+            justExchangedAtPreviousPosition = true;
+          }
+          if(genePlacesOfParent1NotPresentInParent2[i]!= - 1)
+          {
+            maskForChilds[1, i] = 1;
+            justExchangedAtPreviousPosition = true;
+          }
+        }
+        else
+          justExchangedAtPreviousPosition = false;
+      }
+    }
+
+    /// <summary>
+    /// This method returns an array of genomes based on 
+    /// a mix of the genes of parents, such that the 2 childs,
+    /// if possible, are different from parents and, at 
+    /// the same time, childs' genes are not duplicated  
+    /// </summary> 
+    /// <param name="parent1">First genome parent from which genes are to be mixed in offspring</param>
+    /// <param name="parents">Second genome parent from which genes are to be mixed in offspring</param>
+    /// <param name="constToDiscoverGenesDuplicates">Gene y is a duplicate of gene x iff y = |x| - 1
+    ///  or y = -|x| -1</param>
+    public static Genome[] MixGenesWithoutDuplicates(Genome parent1, Genome parent2)
+    {
+      initializeStaticMembers(parent1, parent2);
+      if(parent1.Size > (parent1.MaxValueForGenes - parent1.MinValueForGenes + 1))
+        //it is impossible not to duplicate genes if size is too
+        // large for the range of variation of each gene
+        throw new Exception("Impossible to avoid duplicates with the given size!");
+      if(parent1.Size != parent2.Size)
+        throw new Exception("Genomes must have the same size!");	
+      
+      setMaskForChildsForMixingWithoutDuplicates(parent1, parent2);
+      setChildsUsingMaskForChilds(parent1, parent2);
+      //throwExcIfAChildHasDuplicateGenes(); //just for debugging purposes
+      return childs;
+    }
+    #endregion
 	}
 }
