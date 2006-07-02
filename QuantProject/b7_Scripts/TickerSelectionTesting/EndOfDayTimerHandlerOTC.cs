@@ -141,74 +141,20 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
       
     protected DataTable getSetOfTickersToBeOptimized(DateTime currentDate)
     {
-     		SelectorByGroup temporizedGroup = new SelectorByGroup(this.tickerGroupID, currentDate);
-      SelectorByOpenCloseCorrelationToBenchmark lessCorrelatedFromTemporizedGroup = 
-      	new SelectorByOpenCloseCorrelationToBenchmark(temporizedGroup.GetTableOfSelectedTickers(),
-      	                                              this.benchmark,true,
-      	                                              currentDate.AddDays(-this.numDaysForOptimizationPeriod ),
-      	                                    					currentDate,
-      	                                    					this.numberOfEligibleTickers);
+      SelectorByGroup temporizedGroup = new SelectorByGroup(this.tickerGroupID, currentDate);
+      DataTable tickersFromGroup = temporizedGroup.GetTableOfSelectedTickers();
+      SelectorByLiquidity mostLiquid =
+        new SelectorByLiquidity(tickersFromGroup,
+        false,currentDate.AddDays(-this.numDaysForOptimizationPeriod), currentDate,
+        this.numberOfEligibleTickers);
       
-      this.eligibleTickers = lessCorrelatedFromTemporizedGroup.GetTableOfSelectedTickers();
-      SelectorByQuotationAtEachMarketDay quotedAtEachMarketDayFromEligible = 
-        new SelectorByQuotationAtEachMarketDay( this.eligibleTickers,
-                                   false, currentDate.AddDays(-this.numDaysForOptimizationPeriod),
-                                    currentDate, this.numberOfEligibleTickers, this.benchmark);
-      //SelectorByWinningOpenToClose winners =
-      //	new SelectorByWinningOpenToClose(quotedAtEachMarketDayFromMostLiquid.GetTableOfSelectedTickers(),
-      //	                                 false, currentDate.AddDays(-2),
-      //	                                 currentDate, this.numberOfEligibleTickers/4);      	                                 
-      //return winners.GetTableOfSelectedTickers();
-      //SelectorByOpenCloseCorrelationToBenchmark lessCorrelated = 
-      //  new SelectorByOpenCloseCorrelationToBenchmark(quotedAtEachMarketDayFromEligible.GetTableOfSelectedTickers(),
-      //                                                this.benchmark, true,
-      //                                                currentDate.AddDays(-this.numDaysForLiquidity),
-      //                                                currentDate, this.numberOfEligibleTickers/2);
-      return quotedAtEachMarketDayFromEligible.GetTableOfSelectedTickers();
-    	
-    	
-    	/*
-     	SelectorByGroup temporizedGroup = new SelectorByGroup(this.tickerGroupID, currentDate);
-      
-      SelectorByLiquidity mostLiquidFromTemporized =
-        new SelectorByLiquidity(temporizedGroup.GetTableOfSelectedTickers(),
-                                false, currentDate.AddDays(-this.numDaysForOptimizationPeriod),
-                                currentDate, this.numberOfEligibleTickers);
-      
-      SelectorByAverageRawOpenPrice selectorByOpenPriceFromMostLiquid =
-      	      new SelectorByAverageRawOpenPrice(mostLiquidFromTemporized.GetTableOfSelectedTickers(), false,
-                                currentDate.AddDays(-10), currentDate,
-                                this.numberOfEligibleTickers, this.minPriceForMinimumCommission,
-                                this.maxPriceForMinimumCommission, 0, 10);
-      
-      SelectorByOpenCloseCorrelationToBenchmark lessCorrelatedFromSelectedByPrice = 
-      	new SelectorByOpenCloseCorrelationToBenchmark(selectorByOpenPriceFromMostLiquid.GetTableOfSelectedTickers(),
-      	                                              this.benchmark,true,
-      	                                              currentDate.AddDays(-this.numDaysForOptimizationPeriod ),
-      	                                    					currentDate,
-      	                                    					this.numberOfEligibleTickers/2);
-      
-      this.eligibleTickers = lessCorrelatedFromSelectedByPrice.GetTableOfSelectedTickers();
-      SelectorByQuotationAtEachMarketDay quotedAtEachMarketDayFromEligible = 
-        new SelectorByQuotationAtEachMarketDay( this.eligibleTickers,
-                                   false, currentDate.AddDays(-this.numDaysForOptimizationPeriod),
-                                    currentDate, this.numberOfEligibleTickers/2, this.benchmark);
-                  
-      //SelectorByWinningOpenToClose winners =
-      //	new SelectorByWinningOpenToClose(quotedAtEachMarketDayFromMostLiquid.GetTableOfSelectedTickers(),
-      //	                                 false, currentDate.AddDays(-2),
-      //	                                 currentDate, this.numberOfEligibleTickers/4);      	                                 
-      //return winners.GetTableOfSelectedTickers();
-      //SelectorByOpenCloseCorrelationToBenchmark lessCorrelated = 
-      //  new SelectorByOpenCloseCorrelationToBenchmark(quotedAtEachMarketDayFromEligible.GetTableOfSelectedTickers(),
-      //                                                this.benchmark, true,
-      //                                                currentDate.AddDays(-this.numDaysForLiquidity),
-      //                                                currentDate, this.numberOfEligibleTickers/2);
-      return quotedAtEachMarketDayFromEligible.GetTableOfSelectedTickers();
-      //return mostLiquidFromQuotedAtEachMarketDay.GetTableOfSelectedTickers();
-      //return lessCorrelated.GetTableOfSelectedTickers();
-      //return selectorByOpenPriceFromMostLiquid.GetTableOfSelectedTickers();
-      */
+      SelectorByQuotationAtEachMarketDay quotedAtEachMarketDayFromMostLiquid = 
+        new SelectorByQuotationAtEachMarketDay(mostLiquid.GetTableOfSelectedTickers(),
+        false, currentDate.AddDays(-this.numDaysForOptimizationPeriod), currentDate,
+        this.numberOfEligibleTickers, this.benchmark);
+     
+      return quotedAtEachMarketDayFromMostLiquid.GetTableOfSelectedTickers();
+
     }
     
     protected virtual void setTickers(DateTime currentDate,
@@ -228,7 +174,7 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
 //        	                                          this.numberOfTickersToBeChosen,
 //        	                                          this.targetReturn,
 //        	                                         	this.portfolioType);
-          new GenomeManagerForEfficientOTCTypes (setOfTickersToBeOptimized,
+          new GenomeManagerForEfficientOTCCTOPortfolio(setOfTickersToBeOptimized,
                                                     currentDate.AddDays(-this.numDaysForOptimizationPeriod),
                                                     currentDate,
                                                     this.numberOfTickersToBeChosen,

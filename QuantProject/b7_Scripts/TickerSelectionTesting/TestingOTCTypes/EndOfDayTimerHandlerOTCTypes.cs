@@ -28,6 +28,7 @@ using QuantProject.Business.Financial.Accounting;
 using QuantProject.Business.Financial.Instruments;
 using QuantProject.Business.Financial.Ordering;
 using QuantProject.Business.Timing;
+using QuantProject.Business.Strategies;
 using QuantProject.Data.DataProviders;
 using QuantProject.Data.Selectors;
 using QuantProject.ADT.Optimizing.Genetic;
@@ -48,7 +49,9 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
     private int numDaysElapsedSinceLastOptimization;
     private int seedForRandomGenerator;
     private Account[] accounts;
-    //private ArrayList[] ordersForAccounts;
+    private string[,] lastOrderedTickersForTheAccount;
+    int numOfClosesWithOpenPositionsFor2DaysStrategy;
+    
     
     public EndOfDayTimerHandlerOTCTypes(string tickerGroupID, int numberOfEligibleTickers, 
                                 int numberOfTickersToBeChosen, int numDaysForOptimizationPeriod,
@@ -68,38 +71,22 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
     	this.numDaysElapsedSinceLastOptimization = 0;
     	this.seedForRandomGenerator = ConstantsProvider.SeedForRandomGenerator;
       this.accounts = accounts;
-      //for(int i = 0; i<this.accounts.Length;i++)
-        //ordersForAccounts[i] = new ArrayList();
+      this.lastOrderedTickersForTheAccount = new string[this.accounts.Length,
+                                                     this.numberOfTickersToBeChosen];
     }
-   
-//    protected override void addChosenTickersToOrderList()
-//    {
-//      for(int i = 0; i<this.accounts.Length; i++)
-//      {
-//        if(i==0)//OTC daily
-//        {}
-//        if(i==1)
-//        {}
-//        if(i==2)
-//        {}
-//        for(int j = 0; j<this.numberOfTickersToBeChosen; j++) 
-//        {
-//          string ticker = this.chosenTickersForAccounts[i,j];
-//          if( ticker != null)
-//          {  
-//            this.addOrderForTickerForEachAccount(i, ticker );
-//            this.lastOrderedTickersForAccounts[i,j] = 
-//              GenomeManagerForEfficientPortfolio.GetCleanTickerCode(ticker);
-//          }
-//        }
-//      }
-//    }
-    private void openPositions_openWhenPortfolioIsEmpty(int accountNumber)
+ 
+    private void openPositionsForTheAccountWhenPortfolioIsEmpty(int accountNumber)
     {
       if(this.accounts[accountNumber].Portfolio.Count == 0)
       {
-        foreach(object item in this.orders)
-          this.accounts[accountNumber].AddOrder((Order)item);
+        this.orders.Clear();
+        this.addChosenTickersToOrderListForTheGivenAccount(accountNumber);
+        for(int i = 0; i<this.orders.Count;i++)
+        {
+          this.accounts[accountNumber].AddOrder((Order)this.orders[i]);
+          this.lastOrderedTickersForTheAccount[accountNumber, i] = 
+            SignedTicker.GetTicker(((Order)this.orders[i]).Instrument.Key);
+        }
       }
     }
 
@@ -122,58 +109,25 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
       
       this.orders.Add(order);
     }
+    
     protected void addChosenTickersToOrderListForTheGivenAccount(int accountNumber)
     {
       for( int i = 0; i<this.chosenTickers.Length; i++)
       {
       	if(this.chosenTickers[i] != null)
-        {  
           this.addOrderForTickerForTheGivenAccount( i, accountNumber );
-          this.lastOrderedTickers[i] = 
-          	GenomeManagerForEfficientPortfolio.GetCleanTickerCode(this.chosenTickers[i]);
-        }
       }
     }
-    protected override void openPositions()
-    {
-      
-      for(int i = 0; i<this.accounts.Length; i++)
-      {
-        //add cash first for each account
-        if(this.orders.Count == 0 && this.accounts[i].Transactions.Count == 0)
-              this.accounts[i].AddCash(30000);  
-        
-        if(i<=1)//daily classical, and multiday
-        {
-        	this.orders.Clear();
-        	this.addChosenTickersToOrderListForTheGivenAccount(i);
-        	this.openPositions_openWhenPortfolioIsEmpty(i);
-        }
-        	else if(i==2)//for the CTO OTC
-        {
-          this.closePositions_close(i);
-          this.orders.Clear();
-          this.addChosenTickersToOrderListForTheGivenAccount(i);
-          foreach(object item in this.orders)
-            this.accounts[i].AddOrder((Order)item);
-        }
-        else if(i==3)//for the CTO, no position is opened
-        	//at market open. Any open position is closed, instead
-        {
-          this.closePositions_close(i);	
-        }
-      }
-    }
+    
  
-   
-    private void closePositions_close(int accountNumber)
+    private void closePositionsForTheAccount(int accountNumber)
     {
       string ticker;
       if(this.accounts[accountNumber].Portfolio.Count >0)
       {
-        for(int j = 0; j<this.lastOrderedTickers.Length; j++)
+        for(int j = 0; j<this.numberOfTickersToBeChosen; j++)
         {
-          ticker = this.lastOrderedTickers[j];
+          ticker = this.lastOrderedTickersForTheAccount[accountNumber, j];
           if( ticker != null)
           {
             if(this.accounts[accountNumber].Portfolio[ticker]!=null)
@@ -183,64 +137,21 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
       }
     }
 
-
-    
-    protected override void closePositions()
+    private void marketCloseEventHandler_reversePositionsForTheAccount(int accountNumber)
     {
-      for(int i=0; i<this.accounts.Length; i++)
+      this.closePositionsForTheAccount(accountNumber);
+      SignedTicker.ChangeSignOfEachTicker(this.chosenTickers);
+      try
       {
-        if(i==0)//OTC daily account
-            this.closePositions_close(i);
-        if(i==1)//OTC 2 days 
-        {
-          if(this.numDaysElapsedSinceLastOptimization ==
-    	        this.numDaysBetweenEachOptimization - 1)
-            this.closePositions_close(i);
-        }
-        if(i==2)//OTC-CTO
-        {
-          this.closePositions_close(i);
-          if(this.numDaysElapsedSinceLastOptimization < 
-            this.numDaysBetweenEachOptimization - 1)
-          //open reverse positions at night
-          {
-            this.reverseSignOfChosenTickers();
-            this.orders.Clear();
-            this.addChosenTickersToOrderListForTheGivenAccount(i);
-            this.openPositions_openWhenPortfolioIsEmpty(i);
-            this.reverseSignOfChosenTickers();
-            this.orders.Clear();
-          }
-        }
-        if(i==3)//CTO, only at night
-        {
-//          this.closePositions_close(i);
-          if(this.numDaysElapsedSinceLastOptimization < 
-            this.numDaysBetweenEachOptimization - 1)
-            //open reverse positions at night
-          {
-            this.reverseSignOfChosenTickers();
-            this.orders.Clear();
-            this.addChosenTickersToOrderListForTheGivenAccount(i);
-            this.openPositions_openWhenPortfolioIsEmpty(i);
-            this.reverseSignOfChosenTickers();
-            this.orders.Clear();
-          }
-        }
+        this.openPositionsForTheAccountWhenPortfolioIsEmpty(accountNumber);
       }
-    }
-    private void reverseSignOfChosenTickers()
-    {
-      for(int i = 0; i<this.chosenTickers.Length; i++)
+      catch(Exception ex)
       {
-        if(this.chosenTickers[i] != null)
-        {
-          if(this.chosenTickers[i].StartsWith("-"))
-            this.chosenTickers[i] =
-              GenomeManagerForEfficientPortfolio.GetCleanTickerCode(this.chosenTickers[i]);
-          else
-            this.chosenTickers[i] = "-" + this.chosenTickers[i];
-        }
+        ex = ex;
+      }
+      finally
+      {
+        SignedTicker.ChangeSignOfEachTicker(this.chosenTickers);
       }
     }
 
@@ -252,21 +163,49 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
     public override void MarketOpenEventHandler(
       Object sender , EndOfDayTimingEventArgs endOfDayTimingEventArgs )
     {
-    	//temporarily the if condition
-    	//if(this.numDaysElapsedSinceLastOptimization == 0)
-    		this.openPositions();
+      for(int i = 0; i<this.accounts.Length; i++)
+      {
+        //add cash first for each account
+        if(this.orders.Count == 0 && this.accounts[i].Transactions.Count == 0)
+          this.accounts[i].AddCash(30000);  
+        
+        if(i<=1)//daily classical and multiday
+           this.openPositionsForTheAccountWhenPortfolioIsEmpty(i);
+   
+        if(i==2)//for the CTO OTC
+        {
+          this.closePositionsForTheAccount(i);
+          this.openPositionsForTheAccountWhenPortfolioIsEmpty(i);
+        }
+        if(i==3)//for the CTO, no position is opened
+          //at market open. Any open position is closed, instead
+          this.closePositionsForTheAccount(i);	
+      }
     }
-		
-                
+	          
     public override void MarketCloseEventHandler(
       Object sender , EndOfDayTimingEventArgs endOfDayTimingEventArgs )
     {
-    	
-    	//temporarily
-    	//if(this.numDaysElapsedSinceLastOptimization ==
-    	//   this.numDaysBetweenEachOptimization)
-    	 		this.closePositions();
-    	  	
+     	if(this.accounts[1].Portfolio.Count > 0)
+ 		    numOfClosesWithOpenPositionsFor2DaysStrategy++;
+      
+      for(int i=0; i<this.accounts.Length; i++)
+      {
+        if(i==0)//OTC daily account
+          this.closePositionsForTheAccount(i);
+        
+        if(i==1)//OTC 2 days 
+        {
+          if(this.numOfClosesWithOpenPositionsFor2DaysStrategy == 2)
+          {
+            this.closePositionsForTheAccount(i);
+            this.numOfClosesWithOpenPositionsFor2DaysStrategy = 0;
+          }
+        }
+        
+        if(i>=2)//for the OTC-CTO and CTO
+          this.marketCloseEventHandler_reversePositionsForTheAccount(i);
+      }
     }
     
     
@@ -275,40 +214,27 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
       
     protected DataTable getSetOfTickersToBeOptimized(DateTime currentDate)
     {
-      /*
-      SelectorByAverageRawOpenPrice selectorByOpenPrice = 
-                  new SelectorByAverageRawOpenPrice(this.tickerGroupID, false,
-                          currentDate.AddDays(-this.numDaysForLiquidity), currentDate,
-                          this.numberOfEligibleTickers, this.minPriceForMinimumCommission,
-                          this.maxPriceForMinimumCommission, 0, 2);
-      DataTable tickersByPrice = selectorByOpenPrice.GetTableOfSelectedTickers();
-      */
-     	
-     	SelectorByGroup temporizedGroup = new SelectorByGroup(this.tickerGroupID, currentDate);
-      SelectorByOpenCloseCorrelationToBenchmark lessCorrelatedFromTemporizedGroup = 
-      	new SelectorByOpenCloseCorrelationToBenchmark(temporizedGroup.GetTableOfSelectedTickers(),
-      	                                              this.benchmark,true,
-      	                                              currentDate.AddDays(-this.numDaysForOptimizationPeriod ),
-      	                                    					currentDate,
-      	                                    					this.numberOfEligibleTickers);
+      SelectorByGroup temporizedGroup = new SelectorByGroup(this.tickerGroupID, currentDate);
+      DataTable tickersFromGroup = temporizedGroup.GetTableOfSelectedTickers();
       
-      this.eligibleTickers = lessCorrelatedFromTemporizedGroup.GetTableOfSelectedTickers();
-      SelectorByQuotationAtEachMarketDay quotedAtEachMarketDayFromEligible = 
-        new SelectorByQuotationAtEachMarketDay( this.eligibleTickers,
-                                   false, currentDate.AddDays(-this.numDaysForOptimizationPeriod),
-                                    currentDate, this.numberOfEligibleTickers, this.benchmark);
-      //SelectorByWinningOpenToClose winners =
-      //	new SelectorByWinningOpenToClose(quotedAtEachMarketDayFromMostLiquid.GetTableOfSelectedTickers(),
-      //	                                 false, currentDate.AddDays(-2),
-      //	                                 currentDate, this.numberOfEligibleTickers/4);      	                                 
-      //return winners.GetTableOfSelectedTickers();
-      //SelectorByOpenCloseCorrelationToBenchmark lessCorrelated = 
-      //  new SelectorByOpenCloseCorrelationToBenchmark(quotedAtEachMarketDayFromEligible.GetTableOfSelectedTickers(),
-      //                                                this.benchmark, true,
-      //                                                currentDate.AddDays(-this.numDaysForLiquidity),
-      //                                                currentDate, this.numberOfEligibleTickers/2);
-      return quotedAtEachMarketDayFromEligible.GetTableOfSelectedTickers();
-      //return lessCorrelated.GetTableOfSelectedTickers();
+      SelectorByAverageRawOpenPrice byPrice = 
+      		new SelectorByAverageRawOpenPrice(tickersFromGroup,false,currentDate,
+      	                                  currentDate.AddDays(-30),
+      	                                  tickersFromGroup.Rows.Count,
+      	                                  30,500, 0.0001,100);
+      	                                  
+      
+      SelectorByLiquidity mostLiquidSelector =
+      	new SelectorByLiquidity(byPrice.GetTableOfSelectedTickers(),
+        false,currentDate.AddDays(-this.numDaysForOptimizationPeriod), currentDate,
+        this.numberOfEligibleTickers);
+      
+      SelectorByQuotationAtEachMarketDay quotedAtEachMarketDayFromMostLiquid = 
+        new SelectorByQuotationAtEachMarketDay(mostLiquidSelector.GetTableOfSelectedTickers(),
+        false, currentDate.AddDays(-this.numDaysForOptimizationPeriod), currentDate,
+        this.numberOfEligibleTickers, this.benchmark);
+     
+      return quotedAtEachMarketDayFromMostLiquid.GetTableOfSelectedTickers();
     }
     
     protected virtual void setTickers(DateTime currentDate,
@@ -322,7 +248,7 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
       
       {
         IGenomeManager genManEfficientOTCTypes = 
-          new GenomeManagerForEfficientOTCTypes(setOfTickersToBeOptimized,
+          new GenomeManagerForEfficientOTCCTOPortfolio(setOfTickersToBeOptimized,
         	                                          currentDate.AddDays(-this.numDaysForOptimizationPeriod),
         	                                          currentDate,
         	                                          this.numberOfTickersToBeChosen,
@@ -347,15 +273,6 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
       //that's it the actual chosenTickers member
     }
 
-    protected void oneHourAfterMarketCloseEventHandler_updatePrices()
-    {
-    	//min price for minimizing commission amount
-    	//according to IB Broker's commission scheme
-    	this.minPriceForMinimumCommission = this.account.CashAmount/(this.numberOfTickersToBeChosen*100);
-      this.maxPriceForMinimumCommission = this.maxPriceForMinimumCommission;
-      //just to avoid warning message
-    }
-    
     /// <summary>
     /// Handles a "One hour after market close" event.
     /// </summary>
@@ -366,7 +283,6 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
     {
     	this.seedForRandomGenerator++;
     	this.orders.Clear();
-    	//this.oneHourAfterMarketCloseEventHandler_updatePrices();
       if(this.numDaysElapsedSinceLastOptimization == 
     	   this.numDaysBetweenEachOptimization - 1)
     	{

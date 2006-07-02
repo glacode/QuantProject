@@ -105,9 +105,9 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
       {
         this.variance = portfolioVariance;
         this.rateOfReturn = averagePortfolioRateOfReturn;
-        //returnValue = this.getFitnessValue_calculate();
-        returnValue = this.getFitnessValue_calculate() -
-                      this.genManOTC.GetFitnessValue(genome);
+        returnValue = this.getFitnessValue_calculate();
+//        returnValue = this.getFitnessValue_calculate() -
+//                      this.genManOTC.GetFitnessValue(genome);
         
       }
       
