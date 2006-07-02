@@ -52,6 +52,8 @@ namespace QuantProject.Applications.Downloader
     internal System.Windows.Forms.CheckBox checkBoxComputeCloseToCloseValues;
     private System.Windows.Forms.ToolTip toolTip1;
     internal System.Windows.Forms.CheckBox checkBoxDownloadOnlyAfterCloseToCloseCheck;
+    private System.Windows.Forms.DateTimePicker dateTimePickerSelectedDate;
+    private System.Windows.Forms.RadioButton radioButtonDownloadSingleQuote;
     private System.ComponentModel.IContainer components;
 
 		public WebDownloader()
@@ -154,6 +156,8 @@ namespace QuantProject.Applications.Downloader
       this.checkBoxComputeCloseToCloseValues = new System.Windows.Forms.CheckBox();
       this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
       this.checkBoxDownloadOnlyAfterCloseToCloseCheck = new System.Windows.Forms.CheckBox();
+      this.dateTimePickerSelectedDate = new System.Windows.Forms.DateTimePicker();
+      this.radioButtonDownloadSingleQuote = new System.Windows.Forms.RadioButton();
       ((System.ComponentModel.ISupportInitialize)(this.dataGrid1)).BeginInit();
       this.groupBoxWebDownloaderOptions.SuspendLayout();
       this.groupBoxUpdateDatabaseOptions.SuspendLayout();
@@ -336,6 +340,8 @@ namespace QuantProject.Applications.Downloader
       // groupBoxUpdateDatabaseOptions
       // 
       this.groupBoxUpdateDatabaseOptions.Controls.AddRange(new System.Windows.Forms.Control[] {
+                                                                                                this.radioButtonDownloadSingleQuote,
+                                                                                                this.dateTimePickerSelectedDate,
                                                                                                 this.radioButtonDownloadOnlyAfterMax,
                                                                                                 this.radioButtonDownloadBeforeMinAndAfterMax,
                                                                                                 this.radioButtonOverWriteNo,
@@ -360,20 +366,22 @@ namespace QuantProject.Applications.Downloader
       // radioButtonDownloadBeforeMinAndAfterMax
       // 
       this.radioButtonDownloadBeforeMinAndAfterMax.Enabled = false;
-      this.radioButtonDownloadBeforeMinAndAfterMax.Location = new System.Drawing.Point(16, 56);
+      this.radioButtonDownloadBeforeMinAndAfterMax.Location = new System.Drawing.Point(200, 104);
       this.radioButtonDownloadBeforeMinAndAfterMax.Name = "radioButtonDownloadBeforeMinAndAfterMax";
-      this.radioButtonDownloadBeforeMinAndAfterMax.Size = new System.Drawing.Size(256, 32);
+      this.radioButtonDownloadBeforeMinAndAfterMax.Size = new System.Drawing.Size(40, 32);
       this.radioButtonDownloadBeforeMinAndAfterMax.TabIndex = 2;
       this.radioButtonDownloadBeforeMinAndAfterMax.Text = "Download only quotes before first quote and after last quote (TO BE TESTED)";
+      this.radioButtonDownloadBeforeMinAndAfterMax.Visible = false;
       // 
       // radioButtonOverWriteNo
       // 
       this.radioButtonOverWriteNo.Enabled = false;
-      this.radioButtonOverWriteNo.Location = new System.Drawing.Point(16, 96);
+      this.radioButtonOverWriteNo.Location = new System.Drawing.Point(240, 104);
       this.radioButtonOverWriteNo.Name = "radioButtonOverWriteNo";
-      this.radioButtonOverWriteNo.Size = new System.Drawing.Size(256, 32);
+      this.radioButtonOverWriteNo.Size = new System.Drawing.Size(40, 32);
       this.radioButtonOverWriteNo.TabIndex = 1;
       this.radioButtonOverWriteNo.Text = "Download all quotes, adding to database only the missing ones (TO BE TESTED)";
+      this.radioButtonOverWriteNo.Visible = false;
       // 
       // radioButtonOverWriteYes
       // 
@@ -411,6 +419,25 @@ namespace QuantProject.Applications.Downloader
       this.checkBoxDownloadOnlyAfterCloseToCloseCheck.Text = "Download only after CTC check (slower)";
       this.toolTip1.SetToolTip(this.checkBoxDownloadOnlyAfterCloseToCloseCheck, "If checked, commit to database is performed only for tickers for which new adjust" +
         "ed values respect current close to close ratio  ");
+      // 
+      // dateTimePickerSelectedDate
+      // 
+      this.dateTimePickerSelectedDate.Enabled = false;
+      this.dateTimePickerSelectedDate.Location = new System.Drawing.Point(24, 96);
+      this.dateTimePickerSelectedDate.Name = "dateTimePickerSelectedDate";
+      this.dateTimePickerSelectedDate.Size = new System.Drawing.Size(184, 20);
+      this.dateTimePickerSelectedDate.TabIndex = 7;
+      // 
+      // radioButtonDownloadSingleQuote
+      // 
+      this.radioButtonDownloadSingleQuote.Checked = true;
+      this.radioButtonDownloadSingleQuote.Location = new System.Drawing.Point(16, 56);
+      this.radioButtonDownloadSingleQuote.Name = "radioButtonDownloadSingleQuote";
+      this.radioButtonDownloadSingleQuote.Size = new System.Drawing.Size(256, 24);
+      this.radioButtonDownloadSingleQuote.TabIndex = 8;
+      this.radioButtonDownloadSingleQuote.TabStop = true;
+      this.radioButtonDownloadSingleQuote.Text = "Download single quote";
+      this.radioButtonDownloadSingleQuote.CheckedChanged += new System.EventHandler(this.radioButtonDownloadSingleQuote_CheckedChanged);
       // 
       // WebDownloader
       // 
@@ -756,6 +783,14 @@ namespace QuantProject.Applications.Downloader
       this.buttonAbort.Enabled = false; 
       this.downloadThread.Abort(); 
     }
+
+    private void radioButtonDownloadSingleQuote_CheckedChanged(object sender, System.EventArgs e)
+    {
+      if(this.radioButtonDownloadSingleQuote.Checked)
+        this.dateTimePickerSelectedDate.Enabled = true;
+      else
+        this.dateTimePickerSelectedDate.Enabled = false;
+    }
     
     public bool IsComputeCloseToCloseRatioSelected
     {
@@ -807,6 +842,20 @@ namespace QuantProject.Applications.Downloader
       get
       {
         return this.checkBoxDownloadOnlyAfterCloseToCloseCheck.Checked;
+      }
+    }
+    public bool IsSingleQuoteSelected
+    {
+      get
+      {
+        return this.radioButtonDownloadSingleQuote.Checked;
+      }
+    }
+    public DateTime SelectedDateForSingleQuote
+    {
+      get
+      {
+        return this.dateTimePickerSelectedDate.Value;
       }
     }
   }

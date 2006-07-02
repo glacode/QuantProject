@@ -250,18 +250,31 @@ namespace QuantProject.Applications.Downloader
       this.downloadedValuesFromSource.AcceptChanges();
       DateTime currBeginDate = new DateTime();
       currBeginDate = startDate;
-      while ( currBeginDate < endDate )
+      if(currBeginDate == endDate)
+        //just a single quote requested: initial date is 10 day before end date
+        //just for close to close direct computation
       {
-        DateTime currEndDate = new DateTime();
-        if ( DateTime.Compare( DateTime.Today , currBeginDate.AddDays( numDaysOfTimeFrame ) ) < 0 )
-          currEndDate = DateTime.Today;
-        else
-          currEndDate = currBeginDate.AddDays( numDaysOfTimeFrame );
-        this.importTickerForCurrentTimeFrame ( currBeginDate , currEndDate );
-        currBeginDate = currEndDate.AddDays( 1 );
+        this.importTickerForCurrentTimeFrame ( currBeginDate.AddDays(-10) , endDate );
+        int rowsDownloaded = this.downloadedValuesFromSource.Rows.Count;
+        for(int i = rowsDownloaded-1;i>1 ;i--)
+        //for the computation of ctc ratio it is necessary to have previous quote
+          this.downloadedValuesFromSource.Rows.RemoveAt(i);
+        return this.downloadedValuesFromSource;
       }
-      return this.downloadedValuesFromSource;
-
+      else
+      {
+        while ( currBeginDate < endDate )
+        {
+          DateTime currEndDate = new DateTime();
+          if ( DateTime.Compare( DateTime.Today , currBeginDate.AddDays( numDaysOfTimeFrame ) ) < 0 )
+            currEndDate = DateTime.Today;
+          else
+            currEndDate = currBeginDate.AddDays( numDaysOfTimeFrame );
+          this.importTickerForCurrentTimeFrame ( currBeginDate , currEndDate );
+          currBeginDate = currEndDate.AddDays( 1 );
+        }
+        return this.downloadedValuesFromSource;
+      }
     }
     
     private DataTable getTableOfDownloadedValues(DateTime newStartDate, DateTime newEndDate)
@@ -347,7 +360,7 @@ namespace QuantProject.Applications.Downloader
                this.updateCurrentStatusAdjustedClose("Updated!");
                this.downloadedValuesFromSource = this.getTableOfDownloadedValues(Quotes.GetEndDate(this.p_quTicker),
                                                                                  DateTime.Now);
-               this.commitDownloadedValuesToDatabase();
+            this.commitDownloadedValuesToDatabase();
           } 
         }
         else
@@ -373,6 +386,12 @@ namespace QuantProject.Applications.Downloader
       }
     }
     
+    private void downloadTickerForTheSelectedDate(DateTime date)
+    {
+      this.startDate = date;
+      this.endDate = date;
+      this.checkForNewAdjustedAndContinueOrStop();
+    }
     
     private void downloadTickerAfterLastQuote()
     {
@@ -398,7 +417,10 @@ namespace QuantProject.Applications.Downloader
     private void commitDownloadedValuesToDatabase()
     {
       if(this.p_myForm.IsOverWriteYesSelected)
-        Quotes.Delete(this.p_quTicker);
+      {
+        foreach(DataRow row in this.downloadedValuesFromSource.Rows)
+          Quotes.Delete(this.p_quTicker, (DateTime)row["quDate"]);
+      }
       if(this.p_myForm.IsComputeCloseToCloseRatioSelected)
         QuantProject.DataAccess.Tables.Quotes.ComputeCloseToCloseValues(this.downloadedValuesFromSource);
       this.adapter.OleDbDataAdapter.ContinueUpdateOnError = true;
@@ -450,6 +472,14 @@ namespace QuantProject.Applications.Downloader
         this.numberOfQuotesInDatabase >= 1)
       {
         this.resetAndImportTicker();
+      }
+      else if(this.p_myForm.IsSingleQuoteSelected)
+      {
+        if(Quotes.GetTickerQuotes(this.p_quTicker,
+      	   				this.p_myForm.SelectedDateForSingleQuote,
+      	   				this.p_myForm.SelectedDateForSingleQuote).Rows.Count == 0)
+        //there's no quote for the ticker at the given date
+      		this.downloadTickerForTheSelectedDate(this.p_myForm.SelectedDateForSingleQuote);
       }
       Cursor.Current = Cursors.Default; 
   
