@@ -83,43 +83,21 @@ namespace QuantProject.Scripts.EvaluatingOptimizationTechnique.EfficientPortfoli
   		this.numberOfSubsets = numberOfSubsets;
    	}
     
-  	private DataTable getSetOfTickersToBeOptimized(DateTime date)
+  	private DataTable getSetOfTickersToBeOptimized(DateTime currentDate)
     {
-      /*
-      SelectorByAverageRawOpenPrice selectorByOpenPrice = 
-                  new SelectorByAverageRawOpenPrice(this.tickerGroupID, false,
-                          currentDate.AddDays(-this.numDaysForOptimization), currentDate,
-                          this.numberOfEligibleTickers, this.minPriceForMinimumCommission,
-                          this.maxPriceForMinimumCommission, 0, 2);
-      DataTable tickersByPrice = selectorByOpenPrice.GetTableOfSelectedTickers();
-      */
-     	
-     	SelectorByGroup temporizedGroup = new SelectorByGroup(this.tickerGroupID,
-      	                                                    date);
+      SelectorByGroup temporizedGroup = new SelectorByGroup(this.tickerGroupID, currentDate);
+      DataTable tickersFromGroup = temporizedGroup.GetTableOfSelectedTickers();
+      SelectorByLiquidity mostLiquid =
+        new SelectorByLiquidity(tickersFromGroup,
+        false,currentDate.AddDays(-this.numDaysForOptimization), currentDate,
+        this.numberOfEligibleTickers);
       
-      SelectorByOpenCloseCorrelationToBenchmark lessCorrelatedFromTemporizedGroup = 
-        new SelectorByOpenCloseCorrelationToBenchmark(temporizedGroup.GetTableOfSelectedTickers(),
-                                          this.benchmark,true,
-                                          date.AddDays(-this.numDaysForOptimization ),
-                                          date,
-                                         this.numberOfEligibleTickers);
-      
-      DataTable eligibleTickers;
-      eligibleTickers = lessCorrelatedFromTemporizedGroup.GetTableOfSelectedTickers();
-      //eligibleTickers = temporizedGroup.GetTableOfSelectedTickers();
-      SelectorByQuotationAtEachMarketDay quotedAtEachMarketDayFromEligible = 
-        new SelectorByQuotationAtEachMarketDay( eligibleTickers,
-                                   false, date.AddDays(-this.numDaysForOptimization),
-                                    date, this.numberOfEligibleTickers, this.benchmark);
-      //SelectorByWinningOpenToClose winners =
-      	//new SelectorByWinningOpenToClose(quotedAtEachMarketDayFromEligible.GetTableOfSelectedTickers(),
-      	  //                               false, date.AddDays(-1),
-      	    //                             date.AddDays(-1), this.numberOfEligibleTickers/2,
-              //                            true);      	                                 
-      //return winners.GetTableOfSelectedTickers();
+      SelectorByQuotationAtEachMarketDay quotedAtEachMarketDayFromMostLiquid = 
+        new SelectorByQuotationAtEachMarketDay(mostLiquid.GetTableOfSelectedTickers(),
+        false, currentDate.AddDays(-this.numDaysForOptimization), currentDate,
+        this.numberOfEligibleTickers, this.benchmark);
      
-      return quotedAtEachMarketDayFromEligible.GetTableOfSelectedTickers();
-      //return lessCorrelated.GetTableOfSelectedTickers();
+      return quotedAtEachMarketDayFromMostLiquid.GetTableOfSelectedTickers();
     }
   	
     private double setFitnesses_setFitnessesActually_getFitnessOutOfSample(Genome genome)
@@ -275,15 +253,15 @@ namespace QuantProject.Scripts.EvaluatingOptimizationTechnique.EfficientPortfoli
       
       DataTable setOfTickersToBeOptimized = 
       	this.getSetOfTickersToBeOptimized(this.marketDate);
-       IGenomeManager genManEfficientOTCTypes = 
-        new GenomeManagerForEfficientOTCTypes(setOfTickersToBeOptimized,
+       IGenomeManager genManEfficientOTC_CTO = 
+        new GenomeManagerForEfficientOTCCTOPortfolio(setOfTickersToBeOptimized,
       	                                          this.marketDate.AddDays(-this.numDaysForOptimization),
       	                                          this.marketDate,
       	                                          this.numberOfTickersToBeChosen,
       	                                          this.targetReturn,
       	                                         	this.portfolioType);
     
-      this.setFitnesses_setFitnessesActually(genManEfficientOTCTypes);
+      this.setFitnesses_setFitnessesActually(genManEfficientOTC_CTO);
       
     }
   	

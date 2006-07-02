@@ -29,6 +29,7 @@ using QuantProject.ADT.Optimizing.Genetic;
 using QuantProject.Data.Selectors;
 using QuantProject.Data.DataTables;
 using QuantProject.ADT.Statistics;
+using QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios;
 using QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.ExtremeCounterTrend;
 
 namespace QuantProject.Scripts.EvaluatingOptimizationTechnique.TechnicalAnalysis
@@ -45,12 +46,12 @@ namespace QuantProject.Scripts.EvaluatingOptimizationTechnique.TechnicalAnalysis
   	private string tickerGroupID;
     private int numberOfEligibleTickers;
     private int numberOfTickersToBeChosen;
-    private int numDaysForOptimization;
+    private int numDaysForOptimizationPeriod;
     private int populationSizeForGeneticOptimizer;
     private int generationNumberForGeneticOptimizer;
   	private string benchmark;
   	private DateTime marketDate;
-  	private double targetReturn;
+  	private int numDaysForReturnCalculation;
   	private PortfolioType portfolioType;
   	private int numDaysAfterLastOptimizationDay;
   	private int numberOfSubsets;
@@ -58,10 +59,10 @@ namespace QuantProject.Scripts.EvaluatingOptimizationTechnique.TechnicalAnalysis
   	private int numberOfGenomesToTest;
       	
     public RunTestingOptimizationExtremeCounterTrend(string tickerGroupID, int numberOfEligibleTickers,
-      				int numberOfTickersToBeChosen, int numDaysForOptimization,
+      				int numberOfTickersToBeChosen, int numDaysForOptimizationPeriod,
       				int generationNumberForGeneticOptimizer, int populationSizeForGeneticOptimizer, 
       				string benchmark,
-      				DateTime marketDate, double targetReturn,
+      				DateTime marketDate, int numDaysForReturnCalculation,
       				PortfolioType portfolioType, int numDaysAfterLastOptimizationDay,
       				int numberOfSubsets, int numberOfGenomesToTest)
     {
@@ -72,31 +73,66 @@ namespace QuantProject.Scripts.EvaluatingOptimizationTechnique.TechnicalAnalysis
   		this.tickerGroupID = tickerGroupID;
   		this.numberOfEligibleTickers = numberOfEligibleTickers;
   		this.numberOfTickersToBeChosen = numberOfTickersToBeChosen;
-  		this.numDaysForOptimization = numDaysForOptimization;
+  		this.numDaysForOptimizationPeriod = numDaysForOptimizationPeriod;
   		this.populationSizeForGeneticOptimizer = populationSizeForGeneticOptimizer;
   		this.generationNumberForGeneticOptimizer = generationNumberForGeneticOptimizer;
   		this.benchmark = benchmark;
   		this.marketDate = marketDate;
-  		this.targetReturn = targetReturn;
+  		this.numDaysForReturnCalculation = numDaysForReturnCalculation;
   		this.portfolioType = portfolioType;
   		this.numDaysAfterLastOptimizationDay = numDaysAfterLastOptimizationDay;
   		this.numberOfSubsets = numberOfSubsets;
    	}
     
-  	private DataTable getSetOfTickersToBeOptimized(DateTime date)
+  	private DataTable getSetOfTickersToBeOptimized(DateTime currentDate)
     {
            	
      	SelectorByGroup temporizedGroup = new SelectorByGroup(this.tickerGroupID,
-        																										date);
+        																										currentDate);
       
-      SelectorByQuotationAtEachMarketDay quotedAtEachMarketFromTemporized = 
+      SelectorByQuotationAtEachMarketDay quotedAtEachMarketDayFromTemporized = 
         new SelectorByQuotationAtEachMarketDay(temporizedGroup.GetTableOfSelectedTickers(),
-        false, date.AddDays(-this.numDaysForOptimization), date,
-        this.numberOfEligibleTickers, this.benchmark);
-      
-      return quotedAtEachMarketFromTemporized.GetTableOfSelectedTickers();
+        false, currentDate.AddDays(-this.numDaysForOptimizationPeriod), currentDate,
+        600, this.benchmark);
+      // filter to be used with plain stocks
+//      DataTable tickersQuotedAtEachMarketDay = quotedAtEachMarketDayFromTemporized.GetTableOfSelectedTickers();
+//      SelectorByLiquidity mostLiquid =
+//      	new SelectorByLiquidity(tickersQuotedAtEachMarketDay,
+//      	                        false,currentDate.AddDays(-this.numDaysForOptimizationPeriod), currentDate,
+//      	                        tickersQuotedAtEachMarketDay.Rows.Count/2);
+//      
+//      DataTable mostLiquidTickers = mostLiquid.GetTableOfSelectedTickers();
+//      	                        
+//      SelectorByCloseToCloseVolatility lessVolatile =
+//      	new SelectorByCloseToCloseVolatility(mostLiquidTickers,
+//      	                                     true,currentDate.AddDays(-30), currentDate,
+//      	                                     Math.Min(this.numberOfEligibleTickers, mostLiquidTickers.Rows.Count/2));
+////      return mostLiquid.GetTableOfSelectedTickers();
+//      return lessVolatile.GetTableOfSelectedTickers();
+      //
+      return quotedAtEachMarketDayFromTemporized.GetTableOfSelectedTickers();
     }
   	
+    private double setFitnesses_setFitnessesActually_getFitnessOutOfSample_PortfolioClose(Genome portfolioGenome, DateTime date)
+  		
+    {
+      double returnValue = 0.0;
+      foreach(string tickerCode in ((GenomeMeaning)portfolioGenome.Meaning).Tickers)
+      {
+        double coefficient = 1.0;
+        string ticker = tickerCode;
+        if(ticker.StartsWith("-"))
+        {
+          ticker = ticker.Substring(1,ticker.Length -1);
+          coefficient = -1.0;
+        }
+        Quotes tickerQuotes = new Quotes(ticker, date,
+                                         date);
+        returnValue += (tickerQuotes.GetFirstValidCloseToCloseRatio(date) - 1.0)*coefficient;
+      }
+      return returnValue/portfolioGenome.Size;
+    }
+
     private double setFitnesses_setFitnessesActually_getFitnessOutOfSample(Genome genome)
   		
     {
@@ -110,43 +146,18 @@ namespace QuantProject.Scripts.EvaluatingOptimizationTechnique.TechnicalAnalysis
           ticker = ticker.Substring(1,ticker.Length -1);
           coefficient = -1.0;
         }
-        DateTime dateOutOfSample = this.marketDate.AddDays(this.numDaysAfterLastOptimizationDay);
-        //returnValue is the single return for the numDaysAfterLastOptimizationDay - th day
-        //after the given market date
+        DateTime endDateOutOfSample = this.marketDate.AddDays(this.numDaysAfterLastOptimizationDay);
         
-        //Quotes tickerQuotes = new Quotes(ticker, dateOutOfSample,
-        //  															 dateOutOfSample);
-        //returnValue +=
-        //  (tickerQuotes.GetFirstValidRawClose(dateOutOfSample)/
-        //  tickerQuotes.GetFirstValidRawOpen(dateOutOfSample) - 1.0)*coefficient;
-	 			
-        //returnValue is the average return for the interval between
-	 			//the given market date and the numDaysAfterLastOptimizationDay - th
-	 			//day after the given market date
-	 			//Quotes tickerQuotes = new Quotes(ticker, this.marketDate,
-        //  															 dateOutOfSample);
-        //double close, open;
-	 			//for(int i = 0; i<this.numDaysAfterLastOptimizationDay; i++)
-	 			//{
-		      //close = tickerQuotes.GetFirstValidRawClose(this.marketDate.AddDays(i));
-		      //open = tickerQuotes.GetFirstValidRawOpen(this.marketDate.AddDays(i));
-	 				//returnValue +=
-		      //(close/open - 1.0)*coefficient/this.numDaysAfterLastOptimizationDay;
-		      	
-	 			//}
-        
-        //returnValue is the sharpe ratio for the interval between
-        //the given market date and the numDaysAfterLastOptimizationDay - th
-        //day after the given market date
         Quotes tickerQuotes = new Quotes(ticker, this.marketDate,
-          															 dateOutOfSample);
-        double close, open;
-        double[] returns = new double[this.numDaysAfterLastOptimizationDay];
-        for(int i = 0; i<this.numDaysAfterLastOptimizationDay; i++)
+          															 endDateOutOfSample);
+        double[] returns = new double[tickerQuotes.Rows.Count];
+        for(int i = 1; i<returns.Length; i++)
         {
-          close = tickerQuotes.GetFirstValidRawClose(this.marketDate.AddDays(i));
-          open = tickerQuotes.GetFirstValidRawOpen(this.marketDate.AddDays(i));
-          returns[i] = (close/open - 1.0)*coefficient;
+          if(this.setFitnesses_setFitnessesActually_getFitnessOutOfSample_PortfolioClose(
+                genome, (DateTime)tickerQuotes.Rows[i-1]["quDate"])>0.0)
+            coefficient = -1.0 * coefficient;
+        	returns[i] = (tickerQuotes.GetFirstValidCloseToCloseRatio(
+                          (DateTime)tickerQuotes.Rows[i]["quDate"] ) - 1.0)*coefficient;
         }
         returnValue += BasicFunctions.SimpleAverage(returns) / BasicFunctions.StdDev(returns);
       }
@@ -250,15 +261,16 @@ namespace QuantProject.Scripts.EvaluatingOptimizationTechnique.TechnicalAnalysis
       
       DataTable setOfTickersToBeOptimized = 
       	this.getSetOfTickersToBeOptimized(this.marketDate);
-       IGenomeManager genManEfficientOTCTypes = 
-        new GenomeManagerForEfficientOTCTypes(setOfTickersToBeOptimized,
-      	                                          this.marketDate.AddDays(-this.numDaysForOptimization),
-      	                                          this.marketDate,
-      	                                          this.numberOfTickersToBeChosen,
-      	                                          this.targetReturn,
-      	                                         	this.portfolioType);
+      
+      IGenomeManager genManExtremeCounterTrend =
+        new GenomeManagerECT(setOfTickersToBeOptimized,
+	                            this.marketDate.AddDays(-this.numDaysForOptimizationPeriod),
+	                            this.marketDate,
+	                            this.numberOfTickersToBeChosen,
+	                            this.numDaysForReturnCalculation,
+	                           	this.portfolioType);
     
-      this.setFitnesses_setFitnessesActually(genManEfficientOTCTypes);
+      this.setFitnesses_setFitnessesActually(genManExtremeCounterTrend);
       
     }
   	
@@ -291,8 +303,8 @@ namespace QuantProject.Scripts.EvaluatingOptimizationTechnique.TechnicalAnalysis
                     "\\OptimizationEvaluation.txt";
   	  StreamWriter w = File.AppendText(pathFile);
   	  w.WriteLine ("\n----------------------------------------------\r\n");
-  	  w.Write("\r\nNew Test for Evaluation of Open To Close Optimization {0}\r", DateTime.Now.ToLongDateString()+ " " +DateTime.Now.ToLongTimeString());
-  	  w.Write("\r\nNum days for optimization {0}\r", this.numDaysForOptimization.ToString());
+  	  w.Write("\r\nNew Test for Evaluation of Extreme Counter Trend Optimization {0}\r", DateTime.Now.ToLongDateString()+ " " +DateTime.Now.ToLongTimeString());
+  	  w.Write("\r\nNum days for optimization {0}\r", this.numDaysForOptimizationPeriod.ToString());
       w.Write("\r\nOptimizing market date {0}\r", this.marketDate.ToLongDateString());
       w.Write("\r\nMarket date for test out of sample (sharpe ratio as fitness OS){0}\r",
                         this.marketDate.AddDays(this.numDaysAfterLastOptimizationDay).ToLongDateString());
