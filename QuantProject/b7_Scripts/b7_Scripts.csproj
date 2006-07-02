@@ -117,6 +117,11 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "SimpleScriptsContainer.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "ArbitrageTesting\PairTrading\PairTradingCandidate.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
@@ -198,6 +203,11 @@
                 />
                 <File
                     RelPath = "EvaluatingOptimizationTechnique\EfficientPortfolio\RunTestingOptimizationOpenToCloseFitnessCombined.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "EvaluatingOptimizationTechnique\TechnicalAnalysis\RunTestingOptimizationExtremeCounterTrend.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
@@ -334,6 +344,11 @@
                 />
                 <File
                     RelPath = "TickerSelectionTesting\GenomeManagerForEfficientCTOPortfolio.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "TickerSelectionTesting\GenomeManagerForEfficientOTCCTOPortfolio.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
@@ -524,6 +539,11 @@
                 />
                 <File
                     RelPath = "WalkForwardTesting\LinearCombination\OptimizationOutput.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "WalkForwardTesting\LinearCombination\OTC_CTODailyStrategy.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
