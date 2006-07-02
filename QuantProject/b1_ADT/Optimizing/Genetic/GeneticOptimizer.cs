@@ -166,7 +166,7 @@ namespace QuantProject.ADT.Optimizing.Genetic
       this.genomeManager = genomeManager;
       this.populationSize = populationSize;
       this.generationNumber = generationNumber;
-      this.random = new Random((int)DateTime.Now.Ticks);
+      this.random = new Random(ConstantsProvider.SeedForRandomGenerator);
       this.commonInitialization();
     }
     
@@ -190,7 +190,7 @@ namespace QuantProject.ADT.Optimizing.Genetic
       this.populationSize = populationSize;
       this.generationNumber = generationNumber;
       this.genomeManager = genomeManager;
-      this.random = new Random((int)DateTime.Now.Ticks);
+      this.random = new Random(ConstantsProvider.SeedForRandomGenerator);
       this.commonInitialization();
     }
     
