@@ -61,9 +61,14 @@ namespace QuantProject.DataAccess
 					{
 						//gets full path of the file that contains the database
 						this.Path = xmlTextReader.GetAttribute(0);
-            if(!File.Exists(this.path)) 
-              throw new Exception("Specified file in DataBase.xml doesn't exist!\n" +
-                                  "Delete Database.xml and retry!");
+            if(!File.Exists(this.path))
+            {
+              xmlTextReader.Close();
+							stream.Close();
+							File.Delete(xmlPath);
+            	MessageBox.Show("Specified file in DataBase.xml doesn't exist!\n\n" +
+                              "Retry and select again Database.mdb.");
+            }
 					}
 				}
 				xmlTextReader.Close();
@@ -73,8 +78,10 @@ namespace QuantProject.DataAccess
 			catch (Exception ex)
 			{
 				MessageBox.Show(ex.ToString());
-				xmlTextReader.Close();
-				stream.Close();
+				if(xmlTextReader != null)
+				  xmlTextReader.Close();
+				if(this.stream != null)
+					stream.Close();
 			}
 		}
 		
