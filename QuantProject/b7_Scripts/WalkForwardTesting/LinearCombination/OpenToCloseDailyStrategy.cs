@@ -39,38 +39,40 @@ namespace QuantProject.Scripts.WalkForwardTesting.LinearCombination
 	{
 		private Account account;
 		private string[] signedTickers;
+		private double[] weightsForSignedTickers;
 
 		public OpenToCloseDailyStrategy( Account account ,
-			string[] signedTickers)
+			string[] signedTickers, double[] weightsForSignedTickers)
 		{
 			this.account = account;
 			this.signedTickers = signedTickers;
+			this.weightsForSignedTickers = weightsForSignedTickers;
 		}
 		private long marketOpenEventHandler_addOrder_getQuantity(
-			string ticker )
+			int indexForSignedTicker )
 		{
 			double accountValue = this.account.GetMarketValue();
 			double currentTickerAsk =
-				this.account.DataStreamer.GetCurrentAsk( ticker );
+				this.account.DataStreamer.GetCurrentAsk( SignedTicker.GetTicker(this.signedTickers[indexForSignedTicker]) );
 			double maxPositionValueForThisTicker =
-				accountValue/this.signedTickers.Length;
+				accountValue*this.weightsForSignedTickers[indexForSignedTicker];
 			long quantity = Convert.ToInt64(	Math.Floor(
 				maxPositionValueForThisTicker /	currentTickerAsk ) );
 			return quantity;
 		}
-		private void marketOpenEventHandler_addOrder( string signedTicker )
+		private void marketOpenEventHandler_addOrder( int indexForSignedTicker )
 		{
-			OrderType orderType = GenomeRepresentation.GetOrderType( signedTicker );
-			string ticker = GenomeRepresentation.GetTicker( signedTicker );
-			long quantity = marketOpenEventHandler_addOrder_getQuantity( ticker );
+			OrderType orderType = GenomeRepresentation.GetOrderType( this.signedTickers[indexForSignedTicker] );
+			string ticker = GenomeRepresentation.GetTicker( this.signedTickers[indexForSignedTicker] );
+			long quantity = marketOpenEventHandler_addOrder_getQuantity( indexForSignedTicker );
 			Order order = new Order( orderType , new Instrument( ticker ) ,
 				quantity );
 			this.account.AddOrder( order );
 		}
 		private void marketOpenEventHandler_addOrders()
 		{
-			foreach ( string signedTicker in this.signedTickers )
-				marketOpenEventHandler_addOrder( signedTicker );
+			for(int i = 0; i<this.signedTickers.Length; i++)
+				marketOpenEventHandler_addOrder( i );
 		}
 		public void MarketOpenEventHandler(
 			Object sender , EndOfDayTimingEventArgs endOfDayTimingEventArgs )
