@@ -32,6 +32,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.LinearCombination
     OpenToCloseDaily,
     OpenToCloseWeekly,
     CloseToOpenDaily,
+    OpenToCloseCloseToOpenDaily,
     FixedPeriodOscillator,
     ExtremeCounterTrend
   }

@@ -40,6 +40,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.LinearCombination
 	{
 		private Account account;
 		private string[] signedTickers;
+		private double[] weightsForSignedTickers;
     private int daysForRightPeriod;
     private int daysForReversalPeriod;
     //length for movement upwards or downwards of the given tickers
@@ -50,40 +51,42 @@ namespace QuantProject.Scripts.WalkForwardTesting.LinearCombination
      
 
 		public FixedPeriodOscillatorStrategy( Account account ,
-			                                     string[] signedTickers, 
+			                                     string[] signedTickers,
+			                                     double[] weightsForSignedTickers,
                                            int daysForRightPeriod,
                                            int daysForReversalPeriod)
 		{
 			this.account = account;
 			this.signedTickers = signedTickers;
+			this.weightsForSignedTickers = weightsForSignedTickers;
       this.daysForRightPeriod = daysForRightPeriod;
       this.daysForReversalPeriod = daysForReversalPeriod;
 		}
 		private long marketCloseEventHandler_addOrder_getQuantity(
-			string ticker )
+			int indexForSignedTicker)
 		{
 			double accountValue = this.account.GetMarketValue();
 			double currentTickerAsk =
-				this.account.DataStreamer.GetCurrentAsk( ticker );
+				this.account.DataStreamer.GetCurrentAsk( SignedTicker.GetTicker(this.signedTickers[indexForSignedTicker]) );
 			double maxPositionValueForThisTicker =
-				accountValue/this.signedTickers.Length;
+				accountValue*this.weightsForSignedTickers[indexForSignedTicker];
 			long quantity = Convert.ToInt64(	Math.Floor(
 				maxPositionValueForThisTicker /	currentTickerAsk ) );
 			return quantity;
 		}
-		private void marketCloseEventHandler_addOrder( string signedTicker )
+		private void marketCloseEventHandler_addOrder( int indexForSignedTicker )
 		{
-			OrderType orderType = GenomeRepresentation.GetOrderType( signedTicker );
-			string ticker = GenomeRepresentation.GetTicker( signedTicker );
-			long quantity = marketCloseEventHandler_addOrder_getQuantity( ticker );
+			OrderType orderType = GenomeRepresentation.GetOrderType( this.signedTickers[indexForSignedTicker] );
+			string ticker = GenomeRepresentation.GetTicker( this.signedTickers[indexForSignedTicker] );
+			long quantity = marketCloseEventHandler_addOrder_getQuantity( indexForSignedTicker );
 			Order order = new Order( orderType , new Instrument( ticker ) ,
 				quantity );
 			this.account.AddOrder( order );
 		}
 		private void marketCloseEventHandler_addOrders()
 		{
-			foreach ( string signedTicker in this.signedTickers )
-				marketCloseEventHandler_addOrder( signedTicker );
+			for(int i = 0; i<this.signedTickers.Length; i++)
+				marketCloseEventHandler_addOrder( i );
 		}
 		
     public void MarketOpenEventHandler(

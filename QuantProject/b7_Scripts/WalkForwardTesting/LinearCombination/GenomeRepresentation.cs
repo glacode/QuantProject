@@ -22,6 +22,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 using System;
 
+using QuantProject.ADT;
 using QuantProject.ADT.Optimizing.Genetic;
 using QuantProject.Business.Financial.Ordering;
 using QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios;
@@ -67,11 +68,51 @@ namespace QuantProject.Scripts.WalkForwardTesting.LinearCombination
 			get { return this.generationCounter; }
 		}
 
-		public static string[] GetSignedTickers( string signedTickers )
+//		public static string[] GetSignedTickers( string signedTickers )
+//		{
+//			string[] returnValue = signedTickers.Split( ";".ToCharArray());
+//			return returnValue;
+//		}
+		
+		public static string[] GetSignedTickers( string signedTickersWithWeights )
 		{
-			string[] returnValue = signedTickers.Split( ";".ToCharArray() );
+			string[] returnValue = 
+        signedTickersWithWeights.Split( ConstantsProvider.SeparatorForTickers.ToCharArray());
+			if( signedTickersWithWeights.Split( ConstantsProvider.SeparatorForWeights.ToCharArray() ).Length > 1 )
+			//the separator char for tickers is contained in signedTickersWithWeights: 
+			//so weights have been saved within tickers, separated by this special char
+			{
+				for(int i = 0; i<returnValue.Length; i++)
+				{
+					returnValue[i] = 
+						 returnValue[i].Split( ConstantsProvider.SeparatorForWeights.ToCharArray() )[0];
+				}
+			}	
 			return returnValue;
 		}
+		
+		public static double[] GetWeightsForSignedTickers( string signedTickersWithWeights )
+		{
+			string[] signedTickersWithWeightsArray = 
+								signedTickersWithWeights.Split( ConstantsProvider.SeparatorForTickers.ToCharArray() );
+			double[] returnValue =
+				new double[signedTickersWithWeightsArray.Length];
+			for(int i = 0; i<returnValue.Length; i++)
+				returnValue[i] = 1.0/returnValue.Length;
+			
+			if((signedTickersWithWeights.Split(ConstantsProvider.SeparatorForWeights.ToCharArray())).Length > 1)
+			//the separator for weights is contained in signedTickersWithWeights: 
+			//so weights have been saved within tickers, separated by this char
+			{
+				for(int i = 0; i<returnValue.Length; i++)
+				{
+					returnValue[i] = 
+						Convert.ToDouble( signedTickersWithWeightsArray[i].Split( ConstantsProvider.SeparatorForWeights.ToCharArray() )[1] );
+				}
+			}	
+			return returnValue;
+		}
+		
 		public static OrderType GetOrderType( string signedTicker )
 		{
 			OrderType returnValue;
@@ -90,6 +131,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.LinearCombination
 				returnValue = signedTicker;
 			return returnValue;
 		}
+
 		private string getSignedTickers( Genome genome )
 		{
 			string signedTickers = "";
@@ -99,12 +141,30 @@ namespace QuantProject.Scripts.WalkForwardTesting.LinearCombination
 				signedTickers.Length - 1 );
 			return signedTickers;
 		}
+		private string getSignedTickersWithWeights( Genome genome )
+		{
+			string signedTickersWithWeights = "";
+			for ( int i = 0; i<((GenomeMeaning)genome.Meaning).Tickers.Length; i++ )
+			{
+				signedTickersWithWeights +=
+					((GenomeMeaning)genome.Meaning).Tickers[i] + 
+					ConstantsProvider.SeparatorForWeights +
+					((GenomeMeaning)genome.Meaning).TickersPortfolioWeights[i] +
+					ConstantsProvider.SeparatorForTickers;
+			}
+			signedTickersWithWeights = signedTickersWithWeights.Substring( 0 ,
+					signedTickersWithWeights.Length - 1 );
+			
+			return signedTickersWithWeights;
+		}
+		
 		private void genomeRepresentation( Genome genome ,
 			DateTime firstOptimizationDate , DateTime lastOptimizationDate ,
 			int generationCounter )
 		{
 			this.fitness = genome.Fitness;
-			this.signedTickers = this.getSignedTickers( genome );
+			this.signedTickers = this.getSignedTickersWithWeights( genome );
+			//this.signedTickers = this.getSignedTickers( genome );
 			this.firstOptimizationDate = firstOptimizationDate;
 			this.lastOptimizationDate = lastOptimizationDate;
 			this.generationCounter = generationCounter;

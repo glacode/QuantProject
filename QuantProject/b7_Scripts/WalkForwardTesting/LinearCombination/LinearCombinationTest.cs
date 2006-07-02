@@ -93,11 +93,14 @@ namespace QuantProject.Scripts.WalkForwardTesting.LinearCombination
 		{
 			string[] signedTickers = GenomeRepresentation.GetSignedTickers(
 				this.genomeRepresentation.SignedTickers );
+			double[] weightsForSignedTickers = GenomeRepresentation.GetWeightsForSignedTickers(
+				this.genomeRepresentation.SignedTickers );
       switch (this.strategyType)
       {
         case StrategyType.OpenToCloseDaily:
           this.endOfDayStrategy = new OpenToCloseDailyStrategy(
-					                            this.account , signedTickers );
+					                            this.account , signedTickers,
+					                            weightsForSignedTickers );
           break;
         case StrategyType.OpenToCloseWeekly:
           this.endOfDayStrategy = new OpenToCloseWeeklyStrategy(
@@ -108,14 +111,21 @@ namespace QuantProject.Scripts.WalkForwardTesting.LinearCombination
                                       this.account , signedTickers );
           break;
         
+        case StrategyType.OpenToCloseCloseToOpenDaily:
+          this.endOfDayStrategy = new OTC_CTODailyStrategy(
+            this.account , signedTickers , weightsForSignedTickers);
+          break;
+        
         case StrategyType.FixedPeriodOscillator:
           this.endOfDayStrategy = new FixedPeriodOscillatorStrategy(
-            this.account , signedTickers , this.numDaysForOscillatorStrategy , this.numDaysForOscillatorStrategy );
+			            this.account , signedTickers , weightsForSignedTickers,
+			            this.numDaysForOscillatorStrategy , 
+			            this.numDaysForOscillatorStrategy );
           break;
         
         case StrategyType.ExtremeCounterTrend:
           this.endOfDayStrategy = new ExtremeCounterTrendStrategy(
-            this.account , signedTickers , this.numDaysForOscillatorStrategy );
+            this.account , signedTickers , weightsForSignedTickers, this.numDaysForOscillatorStrategy );
           break;
       }
 		}
