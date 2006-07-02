@@ -1,0 +1,110 @@
+﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{55423900-E60B-4638-AD2A-A2A9C3F2E3B6}</ProjectGuid>
+    <RootNamespace>QuantProject.Applications.Downloader</RootNamespace>
+    <AssemblyName>QuantDownloader</AssemblyName>
+    <OutputType>WinExe</OutputType>
+    <ApplicationIcon>.\App.ico</ApplicationIcon>
+    <WarningLevel>4</WarningLevel>
+    <NoStdLib>False</NoStdLib>
+    <NoConfig>False</NoConfig>
+    <RunPostBuildEvent>OnSuccessfulBuild</RunPostBuildEvent>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>True</DebugSymbols>
+    <Optimize>False</Optimize>
+    <AllowUnsafeBlocks>False</AllowUnsafeBlocks>
+    <CheckForOverflowUnderflow>True</CheckForOverflowUnderflow>
+    <OutputPath>..\bin\Debug\</OutputPath>
+    <TreatWarningsAsErrors>False</TreatWarningsAsErrors>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugSymbols>False</DebugSymbols>
+    <Optimize>True</Optimize>
+    <AllowUnsafeBlocks>False</AllowUnsafeBlocks>
+    <CheckForOverflowUnderflow>False</CheckForOverflowUnderflow>
+    <OutputPath>..\bin\Release\</OutputPath>
+    <TreatWarningsAsErrors>False</TreatWarningsAsErrors>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml" />
+    <Reference Include="NPlot">
+      <HintPath>..\..\NPlot.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="AssemblyInfo.cs" />
+    <Compile Include="DataBaseImporter.cs" />
+    <Compile Include="DataSet1.cs" />
+    <Compile Include="Main.cs" />
+    <Compile Include="QuotesDataGrid.cs" />
+    <Compile Include="TestDownloadedData.cs" />
+    <Compile Include="TickerDownloader.cs" />
+    <Compile Include="WebDownloader.cs" />
+    <Compile Include="QuotesEditor\QuotesChart.cs" />
+    <Compile Include="QuotesEditor\QuotesEditor.cs" />
+    <Compile Include="QuotesEditor\ValidationDataGrid.cs" />
+    <Compile Include="QuotesEditor\ValidationGridTabPage.cs" />
+    <Compile Include="QuotesEditor\ValidationTabControl.cs" />
+    <Compile Include="QuotesEditor\ValidationTabPage.cs" />
+    <Compile Include="QuotesEditor\VisualValidationChart.cs" />
+    <Compile Include="QuotesEditor\VisualValidationDataGrid.cs" />
+    <Compile Include="QuotesEditor\VisualValidationTabPage.cs" />
+    <Compile Include="QuotesEditor\CloseToClose\CloseToCloseChart.cs" />
+    <Compile Include="QuotesEditor\CloseToClose\CloseToCloseDataGrid.cs" />
+    <Compile Include="QuotesEditor\CloseToClose\CloseToCloseTabPage.cs" />
+    <Compile Include="QuotesEditor\OHLC\OHLCdataGrid.cs" />
+    <Compile Include="QuotesEditor\OHLC\OHLCtabPage.cs" />
+    <Compile Include="QuotesEditor\OHLC\OHLCuserControl.cs" />
+    <Compile Include="QuotesEditor\RangeToRange\RangeToRangeChart.cs" />
+    <Compile Include="QuotesEditor\RangeToRange\RangeToRangeDataGrid.cs" />
+    <Compile Include="QuotesEditor\RangeToRange\RangeToRangeTabPage.cs" />
+    <Compile Include="TickerSelectors\GroupEditor.cs" />
+    <Compile Include="TickerSelectors\TickerGroupsListViewMenu.cs" />
+    <Compile Include="TickerSelectors\TickerGroupsViewer.cs" />
+    <Compile Include="TickerSelectors\TickerSelectorForm.cs" />
+    <Compile Include="TickerSelectors\TickerViewer.cs" />
+    <Compile Include="TickerSelectors\TickerViewerMenu.cs" />
+    <Compile Include="Validate\ValidateDataGrid.cs" />
+    <Compile Include="Validate\ValidateForm.cs" />
+    <None Include="app.config" />
+    <None Include="App.ico" />
+    <EmbeddedResource Include="TickerSelectors\TickerSelectorForm.resx">
+      <DependentUpon>TickerSelectorForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="WebDownloader.resx">
+      <DependentUpon>WebDownloader.cs</DependentUpon>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\QuantProject\b1_ADT\ADT_SD.csproj">
+      <Project>{217A1E06-5FA7-49C1-A3D7-586F3690D5DE}</Project>
+      <Name>b1_ADT</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\QuantProject\b2_DataAccess\DataAccess_SD.csproj">
+      <Project>{81FA94CD-4E64-4108-8C4D-9F07596AF5FB}</Project>
+      <Name>b2_DataAccess</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\QuantProject\b3_Data\Data_SD.csproj">
+      <Project>{42B091B3-3BDF-45EB-B5E6-9C3CA353117C}</Project>
+      <Name>b3_Data</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\QuantProject\b4_Business\Business_SD.csproj">
+      <Project>{FA7D0E18-390A-4D03-A4C0-B9AEFC765A54}</Project>
+      <Name>b4_Business</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\QuantProject\b5_Presentation\Presentation_SD.csproj">
+      <Project>{AF44E0EA-A055-4BFC-B549-5AC81C95483D}</Project>
+      <Name>b5_Presentation</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.Targets" />
+</Project>

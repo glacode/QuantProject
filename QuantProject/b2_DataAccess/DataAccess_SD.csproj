@@ -1,0 +1,66 @@
+﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{3D38C64D-1118-4C16-A88E-5F2FFD6481BA}</ProjectGuid>
+    <RootNamespace>DataAccess</RootNamespace>
+    <AssemblyName>QuantProject.DataAccess</AssemblyName>
+    <OutputType>Library</OutputType>
+    <WarningLevel>4</WarningLevel>
+    <NoStdLib>False</NoStdLib>
+    <NoConfig>False</NoConfig>
+    <RunPostBuildEvent>OnSuccessfulBuild</RunPostBuildEvent>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>True</DebugSymbols>
+    <Optimize>False</Optimize>
+    <AllowUnsafeBlocks>False</AllowUnsafeBlocks>
+    <CheckForOverflowUnderflow>True</CheckForOverflowUnderflow>
+    <OutputPath>..\bin\Debug\</OutputPath>
+    <TreatWarningsAsErrors>False</TreatWarningsAsErrors>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugSymbols>False</DebugSymbols>
+    <Optimize>True</Optimize>
+    <AllowUnsafeBlocks>False</AllowUnsafeBlocks>
+    <CheckForOverflowUnderflow>False</CheckForOverflowUnderflow>
+    <OutputPath>..\bin\Release\</OutputPath>
+    <TreatWarningsAsErrors>False</TreatWarningsAsErrors>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="AssemblyInfo.cs" />
+    <Compile Include="ConnectionProvider.cs" />
+    <Compile Include="DataBase.cs" />
+    <Compile Include="DataBaseLocator.cs" />
+    <Compile Include="DataBaseVersionManager.cs" />
+    <Compile Include="OleDbSingleTableAdapter.cs" />
+    <Compile Include="QuoteField.cs" />
+    <Compile Include="SQLBuilder.cs" />
+    <Compile Include="SqlExecutor.cs" />
+    <Compile Include="ValidationTypes.cs" />
+    <Compile Include="Tables\FaultyTickers.cs" />
+    <Compile Include="Tables\Quotes.cs" />
+    <Compile Include="Tables\TickerGroups.cs" />
+    <Compile Include="Tables\Tickers.cs" />
+    <Compile Include="Tables\Tickers_tickerGroups.cs" />
+    <Compile Include="Tables\ValidatedTickers.cs" />
+    <Compile Include="Tables\VisuallyValidatedQuotes.cs" />
+    <Compile Include="Tables\EventType.cs" />
+    <Compile Include="MissingQuoteException.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\b1_ADT\ADT_SD.csproj">
+      <Project>{217A1E06-5FA7-49C1-A3D7-586F3690D5DE}</Project>
+      <Name>b1_ADT</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.Targets" />
+</Project>

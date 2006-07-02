@@ -1,0 +1,171 @@
+﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{91CAD8B7-D505-40BE-8FAF-0597E62FF71D}</ProjectGuid>
+    <RootNamespace>Business</RootNamespace>
+    <AssemblyName>QuantProject.Business</AssemblyName>
+    <OutputType>Library</OutputType>
+    <WarningLevel>4</WarningLevel>
+    <NoStdLib>False</NoStdLib>
+    <NoConfig>False</NoConfig>
+    <RunPostBuildEvent>OnSuccessfulBuild</RunPostBuildEvent>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>True</DebugSymbols>
+    <Optimize>False</Optimize>
+    <AllowUnsafeBlocks>False</AllowUnsafeBlocks>
+    <CheckForOverflowUnderflow>True</CheckForOverflowUnderflow>
+    <OutputPath>..\bin\Debug\</OutputPath>
+    <TreatWarningsAsErrors>False</TreatWarningsAsErrors>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugSymbols>False</DebugSymbols>
+    <Optimize>True</Optimize>
+    <AllowUnsafeBlocks>False</AllowUnsafeBlocks>
+    <CheckForOverflowUnderflow>False</CheckForOverflowUnderflow>
+    <OutputPath>..\bin\Release\</OutputPath>
+    <TreatWarningsAsErrors>False</TreatWarningsAsErrors>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml" />
+    <Reference Include="Interop.VBIDE">
+      <HintPath>..\..\Interop.VBIDE.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Interop.Excel">
+      <HintPath>..\..\Interop.Excel.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Interop.Office">
+      <HintPath>..\..\Interop.Office.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Runtime.Serialization.Formatters.Soap" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="AssemblyInfo.cs" />
+    <Compile Include="a0_Validation\IValidator.cs" />
+    <Compile Include="a0_Validation\SospiciousDataRowEventArgs.cs" />
+    <Compile Include="a0_Validation\ValidateDataTable.cs" />
+    <Compile Include="a0_Validation\ValidationWarnings.cs" />
+    <Compile Include="a0_Validation\Validator.cs" />
+    <Compile Include="a0_Validation\Validators\CloseToCloseValidator.cs" />
+    <Compile Include="a0_Validation\Validators\MultiValidator.cs" />
+    <Compile Include="a0_Validation\Validators\OHLCvalidator.cs" />
+    <Compile Include="a0_Validation\Validators\RangeToRangeValidator.cs" />
+    <Compile Include="a05_Timing\EndOfDayDateTime.cs" />
+    <Compile Include="a05_Timing\EndOfDaySpecificTime.cs" />
+    <Compile Include="a05_Timing\EndOfDayTimingEventArgs.cs" />
+    <Compile Include="a05_Timing\HistoricalEndOfDayTimer.cs" />
+    <Compile Include="a05_Timing\IEndOfDayTimer.cs" />
+    <Compile Include="a05_Timing\IndexBasedEndOfDayTimer.cs" />
+    <Compile Include="a07_DataProviders\HistoricalAdjustedQuoteProvider.cs" />
+    <Compile Include="a07_DataProviders\HistoricalEndOfDayDataStreamer.cs" />
+    <Compile Include="a07_DataProviders\HistoricalRawQuoteProvider.cs" />
+    <Compile Include="a07_DataProviders\IHistoricalQuoteProvider.cs" />
+    <Compile Include="a1_Financial\a1_Instruments\Instrument.cs" />
+    <Compile Include="a1_Financial\a1_Instruments\Instruments.cs" />
+    <Compile Include="a1_Financial\a1_Instruments\QuoteCache.cs" />
+    <Compile Include="a1_Financial\a2_Accounting\Account.cs" />
+    <Compile Include="a1_Financial\a2_Accounting\AccountReportRecord.cs" />
+    <Compile Include="a1_Financial\a2_Accounting\Accounts.cs" />
+    <Compile Include="a1_Financial\a2_Accounting\Portfolio.cs" />
+    <Compile Include="a1_Financial\a2_Accounting\Position.cs" />
+    <Compile Include="a1_Financial\a2_Accounting\TimedTransaction.cs" />
+    <Compile Include="a1_Financial\a2_Accounting\Transaction.cs" />
+    <Compile Include="a1_Financial\a2_Accounting\TransactionType.cs" />
+    <Compile Include="a1_Financial\a2_Accounting\Commissions\Commission.cs" />
+    <Compile Include="a1_Financial\a2_Accounting\Commissions\IBCommission.cs" />
+    <Compile Include="a1_Financial\a2_Accounting\Commissions\IBCommissionManager.cs" />
+    <Compile Include="a1_Financial\a2_Accounting\Commissions\ICommissionManager.cs" />
+    <Compile Include="a1_Financial\a2_Accounting\Commissions\ZeroCommission.cs" />
+    <Compile Include="a1_Financial\a2_Accounting\Commissions\ZeroCommissionManager.cs" />
+    <Compile Include="a1_Financial\a2_Accounting\h5_Reporting\AccountReport.cs" />
+    <Compile Include="a1_Financial\a2_Accounting\h5_Reporting\ReportTable.cs" />
+    <Compile Include="a1_Financial\a2_Accounting\h5_Reporting\SummaryRows\AnnualSystemPercentageReturn.cs" />
+    <Compile Include="a1_Financial\a2_Accounting\h5_Reporting\SummaryRows\AverageLongTradePercentageReturn.cs" />
+    <Compile Include="a1_Financial\a2_Accounting\h5_Reporting\SummaryRows\AverageShortTradePercentageReturn.cs" />
+    <Compile Include="a1_Financial\a2_Accounting\h5_Reporting\SummaryRows\AverageTradePercentageReturn.cs" />
+    <Compile Include="a1_Financial\a2_Accounting\h5_Reporting\SummaryRows\LargestLosingTradePercentage.cs" />
+    <Compile Include="a1_Financial\a2_Accounting\h5_Reporting\SummaryRows\LargestWinningTradePercentage.cs" />
+    <Compile Include="a1_Financial\a2_Accounting\h5_Reporting\SummaryRows\MaxEquityDrawDown.cs" />
+    <Compile Include="a1_Financial\a2_Accounting\h5_Reporting\SummaryRows\NumberWinningLongTrades.cs" />
+    <Compile Include="a1_Financial\a2_Accounting\h5_Reporting\SummaryRows\NumberWinningShortTrades.cs" />
+    <Compile Include="a1_Financial\a2_Accounting\h5_Reporting\SummaryRows\NumberWinningTrades.cs" />
+    <Compile Include="a1_Financial\a2_Accounting\h5_Reporting\SummaryRows\ReturnOnAccount.cs" />
+    <Compile Include="a1_Financial\a2_Accounting\h5_Reporting\SummaryRows\SummaryRow.cs" />
+    <Compile Include="a1_Financial\a2_Accounting\h5_Reporting\SummaryRows\TotalCommissionAmount.cs" />
+    <Compile Include="a1_Financial\a2_Accounting\h5_Reporting\SummaryRows\TotalNetProfit.cs" />
+    <Compile Include="a1_Financial\a2_Accounting\h5_Reporting\SummaryRows\TotalNumberOfLongTrades.cs" />
+    <Compile Include="a1_Financial\a2_Accounting\h5_Reporting\SummaryRows\TotalNumberOfShortTrades.cs" />
+    <Compile Include="a1_Financial\a2_Accounting\h5_Reporting\SummaryRows\TotalNumberOfTrades.cs" />
+    <Compile Include="a1_Financial\a2_Accounting\h5_Reporting\Tables\Equity.cs" />
+    <Compile Include="a1_Financial\a2_Accounting\h5_Reporting\Tables\RoundTrades.cs" />
+    <Compile Include="a1_Financial\a2_Accounting\h5_Reporting\Tables\Summary.cs" />
+    <Compile Include="a1_Financial\a2_Accounting\h5_Reporting\Tables\Transactions.cs" />
+    <Compile Include="a1_Financial\a2_Accounting\Transactions\EndOfDayTransaction.cs" />
+    <Compile Include="a1_Financial\a2_Accounting\Transactions\TransactionHistory.cs" />
+    <Compile Include="a1_Financial\a3_Ordering\HistoricalEndOfDayOrderExecutor.cs" />
+    <Compile Include="a1_Financial\a3_Ordering\IOrderExecutor.cs" />
+    <Compile Include="a1_Financial\a3_Ordering\Order.cs" />
+    <Compile Include="a1_Financial\a3_Ordering\OrderFilledEventArgs.cs" />
+    <Compile Include="a1_Financial\a3_Ordering\OrderManager.cs" />
+    <Compile Include="a1_Financial\a3_Ordering\Orders.cs" />
+    <Compile Include="a1_Financial\a3_Ordering\OrderStatus.cs" />
+    <Compile Include="a1_Financial\a3_Ordering\OrderType.cs" />
+    <Compile Include="a2_Strategies\AccountStrategy.cs" />
+    <Compile Include="a2_Strategies\Signal.cs" />
+    <Compile Include="a2_Strategies\Signals.cs" />
+    <Compile Include="a2_Strategies\TradingSystem.cs" />
+    <Compile Include="a2_Strategies\TradingSystems.cs" />
+    <Compile Include="a3_Testing\BackTester.cs" />
+    <Compile Include="a3_Testing\Tester.cs" />
+    <Compile Include="a3_Testing\TestResults.cs" />
+    <Compile Include="a3_Testing\TestWindow.cs" />
+    <Compile Include="a3_Testing\TestWindows.cs" />
+    <Compile Include="a3_Testing\WalkForwardTester.cs" />
+    <Compile Include="a4_Scripting\Script.cs" />
+    <Compile Include="a1_Financial\a2_Accounting\h5_Reporting\SummaryRows\BenchmarkPercentageReturn.cs" />
+    <Compile Include="a1_Financial\a2_Accounting\h5_Reporting\SummaryRows\NumberLosingPeriods.cs" />
+    <Compile Include="a1_Financial\a2_Accounting\h5_Reporting\SummaryRows\NumberWinningPeriods.cs" />
+    <Compile Include="a1_Financial\a2_Accounting\h5_Reporting\SummaryRows\PercentageWinningPeriods.cs" />
+    <Compile Include="a1_Financial\a2_Accounting\h5_Reporting\SummaryRows\NumberEvenPeriods.cs" />
+    <Compile Include="a1_Financial\a2_Accounting\h5_Reporting\SummaryRows\DoubleSummaryRow.cs" />
+    <Compile Include="a1_Financial\a2_Accounting\h5_Reporting\SummaryRows\IntegerSummaryRow.cs" />
+    <Compile Include="a1_Financial\a2_Accounting\h5_Reporting\SummaryRows\PercentageSummaryRow.cs" />
+    <Compile Include="a2_Strategies\IEndOfDayStrategy.cs" />
+    <Compile Include="a1_Financial\a2_Accounting\h5_Reporting\SummaryRows\SharpeRatio.cs" />
+    <Compile Include="a1_Financial\a2_Accounting\EquityLine.cs" />
+    <Compile Include="a1_Financial\a2_Accounting\PositionType.cs" />
+    <Compile Include="a1_Financial\a2_Accounting\Slippage\ISlippageManager.cs" />
+    <Compile Include="a1_Financial\a2_Accounting\Slippage\ZeroSlippageManager.cs" />
+    <Compile Include="a1_Financial\a2_Accounting\Slippage\FixedPercentageSlippageManager.cs" />
+    <Compile Include="a1_Financial\a2_Accounting\RebuildableAccount.cs" />
+    <Compile Include="a2_Strategies\SignedTicker.cs" />
+    <Compile Include="a1_Financial\a2_Accounting\h5_Reporting\SummaryRows\PercentagePositivePeriods.cs" />
+    <Compile Include="a1_Financial\a2_Accounting\h5_Reporting\SummaryRows\ExpectancyScore.cs" />
+    <Compile Include="a1_Financial\a2_Accounting\h5_Reporting\SummaryRows\NumberNegativePeriods.cs" />
+    <Compile Include="a1_Financial\a2_Accounting\h5_Reporting\SummaryRows\NumberPositivePeriods.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\b1_ADT\ADT_SD.csproj">
+      <Project>{217A1E06-5FA7-49C1-A3D7-586F3690D5DE}</Project>
+      <Name>b1_ADT</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\b2_DataAccess\DataAccess_SD.csproj">
+      <Project>{81FA94CD-4E64-4108-8C4D-9F07596AF5FB}</Project>
+      <Name>b2_DataAccess</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\b3_Data\Data_SD.csproj">
+      <Project>{42B091B3-3BDF-45EB-B5E6-9C3CA353117C}</Project>
+      <Name>b3_Data</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.Targets" />
+</Project>

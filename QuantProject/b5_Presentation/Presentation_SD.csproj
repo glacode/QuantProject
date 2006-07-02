@@ -1,0 +1,91 @@
+﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{E05282BB-A762-4205-B420-812CECB48E5C}</ProjectGuid>
+    <RootNamespace>Presentation</RootNamespace>
+    <AssemblyName>QuantProject.Presentation</AssemblyName>
+    <OutputType>Library</OutputType>
+    <WarningLevel>4</WarningLevel>
+    <NoStdLib>False</NoStdLib>
+    <NoConfig>False</NoConfig>
+    <RunPostBuildEvent>OnSuccessfulBuild</RunPostBuildEvent>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>True</DebugSymbols>
+    <Optimize>False</Optimize>
+    <AllowUnsafeBlocks>False</AllowUnsafeBlocks>
+    <CheckForOverflowUnderflow>True</CheckForOverflowUnderflow>
+    <OutputPath>..\bin\Debug\</OutputPath>
+    <TreatWarningsAsErrors>False</TreatWarningsAsErrors>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugSymbols>False</DebugSymbols>
+    <Optimize>True</Optimize>
+    <AllowUnsafeBlocks>False</AllowUnsafeBlocks>
+    <CheckForOverflowUnderflow>False</CheckForOverflowUnderflow>
+    <OutputPath>..\bin\Release\</OutputPath>
+    <TreatWarningsAsErrors>False</TreatWarningsAsErrors>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml" />
+    <Reference Include="NPlot">
+      <HintPath>..\..\NPlot.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Interop.VBIDE">
+      <HintPath>..\..\Interop.VBIDE.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Interop.Excel">
+      <HintPath>..\..\Interop.Excel.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Interop.Office">
+      <HintPath>..\..\Interop.Office.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="AssemblyInfo.cs" />
+    <Compile Include="FormatProvider.cs" />
+    <Compile Include="Charting\CharPlot.cs" />
+    <Compile Include="Charting\Chart.cs" />
+    <Compile Include="Reporting\Console\ConsoleManager.cs" />
+    <Compile Include="Reporting\MicrosoftExcel\ExcelManager.cs" />
+    <Compile Include="Reporting\WindowsForm\EquityChartTabPage.cs" />
+    <Compile Include="Reporting\WindowsForm\Report.cs" />
+    <Compile Include="Reporting\WindowsForm\ReportGrid.cs" />
+    <Compile Include="Reporting\WindowsForm\ReportGridTabPage.cs" />
+    <Compile Include="Reporting\WindowsForm\ReportShower.cs" />
+    <Compile Include="Reporting\WindowsForm\ReportTabControl.cs" />
+    <Compile Include="Reporting\WindowsForm\SummaryTabPage.cs" />
+    <Compile Include="Reporting\WindowsForm\AccountViewer.cs" />
+    <Compile Include="Reporting\WindowsForm\SummaryItem.cs" />
+    <Compile Include="VisualObjectArchiver.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\b1_ADT\ADT_SD.csproj">
+      <Project>{217A1E06-5FA7-49C1-A3D7-586F3690D5DE}</Project>
+      <Name>b1_ADT</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\b2_DataAccess\DataAccess_SD.csproj">
+      <Project>{81FA94CD-4E64-4108-8C4D-9F07596AF5FB}</Project>
+      <Name>b2_DataAccess</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\b3_Data\Data_SD.csproj">
+      <Project>{42B091B3-3BDF-45EB-B5E6-9C3CA353117C}</Project>
+      <Name>b3_Data</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\b4_Business\Business_SD.csproj">
+      <Project>{FA7D0E18-390A-4D03-A4C0-B9AEFC765A54}</Project>
+      <Name>b4_Business</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.Targets" />
+</Project>

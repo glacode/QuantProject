@@ -1,0 +1,69 @@
+<Project name="b3_Data" standardNamespace="Data" description="" newfilesearch="None" enableviewstate="True" version="1.1" projecttype="C#">
+  <Contents>
+    <File name=".\AssemblyInfo.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
+    <File name=".\ExtendedDataTable.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
+    <File name=".\FilterBuilder.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
+    <File name=".\DataProviders\HistoricalDataProvider.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
+    <File name=".\DataProviders\IDataStreamer.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
+    <File name=".\DataProviders\NewExtendedDateTimeEventArgs.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
+    <File name=".\DataProviders\NewQuoteEventArgs.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
+    <File name=".\DataProviders\Quote.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
+    <File name=".\DataProviders\Timer.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
+    <File name=".\DataProviders\Caching\Cache.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
+    <File name=".\DataTables\GroupQuotes.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
+    <File name=".\DataTables\Quotes.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
+    <File name=".\DataTables\TickerDataTable.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
+    <File name=".\DataTables\Tickers_tickerGroups.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
+    <File name=".\DataTables\ValidatedTickers.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
+    <File name=".\DataTables\VisuallyValidatedQuotes.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
+    <File name=".\Selectors\ITickerReceiver.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
+    <File name=".\Selectors\ITickerRemover.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
+    <File name=".\Selectors\ITickerSelector.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
+    <File name=".\Selectors\SelectorByAbsolutePerformance.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
+    <File name=".\Selectors\SelectorByAverageCloseToClosePerformance.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
+    <File name=".\Selectors\SelectorByAverageOpenToClosePerformance.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
+    <File name=".\Selectors\SelectorByCloseToCloseLinearCorrelation.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
+    <File name=".\Selectors\SelectorByCloseToCloseVolatility.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
+    <File name=".\Selectors\SelectorByLiquidity.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
+    <File name=".\Selectors\SelectorByOpenToCloseLinearCorrelation.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
+    <File name=".\Selectors\SelectorByOpenToCloseVolatility.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
+    <File name=".\Selectors\SelectorByQuotationAtEachMarketDay.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
+    <File name=".\Selectors\SelectorByAverageRawOpenPrice.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
+    <File name=".\Selectors\TickerSelector.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
+    <File name=".\Selectors\SelectorByWinningOpenToClose.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
+    <File name=".\Selectors\SelectorByOpenCloseCorrelationToBenchmark.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
+    <File name=".\DataProviders\Caching\EarlyDateException.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
+    <File name=".\DataProviders\Caching\CachePage.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
+    <File name=".\DataProviders\Caching\MissingQuoteException.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
+    <File name=".\Selectors\SelectorByGroup.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
+    <File name=".\Selectors\SelectorByCloseToCloseCorrelationToBenchmark.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
+    <File name=".\Selectors\SelectorByCloseToOpenVolatility.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
+    <File name=".\Selectors\SelectorByAverageCloseToOpenPerformance.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
+    <File name=".\DataProviders\Caching\ICache.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
+    <File name=".\DataProviders\Caching\SimpleCache.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
+    <File name=".\Selectors\SelectorByQuotationNotAtEachMarketDay.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
+    <File name=".\MissingQuotesException.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
+  </Contents>
+  <References>
+    <Reference type="Project" refto="b2_DataAccess" localcopy="True" />
+    <Reference type="Project" refto="b1_ADT" localcopy="True" />
+  </References>
+  <DeploymentInformation target="" script="" strategy="File" />
+  <Configuration runwithwarnings="True" name="Debug">
+    <CodeGeneration runtime="MsNet" compiler="Csc" compilerversion="" warninglevel="4" nowarn="" includedebuginformation="True" optimize="False" unsafecodeallowed="False" generateoverflowchecks="True" mainclass="" target="Library" definesymbols="" generatexmldocumentation="False" win32Icon="" noconfig="False" nostdlib="False" />
+    <Execution commandlineparameters="" consolepause="True" />
+    <Output directory="..\bin\Debug" assembly="QuantProject.Data" executeScript="" executeBeforeBuild="" executeAfterBuild="" executeBeforeBuildArguments="" executeAfterBuildArguments="" />
+  </Configuration>
+  <Configurations active="Debug">
+    <Configuration runwithwarnings="True" name="Debug">
+      <CodeGeneration runtime="MsNet" compiler="Csc" compilerversion="" warninglevel="4" nowarn="" includedebuginformation="True" optimize="False" unsafecodeallowed="False" generateoverflowchecks="True" mainclass="" target="Library" definesymbols="" generatexmldocumentation="False" win32Icon="" noconfig="False" nostdlib="False" />
+      <Execution commandlineparameters="" consolepause="True" />
+      <Output directory="..\bin\Debug" assembly="QuantProject.Data" executeScript="" executeBeforeBuild="" executeAfterBuild="" executeBeforeBuildArguments="" executeAfterBuildArguments="" />
+    </Configuration>
+    <Configuration runwithwarnings="True" name="Release">
+      <CodeGeneration runtime="MsNet" compiler="Csc" compilerversion="" warninglevel="4" nowarn="" includedebuginformation="False" optimize="True" unsafecodeallowed="False" generateoverflowchecks="False" mainclass="" target="Library" definesymbols="" generatexmldocumentation="False" win32Icon="" noconfig="False" nostdlib="False" />
+      <Execution commandlineparameters="" consolepause="True" />
+      <Output directory="..\bin\Release" assembly="QuantProject.Data" executeScript="" executeBeforeBuild="" executeAfterBuild="" executeBeforeBuildArguments="" executeAfterBuildArguments="" />
+    </Configuration>
+  </Configurations>
+</Project>

@@ -1,0 +1,46 @@
+﻿Microsoft Visual Studio Solution File, Format Version 9.00
+# SharpDevelop 2.0.0.1462
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QuantDownloader", "Downloader\QuantDownloader_SD.csproj", "{55423900-E60B-4638-AD2A-A2A9C3F2E3B6}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "b1_ADT", "..\QuantProject\b1_ADT\ADT_SD.csproj", "{217A1E06-5FA7-49C1-A3D7-586F3690D5DE}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "b2_DataAccess", "..\QuantProject\b2_DataAccess\DataAccess_SD.csproj", "{81FA94CD-4E64-4108-8C4D-9F07596AF5FB}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "b3_Data", "..\QuantProject\b3_Data\Data_SD.csproj", "{42B091B3-3BDF-45EB-B5E6-9C3CA353117C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "b4_Business", "..\QuantProject\b4_Business\Business_SD.csproj", "{FA7D0E18-390A-4D03-A4C0-B9AEFC765A54}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "b5_Presentation", "..\QuantProject\b5_Presentation\Presentation_SD.csproj", "{AF44E0EA-A055-4BFC-B549-5AC81C95483D}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{AF44E0EA-A055-4BFC-B549-5AC81C95483D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AF44E0EA-A055-4BFC-B549-5AC81C95483D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AF44E0EA-A055-4BFC-B549-5AC81C95483D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AF44E0EA-A055-4BFC-B549-5AC81C95483D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FA7D0E18-390A-4D03-A4C0-B9AEFC765A54}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FA7D0E18-390A-4D03-A4C0-B9AEFC765A54}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FA7D0E18-390A-4D03-A4C0-B9AEFC765A54}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FA7D0E18-390A-4D03-A4C0-B9AEFC765A54}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{42B091B3-3BDF-45EB-B5E6-9C3CA353117C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{42B091B3-3BDF-45EB-B5E6-9C3CA353117C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{42B091B3-3BDF-45EB-B5E6-9C3CA353117C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{42B091B3-3BDF-45EB-B5E6-9C3CA353117C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{81FA94CD-4E64-4108-8C4D-9F07596AF5FB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{81FA94CD-4E64-4108-8C4D-9F07596AF5FB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{81FA94CD-4E64-4108-8C4D-9F07596AF5FB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{81FA94CD-4E64-4108-8C4D-9F07596AF5FB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{217A1E06-5FA7-49C1-A3D7-586F3690D5DE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{217A1E06-5FA7-49C1-A3D7-586F3690D5DE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{217A1E06-5FA7-49C1-A3D7-586F3690D5DE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{217A1E06-5FA7-49C1-A3D7-586F3690D5DE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{55423900-E60B-4638-AD2A-A2A9C3F2E3B6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{55423900-E60B-4638-AD2A-A2A9C3F2E3B6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{55423900-E60B-4638-AD2A-A2A9C3F2E3B6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{55423900-E60B-4638-AD2A-A2A9C3F2E3B6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+	EndGlobalSection
+EndGlobal

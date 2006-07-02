@@ -1,0 +1,44 @@
+<Project name="b2_DataAccess" standardNamespace="DataAccess" description="" newfilesearch="None" enableviewstate="True" version="1.1" projecttype="C#">
+  <Contents>
+    <File name=".\AssemblyInfo.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
+    <File name=".\ConnectionProvider.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
+    <File name=".\DataBase.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
+    <File name=".\DataBaseLocator.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
+    <File name=".\DataBaseVersionManager.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
+    <File name=".\OleDbSingleTableAdapter.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
+    <File name=".\QuoteField.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
+    <File name=".\SQLBuilder.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
+    <File name=".\SqlExecutor.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
+    <File name=".\ValidationTypes.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
+    <File name=".\Tables\FaultyTickers.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
+    <File name=".\Tables\Quotes.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
+    <File name=".\Tables\TickerGroups.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
+    <File name=".\Tables\Tickers.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
+    <File name=".\Tables\Tickers_tickerGroups.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
+    <File name=".\Tables\ValidatedTickers.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
+    <File name=".\Tables\VisuallyValidatedQuotes.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
+    <File name=".\Tables\EventType.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
+    <File name=".\MissingQuoteException.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
+  </Contents>
+  <References>
+    <Reference type="Project" refto="b1_ADT" localcopy="True" />
+  </References>
+  <DeploymentInformation target="" script="" strategy="File" />
+  <Configuration runwithwarnings="True" name="Debug">
+    <CodeGeneration runtime="MsNet" compiler="Csc" compilerversion="" warninglevel="4" nowarn="" includedebuginformation="True" optimize="False" unsafecodeallowed="False" generateoverflowchecks="True" mainclass="" target="Library" definesymbols="" generatexmldocumentation="False" win32Icon="" noconfig="False" nostdlib="False" />
+    <Execution commandlineparameters="" consolepause="True" />
+    <Output directory="..\bin\Debug" assembly="QuantProject.DataAccess" executeScript="" executeBeforeBuild="" executeAfterBuild="" executeBeforeBuildArguments="" executeAfterBuildArguments="" />
+  </Configuration>
+  <Configurations active="Debug">
+    <Configuration runwithwarnings="True" name="Debug">
+      <CodeGeneration runtime="MsNet" compiler="Csc" compilerversion="" warninglevel="4" nowarn="" includedebuginformation="True" optimize="False" unsafecodeallowed="False" generateoverflowchecks="True" mainclass="" target="Library" definesymbols="" generatexmldocumentation="False" win32Icon="" noconfig="False" nostdlib="False" />
+      <Execution commandlineparameters="" consolepause="True" />
+      <Output directory="..\bin\Debug" assembly="QuantProject.DataAccess" executeScript="" executeBeforeBuild="" executeAfterBuild="" executeBeforeBuildArguments="" executeAfterBuildArguments="" />
+    </Configuration>
+    <Configuration runwithwarnings="True" name="Release">
+      <CodeGeneration runtime="MsNet" compiler="Csc" compilerversion="" warninglevel="4" nowarn="" includedebuginformation="False" optimize="True" unsafecodeallowed="False" generateoverflowchecks="False" mainclass="" target="Library" definesymbols="" generatexmldocumentation="False" win32Icon="" noconfig="False" nostdlib="False" />
+      <Execution commandlineparameters="" consolepause="True" />
+      <Output directory="..\bin\Release" assembly="QuantProject.DataAccess" executeScript="" executeBeforeBuild="" executeAfterBuild="" executeBeforeBuildArguments="" executeAfterBuildArguments="" />
+    </Configuration>
+  </Configurations>
+</Project>

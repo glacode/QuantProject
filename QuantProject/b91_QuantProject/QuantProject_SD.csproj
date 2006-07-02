@@ -1,0 +1,73 @@
+﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{50E9AF80-5E82-4872-99EA-717A91993B08}</ProjectGuid>
+    <RootNamespace>QuantProject</RootNamespace>
+    <AssemblyName>QuantProject</AssemblyName>
+    <OutputType>WinExe</OutputType>
+    <ApplicationIcon>.\App.ico</ApplicationIcon>
+    <WarningLevel>4</WarningLevel>
+    <NoStdLib>False</NoStdLib>
+    <NoConfig>False</NoConfig>
+    <RunPostBuildEvent>OnSuccessfulBuild</RunPostBuildEvent>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>True</DebugSymbols>
+    <Optimize>False</Optimize>
+    <AllowUnsafeBlocks>False</AllowUnsafeBlocks>
+    <CheckForOverflowUnderflow>True</CheckForOverflowUnderflow>
+    <OutputPath>..\bin\Debug\</OutputPath>
+    <TreatWarningsAsErrors>False</TreatWarningsAsErrors>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugSymbols>False</DebugSymbols>
+    <Optimize>True</Optimize>
+    <AllowUnsafeBlocks>False</AllowUnsafeBlocks>
+    <CheckForOverflowUnderflow>False</CheckForOverflowUnderflow>
+    <OutputPath>..\bin\Release\</OutputPath>
+    <TreatWarningsAsErrors>False</TreatWarningsAsErrors>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="DataSet1.cs" />
+    <Compile Include="Main.cs" />
+    <Compile Include="TestDownloadedData.cs" />
+    <None Include="app.config" />
+    <None Include="App.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\b1_ADT\ADT_SD.csproj">
+      <Project>{6A426DC3-013E-4D38-A1AE-7BE128BF2DD7}</Project>
+      <Name>b1_ADT</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\b2_DataAccess\DataAccess_SD.csproj">
+      <Project>{3D38C64D-1118-4C16-A88E-5F2FFD6481BA}</Project>
+      <Name>b2_DataAccess</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\b3_Data\Data_SD.csproj">
+      <Project>{1A0B0C1A-DBC5-4AE6-BE2E-2298135DD60C}</Project>
+      <Name>b3_Data</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\b4_Business\Business_SD.csproj">
+      <Project>{91CAD8B7-D505-40BE-8FAF-0597E62FF71D}</Project>
+      <Name>b4_Business</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\b5_Presentation\Presentation_SD.csproj">
+      <Project>{E05282BB-A762-4205-B420-812CECB48E5C}</Project>
+      <Name>b5_Presentation</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\b7_Scripts\Scripts_SD.csproj">
+      <Project>{B5AAC5AA-DCC1-4698-A362-D399AB9A90C4}</Project>
+      <Name>b7_Scripts</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.Targets" />
+</Project>

@@ -1,0 +1,58 @@
+<Project name="b1_ADT" standardNamespace="ADT" description="" newfilesearch="None" enableviewstate="True" version="1.1" projecttype="C#">
+  <Contents>
+    <File name=".\AdvancedSortedList.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
+    <File name=".\AssemblyInfo.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
+    <File name=".\BarComponent.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
+    <File name=".\ConstantsProvider.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
+    <File name=".\ExtendedDataTable.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
+    <File name=".\ExtendedDateTime.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
+    <File name=".\HashProvider.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
+    <File name=".\IProgressNotifier.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
+    <File name=".\Keyed.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
+    <File name=".\NewProgressEventArgs.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
+    <File name=".\RecursiveHashTable.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
+    <File name=".\FileManaging\ObjectArchiver.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
+    <File name=".\Histories\History.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
+    <File name=".\Optimizing\Optimizable.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
+    <File name=".\Optimizing\Parameter.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
+    <File name=".\Optimizing\Parameters.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
+    <File name=".\Optimizing\Genetic\GeneticOptimizer.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
+    <File name=".\Optimizing\Genetic\Genome.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
+    <File name=".\Optimizing\Genetic\GenomeComparer.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
+    <File name=".\Optimizing\Genetic\GenomeManagement.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
+    <File name=".\Optimizing\Genetic\GenomeManagerTest.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
+    <File name=".\Optimizing\Genetic\IGenomeManager.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
+    <File name=".\Statistics\BasicFunctions.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
+    <File name=".\Statistics\CalculusApproximation.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
+    <File name=".\Statistics\Function.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
+    <File name=".\Statistics\IPdfDefiner.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
+    <File name=".\Statistics\NormalDistribution.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
+    <File name=".\Histories\PreviousInterpolator.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
+    <File name=".\Histories\IInterpolatonMethod.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
+    <File name=".\IndexOfKeyOrPreviousException.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
+    <File name=".\Statistics\AdvancedFunctions.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
+    <File name=".\EstimatedObject.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
+    <File name=".\Optimizing\Genetic\NewGenerationEventArgs.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
+    <File name=".\Optimizing\Genetic\GenomeCounter.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
+    <File name=".\Collections\QPHashtable.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
+  </Contents>
+  <References />
+  <DeploymentInformation target="" script="" strategy="File" />
+  <Configuration runwithwarnings="True" name="Debug">
+    <CodeGeneration runtime="MsNet" compiler="Csc" compilerversion="Standard" warninglevel="4" nowarn="" includedebuginformation="True" optimize="False" unsafecodeallowed="False" generateoverflowchecks="True" mainclass="" target="Library" definesymbols="" generatexmldocumentation="False" win32Icon="" noconfig="False" nostdlib="False" />
+    <Execution commandlineparameters="" consolepause="True" />
+    <Output directory="..\bin\Debug" assembly="QuantProject.ADT" executeScript="" executeBeforeBuild="" executeAfterBuild="" executeBeforeBuildArguments="" executeAfterBuildArguments="" />
+  </Configuration>
+  <Configurations active="Debug">
+    <Configuration runwithwarnings="True" name="Debug">
+      <CodeGeneration runtime="MsNet" compiler="Csc" compilerversion="Standard" warninglevel="4" nowarn="" includedebuginformation="True" optimize="False" unsafecodeallowed="False" generateoverflowchecks="True" mainclass="" target="Library" definesymbols="" generatexmldocumentation="False" win32Icon="" noconfig="False" nostdlib="False" />
+      <Execution commandlineparameters="" consolepause="True" />
+      <Output directory="..\bin\Debug" assembly="QuantProject.ADT" executeScript="" executeBeforeBuild="" executeAfterBuild="" executeBeforeBuildArguments="" executeAfterBuildArguments="" />
+    </Configuration>
+    <Configuration runwithwarnings="True" name="Release">
+      <CodeGeneration runtime="MsNet" compiler="Csc" compilerversion="" warninglevel="4" nowarn="" includedebuginformation="False" optimize="True" unsafecodeallowed="False" generateoverflowchecks="False" mainclass="" target="Library" definesymbols="" generatexmldocumentation="False" win32Icon="" noconfig="False" nostdlib="False" />
+      <Execution commandlineparameters="" consolepause="True" />
+      <Output directory="..\bin\Release" assembly="QuantProject.ADT" executeScript="" executeBeforeBuild="" executeAfterBuild="" executeBeforeBuildArguments="" executeAfterBuildArguments="" />
+    </Configuration>
+  </Configurations>
+</Project>

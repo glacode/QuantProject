@@ -1,0 +1,66 @@
+<Project name="QuantDownloader" standardNamespace="QuantProject.Applications.Downloader" description="" newfilesearch="None" enableviewstate="True" version="1.1" projecttype="C#">
+  <Contents>
+    <File name=".\AssemblyInfo.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
+    <File name=".\DataBaseImporter.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
+    <File name=".\DataSet1.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
+    <File name=".\Main.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
+    <File name=".\QuotesDataGrid.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
+    <File name=".\TestDownloadedData.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
+    <File name=".\TickerDownloader.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
+    <File name=".\WebDownloader.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
+    <File name=".\QuotesEditor\QuotesChart.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
+    <File name=".\QuotesEditor\QuotesEditor.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
+    <File name=".\QuotesEditor\ValidationDataGrid.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
+    <File name=".\QuotesEditor\ValidationGridTabPage.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
+    <File name=".\QuotesEditor\ValidationTabControl.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
+    <File name=".\QuotesEditor\ValidationTabPage.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
+    <File name=".\QuotesEditor\VisualValidationChart.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
+    <File name=".\QuotesEditor\VisualValidationDataGrid.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
+    <File name=".\QuotesEditor\VisualValidationTabPage.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
+    <File name=".\QuotesEditor\CloseToClose\CloseToCloseChart.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
+    <File name=".\QuotesEditor\CloseToClose\CloseToCloseDataGrid.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
+    <File name=".\QuotesEditor\CloseToClose\CloseToCloseTabPage.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
+    <File name=".\QuotesEditor\OHLC\OHLCdataGrid.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
+    <File name=".\QuotesEditor\OHLC\OHLCtabPage.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
+    <File name=".\QuotesEditor\OHLC\OHLCuserControl.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
+    <File name=".\QuotesEditor\RangeToRange\RangeToRangeChart.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
+    <File name=".\QuotesEditor\RangeToRange\RangeToRangeDataGrid.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
+    <File name=".\QuotesEditor\RangeToRange\RangeToRangeTabPage.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
+    <File name=".\TickerSelectors\GroupEditor.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
+    <File name=".\TickerSelectors\TickerGroupsListViewMenu.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
+    <File name=".\TickerSelectors\TickerGroupsViewer.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
+    <File name=".\TickerSelectors\TickerSelectorForm.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
+    <File name=".\TickerSelectors\TickerViewer.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
+    <File name=".\TickerSelectors\TickerViewerMenu.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
+    <File name=".\Validate\ValidateDataGrid.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
+    <File name=".\Validate\ValidateForm.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
+    <File name=".\app.config" subtype="Code" buildaction="Nothing" dependson="" data="" />
+    <File name=".\App.ico" subtype="Code" buildaction="Nothing" dependson="" data="" />
+  </Contents>
+  <References>
+    <Reference type="Project" refto="b1_ADT" localcopy="True" />
+    <Reference type="Project" refto="b2_DataAccess" localcopy="True" />
+    <Reference type="Project" refto="b3_Data" localcopy="True" />
+    <Reference type="Project" refto="b4_Business" localcopy="True" />
+    <Reference type="Project" refto="b5_Presentation" localcopy="True" />
+    <Reference type="Assembly" refto="..\..\NPlot.dll" localcopy="True" />
+  </References>
+  <DeploymentInformation target="" script="" strategy="File" />
+  <Configuration runwithwarnings="True" name="Debug">
+    <CodeGeneration runtime="MsNet" compiler="Csc" compilerversion="Standard" warninglevel="4" nowarn="" includedebuginformation="True" optimize="False" unsafecodeallowed="False" generateoverflowchecks="True" mainclass="" target="WinExe" definesymbols="" generatexmldocumentation="False" win32Icon=".\App.ico" noconfig="False" nostdlib="False" />
+    <Execution commandlineparameters="" consolepause="True" />
+    <Output directory="..\bin\Debug" assembly="QuantDownloader" executeScript="" executeBeforeBuild="" executeAfterBuild="" executeBeforeBuildArguments="" executeAfterBuildArguments="" />
+  </Configuration>
+  <Configurations active="Debug">
+    <Configuration runwithwarnings="True" name="Debug">
+      <CodeGeneration runtime="MsNet" compiler="Csc" compilerversion="Standard" warninglevel="4" nowarn="" includedebuginformation="True" optimize="False" unsafecodeallowed="False" generateoverflowchecks="True" mainclass="" target="WinExe" definesymbols="" generatexmldocumentation="False" win32Icon=".\App.ico" noconfig="False" nostdlib="False" />
+      <Execution commandlineparameters="" consolepause="True" />
+      <Output directory="..\bin\Debug" assembly="QuantDownloader" executeScript="" executeBeforeBuild="" executeAfterBuild="" executeBeforeBuildArguments="" executeAfterBuildArguments="" />
+    </Configuration>
+    <Configuration runwithwarnings="True" name="Release">
+      <CodeGeneration runtime="MsNet" compiler="Csc" compilerversion="Standard" warninglevel="4" nowarn="" includedebuginformation="False" optimize="True" unsafecodeallowed="False" generateoverflowchecks="False" mainclass="" target="WinExe" definesymbols="" generatexmldocumentation="False" win32Icon="" noconfig="False" nostdlib="False" />
+      <Execution commandlineparameters="" consolepause="True" />
+      <Output directory="..\bin\Release" assembly="QuantDownloader" executeScript="" executeBeforeBuild="" executeAfterBuild="" executeBeforeBuildArguments="" executeAfterBuildArguments="" />
+    </Configuration>
+  </Configurations>
+</Project>

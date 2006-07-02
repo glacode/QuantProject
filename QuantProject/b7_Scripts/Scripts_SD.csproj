@@ -1,0 +1,197 @@
+﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{B5AAC5AA-DCC1-4698-A362-D399AB9A90C4}</ProjectGuid>
+    <RootNamespace>Scripts</RootNamespace>
+    <AssemblyName>Scripts</AssemblyName>
+    <OutputType>Library</OutputType>
+    <WarningLevel>4</WarningLevel>
+    <NoStdLib>False</NoStdLib>
+    <NoConfig>False</NoConfig>
+    <RunPostBuildEvent>OnSuccessfulBuild</RunPostBuildEvent>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>True</DebugSymbols>
+    <Optimize>False</Optimize>
+    <AllowUnsafeBlocks>False</AllowUnsafeBlocks>
+    <CheckForOverflowUnderflow>True</CheckForOverflowUnderflow>
+    <OutputPath>..\bin\Debug\</OutputPath>
+    <TreatWarningsAsErrors>False</TreatWarningsAsErrors>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugSymbols>False</DebugSymbols>
+    <Optimize>True</Optimize>
+    <AllowUnsafeBlocks>False</AllowUnsafeBlocks>
+    <CheckForOverflowUnderflow>False</CheckForOverflowUnderflow>
+    <OutputPath>..\bin\Release\</OutputPath>
+    <TreatWarningsAsErrors>False</TreatWarningsAsErrors>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="AssemblyInfo.cs" />
+    <Compile Include="MyTradingSystem.cs" />
+    <Compile Include="CallingReportsForRunScripts\ShowReportFromFile.cs" />
+    <Compile Include="SimpleTesting\MSFTsimpleTest\TsMSFTsimpleTest.cs" />
+    <Compile Include="SimpleTesting\OneRank\OneRank.cs" />
+    <Compile Include="SimpleTesting\OneRank\RunOneRank.cs" />
+    <Compile Include="SimpleTesting\ShortTest\EndOfDayTimerHandler.cs" />
+    <Compile Include="SimpleTesting\ShortTest\RunShortTest.cs" />
+    <Compile Include="TickerSelectionTesting\EndOfDayTimerHandlerCTC.cs" />
+    <Compile Include="TickerSelectionTesting\EndOfDayTimerHandlerCTO.cs" />
+    <Compile Include="TickerSelectionTesting\GenomeManagerForEfficientCTCPortfolio.cs" />
+    <Compile Include="TickerSelectionTesting\GenomeManagerForEfficientCTOPortfolio.cs" />
+    <Compile Include="TickerSelectionTesting\GenomeManagerForEfficientPortfolio.cs" />
+    <Compile Include="TickerSelectionTesting\RunEfficientCTCPortfolio.cs" />
+    <Compile Include="TickerSelectionTesting\RunEfficientCTOPortfolio.cs" />
+    <Compile Include="WalkForwardTesting\MSFTwalkForward\TsMSFTwalkForward.cs" />
+    <Compile Include="WalkForwardTesting\WalkForwardOneRank\BestPerformingTickers.cs" />
+    <Compile Include="WalkForwardTesting\WalkForwardOneRank\ChosenTickers.cs" />
+    <Compile Include="WalkForwardTesting\WalkForwardOneRank\ComparableAccount.cs" />
+    <Compile Include="WalkForwardTesting\WalkForwardOneRank\EligibleTickers.cs" />
+    <Compile Include="WalkForwardTesting\WalkForwardOneRank\ProgressBarForm.cs" />
+    <Compile Include="WalkForwardTesting\WalkForwardOneRank\RunWalkForwardOneRank.cs" />
+    <Compile Include="TickerSelectionTesting\EndOfDayTimerHandler.cs" />
+    <Compile Include="TickerSelectionTesting\RunEfficientPortfolio.cs" />
+    <Compile Include="TickerSelectionTesting\PortfolioType.cs" />
+    <Compile Include="TickerSelectionTesting\RunTestOptimizedCTCPortfolio.cs" />
+    <Compile Include="TickerSelectionTesting\EndOfDayTimerHandlerCTCTest.cs" />
+    <Compile Include="SimpleTesting\OneRank\OneRankForm.cs" />
+    <Compile Include="TickerSelectionTesting\EndOfDayTimerHandlerLastChosenPortfolio.cs" />
+    <Compile Include="TickerSelectionTesting\RunLastChosenPortfolioOutOfSample.cs" />
+    <Compile Include="WalkForwardTesting\LinearCombination\GenomeRepresentation.cs" />
+    <Compile Include="TickerSelectionTesting\CandidateProperties.cs" />
+    <Compile Include="WalkForwardTesting\LinearCombination\LinearCombinationTest.cs" />
+    <Compile Include="WalkForwardTesting\LinearCombination\MainForm.cs" />
+    <Compile Include="WalkForwardTesting\LinearCombination\OptimizationOutput.cs" />
+    <Compile Include="WalkForwardTesting\LinearCombination\RunBestLinearCombination.cs" />
+    <Compile Include="WalkForwardTesting\LinearCombination\TestDisplayer.cs" />
+    <Compile Include="TickerSelectionTesting\EndOfDayTimerHandlerCTCWeekly.cs" />
+    <Compile Include="TickerSelectionTesting\RunEfficientCTCWeeklyPortfolio.cs" />
+    <Compile Include="TickerSelectionTesting\GenomeManipulator.cs" />
+    <Compile Include="WalkForwardTesting\LinearCombination\OpenToCloseWeeklyStrategy.cs" />
+    <Compile Include="WalkForwardTesting\LinearCombination\OpenToCloseDailyStrategy.cs" />
+    <Compile Include="WalkForwardTesting\LinearCombination\WalkForwardTest\RunWalkForwardLinearCombination.cs" />
+    <Compile Include="WalkForwardTesting\LinearCombination\WalkForwardTest\WalkForwardOpenToCloseDailyStrategy.cs" />
+    <Compile Include="EvaluatingOptimizationTechnique\OptimizationTechniqueEvaluator.cs" />
+    <Compile Include="EvaluatingOptimizationTechnique\EfficientPortfolio\RunTestingOptimizationOpenToClose.cs" />
+    <Compile Include="TickerSelectionTesting\EndOfDayTimerHandlerOTCCTO.cs" />
+    <Compile Include="TickerSelectionTesting\RunEfficientOTCCTOPortfolio.cs" />
+    <Compile Include="TickerSelectionTesting\RunEfficientOTCPortfolioMultiday.cs" />
+    <Compile Include="TickerSelectionTesting\EndOfDayTimerHandlerOTCMultiday.cs" />
+    <Compile Include="TickerSelectionTesting\SimpleSelection\RunSimpleSelectionOpenToClose.cs" />
+    <Compile Include="TickerSelectionTesting\SimpleSelection\BestTickersScreener.cs" />
+    <Compile Include="TickerSelectionTesting\SimpleSelection\BestTickersScreenerOpenToClose.cs" />
+    <Compile Include="TickerSelectionTesting\SimpleSelection\CandidatePropertiesForSimpleSelection.cs" />
+    <Compile Include="TickerSelectionTesting\SimpleSelection\EndOfDayTimerHandlerSimpleSelection.cs" />
+    <Compile Include="TickerSelectionTesting\SimpleSelection\EndOfDayTimerHandlerSimpleSelectionOpenToClose.cs" />
+    <Compile Include="TickerSelectionTesting\SimpleSelection\RunSimpleSelection.cs" />
+    <Compile Include="WalkForwardTesting\WalkForwardOneRank\MyEndOfDayTimerHandler.cs" />
+    <Compile Include="TickerSelectionTesting\GenomeMeaning.cs" />
+    <Compile Include="TickerSelectionTesting\GenomeManagerForWeightedEfficientPortfolio.cs" />
+    <Compile Include="WalkForwardTesting\WalkForwardMultiOneRank\WFMultiOneRankGenomeManager.cs" />
+    <Compile Include="WalkForwardTesting\WalkForwardMultiOneRank\RunWalkForwardMultiOneRank.cs" />
+    <Compile Include="WalkForwardTesting\WalkForwardMultiOneRank\WFMultiOneRankChosenTickers.cs" />
+    <Compile Include="WalkForwardTesting\WalkForwardMultiOneRank\WFMultiOneRankEligibleTickers.cs" />
+    <Compile Include="WalkForwardTesting\WalkForwardMultiOneRank\ReportDebugger\WFMultiOneRankDebugInSample.cs" />
+    <Compile Include="WalkForwardTesting\WalkForwardMultiOneRank\WFMultiOneRankEndOfDayTimerHandler.cs" />
+    <Compile Include="WalkForwardTesting\WalkForwardMultiOneRank\ReportDebugger\WFMultiOneRankDebugEndOfDayTimerHandler.cs" />
+    <Compile Include="WalkForwardTesting\WalkForwardMultiOneRank\ReportDebugger\WFMultiOneRankReportDebugger.cs" />
+    <Compile Include="WalkForwardTesting\IWalkForwardProgressNotifier.cs" />
+    <Compile Include="WalkForwardTesting\WalkForwardMultiOneRank\ReportDebugger\WFMultiOneRankDebugInSampleForm.cs" />
+    <Compile Include="WalkForwardTesting\WalkForwardMultiOneRank\ReportDebugger\WFMultiOneRankRunInSampleDebug.cs" />
+    <Compile Include="TickerSelectionTesting\TestingOTCTypes\EndOfDayTimerHandlerOTCTypes.cs" />
+    <Compile Include="TickerSelectionTesting\TestingOTCTypes\RunEfficientOTCTypes.cs" />
+    <Compile Include="TickerSelectionTesting\GenomeManagerForEfficientOTCPortfolio.cs" />
+    <Compile Include="TickerSelectionTesting\RunEfficientOTCPortfolio.cs" />
+    <Compile Include="TickerSelectionTesting\EndOfDayTimerHandlerOTC.cs" />
+    <Compile Include="TickerSelectionTesting\RunTestOptimizedOTCPortfolio.cs" />
+    <Compile Include="TickerSelectionTesting\TestingOTCTypes\GenomeManagerForEfficientOTCTypes.cs" />
+    <Compile Include="TickerSelectionTesting\EndOfDayTimerHandlerOTCTest.cs" />
+    <Compile Include="EvaluatingOptimizationTechnique\EfficientPortfolio\RunTestingOptimizationCloseToOpen.cs" />
+    <Compile Include="WalkForwardTesting\LinearCombination\StrategyType.cs" />
+    <Compile Include="WalkForwardTesting\LinearCombination\CloseToOpenDailyStrategy.cs" />
+    <Compile Include="ArbitrageTesting\PairTrading\RunPairTrading.cs" />
+    <Compile Include="ArbitrageTesting\PairTrading\SimplePairTrading\EndOfDayTimerHandlerSimplePT.cs" />
+    <Compile Include="ArbitrageTesting\PairTrading\SimplePairTrading\GenomeManagerForSimplePT.cs" />
+    <Compile Include="ArbitrageTesting\PairTrading\SimplePairTrading\RunSimplePairTrading.cs" />
+    <Compile Include="ArbitrageTesting\PairTrading\PairTradingCandidate.cs" />
+    <Compile Include="ArbitrageTesting\PairTrading\SimplePairTrading\SimplePTGenomeManipulator.cs" />
+    <Compile Include="ArbitrageTesting\PairTrading\SimplePairTrading\GenomeMeaningSimplePT.cs" />
+    <Compile Include="ArbitrageTesting\PairTrading\SimplePairTrading\InSample\RunSimplePairTradingIS.cs" />
+    <Compile Include="EvaluatingOptimizationTechnique\EfficientPortfolio\RunTestingOptimizationOpenToCloseFitnessCombined.cs" />
+    <Compile Include="EvaluatingOptimizationTechnique\TechnicalAnalysis\RunTestingOptimizationExtremeCounterTrend.cs" />
+    <Compile Include="TechnicalAnalysisTesting\Oscillators\FixedPeriodOscillators\RunFPOscillatorCTC.cs" />
+    <Compile Include="TechnicalAnalysisTesting\Oscillators\FixedPeriodOscillators\EndOfDayTimerHandlerFPOscillatorCTC.cs" />
+    <Compile Include="WalkForwardTesting\WalkForwardLag\RunWalkForwardLag.cs" />
+    <Compile Include="WalkForwardTesting\WalkForwardLag\WFLagSignedTickers.cs" />
+    <Compile Include="WalkForwardTesting\WalkForwardLag\WFLagCandidates.cs" />
+    <Compile Include="WalkForwardTesting\WalkForwardLag\WFLagChosenTickers.cs" />
+    <Compile Include="WalkForwardTesting\WalkForwardLag\WFLagEligibleTickers.cs" />
+    <Compile Include="WalkForwardTesting\WalkForwardLag\WFLagEndOfDayTimerHandler.cs" />
+    <Compile Include="WalkForwardTesting\WalkForwardLag\WFLagGenomeManager.cs" />
+    <Compile Include="WalkForwardTesting\WalkForwardLag\WFLagDebugger\WFLagLog.cs" />
+    <Compile Include="WalkForwardTesting\WalkForwardLag\WFLagDebugger\WFLagDebugPositions\WFLagDebugPositions.cs" />
+    <Compile Include="TechnicalAnalysisTesting\Oscillators\FixedPeriodOscillators\GenomeManagerForFPOscillatorCTC.cs" />
+    <Compile Include="WalkForwardTesting\WalkForwardLag\WFLagDebugger\WFLagRunDebugger.cs" />
+    <Compile Include="WalkForwardTesting\WalkForwardLag\WFLagDebugger\WFLagChosenPositions.cs" />
+    <Compile Include="WalkForwardTesting\WalkForwardLag\WFLagDebugger\WFLagReportDebugger.cs" />
+    <Compile Include="WalkForwardTesting\WalkForwardLag\WFLagDebugger\WFLagDebugPositions\WFLagDebugPositionsEndOfDayTimerHandler.cs" />
+    <Compile Include="WalkForwardTesting\WalkForwardLag\WFLagNewChosenTickersEventArgs.cs" />
+    <Compile Include="WalkForwardTesting\WalkForwardLag\WFLagMain.cs" />
+    <Compile Include="ArbitrageTesting\PairTrading\SimplePairTrading\InSample\OutputDisplayer.cs" />
+    <Compile Include="ArbitrageTesting\PairTrading\SimplePairTrading\InSample\EndOfDayTimerHandlerSimplePTIS.cs" />
+    <Compile Include="ArbitrageTesting\PairTrading\SimplePairTrading\InSample\GenomeRepresentation.cs" />
+    <Compile Include="ArbitrageTesting\PairTrading\SimplePairTrading\InSample\OptimizationOutput.cs" />
+    <Compile Include="TechnicalAnalysisTesting\Oscillators\ExtremeCounterTrend\RunExtremeCounterTrend.cs" />
+    <Compile Include="TechnicalAnalysisTesting\Oscillators\ExtremeCounterTrend\EndOfDayTimerHandlerECT.cs" />
+    <Compile Include="TechnicalAnalysisTesting\Oscillators\ExtremeCounterTrend\GenomeManagerECT.cs" />
+    <Compile Include="WalkForwardTesting\LinearCombination\ExtremeCounterTrendStrategy.cs" />
+    <Compile Include="WalkForwardTesting\LinearCombination\FixedPeriodOscillatorStrategy.cs" />
+    <Compile Include="WalkForwardTesting\WalkForwardLag\WFLagDebugger\WFLagDebugGenome.cs" />
+    <Compile Include="TickerSelectionTesting\GenomeManagerForEfficientOTCCTOPortfolio.cs" />
+    <Compile Include="WalkForwardTesting\LinearCombination\OTC_CTODailyStrategy.cs" />
+    <EmbeddedResource Include="QuantProject.Scripts.WalkForwardTesting.LinearCombination.TestDisplayer.resources" />
+    <None Include="MultiTesting\MultiTestOneRank\" />
+    <None Include="SimpleTesting\MSFTSimpleTest_2\TsMSFTsimpleTest_2.cs" />
+    <Compile Include="SimpleScriptsContainer.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="EvaluatingOptimizationTechnique\" />
+    <Folder Include="EvaluatingOptimizationTechnique\EfficientPortfolio\" />
+    <Folder Include="TickerSelectionTesting\SimpleSelection\" />
+    <Folder Include="WalkForwardTesting\WalkForwardMultiOneRank\" />
+    <Folder Include="TechnicalAnalysisTesting\" />
+    <Folder Include="TechnicalAnalysisTesting\Oscillators\" />
+    <Folder Include="TechnicalAnalysisTesting\Oscillators\FixedPeriodOscillators\" />
+    <Folder Include="TechnicalAnalysisTesting\Oscillators\ExtremeCounterTrend\" />
+    <ProjectReference Include="..\b1_ADT\ADT_SD.csproj">
+      <Project>{6A426DC3-013E-4D38-A1AE-7BE128BF2DD7}</Project>
+      <Name>b1_ADT</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\b2_DataAccess\DataAccess_SD.csproj">
+      <Project>{3D38C64D-1118-4C16-A88E-5F2FFD6481BA}</Project>
+      <Name>b2_DataAccess</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\b3_Data\Data_SD.csproj">
+      <Project>{1A0B0C1A-DBC5-4AE6-BE2E-2298135DD60C}</Project>
+      <Name>b3_Data</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\b4_Business\Business_SD.csproj">
+      <Project>{91CAD8B7-D505-40BE-8FAF-0597E62FF71D}</Project>
+      <Name>b4_Business</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\b5_Presentation\Presentation_SD.csproj">
+      <Project>{E05282BB-A762-4205-B420-812CECB48E5C}</Project>
+      <Name>b5_Presentation</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.Targets" />
+</Project>

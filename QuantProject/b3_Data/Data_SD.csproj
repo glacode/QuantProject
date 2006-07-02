@@ -1,0 +1,98 @@
+﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{1A0B0C1A-DBC5-4AE6-BE2E-2298135DD60C}</ProjectGuid>
+    <RootNamespace>Data</RootNamespace>
+    <AssemblyName>QuantProject.Data</AssemblyName>
+    <OutputType>Library</OutputType>
+    <WarningLevel>4</WarningLevel>
+    <NoStdLib>False</NoStdLib>
+    <NoConfig>False</NoConfig>
+    <RunPostBuildEvent>OnSuccessfulBuild</RunPostBuildEvent>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>True</DebugSymbols>
+    <Optimize>False</Optimize>
+    <AllowUnsafeBlocks>False</AllowUnsafeBlocks>
+    <CheckForOverflowUnderflow>True</CheckForOverflowUnderflow>
+    <OutputPath>..\bin\Debug\</OutputPath>
+    <TreatWarningsAsErrors>False</TreatWarningsAsErrors>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugSymbols>False</DebugSymbols>
+    <Optimize>True</Optimize>
+    <AllowUnsafeBlocks>False</AllowUnsafeBlocks>
+    <CheckForOverflowUnderflow>False</CheckForOverflowUnderflow>
+    <OutputPath>..\bin\Release\</OutputPath>
+    <TreatWarningsAsErrors>False</TreatWarningsAsErrors>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="AssemblyInfo.cs" />
+    <Compile Include="ExtendedDataTable.cs" />
+    <Compile Include="FilterBuilder.cs" />
+    <Compile Include="DataProviders\HistoricalDataProvider.cs" />
+    <Compile Include="DataProviders\IDataStreamer.cs" />
+    <Compile Include="DataProviders\NewExtendedDateTimeEventArgs.cs" />
+    <Compile Include="DataProviders\NewQuoteEventArgs.cs" />
+    <Compile Include="DataProviders\Quote.cs" />
+    <Compile Include="DataProviders\Timer.cs" />
+    <Compile Include="DataProviders\Caching\Cache.cs" />
+    <Compile Include="DataTables\GroupQuotes.cs" />
+    <Compile Include="DataTables\Quotes.cs" />
+    <Compile Include="DataTables\TickerDataTable.cs" />
+    <Compile Include="DataTables\Tickers_tickerGroups.cs" />
+    <Compile Include="DataTables\ValidatedTickers.cs" />
+    <Compile Include="DataTables\VisuallyValidatedQuotes.cs" />
+    <Compile Include="Selectors\ITickerReceiver.cs" />
+    <Compile Include="Selectors\ITickerRemover.cs" />
+    <Compile Include="Selectors\ITickerSelector.cs" />
+    <Compile Include="Selectors\SelectorByAbsolutePerformance.cs" />
+    <Compile Include="Selectors\SelectorByAverageCloseToClosePerformance.cs" />
+    <Compile Include="Selectors\SelectorByAverageOpenToClosePerformance.cs" />
+    <Compile Include="Selectors\SelectorByCloseToCloseLinearCorrelation.cs" />
+    <Compile Include="Selectors\SelectorByCloseToCloseVolatility.cs" />
+    <Compile Include="Selectors\SelectorByLiquidity.cs" />
+    <Compile Include="Selectors\SelectorByOpenToCloseLinearCorrelation.cs" />
+    <Compile Include="Selectors\SelectorByOpenToCloseVolatility.cs" />
+    <Compile Include="Selectors\SelectorByQuotationAtEachMarketDay.cs" />
+    <Compile Include="Selectors\SelectorByAverageRawOpenPrice.cs" />
+    <Compile Include="Selectors\TickerSelector.cs" />
+    <Compile Include="Selectors\SelectorByWinningOpenToClose.cs" />
+    <Compile Include="Selectors\SelectorByOpenCloseCorrelationToBenchmark.cs" />
+    <Compile Include="DataProviders\Caching\EarlyDateException.cs" />
+    <Compile Include="DataProviders\Caching\CachePage.cs" />
+    <Compile Include="DataProviders\Caching\MissingQuoteException.cs" />
+    <Compile Include="Selectors\SelectorByGroup.cs" />
+    <Compile Include="Selectors\SelectorByCloseToCloseCorrelationToBenchmark.cs" />
+    <Compile Include="Selectors\SelectorByCloseToOpenVolatility.cs" />
+    <Compile Include="Selectors\SelectorByAverageCloseToOpenPerformance.cs" />
+    <Compile Include="DataProviders\Caching\ICache.cs" />
+    <Compile Include="DataProviders\Caching\SimpleCache.cs" />
+    <Compile Include="Selectors\SelectorByQuotationNotAtEachMarketDay.cs" />
+    <Compile Include="MissingQuotesException.cs" />
+    <Compile Include="Selectors\ByLinearIndipendence\Candidate.cs" />
+    <Compile Include="Selectors\ByLinearIndipendence\GenomeManagerForMaxLinearIndipendenceSelector.cs" />
+    <Compile Include="Selectors\ByLinearIndipendence\SelectorByMaxLinearIndipendence.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\b2_DataAccess\DataAccess_SD.csproj">
+      <Project>{81FA94CD-4E64-4108-8C4D-9F07596AF5FB}</Project>
+      <Name>b2_DataAccess</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\b1_ADT\ADT_SD.csproj">
+      <Project>{217A1E06-5FA7-49C1-A3D7-586F3690D5DE}</Project>
+      <Name>b1_ADT</Name>
+    </ProjectReference>
+    <Folder Include="Selectors\ByLinearIndipendence" />
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.Targets" />
+</Project>
