@@ -21,11 +21,9 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
 using System;
-using System.Collections;
 using System.Data;
-using System.Windows.Forms;
 using QuantProject.DataAccess.Tables;
-using QuantProject.Data.DataTables;
+using QuantProject.ADT.Statistics;
 
 namespace QuantProject.Data.Selectors
 {
@@ -40,42 +38,40 @@ namespace QuantProject.Data.Selectors
    public class SelectorByCloseToCloseCorrelationToBenchmark : TickerSelector, ITickerSelector
   {
     private string benchmark;
-    private int numDaysBetweenEachClose;
+    private bool addBenchmarkToTheGivenSetOfTickers;
     /// <summary>
     /// Creates a new instance of the selector
     /// </summary>
-    /// <param name="setOfTickersToBeSelected">The data table containing in the first column the tickers that have to be ordered</param>
+    /// <param name="setOfTickersToBeSelected">The data table containing
+    /// in the first column the tickers that have to be ordered by pearson correlation
+    /// coefficient to a given benchmark</param>
     /// <param name="benchmark">Benchmark code</param>
     /// <param name="orderInASCmode">Ordering mode</param>
     /// <param name="firstQuoteDate">The first date for the interval</param>
     /// <param name="lastQuoteDate">The last date for the interval</param>
     /// <param name="maxNumOfReturnedTickers">Max number of tickers to be returned</param>
-    /// <param name="numDaysBetweenEachClose">Number of days between closes to be studied. NOTE that
-    /// close values are grouped in pairs and the first close value in each group is 
-    /// not the last close in the previous group. There is, in other words, a discontinuity
-    /// between each group, with length equal to the group's length </param>
     public SelectorByCloseToCloseCorrelationToBenchmark(DataTable setOfTickersToBeSelected,
-                               string benchmark,
-                               bool orderInASCmode,
-                               DateTime firstQuoteDate,
-                               DateTime lastQuoteDate,
-                               long maxNumOfReturnedTickers,
-                               int numDaysBetweenEachClose):
-                                    base(setOfTickersToBeSelected, 
-                                         orderInASCmode,
-                                         firstQuoteDate,
-                                         lastQuoteDate,
-                                         maxNumOfReturnedTickers)
+                                                        string benchmark,
+                                                        bool orderInASCmode,
+                                                        DateTime firstQuoteDate,
+                                                        DateTime lastQuoteDate,
+                                                        long maxNumOfReturnedTickers,
+                                                        bool addBenchmarkToTheGivenSetOfTickers):
+                                                        base(setOfTickersToBeSelected, 
+                                                            orderInASCmode,
+                                                            firstQuoteDate,
+                                                            lastQuoteDate,
+                                                            maxNumOfReturnedTickers)
     {
       this.benchmark = benchmark;
-      this.numDaysBetweenEachClose = numDaysBetweenEachClose;
+      this.addBenchmarkToTheGivenSetOfTickers = addBenchmarkToTheGivenSetOfTickers;
     }
      
      /// <summary>
      /// Creates a new instance of the selector
      /// </summary>
      /// <param name="groupID">The group ID containing the tickers that have to be ordered</param>
-     /// <param name="benchmark">Benchmark code</param>
+     /// <param name="benchmark">Benchmark</param>
      /// <param name="orderInASCmode">Ordering mode</param>
      /// <param name="firstQuoteDate">The first date for the interval</param>
      /// <param name="lastQuoteDate">The last date for the interval</param>
@@ -85,40 +81,94 @@ namespace QuantProject.Data.Selectors
      /// not the last close in the previous group. There is, in other words, a discontinuity
      /// between each group, with length equal to the group's length </param>
      public SelectorByCloseToCloseCorrelationToBenchmark(string groupID, 
-                                string benchmark,
-                                bool orderInASCmode,
-                                DateTime firstQuoteDate,
-                                DateTime lastQuoteDate,
-                                long maxNumOfReturnedTickers,
-                               	int numDaysBetweenEachClose):
-                                  base(groupID, 
-                                      orderInASCmode,
-                                      firstQuoteDate,
-                                      lastQuoteDate,
-                                      maxNumOfReturnedTickers)
+                                                        string benchmark,
+                                                        bool orderInASCmode,
+                                                        DateTime firstQuoteDate,
+                                                        DateTime lastQuoteDate,
+                                                        long maxNumOfReturnedTickers,
+                                                        bool addBenchmarkToTheGivenSetOfTickers):
+                                                        base(groupID, 
+                                                            orderInASCmode,
+                                                            firstQuoteDate,
+                                                            lastQuoteDate,
+                                                            maxNumOfReturnedTickers)
      {
         this.benchmark = benchmark;
-        this.numDaysBetweenEachClose = numDaysBetweenEachClose;
+        this.addBenchmarkToTheGivenSetOfTickers = addBenchmarkToTheGivenSetOfTickers;
      }
 
 
     public DataTable GetTableOfSelectedTickers()
     {
       if(this.setOfTickersToBeSelected == null)
-        return QuantProject.Data.DataTables.Quotes.GetTickersByCloseToCloseCorrelationToBenchmark(this.isOrderedInASCMode,
+        return this.getTickersByCloseToCloseCorrelationToBenchmark(this.isOrderedInASCMode,
                                     this.groupID,this.benchmark,
                                     this.firstQuoteDate, this.lastQuoteDate,
-                                    this.maxNumOfReturnedTickers, this.numDaysBetweenEachClose);        
+                                    this.maxNumOfReturnedTickers);        
 
       else
-        return QuantProject.Data.DataTables.Quotes.GetTickersByCloseToCloseCorrelationToBenchmark(this.isOrderedInASCMode,
+        return this.getTickersByCloseToCloseCorrelationToBenchmark(this.isOrderedInASCMode,
           this.setOfTickersToBeSelected,this.benchmark,
           this.firstQuoteDate, this.lastQuoteDate,
-          this.maxNumOfReturnedTickers, this.numDaysBetweenEachClose);      
+          this.maxNumOfReturnedTickers);      
     }
     public void SelectAllTickers()
     {
       ;
-    }	
+    }
+    
+    private DataTable getTickersByCloseToCloseCorrelationToBenchmark( bool orderByASC,
+                                                DataTable setOfTickers, string benchmark,
+                                                DateTime firstQuoteDate,
+                                                DateTime lastQuoteDate,
+                                                long maxNumOfReturnedTickers)
+    {
+      if(!setOfTickers.Columns.Contains("CloseToCloseCorrelationToBenchmark"))
+        setOfTickers.Columns.Add("CloseToCloseCorrelationToBenchmark", System.Type.GetType("System.Double"));
+      float[] benchmarkQuotes = QuantProject.Data.DataTables.Quotes.GetArrayOfAdjustedCloseQuotes(benchmark, firstQuoteDate, lastQuoteDate);
+      foreach(DataRow row in setOfTickers.Rows)
+      {
+        float[] tickerQuotes = QuantProject.Data.DataTables.Quotes.GetArrayOfAdjustedCloseQuotes((string)row[0], 
+                                firstQuoteDate, lastQuoteDate);
+        if(tickerQuotes.Length == benchmarkQuotes.Length)
+        {
+          if((string)row[0] == benchmark)
+            row["CloseToCloseCorrelationToBenchmark"] = 1;
+          else
+            row["CloseToCloseCorrelationToBenchmark"] =
+              BasicFunctions.PearsonCorrelationCoefficient(benchmarkQuotes, tickerQuotes);
+        }
+          
+      }
+      DataTable tableToReturn = ExtendedDataTable.CopyAndSort(setOfTickers,
+                                                              "CloseToCloseCorrelationToBenchmark>=0.0 OR " +
+                                                              "CloseToCloseCorrelationToBenchmark<0.0",
+                                                              "CloseToCloseCorrelationToBenchmark",
+                                                              orderByASC);
+      ExtendedDataTable.DeleteRows(tableToReturn, maxNumOfReturnedTickers);
+      if(this.addBenchmarkToTheGivenSetOfTickers)
+      {
+        DataRow newRow = tableToReturn.NewRow();
+        newRow[0] = benchmark;
+        tableToReturn.Rows.Add(newRow);
+      }
+      return tableToReturn;
+    }
+    
+    private DataTable getTickersByCloseToCloseCorrelationToBenchmark( bool orderByASC,
+																					      string groupID, string benchmark,
+																					      DateTime firstQuoteDate,
+																					      DateTime lastQuoteDate,
+																					      long maxNumOfReturnedTickers)
+    {
+      DataTable tickersOfGroup = Tickers_tickerGroups.GetTickers(groupID);
+      return this.getTickersByCloseToCloseCorrelationToBenchmark(orderByASC,
+																					      tickersOfGroup, benchmark,
+																					      firstQuoteDate,
+																					      lastQuoteDate,
+																					      maxNumOfReturnedTickers);
+    }
+    
+	
 	}
 }
