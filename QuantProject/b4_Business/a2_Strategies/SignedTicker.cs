@@ -190,21 +190,21 @@ namespace QuantProject.Business.Strategies
       return returnValue;
     }
 		
-		/// <summary>
-		/// Gets portfolio's return for a given period, for given tickers
-		/// </summary>
-		/// <param name="signedTickers">Array of signed tickers that compose the portfolio (each ticker has the same weight)</param>
-		/// <param name="startDate">Start date for the period for which return has to be computed</param>
-		/// <param name="endDate">End date for the period for which return has to be computed</param>
-		public static double GetCloseToClosePortfolioReturn(string[] signedTickers,
-			DateTime startDate,
-			DateTime endDate )
-		{
-			double[] tickersWeights = new double[signedTickers.Length];
-			for(int i = 0; i<signedTickers.Length; i++)
-				tickersWeights[i] = 1.0/signedTickers.Length;
-    	
-			return GetCloseToClosePortfolioReturn(
+    /// <summary>
+    /// Gets portfolio's return for a given period, for the given tickers
+    /// </summary>
+    /// <param name="signedTickers">Array of signed tickers that compose the portfolio (each ticker has the same weight)</param>
+    /// <param name="startDate">Start date for the period for which return has to be computed</param>
+    /// <param name="endDate">End date for the period for which return has to be computed</param>
+    public static double GetCloseToClosePortfolioReturn(string[] signedTickers,
+                                                        DateTime startDate,
+                                                        DateTime endDate )
+    {
+    	double[] tickersWeights = new double[signedTickers.Length];
+    	for(int i = 0; i<signedTickers.Length; i++)
+    		tickersWeights[i] = 1.0/signedTickers.Length;
+			
+      return GetCloseToClosePortfolioReturn(
 				signedTickers,tickersWeights, startDate, endDate);
     	
 		}
@@ -300,8 +300,11 @@ namespace QuantProject.Business.Strategies
     /// </summary>
     public static void ChangeSignOfEachTicker( string[] signedTickers )
 		{
-    	for(int i = 0; i<signedTickers.Length; i++)
-    		signedTickers[i] = GetOppositeSignedTicker(signedTickers[i]);
+      for(int i = 0; i<signedTickers.Length; i++)
+      {
+        if(signedTickers[i] != null)
+          signedTickers[i] = GetOppositeSignedTicker(signedTickers[i]);
+      }
 		}
 	}
 }

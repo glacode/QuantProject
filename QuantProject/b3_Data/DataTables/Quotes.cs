@@ -608,53 +608,13 @@ namespace QuantProject.Data.DataTables
       return GetArrayOfCloseToCloseRatios(ticker, ref firstQuoteDate, lastQuoteDate, numDaysBetweenEachClose,
                                           0);
     }
-    /// <summary>
-    /// returns tickers of a given set of tickers ordered by close to close 
-    /// correlation to a given benchmark
-    /// </summary>
-    public static DataTable GetTickersByCloseToCloseCorrelationToBenchmark( bool orderByASC,
-      DataTable setOfTickers, string benchmark,
-      DateTime firstQuoteDate,
-      DateTime lastQuoteDate,
-      long maxNumOfReturnedTickers, int numDaysBetweenEachClose)
-    {
-      if(!setOfTickers.Columns.Contains("CloseToCloseCorrelationToBenchmark"))
-        setOfTickers.Columns.Add("CloseToCloseCorrelationToBenchmark", System.Type.GetType("System.Double"));
-      float[] benchmarkRatios = GetArrayOfCloseToCloseRatios(benchmark, ref firstQuoteDate, lastQuoteDate, numDaysBetweenEachClose);
-      foreach(DataRow row in setOfTickers.Rows)
-      {
-        float[] tickerRatios = GetArrayOfCloseToCloseRatios((string)row[0], 
-          ref firstQuoteDate, lastQuoteDate, numDaysBetweenEachClose );
-      	if(tickerRatios.Length == benchmarkRatios.Length)
-      		row["CloseToCloseCorrelationToBenchmark"] =
-          	Math.Abs(BasicFunctions.PearsonCorrelationCoefficient(benchmarkRatios, tickerRatios));
-      }
-      DataTable tableToReturn = ExtendedDataTable.CopyAndSort(setOfTickers,
-                                                              "CloseToCloseCorrelationToBenchmark>=0.0",
-                                                              "CloseToCloseCorrelationToBenchmark",
-                                                              orderByASC);
-      ExtendedDataTable.DeleteRows(tableToReturn, maxNumOfReturnedTickers);
-      return tableToReturn;
-    }
     
-    /// <summary>
-    /// returns tickers of a given set of tickers ordered by close to close 
-    /// correlation to a given benchmark
-    /// </summary>
-    public static DataTable GetTickersByCloseToCloseCorrelationToBenchmark( bool orderByASC,
-																					      string groupID, string benchmark,
-																					      DateTime firstQuoteDate,
-																					      DateTime lastQuoteDate,
-																					      long maxNumOfReturnedTickers,
-																					      int numDaysBetweenEachClose)
+    public static float[] GetArrayOfAdjustedCloseQuotes(string ticker,
+                                                        DateTime firstQuoteDate,
+                                                        DateTime lastQuoteDate)
     {
-      DataTable tickersOfGroup = new Tickers_tickerGroups(groupID);
-      return GetTickersByCloseToCloseCorrelationToBenchmark(orderByASC,
-																					      tickersOfGroup, benchmark,
-																					      firstQuoteDate,
-																					      lastQuoteDate,
-																					      maxNumOfReturnedTickers,
-																					      numDaysBetweenEachClose);
+      Quotes tickerQuotes = new Quotes(ticker, firstQuoteDate, lastQuoteDate);
+      return ExtendedDataTable.GetArrayOfFloatFromColumn(tickerQuotes,"quAdjustedClose");
     }
     
 		/// <summary>
@@ -679,6 +639,7 @@ namespace QuantProject.Data.DataTables
 			return marketDays;
 		}
     
+
     private History history;
 
 		/// <summary>
@@ -968,6 +929,20 @@ namespace QuantProject.Data.DataTables
 
       return (float)foundRow[Quotes.Open]*((float)foundRow[Quotes.AdjustedClose]/
                                            (float)foundRow[Quotes.Close]); 
+    }
+
+    /// <summary>
+    /// Gets the first valid close to close ratio at the given date
+    /// </summary>
+    /// <returns></returns>
+    public float GetFirstValidCloseToCloseRatio(DateTime date )
+    {
+      object[] keys = new object[1];
+      keys[0] = this.GetFirstValidQuoteDate(date.Date);
+      DataRow foundRow = this.Rows.Find(keys);
+      if(foundRow==null)
+        throw new Exception("No quote for such a date!");
+      return (float)foundRow[Quotes.AdjustedCloseToCloseRatio]; 
     }
 
 //		public DateTime GetPrecedingDate( DateTime quoteDate , int precedingDays )
