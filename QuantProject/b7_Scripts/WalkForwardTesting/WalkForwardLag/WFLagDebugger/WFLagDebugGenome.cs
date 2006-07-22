@@ -36,9 +36,17 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag.WFLagDebugger
 	/// </summary>
 	public class WFLagDebugGenome : System.Windows.Forms.Form
 	{
-		DateTime transactionDateTime;
-		WFLagLog wFLagLog;
+		int inSampleDays;
+		string benchmark;
 		WFLagChosenPositions wFLagChosenPositions;
+		
+		private WFLagChosenPositionsDebugInfo wFLagChosenPositionsDebugInfo;
+
+		public WFLagChosenPositionsDebugInfo WFLagChosenPositionsDebugInfo
+		{
+			set { this.wFLagChosenPositionsDebugInfo = value; }
+			get { return this.wFLagChosenPositionsDebugInfo; }
+		}
 
 		private System.Windows.Forms.Button TestPreInSampleAndPost;
 		private System.Windows.Forms.Button TestInSample;
@@ -55,8 +63,8 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag.WFLagDebugger
 		/// </summary>
 		private System.ComponentModel.Container components = null;
 
-		public WFLagDebugGenome( DateTime transactionDateTime ,
-			WFLagLog wFLagLog )
+		public WFLagDebugGenome( WFLagChosenPositions wFLagChosenPositions ,
+			int inSampleDays , string benchmark )
 		{
 			//
 			// Required for Windows Form Designer support
@@ -66,8 +74,9 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag.WFLagDebugger
 			//
 			// TODO: Add any constructor code after InitializeComponent call
 			//
-			this.transactionDateTime = transactionDateTime;
-			this.wFLagLog = wFLagLog;
+			this.inSampleDays = inSampleDays;
+			this.benchmark = benchmark;
+			this.wFLagChosenPositions = wFLagChosenPositions;
 		}
 
 		/// <summary>
@@ -207,16 +216,16 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag.WFLagDebugger
 		}
 		#endregion
 
-		private DateTime getInSampleLastDateTime()
-		{
-			DateTime inSampleLastDateTime =
-				this.transactionDateTime.AddDays( - 1 );
-			return inSampleLastDateTime;
-		}
+//		private DateTime getInSampleLastDateTime()
+//		{
+//			DateTime inSampleLastDateTime =
+//				this.transactionDateTime.AddDays( - 1 );
+//			return inSampleLastDateTime;
+//		}
 		private DateTime getPreSampleLastDateTime()
 		{
 			DateTime preSampleLastDateTime =
-				this.getInSampleLastDateTime().AddDays( -this.wFLagLog.InSampleDays );
+				this.wFLagChosenPositions.LastOptimizationDate.AddDays( -this.inSampleDays );
 			return preSampleLastDateTime;
 		}
 		private int getPostSampleDays()
@@ -231,6 +240,27 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag.WFLagDebugger
 				Convert.ToInt32(  this.PreSampleDays.Text );
 			return preSampleDays;
 		}
+		
+//		private void setChosenPositions_actually()
+//		{
+//			if ( this.wFLagChosenPositionsDebugInfo != null )
+//			{
+//				// the form was given a valid WFLagChosenPositionsDebugInfo object
+//				this.wFLagChosenPositions = this.wFLagChosenPositionsDebugInfo.GetChosenPositions();
+//			}
+//			else
+//			{
+//				// the form was given a valid WFLagLog object
+//				this.wFLagChosenPositions = this.wflagl
+//				}
+//		}
+//		private void setChosenPositions()
+//		{
+//			if ( this.wFLagChosenPositions == null )
+//			{
+//				this.setChosenPositions_actually();
+//			}
+//		}
 		private void run( DateTime inSampleLastDateTime ,
 			int preSampleDays , int inSampleDays , int postSampleDays )
 		{
@@ -241,38 +271,32 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag.WFLagDebugger
 				new WFLagDebugPositions( this.wFLagChosenPositions ,
 				inSampleLastDateTime , preSampleDays ,
 				inSampleDays , postSampleDays ,
-				this.wFLagLog.Benchmark );
+				this.benchmark );
 			wFLagDebugPositions.Run();
 		}
 		private void TestPreInSampleAndPost_Click(object sender, System.EventArgs e)
 		{
-			WFLagChosenPositions wFLagChosenPositions =
-				this.wFLagLog.GetChosenPositions(
-				this.transactionDateTime );
 			WFLagDebugPositions wFLagDebugPositions =
-				new WFLagDebugPositions( wFLagChosenPositions ,
-				this.transactionDateTime.AddDays( - 1 ) , 30 ,
-				this.wFLagLog.InSampleDays ,
+				new WFLagDebugPositions( this.wFLagChosenPositions ,
+				this.wFLagChosenPositions.LastOptimizationDate , 30 ,
+				this.inSampleDays ,
 				Convert.ToInt32(  this.PostSampleDays.Text ) ,
-				this.wFLagLog.Benchmark );
+				this.benchmark );
 			wFLagDebugPositions.Run();
 		}
 
 		private void TestInSample_Click(object sender, System.EventArgs e)
 		{		
-			WFLagChosenPositions wFLagChosenPositions =
-				this.wFLagLog.GetChosenPositions(
-				this.transactionDateTime );
 			WFLagDebugPositions wFLagDebugPositions =
-				new WFLagDebugPositions( wFLagChosenPositions ,
-				this.transactionDateTime.AddDays( - 1 ) , 0 ,
-				this.wFLagLog.InSampleDays , 0 ,
-				this.wFLagLog.Benchmark );
+				new WFLagDebugPositions( this.wFLagChosenPositions ,
+				this.wFLagChosenPositions.LastOptimizationDate , 0 ,
+				this.inSampleDays , 0 ,
+				this.benchmark );
 			wFLagDebugPositions.Run();
 		}
 		private void TestPostSample_Click(object sender, System.EventArgs e)
 		{
-			this.run( this.getInSampleLastDateTime() ,
+			this.run( this.wFLagChosenPositions.LastOptimizationDate ,
 				0 , 0 , this.getPostSampleDays() );
 		}
 
@@ -293,9 +317,6 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag.WFLagDebugger
 
 		private void WFLagDebugGenome_Load(object sender, System.EventArgs e)
 		{
-			this.wFLagChosenPositions =
-				this.wFLagLog.GetChosenPositions(
-				this.transactionDateTime );
 			this.labelDrivingPositionsContent.Text =
 				this.wFLagChosenPositions.DrivingPositions.KeyConcat;
 			this.labelPortfolioPositionsContent.Text =

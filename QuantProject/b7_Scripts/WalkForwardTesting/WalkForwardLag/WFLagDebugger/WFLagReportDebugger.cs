@@ -90,8 +90,8 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag.WFLagDebugger
 			DateTime transactionDateTime =
 				this.getRowDateTime( (DataGrid)sender , rowNumber );
 			WFLagDebugGenome wFLagDebugGenome =
-				new WFLagDebugGenome( transactionDateTime ,
-				this.wFLagLog );
+				new WFLagDebugGenome( this.wFLagLog.GetChosenPositions( transactionDateTime ) ,
+				this.wFLagLog.InSampleDays , this.wFLagLog.Benchmark );
 			wFLagDebugGenome.Show();
 		}
 		public void MouseClickEventHandler( object sender ,
