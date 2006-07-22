@@ -82,8 +82,9 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag.WFLagDebugger
 		private void showList()
 		{
 			WFLagDebugChosenPositionsCollection wFLagDebugChosenPositionsCollection =
-				new WFLagDebugChosenPositionsCollection( this.chosenPositionsDebugInfoList );
-			wFLagDebugChosenPositionsCollection.ShowDialog();
+				new WFLagDebugChosenPositionsCollection( this.wFLagLog.InSampleDays ,
+				this.wFLagLog.Benchmark , this.chosenPositionsDebugInfoList );
+			wFLagDebugChosenPositionsCollection.Show();
 		}
 		public void Run( WFLagLog wFLagLog )
 		{
