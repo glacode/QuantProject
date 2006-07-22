@@ -21,6 +21,9 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
 using System;
+using System.Collections;
+
+using QuantProject.Business.Strategies;
 
 namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag.WFLagDebugger
 {
@@ -29,11 +32,17 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag.WFLagDebugger
 	/// </summary>
 	public class WFLagChosenPositionsDebugInfo
 	{
+		private double dummyValue;
+		private int maxPreSampleDays;
 		private WFLagChosenPositions wFLagChosenPositions;
 		private WFLagLog wFLagLog;
 		private double inSampleSharpeRatio;
 		private double preSampleSharpeRatio30;
+		private double preSampleSharpeRatio150;
+		private double preSampleMaxSharpeRatio;
 		private double postSampleSharpeRatio30;
+		private double postSampleSharpeRatio150;
+		private double inSampleExpectancyScore;
 
 		public string DrivingPositions
 		{
@@ -55,13 +64,38 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag.WFLagDebugger
 		{
 			get { return this.inSampleSharpeRatio; }
 		}
-		public double PreSampleSharpeRatio30
+		public double InSampleExpectancyScore
+		{
+			get { return this.inSampleExpectancyScore; }
+		}
+		public int MaxPreSampleDays
+		{
+			get
+			{
+				if ( this.maxPreSampleDays == int.MinValue )
+					this.setMaxPreSampleDays();
+				return this.maxPreSampleDays;
+			}
+		}
+		public double PreSample30SharpeRatio
 		{
 			get { return this.preSampleSharpeRatio30; }
 		}
-		public double PostSampleSharpeRatio30
+		public double PreSampleMaxSharpeRatio
+		{
+			get { return this.preSampleMaxSharpeRatio; }
+		}
+		public double PreSample150SharpeRatio
+		{
+			get { return this.preSampleSharpeRatio150; }
+		}
+		public double PostSample30SharpeRatio
 		{
 			get { return this.postSampleSharpeRatio30; }
+		}
+		public double PostSample150SharpeRatio
+		{
+			get { return this.postSampleSharpeRatio150; }
 		}
 		public WFLagChosenPositionsDebugInfo(
 			WFLagChosenPositions wFLagChosenPositions ,
@@ -70,11 +104,70 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag.WFLagDebugger
 			//
 			// TODO: Add constructor logic here
 			//
+			this.dummyValue = -999;
+
 			this.wFLagChosenPositions = wFLagChosenPositions;
 			this.wFLagLog = wFLagLog;
 			this.inSampleSharpeRatio = this.getInSampleSharpeRatio();
+			this.inSampleExpectancyScore = this.getInSampleExpectancyScore();
+			this.setMaxPreSampleDays();
 			this.preSampleSharpeRatio30 = this.getPreSampleSharpeRatio( 30 );
+			this.preSampleSharpeRatio150 = this.getPreSampleSharpeRatio( 150 );
+			this.preSampleMaxSharpeRatio = this.getPreSampleSharpeRatio(
+				this.MaxPreSampleDays );
 			this.postSampleSharpeRatio30 = this.getPostSampleSharpeRatio( 30 );
+			this.postSampleSharpeRatio150 = this.getPostSampleSharpeRatio( 150 );
+		}
+		public static string[] GetDrivingAndPortfolioTickers(
+			WFLagChosenPositions wFLagChosenPositions )
+		{
+			int size = wFLagChosenPositions.DrivingPositions.Count +
+				wFLagChosenPositions.PortfolioPositions.Count;
+			string[] drivingAndPortfolioTickers = new string[ size ];
+			int i = 0;
+			foreach ( string signedTicker in wFLagChosenPositions.DrivingPositions.Keys )
+			{
+				drivingAndPortfolioTickers[ i ] = SignedTicker.GetTicker( signedTicker );
+				i++;
+			}
+			foreach ( string signedTicker in wFLagChosenPositions.PortfolioPositions.Keys )
+			{
+				drivingAndPortfolioTickers[ i ] = SignedTicker.GetTicker( signedTicker );
+				i++;
+			}
+			return drivingAndPortfolioTickers;
+		}
+		/// <summary>
+		/// returns the chosen positions. A method is used instead of a property, because
+		/// we don't want this as a column displayed in the grid
+		/// </summary>
+		public WFLagChosenPositions GetChosenPositions()
+		{
+			return this.wFLagChosenPositions;
+		}
+		private ArrayList getMinDatesForTickers()
+		{
+			string[] tickers = GetDrivingAndPortfolioTickers( this.wFLagChosenPositions );
+			ArrayList minDatesForTickers = new ArrayList();
+			foreach ( string ticker in tickers )
+				minDatesForTickers.Add(
+					QuantProject.Data.DataTables.Quotes.GetFirstQuoteDate( ticker ) );
+			return minDatesForTickers;
+		}
+		private DateTime getFirstCommonDateForTickers()
+		{
+			ArrayList minDatesForTickers =
+				this.getMinDatesForTickers();
+			minDatesForTickers.Sort();
+			return (DateTime)minDatesForTickers[ minDatesForTickers.Count - 1 ];
+		}
+		private void setMaxPreSampleDays()
+		{
+			DateTime firstCommonDateForTickers =
+				this.getFirstCommonDateForTickers();
+			TimeSpan timeSpan = this.getInSampleFirstDate() -
+				firstCommonDateForTickers;
+			this.maxPreSampleDays = timeSpan.Days - 1; // I subtract one, so I have the number of daily returns
 		}
 		private DateTime getInSampleFirstDate()
 		{
@@ -89,13 +182,25 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag.WFLagDebugger
 				this.wFLagChosenPositions , firstDateTime ,
 				this.LastOptimization );
 		}
+		private double getInSampleExpectancyScore()
+		{
+			DateTime firstDateTime = this.getInSampleFirstDate();
+			return WFLagSharpeRatioComputer.GetExpectancyScore(
+				this.wFLagChosenPositions , firstDateTime ,
+				this.LastOptimization );
+		}
 		private double getPreSampleSharpeRatio( int days )
 		{
-			DateTime lastDateTime = this.getInSampleFirstDate();
-			DateTime firstDateTime = lastDateTime.AddDays( -days - 1 );  // I subtract one more day, so I have days daily returns
-			return WFLagSharpeRatioComputer.GetSharpeRatio(
-				this.wFLagChosenPositions , firstDateTime ,
-				lastDateTime );
+			double preSampleSharpeRatio = this.dummyValue;
+			if ( this.MaxPreSampleDays >= days )
+			{
+				DateTime lastDateTime = this.getInSampleFirstDate();
+				DateTime firstDateTime = lastDateTime.AddDays( -days - 1 );  // I subtract one more day, so I have days daily returns
+				preSampleSharpeRatio = WFLagSharpeRatioComputer.GetSharpeRatio(
+					this.wFLagChosenPositions , firstDateTime ,
+					lastDateTime );
+			}
+			return preSampleSharpeRatio;
 		}
 		private double getPostSampleSharpeRatio( int days )
 		{
