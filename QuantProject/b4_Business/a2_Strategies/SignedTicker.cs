@@ -196,17 +196,64 @@ namespace QuantProject.Business.Strategies
     /// <param name="signedTickers">Array of signed tickers that compose the portfolio (each ticker has the same weight)</param>
     /// <param name="startDate">Start date for the period for which return has to be computed</param>
     /// <param name="endDate">End date for the period for which return has to be computed</param>
-    public static double GetCloseToClosePortfolioReturn(string[] signedTickers,
-                                                        DateTime startDate,
-                                                        DateTime endDate )
-    {
-    	double[] tickersWeights = new double[signedTickers.Length];
-    	for(int i = 0; i<signedTickers.Length; i++)
-    		tickersWeights[i] = 1.0/signedTickers.Length;
+		public static double GetCloseToClosePortfolioReturn(string[] signedTickers,
+			DateTime startDate,
+			DateTime endDate )
+		{
+			double[] tickersWeights = new double[signedTickers.Length];
+			for(int i = 0; i<signedTickers.Length; i++)
+				tickersWeights[i] = 1.0/signedTickers.Length;
 			
-      return GetCloseToClosePortfolioReturn(
+			return GetCloseToClosePortfolioReturn(
 				signedTickers,tickersWeights, startDate, endDate);
     	
+		}
+    
+		/// <summary>
+		/// Gets portfolio's return for a given period, for given tickers
+		/// </summary>
+		/// <param name="signedTickers">Array of signed tickers that compose the portfolio</param>
+		/// <param name="tickersWeights">Array of weights for tickers - the same order has to be provided!</param>
+		/// <param name="startDate">Start date for the period for which return has to be computed</param>
+		/// <param name="endDate">End date for the period for which return has to be computed</param>
+		public static double GetCloseToClosePortfolioReturn( string[] signedTickers ,
+			double[] tickersWeights ,
+			SortedList commonMarketDays )
+		{
+			double returnValue = 0.0;
+			Quotes[] tickersQuotes = new Quotes[ signedTickers.Length ];
+			for( int i = 0 ; i < signedTickers.Length ; i++ )
+			{
+				tickersQuotes[ i ] =
+					new Quotes( SignedTicker.GetTicker( (string)signedTickers[ i ] ) ,
+					commonMarketDays );
+			}
+			double[] returns = new double[ tickersQuotes[0].Rows.Count ];
+			getCloseToClosePortfolioReturn_setReturns( returns , signedTickers ,
+				tickersWeights , tickersQuotes);
+			for( int i = 0 ; i < returns.Length ; i++ )
+				returnValue = (1.0+returnValue) * returns[i];
+
+			return returnValue;
+		}
+		
+		/// <summary>
+		/// Gets portfolio's return, for the given tickers, considering only
+		/// the market days contained in commonMarketDays
+		/// </summary>
+		/// <param name="signedTickers"></param>
+		/// <param name="commonMarketDays"></param>
+		/// <returns></returns>
+		public static double GetCloseToClosePortfolioReturn(
+			string[] signedTickers,
+			SortedList commonMarketDays )
+		{
+			double[] tickersWeights = new double[signedTickers.Length];
+			for(int i = 0; i<signedTickers.Length; i++)
+				tickersWeights[i] = 1.0/signedTickers.Length;
+			
+			return GetCloseToClosePortfolioReturn(
+				signedTickers , tickersWeights , commonMarketDays );
 		}
     
 		private static string[] getSignedTickersArray( ICollection signedTickers )
@@ -233,10 +280,11 @@ namespace QuantProject.Business.Strategies
 		}
 		#region GetCloseToClosePortfolioReturns
 		private static double getCloseToCloseReturn( string ticker ,
-			DateTime[] datesForReturnComputation , int i )
+			SortedList datesForReturnComputation , int i )
 		{
-			DateTime previousDate = datesForReturnComputation[ i ];
-			DateTime currentDate = datesForReturnComputation[ i + 1 ];
+			DateTime previousDate = (DateTime)datesForReturnComputation.GetByIndex( i );
+			DateTime currentDate =
+				(DateTime)datesForReturnComputation.GetByIndex( i + 1 );
 			HistoricalAdjustedQuoteProvider historicalQuoteProvider =
 				new HistoricalAdjustedQuoteProvider();
 			double previousQuote = historicalQuoteProvider.GetMarketValue( ticker ,
@@ -254,7 +302,7 @@ namespace QuantProject.Business.Strategies
 			return multiplier;
 		}
 		private static double getCloseToClosePortfolioReturn(
-			string[] signedTickers , DateTime[] datesForReturnComputation , int i )
+			string[] signedTickers , SortedList datesForReturnComputation , int i )
 		{
 			double dailyReturn = 0.0;
 			foreach ( String signedTicker in signedTickers )
@@ -265,16 +313,24 @@ namespace QuantProject.Business.Strategies
 			return dailyReturn;
 		}
 		private static double[] getCloseToClosePortfolioReturns(
-			string[] signedTickers , DateTime[] datesForReturnComputation )
+			string[] signedTickers , SortedList datesForReturnComputation )
 		{
 			// the return for first DateTime cannot be computed so the returned
 			// array will have one element less the datesForReturnComputation
 			double[] closeToClosePortfolioReturns =
-				new double[ datesForReturnComputation.Length - 1 ];
+				new double[ datesForReturnComputation.Count - 1 ];
 			for ( int i=0 ; i < closeToClosePortfolioReturns.Length ; i++ )
 				closeToClosePortfolioReturns[ i ] =	getCloseToClosePortfolioReturn(
 					signedTickers , datesForReturnComputation , i );
 			return closeToClosePortfolioReturns;
+		}
+		private static double[] getCloseToClosePortfolioReturns(
+			ICollection signedTickers,	SortedList datesForReturnComputation )
+		{
+			string[] signedTickerArray =
+				getSignedTickerArray( signedTickers );
+			return getCloseToClosePortfolioReturns( signedTickerArray ,
+				datesForReturnComputation );
 		}
 		/// <summary>
 		/// Gets portfolio's return for a given period, for given tickers
@@ -285,12 +341,23 @@ namespace QuantProject.Business.Strategies
 		public static double[] GetCloseToClosePortfolioReturns(
 			ICollection signedTickers,	DateTime firstDate,	DateTime lastDate )
 		{
-			string[] signedTickerArray =
-				getSignedTickerArray( signedTickers );
-			DateTime[] datesForReturnComputation = Quotes.GetMarketDays(
-				GetTicker( signedTickerArray[ 0 ] ), firstDate , lastDate );
-			return getCloseToClosePortfolioReturns( signedTickerArray ,
-				datesForReturnComputation );
+			SortedList datesForReturnComputation = Quotes.GetCommonMarketDays(
+				signedTickers , firstDate , lastDate );
+			return GetCloseToClosePortfolioReturns(
+				signedTickers , datesForReturnComputation );
+		}
+		/// <summary>
+		/// Gets portfolio's return (for given signed tickers) computed on the
+		/// market days contained in commonMarketDays
+		/// </summary>
+		/// <param name="signedTickers"></param>
+		/// <param name="commonMarketDays">SortedList of DateTime objects</param>
+		/// <returns></returns>
+		public static double[] GetCloseToClosePortfolioReturns(
+			ICollection signedTickers,	SortedList commonMarketDays )
+		{
+			return
+				getCloseToClosePortfolioReturns( signedTickers , commonMarketDays );
 		}
 		#endregion
     
