@@ -60,19 +60,19 @@ namespace QuantProject.DataAccess.Tables
 		/// </summary>
 		/// <param name="ticker">ticker for which the starting date has to be returned</param>
 		/// <returns></returns>
-		public static DateTime GetStartDate( string ticker )
+		public static DateTime GetFirstQuoteDate( string ticker )
 		{
 			DataTable dataTable = SqlExecutor.GetDataTable(
-				"select * from quotes where quTicker='" + ticker + "' " +
-				"order by quDate");
-			return (DateTime)(dataTable.Rows[ 0 ][ "quDate" ]);
+				"select min(quDate) as minDate from quotes where quTicker='" + ticker + "' " +
+				"group by quTicker");
+			return (DateTime)(dataTable.Rows[ 0 ][ "minDate" ]);
 		}
 		/// <summary>
 		/// Returns the last date for the given ticker
 		/// </summary>
 		/// <param name="ticker">ticker for which the lasat date has to be returned</param>
 		/// <returns></returns>
-		public static DateTime GetEndDate( string ticker )
+		public static DateTime GetLastQuoteDate( string ticker )
 		{
 			DataTable dataTable = SqlExecutor.GetDataTable(
 				"select * from quotes where quTicker='" + ticker + "' " +
