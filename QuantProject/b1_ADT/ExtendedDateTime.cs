@@ -21,6 +21,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
 using System;
+using System.Collections;
 
 namespace QuantProject.ADT
 {
@@ -101,5 +102,21 @@ namespace QuantProject.ADT
     {
       return this.DateTime.ToString() + " - " + this.BarComponent.ToString();
     }
+//		public static SortedList GetArray( SortedList sortedDateTimes )
+//		{
+//			SortedList dateTimes = new DateTime[ sortedDateTimes.Count ];
+//			for ( int i = 0; i<sortedDateTimes.Count ; i++ )
+//			{
+//				if ( !(sortedDateTimes.GetByIndex( i ) is DateTime ) )
+//					throw( new Exception( "sortedDateTimes is expected to contain only DateTime elements. " +
+//						"The element number " + i + " is not a DateTime, instead." ) );
+//				else
+//				{
+//					DateTime dateTime = (DateTime)sortedDateTimes.GetByIndex( i );
+//					dateTimes[ i ] = dateTime;
+//				}
+//			}
+//			return dateTimes;
+//		}
 	}
 }
