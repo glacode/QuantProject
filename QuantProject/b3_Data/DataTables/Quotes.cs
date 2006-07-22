@@ -43,12 +43,34 @@ namespace QuantProject.Data.DataTables
 		{
 			this.fillDataTable( ticker , startDate , endDate );
 		}
+
+		/// <summary>
+		/// builds a Quotes data table containing the ticker's quotes for the
+		/// market days contained in the marketDays SortedList
+		/// </summary>
+		/// <param name="ticker"></param>
+		/// <param name="marketDays"></param>
+		public Quotes( string ticker , SortedList marketDays )
+		{
+			DateTime firstDate = (DateTime)marketDays.GetByIndex( 0 );
+			DateTime lastDate = (DateTime)marketDays.GetByIndex(
+				marketDays.Count - 1 );
+			this.fillDataTable( ticker , firstDate , lastDate );
+			this.removeNonContainedDates( marketDays );
+		}
+		private void removeNonContainedDates( SortedList marketDays )
+		{
+			foreach( DataRow dataRow in this.Rows )
+				if ( marketDays.ContainsKey(
+					(DateTime)dataRow[ Quotes.Date ] ) )
+					this.Rows.Remove( dataRow );
+		}
 		public Quotes( string ticker )
 		{
 			this.fillDataTable( 
 				ticker ,
-				QuantProject.DataAccess.Tables.Quotes.GetStartDate( ticker ) ,
-				QuantProject.DataAccess.Tables.Quotes.GetEndDate( ticker ) );
+				QuantProject.DataAccess.Tables.Quotes.GetFirstQuoteDate( ticker ) ,
+				QuantProject.DataAccess.Tables.Quotes.GetLastQuoteDate( ticker ) );
 		}
     public Quotes(SerializationInfo info, StreamingContext context)
       : base(info, context)
@@ -625,22 +647,75 @@ namespace QuantProject.Data.DataTables
 		/// <param name="firstDate">begin interval</param>
 		/// <param name="lastDate">end interval</param>
 		/// <returns></returns>
-		public static DateTime[] GetMarketDays( string ticker ,
+		public static SortedList GetMarketDays( string ticker ,
 			DateTime firstDate , DateTime lastDate )
 		{
 			Quotes quotes = new Quotes( ticker , firstDate , lastDate );
-			DateTime[] marketDays = new DateTime[ quotes.Rows.Count ];
+//			DateTime[] marketDays = new DateTime[ quotes.Rows.Count ];
+			SortedList marketDays = new SortedList();
 			int i = 0;
 			foreach ( DataRow dataRow in quotes.Rows )
 			{
-				marketDays[ i ] = (DateTime)dataRow[ Quotes.Date ];
+//				marketDays[ i ] = (DateTime)dataRow[ Quotes.Date ];
+				marketDays.Add( (DateTime)dataRow[ Quotes.Date ] , (DateTime)dataRow[ Quotes.Date ] );
 				i++;
 			}
 			return marketDays;
 		}
     
 
-    private History history;
+		#region GetCommonMarketDays
+		private static Hashtable getMarketDays( ICollection tickers , DateTime firstDate ,
+			DateTime lastDate )
+		{
+			Hashtable marketDays = new Hashtable();
+			foreach ( string ticker in tickers )
+				if ( !marketDays.ContainsKey( ticker ) )
+				{
+					SortedList marketDaysForSingleTicker =
+						GetMarketDays( ticker , firstDate , lastDate );
+					marketDays.Add( ticker , marketDaysForSingleTicker );
+				}
+			return marketDays;
+		}
+		private static bool isCommonDate( ICollection tickers , DateTime dateTime ,
+			Hashtable marketDays )
+		{
+			bool itIsCommon = true;
+			foreach ( string ticker in tickers )
+				itIsCommon = itIsCommon &&
+					((SortedList)marketDays[ ticker ]).ContainsKey( dateTime );
+			return itIsCommon;
+		}
+		private static void getCommonMarketDays_ifTheCaseAdd( ICollection tickers , DateTime dateTime ,
+			Hashtable marketDays , AdvancedSortedList commonMarketDays )
+		{
+			if ( isCommonDate( tickers , dateTime , marketDays ) )
+				commonMarketDays.Add( dateTime , dateTime );
+		}
+		private static SortedList getCommonMarketDays( ICollection tickers ,
+			DateTime firstDate , DateTime lastDate , Hashtable marketDays )
+		{
+			AdvancedSortedList commonMarketDays = new AdvancedSortedList();
+			DateTime currentDateTime = firstDate;
+			while ( currentDateTime <= lastDate )
+			{
+				getCommonMarketDays_ifTheCaseAdd( tickers , 
+					currentDateTime , marketDays , commonMarketDays );
+				currentDateTime = currentDateTime.AddDays( 1 );
+			}
+			return commonMarketDays;
+		}
+
+		public static SortedList GetCommonMarketDays( ICollection tickers ,
+			DateTime firstDate , DateTime lastDate )
+		{
+			Hashtable marketDays = getMarketDays( tickers , firstDate , lastDate );
+      return getCommonMarketDays( tickers , firstDate , lastDate , marketDays );
+		}
+
+		#endregion
+		private History history;
 
 		/// <summary>
 		/// Gets the ticker whose quotes are contained into the Quotes object
@@ -860,6 +935,16 @@ namespace QuantProject.Data.DataTables
         return this.GetQuoteDateOrPreceding(date);
       }
     }
+		/// <summary>
+		/// returns the first quote date for the ticker
+		/// </summary>
+		/// <param name="ticker"></param>
+		/// <returns></returns>
+		public static DateTime GetFirstQuoteDate( string ticker )
+		{
+			return QuantProject.DataAccess.Tables.Quotes.GetFirstQuoteDate( ticker );
+		}
+
 
     /// <summary>
     /// Gets the adjusted close at the given date
