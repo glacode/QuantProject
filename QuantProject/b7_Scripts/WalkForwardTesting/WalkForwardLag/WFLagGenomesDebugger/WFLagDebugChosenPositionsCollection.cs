@@ -39,9 +39,12 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag.WFLagDebugger
 		/// </summary>
 		private System.ComponentModel.Container components = null;
 
-		private ICollection chosenPositionsCollection;
+		private ArrayList chosenPositionsDebugInfoList;
+		private int inSampleDays;
+		string benchmark;
 
-		public WFLagDebugChosenPositionsCollection( ICollection chosenPositionsCollection )
+		public WFLagDebugChosenPositionsCollection( int inSampleDays , string benchmark ,
+			ArrayList chosenPositionsDebugInfoList )
 		{
 			//
 			// Required for Windows Form Designer support
@@ -51,7 +54,10 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag.WFLagDebugger
 			//
 			// TODO: Add any constructor code after InitializeComponent call
 			//
-			this.chosenPositionsCollection = chosenPositionsCollection;
+			this.inSampleDays = inSampleDays;
+			this.benchmark = benchmark;
+			this.chosenPositionsDebugInfoList = chosenPositionsDebugInfoList;
+			this.setDataGridTableStyle();
 			this.updateGrid();
 		}
 
@@ -89,6 +95,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag.WFLagDebugger
 			this.dataGridChosenPositionsWithAttributes.Name = "dataGridChosenPositionsWithAttributes";
 			this.dataGridChosenPositionsWithAttributes.Size = new System.Drawing.Size(576, 240);
 			this.dataGridChosenPositionsWithAttributes.TabIndex = 0;
+			this.dataGridChosenPositionsWithAttributes.MouseUp += new System.Windows.Forms.MouseEventHandler(this.dataGridChosenPositionsWithAttributes_MouseUp);
 			// 
 			// WFLagDebugChosenPositionsCollection
 			// 
@@ -105,11 +112,61 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag.WFLagDebugger
 		#endregion
 
 
+		private void setDataGridTableStyle()
+		{
+			DataGridTableStyle dataGridTableStyle = new DataGridTableStyle( true );
+//			DataGridColumnStyle dataGridColumnStyle = new DataGridColumnStyle();
+		}
 		private void updateGrid()
 		{
 			this.dataGridChosenPositionsWithAttributes.DataSource =
-				this.chosenPositionsCollection;
+				this.chosenPositionsDebugInfoList;
 			this.dataGridChosenPositionsWithAttributes.Refresh();
 		}
+
+		#region DataGridMouseClickEventHandler
+		private int rightClickEventHandler_getRowNumber(  object sender ,
+			MouseEventArgs eventArgs )
+		{
+			DataGrid dataGrid = (DataGrid)sender;
+			Point point = new Point( eventArgs.X , eventArgs.Y );
+			DataGrid.HitTestInfo hitTestInfo = dataGrid.HitTest( point );
+//			DataTable dataTable = (DataTable)dataGrid.DataSource;
+			return hitTestInfo.Row;
+		}
+		private WFLagChosenPositions rightClickEventHandler_getWFLagChosenPositions(
+			DataGrid dataGrid , int rowNumber )
+		{
+//			DataTable dataTable = (DataTable)dataGrid.DataSource;
+			WFLagChosenPositionsDebugInfo wFLagChosenPositionsDebugInfo =
+				(WFLagChosenPositionsDebugInfo)(this.chosenPositionsDebugInfoList[ rowNumber ]);
+			WFLagChosenPositions wFLagChosenPositions =
+				wFLagChosenPositionsDebugInfo.GetChosenPositions();
+			return wFLagChosenPositions;
+		}
+
+		private WFLagChosenPositions rightClickEventHandler_getWFLagChosenPositions(
+			object sender, System.Windows.Forms.MouseEventArgs e )
+		{
+			int rowNumber = rightClickEventHandler_getRowNumber(
+				sender , e );
+			WFLagChosenPositions wFLagChosenPositions =
+				this.rightClickEventHandler_getWFLagChosenPositions( (DataGrid)sender , rowNumber );
+			return wFLagChosenPositions;
+		}
+		private void rightClickEventHandler(object sender, System.Windows.Forms.MouseEventArgs e)
+		{
+			WFLagChosenPositions wFLagChosenPositions =
+				this.rightClickEventHandler_getWFLagChosenPositions( sender , e );
+			WFLagDebugGenome wFLagDebugGenome = new WFLagDebugGenome( wFLagChosenPositions ,
+				this.inSampleDays , this.benchmark );
+			wFLagDebugGenome.Show();
+		}
+		private void dataGridChosenPositionsWithAttributes_MouseUp(object sender, System.Windows.Forms.MouseEventArgs e)
+		{
+			if ( e.Button == MouseButtons.Right )
+				this.rightClickEventHandler( sender , e );
+		}
+		#endregion
 	}
 }
