@@ -94,18 +94,32 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag.WFLagDebugger
 					strategyReturns[ i ] = portfolioPositionsReturns[ i + 1 ];
 			return strategyReturns;
 		}
+		private static SortedList getCommonMarketDays(
+			WFLagChosenPositions wFLagChosenPositions ,
+			DateTime firstDate , DateTime lastDate )
+		{
+			string[] tickers =
+				WFLagChosenPositionsDebugInfo.GetDrivingAndPortfolioTickers(
+				wFLagChosenPositions );
+			SortedList commonMarketDays =
+				QuantProject.Data.DataTables.Quotes.GetCommonMarketDays(
+				tickers , firstDate , lastDate );
+			return commonMarketDays;
+		}
 		private static double[] getStrategyReturns(
 			WFLagChosenPositions wFLagChosenPositions ,
 			DateTime firstDate , DateTime lastDate )
 		{
+			SortedList commonMarketDays =
+				getCommonMarketDays( wFLagChosenPositions , firstDate , lastDate );
 			double[] drivingPositionsReturns =
 				SignedTicker.GetCloseToClosePortfolioReturns(
 				wFLagChosenPositions.DrivingPositions.Keys ,
-				firstDate , lastDate );
+				commonMarketDays );
 			double[] portfolioPositionsReturns =
 				SignedTicker.GetCloseToClosePortfolioReturns(
 				wFLagChosenPositions.PortfolioPositions.Keys ,
-				firstDate , lastDate );
+				commonMarketDays );
 			double[] strategyReturns = getStrategyReturns(
 				drivingPositionsReturns , portfolioPositionsReturns );
 			return strategyReturns;
@@ -129,6 +143,25 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag.WFLagDebugger
 				string dummy = ex.Message;
 			}
 			return sharpeRatio;
+		}
+		public static double GetExpectancyScore(
+			WFLagChosenPositions wFLagChosenPositions ,
+			DateTime firstDate , DateTime lastDate )
+		{
+			double expectancyScore = double.MinValue;
+			try
+			{
+				double[] strategyReturns = getStrategyReturns(
+					wFLagChosenPositions , firstDate , lastDate );
+				expectancyScore =
+					AdvancedFunctions.GetExpectancyScore( strategyReturns );
+			}
+			catch( MissingQuoteException ex )
+			{
+				expectancyScore = double.MinValue;
+				string dummy = ex.Message;
+			}
+			return expectancyScore;
 		}
 	}
 }
