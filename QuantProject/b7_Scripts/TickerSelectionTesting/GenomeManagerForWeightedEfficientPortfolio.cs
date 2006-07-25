@@ -61,7 +61,8 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
     
     protected override double getTickerWeight(int[] genes, int tickerPositionInGenes)
     {
-      double minimumWeight = ConstantsProvider.MinimumPortfolioWeightForTicker;
+      double minimumWeight = (1.0 - ConstantsProvider.AmountOfVariableWeightToBeAssignedToTickers)/
+                             (genes.Length / 2);
       double totalOfValuesForWeightsInGenes = 0.0;
       for(int j = 0; j<genes.Length; j++)
       {
