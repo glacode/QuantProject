@@ -58,13 +58,31 @@ namespace QuantProject.Data.DataTables
 			this.fillDataTable( ticker , firstDate , lastDate );
 			this.removeNonContainedDates( marketDays );
 		}
+		#region removeNonContainedDates
+		private ArrayList	removeNonContainedDates_getDataRowsToBeRemoved(
+			SortedList marketDays )
+		{
+			ArrayList dataRowsToBeRemoved = new ArrayList();
+			foreach( DataRow dataRow in this.Rows )
+				if ( !marketDays.ContainsKey(
+					(DateTime)dataRow[ Quotes.Date ] ) )
+					dataRowsToBeRemoved.Add( dataRow );
+			return dataRowsToBeRemoved;
+		}
+		private void removeDataRows( ICollection dataRowsToBeRemoved )
+		{
+			foreach ( DataRow dataRowToBeRemoved in dataRowsToBeRemoved )
+				this.Rows.Remove( dataRowToBeRemoved );
+		}
 		private void removeNonContainedDates( SortedList marketDays )
 		{
-			foreach( DataRow dataRow in this.Rows )
-				if ( marketDays.ContainsKey(
-					(DateTime)dataRow[ Quotes.Date ] ) )
-					this.Rows.Remove( dataRow );
+			ArrayList dataRowsToBeRemoved =
+				this.removeNonContainedDates_getDataRowsToBeRemoved(
+				marketDays );
+			this.removeDataRows( dataRowsToBeRemoved );
 		}
+		#endregion
+
 		public Quotes( string ticker )
 		{
 			this.fillDataTable( 
