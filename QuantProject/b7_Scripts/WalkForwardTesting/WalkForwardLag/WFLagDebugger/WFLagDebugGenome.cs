@@ -56,8 +56,8 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag.WFLagDebugger
 		private System.Windows.Forms.TextBox PreSampleDays;
 		private System.Windows.Forms.Label labelDrivingPositions;
 		private System.Windows.Forms.Label labelPortfolioPositions;
-		private System.Windows.Forms.Label labelDrivingPositionsContent;
-		private System.Windows.Forms.Label labelPortfolioPositionsContent;
+		private System.Windows.Forms.DataGrid dataGridDrivingPositions;
+		private System.Windows.Forms.DataGrid dataGridPortfolioPositions;
 		/// <summary>
 		/// Required designer variable.
 		/// </summary>
@@ -109,8 +109,10 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag.WFLagDebugger
 			this.PreSampleDays = new System.Windows.Forms.TextBox();
 			this.labelDrivingPositions = new System.Windows.Forms.Label();
 			this.labelPortfolioPositions = new System.Windows.Forms.Label();
-			this.labelDrivingPositionsContent = new System.Windows.Forms.Label();
-			this.labelPortfolioPositionsContent = new System.Windows.Forms.Label();
+			this.dataGridDrivingPositions = new System.Windows.Forms.DataGrid();
+			this.dataGridPortfolioPositions = new System.Windows.Forms.DataGrid();
+			((System.ComponentModel.ISupportInitialize)(this.dataGridDrivingPositions)).BeginInit();
+			((System.ComponentModel.ISupportInitialize)(this.dataGridPortfolioPositions)).BeginInit();
 			this.SuspendLayout();
 			// 
 			// TestPreInSampleAndPost
@@ -133,7 +135,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag.WFLagDebugger
 			// 
 			// TestPostSample
 			// 
-			this.TestPostSample.Location = new System.Drawing.Point(32, 144);
+			this.TestPostSample.Location = new System.Drawing.Point(32, 304);
 			this.TestPostSample.Name = "TestPostSample";
 			this.TestPostSample.Size = new System.Drawing.Size(160, 32);
 			this.TestPostSample.TabIndex = 2;
@@ -142,14 +144,14 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag.WFLagDebugger
 			// 
 			// PostSampleDays
 			// 
-			this.PostSampleDays.Location = new System.Drawing.Point(256, 152);
+			this.PostSampleDays.Location = new System.Drawing.Point(256, 312);
 			this.PostSampleDays.Name = "PostSampleDays";
 			this.PostSampleDays.TabIndex = 3;
 			this.PostSampleDays.Text = "30";
 			// 
 			// testPreSample
 			// 
-			this.testPreSample.Location = new System.Drawing.Point(32, 216);
+			this.testPreSample.Location = new System.Drawing.Point(32, 376);
 			this.testPreSample.Name = "testPreSample";
 			this.testPreSample.Size = new System.Drawing.Size(160, 32);
 			this.testPreSample.TabIndex = 4;
@@ -158,48 +160,54 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag.WFLagDebugger
 			// 
 			// PreSampleDays
 			// 
-			this.PreSampleDays.Location = new System.Drawing.Point(256, 224);
+			this.PreSampleDays.Location = new System.Drawing.Point(256, 384);
 			this.PreSampleDays.Name = "PreSampleDays";
 			this.PreSampleDays.TabIndex = 5;
 			this.PreSampleDays.Text = "30";
 			// 
 			// labelDrivingPositions
 			// 
-			this.labelDrivingPositions.Location = new System.Drawing.Point(272, 16);
+			this.labelDrivingPositions.Location = new System.Drawing.Point(208, 16);
 			this.labelDrivingPositions.Name = "labelDrivingPositions";
+			this.labelDrivingPositions.Size = new System.Drawing.Size(72, 23);
 			this.labelDrivingPositions.TabIndex = 6;
 			this.labelDrivingPositions.Text = "Driving Pos.";
 			this.labelDrivingPositions.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
 			// 
 			// labelPortfolioPositions
 			// 
-			this.labelPortfolioPositions.Location = new System.Drawing.Point(272, 64);
+			this.labelPortfolioPositions.Location = new System.Drawing.Point(208, 160);
 			this.labelPortfolioPositions.Name = "labelPortfolioPositions";
+			this.labelPortfolioPositions.Size = new System.Drawing.Size(72, 23);
 			this.labelPortfolioPositions.TabIndex = 7;
 			this.labelPortfolioPositions.Text = "Portfolio Pos.";
 			this.labelPortfolioPositions.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
 			// 
-			// labelDrivingPositionsContent
+			// dataGridDrivingPositions
 			// 
-			this.labelDrivingPositionsContent.Location = new System.Drawing.Point(384, 16);
-			this.labelDrivingPositionsContent.Name = "labelDrivingPositionsContent";
-			this.labelDrivingPositionsContent.TabIndex = 8;
-			this.labelDrivingPositionsContent.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+			this.dataGridDrivingPositions.DataMember = "";
+			this.dataGridDrivingPositions.HeaderForeColor = System.Drawing.SystemColors.ControlText;
+			this.dataGridDrivingPositions.Location = new System.Drawing.Point(296, 16);
+			this.dataGridDrivingPositions.Name = "dataGridDrivingPositions";
+			this.dataGridDrivingPositions.Size = new System.Drawing.Size(312, 128);
+			this.dataGridDrivingPositions.TabIndex = 10;
 			// 
-			// labelPortfolioPositionsContent
+			// dataGridPortfolioPositions
 			// 
-			this.labelPortfolioPositionsContent.Location = new System.Drawing.Point(384, 64);
-			this.labelPortfolioPositionsContent.Name = "labelPortfolioPositionsContent";
-			this.labelPortfolioPositionsContent.TabIndex = 9;
-			this.labelPortfolioPositionsContent.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+			this.dataGridPortfolioPositions.DataMember = "";
+			this.dataGridPortfolioPositions.HeaderForeColor = System.Drawing.SystemColors.ControlText;
+			this.dataGridPortfolioPositions.Location = new System.Drawing.Point(296, 160);
+			this.dataGridPortfolioPositions.Name = "dataGridPortfolioPositions";
+			this.dataGridPortfolioPositions.Size = new System.Drawing.Size(312, 128);
+			this.dataGridPortfolioPositions.TabIndex = 11;
 			// 
 			// WFLagDebugGenome
 			// 
 			this.AutoScaleBaseSize = new System.Drawing.Size(5, 13);
-			this.ClientSize = new System.Drawing.Size(616, 365);
+			this.ClientSize = new System.Drawing.Size(616, 437);
 			this.Controls.AddRange(new System.Windows.Forms.Control[] {
-																																	this.labelPortfolioPositionsContent,
-																																	this.labelDrivingPositionsContent,
+																																	this.dataGridPortfolioPositions,
+																																	this.dataGridDrivingPositions,
 																																	this.labelPortfolioPositions,
 																																	this.labelDrivingPositions,
 																																	this.PreSampleDays,
@@ -211,6 +219,8 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag.WFLagDebugger
 			this.Name = "WFLagDebugGenome";
 			this.Text = "WFLagDebugGenome";
 			this.Load += new System.EventHandler(this.WFLagDebugGenome_Load);
+			((System.ComponentModel.ISupportInitialize)(this.dataGridDrivingPositions)).EndInit();
+			((System.ComponentModel.ISupportInitialize)(this.dataGridPortfolioPositions)).EndInit();
 			this.ResumeLayout(false);
 
 		}
@@ -315,12 +325,26 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag.WFLagDebugger
 			}
 		}
 
+		private void setDataGridDrivingPositions()
+		{
+			ArrayList drivingWeightedPositions =
+				new ArrayList( this.wFLagChosenPositions.DrivingWeightedPositions.Values );
+			this.dataGridDrivingPositions.DataSource = drivingWeightedPositions;
+		}
+		private void setDataGridPortfolioPositions()
+		{
+			ArrayList portfolioWeightedPositions =
+				new ArrayList( this.wFLagChosenPositions.PortfolioWeightedPositions.Values );
+			this.dataGridPortfolioPositions.DataSource = portfolioWeightedPositions;
+		}
 		private void WFLagDebugGenome_Load(object sender, System.EventArgs e)
 		{
-			this.labelDrivingPositionsContent.Text =
-				this.wFLagChosenPositions.DrivingPositions.KeyConcat;
-			this.labelPortfolioPositionsContent.Text =
-				this.wFLagChosenPositions.PortfolioPositions.KeyConcat;
+//			this.labelDrivingPositionsContent.Text =
+//				this.wFLagChosenPositions.DrivingPositions.KeyConcat;
+//			this.labelPortfolioPositionsContent.Text =
+//				this.wFLagChosenPositions.PortfolioPositions.KeyConcat;
+			this.setDataGridDrivingPositions();
+			this.setDataGridPortfolioPositions();
 		}
 	}
 }
