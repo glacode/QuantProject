@@ -63,6 +63,14 @@ namespace QuantProject.Business.Financial.Accounting
 				return positionType;
 			}
 		}
+		public bool IsLong
+		{
+			get { return ( this.Quantity >= 0 ); }
+		}
+		public bool IsShort
+		{
+			get { return ( !this.IsLong ); }
+		}
 		public Position( Instrument instrument , long quantity )
 		{
 			this.instrument = instrument;
