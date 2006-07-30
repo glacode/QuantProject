@@ -26,6 +26,7 @@ using System.Collections;
 using QuantProject.ADT;
 using QuantProject.ADT.Collections;
 using QuantProject.ADT.Optimizing.Genetic;
+using QuantProject.Business.Strategies;
 using QuantProject.Business.Timing;
 
 
@@ -48,23 +49,37 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag
 		private int generationNumberForGeneticOptimizer;
 		private int populationSizeForGeneticOptimizer;
 
-		private QPHashtable drivingPositions;
-		private QPHashtable portfolioPositions;
+		private WeightedPositions drivingWeightedPositions;
+		private WeightedPositions portfolioWeightedPositions;
 		private DateTime firstOptimizationDate;
 		private DateTime lastOptimizationDate;
 
-		public QPHashtable DrivingPositions
+//		public QPHashtable PortfolioPositions
+//		{
+//			get
+//			{
+//				return this.portfolioPositions;
+//			}
+//		}
+//		public QPHashtable DrivingPositions
+//		{
+//			get
+//			{
+//				return this.drivingPositions;
+//			}
+//		}
+		public WeightedPositions DrivingWeightedPositions
 		{
 			get
 			{
-				return this.drivingPositions;
+				return this.drivingWeightedPositions;
 			}
 		}
-		public QPHashtable PortfolioPositions
+		public WeightedPositions PortfolioWeightedPositions
 		{
 			get
 			{
-				return this.portfolioPositions;
+				return this.portfolioWeightedPositions;
 			}
 		}
 		public DateTime FirstOptimizationDate
@@ -114,15 +129,17 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag
 				new NewProgressEventArgs( e.GenerationCounter , e.GenerationNumber ) );
 		}
 		private void setSignedTickers_setTickersFromGenome(
-			WFLagGenomeManager genomeManager ,
+			IGenomeManager genomeManager ,
 			Genome genome )
 		{
-			WFLagSignedTickers wFLagSignedTickers =
-				( WFLagSignedTickers )genomeManager.Decode( genome );
-			this.drivingPositions = wFLagSignedTickers.DrivingPositions;
-			this.portfolioPositions = wFLagSignedTickers.PortfolioPositions;
+			WFLagWeightedPositions wFLagWeightedPositions =
+				( WFLagWeightedPositions )genomeManager.Decode( genome );
+			this.drivingWeightedPositions =
+				wFLagWeightedPositions.DrivingWeightedPositions;
+			this.portfolioWeightedPositions =
+				wFLagWeightedPositions.PortfolioWeightedPositions;
 		}
-		public void SetSignedTickers( WFLagEligibleTickers eligibleTickers )
+		public void SetWeightedPositions( WFLagEligibleTickers eligibleTickers )
 		{
 //			this.setSignedTickers_clearPositions();
 
@@ -132,10 +149,11 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag
 			this.lastOptimizationDate =
 				this.endOfDayTimer.GetCurrentTime().DateTime;
 
-			WFLagGenomeManager genomeManager = 
-				new WFLagGenomeManager(
+			WFLagGenomeManagerWithWeights genomeManager = 
+				new WFLagGenomeManagerWithWeights(
 				eligibleTickers.EligibleTickers ,
-				firstOptimizationDate ,
+				eligibleTickers.EligibleTickers ,
+				this.firstOptimizationDate ,
 				this.lastOptimizationDate ,
 				this.numberOfDrivingPositions ,
 				this.numberOfPositionsToBeChosen );

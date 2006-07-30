@@ -113,12 +113,10 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag.WFLagDebugger
 			SortedList commonMarketDays =
 				getCommonMarketDays( wFLagChosenPositions , firstDate , lastDate );
 			double[] drivingPositionsReturns =
-				SignedTicker.GetCloseToClosePortfolioReturns(
-				wFLagChosenPositions.DrivingPositions.Keys ,
+				wFLagChosenPositions.DrivingWeightedPositions.GetCloseToClosePortfolioReturns(
 				commonMarketDays );
 			double[] portfolioPositionsReturns =
-				SignedTicker.GetCloseToClosePortfolioReturns(
-				wFLagChosenPositions.PortfolioPositions.Keys ,
+				wFLagChosenPositions.PortfolioWeightedPositions.GetCloseToClosePortfolioReturns(
 				commonMarketDays );
 			double[] strategyReturns = getStrategyReturns(
 				drivingPositionsReturns , portfolioPositionsReturns );

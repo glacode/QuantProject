@@ -28,6 +28,7 @@ using QuantProject.Business.DataProviders;
 using QuantProject.Business.Financial.Accounting;
 using QuantProject.Business.Financial.Ordering;
 using QuantProject.Business.Financial.Instruments;
+using QuantProject.Business.Strategies;
 using QuantProject.Business.Timing;
 using QuantProject.Scripts.SimpleTesting;
 
@@ -60,6 +61,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag
 		private HistoricalAdjustedQuoteProvider historicalAdjustedQuoteProvider;
 
 		private DateTime lastOptimizationDate;
+		private bool arePositionsUpToDateWithChosenTickers;
 
 		public event InSampleNewProgressEventHandler InSampleNewProgress;
 		public event NewChosenTickersEventHandler NewChosenTickers;
@@ -119,24 +121,24 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag
 			this.InSampleNewProgress( sender , eventArgs );
 		}
 		#region fiveMinutesBeforeMarketCloseEventHandler_openPositions
-		private string getTicker( string signedTicker )
-		{
-			string returnValue;
-			if ( signedTicker.IndexOf( "-" ) == 0 )
-				returnValue = signedTicker.Substring( 1 , signedTicker.Length - 1 );
-			else
-				returnValue = signedTicker;
-			return returnValue;
-		}
-		private int getReturnMultiplier( string signedTicker )
-		{
-			int returnValue;
-			if ( signedTicker.IndexOf( "-" ) == 0 )
-				returnValue = -1;
-			else
-				returnValue = 1;
-			return returnValue;
-		}
+//		private string getTicker( string signedTicker )
+//		{
+//			string returnValue;
+//			if ( signedTicker.IndexOf( "-" ) == 0 )
+//				returnValue = signedTicker.Substring( 1 , signedTicker.Length - 1 );
+//			else
+//				returnValue = signedTicker;
+//			return returnValue;
+//		}
+//		private int getReturnMultiplier( string signedTicker )
+//		{
+//			int returnValue;
+//			if ( signedTicker.IndexOf( "-" ) == 0 )
+//				returnValue = -1;
+//			else
+//				returnValue = 1;
+//			return returnValue;
+//		}
 		private double getTodayReturnForTicker( string ticker )
 		{
 			double todayMarketValueAtClose =
@@ -153,11 +155,12 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag
 				yesterdayMarketValueAtClose ;
 			return returnValue;
 		}
-		private double getTodayReturnForSignedTicker( string signedTicker )
+		private double getTodayReturn(
+			WeightedPosition weightedPosition )
 		{
 			double todayReturnForTicker = this.getTodayReturnForTicker(
-				WFLagGenomeManager.GetTicker( signedTicker ) );
-			int returnMultiplier = this.getReturnMultiplier( signedTicker );
+				weightedPosition.Ticker );
+			double returnMultiplier = weightedPosition.Weight;
 			return todayReturnForTicker * returnMultiplier;
 		}
 		/// <summary>
@@ -167,53 +170,62 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag
 		private bool isToReverse()
 		{
 			double totalReturn = 0;
-			foreach ( string signedTicker in this.chosenTickers.DrivingPositions.Keys )
-				totalReturn += this.getTodayReturnForSignedTicker( signedTicker );
+			foreach ( WeightedPosition weightedPosition in
+				this.chosenTickers.DrivingWeightedPositions.Values )
+				totalReturn += this.getTodayReturn( weightedPosition );
 			return totalReturn < 0;
 		}
 		private OrderType
 			fiveMinutesBeforeMarketCloseEventHandler_openPosition_getOrderType(
-			string signedTicker , bool isToReverse )
+			WeightedPosition weightedPosition , bool isToReverse )
 		{
 			OrderType orderType = OrderType.MarketBuy;
-			if ( ( signedTicker.StartsWith( "-" ) && !isToReverse ) ||
-				( !signedTicker.StartsWith( "-" ) && isToReverse ) )
+			if ( ( weightedPosition.IsShort && !isToReverse ) ||
+				( weightedPosition.IsLong && isToReverse ) )
 				orderType = OrderType.MarketSellShort;
 			return orderType;
 		}
-		private void fiveMinutesBeforeMarketCloseEventHandler_openPosition(
-			string signedTicker , bool isToReverse )
+		private long getMaxBuyableShares( WeightedPosition weightedPosition )
 		{
-			string ticker = this.getTicker( signedTicker );
+			double maxPositionValue =	this.account.GetMarketValue() *
+				Math.Abs( weightedPosition.Weight );
+			double currentAsk =
+				this.account.DataStreamer.GetCurrentAsk( weightedPosition.Ticker );
+			return Convert.ToInt64(	Math.Floor(	maxPositionValue / currentAsk ) );
+		}
+		private void fiveMinutesBeforeMarketCloseEventHandler_openPosition(
+			WeightedPosition weightedPosition , bool isToReverse )
+		{
+			string ticker = weightedPosition.Ticker;
 			OrderType orderType =
 				this.fiveMinutesBeforeMarketCloseEventHandler_openPosition_getOrderType(
-				signedTicker , isToReverse );
+				weightedPosition , isToReverse );
 			double maxPositionValue = this.account.GetMarketValue() /
 				this.numberOfPositionsToBeChosen;
-			long sharesToBeTraded = OneRank.MaxBuyableShares( ticker ,
-				maxPositionValue , this.account.DataStreamer );
+			long sharesToBeTraded = this.getMaxBuyableShares( weightedPosition );
 			this.account.AddOrder( new Order( orderType ,
 				new Instrument( ticker ) , sharesToBeTraded ) );
 		}
 		private void fiveMinutesBeforeMarketCloseEventHandler_openPositions_actually()
 		{
 			bool isToReverse = this.isToReverse();
-			foreach ( string signedTicker
-									in this.chosenTickers.PortfolioPositions.Keys )
+			foreach ( WeightedPosition weightedPosition
+									in this.chosenTickers.PortfolioWeightedPositions.Values )
 				this.fiveMinutesBeforeMarketCloseEventHandler_openPosition( 
-					signedTicker , isToReverse );
+					weightedPosition , isToReverse );
+			this.arePositionsUpToDateWithChosenTickers = true;
 		}
 		private void fiveMinutesBeforeMarketCloseEventHandler_openPositions()
 		{
-			if ( this.chosenTickers.DrivingPositions != null )
+			if ( this.chosenTickers.DrivingWeightedPositions != null )
 				this.fiveMinutesBeforeMarketCloseEventHandler_openPositions_actually();
 		}
 		private double getTodayReturnForDrivingPositions()
 		{
 			double totalReturn = 0;
-			foreach ( string signedTicker in
-				this.chosenTickers.DrivingPositions.Keys )
-				totalReturn += this.getTodayReturnForSignedTicker( signedTicker );
+			foreach ( WeightedPosition weightedPosition in
+				this.chosenTickers.DrivingWeightedPositions.Values )
+				totalReturn += this.getTodayReturn( weightedPosition );
 			return totalReturn;
 		}
 		private Position getFirstPosition()
@@ -224,82 +236,95 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag
 			Position position = (Position)positions.Current;
 			return position;
 		}
-		private string getSignedTicker( string ticker )
+//		private string getSignedTicker( string ticker )
+//		{
+//			string signedTicker = "";
+//			if ( this.chosenTickers.PortfolioWeightedPositions.ContainsKey( ticker ) )
+//				signedTicker = ticker;
+//			if ( this.chosenTickers.PortfolioWeightedPositions.ContainsKey( "-" + ticker ) )
+//				signedTicker = "-" + ticker;
+//			if ( signedTicker == "" )
+//				throw new Exception( "Nor ticker, nor '-'+ticker are contained in " +
+//					"chosenTickers.PortfolioPositions ; this is an unexpected " +
+//					"situation, when this method is invoked." );
+//			return signedTicker;
+//		}
+//		private bool isShort( string signedTicker )
+//		{
+//			return ( signedTicker.StartsWith( "-" ) );
+//		}
+//		private bool isLong( string signedTicker )
+//		{
+//			return ( !this.isShort( signedTicker ) );
+//		}
+//		private bool isContainedInPortfolio( WeightedPosition weightedPosition )
+//		{
+//			bool isContained = false;
+//			if ( this.account.Portfolio.ContainsKey( weightedPosition.Ticker ) )
+//			{
+//				Position position =
+//					this.account.Portfolio.GetPosition( weightedPosition.Ticker );
+//				isContained = ( position.q
+//			}
+//			bool isContained =
+//				( this.account.Portfolio.ContainsKey( weightedPosition.Ticker ) )
+//				&&
+//				( ( weightedPosition.IsLong &&
+//				this.account.Portfolio.IsLong( weightedPosition.Ticker ) ) ||
+//				( weightedPosition.IsShort &&
+//				this.account.Portfolio.IsShort( weightedPosition.Ticker ) ) );
+//			return isContained;
+//		}
+//		private bool doPositionsCorrespondTo( ICollection signedTickers )
+//		{
+//			bool areUpTodate = true;
+//			foreach ( string signedTicker in signedTickers )
+//				areUpTodate = areUpTodate &&
+//					this.isContainedInPortfolio( signedTicker );
+//			return areUpTodate;
+//		}
+//		private string reverse( string signedTicker )
+//		{
+//			string reversedSignedTicker = "";
+//			if ( this.isLong( signedTicker ) )
+//				reversedSignedTicker = "-" + signedTicker;
+//			if ( !this.isLong( signedTicker ) )
+//				// signedTicker starts with a "-" character
+//				reversedSignedTicker = signedTicker.Substring( 1 );
+//			return reversedSignedTicker;
+//		}
+//		private ICollection reverse( ICollection signedTickers )
+//		{
+//			Hashtable reversedCollection = new Hashtable();
+//			foreach ( string signedTicker in signedTickers )
+//				reversedCollection.Add( this.reverse( signedTicker ) , null );
+//			return reversedCollection.Keys;
+//		}
+//		private bool arePositionsUpToDateWithChosenTickers()
+//		{
+//			bool areUpTodate =
+//				this.doPositionsCorrespondTo(
+//				this.chosenTickers.PortfolioWeightedPositions ) ||
+//				this.doPositionsCorrespondTo(
+//				this.reverse( this.chosenTickers.PortfolioWeightedPositions ) );
+//			return areUpTodate;
+//		}
+		private WeightedPosition getWeightedPosition( string ticker )
 		{
-			string signedTicker = "";
-			if ( this.chosenTickers.PortfolioPositions.ContainsKey( ticker ) )
-				signedTicker = ticker;
-			if ( this.chosenTickers.PortfolioPositions.ContainsKey( "-" + ticker ) )
-				signedTicker = "-" + ticker;
-			if ( signedTicker == "" )
-				throw new Exception( "Nor ticker, nor '-'+ticker are contained in " +
-					"chosenTickers.PortfolioPositions ; this is an unexpected " +
-					"situation, when this method is invoked." );
-			return signedTicker;
-		}
-		private bool isShort( string signedTicker )
-		{
-			return ( signedTicker.StartsWith( "-" ) );
-		}
-		private bool isLong( string signedTicker )
-		{
-			return ( !this.isShort( signedTicker ) );
-		}
-		private bool isContainedInPortfolio( string signedTicker )
-		{
-			string ticker = this.getTicker( signedTicker );
-			bool isContained =
-				( this.account.Portfolio.ContainsKey( ticker ) )
-				&&
-				( ( this.isLong( signedTicker ) &&
-				this.account.Portfolio.IsLong( ticker ) ) ||
-				( !this.isLong( signedTicker ) &&
-				this.account.Portfolio.IsShort( ticker ) ) );
-			return isContained;
-		}
-		private bool doPositionsCorrespondTo( ICollection signedTickers )
-		{
-			bool areUpTodate = true;
-			foreach ( string signedTicker in signedTickers )
-				areUpTodate = areUpTodate && this.isContainedInPortfolio( signedTicker );
-			return areUpTodate;
-		}
-		private string reverse( string signedTicker )
-		{
-			string reversedSignedTicker = "";
-			if ( this.isLong( signedTicker ) )
-				reversedSignedTicker = "-" + signedTicker;
-			if ( !this.isLong( signedTicker ) )
-				// signedTicker starts with a "-" character
-				reversedSignedTicker = signedTicker.Substring( 1 );
-			return reversedSignedTicker;
-		}
-		private ICollection reverse( ICollection signedTickers )
-		{
-			Hashtable reversedCollection = new Hashtable();
-			foreach ( string signedTicker in signedTickers )
-				reversedCollection.Add( this.reverse( signedTicker ) , null );
-			return reversedCollection.Keys;
-		}
-		private bool arePositionsUpToDateWithChosenTickers()
-		{
-			bool areUpTodate =
-				this.doPositionsCorrespondTo(
-				this.chosenTickers.PortfolioPositions.Keys ) ||
-				this.doPositionsCorrespondTo(
-				this.reverse( this.chosenTickers.PortfolioPositions.Keys ) );
-			return areUpTodate;
+			return this.chosenTickers.PortfolioWeightedPositions.GetWeightedPosition(
+				ticker );
 		}
 		private bool isReversed()
 		{
 			Position position = this.getFirstPosition();
 			PositionType positionType = position.Type;
-			string positionTicker = position.Instrument.Key;
-			String signedTicker = this.getSignedTicker( positionTicker );
+			string firstPositionTicker = position.Instrument.Key;
+			WeightedPosition weightedPosition =
+				this.getWeightedPosition( firstPositionTicker );
 			bool isReversedPosition =
-				( ( this.isLong( signedTicker )&&
+				( ( weightedPosition.IsLong &&
 				( position.Type == PositionType.Short ) ) ||
-				( !this.isLong( signedTicker ) &&
+				( weightedPosition.IsShort &&
 				( position.Type == PositionType.Long ) ) );
 			return isReversedPosition;
 		}
@@ -317,7 +342,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag
 		private bool arePositionsToBeClosed()
 		{
 			bool areToBeClosed =
-				(!this.arePositionsUpToDateWithChosenTickers()) ||
+				( !this.arePositionsUpToDateWithChosenTickers ) ||
 				this.isReversingNeeded();
 			return areToBeClosed;
 		}
@@ -367,7 +392,8 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag
 				RunWalkForwardLag.WriteToTextLog( outputMessage );
 //				Console.WriteLine( "Number of Eligible tickers: " +
 //					this.eligibleTickers.EligibleTickers.Rows.Count );
-				this.chosenTickers.SetSignedTickers( this.eligibleTickers );
+				this.chosenTickers.SetWeightedPositions( this.eligibleTickers );
+				this.arePositionsUpToDateWithChosenTickers = false;
 				this.NewChosenTickers( this ,
 					new WFLagNewChosenTickersEventArgs( this.chosenTickers ) );
 				this.lastOptimizationDate = this.now().DateTime;

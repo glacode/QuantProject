@@ -46,11 +46,11 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag.WFLagDebugger
 
 		public string DrivingPositions
 		{
-			get { return this.wFLagChosenPositions.DrivingPositions.KeyConcat; }
+			get { return this.wFLagChosenPositions.DrivingWeightedPositions.ToString(); }
 		}
 		public string PortfolioPositions
 		{
-			get { return this.wFLagChosenPositions.PortfolioPositions.KeyConcat; }
+			get { return this.wFLagChosenPositions.PortfolioWeightedPositions.ToString(); }
 		}
 		public DateTime LastOptimization
 		{
@@ -121,16 +121,18 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag.WFLagDebugger
 		public static string[] GetDrivingAndPortfolioTickers(
 			WFLagChosenPositions wFLagChosenPositions )
 		{
-			int size = wFLagChosenPositions.DrivingPositions.Count +
-				wFLagChosenPositions.PortfolioPositions.Count;
+			int size = wFLagChosenPositions.DrivingWeightedPositions.Count +
+				wFLagChosenPositions.PortfolioWeightedPositions.Count;
 			string[] drivingAndPortfolioTickers = new string[ size ];
 			int i = 0;
-			foreach ( string signedTicker in wFLagChosenPositions.DrivingPositions.Keys )
+			foreach ( string signedTicker in
+				wFLagChosenPositions.DrivingWeightedPositions.Keys )
 			{
 				drivingAndPortfolioTickers[ i ] = SignedTicker.GetTicker( signedTicker );
 				i++;
 			}
-			foreach ( string signedTicker in wFLagChosenPositions.PortfolioPositions.Keys )
+			foreach ( string signedTicker in
+				wFLagChosenPositions.PortfolioWeightedPositions.Keys )
 			{
 				drivingAndPortfolioTickers[ i ] = SignedTicker.GetTicker( signedTicker );
 				i++;
