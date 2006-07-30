@@ -97,6 +97,25 @@ namespace QuantProject.ADT.Statistics
 			return	sumOfSquares;
 		}
     
+		static public  double SumOfAbs( double[] data )
+		{
+			double sum = 0;
+			for( int i = 0; i < data.Length ; i ++ ) 
+			{
+				sum += Math.Abs( data[ i ] );
+			}
+			return	sum;
+		}
+		static public double[] MultiplyBy( double[] data , double multiplier )
+		{
+			double[] returnData = new double[ data.Length ];
+			for( int i = 0; i < data.Length ; i ++ ) 
+			{
+				returnData[ i ] = data[ i ] * multiplier;
+			}
+			return returnData;
+		}
+		
 		static public double SimpleAverage( double[] data ) 
 		{
 			return	BasicFunctions.Sum(data)/data.Length;
