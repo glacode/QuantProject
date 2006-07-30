@@ -29,7 +29,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag
 {
 	/// <summary>
 	/// This class identifies all the signed tickers to apply
-	/// the lag strategy our of sample: it contains both the
+	/// the lag strategy out of sample: it contains both the
 	/// driving positions and the portfolio positions. Each genome
 	/// can be decoded to an instance of this class
 	/// </summary>
