@@ -63,24 +63,24 @@ namespace QuantProject.ADT.FileManaging
     {
       object returnValue = null;
     	
-			try
-			{
+//			try
+//			{
 				ObjectArchiver.stream = new FileStream(
 					fullPath,
 					FileMode.Open,
 					FileAccess.Read,
 					FileShare.None);
 				returnValue = ObjectArchiver.formatter.Deserialize(stream);
-			}
-			catch( Exception ex )
-			{
-				string stringForBreakpoint = ex.Message;
-				stringForBreakpoint = stringForBreakpoint;
-			}
-			finally
-			{
+//			}
+//			catch( Exception ex )
+//			{
+//				string stringForBreakpoint = ex.Message;
+//				stringForBreakpoint = stringForBreakpoint;
+//			}
+//			finally
+//			{
 				ObjectArchiver.stream.Close();
-			}
+//			}
       return returnValue;
     }
   }
