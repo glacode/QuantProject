@@ -613,6 +613,11 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "WalkForwardTesting\WalkForwardLag\WFLagGenomeManagerWithWeights.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "WalkForwardTesting\WalkForwardLag\WFLagMain.cs"
                     SubType = "Form"
                     BuildAction = "Compile"
@@ -624,6 +629,11 @@
                 />
                 <File
                     RelPath = "WalkForwardTesting\WalkForwardLag\WFLagSignedTickers.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "WalkForwardTesting\WalkForwardLag\WFLagWeightedPositions.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
@@ -686,11 +696,6 @@
                     RelPath = "WalkForwardTesting\WalkForwardLag\WFLagLogDebugger\WFLagLogDebugger.cs"
                     SubType = "Form"
                     BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "WalkForwardTesting\WalkForwardLag\WFLagLogDebugger\WFLagLogDebugger.resx"
-                    DependentUpon = "WFLagLogDebugger.cs"
-                    BuildAction = "EmbeddedResource"
                 />
                 <File
                     RelPath = "WalkForwardTesting\WalkForwardMultiOneRank\RunWalkForwardMultiOneRank.cs"
