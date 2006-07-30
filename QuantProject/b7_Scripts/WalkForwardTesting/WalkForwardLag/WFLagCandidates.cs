@@ -43,9 +43,21 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag
 		public WFLagCandidates( DataTable eligibleTickers ,
 			DateTime firstQuoteDate , DateTime lastQuoteDate )
 		{
+			this.checkParameters( eligibleTickers , firstQuoteDate ,
+				lastQuoteDate );
 			this.eligibleTickers = eligibleTickers;
 			this.firstQuoteDate = firstQuoteDate;
 			this.lastQuoteDate = lastQuoteDate;
+		}
+		private void checkParameters( DataTable eligibleTickers ,
+			DateTime firstQuoteDate , DateTime lastQuoteDate )
+		{
+			if ( eligibleTickers.Rows.Count < 2 )
+				throw new Exception( "eligibleTickers is expected to have at least " +
+					"two rows. It has less than two rows!" );
+      if ( firstQuoteDate >= lastQuoteDate )
+				throw new Exception( "firstQuoteDate has to be less than" +
+					"lastQuoteDate!" );
 		}
 		/// <summary>
 		/// arrays of close to close returns, one for each ticker
@@ -63,6 +75,22 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag
 				tickersReturns[ i ] = (float[])this.closeToCloseReturns[ ticker ];
 				i++;
 			}
+			return tickersReturns;
+		}
+
+		/// <summary>
+		/// arrays of close to close returns, one for each ticker
+		/// </summary>
+		/// <param name="tickers"></param>
+		/// <returns></returns>
+		public float[][] GetTickersReturns( string[] tickers )
+		{
+			if ( this.closeToCloseReturns == null )
+				this.set_closeToCloseReturns();
+			float[][] tickersReturns = new float[ tickers.Length ][];
+			int i = 0;
+			for ( i = 0 ; i < tickers.Length ; i++ )
+				tickersReturns[ i ] = (float[])this.closeToCloseReturns[ tickers[ i ] ];
 			return tickersReturns;
 		}
 
