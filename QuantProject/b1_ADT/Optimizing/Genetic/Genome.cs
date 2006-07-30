@@ -62,7 +62,13 @@ namespace QuantProject.ADT.Optimizing.Genetic
     
     public double Fitness
     {
-      get{return this.fitness;}
+      get
+			{
+				if ( double.IsNaN( this.fitness ) )
+					throw new Exception(
+						"The fitness for this genome is not a number!" );
+				return this.fitness;
+			}
       set{this.fitness = value;}
     }
 
