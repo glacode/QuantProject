@@ -28,7 +28,7 @@ using QuantProject.Business.Financial.Accounting;
 using QuantProject.Business.Strategies;
 using QuantProject.Business.Timing;
 
-namespace QuantProject.Business.Strategies
+namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag
 {
 	[Serializable]
 	/// <summary>
