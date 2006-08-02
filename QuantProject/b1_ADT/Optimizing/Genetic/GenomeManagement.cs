@@ -141,16 +141,19 @@ namespace QuantProject.ADT.Optimizing.Genetic
 
     private static void setMaskForChildsForAlternateFixedCrossover()
     {
-      for(int childIndex = 0; childIndex < 2; childIndex++)
+      for(int genePos = 0; genePos < genomeSize; genePos++)
       {
-        for(int genePos = 0; genePos < genomeSize; genePos++)
+        if(genePos%2 == 0)
+        //gene position is even
+        {  
+          maskForChilds[0, genePos] = 1;
+          maskForChilds[1, genePos] = 2;
+        }
+        else
+        // gene position is odd
         {
-          if(genePos%2 == 0)
-            //gene position is even
-            maskForChilds[childIndex, genePos] = 1;
-          else
-            // gene position is odd
-            maskForChilds[childIndex, genePos] = 2;
+          maskForChilds[0, genePos] = 2;
+          maskForChilds[1, genePos] = 1;
         }
       }
     }
