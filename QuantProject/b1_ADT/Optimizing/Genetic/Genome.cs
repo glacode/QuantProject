@@ -157,6 +157,7 @@ namespace QuantProject.ADT.Optimizing.Genetic
       returnValue.CopyValuesInGenes(this.genes);
       returnValue.Fitness = this.Fitness;
       returnValue.Meaning = this.Meaning;
+      returnValue.generation = this.Generation;
       returnValue.hasBeenCloned = true;
       
       return returnValue;
