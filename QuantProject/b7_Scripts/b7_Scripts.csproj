@@ -278,6 +278,21 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "TechnicalAnalysisTesting\TrendFollowing\ImmediateTrendFollower\EndOfDayTimerHandlerITF.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "TechnicalAnalysisTesting\TrendFollowing\ImmediateTrendFollower\GenomeManagerITF.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "TechnicalAnalysisTesting\TrendFollowing\ImmediateTrendFollower\RunImmediateTrendFollower.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "TickerSelectionTesting\CandidateProperties.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
@@ -509,6 +524,11 @@
                 />
                 <File
                     RelPath = "WalkForwardTesting\LinearCombination\GenomeRepresentation.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "WalkForwardTesting\LinearCombination\ImmediateTrendFollowerStrategy.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
