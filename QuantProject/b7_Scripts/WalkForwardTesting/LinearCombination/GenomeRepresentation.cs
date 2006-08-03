@@ -21,6 +21,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
 using System;
+using System.Reflection;
+using System.Runtime.Serialization;
 
 using QuantProject.ADT;
 using QuantProject.ADT.Optimizing.Genetic;
@@ -33,14 +35,16 @@ namespace QuantProject.Scripts.WalkForwardTesting.LinearCombination
 	/// Provides the genome relevant informations
 	/// </summary>
 	[Serializable]
-	public class GenomeRepresentation
+	public class GenomeRepresentation : ISerializable
 	{
 		private double fitness;
 		private string signedTickers;
+    private string weights;
 		private int generationCounter;
 		private DateTime firstOptimizationDate;
 		private DateTime lastOptimizationDate;
-
+		private int eligibleTickers = -1;
+		
 		public string SignedTickers
 		{
 			get
@@ -48,6 +52,22 @@ namespace QuantProject.Scripts.WalkForwardTesting.LinearCombination
 				return this.signedTickers;
 			}
 		}
+    
+		public int EligibleTickers
+		{
+			get
+			{
+				return this.eligibleTickers;
+			}
+		}
+		
+    public string WeightsForSignedTickers
+    {
+      get
+      {
+        return this.weights;
+      }
+    }
 		public double Fitness
 		{
 			get { return this.fitness; }
@@ -74,6 +94,18 @@ namespace QuantProject.Scripts.WalkForwardTesting.LinearCombination
 //			return returnValue;
 //		}
 		
+    	public static double[] GetWeightsArray( string weightsWithSeparator )
+    	{
+    		double[] returnValue;
+        string[] returnValueString = weightsWithSeparator.Split( ";".ToCharArray());
+    		returnValue = new double[returnValueString.Length];
+        for(int i = 0; i<returnValue.Length; i++)
+        {
+          returnValue[i] = Convert.ToDouble(returnValueString[i]);
+        }
+        return returnValue;
+    	}
+
 		public static string[] GetSignedTickers( string signedTickersWithWeights )
 		{
 			string[] returnValue = 
@@ -90,7 +122,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.LinearCombination
 			}	
 			return returnValue;
 		}
-		
+	
 		public static double[] GetWeightsForSignedTickers( string signedTickersWithWeights )
 		{
 			string[] signedTickersWithWeightsArray = 
@@ -141,46 +173,136 @@ namespace QuantProject.Scripts.WalkForwardTesting.LinearCombination
 				signedTickers.Length - 1 );
 			return signedTickers;
 		}
-		private string getSignedTickersWithWeights( Genome genome )
+    
+    private string getWeights( Genome genome )
+    {
+      string weights = "";
+      foreach ( double weight in ((GenomeMeaning)genome.Meaning).TickersPortfolioWeights )
+        weights += weight.ToString() + ";";
+      weights = weights.Substring( 0, weights.Length - 1 );
+      return weights;
+    }
+
+//		private string getSignedTickersWithWeights( Genome genome )
+//		{
+//			string signedTickersWithWeights = "";
+//			for ( int i = 0; i<((GenomeMeaning)genome.Meaning).Tickers.Length; i++ )
+//			{
+//				signedTickersWithWeights +=
+//					((GenomeMeaning)genome.Meaning).Tickers[i] + 
+//					ConstantsProvider.SeparatorForWeights +
+//					((GenomeMeaning)genome.Meaning).TickersPortfolioWeights[i] +
+//					ConstantsProvider.SeparatorForTickers;
+//			}
+//			signedTickersWithWeights = signedTickersWithWeights.Substring( 0 ,
+//					signedTickersWithWeights.Length - 1 );
+//			
+//			return signedTickersWithWeights;
+//		}
+		
+    private void genomeRepresentation_synchronizeOldWithNew()
+    {
+      if(this.weights == null)
+      //for old genomes saved to disk not having "weights" field
+      {
+        foreach(double weight in GenomeRepresentation.GetWeightsForSignedTickers(this.signedTickers))
+          this.weights += weight.ToString() + ";";
+        this.weights = this.weights.Substring( 0, this.weights.Length - 1 );
+      //
+        string newRepresentationForSignedTickers = null;
+        foreach(string ticker in GenomeRepresentation.GetSignedTickers(this.signedTickers))
+          newRepresentationForSignedTickers += ticker + ";";
+        this.signedTickers = newRepresentationForSignedTickers.Substring(0, newRepresentationForSignedTickers.Length -1);
+      }
+
+    }
+
+		/// <summary>
+		/// This constructor allows custom deserialization (see the ISerializable
+		/// interface documentation)
+		/// </summary>
+		/// <param name="info"></param>
+		/// <param name="context"></param>
+		protected GenomeRepresentation( SerializationInfo info , StreamingContext context )
 		{
-			string signedTickersWithWeights = "";
-			for ( int i = 0; i<((GenomeMeaning)genome.Meaning).Tickers.Length; i++ )
+			// get the set of serializable members for this class and its base classes
+			Type thisType = this.GetType();
+			MemberInfo[] mi = FormatterServices.GetSerializableMembers(
+				thisType , context);
+
+			// deserialize the fields from the info object
+			for (Int32 i = 0 ; i < mi.Length; i++) 
 			{
-				signedTickersWithWeights +=
-					((GenomeMeaning)genome.Meaning).Tickers[i] + 
-					ConstantsProvider.SeparatorForWeights +
-					((GenomeMeaning)genome.Meaning).TickersPortfolioWeights[i] +
-					ConstantsProvider.SeparatorForTickers;
+				FieldInfo fieldInfo = (FieldInfo) mi[i];
+
+				// set the field to the deserialized value
+				try{
+				fieldInfo.SetValue( this ,
+					info.GetValue( fieldInfo.Name, fieldInfo.FieldType ) );
+				}
+				catch(Exception ex)
+				{ex = ex;}
 			}
-			signedTickersWithWeights = signedTickersWithWeights.Substring( 0 ,
-					signedTickersWithWeights.Length - 1 );
-			
-			return signedTickersWithWeights;
+      
+      this.genomeRepresentation_synchronizeOldWithNew();
+
 		}
 		
 		private void genomeRepresentation( Genome genome ,
 			DateTime firstOptimizationDate , DateTime lastOptimizationDate ,
-			int generationCounter )
+			int generationCounter, int eligibleTickers )
 		{
 			this.fitness = genome.Fitness;
-			this.signedTickers = this.getSignedTickersWithWeights( genome );
-			//this.signedTickers = this.getSignedTickers( genome );
-			this.firstOptimizationDate = firstOptimizationDate;
+			//this.signedTickers = this.getSignedTickersWithWeights( genome );
+			this.signedTickers = this.getSignedTickers( genome );
+			this.weights = this.getWeights( genome );
+      this.firstOptimizationDate = firstOptimizationDate;
 			this.lastOptimizationDate = lastOptimizationDate;
 			this.generationCounter = generationCounter;
+			this.eligibleTickers = eligibleTickers;
 		}
 		public GenomeRepresentation( Genome genome ,
 			DateTime firstOptimizationDate , DateTime lastOptimizationDate )
 		{
 			this.genomeRepresentation( genome ,
-				firstOptimizationDate , lastOptimizationDate , -1 );
+				firstOptimizationDate , lastOptimizationDate , -1, -1 );
 		}
 		public GenomeRepresentation( Genome genome ,
 			DateTime firstOptimizationDate , DateTime lastOptimizationDate ,
 			int generationCounter )
 		{
 			this.genomeRepresentation( genome , firstOptimizationDate ,
-				lastOptimizationDate , generationCounter );
+				lastOptimizationDate , generationCounter, -1 );
 		}
+		
+		public GenomeRepresentation( Genome genome ,
+			DateTime firstOptimizationDate , DateTime lastOptimizationDate ,
+			int generationCounter, int eligibleTickers )
+		{
+			this.genomeRepresentation( genome , firstOptimizationDate ,
+				lastOptimizationDate , generationCounter, eligibleTickers );
+		}
+		
+		#region GetObjectData
+		/// <summary>
+		/// serialize the set of serializable members for this class and base classes
+		/// </summary>
+		/// <param name="info"></param>
+		/// <param name="context"></param>
+		void ISerializable.GetObjectData(
+			SerializationInfo info, StreamingContext context) 
+		{
+			// get the set of serializable members for this class and base classes
+			Type thisType = this.GetType();
+			MemberInfo[] mi = 
+				FormatterServices.GetSerializableMembers( thisType , context);
+
+			// serialize the fields to the info object
+			for (Int32 i = 0 ; i < mi.Length; i++) 
+			{
+				info.AddValue(mi[i].Name, ((FieldInfo) mi[i]).GetValue(this));
+			}
+		}
+		#endregion
 	}
 }
