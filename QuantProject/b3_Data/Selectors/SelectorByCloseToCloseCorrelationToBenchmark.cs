@@ -70,16 +70,16 @@ namespace QuantProject.Data.Selectors
      /// <summary>
      /// Creates a new instance of the selector
      /// </summary>
-     /// <param name="groupID">The group ID containing the tickers that have to be ordered</param>
-     /// <param name="benchmark">Benchmark</param>
+     /// <param name="groupID">The group ID containing the tickers that have to be ordered by Pearson
+     /// 												correlation coefficient to a given benchmark</param>
+     /// <param name="benchmark">Benchmark to be used for computation of correlation coefficient</param>
      /// <param name="orderInASCmode">Ordering mode</param>
      /// <param name="firstQuoteDate">The first date for the interval</param>
      /// <param name="lastQuoteDate">The last date for the interval</param>
      /// <param name="maxNumOfReturnedTickers">Max number of tickers to be returned</param>
-     /// <param name="numDaysBetweenEachClose">Number of days between closes to be studied. NOTE that
-     /// close values are grouped in pairs and the first close value in each group is 
-     /// not the last close in the previous group. There is, in other words, a discontinuity
-     /// between each group, with length equal to the group's length </param>
+     /// <param name="addBenchmarkToTheGivenSetOfTickers">If TRUE, the benchmark is added to
+     /// 																									output table (with correlation
+     /// 																									equal to 1) </param>
      public SelectorByCloseToCloseCorrelationToBenchmark(string groupID, 
                                                         string benchmark,
                                                         bool orderInASCmode,
