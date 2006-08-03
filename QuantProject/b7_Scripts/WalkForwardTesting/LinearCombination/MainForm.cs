@@ -108,45 +108,45 @@ namespace QuantProject.Scripts.WalkForwardTesting.LinearCombination
 		/// </summary>
 		private void InitializeComponent()
 		{
-			this.mainMenu1 = new System.Windows.Forms.MainMenu();
-			this.menuItem1 = new System.Windows.Forms.MenuItem();
-			this.menuItem2 = new System.Windows.Forms.MenuItem();
-			this.menuItem3 = new System.Windows.Forms.MenuItem();
-			// 
-			// mainMenu1
-			// 
-			this.mainMenu1.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
-																																							this.menuItem1});
-			// 
-			// menuItem1
-			// 
-			this.menuItem1.Index = 0;
-			this.menuItem1.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
-																																							this.menuItem2,
-																																							this.menuItem3});
-			this.menuItem1.Text = "File";
-			// 
-			// menuItem2
-			// 
-			this.menuItem2.Index = 0;
-			this.menuItem2.Text = "Create Optimized Genomes";
-			this.menuItem2.Click += new System.EventHandler(this.menuItem2_Click);
-			// 
-			// menuItem3
-			// 
-			this.menuItem3.Index = 1;
-			this.menuItem3.Text = "Test Optimized Genomes";
-			this.menuItem3.Click += new System.EventHandler(this.menuItem3_Click);
-			// 
-			// MainForm
-			// 
-			this.AutoScaleBaseSize = new System.Drawing.Size(5, 13);
-			this.ClientSize = new System.Drawing.Size(292, 273);
-			this.Menu = this.mainMenu1;
-			this.Name = "MainForm";
-			this.Text = "MainForm";
+      this.mainMenu1 = new System.Windows.Forms.MainMenu();
+      this.menuItem1 = new System.Windows.Forms.MenuItem();
+      this.menuItem2 = new System.Windows.Forms.MenuItem();
+      this.menuItem3 = new System.Windows.Forms.MenuItem();
+      // 
+      // mainMenu1
+      // 
+      this.mainMenu1.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
+                                                                              this.menuItem1});
+      // 
+      // menuItem1
+      // 
+      this.menuItem1.Index = 0;
+      this.menuItem1.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
+                                                                              this.menuItem2,
+                                                                              this.menuItem3});
+      this.menuItem1.Text = "File";
+      // 
+      // menuItem2
+      // 
+      this.menuItem2.Index = 0;
+      this.menuItem2.Text = "Create Optimized Genomes";
+      this.menuItem2.Click += new System.EventHandler(this.menuItem2_Click);
+      // 
+      // menuItem3
+      // 
+      this.menuItem3.Index = 1;
+      this.menuItem3.Text = "Test Optimized Genomes";
+      this.menuItem3.Click += new System.EventHandler(this.menuItem3_Click);
+      // 
+      // MainForm
+      // 
+      this.AutoScaleBaseSize = new System.Drawing.Size(5, 13);
+      this.ClientSize = new System.Drawing.Size(292, 273);
+      this.Menu = this.mainMenu1;
+      this.Name = "MainForm";
+      this.Text = "MainForm";
 
-		}
+    }
 		#endregion
 
 		#region createOptimizedGenomes
@@ -279,7 +279,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.LinearCombination
 		{
 			TestDisplayer testDisplayer = new TestDisplayer(
 				this.firstDate , this.lastDate , this.optimizationOutput );
-			this.optimizationOutput = null;
+			this.optimizationOutput = null;//why this?
 			testDisplayer.Show();
 		}
 		private void testOptimizedGenomes()

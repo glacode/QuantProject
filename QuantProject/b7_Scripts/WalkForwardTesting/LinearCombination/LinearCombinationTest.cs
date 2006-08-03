@@ -91,10 +91,9 @@ namespace QuantProject.Scripts.WalkForwardTesting.LinearCombination
 		}
 		private void run_setStrategy()
 		{
-			string[] signedTickers = GenomeRepresentation.GetSignedTickers(
-				this.genomeRepresentation.SignedTickers );
-			double[] weightsForSignedTickers = GenomeRepresentation.GetWeightsForSignedTickers(
-				this.genomeRepresentation.SignedTickers );
+			string[] signedTickers = genomeRepresentation.SignedTickers.Split(";".ToCharArray());
+			double[] weightsForSignedTickers = 
+          GenomeRepresentation.GetWeightsArray(this.genomeRepresentation.WeightsForSignedTickers);
       switch (this.strategyType)
       {
         case StrategyType.OpenToCloseDaily:
@@ -125,6 +124,11 @@ namespace QuantProject.Scripts.WalkForwardTesting.LinearCombination
         
         case StrategyType.ExtremeCounterTrend:
           this.endOfDayStrategy = new ExtremeCounterTrendStrategy(
+            this.account , signedTickers , weightsForSignedTickers, this.numDaysForOscillatorStrategy );
+          break;
+        
+        case StrategyType.ImmediateTrendFollower:
+          this.endOfDayStrategy = new ImmediateTrendFollowerStrategy(
             this.account , signedTickers , weightsForSignedTickers, this.numDaysForOscillatorStrategy );
           break;
       }

@@ -37,7 +37,6 @@ namespace QuantProject.Scripts.WalkForwardTesting.LinearCombination
 		private System.Windows.Forms.Label labelDays;
 		private System.Windows.Forms.RadioButton radioButtonFixedPeriodOscillator;
 		private System.Windows.Forms.RadioButton radioButtonOpenToCloseDaily;
-		private System.Windows.Forms.RadioButton radioButtonReversalOneRank;
 		private System.Windows.Forms.DateTimePicker dtpLastDate;
 		private System.Windows.Forms.Label label1;
 		private System.Windows.Forms.DateTimePicker dtpFirstDate;
@@ -54,11 +53,55 @@ namespace QuantProject.Scripts.WalkForwardTesting.LinearCombination
 		private ArrayList bestGenomes;
 		private GenomeRepresentation lastSelectedGenomeRepresentation;
     private System.Windows.Forms.RadioButton radioButtonOTCCTODaily;
+    private System.Windows.Forms.RadioButton radioButtonExtremeCounterTrend;
+    private System.Windows.Forms.RadioButton radioButtonImmediateTrendFollower;
     private StrategyType selectedStrategyType = StrategyType.OpenToCloseDaily;
 
 		private void testdisplayer()
 		{
 			this.dgBestGenomes.DataSource = this.bestGenomes;
+      DataGridTableStyle ts = new DataGridTableStyle();
+      ts.MappingName = this.dgBestGenomes.DataSource.GetType().Name;
+      
+      DataGridTextBoxColumn signedTickersBox = new DataGridTextBoxColumn();
+      signedTickersBox.MappingName ="SignedTickers";
+      signedTickersBox.HeaderText = "Tickers";
+      ts.GridColumnStyles.Add(signedTickersBox);
+      
+      DataGridTextBoxColumn weights = new DataGridTextBoxColumn();
+      weights.MappingName ="WeightsForSignedTickers";
+      weights.HeaderText = "Weights";
+      ts.GridColumnStyles.Add(weights);
+      
+      DataGridTextBoxColumn fitness = new DataGridTextBoxColumn();
+      fitness.MappingName ="Fitness";
+      fitness.HeaderText = "Fitness";
+      ts.GridColumnStyles.Add(fitness);
+
+      DataGridTextBoxColumn firstDate = new DataGridTextBoxColumn();
+      firstDate.MappingName ="FirstOptimizationDate";
+      firstDate.HeaderText = "FirstOptimizationDate";
+      ts.GridColumnStyles.Add(firstDate);
+
+      DataGridTextBoxColumn lastDate = new DataGridTextBoxColumn();
+      lastDate.MappingName ="LastOptimizationDate";
+      lastDate.HeaderText = "LastOptimizationDate";
+      ts.GridColumnStyles.Add(lastDate);
+      
+      DataGridTextBoxColumn genNumber = new DataGridTextBoxColumn();
+      genNumber.MappingName ="GenerationCounter";
+      genNumber.HeaderText = "GenNum";
+      ts.GridColumnStyles.Add(genNumber);
+      
+      DataGridTextBoxColumn eligible = new DataGridTextBoxColumn();
+      eligible.MappingName ="EligibleTickers";
+      eligible.HeaderText = "EligibleTickers";
+      ts.GridColumnStyles.Add(eligible);
+      
+      this.dgBestGenomes.TableStyles.Clear();
+      ts.AllowSorting = true;
+      this.dgBestGenomes.TableStyles.Add(ts);
+      this.dgBestGenomes.AllowSorting = true;
 		}
 		public TestDisplayer( DateTime firstDate , DateTime lastDate ,
 			ArrayList bestGenomes )
@@ -110,11 +153,12 @@ namespace QuantProject.Scripts.WalkForwardTesting.LinearCombination
       this.dtpFirstDate = new System.Windows.Forms.DateTimePicker();
       this.label1 = new System.Windows.Forms.Label();
       this.dtpLastDate = new System.Windows.Forms.DateTimePicker();
-      this.radioButtonReversalOneRank = new System.Windows.Forms.RadioButton();
+      this.radioButtonExtremeCounterTrend = new System.Windows.Forms.RadioButton();
       this.radioButtonOpenToCloseDaily = new System.Windows.Forms.RadioButton();
       this.radioButtonFixedPeriodOscillator = new System.Windows.Forms.RadioButton();
       this.labelDays = new System.Windows.Forms.Label();
       this.radioButtonOTCCTODaily = new System.Windows.Forms.RadioButton();
+      this.radioButtonImmediateTrendFollower = new System.Windows.Forms.RadioButton();
       ((System.ComponentModel.ISupportInitialize)(this.dgBestGenomes)).BeginInit();
       this.SuspendLayout();
       // 
@@ -149,7 +193,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.LinearCombination
       // 
       // textBoxDaysFPOscillatorAndRevOneRank
       // 
-      this.textBoxDaysFPOscillatorAndRevOneRank.Location = new System.Drawing.Point(320, 152);
+      this.textBoxDaysFPOscillatorAndRevOneRank.Location = new System.Drawing.Point(320, 176);
       this.textBoxDaysFPOscillatorAndRevOneRank.Name = "textBoxDaysFPOscillatorAndRevOneRank";
       this.textBoxDaysFPOscillatorAndRevOneRank.Size = new System.Drawing.Size(56, 20);
       this.textBoxDaysFPOscillatorAndRevOneRank.TabIndex = 8;
@@ -177,14 +221,14 @@ namespace QuantProject.Scripts.WalkForwardTesting.LinearCombination
       this.dtpLastDate.Size = new System.Drawing.Size(208, 20);
       this.dtpLastDate.TabIndex = 2;
       // 
-      // radioButtonReversalOneRank
+      // radioButtonExtremeCounterTrend
       // 
-      this.radioButtonReversalOneRank.Location = new System.Drawing.Point(232, 120);
-      this.radioButtonReversalOneRank.Name = "radioButtonReversalOneRank";
-      this.radioButtonReversalOneRank.Size = new System.Drawing.Size(192, 24);
-      this.radioButtonReversalOneRank.TabIndex = 10;
-      this.radioButtonReversalOneRank.Text = "Extreme counter trend";
-      this.radioButtonReversalOneRank.CheckedChanged += new System.EventHandler(this.radioButtonReversalOneRank_CheckedChanged);
+      this.radioButtonExtremeCounterTrend.Location = new System.Drawing.Point(232, 120);
+      this.radioButtonExtremeCounterTrend.Name = "radioButtonExtremeCounterTrend";
+      this.radioButtonExtremeCounterTrend.Size = new System.Drawing.Size(192, 24);
+      this.radioButtonExtremeCounterTrend.TabIndex = 10;
+      this.radioButtonExtremeCounterTrend.Text = "Extreme counter trend";
+      this.radioButtonExtremeCounterTrend.CheckedChanged += new System.EventHandler(this.radioButtonExtremeCounterTrend_CheckedChanged);
       // 
       // radioButtonOpenToCloseDaily
       // 
@@ -206,7 +250,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.LinearCombination
       // 
       // labelDays
       // 
-      this.labelDays.Location = new System.Drawing.Point(272, 152);
+      this.labelDays.Location = new System.Drawing.Point(272, 176);
       this.labelDays.Name = "labelDays";
       this.labelDays.Size = new System.Drawing.Size(40, 16);
       this.labelDays.TabIndex = 9;
@@ -220,13 +264,23 @@ namespace QuantProject.Scripts.WalkForwardTesting.LinearCombination
       this.radioButtonOTCCTODaily.TabIndex = 11;
       this.radioButtonOTCCTODaily.Text = "OTC - CTO Daily";
       // 
+      // radioButtonImmediateTrendFollower
+      // 
+      this.radioButtonImmediateTrendFollower.Location = new System.Drawing.Point(232, 144);
+      this.radioButtonImmediateTrendFollower.Name = "radioButtonImmediateTrendFollower";
+      this.radioButtonImmediateTrendFollower.Size = new System.Drawing.Size(192, 24);
+      this.radioButtonImmediateTrendFollower.TabIndex = 12;
+      this.radioButtonImmediateTrendFollower.Text = "Immediate Trend Follower";
+      this.radioButtonImmediateTrendFollower.CheckedChanged += new System.EventHandler(this.radioButtonImmediateTrendFollower_CheckedChanged);
+      // 
       // TestDisplayer
       // 
       this.AutoScaleBaseSize = new System.Drawing.Size(5, 13);
       this.ClientSize = new System.Drawing.Size(584, 373);
       this.Controls.AddRange(new System.Windows.Forms.Control[] {
+                                                                  this.radioButtonImmediateTrendFollower,
                                                                   this.radioButtonOTCCTODaily,
-                                                                  this.radioButtonReversalOneRank,
+                                                                  this.radioButtonExtremeCounterTrend,
                                                                   this.labelDays,
                                                                   this.textBoxDaysFPOscillatorAndRevOneRank,
                                                                   this.radioButtonFixedPeriodOscillator,
@@ -287,8 +341,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.LinearCombination
 			GenomeRepresentation genomeRepresentation =
 				this.dgBestGenomes_MouseUp_getClickedGenomeRepresentation( sender , e );
 			dgBestGenomes_MouseUp_rightButton_updateDates( genomeRepresentation );
-			string[] signedTickers = GenomeRepresentation.GetSignedTickers(
-				genomeRepresentation.SignedTickers );
+			string[] signedTickers = genomeRepresentation.SignedTickers.Split(";".ToCharArray());
 			LinearCombinationTest linearCombinationTest =
 				new LinearCombinationTest( this.dtpFirstDate.Value ,
 				this.dtpLastDate.Value , genomeRepresentation ,
@@ -333,10 +386,12 @@ namespace QuantProject.Scripts.WalkForwardTesting.LinearCombination
         this.selectedStrategyType = StrategyType.CloseToOpenDaily;
       else if(this.radioButtonFixedPeriodOscillator.Checked)
         this.selectedStrategyType = StrategyType.FixedPeriodOscillator;
-      else if(this.radioButtonReversalOneRank.Checked)
+      else if(this.radioButtonExtremeCounterTrend.Checked)
         this.selectedStrategyType = StrategyType.ExtremeCounterTrend;
       else if(this.radioButtonOTCCTODaily.Checked)
         this.selectedStrategyType = StrategyType.OpenToCloseCloseToOpenDaily;
+      else if(this.radioButtonImmediateTrendFollower.Checked)
+        this.selectedStrategyType = StrategyType.ImmediateTrendFollower;
     }
     
     private void radioButtonOpenToCloseDaily_CheckedChanged(object sender, System.EventArgs e)
@@ -359,9 +414,15 @@ namespace QuantProject.Scripts.WalkForwardTesting.LinearCombination
       this.update_selectedStrategyType();
     }
 
-    private void radioButtonReversalOneRank_CheckedChanged(object sender, System.EventArgs e)
+    private void radioButtonExtremeCounterTrend_CheckedChanged(object sender, System.EventArgs e)
     {
       this.update_selectedStrategyType();
     }
+
+    private void radioButtonImmediateTrendFollower_CheckedChanged(object sender, System.EventArgs e)
+    {
+      this.update_selectedStrategyType();
+    }
+    
 	}
 }
