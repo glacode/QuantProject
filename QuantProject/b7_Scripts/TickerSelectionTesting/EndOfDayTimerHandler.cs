@@ -268,8 +268,9 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
     }
     
     protected void addGenomeToBestGenomes(Genome genome,
-                                                  DateTime firstOptimizationDate,
-                                                  DateTime secondOptimizationDate)
+                                          DateTime firstOptimizationDate,
+                                          DateTime secondOptimizationDate,
+                                          int eligibleTickers)
     {
       if(this.bestGenomes == null)
         this.bestGenomes = new ArrayList();
@@ -277,7 +278,8 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
       this.bestGenomes.Add(new GenomeRepresentation(genome,
                                                     firstOptimizationDate,
                                                     secondOptimizationDate,
-                                                    genome.Generation));
+                                                    genome.Generation,
+                                                   	eligibleTickers));
     }
     
     public virtual void MarketOpenEventHandler(

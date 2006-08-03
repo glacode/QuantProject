@@ -183,25 +183,30 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.ExtremeCount
     {
 			SelectorByGroup temporizedGroup = new SelectorByGroup(this.tickerGroupID, currentDate);
       DataTable tickersFromGroup = temporizedGroup.GetTableOfSelectedTickers();
+      int numOfTickersInGroupAtCurrentDate = tickersFromGroup.Rows.Count;
       
-      SelectorByAverageRawOpenPrice byPrice = 
+      	SelectorByAverageRawOpenPrice byPrice =
       		new SelectorByAverageRawOpenPrice(tickersFromGroup,false,currentDate,
       	                                  currentDate.AddDays(-30),
-      	                                  tickersFromGroup.Rows.Count,
+      	                                  numOfTickersInGroupAtCurrentDate,
       	                                  30,500, 0.0001,100);
-      	                                  
+ 
+//      SelectorByLiquidity mostLiquidSelector =
+//      	new SelectorByLiquidity(byPrice.GetTableOfSelectedTickers(),
+//        false,currentDate.AddDays(-this.numDaysForOptimizationPeriod), currentDate,
+//        this.numberOfEligibleTickers);
       
-      SelectorByLiquidity mostLiquidSelector =
-      	new SelectorByLiquidity(byPrice.GetTableOfSelectedTickers(),
-        false,currentDate.AddDays(-this.numDaysForOptimizationPeriod), currentDate,
-        this.numberOfEligibleTickers);
-      
-      SelectorByQuotationAtEachMarketDay quotedAtEachMarketDayFromMostLiquid = 
-        new SelectorByQuotationAtEachMarketDay(mostLiquidSelector.GetTableOfSelectedTickers(),
+      SelectorByQuotationAtEachMarketDay quotedAtEachMarketDayFromByPrice = 
+        new SelectorByQuotationAtEachMarketDay(byPrice.GetTableOfSelectedTickers(),
         false, currentDate.AddDays(-this.numDaysForOptimizationPeriod), currentDate,
-        this.numberOfEligibleTickers, this.benchmark);
+        numOfTickersInGroupAtCurrentDate, this.benchmark);
      
-      return quotedAtEachMarketDayFromMostLiquid.GetTableOfSelectedTickers();
+      SelectorByCloseToCloseVolatility lessVolatile =
+      	new SelectorByCloseToCloseVolatility(quotedAtEachMarketDayFromByPrice.GetTableOfSelectedTickers(),
+      	                                     true,currentDate.AddDays(-this.numDaysForOptimizationPeriod), currentDate,
+      	                                     this.numberOfEligibleTickers);
+      
+      return lessVolatile.GetTableOfSelectedTickers();
     	//OLD for etf
     	//      SelectorByGroup temporizedGroup = new SelectorByGroup(this.tickerGroupID,
 //        																										currentDate);
@@ -254,7 +259,7 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.ExtremeCount
         
         GO.Run(false);
         this.addGenomeToBestGenomes(GO.BestGenome,((GenomeManagerForEfficientPortfolio)this.iGenomeManager).FirstQuoteDate,
-          ((GenomeManagerForEfficientPortfolio)this.iGenomeManager).LastQuoteDate);
+          ((GenomeManagerForEfficientPortfolio)this.iGenomeManager).LastQuoteDate, setOfTickersToBeOptimized.Rows.Count);
         this.chosenTickers = ((GenomeMeaning)GO.BestGenome.Meaning).Tickers;
         this.chosenTickersPortfolioWeights = ((GenomeMeaning)GO.BestGenome.Meaning).TickersPortfolioWeights;
       }

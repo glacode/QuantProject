@@ -180,7 +180,7 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
         
         GO.Run(false);
         this.addGenomeToBestGenomes(GO.BestGenome,currentDate.AddDays(-this.numDaysForOptimizationPeriod),
-                                    currentDate);
+                                    currentDate, setOfTickersToBeOptimized.Rows.Count);
         this.chosenTickers = ((GenomeMeaning)GO.BestGenome.Meaning).Tickers;
         this.chosenTickersPortfolioWeights = ((GenomeMeaning)GO.BestGenome.Meaning).TickersPortfolioWeights;
         //this.chosenTickers =

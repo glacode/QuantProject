@@ -213,7 +213,8 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
         
         GO.Run(false);
         this.addGenomeToBestGenomes(GO.BestGenome,((GenomeManagerForEfficientCTCPortfolio)genManEfficientCTCPortfolio).FirstQuoteDate,
-                                    ((GenomeManagerForEfficientCTCPortfolio)genManEfficientCTCPortfolio).LastQuoteDate);
+                                    ((GenomeManagerForEfficientCTCPortfolio)genManEfficientCTCPortfolio).LastQuoteDate,
+                                    	setOfTickersToBeOptimized.Rows.Count);
         this.chosenTickers = ((GenomeMeaning)GO.BestGenome.Meaning).Tickers;
         this.chosenTickersPortfolioWeights = ((GenomeMeaning)GO.BestGenome.Meaning).TickersPortfolioWeights;
       }
