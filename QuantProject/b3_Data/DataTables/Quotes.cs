@@ -270,7 +270,7 @@ namespace QuantProject.Data.DataTables
       return tableToReturn;
     }
     
-    private static void getTickersByAdjCloseToClosePearsonCorrelationCoefficient_setTickersReturns(out float[][]
+    private static void getTickersByAdjCloseToClosePearsonCorrelationCoefficient_setTickersAdjCloses(out float[][]
       tickersReturns, DataTable setOfTickers, DateTime firstQuoteDate, DateTime lastQuoteDate) 
                                                               
     {
@@ -302,8 +302,8 @@ namespace QuantProject.Data.DataTables
       if(!setOfTickers.Columns.Contains("PearsonCorrelationCoefficient"))
         setOfTickers.Columns.Add("PearsonCorrelationCoefficient", System.Type.GetType("System.Double"));
       int initialNumberOfRows = setOfTickers.Rows.Count;
-      float[][] tickersReturns;
-      getTickersByAdjCloseToClosePearsonCorrelationCoefficient_setTickersReturns(out tickersReturns, setOfTickers, firstQuoteDate, lastQuoteDate);
+      float[][] tickersAdjCloses;
+      getTickersByAdjCloseToClosePearsonCorrelationCoefficient_setTickersAdjCloses(out tickersAdjCloses, setOfTickers, firstQuoteDate, lastQuoteDate);
       for(int j=0; j!= initialNumberOfRows; j++)
       {
         string firstTicker = (string)setOfTickers.Rows[j][0];
@@ -319,7 +319,7 @@ namespace QuantProject.Data.DataTables
           {
             rowToAdd["PearsonCorrelationCoefficient"] = 
               QuantProject.ADT.Statistics.BasicFunctions.PearsonCorrelationCoefficient(
-              tickersReturns[j],tickersReturns[i]);
+              tickersAdjCloses[j],tickersAdjCloses[i]);
           }
           catch(Exception ex)
           {
