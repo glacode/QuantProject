@@ -97,7 +97,7 @@
     <File name=".\ArbitrageTesting\PairTrading\SimplePairTrading\GenomeMeaningSimplePT.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
     <File name=".\ArbitrageTesting\PairTrading\SimplePairTrading\InSample\RunSimplePairTradingIS.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
     <File name=".\EvaluatingOptimizationTechnique\EfficientPortfolio\RunTestingOptimizationOpenToCloseFitnessCombined.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
-    <File name=".\EvaluatingOptimizationTechnique\TechnicalAnalysis\RunTestingOptimizationExtremeCounterTrend.cs" subtype="Code" buildaction="Nothing" dependson="" data="" />
+    <File name=".\EvaluatingOptimizationTechnique\TechnicalAnalysis\RunTestingOptimizationExtremeCounterTrend.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
     <File name=".\TechnicalAnalysisTesting\Oscillators\FixedPeriodOscillators\RunFPOscillatorCTC.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
     <File name=".\TechnicalAnalysisTesting\Oscillators\FixedPeriodOscillators\EndOfDayTimerHandlerFPOscillatorCTC.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
     <File name=".\WalkForwardTesting\WalkForwardLag\RunWalkForwardLag.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
@@ -130,6 +130,9 @@
     <File name=".\WalkForwardTesting\LinearCombination\ExtremeCounterTrendStrategy.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
     <File name=".\WalkForwardTesting\LinearCombination\FixedPeriodOscillatorStrategy.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
     <File name=".\WalkForwardTesting\WalkForwardLag\WFLagDebugger\WFLagDebugGenome.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
+    <File name=".\QuantProject.Scripts.WalkForwardTesting.LinearCombination.TestDisplayer.resources" subtype="Code" buildaction="EmbedAsResource" dependson="" data="" />
+    <File name=".\TickerSelectionTesting\GenomeManagerForEfficientOTCCTOPortfolio.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
+    <File name=".\WalkForwardTesting\LinearCombination\OTC_CTODailyStrategy.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
   </Contents>
   <References>
     <Reference type="Project" refto="b1_ADT" localcopy="True" />

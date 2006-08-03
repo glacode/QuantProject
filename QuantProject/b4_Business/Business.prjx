@@ -99,6 +99,10 @@
     <File name=".\a1_Financial\a2_Accounting\Slippage\FixedPercentageSlippageManager.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
     <File name=".\a1_Financial\a2_Accounting\RebuildableAccount.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
     <File name=".\a2_Strategies\SignedTicker.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
+    <File name=".\a1_Financial\a2_Accounting\h5_Reporting\SummaryRows\PercentagePositivePeriods.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
+    <File name=".\a1_Financial\a2_Accounting\h5_Reporting\SummaryRows\ExpectancyScore.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
+    <File name=".\a1_Financial\a2_Accounting\h5_Reporting\SummaryRows\NumberNegativePeriods.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
+    <File name=".\a1_Financial\a2_Accounting\h5_Reporting\SummaryRows\NumberPositivePeriods.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
   </Contents>
   <References>
     <Reference type="Project" refto="b1_ADT" localcopy="True" />
