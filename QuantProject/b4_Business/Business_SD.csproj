@@ -152,6 +152,7 @@
     <Compile Include="a1_Financial\a2_Accounting\h5_Reporting\SummaryRows\ExpectancyScore.cs" />
     <Compile Include="a1_Financial\a2_Accounting\h5_Reporting\SummaryRows\NumberNegativePeriods.cs" />
     <Compile Include="a1_Financial\a2_Accounting\h5_Reporting\SummaryRows\NumberPositivePeriods.cs" />
+    <Compile Include="a2_Strategies\WeightedPosition.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\b1_ADT\ADT_SD.csproj">

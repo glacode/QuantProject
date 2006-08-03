@@ -162,6 +162,18 @@
     <None Include="MultiTesting\MultiTestOneRank\" />
     <None Include="SimpleTesting\MSFTSimpleTest_2\TsMSFTsimpleTest_2.cs" />
     <Compile Include="SimpleScriptsContainer.cs" />
+    <Compile Include="WalkForwardTesting\WalkForwardLag\WFLagLogDebugger\WFLagLogDebugger.cs" />
+    <Compile Include="WalkForwardTesting\WalkForwardLag\WFLagGenomesDebugger\WFLagChosenPositionsDebugInfo.cs" />
+    <Compile Include="WalkForwardTesting\WalkForwardLag\WFLagGenomesDebugger\WFLagDebugChosenPositionsCollection.cs" />
+    <Compile Include="WalkForwardTesting\WalkForwardLag\WFLagGenomesDebugger\WFLagRunGenomesDebugger.cs" />
+    <Compile Include="WalkForwardTesting\WalkForwardLag\WFLagGenomesDebugger\WFLagSharpeRatioComputer.cs" />
+    <Compile Include="TechnicalAnalysisTesting\TrendFollowing\ImmediateTrendFollower\EndOfDayTimerHandlerITF.cs" />
+    <Compile Include="TechnicalAnalysisTesting\TrendFollowing\ImmediateTrendFollower\GenomeManagerITF.cs" />
+    <Compile Include="TechnicalAnalysisTesting\TrendFollowing\ImmediateTrendFollower\RunImmediateTrendFollower.cs" />
+    <Compile Include="WalkForwardTesting\WalkForwardLag\WeightedPositions.cs" />
+    <Compile Include="WalkForwardTesting\WalkForwardLag\WFLagGenomeManagerWithWeights.cs" />
+    <Compile Include="WalkForwardTesting\WalkForwardLag\WFLagWeightedPositions.cs" />
+    <Compile Include="WalkForwardTesting\LinearCombination\ImmediateTrendFollowerStrategy.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="EvaluatingOptimizationTechnique\" />
@@ -192,6 +204,10 @@
       <Project>{E05282BB-A762-4205-B420-812CECB48E5C}</Project>
       <Name>b5_Presentation</Name>
     </ProjectReference>
+    <Folder Include="WalkForwardTesting\WalkForwardLag\WFLagLogDebugger" />
+    <Folder Include="WalkForwardTesting\WalkForwardLag\WFLagGenomesDebugger" />
+    <Folder Include="TechnicalAnalysisTesting\TrendFollowing" />
+    <Folder Include="TechnicalAnalysisTesting\TrendFollowing\ImmediateTrendFollower" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.Targets" />
 </Project>
