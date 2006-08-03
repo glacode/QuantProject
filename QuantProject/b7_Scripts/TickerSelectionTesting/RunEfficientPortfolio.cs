@@ -215,12 +215,12 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
     
     public virtual void SaveScriptResults()
     {
-      string fileName = "From"+this.numberOfEligibleTickers +
-                      "OptDays" + this.numDaysForOptimizationPeriod + "Portfolio" +
+      string fileName = "From_" + this.tickerGroupID + "_" +
+                      + this.numberOfEligibleTickers +
+                      "_OptDays" + this.numDaysForOptimizationPeriod + "_Port" +
                       this.numberOfTickersToBeChosen + "GenNum" + 
                       this.generationNumberForGeneticOptimizer +
                       "PopSize" + this.populationSizeForGeneticOptimizer +
-        							"Target" + Convert.ToString(this.targetReturn) + 
         							Convert.ToString(this.portfolioType);
       string dirNameWhereToSaveReports = System.Configuration.ConfigurationSettings.AppSettings["ReportsArchive"] +
                          								"\\" + this.ScriptName + "\\";

@@ -72,7 +72,7 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.ExtremeCount
                                     startDate, endDate, 0.0,
                                    	portfolioType, maxRunningHours)
 		{
-      this.ScriptName = "ExtremeCounterTrendScriptWithExpScoreWeighted";
+      this.ScriptName = "ExtremeCounterTrendScriptWithSharpeRatio";
       this.numDaysForReturnCalculation = numDaysForReturnCalculation;
       this.maxAcceptableCloseToCloseDrawdown = maxAcceptableCloseToCloseDrawdown;
       this.numDaysBetweenEachOptimization = numDaysBetweenEachOptimization;
@@ -115,7 +115,7 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.ExtremeCount
 
     public override void SaveScriptResults()
     {
-      string fileName = "From"+ this.tickerGroupID + "_" + this.numberOfEligibleTickers +
+      string fileName = this.scriptName + "_From_" + this.tickerGroupID + "_" + this.numberOfEligibleTickers +
                       "_DaysForOpt" + this.numDaysForOptimizationPeriod + "Tickers" +
                       this.numberOfTickersToBeChosen + "GenNum" + 
                       this.generationNumberForGeneticOptimizer +
