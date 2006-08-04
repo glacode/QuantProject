@@ -32,7 +32,7 @@ namespace QuantProject.ADT.Optimizing.Genetic
 	/// <summary>
   /// The class needs to be initialized by an object implementing
   /// IGenomeManager interface 
-  /// Default GO parameters: crossoverRate = 0.85, mutationRate = 0.02, elitismRate = 0.01,
+  /// Default GO parameters: crossoverRate = 0.85, mutationRate = 0.05, elitismRate = 0.01,
   /// populationSize = 1000, generationNumber = 100
   /// keepOnRunningUntilConvergenceIsReached = false, minConvergenceRate = 0.80 
   /// </summary>
@@ -163,58 +163,52 @@ namespace QuantProject.ADT.Optimizing.Genetic
     public GeneticOptimizer(IGenomeManager genomeManager, int populationSize,
                             int generationNumber)
     {
-      this.genomeManager = genomeManager;
-      this.populationSize = populationSize;
-      this.generationNumber = generationNumber;
+      this.commonInitialization(genomeManager, populationSize, generationNumber);
       this.random = new Random(ConstantsProvider.SeedForRandomGenerator);
-      this.commonInitialization();
     }
     
     public GeneticOptimizer(IGenomeManager genomeManager, int populationSize,
                             int generationNumber, int seedForRandomGenerator)
     {
-      this.genomeManager = genomeManager;
-      this.populationSize = populationSize;
-      this.generationNumber = generationNumber;
+      this.commonInitialization(genomeManager, populationSize, generationNumber);
       this.random = new Random(seedForRandomGenerator);
-      this.commonInitialization();
     }
     
     public GeneticOptimizer(double crossoverRate, double mutationRate, double elitismRate, 
                             int populationSize, int generationNumber,
                             IGenomeManager genomeManager)
     {
+      this.commonInitialization(genomeManager, populationSize, generationNumber);
       this.crossoverRate = crossoverRate;
       this.mutationRate = mutationRate;
       this.elitismRate = elitismRate;
-      this.populationSize = populationSize;
-      this.generationNumber = generationNumber;
-      this.genomeManager = genomeManager;
       this.random = new Random(ConstantsProvider.SeedForRandomGenerator);
-      this.commonInitialization();
     }
     
     public GeneticOptimizer(double crossoverRate, double mutationRate, double elitismRate, 
                             int populationSize, int generationNumber,
                             IGenomeManager genomeManager, int seedForRandomGenerator)
     {
+      this.commonInitialization(genomeManager, populationSize, generationNumber);
       this.crossoverRate = crossoverRate;
       this.mutationRate = mutationRate;
       this.elitismRate = elitismRate;
-      this.populationSize = populationSize;
-      this.generationNumber = generationNumber;
-      this.genomeManager = genomeManager;
       this.random = new Random(seedForRandomGenerator);
-      this.commonInitialization();
     }
 
-    private void commonInitialization()
+    private void commonInitialization(IGenomeManager genomeManager, 
+                                      int populationSize, int generationNumber)
     {
-      this.mutationRate = 0.20;
-   		this.crossoverRate = 0.99;
-    	this.elitismRate = 0.0;
+      //default parameters for the GO
+    	this.mutationRate = 0.05;
+   		this.crossoverRate = 0.85;
+    	this.elitismRate = 0.01;
     	this.minConvergenceRate = 0.80;
     	this.keepOnRunningUntilConvergenceIsReached = false;
+    	
+    	this.genomeManager = genomeManager;
+    	this.populationSize = populationSize;
+    	this.generationNumber = generationNumber;
     	this.genomeSize = this.genomeManager.GenomeSize;
       this.minValueForGenes = this.genomeManager.MinValueForGenes;
       this.maxValueForGenes = this.genomeManager.MaxValueForGenes;
