@@ -72,7 +72,7 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.ExtremeCount
                                     startDate, endDate, 0.0,
                                    	portfolioType, maxRunningHours)
 		{
-      this.ScriptName = "ExtremeCounterTrendScriptWithSharpeRatio";
+      this.ScriptName = "ECT_SR_NoWeights";
       this.numDaysForReturnCalculation = numDaysForReturnCalculation;
       this.maxAcceptableCloseToCloseDrawdown = maxAcceptableCloseToCloseDrawdown;
       this.numDaysBetweenEachOptimization = numDaysBetweenEachOptimization;
