@@ -71,7 +71,7 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
       startDate, endDate, targetReturn,
       portfolioType, maxRunningHours)
     {
-      this.ScriptName = "OTC_Types_ExpScoreWithCoeff";
+      this.ScriptName = "OTC_Types_ExpScoreWithCoeffAndPriceSelection";
       this.numDaysBetweenEachOptimization = numDaysBetweenEachOptimization;
       this.accounts = new Account[4];
     }
