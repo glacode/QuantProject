@@ -279,9 +279,42 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
                                                     firstOptimizationDate,
                                                     secondOptimizationDate,
                                                     genome.Generation,
-                                                   	eligibleTickers));
+                                                   	eligibleTickers) );
     }
     
+    protected void addGenomeToBestGenomes(Genome genome,
+                                          DateTime firstOptimizationDate,
+                                          DateTime secondOptimizationDate,
+                                          int eligibleTickers, int halfPeriodDays)
+    {
+      if(this.bestGenomes == null)
+        this.bestGenomes = new ArrayList();
+      
+      this.bestGenomes.Add(new GenomeRepresentation(genome,
+                                    firstOptimizationDate,
+                                    secondOptimizationDate,
+                                    genome.Generation,
+                                    eligibleTickers,
+                                    halfPeriodDays));
+    }
+
+    protected void addGenomeToBestGenomes(Genome genome,
+                                          DateTime firstOptimizationDate,
+                                          DateTime secondOptimizationDate,
+                                          int eligibleTickers, int halfPeriodDays,
+                                          PortfolioType portfolioType)
+    {
+      if(this.bestGenomes == null)
+        this.bestGenomes = new ArrayList();
+      
+      this.bestGenomes.Add(new GenomeRepresentation(genome,
+        firstOptimizationDate,
+        secondOptimizationDate,
+        genome.Generation,
+        eligibleTickers,
+        halfPeriodDays, portfolioType));
+    }
+
     public virtual void MarketOpenEventHandler(
       Object sender , EndOfDayTimingEventArgs endOfDayTimingEventArgs )
     {

@@ -56,6 +56,7 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.TrendFollowing.Immediate
     private int daysCounterWithPositions;
     private DateTime lastCloseDate;
     private IGenomeManager iGenomeManager;
+    private int seedForRandomGenerator;
         
     public EndOfDayTimerHandlerITF(string tickerGroupID, int numberOfEligibleTickers, 
                                 int numberOfTickersToBeChosen, int numDaysForOptimizationPeriod,
@@ -80,6 +81,7 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.TrendFollowing.Immediate
       this.previousAccountValue = 0.0;
 //      this.numDaysBetweenEachOptimization = 2* numDaysForReturnCalculation;
       this.numDaysBetweenEachOptimization = numDaysBetweenEachOptimization;
+      this.seedForRandomGenerator = ConstantsProvider.SeedForRandomGenerator;
     }
 	
 
@@ -134,16 +136,22 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.TrendFollowing.Immediate
     		{
     			SignedTicker.ChangeSignOfEachTicker(this.chosenTickers);
     			//short the portfolio
-    			try{ base.openPositions(); }
-    			catch(Exception ex){ ex = ex; }
-    			finally{SignedTicker.ChangeSignOfEachTicker(this.chosenTickers);}
+    			try{
+            base.openPositions();
+          }
+    			catch(Exception ex)
+          { 
+            ex = ex; 
+          }
+    			finally{
+            SignedTicker.ChangeSignOfEachTicker(this.chosenTickers);
+          }
     		}
     	}
     }
     
     private void marketCloseEventHandler_closePositions()
     {
-      this.daysCounterWithPositions++;
       if(this.daysCounterWithPositions == this.numDaysForReturnCalculation ||
          this.stopLossConditionReached)
       {
@@ -157,6 +165,8 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.TrendFollowing.Immediate
       Object sender , EndOfDayTimingEventArgs endOfDayTimingEventArgs )
     {
       //this.marketCloseEventHandler_updateStopLossCondition();  
+      if(this.account.Portfolio.Count > 0)
+        this.daysCounterWithPositions++;
       this.marketCloseEventHandler_closePositions();
       if(this.chosenTickers[0] != null)
       //tickers to buy have been chosen
@@ -183,23 +193,24 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.TrendFollowing.Immediate
       	                                  currentDate.AddDays(-30),
       	                                  numOfTickersInGroupAtCurrentDate,
       	                                  30,500, 0.0001,100);
- 
-//      SelectorByLiquidity mostLiquidSelector =
-//      	new SelectorByLiquidity(byPrice.GetTableOfSelectedTickers(),
-//        false,currentDate.AddDays(-this.numDaysForOptimizationPeriod), currentDate,
-//        this.numberOfEligibleTickers);
-      
+    
       SelectorByQuotationAtEachMarketDay quotedAtEachMarketDayFromByPrice = 
         new SelectorByQuotationAtEachMarketDay(byPrice.GetTableOfSelectedTickers(),
         false, currentDate.AddDays(-this.numDaysForOptimizationPeriod), currentDate,
         numOfTickersInGroupAtCurrentDate, this.benchmark);
      
-      SelectorByCloseToCloseVolatility lessVolatile =
-      	new SelectorByCloseToCloseVolatility(quotedAtEachMarketDayFromByPrice.GetTableOfSelectedTickers(),
-      	                                     true,currentDate.AddDays(-this.numDaysForOptimizationPeriod), currentDate,
-      	                                     this.numberOfEligibleTickers);
+//      SelectorByCloseToCloseVolatility lessVolatile =
+//      	new SelectorByCloseToCloseVolatility(quotedAtEachMarketDayFromByPrice.GetTableOfSelectedTickers(),
+//      	                                     true,currentDate.AddDays(-this.numDaysForOptimizationPeriod), currentDate,
+//      	                                     this.numberOfEligibleTickers);
       
-      return lessVolatile.GetTableOfSelectedTickers();
+        SelectorByLiquidity mostLiquidSelector =
+      	new SelectorByLiquidity(quotedAtEachMarketDayFromByPrice.GetTableOfSelectedTickers(),
+        true,currentDate.AddDays(-this.numDaysForOptimizationPeriod), currentDate,
+        this.numberOfEligibleTickers);
+      
+      
+      return mostLiquidSelector.GetTableOfSelectedTickers();
     	//OLD for etf
     	//      SelectorByGroup temporizedGroup = new SelectorByGroup(this.tickerGroupID,
 //        																										currentDate);
@@ -246,13 +257,14 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.TrendFollowing.Immediate
         GeneticOptimizer GO = new GeneticOptimizer(this.iGenomeManager,
           this.populationSizeForGeneticOptimizer, 
           this.generationNumberForGeneticOptimizer,
-          ConstantsProvider.SeedForRandomGenerator);
+          this.seedForRandomGenerator);
         if(setGenomeCounter)
           this.genomeCounter = new GenomeCounter(GO);
         
         GO.Run(false);
         this.addGenomeToBestGenomes(GO.BestGenome,((GenomeManagerForEfficientPortfolio)this.iGenomeManager).FirstQuoteDate,
-          ((GenomeManagerForEfficientPortfolio)this.iGenomeManager).LastQuoteDate, setOfTickersToBeOptimized.Rows.Count);
+          ((GenomeManagerForEfficientPortfolio)this.iGenomeManager).LastQuoteDate, setOfTickersToBeOptimized.Rows.Count,
+          this.numDaysForReturnCalculation);
         this.chosenTickers = ((GenomeMeaning)GO.BestGenome.Meaning).Tickers;
         this.chosenTickersPortfolioWeights = ((GenomeMeaning)GO.BestGenome.Meaning).TickersPortfolioWeights;
       }
@@ -269,7 +281,7 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.TrendFollowing.Immediate
       Object sender , EndOfDayTimingEventArgs endOfDayTimingEventArgs )
     {
       this.lastCloseDate = endOfDayTimingEventArgs.EndOfDayDateTime.DateTime;
-      ConstantsProvider.SeedForRandomGenerator++;
+      this.seedForRandomGenerator++;
       this.numDaysElapsedSinceLastOptimization++;
       this.orders.Clear();
       if((this.numDaysElapsedSinceLastOptimization - 1 == 

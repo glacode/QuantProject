@@ -133,25 +133,25 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
       //return lessCorrelated.GetTableOfSelectedTickers();
     }
     
-    private string[] setTickers_getBestTickersLosingAtLastDay(IGenomeManager genomeManager)
-    {
-    	string[] returnValue =
-    		((GenomeMeaning)genomeManager.CurrentGeneticOptimizer.BestGenome.Meaning).Tickers;
-    	int numOfGenomes = genomeManager.CurrentGeneticOptimizer.CurrentGeneration.Count;
-    	int i;
-    	for(i = 0;i<numOfGenomes; i++)
-    	{
-    		if(((GenomeMeaning)((Genome)genomeManager.CurrentGeneticOptimizer.CurrentGeneration[numOfGenomes - i - 1]).Meaning).ReturnAtLastDayInSample < 0)
-    		//the current portfolio has a negative return at the last day in sample
-    		{
-    			returnValue =
-    					((GenomeMeaning)((Genome)genomeManager.CurrentGeneticOptimizer.CurrentGeneration[numOfGenomes - i - 1]).Meaning).Tickers;
-    			i = numOfGenomes;
-    		}
-    	}
-    
-    	return returnValue;
-    }
+//    private string[] setTickers_getBestTickersLosingAtLastDay(IGenomeManager genomeManager)
+//    {
+//    	string[] returnValue =
+//    		((GenomeMeaning)genomeManager.CurrentGeneticOptimizer.BestGenome.Meaning).Tickers;
+//    	int numOfGenomes = genomeManager.CurrentGeneticOptimizer.CurrentGeneration.Count;
+//    	int i;
+//    	for(i = 0;i<numOfGenomes; i++)
+//    	{
+//    		if(((GenomeMeaning)((Genome)genomeManager.CurrentGeneticOptimizer.CurrentGeneration[numOfGenomes - i - 1]).Meaning).ReturnAtLastDayInSample < 0)
+//    		//the current portfolio has a negative return at the last day in sample
+//    		{
+//    			returnValue =
+//    					((GenomeMeaning)((Genome)genomeManager.CurrentGeneticOptimizer.CurrentGeneration[numOfGenomes - i - 1]).Meaning).Tickers;
+//    			i = numOfGenomes;
+//    		}
+//    	}
+//    
+//    	return returnValue;
+//    }
     
     protected virtual void setTickers(DateTime currentDate,
                                      	bool setGenomeCounter)

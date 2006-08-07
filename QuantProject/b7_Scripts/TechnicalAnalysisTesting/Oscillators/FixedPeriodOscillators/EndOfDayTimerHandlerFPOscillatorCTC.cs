@@ -60,6 +60,7 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedPeriodO
 //  private bool isTheFirstClose = false;
     private DateTime lastCloseDate;
     private IGenomeManager iGenomeManager;
+    private int seedForRandomGenerator;
         
     public EndOfDayTimerHandlerFPOscillatorCTC(string tickerGroupID, int numberOfEligibleTickers, 
                                 int numberOfTickersToBeChosen, int numDaysForOptimizationPeriod,
@@ -86,6 +87,7 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedPeriodO
       this.previousAccountValue = 0.0;
       this.numDaysBetweenEachOptimization = 2* numDaysForReturnCalculation;
       this.numDaysBetweenEachOptimization = numDaysForReturnCalculation;
+      this.seedForRandomGenerator = ConstantsProvider.SeedForRandomGenerator;
     }
 	
 
@@ -300,13 +302,14 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedPeriodO
         GeneticOptimizer GO = new GeneticOptimizer(this.iGenomeManager,
           this.populationSizeForGeneticOptimizer, 
           this.generationNumberForGeneticOptimizer,
-          ConstantsProvider.SeedForRandomGenerator);
+          this.seedForRandomGenerator);
         if(setGenomeCounter)
           this.genomeCounter = new GenomeCounter(GO);
         
         GO.Run(false);
         this.addGenomeToBestGenomes(GO.BestGenome,((GenomeManagerForEfficientPortfolio)this.iGenomeManager).FirstQuoteDate,
-          ((GenomeManagerForEfficientPortfolio)this.iGenomeManager).LastQuoteDate, setOfTickersToBeOptimized.Rows.Count);
+          ((GenomeManagerForEfficientPortfolio)this.iGenomeManager).LastQuoteDate, setOfTickersToBeOptimized.Rows.Count,
+          this.numDaysForReturnCalculation);
         this.chosenTickers = ((GenomeMeaning)GO.BestGenome.Meaning).Tickers;
         this.chosenTickersPortfolioWeights = ((GenomeMeaning)GO.BestGenome.Meaning).TickersPortfolioWeights;
       }
@@ -323,7 +326,7 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedPeriodO
       Object sender , EndOfDayTimingEventArgs endOfDayTimingEventArgs )
     {
       this.lastCloseDate = endOfDayTimingEventArgs.EndOfDayDateTime.DateTime;
-      ConstantsProvider.SeedForRandomGenerator++;
+      this.seedForRandomGenerator++;
       this.numDaysElapsedSinceLastOptimization++;
       this.orders.Clear();
       if((this.numDaysElapsedSinceLastOptimization - 1 == 
