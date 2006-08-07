@@ -34,8 +34,6 @@ namespace QuantProject.ADT.Optimizing.Genetic
 	public class Genome : IComparable
 	{
 	  private int[] genes;
-    private int minValueForGenes;
-    private int maxValueForGenes;
     private int size;
     private double fitness;
     private object meaning;
@@ -43,6 +41,7 @@ namespace QuantProject.ADT.Optimizing.Genetic
     private bool hasBeenChanged;
     
     private IGenomeManager genomeManager;
+    private GeneticOptimizer geneticOptimizer;
 		private int generation;
     
     public bool HasBeenCloned
@@ -83,14 +82,14 @@ namespace QuantProject.ADT.Optimizing.Genetic
       get{return this.size;}
     }
     
-    public int MinValueForGenes
+    public int GetMinValueForGenes(int genePosition)
     {
-      get{return this.minValueForGenes;}
+      return this.genomeManager.GetMinValueForGenes(genePosition);
     }
-    
-    public int MaxValueForGenes
+		
+    public int GetMaxValueForGenes(int genePosition)
     {
-      get{return this.maxValueForGenes;}
+      return this.genomeManager.GetMaxValueForGenes(genePosition);
     }
 		
     /// <summary>
@@ -119,12 +118,12 @@ namespace QuantProject.ADT.Optimizing.Genetic
     /// <summary>
     /// It creates a  new genome object initialized by a IGenomeManager
     /// </summary>
-    public Genome(IGenomeManager genomeManager)
+    public Genome(IGenomeManager genomeManager,
+                  GeneticOptimizer geneticOptimizer)
 		{
 			this.genomeManager = genomeManager;
+			this.geneticOptimizer = geneticOptimizer;
 			this.size = this.genomeManager.GenomeSize;
-    	this.minValueForGenes = this.genomeManager.MinValueForGenes;
-    	this.maxValueForGenes = this.genomeManager.MaxValueForGenes;
  			this.genes = new int[ this.size ];
 		}
   
@@ -139,7 +138,7 @@ namespace QuantProject.ADT.Optimizing.Genetic
 				this.genes[i] = this.genomeManager.GetNewGeneValue(this,i);
 			//whenever at least one gene has been written,
 			//the current generation number is stored
-			this.generation = this.genomeManager.CurrentGeneticOptimizer.GenerationCounter;
+			this.generation = this.geneticOptimizer.GenerationCounter;
 		}
     
     public void CalculateFitness()
@@ -153,7 +152,7 @@ namespace QuantProject.ADT.Optimizing.Genetic
     /// </summary>
     public Genome Clone()
     {
-      Genome returnValue = new Genome(this.genomeManager);
+      Genome returnValue = new Genome(this.genomeManager, this.geneticOptimizer);
       returnValue.CopyValuesInGenes(this.genes);
       returnValue.Fitness = this.Fitness;
       returnValue.Meaning = this.Meaning;
@@ -174,26 +173,25 @@ namespace QuantProject.ADT.Optimizing.Genetic
 				this.genes[i] = valuesToBeCopied[i];
 			//whenever at least one gene has been written,
 			//the current generation number is stored
-			this.generation = this.genomeManager.CurrentGeneticOptimizer.GenerationCounter;
+			this.generation = this.geneticOptimizer.GenerationCounter;
 		}
     
     public void SetGeneValue(int geneValue, int genePosition)
     {
-      if(genePosition >= this.size || genePosition<0)
-        throw new IndexOutOfRangeException("Gene position not valid for the genome! ");
+      if(geneValue < this.GetMinValueForGenes(genePosition) ||
+         geneValue > this.GetMaxValueForGenes(genePosition) )
+      	throw new IndexOutOfRangeException("Gene value not valid for the gene at" +
+      	                                   " the given position!");
       
       this.genes[genePosition] = geneValue;
       //whenever at least one gene has been written,
 			//the current generation number is stored
-      this.generation = this.genomeManager.CurrentGeneticOptimizer.GenerationCounter;
+      this.generation = this.geneticOptimizer.GenerationCounter;
       this.hasBeenChanged = true;
     }
     
     public int GetGeneValue(int genePosition)
     {
-      if(genePosition >= this.size || genePosition<0)
-        throw new IndexOutOfRangeException("Gene position not valid for the genome! ");
-      
       return this.genes[genePosition];
     }
     

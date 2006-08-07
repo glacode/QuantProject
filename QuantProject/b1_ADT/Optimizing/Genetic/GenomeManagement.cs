@@ -177,8 +177,8 @@ namespace QuantProject.ADT.Optimizing.Genetic
 			for (int pos = 0 ; pos < genome.Size; pos++)
 			{
 				if (GenomeManagement.RandomGenerator.Next(0,101) < (int)(mutationRate*100))
-					genome.SetGeneValue(GenomeManagement.RandomGenerator.Next(genome.MinValueForGenes,
-                                   genome.MaxValueForGenes + 1), pos);
+					genome.SetGeneValue(GenomeManagement.RandomGenerator.Next(genome.GetMinValueForGenes(pos),
+                                   genome.GetMaxValueForGenes(pos) + 1), pos);
 			}
 		}
 		
@@ -187,8 +187,8 @@ namespace QuantProject.ADT.Optimizing.Genetic
 		{
 		
 			if (GenomeManagement.RandomGenerator.Next(0,101) < (int)(mutationRate*100))
-				genome.SetGeneValue(GenomeManagement.RandomGenerator.Next(genome.MinValueForGenes,
-                            genome.MaxValueForGenes + 1), genePosition);
+				genome.SetGeneValue(GenomeManagement.RandomGenerator.Next(genome.GetMinValueForGenes(genePosition),
+                                   genome.GetMaxValueForGenes(genePosition) + 1), genePosition);
 			
 		}
     
@@ -271,10 +271,6 @@ namespace QuantProject.ADT.Optimizing.Genetic
     public static Genome[] MixGenesWithoutDuplicates(Genome parent1, Genome parent2)
     {
       initializeStaticMembers(parent1, parent2);
-      if(parent1.Size > (parent1.MaxValueForGenes - parent1.MinValueForGenes + 1))
-        //it is impossible not to duplicate genes if size is too
-        // large for the range of variation of each gene
-        throw new Exception("Impossible to avoid duplicates with the given size!");
       if(parent1.Size != parent2.Size)
         throw new Exception("Genomes must have the same size!");	
       

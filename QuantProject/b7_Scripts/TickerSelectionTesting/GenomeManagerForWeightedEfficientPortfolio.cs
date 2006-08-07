@@ -126,8 +126,8 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
     {
       // in this implementation only new gene values pointing to tickers
       // must be different from the others already stored (in odd positions of genome)
-      int returnValue = GenomeManagement.RandomGenerator.Next(genome.MinValueForGenes,
-        																											genome.MaxValueForGenes + 1);
+      int returnValue = GenomeManagement.RandomGenerator.Next(genome.GetMinValueForGenes(genePosition),
+                                                              genome.GetMaxValueForGenes(genePosition) + 1);
       while(genePosition%2 == 1 
             && GenomeManipulator.IsTickerContainedInGenome(returnValue,genome))
       //while in the given position has to be stored
@@ -136,8 +136,8 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
       //already stored in the given genome
       {
         // a new returnValue has to be generated
-      	returnValue = GenomeManagement.RandomGenerator.Next(genome.MinValueForGenes,
-          genome.MaxValueForGenes + 1);
+      	returnValue = GenomeManagement.RandomGenerator.Next(genome.GetMinValueForGenes(genePosition),
+                                                            genome.GetMaxValueForGenes(genePosition) + 1);
       }
 
       return returnValue;
@@ -146,9 +146,10 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
     public override void Mutate(Genome genome, double mutationRate)
     {
       // in this implementation only one gene is mutated
-      int newValueForGene = GenomeManagement.RandomGenerator.Next(genome.MinValueForGenes,
-        genome.MaxValueForGenes +1);
-      int genePositionToBeMutated = GenomeManagement.RandomGenerator.Next(genome.Size); 
+      int genePositionToBeMutated = GenomeManagement.RandomGenerator.Next(genome.Size);
+      int newValueForGene = GenomeManagement.RandomGenerator.Next(genome.GetMinValueForGenes(genePositionToBeMutated),
+                                                                  genome.GetMaxValueForGenes(genePositionToBeMutated) +1);
+       
       while(genePositionToBeMutated%2 == 1 &&
             GenomeManipulator.IsTickerContainedInGenome(newValueForGene,genome))
       //while in the proposed genePositionToBeMutated has to be stored
@@ -156,8 +157,8 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
       //the proposed newValueForGene points to a ticker
       //already stored in the given genome
       {
-        newValueForGene = GenomeManagement.RandomGenerator.Next(genome.MinValueForGenes,
-          genome.MaxValueForGenes + 1);
+        newValueForGene = GenomeManagement.RandomGenerator.Next(genome.GetMinValueForGenes(genePositionToBeMutated),
+                                                                genome.GetMaxValueForGenes(genePositionToBeMutated) +1);
       }
       GenomeManagement.MutateOneGene(genome, mutationRate,
         genePositionToBeMutated, newValueForGene);

@@ -105,10 +105,6 @@ namespace QuantProject.Scripts.ArbitrageTesting.PairTrading.SimplePairTrading
     public static Genome[] MixGenesWithoutDuplicates(Genome parent1, Genome parent2)
     {
       initializeStaticMembers(parent1, parent2);
-      if(parent1.Size > (parent1.MaxValueForGenes - parent1.MinValueForGenes + 1))
-			//it is impossible not to duplicate genes if size is too
-			// large for the range of variation of each gene
-				throw new Exception("Impossible to avoid duplicates with the given size!");
       if(parent1.Size != parent2.Size)
 				throw new Exception("Genomes must have the same size!");	
       

@@ -50,8 +50,6 @@ namespace QuantProject.ADT.Optimizing.Genetic
     private int populationSize;
     private int generationNumber;
     private int genomeSize;
-    private int minValueForGenes;
-    private int maxValueForGenes;
     private double totalFitness;
     private Genome bestGenome;
     private Genome worstGenome;
@@ -210,8 +208,6 @@ namespace QuantProject.ADT.Optimizing.Genetic
     	this.populationSize = populationSize;
     	this.generationNumber = generationNumber;
     	this.genomeSize = this.genomeManager.GenomeSize;
-      this.minValueForGenes = this.genomeManager.MinValueForGenes;
-      this.maxValueForGenes = this.genomeManager.MaxValueForGenes;
       this.genomeComparer = new GenomeComparer();
       this.cumulativeFitnessList = new ArrayList(this.PopulationSize);
       this.currentGeneration = new ArrayList(this.PopulationSize);
@@ -220,7 +216,6 @@ namespace QuantProject.ADT.Optimizing.Genetic
       this.nextGeneration = new ArrayList(this.populationSize +
                                          	eliteNumber);
       this.generationCounter = 1;
-      this.genomeManager.CurrentGeneticOptimizer = this;
     }
     
     /// <summary>
@@ -392,7 +387,7 @@ namespace QuantProject.ADT.Optimizing.Genetic
     {
       for (int i = 0; i < this.populationSize; i++)
       {
-        Genome g = new Genome(this.genomeManager);
+        Genome g = new Genome(this.genomeManager, this);
         g.CreateGenes();
         g.CalculateFitness();
         g.AssignMeaning();

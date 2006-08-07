@@ -29,23 +29,22 @@ namespace QuantProject.ADT.Optimizing.Genetic
 	/// Interface to be implemented by any object used to run
 	/// an instance of the GeneticOptimizer class.
 	/// 
-	/// The interface determines the genome format and provides:
+	/// The interface determines the genome format (size and min and max vaules for genes)
+	/// and provides:
 	/// - an objective function used to calculate genome's fitness;
-	/// - a decode function used to calculate genome's meaning as an object;
+	/// - a decode function used to determine genome's meaning as an object;
 	/// - a GetChilds method used by the genetic optimizer to generate new
-	///   population;
+	///   offspring;
 	/// - a Mutate method used by the genetic optimizer to mutate a 
 	///   given genome
+	/// - a method for production of new genes value (GetNewGeneValue)
 	/// </summary>
 	public interface IGenomeManager
 	{
     int GenomeSize{get;}
-    int MinValueForGenes{get;}
-    int MaxValueForGenes{get;}
-    GeneticOptimizer CurrentGeneticOptimizer{get;set;}
-    
-    int GetNewGeneValue(Genome genome, int genePosition); // Used in generation of genes
-    																    //  by the Genome parameter
+    int GetMaxValueForGenes(int genePosition);
+    int GetMinValueForGenes(int genePosition);
+    int GetNewGeneValue(Genome genome, int genePosition); 
     double GetFitnessValue(Genome genome);
     object Decode(Genome genome);
 		Genome[] GetChilds(Genome parent1, Genome parent2);

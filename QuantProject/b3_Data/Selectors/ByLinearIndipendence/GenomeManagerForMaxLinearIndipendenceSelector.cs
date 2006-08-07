@@ -45,7 +45,6 @@ namespace QuantProject.Data.Selectors.ByLinearIndipendence
     private int genomeSize;
     private int minValueForGenes;
     private int maxValueForGenes;
-    private GeneticOptimizer currentGeneticOptimizer;
     private double[,] correlationMatrix;
     
     //IGenomeManager implementation for properties 
@@ -54,21 +53,6 @@ namespace QuantProject.Data.Selectors.ByLinearIndipendence
       get{return this.genomeSize;}
     }
     
-    public int MinValueForGenes
-    {
-      get{return this.minValueForGenes;}
-    }
-    
-    public int MaxValueForGenes
-    {
-      get{return this.maxValueForGenes;}
-    }
-    
-    public GeneticOptimizer CurrentGeneticOptimizer
-    {
-      get{return this.currentGeneticOptimizer;}
-      set{this.currentGeneticOptimizer = value;}
-    }
     //end of interface implementation for properties
 
     public GenomeManagerForMaxLinearIndipendenceSelector(DataTable setOfInitialTickers,
@@ -83,6 +67,16 @@ namespace QuantProject.Data.Selectors.ByLinearIndipendence
       this.lastQuoteDate = lastQuoteDate;
       this.candidates = new Candidate[this.setOfInitialTickers.Rows.Count];
       this.retrieveData();
+    }
+    
+    public int GetMinValueForGenes(int genePosition)
+    {
+      return this.minValueForGenes;
+    }
+    
+    public int GetMaxValueForGenes(int genePosition)
+    {
+      return this.maxValueForGenes;
     }
     
     private void setMinAndMaxValueForGenes()
@@ -134,27 +128,28 @@ namespace QuantProject.Data.Selectors.ByLinearIndipendence
     
     public int GetNewGeneValue(Genome genome, int genePosition)
     {
-      int returnValue = GenomeManagement.RandomGenerator.Next(genome.MinValueForGenes,
-                                    genome.MaxValueForGenes + 1);
+    	int returnValue = GenomeManagement.RandomGenerator.Next(genome.GetMinValueForGenes(genePosition),
+    	                                                        genome.GetMaxValueForGenes(genePosition) + 1);
       while( genome.HasGene(returnValue) )
         //the genome to be examined shouldn't have a duplicate
       {
-        returnValue = GenomeManagement.RandomGenerator.Next(genome.MinValueForGenes,
-          genome.MaxValueForGenes + 1);
+        returnValue = GenomeManagement.RandomGenerator.Next(genome.GetMinValueForGenes(genePosition),
+    	                                                        genome.GetMaxValueForGenes(genePosition) + 1);
       }
       return returnValue;
     }
         
     public void Mutate(Genome genome, double mutationRate)
     {
-      int newValueForGene = GenomeManagement.RandomGenerator.Next(genome.MinValueForGenes,
-                                                          genome.MaxValueForGenes +1);
-      int genePositionToBeMutated = GenomeManagement.RandomGenerator.Next(genome.Size); 
+      
+      int genePositionToBeMutated = GenomeManagement.RandomGenerator.Next(genome.Size);
+      int newValueForGene = GenomeManagement.RandomGenerator.Next(genome.GetMinValueForGenes(genePositionToBeMutated),
+    	                                                        genome.GetMaxValueForGenes(genePositionToBeMutated) + 1);
       while( genome.HasGene(newValueForGene) )
       //genome shouldn't have a duplicated gene
       {
-        newValueForGene = GenomeManagement.RandomGenerator.Next(genome.MinValueForGenes,
-          genome.MaxValueForGenes + 1);
+        newValueForGene = GenomeManagement.RandomGenerator.Next(genome.GetMinValueForGenes(genePositionToBeMutated),
+    	                                                        genome.GetMaxValueForGenes(genePositionToBeMutated) + 1);
       }
       GenomeManagement.MutateOneGene(genome, mutationRate,
         genePositionToBeMutated, newValueForGene);

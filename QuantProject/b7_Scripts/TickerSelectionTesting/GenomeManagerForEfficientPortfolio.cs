@@ -72,14 +72,14 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
       get{return this.genomeSize;}
     }
     
-    public int MinValueForGenes
+    public int GetMinValueForGenes(int genePosition)
     {
-      get{return this.minValueForGenes;}
+      return this.minValueForGenes;
     }
     
-    public int MaxValueForGenes
+    public int GetMaxValueForGenes(int genePosition)
     {
-      get{return this.maxValueForGenes;}
+      return this.maxValueForGenes;
     }
     //end of implementation for properties
     
@@ -99,11 +99,6 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
       //set{this.portfolioType = value;}
     }
     
-    public GeneticOptimizer CurrentGeneticOptimizer
-    {
-      get{return this.currentGeneticOptimizer;}
-      set{this.currentGeneticOptimizer = value;}
-    }
     public double[] PortfolioRatesOfReturn
     {
       get{return this.portfolioRatesOfReturn;}
@@ -144,12 +139,25 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
     
     private void setMinAndMaxValueForGenes()
     {
-      this.minValueForGenes = 0;
-      this.maxValueForGenes = this.originalNumOfTickers - 1;
-           
-      if(this.portfolioType == PortfolioType.ShortAndLong)
-        this.minValueForGenes = - this.originalNumOfTickers;
-      //if gene g is negative, it refers to the ticker |g|-1 to be shorted
+      switch (this.portfolioType) 
+      {
+        case QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios.PortfolioType.OnlyLong :        
+        //OnlyLong orders are admitted
+          this.minValueForGenes = 0;
+          this.maxValueForGenes = this.originalNumOfTickers - 1;
+          break;
+        case QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios.PortfolioType.OnlyShort :        
+        //OnlyShort orders are admitted
+          this.minValueForGenes = - this.originalNumOfTickers;
+          //if gene g is negative, it refers to the ticker |g|-1 to be shorted
+          this.maxValueForGenes = 0;
+          break;
+        case QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios.PortfolioType.ShortAndLong :        
+        //Both Long and Short orders are admitted
+          this.minValueForGenes = - this.originalNumOfTickers;
+          this.maxValueForGenes = this.originalNumOfTickers - 1;
+          break;
+      }
     }
     
     //this protected method has to be called by inherited genome
@@ -244,14 +252,14 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
       // the others already stored in the given genome
       // the generation of new genes doesn't depend on gene's position
       // within the genome
-      int returnValue = GenomeManagement.RandomGenerator.Next(genome.MinValueForGenes,
-                                                              genome.MaxValueForGenes + 1);
+      int returnValue = GenomeManagement.RandomGenerator.Next(genome.GetMinValueForGenes(genePosition),
+                                                              genome.GetMaxValueForGenes(genePosition) + 1);
       while(GenomeManipulator.IsTickerContainedInGenome(returnValue,
                                                         genome) )
       //the portfolio can't have a long position and a short one for the same ticker
       {
-        returnValue = GenomeManagement.RandomGenerator.Next(genome.MinValueForGenes,
-          genome.MaxValueForGenes + 1);
+        returnValue = GenomeManagement.RandomGenerator.Next(genome.GetMinValueForGenes(genePosition),
+                                                            genome.GetMaxValueForGenes(genePosition) + 1);
       }
 
       return returnValue;
@@ -261,17 +269,18 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
     {
       // in this implementation only one gene is mutated
       // the new value has to be different from all the other genes of the genome
-      int newValueForGene = GenomeManagement.RandomGenerator.Next(genome.MinValueForGenes,
-                                                                  genome.MaxValueForGenes +1);
-      int genePositionToBeMutated = GenomeManagement.RandomGenerator.Next(genome.Size); 
+      int genePositionToBeMutated = GenomeManagement.RandomGenerator.Next(genome.Size);
+      int newValueForGene = GenomeManagement.RandomGenerator.Next(genome.GetMinValueForGenes(genePositionToBeMutated),
+                                                                  genome.GetMaxValueForGenes(genePositionToBeMutated) + 1);
+       
       while(GenomeManipulator.IsTickerContainedInGenome(newValueForGene,
                                                         genome)  )
         //the efficient portfolio, in this implementation, 
         // can't have a long position and a short position
         // for the same ticker
       {
-        newValueForGene = GenomeManagement.RandomGenerator.Next(genome.MinValueForGenes,
-                                                         genome.MaxValueForGenes + 1);
+        newValueForGene = GenomeManagement.RandomGenerator.Next(genome.GetMinValueForGenes(genePositionToBeMutated),
+                                                                genome.GetMaxValueForGenes(genePositionToBeMutated) + 1);
       }
       GenomeManagement.MutateOneGene(genome, mutationRate,
                                      genePositionToBeMutated, newValueForGene);

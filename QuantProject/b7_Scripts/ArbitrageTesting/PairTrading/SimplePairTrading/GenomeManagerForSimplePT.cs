@@ -50,7 +50,6 @@ namespace QuantProject.Scripts.ArbitrageTesting.PairTrading.SimplePairTrading
     private int genomeSize;
     private int minValueForGenes;
     private int maxValueForGenes;
-    private GeneticOptimizer currentGeneticOptimizer;
     private float[] gaps;
     //it will contain absolute gaps of gain for tickers
     private double[] pairTradingPortfolioGains;
@@ -61,21 +60,16 @@ namespace QuantProject.Scripts.ArbitrageTesting.PairTrading.SimplePairTrading
       get{return this.genomeSize;}
     }
     
-    public int MinValueForGenes
+    public int GetMinValueForGenes(int genePosition)
     {
-      get{return this.minValueForGenes;}
+      return this.minValueForGenes;
     }
     
-    public int MaxValueForGenes
+    public int GetMaxValueForGenes(int genePosition)
     {
-      get{return this.maxValueForGenes;}
+      return this.maxValueForGenes;
     }
     
-    public GeneticOptimizer CurrentGeneticOptimizer
-    {
-      get{return this.currentGeneticOptimizer;}
-      set{this.currentGeneticOptimizer = value;}
-    }
     //end of interface implementation for properties
 
     public GenomeManagerForSimplePT(DataTable setOfInitialTickers,
@@ -188,8 +182,8 @@ namespace QuantProject.Scripts.ArbitrageTesting.PairTrading.SimplePairTrading
         //in 2° or 3° position there must be a ticker different from
         // the one contained in 3° or 2° position
       {
-        returnValue = GenomeManagement.RandomGenerator.Next(genome.MinValueForGenes,
-          genome.MaxValueForGenes + 1);
+      	returnValue = GenomeManagement.RandomGenerator.Next(genome.GetMinValueForGenes(genePosition),
+      	                                                    genome.GetMaxValueForGenes(genePosition) + 1);
         while(genePosition>0 
           && SimplePTGenomeManipulator.IsTickerContainedInGenome(returnValue,
                                                                  genome))
@@ -199,8 +193,8 @@ namespace QuantProject.Scripts.ArbitrageTesting.PairTrading.SimplePairTrading
           //already stored in the given genome
         {
           // a new returnValue has to be generated
-          returnValue = GenomeManagement.RandomGenerator.Next(genome.MinValueForGenes,
-            genome.MaxValueForGenes + 1);
+          returnValue = GenomeManagement.RandomGenerator.Next(genome.GetMinValueForGenes(genePosition),
+                                                              genome.GetMaxValueForGenes(genePosition) + 1);
         }
       }
       return returnValue;
@@ -219,8 +213,8 @@ namespace QuantProject.Scripts.ArbitrageTesting.PairTrading.SimplePairTrading
       }
       else
       {
-        newValueForGene = GenomeManagement.RandomGenerator.Next(genome.MinValueForGenes,
-                                                                genome.MaxValueForGenes + 1);
+      	newValueForGene = GenomeManagement.RandomGenerator.Next(genome.GetMinValueForGenes(genePositionToBeMutated),
+      	                                                        genome.GetMaxValueForGenes(genePositionToBeMutated) + 1);
         while(genePositionToBeMutated>0 &&
                 SimplePTGenomeManipulator.IsTickerContainedInGenome(newValueForGene,
                                                                     genome))
@@ -229,8 +223,8 @@ namespace QuantProject.Scripts.ArbitrageTesting.PairTrading.SimplePairTrading
                 //the proposed newValueForGene points to a ticker
                 //already stored in the given genome
         {
-          newValueForGene = GenomeManagement.RandomGenerator.Next(genome.MinValueForGenes,
-            genome.MaxValueForGenes + 1);
+          newValueForGene = GenomeManagement.RandomGenerator.Next(genome.GetMinValueForGenes(genePositionToBeMutated),
+      	                                                          genome.GetMaxValueForGenes(genePositionToBeMutated) + 1);
         }
 
       }

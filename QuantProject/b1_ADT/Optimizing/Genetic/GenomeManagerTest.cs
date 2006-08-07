@@ -36,28 +36,13 @@ namespace QuantProject.ADT.Optimizing.Genetic
     private int genomeSize;
     private int minValueForGenes;
     private int maxValueForGenes;
-    private GeneticOptimizer currentGeneticOptimizer;
-     
+         
     public int GenomeSize
     {
       get{return this.genomeSize;}
     }
     
-    public int MinValueForGenes
-    {
-      get{return this.minValueForGenes;}
-    }
-    
-    public int MaxValueForGenes
-    {
-      get{return this.maxValueForGenes;}
-    }
-    
-    public GeneticOptimizer CurrentGeneticOptimizer
-    {
-      get{return this.currentGeneticOptimizer;}
-      set{this.currentGeneticOptimizer = value;}
-    }
+            
     public GenomeManagerTest(int genomeSize, int minValueForGenes,
                              int maxValueForGenes)
                           
@@ -67,10 +52,20 @@ namespace QuantProject.ADT.Optimizing.Genetic
       this.maxValueForGenes = maxValueForGenes;
     }
     
+    public int GetMinValueForGenes(int genePosition)
+    {
+      return this.minValueForGenes;
+    }
+    
+    public int GetMaxValueForGenes(int genePosition)
+    {
+      return this.maxValueForGenes;
+    }
+    
     public int GetNewGeneValue(Genome genome, int genePosition)
     {
-      return GenomeManagement.RandomGenerator.Next(genome.MinValueForGenes,
-                                            genome.MaxValueForGenes + 1);
+      return GenomeManagement.RandomGenerator.Next(genome.GetMinValueForGenes(genePosition),
+                                   genome.GetMaxValueForGenes(genePosition) + 1);
     }
 
  		public Genome[] GetChilds(Genome parent1, Genome parent2)

@@ -37,7 +37,7 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.ExtremeCount
 	/// the extreme counter trend strategy
 	/// </summary>
 	[Serializable]
-  public class GenomeManagerECT : GenomeManagerForWeightedEfficientPortfolio
+  public class GenomeManagerECT : GenomeManagerForEfficientPortfolio
   {
     private int numDaysForReturnCalculation;
     
@@ -112,7 +112,8 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.ExtremeCount
 //                              Math.Pow(BasicFunctions.StdDev(equityLineSecondHalf),1.2);
 //      return sharpeRatioAll;//*sharpeRatioSecondHalf; 
 //      return modifiedSharpeRatioAll;
-      return AdvancedFunctions.GetExpectancyScore(equityLine);
+      //return AdvancedFunctions.GetExpectancyScore(equityLine);
+      return AdvancedFunctions.GetSharpeRatio(equityLine);
 
     }
     
@@ -134,11 +135,19 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.ExtremeCount
       
         for(int t=1;t<this.numDaysForReturnCalculation + 1;t++)
         {  
-          if(gainForTheLastHalfPeriod<0.0)
+          if(gainForTheLastHalfPeriod < 0.0)
             // if gain of first half period is negative 
              returnValue[i+t] = this.PortfolioRatesOfReturn[i+t];
-          else
-             returnValue[i+t] = - this.PortfolioRatesOfReturn[i+t]; 
+          else if(gainForTheLastHalfPeriod > 0.0 && 
+                  this.PortfolioType == PortfolioType.ShortAndLong)
+            //if gain of first half period is positive and
+            //original positions can be reversed
+             returnValue[i+t] = - this.PortfolioRatesOfReturn[i+t];
+          else if(gainForTheLastHalfPeriod > 0.0 && 
+                  this.PortfolioType != PortfolioType.ShortAndLong)
+            //if gain of first half period is positive and
+            //original positions can't be reversed
+             returnValue[i+t] = 0.0;//out of the market
         }  
            
       }
