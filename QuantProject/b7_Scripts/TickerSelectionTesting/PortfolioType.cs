@@ -28,6 +28,7 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
   /// Specifies what types of orders are to be added
   /// to portfolio 
   /// </summary>
+  [Serializable]
   public enum PortfolioType
   {
     OnlyLong,
