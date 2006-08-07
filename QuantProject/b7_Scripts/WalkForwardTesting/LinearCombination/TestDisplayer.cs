@@ -26,6 +26,7 @@ using System.Drawing;
 using System.Collections;
 using System.ComponentModel;
 using System.Windows.Forms;
+using QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios;
 
 namespace QuantProject.Scripts.WalkForwardTesting.LinearCombination
 {
@@ -56,8 +57,10 @@ namespace QuantProject.Scripts.WalkForwardTesting.LinearCombination
     private System.Windows.Forms.RadioButton radioButtonExtremeCounterTrend;
     private System.Windows.Forms.RadioButton radioButtonImmediateTrendFollower;
     private StrategyType selectedStrategyType = StrategyType.OpenToCloseDaily;
-
-		private void testdisplayer()
+    private System.Windows.Forms.Label labelPortfolioType;
+    private System.Windows.Forms.ComboBox comboBoxPortfolioType;
+    
+		private void testDisplayer()
 		{
 			this.dgBestGenomes.DataSource = this.bestGenomes;
       DataGridTableStyle ts = new DataGridTableStyle();
@@ -122,7 +125,14 @@ namespace QuantProject.Scripts.WalkForwardTesting.LinearCombination
 			this.dtpLastDate.Value =
 				this.lastSelectedGenomeRepresentation.LastOptimizationDate;
       this.bestGenomes = bestGenomes;
-			this.testdisplayer();
+      this.comboBoxPortfolioType.Items.Add(PortfolioType.ShortAndLong);
+      this.comboBoxPortfolioType.Items.Add(PortfolioType.OnlyLong);
+      this.comboBoxPortfolioType.Items.Add(PortfolioType.OnlyShort);
+      this.comboBoxPortfolioType.SelectedItem = PortfolioType.ShortAndLong;
+      this.comboBoxPortfolioType.Text = this.comboBoxPortfolioType.SelectedItem.ToString();
+			this.comboBoxPortfolioType.Visible = false;
+      this.labelPortfolioType.Visible = false;
+      this.testDisplayer();
 		}
 
 		/// <summary>
@@ -159,6 +169,8 @@ namespace QuantProject.Scripts.WalkForwardTesting.LinearCombination
       this.labelDays = new System.Windows.Forms.Label();
       this.radioButtonOTCCTODaily = new System.Windows.Forms.RadioButton();
       this.radioButtonImmediateTrendFollower = new System.Windows.Forms.RadioButton();
+      this.comboBoxPortfolioType = new System.Windows.Forms.ComboBox();
+      this.labelPortfolioType = new System.Windows.Forms.Label();
       ((System.ComponentModel.ISupportInitialize)(this.dgBestGenomes)).BeginInit();
       this.SuspendLayout();
       // 
@@ -169,7 +181,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.LinearCombination
       this.dgBestGenomes.HeaderForeColor = System.Drawing.SystemColors.ControlText;
       this.dgBestGenomes.Location = new System.Drawing.Point(0, 205);
       this.dgBestGenomes.Name = "dgBestGenomes";
-      this.dgBestGenomes.Size = new System.Drawing.Size(584, 168);
+      this.dgBestGenomes.Size = new System.Drawing.Size(704, 168);
       this.dgBestGenomes.TabIndex = 0;
       this.dgBestGenomes.MouseUp += new System.Windows.Forms.MouseEventHandler(this.dgBestGenomes_MouseUp);
       // 
@@ -273,11 +285,29 @@ namespace QuantProject.Scripts.WalkForwardTesting.LinearCombination
       this.radioButtonImmediateTrendFollower.Text = "Immediate Trend Follower";
       this.radioButtonImmediateTrendFollower.CheckedChanged += new System.EventHandler(this.radioButtonImmediateTrendFollower_CheckedChanged);
       // 
+      // comboBoxPortfolioType
+      // 
+      this.comboBoxPortfolioType.Location = new System.Drawing.Point(480, 104);
+      this.comboBoxPortfolioType.Name = "comboBoxPortfolioType";
+      this.comboBoxPortfolioType.Size = new System.Drawing.Size(184, 21);
+      this.comboBoxPortfolioType.TabIndex = 13;
+      this.comboBoxPortfolioType.Text = "comboBoxPortfolioType";
+      // 
+      // labelPortfolioType
+      // 
+      this.labelPortfolioType.Location = new System.Drawing.Point(480, 88);
+      this.labelPortfolioType.Name = "labelPortfolioType";
+      this.labelPortfolioType.Size = new System.Drawing.Size(100, 16);
+      this.labelPortfolioType.TabIndex = 14;
+      this.labelPortfolioType.Text = "Type of portfolio";
+      // 
       // TestDisplayer
       // 
       this.AutoScaleBaseSize = new System.Drawing.Size(5, 13);
-      this.ClientSize = new System.Drawing.Size(584, 373);
+      this.ClientSize = new System.Drawing.Size(704, 373);
       this.Controls.AddRange(new System.Windows.Forms.Control[] {
+                                                                  this.labelPortfolioType,
+                                                                  this.comboBoxPortfolioType,
                                                                   this.radioButtonImmediateTrendFollower,
                                                                   this.radioButtonOTCCTODaily,
                                                                   this.radioButtonExtremeCounterTrend,
@@ -345,18 +375,31 @@ namespace QuantProject.Scripts.WalkForwardTesting.LinearCombination
 			LinearCombinationTest linearCombinationTest =
 				new LinearCombinationTest( this.dtpFirstDate.Value ,
 				this.dtpLastDate.Value , genomeRepresentation ,
-				this.selectedStrategyType, Convert.ToInt32(this.textBoxDaysFPOscillatorAndRevOneRank.Text));
+				this.selectedStrategyType,
+        (PortfolioType)this.comboBoxPortfolioType.SelectedItem, Convert.ToInt32(this.textBoxDaysFPOscillatorAndRevOneRank.Text));
 			linearCombinationTest.Run();
 			this.lastSelectedGenomeRepresentation = genomeRepresentation;
 		}
-		private void dgBestGenomes_MouseUp_leftButton_updateDates(
-			GenomeRepresentation newSelectedGenomeRepresentation )
-		{
-			this.dtpFirstDate.Value =
-				newSelectedGenomeRepresentation.FirstOptimizationDate;
-			this.dtpLastDate.Value =
-				newSelectedGenomeRepresentation.LastOptimizationDate;
-		}
+		
+    
+    private void dgBestGenomes_MouseUp_leftButton_updateForm(
+      GenomeRepresentation newSelectedGenomeRepresentation )
+    {
+      this.dtpFirstDate.Value =
+        newSelectedGenomeRepresentation.FirstOptimizationDate;
+      this.dtpLastDate.Value =
+        newSelectedGenomeRepresentation.LastOptimizationDate;
+      
+      if(newSelectedGenomeRepresentation.HalfPeriodDays > 0)
+      //genomeRepresentation derives from a strategy
+      //based on HalfPeriodDays
+        this.textBoxDaysFPOscillatorAndRevOneRank.Text =
+          newSelectedGenomeRepresentation.HalfPeriodDays.ToString();
+
+      this.comboBoxPortfolioType.SelectedItem = 
+        newSelectedGenomeRepresentation.PortfolioType;
+    }
+
 		private void dgBestGenomes_MouseUp_leftButton(object sender, System.Windows.Forms.MouseEventArgs e)
 		{
 			if ( aRowHasBeenClicked( sender , e ) )
@@ -364,8 +407,8 @@ namespace QuantProject.Scripts.WalkForwardTesting.LinearCombination
 			{
 				GenomeRepresentation newSelectedGenomeRepresentation =
 					this.dgBestGenomes_MouseUp_getClickedGenomeRepresentation( sender , e );
-				dgBestGenomes_MouseUp_leftButton_updateDates( newSelectedGenomeRepresentation );
-				this.lastSelectedGenomeRepresentation = newSelectedGenomeRepresentation;
+        this.lastSelectedGenomeRepresentation = newSelectedGenomeRepresentation;
+        dgBestGenomes_MouseUp_leftButton_updateForm( newSelectedGenomeRepresentation );
 			}
 		}
 		private void dgBestGenomes_MouseUp(object sender, System.Windows.Forms.MouseEventArgs e)
@@ -417,6 +460,8 @@ namespace QuantProject.Scripts.WalkForwardTesting.LinearCombination
     private void radioButtonExtremeCounterTrend_CheckedChanged(object sender, System.EventArgs e)
     {
       this.update_selectedStrategyType();
+      this.comboBoxPortfolioType.Visible = this.radioButtonExtremeCounterTrend.Checked;
+      this.labelPortfolioType.Visible = this.radioButtonExtremeCounterTrend.Checked;;
     }
 
     private void radioButtonImmediateTrendFollower_CheckedChanged(object sender, System.EventArgs e)

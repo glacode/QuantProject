@@ -30,6 +30,7 @@ using QuantProject.Business.Financial.Ordering;
 using QuantProject.Business.Strategies;
 using QuantProject.Business.Timing;
 using QuantProject.Presentation.Reporting.WindowsForm;
+using QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios;
 
 
 namespace QuantProject.Scripts.WalkForwardTesting.LinearCombination
@@ -51,19 +52,23 @@ namespace QuantProject.Scripts.WalkForwardTesting.LinearCombination
 		private HistoricalEndOfDayTimer historicalEndOfDayTimer;
 		private Account account;
 		private IEndOfDayStrategy endOfDayStrategy;
+    private PortfolioType portfolioType;
 
 		public LinearCombinationTest( DateTime firstDate , DateTime lastDate ,
-			GenomeRepresentation genomeRepresentation , StrategyType strategyType)
+			GenomeRepresentation genomeRepresentation , StrategyType strategyType,
+      PortfolioType portfolioType)
 		{
 			this.firstDate = firstDate;
 			this.lastDate = lastDate;
 			this.genomeRepresentation = genomeRepresentation;
 //			this.openToCloseDaily = openToCloseDaily;
       this.strategyType = strategyType;
-		}
+      this.portfolioType = portfolioType;
+    }
     
     public LinearCombinationTest( DateTime firstDate , DateTime lastDate ,
       GenomeRepresentation genomeRepresentation , StrategyType strategyType,
+      PortfolioType portfolioType,
       int numDaysForOscillatorStrategy)
     {
       this.firstDate = firstDate;
@@ -71,6 +76,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.LinearCombination
       this.genomeRepresentation = genomeRepresentation;
       //			this.openToCloseDaily = openToCloseDaily;
       this.strategyType = strategyType;
+      this.portfolioType = portfolioType;
       this.numDaysForOscillatorStrategy = numDaysForOscillatorStrategy;
     }
 		
@@ -124,7 +130,8 @@ namespace QuantProject.Scripts.WalkForwardTesting.LinearCombination
         
         case StrategyType.ExtremeCounterTrend:
           this.endOfDayStrategy = new ExtremeCounterTrendStrategy(
-            this.account , signedTickers , weightsForSignedTickers, this.numDaysForOscillatorStrategy );
+            this.account , signedTickers , weightsForSignedTickers, this.numDaysForOscillatorStrategy,
+            this.portfolioType);
           break;
         
         case StrategyType.ImmediateTrendFollower:

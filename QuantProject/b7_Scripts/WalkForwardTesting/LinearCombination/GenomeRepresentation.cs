@@ -44,6 +44,8 @@ namespace QuantProject.Scripts.WalkForwardTesting.LinearCombination
 		private DateTime firstOptimizationDate;
 		private DateTime lastOptimizationDate;
 		private int eligibleTickers = -1;
+    private int halfPeriodDays = -1;
+    private PortfolioType portfolioType = PortfolioType.ShortAndLong;
 		
 		public string SignedTickers
 		{
@@ -88,6 +90,21 @@ namespace QuantProject.Scripts.WalkForwardTesting.LinearCombination
 			get { return this.generationCounter; }
 		}
 
+    public int HalfPeriodDays
+    {
+      get
+      {
+        return this.halfPeriodDays;
+      }
+    }
+
+    public PortfolioType PortfolioType
+    {
+      get
+      {
+        return this.portfolioType;
+      }
+    }
 //		public static string[] GetSignedTickers( string signedTickers )
 //		{
 //			string[] returnValue = signedTickers.Split( ";".ToCharArray());
@@ -214,7 +231,6 @@ namespace QuantProject.Scripts.WalkForwardTesting.LinearCombination
           newRepresentationForSignedTickers += ticker + ";";
         this.signedTickers = newRepresentationForSignedTickers.Substring(0, newRepresentationForSignedTickers.Length -1);
       }
-
     }
 
 		/// <summary>
@@ -243,14 +259,12 @@ namespace QuantProject.Scripts.WalkForwardTesting.LinearCombination
 				catch(Exception ex)
 				{ex = ex;}
 			}
-      
       this.genomeRepresentation_synchronizeOldWithNew();
-
 		}
 		
 		private void genomeRepresentation( Genome genome ,
 			DateTime firstOptimizationDate , DateTime lastOptimizationDate ,
-			int generationCounter, int eligibleTickers )
+			int generationCounter, int eligibleTickers, int halfPeriodDays, PortfolioType portfolioType )
 		{
 			this.fitness = genome.Fitness;
 			//this.signedTickers = this.getSignedTickersWithWeights( genome );
@@ -260,19 +274,23 @@ namespace QuantProject.Scripts.WalkForwardTesting.LinearCombination
 			this.lastOptimizationDate = lastOptimizationDate;
 			this.generationCounter = generationCounter;
 			this.eligibleTickers = eligibleTickers;
+      this.halfPeriodDays = halfPeriodDays;
+      this.portfolioType = portfolioType;
 		}
-		public GenomeRepresentation( Genome genome ,
+		
+    public GenomeRepresentation( Genome genome ,
 			DateTime firstOptimizationDate , DateTime lastOptimizationDate )
 		{
 			this.genomeRepresentation( genome ,
-				firstOptimizationDate , lastOptimizationDate , -1, -1 );
+				firstOptimizationDate , lastOptimizationDate , -1, -1, -1, PortfolioType.ShortAndLong );
 		}
-		public GenomeRepresentation( Genome genome ,
+		
+    public GenomeRepresentation( Genome genome ,
 			DateTime firstOptimizationDate , DateTime lastOptimizationDate ,
 			int generationCounter )
 		{
 			this.genomeRepresentation( genome , firstOptimizationDate ,
-				lastOptimizationDate , generationCounter, -1 );
+				lastOptimizationDate , generationCounter, -1, -1, PortfolioType.ShortAndLong);
 		}
 		
 		public GenomeRepresentation( Genome genome ,
@@ -280,9 +298,26 @@ namespace QuantProject.Scripts.WalkForwardTesting.LinearCombination
 			int generationCounter, int eligibleTickers )
 		{
 			this.genomeRepresentation( genome , firstOptimizationDate ,
-				lastOptimizationDate , generationCounter, eligibleTickers );
+				lastOptimizationDate , generationCounter, eligibleTickers, -1, PortfolioType.ShortAndLong);
 		}
-		
+    
+    public GenomeRepresentation( Genome genome ,
+      DateTime firstOptimizationDate , DateTime lastOptimizationDate ,
+      int generationCounter, int eligibleTickers, int halfPeriodDays )
+    {
+      this.genomeRepresentation( genome , firstOptimizationDate ,
+        lastOptimizationDate , generationCounter, eligibleTickers, halfPeriodDays,
+        PortfolioType.ShortAndLong);
+    }
+    
+    public GenomeRepresentation( Genome genome ,
+      DateTime firstOptimizationDate , DateTime lastOptimizationDate ,
+      int generationCounter, int eligibleTickers, int halfPeriodDays, PortfolioType portfolioType )
+    {
+      this.genomeRepresentation( genome , firstOptimizationDate ,
+        lastOptimizationDate , generationCounter, eligibleTickers, halfPeriodDays, portfolioType);
+    }
+
 		#region GetObjectData
 		/// <summary>
 		/// serialize the set of serializable members for this class and base classes
