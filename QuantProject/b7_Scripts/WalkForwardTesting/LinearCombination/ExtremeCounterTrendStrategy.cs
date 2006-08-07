@@ -46,16 +46,19 @@ namespace QuantProject.Scripts.WalkForwardTesting.LinearCombination
 		private int numDaysForReturnCalculation;
     private int numOfClosesElapsed = 0;
     private int numOfDaysWithOpenPosition = 0;
+    private PortfolioType portfolioType;
 
 		public ExtremeCounterTrendStrategy( Account account ,
 			                              string[] signedTickers,
 			                              double[] weightsForSignedTickers,
-                                    int numDaysForReturnCalculation)
+                                    int numDaysForReturnCalculation,
+                                    PortfolioType portfolioType)
 		{
 			this.account = account;
 			this.signedTickers = signedTickers;
 			this.weightsForSignedTickers = weightsForSignedTickers;
       this.numDaysForReturnCalculation = numDaysForReturnCalculation;
+      this.portfolioType = portfolioType;
 		}
     
     public void MarketOpenEventHandler(
@@ -124,13 +127,23 @@ namespace QuantProject.Scripts.WalkForwardTesting.LinearCombination
     	{
     		if(lastHalfPeriodGain < 0.0)
     			this.marketCloseEventHandler_addOrders();
-    		else
+    		else if (lastHalfPeriodGain > 0.0 &&
+                 this.portfolioType == PortfolioType.ShortAndLong )
+        //if gain of the last half period is positive and
+        //original positions can be reversed        
     		{
     			SignedTicker.ChangeSignOfEachTicker(this.signedTickers);
-    			//short the portfolio
-    			try{this.marketCloseEventHandler_addOrders();}
-    			catch(Exception ex){ex = ex;}
-    			finally{SignedTicker.ChangeSignOfEachTicker(this.signedTickers);}
+    			//short the portfolio (short --> long; long --> short)
+    			try{
+            this.marketCloseEventHandler_addOrders();
+          }
+    			catch(Exception ex)
+          {
+            ex = ex;
+          }
+    			finally{
+            SignedTicker.ChangeSignOfEachTicker(this.signedTickers);
+          }
     		}
     	}
     }
@@ -148,6 +161,8 @@ namespace QuantProject.Scripts.WalkForwardTesting.LinearCombination
     public void MarketCloseEventHandler(
       Object sender , EndOfDayTimingEventArgs endOfDayTimingEventArgs )
     {
+      this.numOfClosesElapsed++;
+
       if(this.account.Transactions.Count == 0)
         this.account.AddCash(30000);
       
@@ -156,14 +171,11 @@ namespace QuantProject.Scripts.WalkForwardTesting.LinearCombination
       
       if(this.numOfDaysWithOpenPosition == this.numDaysForReturnCalculation)
           this.marketCloseEventHandler_closePositions();
-      
+     
       if(this.account.Portfolio.Count == 0 &&
-          (this.numOfClosesElapsed + 1) >= this.numDaysForReturnCalculation)
-        //portfolio is empty and previous closes can be now checked
-      	if(this.account.Portfolio.Count == 0)
+          this.numOfClosesElapsed >= this.numDaysForReturnCalculation)
+      //portfolio is empty and previous closes can be now checked
       		this.marketCloseEventHandler_openPositions((IndexBasedEndOfDayTimer)sender);
-      
-      this.numOfClosesElapsed++;
     }
 		
     public void OneHourAfterMarketCloseEventHandler( Object sender ,
