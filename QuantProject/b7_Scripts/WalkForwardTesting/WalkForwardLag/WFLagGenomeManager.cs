@@ -46,8 +46,6 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag
 
 		private int numberOfEligibleTickers;
 
-		private GeneticOptimizer currentGeneticOptimizer;
-
 		private WFLagCandidates wFLagCandidates;
 
 		public int GenomeSize
@@ -57,19 +55,11 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag
 				return this.numberOfDrivingPositions + this.numberOfTickersInPortfolio;
 			}
 		}
-		public int MinValueForGenes
-		{
-			get { return -this.numberOfEligibleTickers; }
-		}
-		public int MaxValueForGenes
-		{
-			get { return this.numberOfEligibleTickers - 1; }
-		}
-		public GeneticOptimizer CurrentGeneticOptimizer
-		{
-			get{ return this.currentGeneticOptimizer; }
-			set{ this.currentGeneticOptimizer = value; }
-		}
+//		public GeneticOptimizer CurrentGeneticOptimizer
+//		{
+//			get{ return this.currentGeneticOptimizer; }
+//			set{ this.currentGeneticOptimizer = value; }
+//		}
 
 		public WFLagGenomeManager(
 			DataTable eligibleTickers ,
@@ -86,12 +76,22 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag
 
 			this.numberOfEligibleTickers = eligibleTickers.Rows.Count;
 
-			GenomeManagement.SetRandomGenerator(QuantProject.ADT.ConstantsProvider.SeedForRandomGenerator);
+			GenomeManagement.SetRandomGenerator(
+				QuantProject.ADT.ConstantsProvider.SeedForRandomGenerator +
+				firstQuoteDate.Date.DayOfYear );
 
 			this.wFLagCandidates = new WFLagCandidates( this.eligibleTickers ,
 				this.firstQuoteDate , this.lastQuoteDate );
 		}
 
+		public int GetMinValueForGenes( int genePosition )
+		{
+			return -this.numberOfEligibleTickers;
+		}
+		public int GetMaxValueForGenes( int genePosition )
+		{
+			return this.numberOfEligibleTickers - 1;
+		}
 
 		public static string GetTicker( string signedTicker )
 		{
@@ -266,11 +266,11 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag
 		{
 			// in this implementation only one gene is mutated
 			// the new value has to be different from all the other genes of the genome
-			int newValueForGene = GenomeManagement.RandomGenerator.Next(
-				genome.MinValueForGenes ,
-				genome.MaxValueForGenes + 1 );
 			int genePositionToBeMutated =
 				GenomeManagement.RandomGenerator.Next( genome.Size ); 
+			int newValueForGene = GenomeManagement.RandomGenerator.Next(
+				genome.GetMinValueForGenes( genePositionToBeMutated ) ,
+				genome.GetMaxValueForGenes( genePositionToBeMutated ) + 1 );
 			while( GenomeManipulator.IsTickerContainedInGenome(
 				newValueForGene ,	genome )  )
 				// the portfolio, in this implementation, 
@@ -278,8 +278,8 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag
 				// for the same ticker
 			{
 				newValueForGene = GenomeManagement.RandomGenerator.Next(
-					genome.MinValueForGenes ,
-					genome.MaxValueForGenes + 1 );
+					genome.GetMinValueForGenes( genePositionToBeMutated ) ,
+					genome.GetMaxValueForGenes( genePositionToBeMutated ) + 1 );
 			}
 			GenomeManagement.MutateOneGene( genome , mutationRate ,
 				genePositionToBeMutated , newValueForGene );
@@ -349,15 +349,17 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag
 			// in this implementation new gene values must be different from
 			// the others already stored in the given genome
 			int returnValue =
-				GenomeManagement.RandomGenerator.Next(genome.MinValueForGenes,
-				genome.MaxValueForGenes + 1);
+				GenomeManagement.RandomGenerator.Next(
+				genome.GetMinValueForGenes( i ) ,
+				genome.GetMaxValueForGenes( i ) + 1);
 			while( GenomeManipulator.IsTickerContainedInGenome(returnValue,
 				genome) )
 				// the portfolio can't have a long position and a
 				// short one for the same ticker
 			{
-				returnValue = GenomeManagement.RandomGenerator.Next(genome.MinValueForGenes,
-					genome.MaxValueForGenes + 1);
+				returnValue = GenomeManagement.RandomGenerator.Next(
+					genome.GetMinValueForGenes( i ) ,
+					genome.GetMaxValueForGenes( i ) + 1 );
 			}
 			return returnValue;
 		}

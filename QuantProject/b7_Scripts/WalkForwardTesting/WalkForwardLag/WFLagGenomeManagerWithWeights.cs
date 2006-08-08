@@ -40,19 +40,19 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag
 			}
 		}
 
-		public int MinValueForGenes
-		{
-			get { return -this.numberOfEligibleTickersForDrivingWeightedPositions; }
-		}
-		public int MaxValueForGenes
-		{
-			get { return this.numberOfEligibleTickersForDrivingWeightedPositions - 1; }
-		}
-		public GeneticOptimizer CurrentGeneticOptimizer
-		{
-			get{ return this.currentGeneticOptimizer; }
-			set{ this.currentGeneticOptimizer = value; }
-		}
+//		public int MinValueForGenes
+//		{
+//			get { return -this.numberOfEligibleTickersForDrivingWeightedPositions; }
+//		}
+//		public int MaxValueForGenes
+//		{
+//			get { return this.numberOfEligibleTickersForDrivingWeightedPositions - 1; }
+//		}
+//		public GeneticOptimizer CurrentGeneticOptimizer
+//		{
+//			get{ return this.currentGeneticOptimizer; }
+//			set{ this.currentGeneticOptimizer = value; }
+//		}
 
 		/// <summary>
 		/// This class implements IGenomeManager, in order to find the
@@ -91,10 +91,27 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag
 
 			this.minimumPositionWeight = 0.2;	// TO DO this value should become a constructor parameter
 
+			GenomeManagement.SetRandomGenerator(
+				QuantProject.ADT.ConstantsProvider.SeedForRandomGenerator
+				+ this.firstOptimizationDate.DayOfYear );
+
 			this.wFLagCandidates = new WFLagCandidates(
 				this.eligibleTickersForDrivingWeightedPositions ,
 				this.firstOptimizationDate , this.lastOptimizationDate );
 		}
+		public int GetMinValueForGenes( int genePosition )
+		{
+			int minValueForGene = 0;
+			if ( genePosition % 2 == 0 )
+				// gene refers to a weight, not to a ticker
+				minValueForGene = -this.numberOfEligibleTickersForDrivingWeightedPositions;
+			return minValueForGene;
+		}
+		public int GetMaxValueForGenes( int genePosition )
+		{
+			return this.numberOfEligibleTickersForDrivingWeightedPositions - 1;
+		}
+
 		#region GetFitnessValue
 		private string[] getTickers( WeightedPositions weightedPositions )
 		{
@@ -298,9 +315,11 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag
 		#region getNormalizedWeightValues
 		private double getAdditionalWeight( int weightRelatedGeneValue )
 		{
-			double midrangeValue = ( this.MinValueForGenes + this.MaxValueForGenes ) / 2;
+			double midrangeValue = (
+				this.GetMinValueForGenes( 0 ) + this.GetMaxValueForGenes( 0 ) ) / 2;
 			double singleWeightFreeRange = 1 - this.minimumPositionWeight;
-			double scaleRange = Convert.ToDouble( this.MaxValueForGenes - this.MinValueForGenes );
+			double scaleRange = Convert.ToDouble(
+				this.GetMinValueForGenes( 0 ) - this.GetMaxValueForGenes( 0 ) );
 			double nonScaledAdditionalWeight = Convert.ToDouble( weightRelatedGeneValue ) -
 				midrangeValue;
 			double scaledAdditionalWeight =
@@ -443,21 +462,21 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag
 		}
 		#endregion
 		#region GetNewGeneValue
-		private int getMinGeneValue( int i )
+//		private int getMinGeneValue( int genePosition )
+//		{
+//			int minGeneValue = 0;
+//			if ( genePosition % 2 == 0 )
+//				minGeneValue = -this.numberOfEligibleTickersForDrivingWeightedPositions;
+//			return minGeneValue;
+//		}
+//		private int getMaxGeneValue( int i )
+//		{
+//			return this.MaxValueForGenes;
+//		}
+		public int GetNewGeneValue( Genome genome , int genePosition )
 		{
-			int minGeneValue = 0;
-			if ( i % 2 == 0 )
-				minGeneValue = this.MinValueForGenes;
-			return minGeneValue;
-		}
-		private int getMaxGeneValue( int i )
-		{
-			return this.MaxValueForGenes;
-		}
-		public int GetNewGeneValue( Genome genome , int i )
-		{
-			int minGeneValue = this.getMinGeneValue( i );
-			int maxGeneValue = this.getMaxGeneValue( i );
+			int minGeneValue = this.GetMinValueForGenes( genePosition );
+			int maxGeneValue = this.GetMaxValueForGenes( genePosition );
 			int returnValue =
 				GenomeManagement.RandomGenerator.Next(
 				minGeneValue , maxGeneValue + 1);
