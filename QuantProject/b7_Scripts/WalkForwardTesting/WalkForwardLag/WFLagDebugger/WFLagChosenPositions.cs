@@ -44,6 +44,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag.WFLagDebugger
 		private WeightedPositions drivingWeightedPositions;
 		private WeightedPositions portfolioWeightedPositions;
 		private DateTime lastOptimizationDate;
+		private int generation;
 
 		public WeightedPositions DrivingWeightedPositions
 		{
@@ -73,6 +74,13 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag.WFLagDebugger
 			}
 		}
 
+		/// <summary>
+		/// First generation of the genetic optimizer, when the best genome was created
+		/// </summary>
+		public int Generation
+		{
+			get { return this.generation; }
+		}
 		public WFLagChosenPositions( WFLagChosenTickers wFLagChosenTickers ,
 			DateTime lastOptimizationDate )
 		{
@@ -83,6 +91,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag.WFLagDebugger
 			this.drivingWeightedPositions = wFLagChosenTickers.DrivingWeightedPositions;
 			this.portfolioWeightedPositions = wFLagChosenTickers.PortfolioWeightedPositions;
 			this.lastOptimizationDate = lastOptimizationDate;
+			this.generation = wFLagChosenTickers.Generation;
 		}
 
 		#region deserialization related constructor and methods
@@ -147,9 +156,9 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag.WFLagDebugger
 		{
 			try
 			{
-//				this.portfolioWeightedPositions = new WeightedPositions();
-//				System.Type type = System.Type.GetType(
-//					"QuantProject.Scripts.WalkForwardTesting.WalkForwardLag.WeightedPositions" );
+				//				this.portfolioWeightedPositions = new WeightedPositions();
+				//				System.Type type = System.Type.GetType(
+				//					"QuantProject.Scripts.WalkForwardTesting.WalkForwardLag.WeightedPositions" );
 				this.portfolioWeightedPositions = (WeightedPositions)info.GetValue(
 					"portfolioWeightedPositions" , WeightedPositions.Type );
 			}
@@ -163,12 +172,26 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag.WFLagDebugger
 				//				portfolioWeightedPositions = this.getWeightedPositions( portfolioPositions );
 			}
 		}
+		private void deserializeGeneration(
+			SerializationInfo info , StreamingContext context )
+		{
+			try
+			{
+				this.generation = (int)info.GetValue(
+					"generation" , int.MaxValue.GetType() );
+			}
+			catch
+			{
+				this.generation = -9999;
+			}
+		}
 		private void deserializeThisClassMembers( SerializationInfo info , StreamingContext context )
 		{
 			this.lastOptimizationDate = (DateTime)info.GetValue( "lastOptimizationDate" ,
 				this.lastOptimizationDate.GetType() );
 			this.deserializeDrivingWeightedPositions( info , context );
 			this.deserializePortfolioWeightedPositions( info , context );
+			this.deserializeGeneration( info , context );
 		}
 		void ISerializable.GetObjectData(
 			SerializationInfo info, StreamingContext context) 
