@@ -53,6 +53,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag
 		private WeightedPositions portfolioWeightedPositions;
 		private DateTime firstOptimizationDate;
 		private DateTime lastOptimizationDate;
+		private int generation;
 
 //		public QPHashtable PortfolioPositions
 //		{
@@ -95,6 +96,13 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag
 			{
 				return this.lastOptimizationDate;
 			}
+		}
+		/// <summary>
+		/// First generation of the genetic optimizer, when the best genome was found
+		/// </summary>
+		public int Generation
+		{
+			get { return this.generation; }
 		}
 		public WFLagChosenTickers(
 			int numberOfDrivingPositions ,
@@ -171,6 +179,9 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag
 
 			this.setSignedTickers_setTickersFromGenome(
 				genomeManager , geneticOptimizer.BestGenome );
+
+			this.generation = geneticOptimizer.BestGenome.Generation;
+
 		}
 		#endregion
 	}

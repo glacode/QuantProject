@@ -60,6 +60,14 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag.WFLagDebugger
 		{
 			get { return this.wFLagLog.InSampleDays; }
 		}
+		/// <summary>
+		/// The number of the genetic optimizer's generation
+		/// when the corresponding genome was created
+		/// </summary>
+		public int Generation
+		{
+			get { return this.wFLagChosenPositions.Generation; }
+		}
 		public double InSampleSharpeRatio
 		{
 			get { return this.inSampleSharpeRatio; }
