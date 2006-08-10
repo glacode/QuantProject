@@ -50,7 +50,7 @@ namespace QuantProject.ADT.Optimizing.Genetic
     private int populationSize;
     private int generationNumber;
     private int genomeSize;
-    private double totalFitness;
+    private double totalSpecialFitnessForRouletteSelection;
     private Genome bestGenome;
     private Genome worstGenome;
     private IGenomeManager genomeManager;
@@ -59,7 +59,7 @@ namespace QuantProject.ADT.Optimizing.Genetic
     private ArrayList currentGeneration;
     private ArrayList currentEliteToTransmitToNextGeneration;
     private ArrayList nextGeneration;
-    private ArrayList cumulativeFitnessList;
+    private ArrayList cumulativeSpecialFitnessListForRouletteSelection;
 	
     private int generationCounter;
     private double averageRandomFitness;
@@ -209,7 +209,7 @@ namespace QuantProject.ADT.Optimizing.Genetic
     	this.generationNumber = generationNumber;
     	this.genomeSize = this.genomeManager.GenomeSize;
       this.genomeComparer = new GenomeComparer();
-      this.cumulativeFitnessList = new ArrayList(this.PopulationSize);
+      this.cumulativeSpecialFitnessListForRouletteSelection = new ArrayList(this.PopulationSize);
       this.currentGeneration = new ArrayList(this.PopulationSize);
       int eliteNumber = (int)(this.ElitismRate*(double)this.PopulationSize);
       this.currentEliteToTransmitToNextGeneration = new ArrayList(eliteNumber);
@@ -226,7 +226,7 @@ namespace QuantProject.ADT.Optimizing.Genetic
     public void CalculateRandomFitness()
     {
       this.createFirstGeneration(false);
-      this.averageRandomFitness = this.totalFitness/this.currentGeneration.Count;
+      this.averageRandomFitness = this.totalSpecialFitnessForRouletteSelection/this.currentGeneration.Count;
       this.standardDeviationOfRandomFitness = this.calculateRandomFitness_getStdDevOfRandomFitness();
     }
     /// <summary>
@@ -286,11 +286,12 @@ namespace QuantProject.ADT.Optimizing.Genetic
     private bool IsConvergenceReached()
     {
       bool returnValue = false;
-      double averageFitnessOfCurrentGeneration = this.totalFitness / this.populationSize;
-      double bestFitnessReachedUntilNow = this.BestGenome.Fitness;
+      double averageSpecialFitness = this.totalSpecialFitnessForRouletteSelection / this.populationSize;
+      double bestSpecialFitnessReachedUntilNow = this.BestGenome.Fitness + 
+      		Math.Abs(((Genome)this.currentGeneration[0]).Fitness);
 
-      if (averageFitnessOfCurrentGeneration >= 
-                            this.minConvergenceRate * bestFitnessReachedUntilNow )
+      if (averageSpecialFitness >= 
+                            this.minConvergenceRate * bestSpecialFitnessReachedUntilNow )
           returnValue = true;
       
       return returnValue;
@@ -306,8 +307,8 @@ namespace QuantProject.ADT.Optimizing.Genetic
       if(this.NewGeneration != null)
 			  this.NewGeneration( this , new NewGenerationEventArgs(
 				  this.currentGeneration , this.generationCounter , this.generationNumber ) );
-      this.calculateTotalFitness();
-      this.updateCumulativeFitnessList();
+      this.calculateTotalSpecialFitnessForRouletteSelection();
+      this.updateCumulativeSpecialFitnessListForRouletteSelection();
       this.setInitialBestAndWorstGenomes();
       
       if (showOutputToConsole)
@@ -316,12 +317,30 @@ namespace QuantProject.ADT.Optimizing.Genetic
     
     private void showOutputToConsole()
     {
-      System.Console.WriteLine("\n\n\n\n*_*_*_*_*_*_*_*_*_*_*\n\nGeneration " + this.generationCounter +"\n");
+      string genes = "";
+      //System.Console.WriteLine("\n*_*_*_*_*_*_*_*_*_*_*\n\nGeneration " + this.generationCounter +"\n");
+//      string pathFile = System.Configuration.ConfigurationSettings.AppSettings["GenericArchive"] +
+//                    "\\GenomesThroughoutGenerations.txt";
+//  	  System.IO.StreamWriter w = System.IO.File.AppendText(pathFile);
       for(int i = 0; i < this.populationSize; i++)
       {
-        System.Console.WriteLine((string)((Genome)this.currentGeneration[i]).Meaning +
-          "--> " + ((Genome)this.currentGeneration[i]).Fitness);
+        int genomeNumber = i + 1;
+      	foreach(int gene in ((Genome)this.currentGeneration[i]).Genes() )
+            genes = genes + " " + gene.ToString();
+				System.Console.WriteLine("\r\n" + this.GenerationCounter + " " + genomeNumber + " " + genes + " " + 
+                ((Genome)this.currentGeneration[i]).Fitness + " " +
+                ((Genome)this.currentGeneration[i]).HasBeenChanged.ToString() + " " +
+                ((Genome)this.currentGeneration[i]).HasBeenCloned.ToString() + " " +
+                ((Genome)this.currentGeneration[i]).Generation);
+//        w.Write("\r\n" + this.GenerationCounter + " " + genomeNumber + " " + genes + " " + 
+//                ((Genome)this.currentGeneration[i]).Fitness + " " +
+//                ((Genome)this.currentGeneration[i]).HasBeenChanged.ToString() + " " +
+//                ((Genome)this.currentGeneration[i]).HasBeenCloned.ToString() + " " +
+//                ((Genome)this.currentGeneration[i]).Generation);
+        genes = "";
       }
+//      w.Flush();
+//      w.Close();
       //Console.WriteLine("Press enter key to continue ...");
 			//Console.ReadLine();
     }
@@ -333,7 +352,7 @@ namespace QuantProject.ADT.Optimizing.Genetic
     /// </summary>
     private int rouletteSelection()
     {
-      double randomFitness = this.totalFitness *(double)this.random.Next(1,1001)/1000;
+      double randomFitness = this.totalSpecialFitnessForRouletteSelection *(double)this.random.Next(1,1001)/1000;
       int idx = -1;
       int first = 0;
       int last = this.populationSize -1;
@@ -342,45 +361,46 @@ namespace QuantProject.ADT.Optimizing.Genetic
       //  ArrayList's BinarySearch is for exact values only
       while (idx == -1 && first <= last)
       {
-        if (randomFitness < (double)this.cumulativeFitnessList[mid])
+        if (randomFitness < (double)this.cumulativeSpecialFitnessListForRouletteSelection[mid])
         {
           last = mid;
         }
-        else if (randomFitness >= (double)this.cumulativeFitnessList[mid])
+        else if (randomFitness >= (double)this.cumulativeSpecialFitnessListForRouletteSelection[mid])
         {
           first = mid;
         }
         mid = (first + last)/2;
         if ((last - first) == 1) 
-          idx = last;
+          idx = last;//it's time to exit from the while loop
        }
       return idx;
     }
 
 
     /// <summary>
-    /// Calculate total fitness for current generation
+    /// Calculate total special fitness for current generation
     /// </summary>
-    private void calculateTotalFitness()
+    private void calculateTotalSpecialFitnessForRouletteSelection()
     {
-      this.totalFitness = 0.0;
-      
+      this.totalSpecialFitnessForRouletteSelection = 0.0;
+      double worstSpecialFitnessForRouletteSelection = 
+      	Math.Abs(((Genome)this.currentGeneration[0]).Fitness);
       foreach(Genome g in this.currentGeneration)
-        this.totalFitness += g.Fitness;
+        this.totalSpecialFitnessForRouletteSelection += g.Fitness + 
+      																									worstSpecialFitnessForRouletteSelection;
             
     }
-    
-    /// <summary>
-    /// Rank current generation and sort in order of fitness.
-    /// </summary>
-    private void updateCumulativeFitnessList()
+        
+    private void updateCumulativeSpecialFitnessListForRouletteSelection()
     {
-      double cumulativeFitness = 0.0;
-      this.cumulativeFitnessList.Clear();
+      double cumulativeSpecialFitness = 0.0;
+      this.cumulativeSpecialFitnessListForRouletteSelection.Clear();
       for (int i = 0; i < this.populationSize; i++)
       {
-        cumulativeFitness += ((Genome)this.currentGeneration[i]).Fitness;
-        this.cumulativeFitnessList.Add(cumulativeFitness);
+        cumulativeSpecialFitness += 
+        		((Genome)this.currentGeneration[i]).Fitness +
+        	Math.Abs(((Genome)this.currentGeneration[0]).Fitness);
+        this.cumulativeSpecialFitnessListForRouletteSelection.Add(cumulativeSpecialFitness);
       }
     }
     private void createGenomes()
@@ -458,8 +478,8 @@ namespace QuantProject.ADT.Optimizing.Genetic
 			if(this.NewGeneration != null)
 			  this.NewGeneration( this , new NewGenerationEventArgs(
 				  this.currentGeneration , this.generationCounter , this.generationNumber ) );
-      this.calculateTotalFitness();
-      this.updateCumulativeFitnessList();
+			this.calculateTotalSpecialFitnessForRouletteSelection();
+      this.updateCumulativeSpecialFitnessListForRouletteSelection();
       
       this.generationCounter++;
     }
@@ -491,7 +511,7 @@ namespace QuantProject.ADT.Optimizing.Genetic
     {
       this.currentGeneration.Clear();
       int numOfNextGeneration = this.nextGeneration.Count;
-        // Note that next generation is greater than current:
+      // Note that next generation is greater than current:
       // due to the population size, genomes with lowest fitness are abandoned
       for (int i = 1 ; i <= this.populationSize; i++)
         this.currentGeneration.Add(this.nextGeneration[numOfNextGeneration - i]);
