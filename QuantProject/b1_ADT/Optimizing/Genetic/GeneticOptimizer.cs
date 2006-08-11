@@ -316,29 +316,30 @@ namespace QuantProject.ADT.Optimizing.Genetic
     {
       string genes = "";
       //System.Console.WriteLine("\n*_*_*_*_*_*_*_*_*_*_*\n\nGeneration " + this.generationCounter +"\n");
-      string pathFile = System.Configuration.ConfigurationSettings.AppSettings["GenericArchive"] +
-                    "\\GenomesThroughoutGenerations.txt";
-  	  System.IO.StreamWriter w = System.IO.File.AppendText(pathFile);
+//      string pathFile = System.Configuration.ConfigurationSettings.AppSettings["GenericArchive"] +
+//                    "\\GenomesThroughoutGenerations.txt";
+//  	  System.IO.StreamWriter w = System.IO.File.AppendText(pathFile);
       for(int i = 0; i < this.populationSize; i++)
       {
         int genomeNumber = i + 1;
       	foreach(int gene in ((Genome)this.currentGeneration[i]).Genes() )
             genes = genes + " " + gene.ToString();
-//				System.Console.WriteLine("\r\n" + this.GenerationCounter + " " + genomeNumber + " " + genes + " " + 
-//                ((Genome)this.currentGeneration[i]).Fitness + " " +
-//                ((Genome)this.currentGeneration[i]).HasBeenChanged.ToString() + " " +
-//                ((Genome)this.currentGeneration[i]).HasBeenCloned.ToString() + " " +
-//                ((Genome)this.currentGeneration[i]).Generation);
-        w.Write("\r\n" + this.GenerationCounter + " " + genomeNumber + " " + genes + " " + 
+				System.Console.WriteLine("\r\n" + this.GenerationCounter + " " + genomeNumber + " " + genes + " " + 
                 ((Genome)this.currentGeneration[i]).Fitness + " " +
                 ((Genome)this.currentGeneration[i]).HasBeenChanged.ToString() + " " +
                 ((Genome)this.currentGeneration[i]).HasBeenCloned.ToString() + " " +
                 ((Genome)this.currentGeneration[i]).Generation + " " +
-                 this.BestGenome.Fitness);
+                   this.BestGenome.Fitness);
+//        w.Write("\r\n" + this.GenerationCounter + " " + genomeNumber + " " + genes + " " + 
+//                ((Genome)this.currentGeneration[i]).Fitness + " " +
+//                ((Genome)this.currentGeneration[i]).HasBeenChanged.ToString() + " " +
+//                ((Genome)this.currentGeneration[i]).HasBeenCloned.ToString() + " " +
+//                ((Genome)this.currentGeneration[i]).Generation + " " +
+//                 this.BestGenome.Fitness);
         genes = "";
       }
-      w.Flush();
-      w.Close();
+//      w.Flush();
+//      w.Close();
       //Console.WriteLine("Press enter key to continue ...");
 			//Console.ReadLine();
     }
