@@ -257,27 +257,26 @@ namespace QuantProject.ADT.Optimizing.Genetic
     public void Run(bool showOutputToConsole)
     {
       //this.run_calculateRandomFitness(); to be tested yet
+      if (this.genomeSize == 0 || this.genomeSize < 0)
+        throw new IndexOutOfRangeException("Genome size not set");
       this.createFirstGeneration(showOutputToConsole);
       if(this.keepOnRunningUntilConvergenceIsReached)
       //The GO keeps on generating new population until convergence is reached
       {
         for (int i = 0; !this.IsConvergenceReached(); i++)
-        {
-        	this.generateNewPopulation(showOutputToConsole);
-        }
+         	this.generateNewPopulation(showOutputToConsole);
       }
       else // the GO simply generates the given number of populations and then stops
       {
         for (int i = 0; i < this.generationNumber; i++)
-        {
           this.generateNewPopulation(showOutputToConsole);
-        }
       }
     }
     
     private void generateNewPopulation(bool showOutputToConsole)
     {
     	this.createNextGeneration();
+      this.generationCounter++;
       this.updateBestGenomeFoundInRunning((Genome)this.currentGeneration[populationSize-1]);
       this.updateWorstGenomeFoundInRunning((Genome)this.currentGeneration[0]);
       if (showOutputToConsole)
@@ -295,19 +294,26 @@ namespace QuantProject.ADT.Optimizing.Genetic
       return returnValue;
     }
 
-    private void createFirstGeneration(bool showOutputToConsole)
+    private void sortCurrentGenerationAndFireNewGenerationEvent()
     {
-      if (this.genomeSize == 0 || this.genomeSize < 0)
-        throw new IndexOutOfRangeException("Genome size not set");
-      this.createGenomes();
       this.currentGeneration.Sort(this.genomeComparer);
       if(this.NewGeneration != null)
-			  this.NewGeneration( this , new NewGenerationEventArgs(
-				  this.currentGeneration , this.generationCounter , this.generationNumber ) );
+        this.NewGeneration( this , new NewGenerationEventArgs(
+          this.currentGeneration , this.generationCounter , this.generationNumber ) );
+    }
+
+    private void setSpecialFitnessForRouletteSelection()
+    {
       this.calculateTotalSpecialFitnessForRouletteSelectionAndPlainTotalFitness();
       this.updateCumulativeSpecialFitnessListForRouletteSelection();
+    }
+
+    private void createFirstGeneration(bool showOutputToConsole)
+    {
+      this.createGenomes();
+      this.sortCurrentGenerationAndFireNewGenerationEvent();
       this.setInitialBestAndWorstGenomes();
-      
+      this.setSpecialFitnessForRouletteSelection();
       if (showOutputToConsole)
         this.showOutputToConsole();
     }
@@ -420,21 +426,18 @@ namespace QuantProject.ADT.Optimizing.Genetic
       }
     }
 
-    private void setCurrentEliteToTransmitToNextGeneration()
+    private void createNextGeneration_transmitEliteToNextGeneration()
     {
       this.currentEliteToTransmitToNextGeneration.Clear();
       
       for(int i = populationSize - 1;
-              i >=(populationSize - this.elitismRate*this.populationSize - 1);
-              i--)
+        i >=(populationSize - this.elitismRate*this.populationSize - 1);
+        i--)
       {
-      	if(this.currentGeneration[i] is Genome)
-      		this.currentEliteToTransmitToNextGeneration.Add((Genome)this.currentGeneration[i]);
+        if(this.currentGeneration[i] is Genome)
+          this.currentEliteToTransmitToNextGeneration.Add((Genome)this.currentGeneration[i]);
       }
-    }
-
-    private void transmitEliteToNextGeneration()
-    {
+      
       for(int i = 0;
           i < this.currentEliteToTransmitToNextGeneration.Count;
           i++)
@@ -444,62 +447,53 @@ namespace QuantProject.ADT.Optimizing.Genetic
       }
     }
 
-    private void createNextGeneration()
+    private void createNextGeneration_addChildsWithRouletteSelection()
     {
-      this.nextGeneration.Clear();
-
       for (int i = 0 ; i < this.populationSize ; i+=2)
       {
         int indexForParent1 = this.rouletteSelection();
         int indexForParent2 = this.rouletteSelection();
-        
         Genome parent1, parent2;
-      	Genome[] childs;
+        Genome[] childs;
         parent1 = ((Genome) this.currentGeneration[indexForParent1]);
         parent2 = ((Genome) this.currentGeneration[indexForParent2]);
         if ((double)this.random.Next(1,1001)/1000 < this.crossoverRate)
         {
           childs = this.genomeManager.GetChilds(parent1, parent2);
-         }
+        }
         else
         {//if the crossover doesn't take place there are only
-        //two childs, identical to parents
+          //two childs, identical to parents
           childs = new Genome[2];
           childs[0] = parent1.Clone();
           childs[1] = parent2.Clone();
         }
-        foreach(Genome g in childs){
-        	this.nextGeneration.Add(g);
-        }
+        foreach(Genome g in childs)
+          this.nextGeneration.Add(g);
       }
-      this.setCurrentEliteToTransmitToNextGeneration();
-      this.transmitEliteToNextGeneration();
-      
-      this.mutateGenomes(this.nextGeneration);
-      this.calculateFitnessAndMeaningForAllGenomes(this.nextGeneration);
-      this.nextGeneration.Sort(this.genomeComparer);
+    }
+
+    private void createNextGeneration()
+    {
+      this.nextGeneration.Clear();
+      this.createNextGeneration_addChildsWithRouletteSelection();
+      this.createNextGeneration_transmitEliteToNextGeneration();
+      this.mutateGenomes();
+      this.calculateFitnessAndMeaningForAllGenomes();
       this.updateCurrentGeneration();
-      this.currentGeneration.Sort(this.genomeComparer);
-			if(this.NewGeneration != null)
-			  this.NewGeneration( this , new NewGenerationEventArgs(
-				  this.currentGeneration , this.generationCounter , this.generationNumber ) );
-			this.calculateTotalSpecialFitnessForRouletteSelectionAndPlainTotalFitness();
-      this.updateCumulativeSpecialFitnessListForRouletteSelection();
-      
-      this.generationCounter++;
+      this.sortCurrentGenerationAndFireNewGenerationEvent();
+      this.setSpecialFitnessForRouletteSelection();
     }
     
-    //mutate all genomes of the given population, according to the mutation rate
-    private void mutateGenomes(ArrayList populationOfGenomes)
+    private void mutateGenomes()
     {
-      foreach(Genome g in populationOfGenomes)
+      foreach(Genome g in this.nextGeneration)
          this.genomeManager.Mutate(g,this.MutationRate);
     }
     
-    //calculate Fitness and Meaning for each genome in populationOfGenomes
-    private void calculateFitnessAndMeaningForAllGenomes(ArrayList populationOfGenomes)
+    private void calculateFitnessAndMeaningForAllGenomes()
     {
-      foreach(Genome g in populationOfGenomes)
+      foreach(Genome g in this.nextGeneration)
       {
         if(!g.HasBeenCloned || g.HasBeenChanged)
         //if it has been cloned and it has not been changed,
@@ -511,9 +505,10 @@ namespace QuantProject.ADT.Optimizing.Genetic
         }
       }
     }
-
+    
     private void updateCurrentGeneration()
     {
+      this.nextGeneration.Sort(this.genomeComparer);
       this.currentGeneration.Clear();
       int numOfNextGeneration = this.nextGeneration.Count;
       // Note that next generation is greater than current:
