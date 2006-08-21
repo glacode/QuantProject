@@ -2,7 +2,7 @@
 QuantProject - Quantitative Finance Library
 
 WFLagGenomeManager.cs
-Copyright (C) 2003 
+Copyright (C) 2003
 Glauco Siliprandi
 
 This program is free software; you can redistribute it and/or
@@ -26,122 +26,143 @@ using System.Data;
 
 using QuantProject.ADT.Optimizing.Genetic;
 using QuantProject.ADT.Statistics;
-using QuantProject.Data.DataTables;
-using QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios;
+using QuantProject.Business.Strategies;
 
 namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag
 {
 	/// <summary>
 	/// This class implements IGenomeManager, in order to find the
 	/// best driving position group and the best
-	/// portfolio position group with respect to the lag strategy
+	/// portfolio position group with respect to the lag strategy.
+	/// Weights are NOT used
 	/// </summary>
 	public class WFLagGenomeManager : IGenomeManager
 	{
-		private DataTable eligibleTickers;
-		private DateTime firstQuoteDate;
-		private DateTime lastQuoteDate;
 		private int numberOfDrivingPositions;
 		private int numberOfTickersInPortfolio;
+		private int numberOfEligibleTickersForDrivingWeightedPositions;
+		private DataTable eligibleTickersForDrivingWeightedPositions;
+		private DataTable eligibleTickersForPortfolioWeightedPositions;
+		private DateTime firstOptimizationDate;
+		private DateTime lastOptimizationDate;
 
-		private int numberOfEligibleTickers;
+		private double minimumPositionWeight;
 
 		private WFLagCandidates wFLagCandidates;
+
 
 		public int GenomeSize
 		{
 			get
 			{
-				return this.numberOfDrivingPositions + this.numberOfTickersInPortfolio;
+				return ( this.numberOfDrivingPositions + this.numberOfTickersInPortfolio );
 			}
 		}
+
+//		public int MinValueForGenes
+//		{
+//			get { return -this.numberOfEligibleTickersForDrivingWeightedPositions; }
+//		}
+//		public int MaxValueForGenes
+//		{
+//			get { return this.numberOfEligibleTickersForDrivingWeightedPositions - 1; }
+//		}
 //		public GeneticOptimizer CurrentGeneticOptimizer
 //		{
 //			get{ return this.currentGeneticOptimizer; }
 //			set{ this.currentGeneticOptimizer = value; }
 //		}
 
+		/// <summary>
+		/// This class implements IGenomeManager, in order to find the
+		/// best driving position group and the best
+		/// portfolio position group with respect to the lag strategy.
+		/// Weighted positions are used for both the driving positions
+		/// and the portfolio positions
+		/// </summary>
+		/// <param name="eligibleTickersForDrivingWeightedPositions">weighted positions
+		/// for driving positions will be chosen among these tickers</param>
+		/// <param name="eligibleTickersForPortfolioWeightedPositions">weighted positions
+		/// for portfolio positions will be chosen among these tickers</param>
+		/// <param name="firstOptimizationDate"></param>
+		/// <param name="lastQuoteDate"></param>
+		/// <param name="numberOfDrivingPositions"></param>
+		/// <param name="numberOfTickersInPortfolio"></param>
 		public WFLagGenomeManager(
-			DataTable eligibleTickers ,
-			DateTime firstQuoteDate ,
-			DateTime lastQuoteDate ,
+			DataTable eligibleTickersForDrivingWeightedPositions ,
+			DataTable eligibleTickersForPortfolioWeightedPositions ,
+			DateTime firstOptimizationDate ,
+			DateTime lastOptimizationDate ,
 			int numberOfDrivingPositions ,
-			int numberOfTickersInPortfolio )
+			int numberOfTickersInPortfolio ,
+			int seedForRandomGenerator )
+
 		{
-			this.eligibleTickers = eligibleTickers;
-			this.firstQuoteDate = firstQuoteDate;
-			this.lastQuoteDate = lastQuoteDate;
 			this.numberOfDrivingPositions = numberOfDrivingPositions;
 			this.numberOfTickersInPortfolio = numberOfTickersInPortfolio;
+			this.numberOfEligibleTickersForDrivingWeightedPositions =
+				eligibleTickersForDrivingWeightedPositions.Rows.Count;
+			this.eligibleTickersForDrivingWeightedPositions =
+				eligibleTickersForDrivingWeightedPositions;
+			this.eligibleTickersForPortfolioWeightedPositions =
+				eligibleTickersForPortfolioWeightedPositions;
+			this.firstOptimizationDate = firstOptimizationDate;
+			this.lastOptimizationDate = lastOptimizationDate;
 
-			this.numberOfEligibleTickers = eligibleTickers.Rows.Count;
+			this.minimumPositionWeight = 0.2;	// TO DO this value should become a constructor parameter
 
-			GenomeManagement.SetRandomGenerator(
-				QuantProject.ADT.ConstantsProvider.SeedForRandomGenerator +
-				firstQuoteDate.Date.DayOfYear );
+//			GenomeManagement.SetRandomGenerator(
+//				QuantProject.ADT.ConstantsProvider.SeedForRandomGenerator
+//				+ this.firstOptimizationDate.DayOfYear );
+//			GenomeManagement.SetRandomGenerator(
+//				11 );
+			GenomeManagement.SetRandomGenerator( seedForRandomGenerator );
 
-			this.wFLagCandidates = new WFLagCandidates( this.eligibleTickers ,
-				this.firstQuoteDate , this.lastQuoteDate );
+			this.wFLagCandidates = new WFLagCandidates(
+				this.eligibleTickersForDrivingWeightedPositions ,
+				this.firstOptimizationDate , this.lastOptimizationDate );
 		}
-
 		public int GetMinValueForGenes( int genePosition )
 		{
-			return -this.numberOfEligibleTickers;
+			int minValueForGene =
+				-this.numberOfEligibleTickersForDrivingWeightedPositions;
+			return minValueForGene;
 		}
 		public int GetMaxValueForGenes( int genePosition )
 		{
-			return this.numberOfEligibleTickers - 1;
-		}
-
-		public static string GetTicker( string signedTicker )
-		{
-			string returnValue;
-			if ( signedTicker.IndexOf( "-" ) == 0 )
-				returnValue = signedTicker.Substring( 1 , signedTicker.Length - 1 );
-			else
-				returnValue = signedTicker;
-			return returnValue;
+			return this.numberOfEligibleTickersForDrivingWeightedPositions - 1;
 		}
 
 		#region GetFitnessValue
-		#region getFitnessValue_getLinearCombinationReturns
-		private ArrayList getEnumeratedSignedTickers(
-			ICollection signedTickers )
+		private string[] getTickers( WeightedPositions weightedPositions )
 		{
-			ArrayList enumeratedSignedTickers = new ArrayList();
-			foreach ( string signedTicker in signedTickers )
-				enumeratedSignedTickers.Add( signedTicker );
-			return enumeratedSignedTickers;
-		}
-		private ArrayList getTickers( ICollection signedTickers )
-		{
-			ArrayList tickers = new ArrayList();
-			foreach ( string signedTicker in signedTickers )
-				tickers.Add( WFLagGenomeManager.GetTicker( signedTicker ) );
+			string[] tickers = new string[ weightedPositions.Count ];
+			for ( int i = 0 ; i < weightedPositions.Count ; i++ )
+			{
+				WeightedPosition weightedPosition = weightedPositions.GetWeightedPosition( i );
+				tickers[ i ] = weightedPosition.Ticker;
+			}
 			return tickers;
 		}
-		private float[] getMultipliers( ArrayList signedTickers )
+		private float[] getMultipliers( WeightedPositions weightedPositions )
 		{
-			float[] multipliers = new float[ signedTickers.Count ];
-			int i = 0;
-			foreach ( string signedTicker in signedTickers )
+			float[] multipliers = new float[ weightedPositions.Count ];
+			for ( int i = 0 ; i < weightedPositions.Count ; i++ )
 			{
-				float multiplier = 1F;
-				if ( signedTicker.IndexOf( "-" ) == 0 )
-					multiplier = -1F;
-				multipliers[ i ] = multiplier;
-				i++;
+				WeightedPosition weightedPosition = weightedPositions.GetWeightedPosition( i );
+				multipliers[ i ] = Convert.ToSingle( weightedPosition.Weight );
 			}
 			return multipliers;
 		}
+
 		private double[] getFitnessValue_getLinearCombinationReturns(
-			ICollection signedTickers )
+			WeightedPositions weightedPositions )
 		{
-			ArrayList enumeratedSignedTicker =
-				this.getEnumeratedSignedTickers( signedTickers );
-			int numberOfSignedTickers = enumeratedSignedTicker.Count;
-			ArrayList tickers = this.getTickers( enumeratedSignedTicker );
-			float[] multipliers = this.getMultipliers( enumeratedSignedTicker );
+//			ArrayList enumeratedweightedPositions =
+//				this.getEnumeratedWeightedPositions( weightedPositions );
+			int numberOfWeightedPositions = weightedPositions.Count;
+			string[] tickers = this.getTickers( weightedPositions );
+			float[] multipliers = this.getMultipliers( weightedPositions );
 			// arrays of close to close returns, one for each signed ticker
 			float[][] tickersReturns =
 				this.wFLagCandidates.GetTickersReturns( tickers );
@@ -151,19 +172,15 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag
 				// computes linearCombinationReturns[ i ]
 			{
 				linearCombinationReturns[ i ] = 0;
-				for ( int j=0 ; j < numberOfSignedTickers ; j++ )
+				for ( int j=0 ; j < weightedPositions.Count ; j++ )
 				{
-					double signedTickerReturn =
+					double weightedPositionReturn =
 						tickersReturns[ j ][ i ] * multipliers[ j ];
-					// the investment is assumed to be equally divided for each
-					// signed ticker
-					linearCombinationReturns[ i ] += signedTickerReturn /
-						numberOfSignedTickers;
+					linearCombinationReturns[ i ] += weightedPositionReturn;
 				}
 			}
 			return linearCombinationReturns;
 		}
-		#endregion
 		private double[] getFitnessValue_getStrategyReturn(
 			double[] drivingPositionsReturns , double[] portfolioPositionsReturns )
 		{
@@ -187,63 +204,31 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag
 			return strategyReturns;
 
 		}
-		private double[] getFinalReturns( double[] strategyReturns ,
-			int finalLength )
-		{
-			double[] finalReturns = new double[ finalLength ];
-			for ( int i = strategyReturns.Length - finalLength ;
-				i < strategyReturns.Length ; i++ )
-				finalReturns[ i - ( strategyReturns.Length - finalLength ) ] =
-					strategyReturns[ i ];
-			return finalReturns;
-		}
-		private double getFitnessValue_sharpeRatio(
-			double[] returns )
-		{
-			double fitnessValue =
-				AdvancedFunctions.GetSharpeRatio(
-				returns );
-			return fitnessValue;
-		}
-		private double getFitnessValue_withGoodFinal(
-			double[] strategyReturns )
-		{
-			double[] secondHalfStrategyReturns =
-				this.getFinalReturns( strategyReturns ,
-				strategyReturns.Length/2 );
-			double[] fourthQuorterStrategyReturns =
-				this.getFinalReturns( strategyReturns ,
-				strategyReturns.Length/4 );
-			double fitnessValue =
-				this.getFitnessValue_sharpeRatio( strategyReturns ) *
-				this.getFitnessValue_sharpeRatio( secondHalfStrategyReturns ) *
-				this.getFitnessValue_sharpeRatio( fourthQuorterStrategyReturns );
-			return fitnessValue;
-		}
-
 		private double getFitnessValue( double[] strategyReturns )
 		{
 			double fitnessValue =
 				AdvancedFunctions.GetSharpeRatio(
 				strategyReturns );
-//			double fitnessValue =
-//				AdvancedFunctions.GetExpectancyScore(
-//				strategyReturns );
+//						double fitnessValue =
+//							AdvancedFunctions.GetExpectancyScore(
+//							strategyReturns );
 			//			double fitnessValue =
-//				this.getFitnessValue_withGoodFinal( strategyReturns );
+			//				this.getFitnessValue_withGoodFinal( strategyReturns );
 			//			double fitnessValue =
 			//				BasicFunctions.GetSimpleAverage( strategyReturns ) /
 			//				( Math.Pow( BasicFunctions.GetStdDev( strategyReturns ) , 1.3 ) );
 			return fitnessValue;
 		}
-		private double getFitnessValue( WFLagSignedTickers wFLagSignedTickers )
+
+		public double GetFitnessValue(
+			WFLagWeightedPositions wFLagWeightedPositions )
 		{
 			double[] drivingPositionsReturns =
 				this.getFitnessValue_getLinearCombinationReturns(
-				wFLagSignedTickers.DrivingPositions.Keys );
+				wFLagWeightedPositions.DrivingWeightedPositions );
 			double[] portfolioPositionsReturns =
 				this.getFitnessValue_getLinearCombinationReturns(
-				wFLagSignedTickers.PortfolioPositions.Keys );
+				wFLagWeightedPositions.PortfolioWeightedPositions );
 			double[] strategyReturns =
 				this.getFitnessValue_getStrategyReturn(
 				drivingPositionsReturns , portfolioPositionsReturns );
@@ -252,117 +237,274 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag
 		}
 		public double GetFitnessValue( Genome genome )
 		{
-			WFLagSignedTickers wFLagSignedTickers =
-				( WFLagSignedTickers )this.Decode( genome );
-			return this.getFitnessValue( wFLagSignedTickers );
+			double fitnessValue;
+			WFLagWeightedPositions wFLagWeightedPositions =
+				( WFLagWeightedPositions )this.Decode( genome );
+			int genomeLength = genome.Genes().Length;
+			int decodedWeightedPositions =
+				wFLagWeightedPositions.DrivingWeightedPositions.Count +
+				wFLagWeightedPositions.PortfolioWeightedPositions.Count;
+			if ( decodedWeightedPositions < genomeLength )
+				// genome contains a duplicate gene either for
+				// driving positions or for portfolio positions
+				//fitnessValue = double.MinValue;
+				fitnessValue = -0.2;
+			else
+				// all driving positions genes are distinct and
+				// all portfolio positions genes are distinct
+				fitnessValue =
+					this.GetFitnessValue( wFLagWeightedPositions );
+			return fitnessValue;
 		}
 		#endregion
 		public Genome[] GetChilds( Genome parent1 , Genome parent2 )
 		{
 			return
-				GenomeManipulator.MixGenesWithoutDuplicates(parent1, parent2);
+				GenomeManagement.AlternateFixedCrossover(parent1, parent2);
 		}
 		public void Mutate( Genome genome , double mutationRate )
 		{
-			// in this implementation only one gene is mutated
-			// the new value has to be different from all the other genes of the genome
+//			int newValueForGene = GenomeManagement.RandomGenerator.Next(
+//				genome.MinValueForGenes ,
+//				genome.MaxValueForGenes + 1 );
 			int genePositionToBeMutated =
 				GenomeManagement.RandomGenerator.Next( genome.Size ); 
-			int newValueForGene = GenomeManagement.RandomGenerator.Next(
-				genome.GetMinValueForGenes( genePositionToBeMutated ) ,
-				genome.GetMaxValueForGenes( genePositionToBeMutated ) + 1 );
-			while( GenomeManipulator.IsTickerContainedInGenome(
-				newValueForGene ,	genome )  )
-				// the portfolio, in this implementation, 
-				// can't have a long position and a short position
-				// for the same ticker
-			{
-				newValueForGene = GenomeManagement.RandomGenerator.Next(
-					genome.GetMinValueForGenes( genePositionToBeMutated ) ,
-					genome.GetMaxValueForGenes( genePositionToBeMutated ) + 1 );
-			}
+			int newValueForGene =
+				this.GetNewGeneValue( genome , genePositionToBeMutated );
 			GenomeManagement.MutateOneGene( genome , mutationRate ,
 				genePositionToBeMutated , newValueForGene );
 		}
 		#region Decode
-		private string decode_getSignedTicker( int geneValue )
+		private int getWeight( Genome genome , int genePosition )
 		{
-			string initialCharForTickerCode = "";
-			int position = geneValue;
-			if( geneValue < 0 )
+			int geneValue = 1;
+			if ( genome.GetGeneValue( genePosition ) < 0 )
+				// the position is short
+				geneValue = -1;
+			return geneValue;
+		}
+		private int[] getWeightRelatedGeneValuesForDrivingPositions(
+			Genome genome )
+		{
+			int[] weightRelatedGeneValuesForDrivingPositions =
+				new int[ this.numberOfDrivingPositions ];
+			for ( int genePosition = 0 ;
+				genePosition < this.numberOfDrivingPositions ; genePosition++ )
+				weightRelatedGeneValuesForDrivingPositions[ genePosition ] =
+					this.getWeight( genome , genePosition );
+			return weightRelatedGeneValuesForDrivingPositions;
+		}
+		private int getTickerIndex( Genome genome , int genePosition )
+		{
+			int tickerIndex = genome.GetGeneValue( genePosition );
+			if ( tickerIndex < 0 )
+				// the position is short
+				tickerIndex += -this.GetMinValueForGenes( genePosition );
+			return tickerIndex;
+		}
+		private int[] getTickerRelatedGeneValuesForDrivingPositions(
+			Genome genome )
+		{
+			int[] tickerRelatedGeneValuesForDrivingPositions =
+				new int[ this.numberOfDrivingPositions ];
+			for ( int genePosition = 0 ;
+				genePosition < this.numberOfDrivingPositions ; genePosition++ )
+				tickerRelatedGeneValuesForDrivingPositions[ genePosition ] =
+					this.getTickerIndex( genome , genePosition );
+			return tickerRelatedGeneValuesForDrivingPositions;
+		}
+		private int[] getWeightRelatedGeneValuesForPortfolioPositions(
+			Genome genome )
+		{
+			int[] weightRelatedGeneValuesForPortfolioPositions =
+				new int[ this.numberOfTickersInPortfolio ];
+			int firstPositionForPortfolioRelatedGenomes =
+				this.numberOfDrivingPositions;
+			for ( int i = 0 ; i < this.numberOfTickersInPortfolio ; i++ )
 			{
-				position = Math.Abs( geneValue ) - 1;
-				initialCharForTickerCode = "-";
-			}  
-			return initialCharForTickerCode +
-				( string )this.eligibleTickers.Rows[ position ][ 0 ];
-		}
-		private void decode_addDrivingPosition(
-			Genome genome , int geneIndex ,	WFLagSignedTickers wFLagSignedTickers )
-		{
-			int indexOfTicker = (int)genome.Genes().GetValue( geneIndex );
-			string signedTicker = this.decode_getSignedTicker( indexOfTicker );
-			wFLagSignedTickers.DrivingPositions.Add( signedTicker , null );
-		}
-		private void decode_addPortfolioPosition(
-			Genome genome , int geneIndex ,	WFLagSignedTickers wFLagSignedTickers )
-		{
-			int indexOfTicker = (int)genome.Genes().GetValue( geneIndex );
-			string signedTicker = this.decode_getSignedTicker( indexOfTicker );
-			wFLagSignedTickers.PortfolioPositions.Add( signedTicker , null );
-		}
-		private string decode_getSignedTickerForGeneValue( int geneValue )
-		{
-			string initialCharForTickerCode = "";
-			int position = geneValue;
-			if( geneValue < 0 )
-			{
-				position = Math.Abs( geneValue ) - 1;
-				initialCharForTickerCode = "-";
+				int genePosition =
+					firstPositionForPortfolioRelatedGenomes + i;
+				weightRelatedGeneValuesForPortfolioPositions[ i ] =
+					this.getWeight( genome , genePosition );
 			}
-			return initialCharForTickerCode +
-				( string )this.eligibleTickers.Rows[ position ][ 0 ];
+			return weightRelatedGeneValuesForPortfolioPositions;
+		}
+		private int[] getTickerRelatedGeneValuesForPortfolioPositions(
+			Genome genome )
+		{
+			int[] tickerRelatedGeneValuesForPortfolioPositions =
+				new int[ this.numberOfTickersInPortfolio ];
+			int firstPositionForPortfolioRelatedGenomes =
+				this.numberOfDrivingPositions;
+			for ( int i = 0 ; i < this.numberOfTickersInPortfolio ; i++ )
+			{
+				int genePosition =
+					firstPositionForPortfolioRelatedGenomes + i;
+				tickerRelatedGeneValuesForPortfolioPositions[ i ] =
+					this.getTickerIndex( genome , genePosition );
+			}
+			return tickerRelatedGeneValuesForPortfolioPositions;
+		}
+		#region decodeWeightedPositions
+		#region getNormalizedWeightValues
+		private double getAdditionalWeight( int weightRelatedGeneValue )
+		{
+			double midrangeValue = (
+				this.GetMinValueForGenes( 0 ) + this.GetMaxValueForGenes( 0 ) ) / 2;
+			double singleWeightFreeRange = 1 - this.minimumPositionWeight;
+			double scaleRange = Convert.ToDouble(
+				this.GetMinValueForGenes( 0 ) - this.GetMaxValueForGenes( 0 ) );
+			double nonScaledAdditionalWeight = Convert.ToDouble( weightRelatedGeneValue ) -
+				midrangeValue;
+			double scaledAdditionalWeight =
+				nonScaledAdditionalWeight * singleWeightFreeRange / scaleRange;
+			return scaledAdditionalWeight;
+		}
+		private double getNonNormalizedWeightValue( int weightRelatedGeneValue )
+		{
+			double additionalWeight = this.getAdditionalWeight( weightRelatedGeneValue );
+			double nonNormalizedWeightValue = 0;
+			if ( additionalWeight >= 0 )
+				// the gene value represents a long position
+				nonNormalizedWeightValue = this.minimumPositionWeight + additionalWeight;
+			else
+				// additionalWeight < 0 , i.e. the gene value represents a short position
+				nonNormalizedWeightValue = -this.minimumPositionWeight + additionalWeight;
+			return nonNormalizedWeightValue;
+		}
+		private double[] getNonNormalizedWeightValues( int[] weightRelatedGeneValues )
+		{
+			double[] nonNormalizedWeightValues = new double[ weightRelatedGeneValues.Length ];
+			for ( int i = 0 ; i < weightRelatedGeneValues.Length ; i++ )
+				nonNormalizedWeightValues[ i ] =
+					this.getNonNormalizedWeightValue( weightRelatedGeneValues[ i ] );
+			return nonNormalizedWeightValues;
+		}
+		private double getNormalizingFactor( double[] nonNormalizedWeightValues )
+		{
+			// the absolute value for each nonNormalizedWeightValue is between
+			// this.minimumPositionWeight and 1
+			double totalForNonNormalizedWeightValues = BasicFunctions.SumOfAbs( nonNormalizedWeightValues );
+			double normalizingFactor = 1 / totalForNonNormalizedWeightValues;
+			return normalizingFactor;
+		}
+		private double[] getNormalizedWeightValues( double[] nonNormalizedWeightValues ,
+			double normalizingFactor )
+		{
+			return BasicFunctions.MultiplyBy( nonNormalizedWeightValues , normalizingFactor );
+		}
+		private double[] getNormalizedWeightValues( double[] nonNormalizedWeightValues )
+		{
+			double normalizingFactor = this.getNormalizingFactor( nonNormalizedWeightValues );
+			return getNormalizedWeightValues( nonNormalizedWeightValues , normalizingFactor );
+		}
+		private double[] getNormalizedWeightValues( int[] weightRelatedGeneValues )
+		{
+			double[] nonNormalizedWeightValues =
+				this.getNonNormalizedWeightValues( weightRelatedGeneValues );
+			return this.getNormalizedWeightValues( nonNormalizedWeightValues );
+		}
+		#endregion
+		private string[] decodeTickers( int[] tickerRelatedGeneValues ,
+			DataTable eligibleTickers )
+		{
+			string[] tickers = new string[ tickerRelatedGeneValues.Length ];
+			for( int i = 0 ; i < tickerRelatedGeneValues.Length ; i++ )
+			{
+				int currentGeneValue = tickerRelatedGeneValues[ i ];
+				tickers[ i ] =
+					( string )eligibleTickers.Rows[ currentGeneValue ][ 0 ];
+			}
+			return tickers;
+		}
+		private WeightedPositions decodeWeightedPositions( int[] weightRelatedGeneValues ,
+			int[] tickerRelatedGeneValues , DataTable eligibleTickers )
+		{
+			double[] normalizedWeightValues = this.getNormalizedWeightValues( weightRelatedGeneValues );
+			string[] tickers = this.decodeTickers( tickerRelatedGeneValues , eligibleTickers );
+			WeightedPositions weightedPositions =	new WeightedPositions(
+				normalizedWeightValues , tickers );
+			return weightedPositions;
+		}
+		#endregion
+		private WeightedPositions decodeDrivingWeightedPositions(
+			Genome genome )
+		{
+			int[] weightRelatedGeneValuesForDrivingPositions =
+				this.getWeightRelatedGeneValuesForDrivingPositions( genome );
+			int[] tickerRelatedGeneValuesForDrivingPositions =
+				this.getTickerRelatedGeneValuesForDrivingPositions( genome );
+			return decodeWeightedPositions(
+				weightRelatedGeneValuesForDrivingPositions ,
+				tickerRelatedGeneValuesForDrivingPositions ,
+				this.eligibleTickersForDrivingWeightedPositions );
+			//
+			//			double weight = this.decodeDrivingWeight( genome , geneIndex );
+			//			string ticker = this.decodeDrivingTicker( genome , geneIndex );
+			//			WeightedPosition weightedPosition = new WeightedPosition(
+			//				weight , ticker );
+			//			wFLagWeightedPositions.DrivingWeightedPositions.AddWeightedPosition(
+			//				weightedPosition );
+		}
+		private WeightedPositions decodePortfolioWeightedPositions(
+			Genome genome )
+		{
+			int[] weightRelatedGeneValuesForPortfolioPositions =
+				this.getWeightRelatedGeneValuesForPortfolioPositions( genome );
+			int[] tickerRelatedGeneValuesForPortfolioPositions =
+				this.getTickerRelatedGeneValuesForPortfolioPositions( genome );
+			return decodeWeightedPositions(
+				weightRelatedGeneValuesForPortfolioPositions ,
+				tickerRelatedGeneValuesForPortfolioPositions ,
+				this.eligibleTickersForPortfolioWeightedPositions );
+			//
+			//			double weight = this.decodeDrivingWeight( genome , geneIndex );
+			//			string ticker = this.decodeDrivingTicker( genome , geneIndex );
+			//			WeightedPosition weightedPosition = new WeightedPosition(
+			//				weight , ticker );
+			//			wFLagWeightedPositions.DrivingWeightedPositions.AddWeightedPosition(
+			//				weightedPosition );
 		}
 		public virtual object Decode(Genome genome)
 		{
-			WFLagSignedTickers wFLagSignedTickers = new WFLagSignedTickers();
-			for ( int geneIndex = 0 ; geneIndex < this.numberOfDrivingPositions ;
-				geneIndex ++ )
-				this.decode_addDrivingPosition( genome , geneIndex , wFLagSignedTickers );
-			for ( int geneIndex = this.numberOfDrivingPositions ;
-				geneIndex < this.numberOfDrivingPositions + this.numberOfTickersInPortfolio ;
-				geneIndex ++ )
-				this.decode_addPortfolioPosition( genome , geneIndex , wFLagSignedTickers );
-			string[] arrayOfTickers = new string[genome.Genes().Length];
-			int indexOfTicker;
-			for(int index = 0; index < genome.Genes().Length; index++)
-			{
-				indexOfTicker = (int)genome.Genes().GetValue(index);
-				arrayOfTickers[index] =
-					this.decode_getSignedTickerForGeneValue(indexOfTicker);
-			}
-			return wFLagSignedTickers;
+			WeightedPositions drivingWeightedPositions =
+				this.decodeDrivingWeightedPositions( genome );
+			WeightedPositions portfolioWeightedPositions =
+				this.decodePortfolioWeightedPositions( genome );
+			WFLagWeightedPositions wFLagWeightedPositions =
+				new WFLagWeightedPositions(
+				drivingWeightedPositions , portfolioWeightedPositions );
+
+			//			int[] drivingGeneValues = this.getDrivingGeneValues( genome );
+			//			for ( int geneIndex = 0 ; geneIndex < this.numberOfDrivingPositions * 2 ;
+			//				geneIndex += 2 )
+			//				this.decode_addDrivingPosition( genome , geneIndex , wFLagWeightedPositions );
+			//			for ( int geneIndex = this.numberOfDrivingPositions * 2 ;
+			//				geneIndex <
+			//				( this.numberOfDrivingPositions + this.numberOfTickersInPortfolio ) * 2 ;
+			//				geneIndex += 2 )
+			//				this.decode_addPortfolioPosition( genome , geneIndex , wFLagSignedTickers );
+			//			string[] arrayOfTickers = new string[genome.Genes().Length];
+			//			int indexOfTicker;
+			//			for(int index = 0; index < genome.Genes().Length; index++)
+			//			{
+			//				indexOfTicker = (int)genome.Genes().GetValue(index);
+			//				arrayOfTickers[index] =
+			//					this.decode_getSignedTickerForGeneValue(indexOfTicker);
+			//			}
+			return wFLagWeightedPositions;
 		}
 		#endregion
-		public int GetNewGeneValue( Genome genome , int i )
+		#region GetNewGeneValue
+		public int GetNewGeneValue( Genome genome , int genePosition )
 		{
-			// in this implementation new gene values must be different from
-			// the others already stored in the given genome
+			int minGeneValue = this.GetMinValueForGenes( genePosition );
+			int maxGeneValue = this.GetMaxValueForGenes( genePosition );
 			int returnValue =
 				GenomeManagement.RandomGenerator.Next(
-				genome.GetMinValueForGenes( i ) ,
-				genome.GetMaxValueForGenes( i ) + 1);
-			while( GenomeManipulator.IsTickerContainedInGenome(returnValue,
-				genome) )
-				// the portfolio can't have a long position and a
-				// short one for the same ticker
-			{
-				returnValue = GenomeManagement.RandomGenerator.Next(
-					genome.GetMinValueForGenes( i ) ,
-					genome.GetMaxValueForGenes( i ) + 1 );
-			}
+				minGeneValue , maxGeneValue + 1);
 			return returnValue;
 		}
-
+		#endregion
 	}
 }
