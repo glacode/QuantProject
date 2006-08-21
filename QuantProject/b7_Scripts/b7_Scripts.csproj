@@ -663,6 +663,16 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "WalkForwardTesting\WalkForwardLag\GeneticOptimizerTesting\WFLagGOTester.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "WalkForwardTesting\WalkForwardLag\WFLagBruteForceOptimizableItemManager\WFLagBruteForceOptimizableParametersManager.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "WalkForwardTesting\WalkForwardLag\WFLagDebugger\WFLagChosenPositions.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
