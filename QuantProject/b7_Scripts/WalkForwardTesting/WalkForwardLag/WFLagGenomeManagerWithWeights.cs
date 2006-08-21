@@ -1,3 +1,25 @@
+/*
+QuantProject - Quantitative Finance Library
+
+WFLagGenomeManagerWithWeights.cs
+Copyright (C) 2003
+Glauco Siliprandi
+
+This program is free software; you can redistribute it and/or
+modify it under the terms of the GNU General Public License
+as published by the Free Software Foundation; either version 2
+of the License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program; if not, write to the Free Software
+Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+*/
+
 using System;
 using System.Collections;
 using System.Data;
@@ -29,8 +51,6 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag
 
 		private WFLagCandidates wFLagCandidates;
 
-
-		private GeneticOptimizer currentGeneticOptimizer;
 
 		public int GenomeSize
 		{
@@ -75,7 +95,8 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag
 			DateTime firstOptimizationDate ,
 			DateTime lastOptimizationDate ,
 			int numberOfDrivingPositions ,
-			int numberOfTickersInPortfolio )
+			int numberOfTickersInPortfolio ,
+			int seedForRandomGenerator )
 
 		{
 			this.numberOfDrivingPositions = numberOfDrivingPositions;
@@ -91,9 +112,12 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag
 
 			this.minimumPositionWeight = 0.2;	// TO DO this value should become a constructor parameter
 
-			GenomeManagement.SetRandomGenerator(
-				QuantProject.ADT.ConstantsProvider.SeedForRandomGenerator
-				+ this.firstOptimizationDate.DayOfYear );
+//			GenomeManagement.SetRandomGenerator(
+//				QuantProject.ADT.ConstantsProvider.SeedForRandomGenerator
+//				+ this.firstOptimizationDate.DayOfYear );
+//			GenomeManagement.SetRandomGenerator(
+//				11 );
+			GenomeManagement.SetRandomGenerator( seedForRandomGenerator );
 
 			this.wFLagCandidates = new WFLagCandidates(
 				this.eligibleTickersForDrivingWeightedPositions ,
@@ -185,12 +209,12 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag
 		}
 		private double getFitnessValue( double[] strategyReturns )
 		{
-//			double fitnessValue =
-//				AdvancedFunctions.GetSharpeRatio(
-//				strategyReturns );
-						double fitnessValue =
-							AdvancedFunctions.GetExpectancyScore(
-							strategyReturns );
+			double fitnessValue =
+				AdvancedFunctions.GetSharpeRatio(
+				strategyReturns );
+//						double fitnessValue =
+//							AdvancedFunctions.GetExpectancyScore(
+//							strategyReturns );
 			//			double fitnessValue =
 			//				this.getFitnessValue_withGoodFinal( strategyReturns );
 			//			double fitnessValue =
@@ -226,7 +250,8 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag
 			if ( ( decodedWeightedPositions * 2 ) < genomeLength )
 				// genome contains a duplicate gene either for
 				// driving positions or for portfolio positions
-				fitnessValue = double.MinValue;
+				//fitnessValue = double.MinValue;
+				fitnessValue = -0.2;
 			else
 				// all driving positions genes are distinct and
 				// all portfolio positions genes are distinct
