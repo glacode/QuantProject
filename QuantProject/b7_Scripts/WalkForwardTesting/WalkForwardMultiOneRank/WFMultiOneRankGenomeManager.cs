@@ -44,7 +44,6 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardMultiOneRank
 		private int numberOfTickersInPortfolio;
 
 		private int numberOfEligibleTickers;
-		private GeneticOptimizer currentGeneticOptimizer;
 		private CandidateProperties[] setOfCandidates;
 
 		public int GenomeSize
