@@ -25,6 +25,7 @@ using System.Collections;
 
 using QuantProject.ADT;
 using QuantProject.ADT.Collections;
+using QuantProject.ADT.Optimizing.BruteForce;
 using QuantProject.ADT.Optimizing.Genetic;
 using QuantProject.Business.Strategies;
 using QuantProject.Business.Timing;
@@ -41,13 +42,13 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag
 	{
 		public event NewProgressEventHandler NewProgress;
 
-		private WFLagEligibleTickers eligibleTickers;
-		private int numberOfDrivingPositions;
-		private int numberOfPositionsToBeChosen;
-		private int inSampleDays;
-		private IEndOfDayTimer endOfDayTimer;
-		private int generationNumberForGeneticOptimizer;
-		private int populationSizeForGeneticOptimizer;
+		protected WFLagEligibleTickers eligibleTickers;
+		protected int numberOfDrivingPositions;
+		protected int numberOfPositionsToBeChosen;
+		protected int inSampleDays;
+		protected IEndOfDayTimer endOfDayTimer;
+		protected int generationNumberForGeneticOptimizer;
+		protected int populationSizeForGeneticOptimizer;
 
 		private WeightedPositions drivingWeightedPositions;
 		private WeightedPositions portfolioWeightedPositions;
@@ -124,17 +125,26 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag
 				populationSizeForGeneticOptimizer;
 		}
 
-		#region SetSignedTickers
+		#region SetWeightedPositions
 //		private void setSignedTickers_clearPositions()
 //		{
 //			this.drivingPositions.Clear();
 //			this.portfolioPositions.Clear();
 //		}
+		#region setWeightedPositions_usingTheGeneticOptimizer
 		private void newGenerationEventHandler(
 			object sender , NewGenerationEventArgs e )
 		{
 			this.NewProgress( sender ,
 				new NewProgressEventArgs( e.GenerationCounter , e.GenerationNumber ) );
+		}
+		private void setWeightedPositions(
+			WFLagWeightedPositions wFLagWeightedPositions )
+		{
+			this.drivingWeightedPositions =
+				wFLagWeightedPositions.DrivingWeightedPositions;
+			this.portfolioWeightedPositions =
+				wFLagWeightedPositions.PortfolioWeightedPositions;
 		}
 		private void setSignedTickers_setTickersFromGenome(
 			IGenomeManager genomeManager ,
@@ -142,34 +152,38 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag
 		{
 			WFLagWeightedPositions wFLagWeightedPositions =
 				( WFLagWeightedPositions )genomeManager.Decode( genome );
-			this.drivingWeightedPositions =
-				wFLagWeightedPositions.DrivingWeightedPositions;
-			this.portfolioWeightedPositions =
-				wFLagWeightedPositions.PortfolioWeightedPositions;
+			this.setWeightedPositions( wFLagWeightedPositions );
+//			this.drivingWeightedPositions =
+//				wFLagWeightedPositions.DrivingWeightedPositions;
+//			this.portfolioWeightedPositions =
+//				wFLagWeightedPositions.PortfolioWeightedPositions;
 		}
-		public void SetWeightedPositions( WFLagEligibleTickers eligibleTickers )
+		public virtual void setWeightedPositions_usingTheGeneticOptimizer(
+			WFLagEligibleTickers eligibleTickers )
 		{
-//			this.setSignedTickers_clearPositions();
-
 			this.firstOptimizationDate =
 				this.endOfDayTimer.GetCurrentTime().DateTime.AddDays(
 				-( this.inSampleDays - 1 ) );
 			this.lastOptimizationDate =
 				this.endOfDayTimer.GetCurrentTime().DateTime;
 
-			WFLagGenomeManagerWithWeights genomeManager = 
-				new WFLagGenomeManagerWithWeights(
+			WFLagGenomeManager genomeManager = 
+				new WFLagGenomeManager(
 				eligibleTickers.EligibleTickers ,
 				eligibleTickers.EligibleTickers ,
 				this.firstOptimizationDate ,
 				this.lastOptimizationDate ,
 				this.numberOfDrivingPositions ,
-				this.numberOfPositionsToBeChosen );
+				this.numberOfPositionsToBeChosen ,
+				QuantProject.ADT.ConstantsProvider.SeedForRandomGenerator );
 
 			GeneticOptimizer geneticOptimizer = new GeneticOptimizer(
-				genomeManager ,
+				0.85 ,
+				0.02 ,
+				0.1 ,
 				this.populationSizeForGeneticOptimizer ,
 				this.generationNumberForGeneticOptimizer ,
+				genomeManager ,
 				ConstantsProvider.SeedForRandomGenerator );
 
 			geneticOptimizer.NewGeneration +=
@@ -182,6 +196,59 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag
 
 			this.generation = geneticOptimizer.BestGenome.Generation;
 
+		}
+		#endregion
+		#region setWeightedPositions_usingTheBruteForceOptimizer
+		private void newBruteForceOptimizerProgressEventHandler(
+			object sender , NewProgressEventArgs e )
+		{
+			this.NewProgress( sender , e );
+		}
+		public virtual void setWeightedPositions_usingTheBruteForceOptimizer(
+			WFLagEligibleTickers eligibleTickers )
+		{
+			this.firstOptimizationDate =
+				this.endOfDayTimer.GetCurrentTime().DateTime.AddDays(
+				-( this.inSampleDays - 1 ) );
+			this.lastOptimizationDate =
+				this.endOfDayTimer.GetCurrentTime().DateTime;
+
+			WFLagBruteForceOptimizableParametersManager
+				wFLagBruteForceOptimizableItemManager= 
+				new WFLagBruteForceOptimizableParametersManager(
+				eligibleTickers.EligibleTickers ,
+				eligibleTickers.EligibleTickers ,
+				this.firstOptimizationDate ,
+				this.lastOptimizationDate ,
+				this.numberOfDrivingPositions ,
+				this.numberOfPositionsToBeChosen );
+
+			BruteForceOptimizer bruteForceOptimizer = new BruteForceOptimizer(
+				wFLagBruteForceOptimizableItemManager );
+
+			bruteForceOptimizer.NewProgress +=
+				new NewProgressEventHandler(
+				this.newBruteForceOptimizerProgressEventHandler );
+
+			bruteForceOptimizer.Run();
+
+			BruteForceOptimizableParameters bestParameters =
+				bruteForceOptimizer.BestParameters;
+
+			WFLagWeightedPositions wFLagWeightedPositions =
+				( WFLagWeightedPositions )wFLagBruteForceOptimizableItemManager.Decode(
+				bestParameters );
+
+			this.setWeightedPositions( wFLagWeightedPositions );
+		}
+		#endregion
+		public virtual void SetWeightedPositions(
+			WFLagEligibleTickers eligibleTickers )
+		{
+//			this.setWeightedPositions_usingTheGeneticOptimizer(
+//				eligibleTickers );
+			this.setWeightedPositions_usingTheBruteForceOptimizer(
+				eligibleTickers );
 		}
 		#endregion
 	}
