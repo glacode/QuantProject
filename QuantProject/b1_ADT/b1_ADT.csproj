@@ -187,6 +187,21 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "Optimizing\BruteForce\BruteForceOptimizableParameters.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Optimizing\BruteForce\BruteForceOptimizer.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Optimizing\BruteForce\IBruteForceOptimizableParametersManager.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "Optimizing\Genetic\GeneticOptimizer.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
@@ -253,6 +268,11 @@
                 />
                 <File
                     RelPath = "Statistics\NormalDistribution.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Statistics\Combinatorial\Combination.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
