@@ -208,6 +208,31 @@ namespace QuantProject.ADT.Optimizing.Genetic
       }
       return returnValue;
     }
+    
+    /// <summary>
+    /// It returns true if the given gene is already stored in the current genome
+    /// </summary>
+    /// <param name="fromGenePosition">First gene position from which the checking
+    /// 		has to be done, inside the given genome</param>
+    /// <param name="toGenePosition">Last gene position to which the checking
+    /// 		has to be done, inside the given genome</param>
+    public bool HasGene(int geneValue, int fromGenePosition,
+                        int toGenePosition)
+    {
+      if(fromGenePosition < 0 ||
+    	   toGenePosition < 0 ||
+    	   fromGenePosition >= this.size ||
+    	   toGenePosition >= this.size)
+    		throw new IndexOutOfRangeException("error in parameters fromGenePosition or toGenePosition!");
+    		                                   
+    	bool returnValue = false;
+      for(int i = fromGenePosition; i <= toGenePosition; i++)
+      {
+      	if( geneValue == this.Genes()[i] )
+              returnValue = true;
+      }
+      return returnValue;
+    }
 
     /// <summary>
     /// It returns true if the current instance shares no gene with the given
