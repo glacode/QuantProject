@@ -477,8 +477,8 @@ namespace QuantProject.ADT.Optimizing.Genetic
     {
       this.nextGeneration.Clear();
       this.createNextGeneration_addChildsWithRouletteSelection();
-      this.createNextGeneration_transmitEliteToNextGeneration();
       this.mutateGenomes();
+      this.createNextGeneration_transmitEliteToNextGeneration();
       this.calculateFitnessAndMeaningForAllGenomes();
       this.updateCurrentGeneration();
       this.sortCurrentGenerationAndFireNewGenerationEvent();
