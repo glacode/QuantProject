@@ -314,7 +314,7 @@ namespace QuantProject.Applications.Downloader
 
     private void downloadTickerBeforeFirstQuote()
     {
-      this.endDate = Quotes.GetStartDate(this.p_quTicker);
+      this.endDate = Quotes.GetFirstQuoteDate(this.p_quTicker);
       this.resetStartDateIfNecessary();
       this.checkForNewAdjustedAndContinueOrStop();
     }
@@ -342,8 +342,8 @@ namespace QuantProject.Applications.Downloader
         {
           this.updateCurrentStatusAdjustedClose("Changed!");
           if (Quotes.IsAdjustedCloseToCloseRatioChanged(this.p_quTicker, 
-              this.getTableOfDownloadedValues(Quotes.GetStartDate(this.p_quTicker),
-                                               Quotes.GetEndDate(this.p_quTicker))) && 
+              this.getTableOfDownloadedValues(Quotes.GetFirstQuoteDate(this.p_quTicker),
+                                               Quotes.GetLastQuoteDate(this.p_quTicker))) && 
               this.p_myForm.IsCheckCloseToCloseSelected)
           {
                this.updateCurrentStatusAdjustedCloseToCloseRatio("Changed at " + 
@@ -358,7 +358,7 @@ namespace QuantProject.Applications.Downloader
                   this.updateCurrentStatusAdjustedCloseToCloseRatio("Not Checked");
                this.updateAdjustedClose();
                this.updateCurrentStatusAdjustedClose("Updated!");
-               this.downloadedValuesFromSource = this.getTableOfDownloadedValues(Quotes.GetEndDate(this.p_quTicker),
+               this.downloadedValuesFromSource = this.getTableOfDownloadedValues(Quotes.GetLastQuoteDate(this.p_quTicker),
                                                                                  DateTime.Now);
             this.commitDownloadedValuesToDatabase();
           } 
@@ -395,7 +395,7 @@ namespace QuantProject.Applications.Downloader
     
     private void downloadTickerAfterLastQuote()
     {
-      this.startDate = Quotes.GetEndDate(this.p_quTicker);
+      this.startDate = Quotes.GetLastQuoteDate(this.p_quTicker);
       this.endDate = DateTime.Today;
       this.checkForNewAdjustedAndContinueOrStop();
     }
