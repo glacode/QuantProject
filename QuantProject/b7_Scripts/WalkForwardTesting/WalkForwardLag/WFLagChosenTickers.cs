@@ -180,7 +180,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag
 			GeneticOptimizer geneticOptimizer = new GeneticOptimizer(
 				0.85 ,
 				0.02 ,
-				0.1 ,
+				0.001 ,
 				this.populationSizeForGeneticOptimizer ,
 				this.generationNumberForGeneticOptimizer ,
 				genomeManager ,
@@ -242,13 +242,61 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag
 			this.setWeightedPositions( wFLagWeightedPositions );
 		}
 		#endregion
+		#region setWeightedPositions_withFixedPortfolio
+//		private void newBruteForceOptimizerProgressEventHandler(
+//			object sender , NewProgressEventArgs e )
+//		{
+//			this.NewProgress( sender , e );
+//		}
+		public virtual void setWeightedPositions_withFixedPortfolio(
+			WFLagEligibleTickers eligibleTickers ,
+			string longPortfolioTicker , string shortPortfolioTicker )
+		{
+			this.firstOptimizationDate =
+				this.endOfDayTimer.GetCurrentTime().DateTime.AddDays(
+				-( this.inSampleDays - 1 ) );
+			this.lastOptimizationDate =
+				this.endOfDayTimer.GetCurrentTime().DateTime;
+
+			WFLagFixedPortfolioBruteForceOptimizableParametersManager
+				wFLagFixedPortfolioBruteForceOptimizableParametersManager= 
+				new WFLagFixedPortfolioBruteForceOptimizableParametersManager(
+				eligibleTickers.EligibleTickers ,
+				longPortfolioTicker ,
+				shortPortfolioTicker ,
+				this.firstOptimizationDate ,
+				this.lastOptimizationDate ,
+				this.numberOfDrivingPositions );
+
+			BruteForceOptimizer bruteForceOptimizer = new BruteForceOptimizer(
+				wFLagFixedPortfolioBruteForceOptimizableParametersManager );
+
+			bruteForceOptimizer.NewProgress +=
+				new NewProgressEventHandler(
+				this.newBruteForceOptimizerProgressEventHandler );
+
+			bruteForceOptimizer.Run( 100000 ,
+				wFLagFixedPortfolioBruteForceOptimizableParametersManager.TotalIterations );
+
+			BruteForceOptimizableParameters bestParameters =
+				bruteForceOptimizer.BestParameters;
+
+			WFLagWeightedPositions wFLagWeightedPositions =
+				( WFLagWeightedPositions )wFLagFixedPortfolioBruteForceOptimizableParametersManager.Decode(
+				bestParameters );
+
+			this.setWeightedPositions( wFLagWeightedPositions );
+		}
+		#endregion
 		public virtual void SetWeightedPositions(
 			WFLagEligibleTickers eligibleTickers )
 		{
 //			this.setWeightedPositions_usingTheGeneticOptimizer(
 //				eligibleTickers );
-			this.setWeightedPositions_usingTheBruteForceOptimizer(
-				eligibleTickers );
+//			this.setWeightedPositions_usingTheBruteForceOptimizer(
+//				eligibleTickers );
+			this.setWeightedPositions_withFixedPortfolio(
+				eligibleTickers , "SPY" , "IWM" );
 		}
 		#endregion
 	}
