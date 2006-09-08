@@ -125,14 +125,14 @@
                     Package = "{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}"
                 />
                 <Reference
-                    Name = "b4_Business"
-                    Project = "{6EE31501-376E-491B-869E-F06D5B7C9C30}"
-                    Package = "{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}"
-                />
-                <Reference
                     Name = "NPlot"
                     AssemblyName = "NPlot"
                     HintPath = "..\..\..\NPlot.dll"
+                />
+                <Reference
+                    Name = "b4_Business"
+                    Project = "{6EE31501-376E-491B-869E-F06D5B7C9C30}"
+                    Package = "{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}"
                 />
             </References>
         </Build>
@@ -179,11 +179,6 @@
                     BuildAction = "Compile"
                 />
                 <File
-                    RelPath = "Reporting\WindowsForm\AccountViewer.resx"
-                    DependentUpon = "AccountViewer.cs"
-                    BuildAction = "EmbeddedResource"
-                />
-                <File
                     RelPath = "Reporting\WindowsForm\EquityChartTabPage.cs"
                     SubType = "Component"
                     BuildAction = "Compile"
@@ -192,11 +187,6 @@
                     RelPath = "Reporting\WindowsForm\Report.cs"
                     SubType = "Form"
                     BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Reporting\WindowsForm\Report.resx"
-                    DependentUpon = "Report.cs"
-                    BuildAction = "EmbeddedResource"
                 />
                 <File
                     RelPath = "Reporting\WindowsForm\ReportGrid.cs"
@@ -212,11 +202,6 @@
                     RelPath = "Reporting\WindowsForm\ReportShower.cs"
                     SubType = "Form"
                     BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Reporting\WindowsForm\ReportShower.resx"
-                    DependentUpon = "ReportShower.cs"
-                    BuildAction = "EmbeddedResource"
                 />
                 <File
                     RelPath = "Reporting\WindowsForm\ReportTabControl.cs"
