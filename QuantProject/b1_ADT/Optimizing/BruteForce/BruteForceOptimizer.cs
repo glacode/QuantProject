@@ -34,6 +34,9 @@ namespace QuantProject.ADT.Optimizing.BruteForce
 		private IBruteForceOptimizableParametersManager
 			bruteForceOptimizableParametersManager;
 
+		private int numberOfAnalizedItemsForNewProgess;
+		private int totalNumberOfItemsToBeAnalized;
+
 		private BruteForceOptimizableParameters bestParameters;
 
 		private int analizedItems;
@@ -50,16 +53,18 @@ namespace QuantProject.ADT.Optimizing.BruteForce
 		{
 			this.bruteForceOptimizableParametersManager =
 				bruteForceOptimizableParametersManager;
+			this.numberOfAnalizedItemsForNewProgess = 100000;
+			this.totalNumberOfItemsToBeAnalized = 0;
 		}
 		#region Run
 		private void handleProgress()
 		{
-			analizedItems ++ ;
-			if ( analizedItems % 100000 == 0 )
+			this.analizedItems ++ ;
+			if ( analizedItems % this.numberOfAnalizedItemsForNewProgess == 0 )
 			{
 				NewProgressEventArgs newProgressEventArgs =
 					new NewProgressEventArgs( analizedItems ,
-					0 );
+					this.totalNumberOfItemsToBeAnalized );
 				if ( this.NewProgress != null )
 					this.NewProgress( this , newProgressEventArgs );
 			}
@@ -81,6 +86,15 @@ namespace QuantProject.ADT.Optimizing.BruteForce
 					this.bestParameters = bruteForceOptimizableParameter;
 				this.handleProgress();
 			}
+		}
+		public void Run( int numberOfAnalizedItemsForNewProgess ,
+			int totalNumberOfItemsToBeAnalized )
+		{
+			this.numberOfAnalizedItemsForNewProgess =
+				numberOfAnalizedItemsForNewProgess;
+			this.totalNumberOfItemsToBeAnalized =
+				totalNumberOfItemsToBeAnalized;
+			this.Run();
 		}
 		#endregion
 	}
