@@ -58,6 +58,18 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag
 					((WeightedPosition)this[ ticker ]).Weight += weight;
 			}
 		}
+		#region checkParameters
+		private void checkParameters_checkDoubleTickers( string[] tickers )
+		{
+			SortedList sortedTicker = new SortedList();
+			foreach ( string ticker in tickers )
+				if ( !sortedTicker.ContainsKey( ticker ) )
+					sortedTicker.Add( ticker , ticker );
+				else
+					throw new Exception( "The WeightedPositions constructur " +
+						"has received a tickers parameter with the ticker '" +
+						ticker + "' that is contained twice! This is not allowed." );
+		}
 		private void checkParameters( double[] normalizedWeightValues ,
 			string[] tickers )
 		{
@@ -71,7 +83,9 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag
 				throw new Exception( "The total of (absolute) weights " +
 					"should sum up to 1, " +
 					"but it sums up to " + totalWeight.ToString() );
+			this.checkParameters_checkDoubleTickers( tickers );
 		}
+		#endregion
 		public WeightedPosition GetWeightedPosition( string ticker )
 		{
 			return (WeightedPosition)this[ ticker ];
@@ -249,6 +263,17 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag
 				getCloseToClosePortfolioReturns( commonMarketDays );
 		}
 		#endregion
+		/// <summary>
+		/// It controls if a WeightedPositions class may be build on the
+		/// given tickers
+		/// </summary>
+		/// <param name="tickers"></param>
+		/// <returns></returns>
+		public static bool AreValidTickers( string[] tickers )
+		{
+			return !QuantProject.ADT.Collections.CollectionManager.ContainsDuplicates(
+				tickers );
+		}
 
 	}
 }
