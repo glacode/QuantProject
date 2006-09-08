@@ -15,9 +15,19 @@ namespace QuantProject.ADT.Statistics.Combinatorial
 		private int maxValue;
 		private int length;
 		
+		/// <summary>
+		/// each combination length
+		/// </summary>
 		public int Length
 		{
 			get { return this.length; }
+		}
+		public long TotalNumberOfCombinations
+		{
+			get
+			{
+				return this.totalNumberOfCombinations();
+			}
 		}
 
 		/// <summary>
@@ -128,5 +138,26 @@ namespace QuantProject.ADT.Statistics.Combinatorial
 		{
 			return this.currentCombinationValues[ elementIndex ];
 		}
+		#region totalNumberOfCombinations
+		private long totalNumberOfCombinations_getNumerator()
+		{
+			int firstFactor = this.maxValue - this.minValue + 1;
+			long numerator = 1;
+			for ( int factor = firstFactor ; factor > firstFactor - this.length ;
+				factor -- )
+				numerator *= factor;
+			return numerator;
+		}
+		private long totalNumberOfCombinations_getDenominator()
+		{
+			return ExtendedMath.Factorial( this.length );
+		}
+		private long totalNumberOfCombinations()
+		{
+			long numerator = this.totalNumberOfCombinations_getNumerator();
+			long denominator = this.totalNumberOfCombinations_getDenominator();
+			return numerator / denominator;
+		}
+		#endregion
 	}
 }
