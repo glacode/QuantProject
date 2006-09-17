@@ -71,6 +71,16 @@
     <Compile Include="Optimizing\Genetic\NewGenerationEventArgs.cs" />
     <Compile Include="Optimizing\Genetic\GenomeCounter.cs" />
     <Compile Include="Collections\QPHashtable.cs" />
+    <Compile Include="Optimizing\BruteForce\BruteForceOptimizableParameters.cs" />
+    <Compile Include="Optimizing\BruteForce\BruteForceOptimizer.cs" />
+    <Compile Include="Optimizing\BruteForce\IBruteForceOptimizableParametersManager.cs" />
+    <Compile Include="Statistics\Combinatorial\Combination.cs" />
+    <Compile Include="ExtendedMath.cs" />
+    <Compile Include="Collections\CollectionManager.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Optimizing\BruteForce" />
+    <Folder Include="Statistics\Combinatorial" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.Targets" />
 </Project>

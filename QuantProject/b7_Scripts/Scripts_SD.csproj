@@ -113,7 +113,6 @@
     <Compile Include="TickerSelectionTesting\RunEfficientOTCPortfolio.cs" />
     <Compile Include="TickerSelectionTesting\EndOfDayTimerHandlerOTC.cs" />
     <Compile Include="TickerSelectionTesting\RunTestOptimizedOTCPortfolio.cs" />
-    <Compile Include="TickerSelectionTesting\TestingOTCTypes\GenomeManagerForEfficientOTCTypes.cs" />
     <Compile Include="TickerSelectionTesting\EndOfDayTimerHandlerOTCTest.cs" />
     <Compile Include="EvaluatingOptimizationTechnique\EfficientPortfolio\RunTestingOptimizationCloseToOpen.cs" />
     <Compile Include="WalkForwardTesting\LinearCombination\StrategyType.cs" />
@@ -174,6 +173,17 @@
     <Compile Include="WalkForwardTesting\WalkForwardLag\WFLagGenomeManagerWithWeights.cs" />
     <Compile Include="WalkForwardTesting\WalkForwardLag\WFLagWeightedPositions.cs" />
     <Compile Include="WalkForwardTesting\LinearCombination\ImmediateTrendFollowerStrategy.cs" />
+    <Compile Include="TechnicalAnalysisTesting\Oscillators\FixedLevelOscillators\PortfolioValueOscillator\EndOfDayTimerHandlerPVO.cs" />
+    <Compile Include="TechnicalAnalysisTesting\Oscillators\FixedLevelOscillators\PortfolioValueOscillator\GenomeManagerPVO.cs" />
+    <Compile Include="TechnicalAnalysisTesting\Oscillators\FixedLevelOscillators\PortfolioValueOscillator\GenomeMeaningPVO.cs" />
+    <Compile Include="TechnicalAnalysisTesting\Oscillators\FixedLevelOscillators\PortfolioValueOscillator\RunPVO.cs" />
+    <Compile Include="WalkForwardTesting\WalkForwardLag\WFLagBruteForceOptimizableItemManager\WFLagBruteForceOptimizableParametersManager.cs" />
+    <Compile Include="TickerSelectionTesting\TestingOTCTypes\BruteForceOptimization\RunEfficientOTCTypesBruteForce.cs" />
+    <Compile Include="TickerSelectionTesting\TestingOTCTypes\BruteForceOptimization\EndOfDayTimerHandlerOTCTypesBruteForce.cs" />
+    <Compile Include="TickerSelectionTesting\TestingOTCTypes\BruteForceOptimization\OTCBruteForceOptimizableParametersManager.cs" />
+    <Compile Include="WalkForwardTesting\WalkForwardLag\GeneticOptimizerTesting\WFLagGOTester.cs" />
+    <Compile Include="WalkForwardTesting\LinearCombination\FixedLevelOscillatorPVOStrategy.cs" />
+    <Compile Include="WalkForwardTesting\WalkForwardLag\WFLagBruteForceOptimizableItemManager\WFLagFixedPortfolioBruteForceOptimizableParametersManager.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="EvaluatingOptimizationTechnique\" />
@@ -208,6 +218,11 @@
     <Folder Include="WalkForwardTesting\WalkForwardLag\WFLagGenomesDebugger" />
     <Folder Include="TechnicalAnalysisTesting\TrendFollowing" />
     <Folder Include="TechnicalAnalysisTesting\TrendFollowing\ImmediateTrendFollower" />
+    <Folder Include="TechnicalAnalysisTesting\Oscillators\FixedLevelOscillators" />
+    <Folder Include="TechnicalAnalysisTesting\Oscillators\FixedLevelOscillators\PortfolioValueOscillator" />
+    <Folder Include="WalkForwardTesting\WalkForwardLag\WFLagBruteForceOptimizableItemManager" />
+    <Folder Include="TickerSelectionTesting\TestingOTCTypes\BruteForceOptimization" />
+    <Folder Include="WalkForwardTesting\WalkForwardLag\GeneticOptimizerTesting" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.Targets" />
 </Project>
