@@ -32,6 +32,7 @@ using QuantProject.Data.DataProviders;
 using QuantProject.Data.Selectors;
 using QuantProject.Data.DataTables;
 using QuantProject.ADT.Optimizing.Genetic;
+using QuantProject.ADT.Optimizing.BruteForce;
 using QuantProject.Scripts.WalkForwardTesting.LinearCombination;
 
 namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
@@ -45,6 +46,7 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
   {
     protected DataTable eligibleTickers;
     protected string[] chosenTickers;
+    protected string[] reversedTickersForOpenedPositions;
     protected double[] chosenTickersPortfolioWeights;
     protected string[] lastOrderedTickers;
     
@@ -178,10 +180,11 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
     		this.chosenTickersPortfolioWeights[i]=1.0/this.chosenTickers.Length;
 		}
      
-    protected virtual void addOrderForTicker(int tickerPosition )
+    protected virtual void addOrderForTicker(string[] tickers, 
+                                             int tickerPosition )
     {
     	string tickerCode = 
-    		GenomeManagerForEfficientPortfolio.GetCleanTickerCode(this.chosenTickers[tickerPosition]);
+    		GenomeManagerForEfficientPortfolio.GetCleanTickerCode(tickers[tickerPosition]);
       double cashForSinglePosition = 
       	this.account.CashAmount * this.chosenTickersPortfolioWeights[tickerPosition];
       long quantity =
@@ -189,7 +192,7 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
       Order order;
       if(this.portfolioType == PortfolioType.OnlyShort ||
          		(this.portfolioType == PortfolioType.ShortAndLong &&
-          this.chosenTickers[tickerPosition] != tickerCode))
+          tickers[tickerPosition] != tickerCode))
         order = new Order( OrderType.MarketSellShort, new Instrument( tickerCode ) , quantity );  
       else      		
       	order = new Order( OrderType.MarketBuy, new Instrument( tickerCode ) , quantity );
@@ -221,24 +224,24 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
       
     }
     
-    protected virtual void addChosenTickersToOrderList()
+    protected virtual void addChosenTickersToOrderList(string[] tickers)
     {
-      for( int i = 0; i<this.chosenTickers.Length; i++)
+      for( int i = 0; i<tickers.Length; i++)
       {
-      	if(this.chosenTickers[i] != null)
+      	if(tickers[i] != null)
         {  
-          this.addOrderForTicker( i );
+          this.addOrderForTicker( tickers, i );
           this.lastOrderedTickers[i] = 
-          	GenomeManagerForEfficientPortfolio.GetCleanTickerCode(this.chosenTickers[i]);
+          	GenomeManagerForEfficientPortfolio.GetCleanTickerCode(tickers[i]);
         }
       }
     }
     
-    protected bool openPositions_allChosenTickersQuotedAtCurrentDate()
+    protected bool openPositions_allTickersToOpenQuotedAtCurrentDate(string[] tickers)
     {
       bool returnValue = true;
       DateTime currentDate = this.Account.EndOfDayTimer.GetCurrentTime().DateTime;
-      foreach(string ticker in this.chosenTickers)
+      foreach(string ticker in tickers)
       {
         if(ticker != null)
         {
@@ -252,15 +255,15 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
       return returnValue;
     }
     
-    protected virtual void openPositions()
+    protected virtual void openPositions(string[] tickers)
     {
       //add cash first
     	if(this.orders.Count == 0 && this.account.Transactions.Count == 0)
         this.account.AddCash(30000);     
-      if(this.openPositions_allChosenTickersQuotedAtCurrentDate())
+      if(this.openPositions_allTickersToOpenQuotedAtCurrentDate(tickers))
         //all tickers have quotes at the current date, so orders can be filled
       {
-        this.addChosenTickersToOrderList();
+        this.addChosenTickersToOrderList(tickers);
         //execute orders actually
         foreach(object item in this.orders)
           this.account.AddOrder((Order)item);
@@ -280,6 +283,22 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
                                                     secondOptimizationDate,
                                                     genome.Generation,
                                                    	eligibleTickers) );
+    }
+    
+    protected void addGenomeToBestGenomes(BruteForceOptimizableParameters BFOptimizableParameters,
+                                          string[] signedTickers,
+                                          DateTime firstOptimizationDate,
+                                          DateTime secondOptimizationDate,
+                                          int eligibleTickers)
+    {
+      if(this.bestGenomes == null)
+        this.bestGenomes = new ArrayList();
+      
+      this.bestGenomes.Add(new GenomeRepresentation(BFOptimizableParameters,
+                                                    signedTickers,
+                                                    firstOptimizationDate,
+                                                    secondOptimizationDate,
+                                                    eligibleTickers) );
     }
     
     protected void addGenomeToBestGenomes(Genome genome,
@@ -315,6 +334,24 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
         halfPeriodDays, portfolioType));
     }
 
+    protected void addGenomeToBestGenomes(Genome genome,
+                                          DateTime firstOptimizationDate,
+                                          DateTime secondOptimizationDate,
+                                          int eligibleTickers, int halfPeriodDays,
+                                          PortfolioType portfolioType,
+                                          int createdGenerations)
+    {
+      if(this.bestGenomes == null)
+        this.bestGenomes = new ArrayList();
+      
+      this.bestGenomes.Add(new GenomeRepresentation(genome,
+        firstOptimizationDate,
+        secondOptimizationDate,
+        genome.Generation,
+        eligibleTickers,
+        halfPeriodDays, portfolioType, createdGenerations));
+    }
+    
     public virtual void MarketOpenEventHandler(
       Object sender , EndOfDayTimingEventArgs endOfDayTimingEventArgs )
     {
@@ -330,5 +367,68 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
     {
       ;
     }
+    
+    #region reversePositions
+    private void reversePositions_addReversedTickersToOrderList_addOrderForTicker(int tickerPosition )
+    {
+      string tickerCode = 
+        GenomeManagerForEfficientPortfolio.GetCleanTickerCode(this.reversedTickersForOpenedPositions[tickerPosition]);
+      double cashForSinglePosition = 
+        this.account.CashAmount * this.chosenTickersPortfolioWeights[tickerPosition];
+      long quantity =
+        Convert.ToInt64( Math.Floor( cashForSinglePosition / this.account.DataStreamer.GetCurrentBid( tickerCode ) ) );
+      Order order;
+      if(this.portfolioType == PortfolioType.OnlyShort ||
+        (this.portfolioType == PortfolioType.ShortAndLong &&
+        this.reversedTickersForOpenedPositions[tickerPosition] != tickerCode))
+        order = new Order( OrderType.MarketSellShort, new Instrument( tickerCode ) , quantity );  
+      else      		
+        order = new Order( OrderType.MarketBuy, new Instrument( tickerCode ) , quantity );
+      
+      this.orders.Add(order);
+    }
+
+    private void reversePositions_addReversedTickersToOrderList()
+    {
+      for( int i = 0; i<this.reversedTickersForOpenedPositions.Length; i++)
+      {
+        if(this.reversedTickersForOpenedPositions[i] != null)
+        {  
+          this.reversePositions_addReversedTickersToOrderList_addOrderForTicker( i );
+          this.lastOrderedTickers[i] = 
+            GenomeManagerForEfficientPortfolio.GetCleanTickerCode(this.reversedTickersForOpenedPositions[i]);
+        }
+      }
+    }
+    
+    
+    private void reversePositions_setReversedTickers()
+    {
+      string sign = "";
+      string instrumentKey = "";
+      Position[] positions = new Position[this.chosenTickers.Length];
+      this.account.Portfolio.Positions.CopyTo(positions, 0);
+      for(int i = 0; i<this.account.Portfolio.Count; i++)
+      {  
+        instrumentKey = positions[i].Instrument.Key;
+        if(positions[i].IsShort)
+          sign = "";
+        else
+          sign = "-";
+        this.reversedTickersForOpenedPositions[i] = sign + instrumentKey;
+      } 
+    }  
+
+    protected void reversePositions()
+    {
+      this.reversedTickersForOpenedPositions = 
+        new string[this.chosenTickers.Length];
+      this.reversePositions_setReversedTickers();
+      this.closePositions();
+      this.orders.Clear();
+      this.openPositions(this.reversedTickersForOpenedPositions);
+    }   
+    #endregion
+
   } // end of class
 }
