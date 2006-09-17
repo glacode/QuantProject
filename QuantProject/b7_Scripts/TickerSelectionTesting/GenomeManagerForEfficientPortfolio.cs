@@ -25,6 +25,7 @@ using System.Data;
 using System.Collections;
 using QuantProject.ADT.Statistics;
 using QuantProject.ADT.Optimizing.Genetic;
+using QuantProject.ADT.Optimizing.BruteForce;
 using QuantProject.Data;
 using QuantProject.Data.DataTables;
 using QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios;
@@ -67,17 +68,17 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
     }
     
     //IGenomeManager implementation for properties 
-    public int GenomeSize
+    public virtual int GenomeSize
     {
       get{return this.genomeSize;}
     }
     
-    public int GetMinValueForGenes(int genePosition)
+    public virtual int GetMinValueForGenes(int genePosition)
     {
       return this.minValueForGenes;
     }
     
-    public int GetMaxValueForGenes(int genePosition)
+    public virtual int GetMaxValueForGenes(int genePosition)
     {
       return this.maxValueForGenes;
     }
@@ -238,6 +239,34 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
       return returnValue;
     }
     
+    public virtual double GetFitnessValue(BruteForceOptimizableParameters bruteForceOptimizableParameters)
+    {
+      double returnValue = 0;
+      this.portfolioRatesOfReturn = 
+      	this.getPortfolioRatesOfReturn(bruteForceOptimizableParameters.GetValues());
+      double averagePortfolioRateOfReturn = 
+            BasicFunctions.SimpleAverage(this.portfolioRatesOfReturn);
+        
+      double portfolioVariance = 
+            BasicFunctions.Variance(this.portfolioRatesOfReturn);
+
+      if(!Double.IsInfinity(portfolioVariance) &&
+         !Double.IsInfinity(averagePortfolioRateOfReturn) &&
+         !Double.IsNaN(portfolioVariance) &&
+         !Double.IsNaN(averagePortfolioRateOfReturn) &&
+        	portfolioVariance > 0.0)
+      //both variance and rate of return are 
+      //double values computed in the right way:
+      // so it's possible to assign fitness
+      {
+	      this.variance = portfolioVariance;
+      	this.rateOfReturn = averagePortfolioRateOfReturn;
+      	returnValue = this.getFitnessValue_calculate();
+      }
+      
+      return returnValue;
+    }
+    
     #endregion
 
     public virtual Genome[] GetChilds(Genome parent1, Genome parent2)
@@ -300,6 +329,20 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
       return initialCharForTickerCode + this.setOfCandidates[position].Ticker;
     }
 
+    public virtual object Decode(BruteForceOptimizableParameters bruteForceOptimizableParameters)
+    {
+     	string[] arrayOfTickers = 
+    		new string[bruteForceOptimizableParameters.GetValues().Length];
+      int indexOfTicker;
+      for(int index = 0; index < bruteForceOptimizableParameters.GetValues().Length; index++)
+      {
+      	indexOfTicker = bruteForceOptimizableParameters.GetValues()[index];
+        arrayOfTickers[index] = this.decode_getTickerCodeForLongOrShortTrade(indexOfTicker);
+      }
+      GenomeMeaning meaning = new GenomeMeaning(arrayOfTickers);
+      return meaning;
+    }
+    
     public virtual object Decode(Genome genome)
     {
     	
@@ -387,7 +430,7 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
     
     #region getPortfolioRatesOfReturn
     
-    protected int getPortfolioRatesOfReturn_getRateOfTickerToBeAddedToTheArray_getPositionInArray(int geneValueForTickerIdx)
+    protected int getPortfolioRatesOfReturn_getRateOfTickerToBeAddedToTheArray_getPositionInSetOfCandidates(int geneValueForTickerIdx)
     {
       int position = geneValueForTickerIdx;
       if(geneValueForTickerIdx<0)
@@ -403,7 +446,7 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
       if(genes[tickerPositionInGenes] > 0)
         //genes[tickerPositionInGenes], the code for ticker, points to a ticker for which long returns are to be examined
         longReturns = true;
-      int position = this.getPortfolioRatesOfReturn_getRateOfTickerToBeAddedToTheArray_getPositionInArray(genes[tickerPositionInGenes]);
+      int position = this.getPortfolioRatesOfReturn_getRateOfTickerToBeAddedToTheArray_getPositionInSetOfCandidates(genes[tickerPositionInGenes]);
       this.setOfCandidates[position].LongRatesOfReturn = longReturns;
       float[] arrayOfRatesOfReturn = this.setOfCandidates[position].ArrayOfRatesOfReturn;
       double tickerWeight = this.getTickerWeight(genes,tickerPositionInGenes);
