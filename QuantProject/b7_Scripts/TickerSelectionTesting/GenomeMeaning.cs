@@ -30,6 +30,7 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
   [Serializable]
   public class GenomeMeaning
   {
+  	  	
   	private string[] tickers;
   	private double[] tickersPortfolioWeights;
   	private double returnAtLastDayInSample;
