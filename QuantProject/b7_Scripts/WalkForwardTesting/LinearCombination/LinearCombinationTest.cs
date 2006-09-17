@@ -22,6 +22,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 using System;
 using System.Collections;
+using System.Drawing;
 
 using QuantProject.Business.DataProviders;
 using QuantProject.Business.Financial.Accounting;
@@ -31,6 +32,7 @@ using QuantProject.Business.Strategies;
 using QuantProject.Business.Timing;
 using QuantProject.Presentation.Reporting.WindowsForm;
 using QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios;
+using QuantProject.Scripts.WalkForwardTesting.WalkForwardLag;
 
 
 namespace QuantProject.Scripts.WalkForwardTesting.LinearCombination
@@ -138,6 +140,13 @@ namespace QuantProject.Scripts.WalkForwardTesting.LinearCombination
           this.endOfDayStrategy = new ImmediateTrendFollowerStrategy(
             this.account , signedTickers , weightsForSignedTickers, this.numDaysForOscillatorStrategy );
           break;
+        
+        case StrategyType.PortfolioValueOscillator:
+          this.endOfDayStrategy = new FixedLevelOscillatorPVOStrategy(
+            this.account , signedTickers , weightsForSignedTickers, 
+            this.genomeRepresentation.OversoldThreshold, this.genomeRepresentation.OverboughtThreshold,
+            this.numDaysForOscillatorStrategy );
+          break;
       }
 		}
 		private string getDateString( DateTime dateTime )
@@ -159,7 +168,36 @@ namespace QuantProject.Scripts.WalkForwardTesting.LinearCombination
 				this.genomeRepresentation.LastOptimizationDate );
 			return returnValue;
 		}
-		public void Run()
+		
+    private void run_addEquityLineForWeightedPositions(
+      WeightedPositions weightedPositions , Color color , Report report )
+    {
+      EquityLine equityLineForWeightedPositions =
+        weightedPositions.GetVirtualEquityLine(
+        30000 , report.AccountReport.EquityLine );
+      report.AddEquityLine( equityLineForWeightedPositions ,
+        color );
+    }
+    
+    private WeightedPositions run_getWeightedPositions(GenomeRepresentation genomeRepresentation)
+      
+    {
+      double[] normalizedWeights = 
+        GenomeRepresentation.GetWeightsArray(this.genomeRepresentation.WeightsForSignedTickers);
+      string[] tickers = 
+        GenomeRepresentation.GetSignedTickers(this.genomeRepresentation.SignedTickers);
+      for(int i = 0; i<tickers.Length; i++)
+      {
+        if(tickers[i].StartsWith("-"))
+        {
+          tickers[i] = SignedTicker.GetTicker(tickers[i]);
+          normalizedWeights[i] = -1.0 * normalizedWeights[i];
+        }
+      }
+      return new WeightedPositions(normalizedWeights, tickers);
+    }
+
+    public void Run()
 		{
 			this.historicalEndOfDayTimer =
 				new IndexBasedEndOfDayTimer(
@@ -189,9 +227,13 @@ namespace QuantProject.Scripts.WalkForwardTesting.LinearCombination
 			this.account.EndOfDayTimer.Start();
 
 			Report report = new Report( this.account , this.historicalQuoteProvider );
-			report.Create( "Linear Combination" , 1 ,
+      report.Create( "Linear Combination" , 1 ,
 				new EndOfDayDateTime( this.lastDate , EndOfDaySpecificTime.MarketClose ) ,
 			"^GSPC");
+      WeightedPositions weightedPositions = 
+        this.run_getWeightedPositions(this.genomeRepresentation);
+      this.run_addEquityLineForWeightedPositions(weightedPositions, Color.Brown,
+                                                  report);
 
 			//			ObjectArchiver.Archive( report.AccountReport ,
 			//				@"C:\Documents and Settings\Glauco\Desktop\reports\runOneRank.qPr" );

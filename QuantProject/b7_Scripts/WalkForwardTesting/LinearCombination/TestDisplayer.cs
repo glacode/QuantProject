@@ -58,6 +58,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.LinearCombination
     private System.Windows.Forms.RadioButton radioButtonImmediateTrendFollower;
     private StrategyType selectedStrategyType = StrategyType.OpenToCloseDaily;
     private System.Windows.Forms.Label labelPortfolioType;
+    private System.Windows.Forms.RadioButton radioButtonPVO;
     private System.Windows.Forms.ComboBox comboBoxPortfolioType;
     
 		private void testDisplayer()
@@ -96,11 +97,26 @@ namespace QuantProject.Scripts.WalkForwardTesting.LinearCombination
       genNumber.HeaderText = "GenNum";
       ts.GridColumnStyles.Add(genNumber);
       
+      DataGridTextBoxColumn createdGen = new DataGridTextBoxColumn();
+      createdGen.MappingName ="CreatedGenerations";
+      createdGen.HeaderText = "TotGen";
+      ts.GridColumnStyles.Add(createdGen);
+      
       DataGridTextBoxColumn eligible = new DataGridTextBoxColumn();
       eligible.MappingName ="EligibleTickers";
       eligible.HeaderText = "EligibleTickers";
       ts.GridColumnStyles.Add(eligible);
       
+      DataGridTextBoxColumn oversoldThreshold = new DataGridTextBoxColumn();
+      oversoldThreshold.MappingName ="OversoldThreshold";
+      oversoldThreshold.HeaderText = "OversoldThreshold";
+      ts.GridColumnStyles.Add(oversoldThreshold);
+
+      DataGridTextBoxColumn overboughtThreshold = new DataGridTextBoxColumn();
+      overboughtThreshold.MappingName ="OverboughtThreshold";
+      overboughtThreshold.HeaderText = "OverboughtThreshold";
+      ts.GridColumnStyles.Add(overboughtThreshold);
+
       this.dgBestGenomes.TableStyles.Clear();
       ts.AllowSorting = true;
       this.dgBestGenomes.TableStyles.Add(ts);
@@ -171,6 +187,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.LinearCombination
       this.radioButtonImmediateTrendFollower = new System.Windows.Forms.RadioButton();
       this.comboBoxPortfolioType = new System.Windows.Forms.ComboBox();
       this.labelPortfolioType = new System.Windows.Forms.Label();
+      this.radioButtonPVO = new System.Windows.Forms.RadioButton();
       ((System.ComponentModel.ISupportInitialize)(this.dgBestGenomes)).BeginInit();
       this.SuspendLayout();
       // 
@@ -205,7 +222,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.LinearCombination
       // 
       // textBoxDaysFPOscillatorAndRevOneRank
       // 
-      this.textBoxDaysFPOscillatorAndRevOneRank.Location = new System.Drawing.Point(320, 176);
+      this.textBoxDaysFPOscillatorAndRevOneRank.Location = new System.Drawing.Point(472, 128);
       this.textBoxDaysFPOscillatorAndRevOneRank.Name = "textBoxDaysFPOscillatorAndRevOneRank";
       this.textBoxDaysFPOscillatorAndRevOneRank.Size = new System.Drawing.Size(56, 20);
       this.textBoxDaysFPOscillatorAndRevOneRank.TabIndex = 8;
@@ -262,9 +279,9 @@ namespace QuantProject.Scripts.WalkForwardTesting.LinearCombination
       // 
       // labelDays
       // 
-      this.labelDays.Location = new System.Drawing.Point(272, 176);
+      this.labelDays.Location = new System.Drawing.Point(432, 136);
       this.labelDays.Name = "labelDays";
-      this.labelDays.Size = new System.Drawing.Size(40, 16);
+      this.labelDays.Size = new System.Drawing.Size(32, 16);
       this.labelDays.TabIndex = 9;
       this.labelDays.Text = "days";
       // 
@@ -287,7 +304,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.LinearCombination
       // 
       // comboBoxPortfolioType
       // 
-      this.comboBoxPortfolioType.Location = new System.Drawing.Point(480, 104);
+      this.comboBoxPortfolioType.Location = new System.Drawing.Point(472, 80);
       this.comboBoxPortfolioType.Name = "comboBoxPortfolioType";
       this.comboBoxPortfolioType.Size = new System.Drawing.Size(184, 21);
       this.comboBoxPortfolioType.TabIndex = 13;
@@ -295,17 +312,27 @@ namespace QuantProject.Scripts.WalkForwardTesting.LinearCombination
       // 
       // labelPortfolioType
       // 
-      this.labelPortfolioType.Location = new System.Drawing.Point(480, 88);
+      this.labelPortfolioType.Location = new System.Drawing.Point(472, 64);
       this.labelPortfolioType.Name = "labelPortfolioType";
       this.labelPortfolioType.Size = new System.Drawing.Size(100, 16);
       this.labelPortfolioType.TabIndex = 14;
       this.labelPortfolioType.Text = "Type of portfolio";
+      // 
+      // radioButtonPVO
+      // 
+      this.radioButtonPVO.Location = new System.Drawing.Point(232, 168);
+      this.radioButtonPVO.Name = "radioButtonPVO";
+      this.radioButtonPVO.Size = new System.Drawing.Size(192, 24);
+      this.radioButtonPVO.TabIndex = 15;
+      this.radioButtonPVO.Text = "Portfolio Value Oscillator";
+      this.radioButtonPVO.CheckedChanged += new System.EventHandler(this.radioButtonPVO_CheckedChanged);
       // 
       // TestDisplayer
       // 
       this.AutoScaleBaseSize = new System.Drawing.Size(5, 13);
       this.ClientSize = new System.Drawing.Size(704, 373);
       this.Controls.AddRange(new System.Windows.Forms.Control[] {
+                                                                  this.radioButtonPVO,
                                                                   this.labelPortfolioType,
                                                                   this.comboBoxPortfolioType,
                                                                   this.radioButtonImmediateTrendFollower,
@@ -435,6 +462,8 @@ namespace QuantProject.Scripts.WalkForwardTesting.LinearCombination
         this.selectedStrategyType = StrategyType.OpenToCloseCloseToOpenDaily;
       else if(this.radioButtonImmediateTrendFollower.Checked)
         this.selectedStrategyType = StrategyType.ImmediateTrendFollower;
+      else if(this.radioButtonPVO.Checked)
+        this.selectedStrategyType = StrategyType.PortfolioValueOscillator;
     }
     
     private void radioButtonOpenToCloseDaily_CheckedChanged(object sender, System.EventArgs e)
@@ -465,6 +494,11 @@ namespace QuantProject.Scripts.WalkForwardTesting.LinearCombination
     }
 
     private void radioButtonImmediateTrendFollower_CheckedChanged(object sender, System.EventArgs e)
+    {
+      this.update_selectedStrategyType();
+    }
+
+    private void radioButtonPVO_CheckedChanged(object sender, System.EventArgs e)
     {
       this.update_selectedStrategyType();
     }

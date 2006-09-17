@@ -26,6 +26,7 @@ using System.Runtime.Serialization;
 
 using QuantProject.ADT;
 using QuantProject.ADT.Optimizing.Genetic;
+using QuantProject.ADT.Optimizing.BruteForce;
 using QuantProject.Business.Financial.Ordering;
 using QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios;
 
@@ -46,6 +47,9 @@ namespace QuantProject.Scripts.WalkForwardTesting.LinearCombination
 		private int eligibleTickers = -1;
     private int halfPeriodDays = -1;
     private PortfolioType portfolioType = PortfolioType.ShortAndLong;
+		private int createdGenerations = -1;
+    private double oversoldThreshold = 0.0;
+    private double overboughtThreshold = 0.0;
 		
 		public string SignedTickers
 		{
@@ -90,6 +94,15 @@ namespace QuantProject.Scripts.WalkForwardTesting.LinearCombination
 			get { return this.generationCounter; }
 		}
 
+		/// <summary>
+		/// Total number of the generations created by the GO
+		/// that produced the current genome
+		/// </summary>
+		public int CreatedGenerations
+		{
+			get { return this.createdGenerations; }
+		}
+		
     public int HalfPeriodDays
     {
       get
@@ -105,6 +118,23 @@ namespace QuantProject.Scripts.WalkForwardTesting.LinearCombination
         return this.portfolioType;
       }
     }
+
+    public double OversoldThreshold
+    {
+      get
+      {
+        return this.oversoldThreshold;
+      }
+    }
+    
+    public double OverboughtThreshold
+    {
+      get
+      {
+        return this.overboughtThreshold;
+      }
+    }
+
 //		public static string[] GetSignedTickers( string signedTickers )
 //		{
 //			string[] returnValue = signedTickers.Split( ";".ToCharArray());
@@ -123,11 +153,11 @@ namespace QuantProject.Scripts.WalkForwardTesting.LinearCombination
         return returnValue;
     	}
 
-		public static string[] GetSignedTickers( string signedTickersWithWeights )
+		public static string[] GetSignedTickers( string signedTickersWithOrWithoutWeights )
 		{
 			string[] returnValue = 
-        signedTickersWithWeights.Split( ConstantsProvider.SeparatorForTickers.ToCharArray());
-			if( signedTickersWithWeights.Split( ConstantsProvider.SeparatorForWeights.ToCharArray() ).Length > 1 )
+        signedTickersWithOrWithoutWeights.Split( ConstantsProvider.SeparatorForTickers.ToCharArray());
+			if( signedTickersWithOrWithoutWeights.Split( ConstantsProvider.SeparatorForWeights.ToCharArray() ).Length > 1 )
 			//the separator char for tickers is contained in signedTickersWithWeights: 
 			//so weights have been saved within tickers, separated by this special char
 			{
@@ -140,23 +170,23 @@ namespace QuantProject.Scripts.WalkForwardTesting.LinearCombination
 			return returnValue;
 		}
 	
-		public static double[] GetWeightsForSignedTickers( string signedTickersWithWeights )
+		public static double[] GetWeightsForSignedTickers( string signedTickersWithOrWithoutWeights )
 		{
-			string[] signedTickersWithWeightsArray = 
-								signedTickersWithWeights.Split( ConstantsProvider.SeparatorForTickers.ToCharArray() );
+			string[] signedTickersWithOrWithoutWeightsArray = 
+								signedTickersWithOrWithoutWeights.Split( ConstantsProvider.SeparatorForTickers.ToCharArray() );
 			double[] returnValue =
-				new double[signedTickersWithWeightsArray.Length];
+				new double[signedTickersWithOrWithoutWeights.Length];
 			for(int i = 0; i<returnValue.Length; i++)
 				returnValue[i] = 1.0/returnValue.Length;
 			
-			if((signedTickersWithWeights.Split(ConstantsProvider.SeparatorForWeights.ToCharArray())).Length > 1)
+			if((signedTickersWithOrWithoutWeights.Split(ConstantsProvider.SeparatorForWeights.ToCharArray())).Length > 1)
 			//the separator for weights is contained in signedTickersWithWeights: 
 			//so weights have been saved within tickers, separated by this char
 			{
 				for(int i = 0; i<returnValue.Length; i++)
 				{
 					returnValue[i] = 
-						Convert.ToDouble( signedTickersWithWeightsArray[i].Split( ConstantsProvider.SeparatorForWeights.ToCharArray() )[1] );
+						Convert.ToDouble( signedTickersWithOrWithoutWeightsArray[i].Split( ConstantsProvider.SeparatorForWeights.ToCharArray() )[1] );
 				}
 			}	
 			return returnValue;
@@ -181,16 +211,16 @@ namespace QuantProject.Scripts.WalkForwardTesting.LinearCombination
 			return returnValue;
 		}
 
-		private string getSignedTickers( Genome genome )
+		private string getSignedTickers( string[] signedTickersArray )
 		{
 			string signedTickers = "";
-			foreach ( string geneValue in ((GenomeMeaning)genome.Meaning).Tickers )
-				signedTickers += geneValue + ";";
+			foreach ( string signedTicker in signedTickersArray )
+				signedTickers += signedTicker + ";";
 			signedTickers = signedTickers.Substring( 0 ,
 				signedTickers.Length - 1 );
 			return signedTickers;
 		}
-    
+    		
     private string getWeights( Genome genome )
     {
       string weights = "";
@@ -199,8 +229,8 @@ namespace QuantProject.Scripts.WalkForwardTesting.LinearCombination
       weights = weights.Substring( 0, weights.Length - 1 );
       return weights;
     }
-
-//		private string getSignedTickersWithWeights( Genome genome )
+		
+    //		private string getSignedTickersWithWeights( Genome genome )
 //		{
 //			string signedTickersWithWeights = "";
 //			for ( int i = 0; i<((GenomeMeaning)genome.Meaning).Tickers.Length; i++ )
@@ -264,11 +294,13 @@ namespace QuantProject.Scripts.WalkForwardTesting.LinearCombination
 		
 		private void genomeRepresentation( Genome genome ,
 			DateTime firstOptimizationDate , DateTime lastOptimizationDate ,
-			int generationCounter, int eligibleTickers, int halfPeriodDays, PortfolioType portfolioType )
+			int generationCounter, int eligibleTickers,
+			int halfPeriodDays, PortfolioType portfolioType,
+		  int createdGenerations)
 		{
 			this.fitness = genome.Fitness;
 			//this.signedTickers = this.getSignedTickersWithWeights( genome );
-			this.signedTickers = this.getSignedTickers( genome );
+			this.signedTickers = this.getSignedTickers( ((GenomeMeaning)genome.Meaning).Tickers );
 			this.weights = this.getWeights( genome );
       this.firstOptimizationDate = firstOptimizationDate;
 			this.lastOptimizationDate = lastOptimizationDate;
@@ -276,13 +308,14 @@ namespace QuantProject.Scripts.WalkForwardTesting.LinearCombination
 			this.eligibleTickers = eligibleTickers;
       this.halfPeriodDays = halfPeriodDays;
       this.portfolioType = portfolioType;
+      this.createdGenerations = createdGenerations;
 		}
 		
     public GenomeRepresentation( Genome genome ,
 			DateTime firstOptimizationDate , DateTime lastOptimizationDate )
 		{
 			this.genomeRepresentation( genome ,
-				firstOptimizationDate , lastOptimizationDate , -1, -1, -1, PortfolioType.ShortAndLong );
+				firstOptimizationDate , lastOptimizationDate , -1, -1, -1, PortfolioType.ShortAndLong, -1 );
 		}
 		
     public GenomeRepresentation( Genome genome ,
@@ -290,15 +323,30 @@ namespace QuantProject.Scripts.WalkForwardTesting.LinearCombination
 			int generationCounter )
 		{
 			this.genomeRepresentation( genome , firstOptimizationDate ,
-				lastOptimizationDate , generationCounter, -1, -1, PortfolioType.ShortAndLong);
+				lastOptimizationDate , generationCounter, -1, -1, PortfolioType.ShortAndLong, -1);
 		}
+		
+		public GenomeRepresentation( BruteForceOptimizableParameters BFOptimizableParamaters ,
+		                            string[] signedTickersArray,
+		                            DateTime firstOptimizationDate , DateTime lastOptimizationDate ,
+																int eligibleTickers )
+		{
+			this.fitness = BFOptimizableParamaters.Fitness;
+			//this.signedTickers = this.getSignedTickersWithWeights( genome );
+			this.signedTickers = this.getSignedTickers(signedTickersArray);
+			this.weights = null;
+      this.firstOptimizationDate = firstOptimizationDate;
+			this.lastOptimizationDate = lastOptimizationDate;
+			this.eligibleTickers = eligibleTickers;
+   	}
+    
 		
 		public GenomeRepresentation( Genome genome ,
 			DateTime firstOptimizationDate , DateTime lastOptimizationDate ,
 			int generationCounter, int eligibleTickers )
 		{
 			this.genomeRepresentation( genome , firstOptimizationDate ,
-				lastOptimizationDate , generationCounter, eligibleTickers, -1, PortfolioType.ShortAndLong);
+				lastOptimizationDate , generationCounter, eligibleTickers, -1, PortfolioType.ShortAndLong, -1);
 		}
     
     public GenomeRepresentation( Genome genome ,
@@ -307,15 +355,40 @@ namespace QuantProject.Scripts.WalkForwardTesting.LinearCombination
     {
       this.genomeRepresentation( genome , firstOptimizationDate ,
         lastOptimizationDate , generationCounter, eligibleTickers, halfPeriodDays,
-        PortfolioType.ShortAndLong);
+        PortfolioType.ShortAndLong, -1);
     }
     
     public GenomeRepresentation( Genome genome ,
       DateTime firstOptimizationDate , DateTime lastOptimizationDate ,
-      int generationCounter, int eligibleTickers, int halfPeriodDays, PortfolioType portfolioType )
+      int generationCounter, int eligibleTickers,
+      int halfPeriodDays, PortfolioType portfolioType )
     {
       this.genomeRepresentation( genome , firstOptimizationDate ,
-        lastOptimizationDate , generationCounter, eligibleTickers, halfPeriodDays, portfolioType);
+        lastOptimizationDate , generationCounter, eligibleTickers,
+        halfPeriodDays, portfolioType, -1);
+    }
+		
+		 public GenomeRepresentation( Genome genome ,
+      DateTime firstOptimizationDate , DateTime lastOptimizationDate ,
+      int generationCounter, int eligibleTickers,
+      int halfPeriodDays, PortfolioType portfolioType, int createdGenerations )
+    {
+      this.genomeRepresentation( genome , firstOptimizationDate ,
+        lastOptimizationDate , generationCounter, eligibleTickers,
+        halfPeriodDays, portfolioType, createdGenerations);
+    }
+
+    public GenomeRepresentation( Genome genome ,
+      DateTime firstOptimizationDate , DateTime lastOptimizationDate ,
+      int generationCounter, int eligibleTickers,
+      int halfPeriodDays, PortfolioType portfolioType, int createdGenerations,
+      double oversoldThreshold, double overboughtThreshold)
+    {
+      this.genomeRepresentation( genome , firstOptimizationDate ,
+        lastOptimizationDate , generationCounter, eligibleTickers,
+        halfPeriodDays, portfolioType, createdGenerations);
+      this.oversoldThreshold = oversoldThreshold;
+      this.overboughtThreshold = overboughtThreshold;
     }
 
 		#region GetObjectData
