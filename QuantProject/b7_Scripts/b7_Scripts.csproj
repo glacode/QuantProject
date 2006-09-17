@@ -263,6 +263,26 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "TechnicalAnalysisTesting\Oscillators\FixedLevelOscillators\PortfolioValueOscillator\EndOfDayTimerHandlerPVO.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "TechnicalAnalysisTesting\Oscillators\FixedLevelOscillators\PortfolioValueOscillator\GenomeManagerPVO.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "TechnicalAnalysisTesting\Oscillators\FixedLevelOscillators\PortfolioValueOscillator\GenomeMeaningPVO.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "TechnicalAnalysisTesting\Oscillators\FixedLevelOscillators\PortfolioValueOscillator\RunPVO.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "TechnicalAnalysisTesting\Oscillators\FixedPeriodOscillators\EndOfDayTimerHandlerFPOscillatorCTC.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
@@ -503,6 +523,21 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "TickerSelectionTesting\TestingOTCTypes\BruteForceOptimization\EndOfDayTimerHandlerOTCTypesBruteForce.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "TickerSelectionTesting\TestingOTCTypes\BruteForceOptimization\OTCBruteForceOptimizableParametersManager.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "TickerSelectionTesting\TestingOTCTypes\BruteForceOptimization\RunEfficientOTCTypesBruteForce.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "WalkForwardTesting\IWalkForwardProgressNotifier.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
@@ -514,6 +549,11 @@
                 />
                 <File
                     RelPath = "WalkForwardTesting\LinearCombination\ExtremeCounterTrendStrategy.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "WalkForwardTesting\LinearCombination\FixedLevelOscillatorPVOStrategy.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
@@ -541,11 +581,6 @@
                     RelPath = "WalkForwardTesting\LinearCombination\MainForm.cs"
                     SubType = "Form"
                     BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "WalkForwardTesting\LinearCombination\MainForm.resx"
-                    DependentUpon = "MainForm.cs"
-                    BuildAction = "EmbeddedResource"
                 />
                 <File
                     RelPath = "WalkForwardTesting\LinearCombination\OpenToCloseDailyStrategy.cs"
@@ -581,11 +616,6 @@
                     RelPath = "WalkForwardTesting\LinearCombination\TestDisplayer.cs"
                     SubType = "Form"
                     BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "WalkForwardTesting\LinearCombination\TestDisplayer.resx"
-                    DependentUpon = "TestDisplayer.cs"
-                    BuildAction = "EmbeddedResource"
                 />
                 <File
                     RelPath = "WalkForwardTesting\LinearCombination\WalkForwardTest\RunWalkForwardLinearCombination.cs"
