@@ -135,7 +135,7 @@
                 />
                 <File
                     RelPath = "ExtendedDataTable.cs"
-                    SubType = "Component"
+                    SubType = "Code"
                     BuildAction = "Compile"
                 />
                 <File
