@@ -157,7 +157,7 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedPeriodO
     private void marketCloseEventHandler_openPositionsIfTuned(IndexBasedEndOfDayTimer timer)
     {
     	if(this.marketCloseEventHandler_openPositionsIfTuned_isTuned(timer))
-        base.openPositions();
+        base.openPositions(this.chosenTickers);
     }
     
     private void marketCloseEventHandler_closePositions()

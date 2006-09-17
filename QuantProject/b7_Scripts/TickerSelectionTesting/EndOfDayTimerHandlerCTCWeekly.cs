@@ -99,7 +99,7 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
     	
     	if(endOfDayTimingEventArgs.EndOfDayDateTime.DateTime.DayOfWeek == 
     	   DayOfWeek.Monday)
-    		this.openPositions();
+    		this.openPositions(this.chosenTickers);
     	
     	if(this.stopLossConditionReached ||
     	   endOfDayTimingEventArgs.EndOfDayDateTime.DateTime.DayOfWeek == 

@@ -97,7 +97,7 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
       this.ordersForAccounts[accountNumber].Add(order);
     }
 
-    protected override void addChosenTickersToOrderList()
+    protected override void addChosenTickersToOrderList(string[] tickers)
     {
       for(int i = 0; i<this.accounts.Length; i++)
       {
@@ -115,7 +115,7 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
     }
 
 
-    protected override void openPositions()
+    protected override void openPositions(string[] tickers)
     {
       //add cash first
       for(int i = 0; i<this.accounts.Length; i++)
@@ -124,7 +124,7 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
               this.accounts[i].AddCash(17000);  
       }
 
-      this.addChosenTickersToOrderList();
+      this.addChosenTickersToOrderList(tickers);
       //execute orders actually
       for(int i = 0; i<this.accounts.Length; i++)
       {
@@ -167,7 +167,7 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
     {
     	//temporarily the if condition
     	//if(this.numDaysElapsedSinceLastOptimization == 0)
-    		this.openPositions();
+    		this.openPositions(this.chosenTickers);
     }
 		
                 

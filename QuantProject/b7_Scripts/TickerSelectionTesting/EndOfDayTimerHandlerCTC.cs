@@ -131,7 +131,7 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
 				if(this.daysCounterWithNoPositions == this.numDaysWithNoPositions ||
            this.Account.Transactions.Count <= 1)
 				{
-					this.openPositions();
+					this.openPositions(this.chosenTickers);
         	this.daysCounterWithNoPositions = 0;
 				}
 			}

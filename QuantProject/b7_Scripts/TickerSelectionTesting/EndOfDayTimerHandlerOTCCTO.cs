@@ -77,7 +77,7 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
     	//temporarily the if condition
     	//if(this.numDaysElapsedSinceLastOptimization == 0)
     	this.closePositions();	
-      this.openPositions();
+      this.openPositions(this.chosenTickers);
     }
     private void reverseSignOfChosenTickers()
     {
@@ -104,7 +104,7 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
     	this.closePositions();
       this.orders.Clear();
       this.reverseSignOfChosenTickers();
-      this.openPositions();
+      this.openPositions(this.chosenTickers);
       this.reverseSignOfChosenTickers();
     }
     

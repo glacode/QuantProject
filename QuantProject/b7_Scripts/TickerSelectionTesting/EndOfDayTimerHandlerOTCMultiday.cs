@@ -76,7 +76,7 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
     {
     	
     	if(this.numDaysElapsedSinceLastOptimization == 0)
-    			this.openPositions();
+    			this.openPositions(this.chosenTickers);
     }
 		
                 

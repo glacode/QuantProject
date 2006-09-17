@@ -131,13 +131,13 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.TrendFollowing.Immediate
     	//last half period gain has been properly computed
     	{
     		if(lastHalfPeriodGain > 0.0)
-    			base.openPositions();
+    			base.openPositions(this.chosenTickers);
     		else//the last HalfPeriodGain has been negative
     		{
     			SignedTicker.ChangeSignOfEachTicker(this.chosenTickers);
     			//short the portfolio
     			try{
-            base.openPositions();
+            base.openPositions(this.chosenTickers);
           }
     			catch(Exception ex)
           { 

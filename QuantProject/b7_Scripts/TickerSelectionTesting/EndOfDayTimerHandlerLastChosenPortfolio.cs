@@ -70,7 +70,7 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
     {
     	if(endOfDayTimingEventArgs.EndOfDayDateTime.CompareTo(this.firstDate) == 0)
     	{
-    		this.openPositions();
+    		this.openPositions(this.chosenTickers);
     	}
     }
 		

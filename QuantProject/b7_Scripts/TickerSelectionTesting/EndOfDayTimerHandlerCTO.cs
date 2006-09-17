@@ -87,7 +87,7 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
 //      if(this.numDaysElapsedSinceLastOptimization < 
 //                  this.numDaysBetweenEachOptimization - 1)
 //      {
-      this.openPositions();
+      this.openPositions(this.chosenTickers);
 //      }
     }
 

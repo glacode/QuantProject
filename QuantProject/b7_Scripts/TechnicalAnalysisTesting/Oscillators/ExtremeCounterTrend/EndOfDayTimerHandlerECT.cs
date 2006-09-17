@@ -138,14 +138,14 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.ExtremeCount
     	//last half period gain has been properly computed
     	{
     		if(lastHalfPeriodGain < 0.0)
-    			base.openPositions();
+    			base.openPositions(this.chosenTickers);
     		else if (lastHalfPeriodGain > 0.0 &&
                   this.portfolioType == PortfolioType.ShortAndLong)
     		{
     			SignedTicker.ChangeSignOfEachTicker(this.chosenTickers);
     			//short the portfolio
     			try{
-            base.openPositions();
+            base.openPositions(this.chosenTickers);
           }
     			catch(Exception ex)
           {
@@ -196,22 +196,22 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.ExtremeCount
       DataTable tickersFromGroup = temporizedGroup.GetTableOfSelectedTickers();
       int numOfTickersInGroupAtCurrentDate = tickersFromGroup.Rows.Count;
       
-//      	SelectorByAverageRawOpenPrice byPrice =
-//      		new SelectorByAverageRawOpenPrice(tickersFromGroup,false,currentDate,
-//      	                                  currentDate.AddDays(-30),
-//      	                                  numOfTickersInGroupAtCurrentDate,
-//      	                                  30,500, 0.0001,100);
+      	SelectorByAverageRawOpenPrice byPrice =
+      		new SelectorByAverageRawOpenPrice(tickersFromGroup,false,currentDate,
+      	                                  currentDate.AddDays(-30),
+      	                                  numOfTickersInGroupAtCurrentDate,
+      	                                  20,500, 0.0001,100);
  
-//      SelectorByLiquidity mostLiquidSelector =
-//      	new SelectorByLiquidity(byPrice.GetTableOfSelectedTickers(),
-//        false,currentDate.AddDays(-this.numDaysForOptimizationPeriod), currentDate,
-//        this.numberOfEligibleTickers);
+      SelectorByLiquidity mostLiquidSelector =
+      	new SelectorByLiquidity(byPrice.GetTableOfSelectedTickers() ,
+        false,currentDate.AddDays(-this.numDaysForOptimizationPeriod), currentDate,
+        this.numberOfEligibleTickers);
       
 //      SelectorByQuotationAtEachMarketDay quotedAtEachMarketDayFromByPrice = 
         SelectorByQuotationAtEachMarketDay quotedAtEachMarketDayFromGroup =
-        new SelectorByQuotationAtEachMarketDay(tickersFromGroup,
+        	new SelectorByQuotationAtEachMarketDay(mostLiquidSelector.GetTableOfSelectedTickers(),
         false, currentDate.AddDays(-this.numDaysForOptimizationPeriod), currentDate,
-        numOfTickersInGroupAtCurrentDate, this.benchmark);
+        this.numberOfEligibleTickers, this.benchmark);
      
 //      SelectorByCloseToCloseVolatility lessVolatile =
 //      	new SelectorByCloseToCloseVolatility(quotedAtEachMarketDayFromByPrice.GetTableOfSelectedTickers(),
@@ -267,14 +267,19 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.ExtremeCount
           this.populationSizeForGeneticOptimizer, 
           this.generationNumberForGeneticOptimizer,
           this.seedForRandomGenerator);
-        GO.CrossoverRate = 0.50;
+        
         if(setGenomeCounter)
           this.genomeCounter = new GenomeCounter(GO);
-        
+//        GO.ElitismRate = 0.00;
+        GO.MutationRate = 0.3;
+        GO.CrossoverRate = 0.9;
+//        GO.MinConvergenceRate = 0.75;
+//        GO.KeepOnRunningUntilConvergenceIsReached = true;
+        //GO.CrossoverRate = 0.5;
         GO.Run(false);
         this.addGenomeToBestGenomes(GO.BestGenome,((GenomeManagerForEfficientPortfolio)this.iGenomeManager).FirstQuoteDate,
           ((GenomeManagerForEfficientPortfolio)this.iGenomeManager).LastQuoteDate, setOfTickersToBeOptimized.Rows.Count,
-          this.numDaysForReturnCalculation, this.portfolioType);
+          this.numDaysForReturnCalculation, this.portfolioType, GO.GenerationCounter);
         this.chosenTickers = ((GenomeMeaning)GO.BestGenome.Meaning).Tickers;
         this.chosenTickersPortfolioWeights = ((GenomeMeaning)GO.BestGenome.Meaning).TickersPortfolioWeights;
       }
@@ -299,7 +304,7 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.ExtremeCount
       //num days without optimization has elapsed or
       //it is the first close (OLD IMPLEMENTATION)
       {
-        this.setTickers(endOfDayTimingEventArgs.EndOfDayDateTime.DateTime, false);
+        this.setTickers(endOfDayTimingEventArgs.EndOfDayDateTime.DateTime, true);
         //sets tickers to be chosen next Market Close event
         this.numDaysElapsedSinceLastOptimization = 0;
       }

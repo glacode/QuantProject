@@ -97,7 +97,7 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
       this.ordersForAccounts[accountNumber].Add(order);
     }
 
-    protected override void addChosenTickersToOrderList()
+    protected override void addChosenTickersToOrderList(string[] tickers)
     {
       for(int i = 0; i<this.accounts.Length; i++)
       {

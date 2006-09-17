@@ -221,7 +221,7 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
       		new SelectorByAverageRawOpenPrice(tickersFromGroup,false,currentDate,
       	                                  currentDate.AddDays(-30),
       	                                  tickersFromGroup.Rows.Count,
-      	                                  30,500, 0.0001,100);
+      	                                  20,500, 0.0001,100);
       	                                  
       
       SelectorByLiquidity mostLiquidSelector =
@@ -261,10 +261,12 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
                                                    this.seedForRandomGenerator);
         if(setGenomeCounter)
         	this.genomeCounter = new GenomeCounter(GO);
-        
+        GO.MutationRate = 0.2;
+        GO.CrossoverRate = 0.95;
         GO.Run(false);
         this.addGenomeToBestGenomes(GO.BestGenome,currentDate.AddDays(-this.numDaysForOptimizationPeriod),
-                                    currentDate,setOfTickersToBeOptimized.Rows.Count);
+                                    currentDate,setOfTickersToBeOptimized.Rows.Count,-1, this.portfolioType,
+                                    GO.GenerationCounter);
         this.chosenTickers = ((GenomeMeaning)GO.BestGenome.Meaning).Tickers;
         this.chosenTickersPortfolioWeights = ((GenomeMeaning)GO.BestGenome.Meaning).TickersPortfolioWeights;
         

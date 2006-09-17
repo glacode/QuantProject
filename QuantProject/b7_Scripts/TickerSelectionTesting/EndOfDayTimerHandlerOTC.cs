@@ -125,7 +125,7 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
       }
       if(allTickerHasBeenChosen && 
          this.marketOpenEventHandler_currCombinationHasLost())
-          this.openPositions();
+          this.openPositions(this.chosenTickers);
     }
 		
                 

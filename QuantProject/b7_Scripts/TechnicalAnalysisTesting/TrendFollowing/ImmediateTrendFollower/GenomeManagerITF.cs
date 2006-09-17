@@ -89,29 +89,32 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.TrendFollowing.Immediate
     
     private double[] getFitnessValue_getEquityLineRates()
     {
-    	double[] returnValue = new double[this.PortfolioRatesOfReturn.Length];
-      double gainForTheLastHalfPeriod = 0.0;
+      double[] returnValue = new double[this.PortfolioRatesOfReturn.Length];
+      double K;//initial capital invested at the beginning of the period
       for(int i = this.numDaysForReturnCalculation - 1;
-          i<this.PortfolioRatesOfReturn.Length - this.numDaysForReturnCalculation;
-          i += this.numDaysForReturnCalculation)
+        i<this.PortfolioRatesOfReturn.Length - this.numDaysForReturnCalculation;
+        i += this.numDaysForReturnCalculation)
       {
-        gainForTheLastHalfPeriod = 0.0;
+        K = 1.0;
         for(int j=this.numDaysForReturnCalculation - 1;
-            j > -1; j--)
+          j > -1; j--)
         {
-          gainForTheLastHalfPeriod = 
-            (1.0+gainForTheLastHalfPeriod) * this.PortfolioRatesOfReturn[i-j];
+          K = K + K * this.PortfolioRatesOfReturn[i-j];
         }
-      
+       
         for(int t=1;t<this.numDaysForReturnCalculation + 1;t++)
         {  
-          if(gainForTheLastHalfPeriod<0.0)
-            // if gain of first half period is negative 
-             returnValue[i+t] = - this.PortfolioRatesOfReturn[i+t];
-            //return of the next half period is still negative
-          else// if gain of first half period is positive
-             returnValue[i+t] = this.PortfolioRatesOfReturn[i+t]; 
-          //return of the next half period is still positive
+          if(K < 1.0 && this.PortfolioType == PortfolioType.ShortAndLong)
+            // if gain of first half period is negative and
+            //positions can be reversed
+            returnValue[i+t] = - this.PortfolioRatesOfReturn[i+t];
+          else if(K > 1.0)
+            //if gain of first half period is positive
+            returnValue[i+t] = this.PortfolioRatesOfReturn[i+t];
+          else if(K < 1.0 && this.PortfolioType != PortfolioType.ShortAndLong)
+            //if gain of first half period is negative and
+            //original positions can't be reversed
+            returnValue[i+t] = 0.0;//out of the market
         }  
            
       }
