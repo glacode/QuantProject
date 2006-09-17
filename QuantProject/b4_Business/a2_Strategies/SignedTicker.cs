@@ -170,7 +170,8 @@ namespace QuantProject.Business.Strategies
                                                         DateTime startDate,
                                                         DateTime endDate )
     {
-      double returnValue = 0.0;
+      const double initialEquity = 1.0;
+      double equityValue = initialEquity;
       Quotes[] tickersQuotes = new Quotes[signedTickers.Length];
       for(int i = 0; i<signedTickers.Length; i++)
       {
@@ -185,9 +186,10 @@ namespace QuantProject.Business.Strategies
       getCloseToClosePortfolioReturn_setReturns(returns,signedTickers,
                                                 tickersWeights, tickersQuotes);
       for(int i = 0; i < returns.Length; i++)
-        returnValue = (1.0+returnValue) * returns[i];
+        equityValue = 
+          equityValue + equityValue * returns[i];
 
-      return returnValue;
+      return (equityValue - initialEquity)/initialEquity;
     }
 		
     /// <summary>
@@ -220,7 +222,8 @@ namespace QuantProject.Business.Strategies
 			double[] tickersWeights ,
 			SortedList commonMarketDays )
 		{
-			double returnValue = 0.0;
+			const double initialEquity = 1.0;
+			double equityValue = initialEquity;
 			Quotes[] tickersQuotes = new Quotes[ signedTickers.Length ];
 			for( int i = 0 ; i < signedTickers.Length ; i++ )
 			{
@@ -232,9 +235,10 @@ namespace QuantProject.Business.Strategies
 			getCloseToClosePortfolioReturn_setReturns( returns , signedTickers ,
 				tickersWeights , tickersQuotes);
 			for( int i = 0 ; i < returns.Length ; i++ )
-				returnValue = (1.0+returnValue) * returns[i];
-
-			return returnValue;
+				equityValue = 
+							equityValue + equityValue * returns[i];
+			
+			return (equityValue - initialEquity)/initialEquity;
 		}
 		
 		/// <summary>
