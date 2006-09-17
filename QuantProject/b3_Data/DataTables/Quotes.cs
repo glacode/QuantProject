@@ -110,7 +110,6 @@ namespace QuantProject.Data.DataTables
     /// <summary>
     /// returns most liquid tickers within the given set of tickers
     /// </summary>
-
     public static DataTable GetTickersByLiquidity( bool orderByASC,
                                                   DataTable setOfTickers,
                                                   DateTime firstQuoteDate,
@@ -127,6 +126,42 @@ namespace QuantProject.Data.DataTables
                                                                         lastQuoteDate);
       }
       DataTable getMostLiquidTicker = ExtendedDataTable.CopyAndSort(setOfTickers,"AverageTradedValue", orderByASC);
+      ExtendedDataTable.DeleteRows(getMostLiquidTicker, maxNumOfReturnedTickers);
+      return getMostLiquidTicker;
+    }
+
+    /// <summary>
+    /// returns most liquid tickers with the given min volume
+    /// within the given set of tickers
+    /// </summary>
+    public static DataTable GetTickersByLiquidity( bool orderByASC,
+                                                  DataTable setOfTickers,
+                                                  DateTime firstQuoteDate,
+                                                  DateTime lastQuoteDate,
+                                                  long minVolume,
+                                                  long maxNumOfReturnedTickers)
+    {
+      if(!setOfTickers.Columns.Contains("AverageTradedValue"))
+        setOfTickers.Columns.Add("AverageTradedValue", System.Type.GetType("System.Double"));
+      if(!setOfTickers.Columns.Contains("AverageTradedVolume"))
+        setOfTickers.Columns.Add("AverageTradedVolume", System.Type.GetType("System.Int64"));
+      
+      foreach(DataRow row in setOfTickers.Rows)
+      {
+        row["AverageTradedValue"] = 
+          QuantProject.DataAccess.Tables.Quotes.GetAverageTradedValue((string)row[0],
+          firstQuoteDate,
+          lastQuoteDate);
+        row["AverageTradedVolume"] = 
+          QuantProject.DataAccess.Tables.Quotes.GetAverageTradedVolume((string)row[0],
+          firstQuoteDate,
+          lastQuoteDate);
+      }
+      DataTable getMostLiquidTicker = ExtendedDataTable.CopyAndSort(setOfTickers,
+                                                                    "AverageTradedVolume>" + 
+                                                                    minVolume.ToString(),
+                                                                    "AverageTradedValue",
+                                                                    orderByASC);
       ExtendedDataTable.DeleteRows(getMostLiquidTicker, maxNumOfReturnedTickers);
       return getMostLiquidTicker;
     }

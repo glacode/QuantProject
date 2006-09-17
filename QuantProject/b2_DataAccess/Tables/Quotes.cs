@@ -678,6 +678,28 @@ namespace QuantProject.DataAccess.Tables
         return (double)dt.Rows[0]["AverageTradedValue"];
      }
 
+    /// <summary>
+    /// returns the average traded volume for the given ticker in the specified interval
+    /// </summary>
+    public static double GetAverageTradedVolume( string ticker,
+      DateTime firstQuoteDate,
+      DateTime lastQuoteDate)
+                                                
+    {
+      DataTable dt;
+      string sql = "SELECT quotes.quTicker, " +
+        "Avg([quVolume]) AS AverageTradedVolume " +
+        "FROM quotes WHERE quTicker ='" + 
+        ticker + "' " +
+        "AND quotes.quDate BETWEEN " + SQLBuilder.GetDateConstant(firstQuoteDate) + 
+        " AND " + SQLBuilder.GetDateConstant(lastQuoteDate) + 
+        " GROUP BY quotes.quTicker";
+      dt = SqlExecutor.GetDataTable( sql );
+      if(dt.Rows.Count==0)
+        return 0;
+      else
+        return (double)dt.Rows[0]["AverageTradedVolume"];
+    }
 
     /// <summary>
     /// returns the average close to close performance value for the given ticker in the specified interval
