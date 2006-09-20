@@ -97,12 +97,19 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag
 			returnValue.Columns[ 0 ].ColumnName = "tiTicker";
 			return returnValue;
 		}
+		private void debug_displayTickersToConsole()
+		{
+			foreach ( DataRow dataRow in this.eligibleTickers.Rows )
+				Console.WriteLine( (string)dataRow[ 0 ] );
+		}
 		private void setTickers_build()
 		{
 			// for fast debug, comment the following line
 			this.eligibleTickers = setTickers_build_getSelectedTickers();
 			// for fast debug, uncomment the following line 
 			//			DataTable selectedTickers = setTickers_buildQuickly_getSelectedTickers();
+//			this.debug_displayTickersToConsole();
+//			this.debug_displayTickersToConsole();
 		}
 		/// <summary>
 		/// Populates the collection of eligible tickers
