@@ -36,16 +36,16 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag
 	/// Weights are NOT used in this implementation
 	/// </summary>
 	public class WFLagFixedPortfolioBruteForceOptimizableParametersManager :
-		IBruteForceOptimizableParametersManager
+		WFLagGenomeManager , IBruteForceOptimizableParametersManager
 	{
 		private Combination drivingCombination;
 
 		private int numberOfDrivingPositions;
-		private WFLagGenomeManager wFLagGenomeManager;
+//		protected WFLagGenomeManager wFLagGenomeManager;
 
 		private DataTable eligibleTickersForDrivingPositions;
-		private string portfolioLongTicker;
-		private string portfolioShortTicker;
+		protected string portfolioLongTicker;
+		protected string portfolioShortTicker;
 
 		public int TotalIterations
 		{
@@ -60,7 +60,15 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag
 			string portfolioShortTicker ,
 			DateTime firstOptimizationDate ,
 			DateTime lastOptimizationDate ,
-			int numberOfDrivingPositions )
+			int numberOfDrivingPositions ) :
+			base(
+			eligibleTickersForDrivingPositions ,
+			eligibleTickersForDrivingPositions ,
+			firstOptimizationDate ,
+			lastOptimizationDate ,
+			numberOfDrivingPositions ,
+			2 ,
+			QuantProject.ADT.ConstantsProvider.SeedForRandomGenerator )
 		{
 			this.eligibleTickersForDrivingPositions =
 				eligibleTickersForDrivingPositions;
@@ -71,14 +79,14 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag
 				- eligibleTickersForDrivingPositions.Rows.Count ,
 				eligibleTickersForDrivingPositions.Rows.Count - 1 ,
 				numberOfDrivingPositions );
-			this.wFLagGenomeManager = new WFLagGenomeManager(
-				eligibleTickersForDrivingPositions ,
-				eligibleTickersForDrivingPositions ,
-				firstOptimizationDate ,
-				lastOptimizationDate ,
-				numberOfDrivingPositions ,
-				2 ,
-				QuantProject.ADT.ConstantsProvider.SeedForRandomGenerator );
+//			this.wFLagGenomeManager = new WFLagGenomeManager(
+//				eligibleTickersForDrivingPositions ,
+//				eligibleTickersForDrivingPositions ,
+//				firstOptimizationDate ,
+//				lastOptimizationDate ,
+//				numberOfDrivingPositions ,
+//				2 ,
+//				QuantProject.ADT.ConstantsProvider.SeedForRandomGenerator );
 		}
 		public bool MoveNext()
 		{
@@ -199,7 +207,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag
 				tickerRelatedParameterValuesForDrivingPositions ,
 				this.eligibleTickersForDrivingPositions );
 		}
-		private WeightedPositions decodePortfolioWeightedPositions(
+		protected virtual WeightedPositions decodePortfolioWeightedPositions(
 			int[] optimizableParameters )
 		{
 			double[] weightsForPortfolioPositions = new double[ 2 ] { 0.5 , -0.5 };
@@ -250,7 +258,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag
 			else
 				// all driving position parameters refer to distinct tickers
 				fitnessValue =
-					this.wFLagGenomeManager.GetFitnessValue( wFLagWeightedPositions );
+					base.GetFitnessValue( wFLagWeightedPositions );
 			return fitnessValue;
 		}
 		#endregion
