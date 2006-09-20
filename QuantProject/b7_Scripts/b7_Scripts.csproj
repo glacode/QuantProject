@@ -709,7 +709,7 @@
                     BuildAction = "Compile"
                 />
                 <File
-                    RelPath = "WalkForwardTesting\WalkForwardLag\WFLagBruteForceOptimizableItemManager\WFLagFixedPortfolioBruteForceOptParamManagerWithNormalizedVolatility.cs"
+                    RelPath = "WalkForwardTesting\WalkForwardLag\WFLagBruteForceOptimizableItemManager\WFLagFixedPortfolioBruteForceOptParamManagerWithPortfolioNormalizedVolatility.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
