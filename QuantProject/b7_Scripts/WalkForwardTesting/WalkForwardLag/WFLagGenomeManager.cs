@@ -48,7 +48,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag
 
 		private double minimumPositionWeight;
 
-		private WFLagCandidates wFLagCandidates;
+		protected WFLagCandidates wFLagCandidates;
 
 
 		public int GenomeSize
