@@ -258,9 +258,19 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag
 			this.lastOptimizationDate =
 				this.endOfDayTimer.GetCurrentTime().DateTime;
 
-			WFLagFixedPortfolioBruteForceOptimizableParametersManager
+//			WFLagFixedPortfolioBruteForceOptimizableParametersManager
+//				wFLagFixedPortfolioBruteForceOptimizableParametersManager= 
+//				new WFLagFixedPortfolioBruteForceOptimizableParametersManager(
+//				eligibleTickers.EligibleTickers ,
+//				longPortfolioTicker ,
+//				shortPortfolioTicker ,
+//				this.firstOptimizationDate ,
+//				this.lastOptimizationDate ,
+//				this.numberOfDrivingPositions );
+//
+			WFLagFixedPortfolioBruteForceOptParamManagerWithNormalizedVolatility
 				wFLagFixedPortfolioBruteForceOptimizableParametersManager= 
-				new WFLagFixedPortfolioBruteForceOptimizableParametersManager(
+				new WFLagFixedPortfolioBruteForceOptParamManagerWithNormalizedVolatility(
 				eligibleTickers.EligibleTickers ,
 				longPortfolioTicker ,
 				shortPortfolioTicker ,
@@ -297,6 +307,10 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag
 //				eligibleTickers );
 			this.setWeightedPositions_withFixedPortfolio(
 				eligibleTickers , "SPY" , "IWM" );
+//			this.setWeightedPositions_withFixedPortfolio(
+//				eligibleTickers , "XLF" , "SMH" );
+//			this.setWeightedPositions_withFixedPortfolio(
+//				eligibleTickers , "QQQQ" , "SPY" );
 		}
 		#endregion
 	}
