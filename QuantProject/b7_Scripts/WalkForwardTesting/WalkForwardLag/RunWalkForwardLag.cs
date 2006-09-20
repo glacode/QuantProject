@@ -150,16 +150,15 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag
 		{
 			if ( !(this.InSampleNewProgress == null) )
 				this.InSampleNewProgress( this , eventArgs );
-//			Console.WriteLine(
-//				eventArgs.CurrentProgress.ToString() + " / " +
-//				eventArgs.Goal.ToString() +
-//				" - " +
-//				DateTime.Now.ToString() );
-			RunWalkForwardLag.WriteToTextLog(
-				eventArgs.CurrentProgress.ToString() + " / " +
-				eventArgs.Goal.ToString() +
-				" - " +
-				DateTime.Now.ToString() );
+			// the following if statement is used to avoid too many output
+			// when small populations are chosen. Comment it out
+			// when large populations are chosen
+			if ( eventArgs.CurrentProgress % 20 == 0 )
+				RunWalkForwardLag.WriteToTextLog(
+					eventArgs.CurrentProgress.ToString() + " / " +
+					eventArgs.Goal.ToString() +
+					" - " +
+					DateTime.Now.ToString() );
 		}
 		private void run_initializeProgressHandlers()
 		{
