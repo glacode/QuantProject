@@ -709,6 +709,11 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "WalkForwardTesting\WalkForwardLag\WFLagBruteForceOptimizableItemManager\WFLagFixedPortfolioBruteForceOptParamManagerWithNormalizedVolatility.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "WalkForwardTesting\WalkForwardLag\WFLagDebugger\WFLagChosenPositions.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
