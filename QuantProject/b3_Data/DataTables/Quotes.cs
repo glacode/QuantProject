@@ -1091,6 +1091,60 @@ namespace QuantProject.Data.DataTables
 //				history.IndexOfKeyOrPrevious( quoteDate ) -
 //				precedingDays ) );
 //		}
+    
+    #region RecalculateCloseToCloseRatios
+
+    private float recalculateCloseToCloseRatios_getAdjCloseJustBeforeCurrentFirstClose()
+    {
+      float returnValue = float.MinValue;
+      DateTime firstCurrentDate = (DateTime)this.Rows[0][Quotes.Date];
+      int daysBeforeCurrent = 1;
+      if(firstCurrentDate > DataAccess.Tables.Quotes.GetFirstQuoteDate(this.Ticker) )
+      //there exist other quotes in the database that precede first current quote
+      {
+        while(returnValue == float.MinValue)
+        {
+          try{
+            returnValue = 
+              DataAccess.Tables.Quotes.GetAdjustedClose(this.Ticker,
+                                                      firstCurrentDate.AddDays(
+                                                       -daysBeforeCurrent)   );
+            
+          }
+          catch(Exception ex){ex = ex;}
+          finally{
+            daysBeforeCurrent++;
+          }
+        }
+      }
+      return returnValue;
+    }
+    
+    /// <summary>
+    /// Recalculate close to close ratios
+    /// overwriting the value(if present) stored in the
+    /// database
+    /// </summary>
+    /// <returns></returns>
+     	public void RecalculateCloseToCloseRatios()
+    {
+      float adjustedCloseJustBeforeTheCurrentFirstClose =
+        this.recalculateCloseToCloseRatios_getAdjCloseJustBeforeCurrentFirstClose();
+      for(int i = 0; i<this.Rows.Count; i++)
+      {
+        if(i == 0 && adjustedCloseJustBeforeTheCurrentFirstClose > float.MinValue)
+        //there exists a valid quote just before the first current close
+          this.Rows[i][Quotes.AdjustedCloseToCloseRatio] =
+            (float)this.Rows[i][Quotes.AdjustedClose] / 
+             adjustedCloseJustBeforeTheCurrentFirstClose;
+        else if(i>0)
+          this.Rows[i][Quotes.AdjustedCloseToCloseRatio] =
+            (float)this.Rows[i][Quotes.AdjustedClose] / 
+            (float)this.Rows[i - 1][Quotes.AdjustedClose];
+      }
+    }
+    #endregion
+
 	}
 }
 
