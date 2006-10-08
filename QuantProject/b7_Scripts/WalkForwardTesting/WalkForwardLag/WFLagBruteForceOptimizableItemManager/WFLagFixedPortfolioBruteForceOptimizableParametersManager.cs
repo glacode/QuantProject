@@ -135,7 +135,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag
 				weight = -1;
 			return weight;
 		}
-		private double[] getWeightRelatedParameterValuesForDrivingPositions(
+		protected virtual double[] getWeightRelatedParameterValuesForDrivingPositions(
 			int[] optimizableParameters )
 		{
 			double[] weightRelatedParameterValuesForDrivingPositions =
@@ -147,7 +147,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag
 					this.numberOfDrivingPositions;
 			return weightRelatedParameterValuesForDrivingPositions;
 		}
-		private int getTickerIndexForDrivingPositions( int[] parameterValues ,
+		protected int getTickerIndexForDrivingPosition( int[] parameterValues ,
 			int parameterPosition )
 		{
 			int tickerIndex = parameterValues[ parameterPosition ];
@@ -165,7 +165,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag
 			for ( int parameterPosition = 0 ;
 				parameterPosition < this.numberOfDrivingPositions ; parameterPosition++ )
 				tickerRelatedParameterValuesForDrivingPositions[ parameterPosition ] =
-					this.getTickerIndexForDrivingPositions(
+					this.getTickerIndexForDrivingPosition(
 					optimizableParameters , parameterPosition );
 			return tickerRelatedParameterValuesForDrivingPositions;
 		}
