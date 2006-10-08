@@ -43,8 +43,8 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag
 		private int numberOfDrivingPositions;
 		private int numberOfPortfolioPositions;
 		private WFLagGenomeManager wFLagGenomeManager;
-		private DataTable eligibleTickersForDrivingPositions;
-		private DataTable eligibleTickersForPortfolioPositions;
+		protected DataTable eligibleTickersForDrivingPositions;
+		protected DataTable eligibleTickersForPortfolioPositions;
 
 		public WFLagBruteForceOptimizableParametersManager(
 			DataTable eligibleTickersForDrivingPositions ,
@@ -139,7 +139,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag
 					this.numberOfDrivingPositions;
 			return weightRelatedParameterValuesForDrivingPositions;
 		}
-		private int getTickerIndexForDrivingPositions( int[] parameterValues ,
+		protected int getTickerIndexForDrivingPositions( int[] parameterValues ,
 			int parameterPosition )
 		{
 			int tickerIndex = parameterValues[ parameterPosition ];
