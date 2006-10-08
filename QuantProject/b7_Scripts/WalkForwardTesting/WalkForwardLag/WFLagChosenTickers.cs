@@ -268,6 +268,15 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag
 //				this.lastOptimizationDate ,
 //				this.numberOfDrivingPositions );
 //
+//			WFLagFixedPortfolioBruteForceOptParamManagerWithPortfolioNormalizedVolatility
+//				wFLagFixedPortfolioBruteForceOptimizableParametersManager= 
+//				new WFLagFixedPortfolioBruteForceOptParamManagerWithNormalizedVolatility(
+//				eligibleTickers.EligibleTickers ,
+//				longPortfolioTicker ,
+//				shortPortfolioTicker ,
+//				this.firstOptimizationDate ,
+//				this.lastOptimizationDate ,
+//				this.numberOfDrivingPositions );
 			WFLagFixedPortfolioBruteForceOptParamManagerWithNormalizedVolatility
 				wFLagFixedPortfolioBruteForceOptimizableParametersManager= 
 				new WFLagFixedPortfolioBruteForceOptParamManagerWithNormalizedVolatility(
@@ -305,12 +314,12 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag
 //				eligibleTickers );
 //			this.setWeightedPositions_usingTheBruteForceOptimizer(
 //				eligibleTickers );
-			this.setWeightedPositions_withFixedPortfolio(
-				eligibleTickers , "SPY" , "IWM" );
+//			this.setWeightedPositions_withFixedPortfolio(
+//				eligibleTickers , "SPY" , "IWM" );
 //			this.setWeightedPositions_withFixedPortfolio(
 //				eligibleTickers , "XLF" , "SMH" );
-//			this.setWeightedPositions_withFixedPortfolio(
-//				eligibleTickers , "QQQQ" , "SPY" );
+			this.setWeightedPositions_withFixedPortfolio(
+				eligibleTickers , "QQQQ" , "SPY" );
 		}
 		#endregion
 	}
