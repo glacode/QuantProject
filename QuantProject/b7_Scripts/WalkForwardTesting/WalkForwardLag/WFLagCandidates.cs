@@ -40,6 +40,14 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag
 
 		private Hashtable closeToCloseReturns;
 
+		/// <summary>
+		/// Number of eligible tickers
+		/// </summary>
+		public int Count
+		{
+			get { return this.eligibleTickers.Rows.Count; }
+		}
+
 		public WFLagCandidates( DataTable eligibleTickers ,
 			DateTime firstQuoteDate , DateTime lastQuoteDate )
 		{
