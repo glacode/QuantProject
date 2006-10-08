@@ -73,7 +73,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag
 //			DataTable groupTickers = selectorByGroup.GetTableOfSelectedTickers();
 			SelectorByLiquidity mostLiquid =
 				new SelectorByLiquidity( this.tickerGroupID , true ,
-				dateTime.AddDays( - this.numberDaysForPerformanceCalculation ) ,
+				dateTime.AddDays( - ( this.numberDaysForPerformanceCalculation - 1 ) ) ,
 				dateTime , 200000 , 99999 );
 			DataTable groupTickers = mostLiquid.GetTableOfSelectedTickers();
 
@@ -86,7 +86,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag
 			SelectorByQuotationAtEachMarketDay quotedInEachMarketDay = 
 				new SelectorByQuotationAtEachMarketDay( groupTickers ,
 				false ,
-				dateTime.AddDays( - this.numberDaysForPerformanceCalculation ) ,
+				dateTime.AddDays( - ( this.numberDaysForPerformanceCalculation - 1 ) ) ,
 				dateTime , this.numberEligibleTickersToBeChosen , this.benchmark );
 			return quotedInEachMarketDay.GetTableOfSelectedTickers();
 		}
