@@ -41,8 +41,8 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag
 		private int numberOfDrivingPositions;
 		private int numberOfTickersInPortfolio;
 		private int numberOfEligibleTickersForDrivingWeightedPositions;
-		private DataTable eligibleTickersForDrivingWeightedPositions;
-		private DataTable eligibleTickersForPortfolioWeightedPositions;
+		protected DataTable eligibleTickersForDrivingWeightedPositions;
+		protected DataTable eligibleTickersForPortfolioWeightedPositions;
 		private DateTime firstOptimizationDate;
 		private DateTime lastOptimizationDate;
 
