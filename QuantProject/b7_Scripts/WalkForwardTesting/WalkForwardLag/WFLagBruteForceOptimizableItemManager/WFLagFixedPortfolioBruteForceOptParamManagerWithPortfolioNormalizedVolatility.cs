@@ -1,7 +1,7 @@
 /*
 QuantProject - Quantitative Finance Library
 
-WFLagFixedPortfolioBruteForceOptParamManagerWithNormalizedVolatility.cs
+WFLagFixedPortfolioBruteForceOptParamManagerWithPortfolioNormalizedVolatility.cs
 Copyright (C) 2006
 Glauco Siliprandi
 
@@ -30,7 +30,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag
 	/// Implements IBruteForceOptimizableParametersManager using weights
 	/// to normalize the portfolio's tickers volatility
 	/// </summary>
-	public class WFLagFixedPortfolioBruteForceOptParamManagerWithNormalizedVolatility
+	public class WFLagFixedPortfolioBruteForceOptParamManagerWithPortfolioNormalizedVolatility
 		: WFLagFixedPortfolioBruteForceOptimizableParametersManager
 	{
 		private double[] weightsForPortfolioPositions;
@@ -39,7 +39,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag
 		private double standardDeviationForShortPosition;
 		private double standardDeviationForLongPosition;
 
-		public WFLagFixedPortfolioBruteForceOptParamManagerWithNormalizedVolatility(
+		public WFLagFixedPortfolioBruteForceOptParamManagerWithPortfolioNormalizedVolatility(
 			DataTable eligibleTickersForDrivingPositions ,
 			string portfolioLongTicker ,
 			string portfolioShortTicker ,
