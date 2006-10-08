@@ -274,6 +274,42 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag
 			return !QuantProject.ADT.Collections.CollectionManager.ContainsDuplicates(
 				tickers );
 		}
-
+		#region GetNormalizedWeights
+		private static double getAbsoluteWeightSum( double[] nonNormalizedWeights )
+		{
+			double absoluteWeightSum = 0;
+			foreach ( double nonNormalizedWeight in nonNormalizedWeights )
+				absoluteWeightSum += Math.Abs( nonNormalizedWeight );
+			return absoluteWeightSum;
+		}
+		private static double getNormalizingFactor( double[] nonNormalizedWeights )
+		{
+			double absoluteWeightSum =
+				getAbsoluteWeightSum( nonNormalizedWeights );
+			double normalizingFactor = 1 / absoluteWeightSum;
+			return normalizingFactor;
+		}
+		private static double[] getNormalizedWeights( double[] nonNormalizedWeights ,
+			double normalizingFactor )
+		{
+			double[] normalizedWeights = new double[ nonNormalizedWeights.Length ];
+			for ( int i = 0 ; i < nonNormalizedWeights.Length ; i ++ )
+				normalizedWeights[ i ] = nonNormalizedWeights[ i ] * normalizingFactor;
+			return normalizedWeights;
+		}
+		/// <summary>
+		/// Returns weights whose absolute values sum up to 1
+		/// </summary>
+		/// <param name="nonNormalizedWeights"></param>
+		/// <returns></returns>
+		/// 
+		public static double[] GetNormalizedWeights( double[] nonNormalizedWeights )
+		{
+			double normalizingFactor =
+				getNormalizingFactor( nonNormalizedWeights );
+			return
+				getNormalizedWeights( nonNormalizedWeights , normalizingFactor );
+		}
+		#endregion
 	}
 }
