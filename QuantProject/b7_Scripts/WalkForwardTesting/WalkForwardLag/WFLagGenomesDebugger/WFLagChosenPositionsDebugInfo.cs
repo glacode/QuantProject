@@ -121,8 +121,9 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag.WFLagDebugger
 			this.setMaxPreSampleDays();
 			this.preSampleSharpeRatio30 = this.getPreSampleSharpeRatio( 30 );
 			this.preSampleSharpeRatio150 = this.getPreSampleSharpeRatio( 150 );
-			this.preSampleMaxSharpeRatio = this.getPreSampleSharpeRatio(
-				this.MaxPreSampleDays );
+			if ( this.MaxPreSampleDays > 1 )
+				this.preSampleMaxSharpeRatio = this.getPreSampleSharpeRatio(
+					this.MaxPreSampleDays - 1 );
 			this.postSampleSharpeRatio30 = this.getPostSampleSharpeRatio( 30 );
 			this.postSampleSharpeRatio150 = this.getPostSampleSharpeRatio( 150 );
 		}
@@ -177,7 +178,13 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag.WFLagDebugger
 				this.getFirstCommonDateForTickers();
 			TimeSpan timeSpan = this.getInSampleFirstDate() -
 				firstCommonDateForTickers;
-			this.maxPreSampleDays = timeSpan.Days - 1; // I subtract one, so I have the number of daily returns
+			this.maxPreSampleDays = timeSpan.Days;
+			// the following statement is used for the rare case when the
+			// firstCommonDateForTickers comes after this.getInSampleFirstDate() 
+			// It may happen when this.getInSampleFirstDate()
+			// falls in a non market day and one of the involved tickers begins being
+			// quoted from the following market day
+			this.maxPreSampleDays = Math.Max( this.maxPreSampleDays , 0 );
 		}
 		private DateTime getInSampleFirstDate()
 		{
@@ -202,7 +209,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag.WFLagDebugger
 		private double getPreSampleSharpeRatio( int days )
 		{
 			double preSampleSharpeRatio = this.dummyValue;
-			if ( this.MaxPreSampleDays >= days )
+			if ( this.MaxPreSampleDays > days )
 			{
 				DateTime lastDateTime = this.getInSampleFirstDate();
 				DateTime firstDateTime = lastDateTime.AddDays( -days - 1 );  // I subtract one more day, so I have days daily returns
