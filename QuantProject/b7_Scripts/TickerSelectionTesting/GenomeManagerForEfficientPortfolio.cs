@@ -151,7 +151,7 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
         //OnlyShort orders are admitted
           this.minValueForGenes = - this.originalNumOfTickers;
           //if gene g is negative, it refers to the ticker |g|-1 to be shorted
-          this.maxValueForGenes = 0;
+          this.maxValueForGenes = - 1;
           break;
         case QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios.PortfolioType.ShortAndLong :        
         //Both Long and Short orders are admitted
@@ -320,8 +320,8 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
     protected string decode_getTickerCodeForLongOrShortTrade(int geneValue)
     {
       string initialCharForTickerCode = "";
-      int position = geneValue;
-      if(geneValue<0)
+      int position = geneValue;//for geneValue >= 0 the coded ticker is for long
+      if(geneValue < 0)
       {
         position = Math.Abs(geneValue) - 1;
         initialCharForTickerCode = "-";
@@ -433,8 +433,8 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
     protected int getPortfolioRatesOfReturn_getRateOfTickerToBeAddedToTheArray_getPositionInSetOfCandidates(int geneValueForTickerIdx)
     {
       int position = geneValueForTickerIdx;
-      if(geneValueForTickerIdx<0)
-        position = Math.Abs(geneValueForTickerIdx + 1);
+      if(geneValueForTickerIdx < 0)
+        position = Math.Abs(geneValueForTickerIdx) - 1;
       return position;
     }
     
@@ -443,7 +443,7 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
                                                                                int arrayElementPosition)
     {
       bool longReturns = false;
-      if(genes[tickerPositionInGenes] > 0)
+      if(genes[tickerPositionInGenes] >= 0)
         //genes[tickerPositionInGenes], the code for ticker, points to a ticker for which long returns are to be examined
         longReturns = true;
       int position = this.getPortfolioRatesOfReturn_getRateOfTickerToBeAddedToTheArray_getPositionInSetOfCandidates(genes[tickerPositionInGenes]);
