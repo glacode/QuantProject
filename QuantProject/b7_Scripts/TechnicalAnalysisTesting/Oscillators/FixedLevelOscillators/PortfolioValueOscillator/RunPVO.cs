@@ -52,15 +52,16 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOs
 	[Serializable]
 	public class RunPVO : RunEfficientPortfolio
 	{
-    private int minLevelForOversoldThreshold;
-    private int maxLevelForOversoldThreshold;
-    private int minLevelForOverboughtThreshold;
-    private int maxLevelForOverboughtThreshold;
-    private int divisorForThresholdComputation;
+    protected int minLevelForOversoldThreshold;
+    protected int maxLevelForOversoldThreshold;
+    protected int minLevelForOverboughtThreshold;
+    protected int maxLevelForOverboughtThreshold;
+    protected int divisorForThresholdComputation;
     //to be used by the optimizer
-    private int numDaysBetweenEachOptimization;
-    private double maxAcceptableCloseToCloseDrawdown;
-    private int numDaysForOscillatingPeriod;
+    protected int numDaysBetweenEachOptimization;
+    protected double maxAcceptableCloseToCloseDrawdown;
+    protected int numDaysForOscillatingPeriod;
+    protected bool symmetricalThresholds = false;
     
     public RunPVO(string tickerGroupID, int maxNumOfEligibleTickersForOptimization, 
                                     int numberOfTickersToBeChosen, int numDaysForOptimizationPeriod, 
@@ -73,15 +74,16 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOs
                                     int minLevelForOverboughtThreshold,
                                     int maxLevelForOverboughtThreshold,
                                     int divisorForThresholdComputation,
+                                    bool symmetricalThresholds,
                                    	int numDaysBetweenEachOptimization,
-                                    PortfolioType portfolioType, double maxAcceptableCloseToCloseDrawdown, 
+                                    PortfolioType inSamplePortfolioType, double maxAcceptableCloseToCloseDrawdown, 
                                     double maxRunningHours):
 																base(tickerGroupID, maxNumOfEligibleTickersForOptimization, 
                                     numberOfTickersToBeChosen, numDaysForOptimizationPeriod, 
                                     generationNumberForGeneticOptimizer,
                                     populationSizeForGeneticOptimizer, benchmark,
                                     startDate, endDate, 0.0,
-                                   	portfolioType, maxRunningHours)
+                                   	inSamplePortfolioType, maxRunningHours)
 		{
       this.ScriptName = "PVO_SR_NoWeights_PriceSel";
       this.minLevelForOversoldThreshold  = minLevelForOversoldThreshold;
@@ -89,6 +91,7 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOs
       this.minLevelForOverboughtThreshold = minLevelForOverboughtThreshold;
       this.maxLevelForOverboughtThreshold = maxLevelForOverboughtThreshold;
       this.divisorForThresholdComputation = divisorForThresholdComputation;
+      this.symmetricalThresholds = symmetricalThresholds;
       this.maxAcceptableCloseToCloseDrawdown = maxAcceptableCloseToCloseDrawdown;
       this.numDaysForOscillatingPeriod = numDaysForOscillatingPeriod;
       this.numDaysBetweenEachOptimization = numDaysBetweenEachOptimization;
@@ -109,6 +112,7 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOs
                                                               this.minLevelForOverboughtThreshold,
                                                               this.maxLevelForOverboughtThreshold,
                                                               this.divisorForThresholdComputation,
+                                                              this.symmetricalThresholds,
     	                                                        this.numDaysBetweenEachOptimization,
                                                               this.portfolioType, this.maxAcceptableCloseToCloseDrawdown);
     }
@@ -136,7 +140,9 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOs
 
     public override void SaveScriptResults()
     {
-      string fileName = this.scriptName + "OsDays_" + numDaysForOscillatingPeriod +
+    	string fileName = DateTime.Now.Hour.ToString().PadLeft(2,'0') + "_" + 
+    										DateTime.Now.Minute.ToString().PadLeft(2,'0') + "_" +
+    		        				this.scriptName +  "OsDays_" + numDaysForOscillatingPeriod +
       								"_From_" + this.tickerGroupID + "_" + this.numberOfEligibleTickers +
                       "_DaysForOpt" + this.numDaysForOptimizationPeriod + "Tick" +
                       this.numberOfTickersToBeChosen + "GenN°" + 

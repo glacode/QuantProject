@@ -47,25 +47,26 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOs
   [Serializable]
   public class EndOfDayTimerHandlerPVO : EndOfDayTimerHandler
   {
-    private int minLevelForOversoldThreshold;
-    private int maxLevelForOversoldThreshold;
-    private int minLevelForOverboughtThreshold;
-    private int maxLevelForOverboughtThreshold;
-    private int divisorForThresholdComputation;
+    protected int minLevelForOversoldThreshold;
+    protected int maxLevelForOversoldThreshold;
+    protected int minLevelForOverboughtThreshold;
+    protected int maxLevelForOverboughtThreshold;
+    protected int divisorForThresholdComputation;
     protected int numDaysForOscillatingPeriod;
     protected double currentOversoldThreshold;
     protected double currentOverboughtThreshold;
-    private double maxAcceptableCloseToCloseDrawdown;
-    private bool stopLossConditionReached;
-    private double currentAccountValue;
-    private double previousAccountValue;
-    private int numDaysBetweenEachOptimization;
-    private int numDaysElapsedSinceLastOptimization;
-    private DateTime lastCloseDate;
-    private IGenomeManager iGenomeManager;
-    private int seedForRandomGenerator;
-    private bool portfolioHasBeenOverbought;
-    private bool portfolioHasBeenOversold;
+    protected double maxAcceptableCloseToCloseDrawdown;
+    protected bool stopLossConditionReached;
+    protected double currentAccountValue;
+    protected double previousAccountValue;
+    protected int numDaysBetweenEachOptimization;
+    protected int numDaysElapsedSinceLastOptimization;
+    protected DateTime lastCloseDate;
+    protected IGenomeManager iGenomeManager;
+    protected int seedForRandomGenerator;
+    protected bool portfolioHasBeenOverbought;
+    protected bool portfolioHasBeenOversold;
+    protected bool symmetricalThresholds;
         
     public EndOfDayTimerHandlerPVO(string tickerGroupID, int numberOfEligibleTickers, 
                                 int numberOfTickersToBeChosen, int numDaysForOptimizationPeriod,
@@ -79,6 +80,7 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOs
                                 int minLevelForOverboughtThreshold,
                                 int maxLevelForOverboughtThreshold,
                                 int divisorForThresholdComputation,
+                                bool symmetricalThresholds,
                                 int numDaysBetweenEachOptimization,
                                 PortfolioType portfolioType, double maxAcceptableCloseToCloseDrawdown):
     														base(tickerGroupID, numberOfEligibleTickers, 
@@ -94,6 +96,7 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOs
       this.minLevelForOverboughtThreshold = minLevelForOverboughtThreshold;
       this.maxLevelForOverboughtThreshold = maxLevelForOverboughtThreshold;
       this.divisorForThresholdComputation = divisorForThresholdComputation;
+      this.symmetricalThresholds = symmetricalThresholds;
       this.maxAcceptableCloseToCloseDrawdown = maxAcceptableCloseToCloseDrawdown;
       this.stopLossConditionReached = false;
       this.currentAccountValue = 0.0;
@@ -258,15 +261,15 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOs
     #region OneHourAfterMarketCloseEventHandler
    
 
-    protected DataTable getSetOfTickersToBeOptimized(DateTime currentDate)
+    protected virtual DataTable getSetOfTickersToBeOptimized(DateTime currentDate)
     {
 			SelectorByGroup temporizedGroup = new SelectorByGroup(this.tickerGroupID, currentDate);
       DataTable tickersFromGroup = temporizedGroup.GetTableOfSelectedTickers();
       int numOfTickersInGroupAtCurrentDate = tickersFromGroup.Rows.Count;
       
       SelectorByAverageRawOpenPrice byPrice =
-      		new SelectorByAverageRawOpenPrice(tickersFromGroup,false,currentDate,
-      	                                  currentDate.AddDays(-30),
+      		new SelectorByAverageRawOpenPrice(tickersFromGroup,false,currentDate.AddDays(-30),
+      	                                  currentDate,
       	                                  numOfTickersInGroupAtCurrentDate,
       	                                  25,500, 0.0001,100);
  
@@ -275,15 +278,22 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOs
         false,currentDate.AddDays(-this.numDaysForOptimizationPeriod), currentDate,
         this.numberOfEligibleTickers);
       
-      SelectorByQuotationAtEachMarketDay quotedAtEachMarketDayFromMostLiquid = 
-        new SelectorByQuotationAtEachMarketDay(mostLiquidSelector.GetTableOfSelectedTickers(),
+      SelectorByCloseToCloseCorrelationToBenchmark byCorrelationToBenchmark =
+      	new SelectorByCloseToCloseCorrelationToBenchmark(mostLiquidSelector.GetTableOfSelectedTickers(),
+      	                                                 "^GSPC",false,
+      	                                                 currentDate.AddDays(-this.numDaysForOptimizationPeriod), currentDate,
+      	                                                 this.numberOfEligibleTickers/2,false);
+      
+      
+      SelectorByQuotationAtEachMarketDay quotedAtEachMarketDayFromLastSelection = 
+        new SelectorByQuotationAtEachMarketDay(byCorrelationToBenchmark.GetTableOfSelectedTickers(),
         false, currentDate.AddDays(-this.numDaysForOptimizationPeriod), currentDate,
-        this.numberOfEligibleTickers, this.benchmark);
+        this.numberOfEligibleTickers/2, this.benchmark);
      
-      return quotedAtEachMarketDayFromMostLiquid.GetTableOfSelectedTickers(); 
+      return quotedAtEachMarketDayFromLastSelection.GetTableOfSelectedTickers(); 
     	
     }
-    private void addPVOGenomeToBestGenomes(Genome genome,
+    protected void addPVOGenomeToBestGenomes(Genome genome,
                                               DateTime firstOptimizationDate,
                                               DateTime secondOptimizationDate,
                                               int eligibleTickers, int daysForOscillatingPeriod,
@@ -323,6 +333,7 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOs
           this.minLevelForOverboughtThreshold,
           this.maxLevelForOverboughtThreshold,
           this.divisorForThresholdComputation,
+          this.symmetricalThresholds,
           this.portfolioType);
         GeneticOptimizer GO = new GeneticOptimizer(this.iGenomeManager,
           this.populationSizeForGeneticOptimizer, 
