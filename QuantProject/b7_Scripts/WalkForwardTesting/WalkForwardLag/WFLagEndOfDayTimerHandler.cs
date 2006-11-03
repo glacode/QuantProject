@@ -29,6 +29,7 @@ using QuantProject.Business.Financial.Accounting;
 using QuantProject.Business.Financial.Ordering;
 using QuantProject.Business.Financial.Instruments;
 using QuantProject.Business.Strategies;
+using QuantProject.Business.Strategies.EquityEvaluation;
 using QuantProject.Business.Timing;
 using QuantProject.Scripts.SimpleTesting;
 
@@ -54,6 +55,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag
 		private Account account;
 		private int generationNumberForGeneticOptimizer;
 		private int populationSizeForGeneticOptimizer;
+		private IEquityEvaluator equityEvaluator;
 
 		private WFLagEligibleTickers eligibleTickers;
 		private WFLagChosenTickers chosenTickers;
@@ -75,7 +77,8 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag
 			int inSampleWindowDays , int outOfSampleWindowDays ,
 			Account account ,
 			int generationNumberForGeneticOptimizer ,
-			int populationSizeForGeneticOptimizer )
+			int populationSizeForGeneticOptimizer ,
+			IEquityEvaluator equityEvaluator )
 		{
 			this.tickerGroupID = tickerGroupID;
 			this.benchmark = benchmark;
@@ -89,6 +92,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag
 				generationNumberForGeneticOptimizer;
 			this.populationSizeForGeneticOptimizer =
 				populationSizeForGeneticOptimizer;
+			this.equityEvaluator = equityEvaluator;
 
 			this.eligibleTickers = new WFLagEligibleTickers(
 				this.tickerGroupID ,
@@ -103,7 +107,8 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag
 				this.inSampleWindowDays ,
 				this.account.EndOfDayTimer ,
 				this.generationNumberForGeneticOptimizer ,
-				this.populationSizeForGeneticOptimizer );
+				this.populationSizeForGeneticOptimizer ,
+				this.equityEvaluator );
 			this.chosenTickers.NewProgress +=
 				new NewProgressEventHandler( this.bestPerformingNewProgress );
 

@@ -28,6 +28,7 @@ using QuantProject.Business.DataProviders;
 using QuantProject.Business.Financial.Accounting;
 using QuantProject.Business.Financial.Ordering;
 using QuantProject.Business.Scripting;
+using QuantProject.Business.Strategies.EquityEvaluation;
 using QuantProject.Business.Timing;
 using QuantProject.Presentation;
 using QuantProject.Presentation.Reporting.WindowsForm;
@@ -52,6 +53,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag
 		private string benchmark;
 		private DateTime firstDateTime;
 		private DateTime lastDateTime;
+		private IEquityEvaluator equityEvaluator;
 		private double maxRunningHours;
 
 		private IHistoricalQuoteProvider historicalQuoteProvider;
@@ -76,6 +78,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag
 			string benchmark ,
 			DateTime firstDateTime ,
 			DateTime lastDateTime ,
+			IEquityEvaluator equityEvaluator ,
 			double maxRunningHours )
 		{
 			this.tickerGroupID = tickerGroupID;
@@ -89,6 +92,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag
 			this.benchmark = benchmark;
 			this.firstDateTime = firstDateTime;
 			this.lastDateTime = lastDateTime;
+			this.equityEvaluator = equityEvaluator;
 
 			this.maxRunningHours = maxRunningHours;
 			this.wFLagLog =
@@ -131,7 +135,8 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag
 				this.numDaysBetweenEachOptimization ,
 				this.account ,
 				this.generationNumberForGeneticOptimizer ,
-				this.populationSizeForGeneticOptimizer );
+				this.populationSizeForGeneticOptimizer ,
+				this.equityEvaluator );
 		}
 		public static void WriteToTextLog( string message )
 		{
@@ -153,7 +158,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag
 			// the following if statement is used to avoid too many output
 			// when small populations are chosen. Comment it out
 			// when large populations are chosen
-			if ( eventArgs.CurrentProgress % 20 == 0 )
+//			if ( eventArgs.CurrentProgress % 20 == 0 )
 				RunWalkForwardLag.WriteToTextLog(
 					eventArgs.CurrentProgress.ToString() + " / " +
 					eventArgs.Goal.ToString() +
