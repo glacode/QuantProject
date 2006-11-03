@@ -28,6 +28,7 @@ using QuantProject.ADT.Collections;
 using QuantProject.ADT.Optimizing.BruteForce;
 using QuantProject.ADT.Optimizing.Genetic;
 using QuantProject.Business.Strategies;
+using QuantProject.Business.Strategies.EquityEvaluation;
 using QuantProject.Business.Timing;
 
 
@@ -49,6 +50,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag
 		protected IEndOfDayTimer endOfDayTimer;
 		protected int generationNumberForGeneticOptimizer;
 		protected int populationSizeForGeneticOptimizer;
+		protected IEquityEvaluator equityEvaluator;
 
 		private WeightedPositions drivingWeightedPositions;
 		private WeightedPositions portfolioWeightedPositions;
@@ -111,7 +113,8 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag
 			int inSampleDays ,
 			IEndOfDayTimer endOfDayTimer ,
 			int generationNumberForGeneticOptimizer ,
-			int populationSizeForGeneticOptimizer
+			int populationSizeForGeneticOptimizer ,
+			IEquityEvaluator equityEvaluator
 			)
 		{
 			this.eligibleTickers = eligibleTickers;
@@ -123,6 +126,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag
 				generationNumberForGeneticOptimizer;
 			this.populationSizeForGeneticOptimizer =
 				populationSizeForGeneticOptimizer;
+			this.equityEvaluator = equityEvaluator;
 		}
 
 		#region SetWeightedPositions
@@ -175,6 +179,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag
 				this.lastOptimizationDate ,
 				this.numberOfDrivingPositions ,
 				this.numberOfPositionsToBeChosen ,
+				this.equityEvaluator ,
 				QuantProject.ADT.ConstantsProvider.SeedForRandomGenerator );
 
 			GeneticOptimizer geneticOptimizer = new GeneticOptimizer(
@@ -221,7 +226,8 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag
 				this.firstOptimizationDate ,
 				this.lastOptimizationDate ,
 				this.numberOfDrivingPositions ,
-				this.numberOfPositionsToBeChosen );
+				this.numberOfPositionsToBeChosen ,
+				this.equityEvaluator );
 
 			BruteForceOptimizer bruteForceOptimizer = new BruteForceOptimizer(
 				wFLagBruteForceOptimizableItemManager );
@@ -285,7 +291,8 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag
 				shortPortfolioTicker ,
 				this.firstOptimizationDate ,
 				this.lastOptimizationDate ,
-				this.numberOfDrivingPositions );
+				this.numberOfDrivingPositions ,
+				this.equityEvaluator );
 
 			BruteForceOptimizer bruteForceOptimizer = new BruteForceOptimizer(
 				wFLagFixedPortfolioBruteForceOptimizableParametersManager );
@@ -314,12 +321,12 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag
 //				eligibleTickers );
 //			this.setWeightedPositions_usingTheBruteForceOptimizer(
 //				eligibleTickers );
-//			this.setWeightedPositions_withFixedPortfolio(
-//				eligibleTickers , "SPY" , "IWM" );
+			this.setWeightedPositions_withFixedPortfolio(
+				eligibleTickers , "SPY" , "IWM" );
 //			this.setWeightedPositions_withFixedPortfolio(
 //				eligibleTickers , "XLF" , "SMH" );
-			this.setWeightedPositions_withFixedPortfolio(
-				eligibleTickers , "QQQQ" , "SPY" );
+//			this.setWeightedPositions_withFixedPortfolio(
+//				eligibleTickers , "QQQQ" , "SPY" );
 		}
 		#endregion
 	}

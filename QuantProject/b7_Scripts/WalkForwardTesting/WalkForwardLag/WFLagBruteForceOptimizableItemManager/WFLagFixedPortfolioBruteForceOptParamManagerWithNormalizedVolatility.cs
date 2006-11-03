@@ -24,12 +24,14 @@ using System.Collections;
 using System.Data;
 
 using QuantProject.ADT.Statistics;
+using QuantProject.Business.Strategies.EquityEvaluation;
 
 namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag
 {
 	/// <summary>
 	/// Implements IBruteForceOptimizableParametersManager using weights
-	/// to normalize the portfolio's tickers volatility
+	/// to normalize not only the portfolio's tickers volatility,
+	/// but the driving positions volatility too
 	/// </summary>
 	public class WFLagFixedPortfolioBruteForceOptParamManagerWithNormalizedVolatility
 		: WFLagFixedPortfolioBruteForceOptParamManagerWithPortfolioNormalizedVolatility
@@ -44,13 +46,15 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag
 			string portfolioShortTicker ,
 			DateTime firstOptimizationDate ,
 			DateTime lastOptimizationDate ,
-			int numberOfDrivingPositions ) :
+			int numberOfDrivingPositions ,
+			IEquityEvaluator equityEvaluator ) :
 			base( eligibleTickersForDrivingPositions ,
 			portfolioLongTicker ,
 			portfolioShortTicker ,
 			firstOptimizationDate ,
 			lastOptimizationDate ,
-			numberOfDrivingPositions )
+			numberOfDrivingPositions ,
+			equityEvaluator)
 		{
 		}
 //		protected override double[]

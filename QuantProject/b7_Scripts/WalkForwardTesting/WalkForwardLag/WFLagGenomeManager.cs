@@ -27,6 +27,7 @@ using System.Data;
 using QuantProject.ADT.Optimizing.Genetic;
 using QuantProject.ADT.Statistics;
 using QuantProject.Business.Strategies;
+using QuantProject.Business.Strategies.EquityEvaluation;
 
 namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag
 {
@@ -49,6 +50,8 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag
 		private double minimumPositionWeight;
 
 		protected WFLagCandidates wFLagCandidates;
+
+		private IEquityEvaluator equityEvaluator;
 
 
 		public int GenomeSize
@@ -95,6 +98,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag
 			DateTime lastOptimizationDate ,
 			int numberOfDrivingPositions ,
 			int numberOfTickersInPortfolio ,
+			IEquityEvaluator equityEvaluator ,
 			int seedForRandomGenerator )
 
 		{
@@ -110,6 +114,8 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag
 			this.lastOptimizationDate = lastOptimizationDate;
 
 			this.minimumPositionWeight = 0.2;	// TO DO this value should become a constructor parameter
+			
+			this.equityEvaluator = equityEvaluator;
 
 //			GenomeManagement.SetRandomGenerator(
 //				QuantProject.ADT.ConstantsProvider.SeedForRandomGenerator
@@ -206,12 +212,16 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag
 		}
 		private double getFitnessValue( double[] strategyReturns )
 		{
+//			double fitnessValue =
+//				AdvancedFunctions.GetSharpeRatio(
+//				strategyReturns );
+//			double fitnessValue =
+//				AdvancedFunctions.GetExpectancyScore(
+//				strategyReturns );
 			double fitnessValue =
-				AdvancedFunctions.GetSharpeRatio(
+				this.equityEvaluator.GetReturnsEvaluation(
 				strategyReturns );
-//						double fitnessValue =
-//							AdvancedFunctions.GetExpectancyScore(
-//							strategyReturns );
+
 			//			double fitnessValue =
 			//				this.getFitnessValue_withGoodFinal( strategyReturns );
 			//			double fitnessValue =

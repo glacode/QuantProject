@@ -23,6 +23,7 @@ using System;
 using System.Data;
 
 using QuantProject.ADT.Statistics;
+using QuantProject.Business.Strategies.EquityEvaluation;
 
 namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag
 {
@@ -45,13 +46,15 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag
 			string portfolioShortTicker ,
 			DateTime firstOptimizationDate ,
 			DateTime lastOptimizationDate ,
-			int numberOfDrivingPositions ) :
+			int numberOfDrivingPositions ,
+			IEquityEvaluator equityEvaluator ) :
 			base( eligibleTickersForDrivingPositions ,
 			portfolioLongTicker ,
 			portfolioShortTicker ,
 			firstOptimizationDate ,
 			lastOptimizationDate ,
-			numberOfDrivingPositions )
+			numberOfDrivingPositions ,
+			equityEvaluator )
 		{
 			this.standardDeviationForLongPosition = double.MinValue;
 			this.standardDeviationForShortPosition = double.MinValue;

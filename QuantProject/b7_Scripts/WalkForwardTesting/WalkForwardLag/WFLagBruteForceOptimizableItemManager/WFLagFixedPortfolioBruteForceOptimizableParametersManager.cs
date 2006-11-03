@@ -25,6 +25,7 @@ using System.Data;
 
 using QuantProject.ADT.Optimizing.BruteForce;
 using QuantProject.ADT.Statistics.Combinatorial;
+using QuantProject.Business.Strategies.EquityEvaluation;
 
 namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag
 {
@@ -60,7 +61,8 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag
 			string portfolioShortTicker ,
 			DateTime firstOptimizationDate ,
 			DateTime lastOptimizationDate ,
-			int numberOfDrivingPositions ) :
+			int numberOfDrivingPositions ,
+			IEquityEvaluator equityEvaluator ) :
 			base(
 			eligibleTickersForDrivingPositions ,
 			eligibleTickersForDrivingPositions ,
@@ -68,6 +70,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag
 			lastOptimizationDate ,
 			numberOfDrivingPositions ,
 			2 ,
+			equityEvaluator ,
 			QuantProject.ADT.ConstantsProvider.SeedForRandomGenerator )
 		{
 			this.eligibleTickersForDrivingPositions =

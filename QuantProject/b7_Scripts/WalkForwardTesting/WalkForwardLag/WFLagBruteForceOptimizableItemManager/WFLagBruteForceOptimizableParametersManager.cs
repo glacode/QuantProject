@@ -25,6 +25,7 @@ using System.Data;
 
 using QuantProject.ADT.Optimizing.BruteForce;
 using QuantProject.ADT.Statistics.Combinatorial;
+using QuantProject.Business.Strategies.EquityEvaluation;
 
 namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag
 {
@@ -45,6 +46,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag
 		private WFLagGenomeManager wFLagGenomeManager;
 		protected DataTable eligibleTickersForDrivingPositions;
 		protected DataTable eligibleTickersForPortfolioPositions;
+		private IEquityEvaluator equityEvaluator;
 
 		public WFLagBruteForceOptimizableParametersManager(
 			DataTable eligibleTickersForDrivingPositions ,
@@ -52,7 +54,8 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag
 			DateTime firstOptimizationDate ,
 			DateTime lastOptimizationDate ,
 			int numberOfDrivingPositions ,
-			int numberOfPortfolioPositions )
+			int numberOfPortfolioPositions ,
+			IEquityEvaluator equityEvaluator )
 		{
 			this.eligibleTickersForDrivingPositions =
 				eligibleTickersForDrivingPositions;
@@ -60,6 +63,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag
 				eligibleTickersForPortfolioPositions;
 			this.numberOfDrivingPositions = numberOfDrivingPositions;
 			this.numberOfPortfolioPositions = numberOfPortfolioPositions;
+			this.equityEvaluator = equityEvaluator;
 			this.drivingCombination = new Combination(
 				- eligibleTickersForDrivingPositions.Rows.Count ,
 				eligibleTickersForDrivingPositions.Rows.Count - 1 ,
@@ -75,6 +79,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag
 				lastOptimizationDate ,
 				numberOfDrivingPositions ,
 				numberOfPortfolioPositions ,
+				this.equityEvaluator ,
 				QuantProject.ADT.ConstantsProvider.SeedForRandomGenerator );
 		}
 		public bool MoveNext()
