@@ -27,6 +27,7 @@ using QuantProject.ADT;
 using QuantProject.ADT.Collections;
 using QuantProject.ADT.Optimizing.Genetic;
 using QuantProject.Business.Strategies;
+using QuantProject.Business.Strategies.EquityEvaluation;
 using QuantProject.Business.Timing;
 
 
@@ -66,13 +67,15 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag
 			int inSampleDays ,
 			IEndOfDayTimer endOfDayTimer ,
 			int generationNumberForGeneticOptimizer ,
-			int populationSizeForGeneticOptimizer
+			int populationSizeForGeneticOptimizer ,
+			IEquityEvaluator equityEvaluator
 			) : base( numberOfDrivingPositions ,
 			numberOfPositionsToBeChosen , 
 			inSampleDays ,
 			endOfDayTimer ,
 			generationNumberForGeneticOptimizer ,
-			populationSizeForGeneticOptimizer )
+			populationSizeForGeneticOptimizer ,
+			equityEvaluator)
 		{
 		}
 //		{
@@ -128,6 +131,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag
 				this.lastOptimizationDate ,
 				this.numberOfDrivingPositions ,
 				this.numberOfPositionsToBeChosen ,
+				this.equityEvaluator ,
 				seed * 100 );
 
 			GeneticOptimizer geneticOptimizer = new GeneticOptimizer(

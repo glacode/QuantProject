@@ -116,17 +116,33 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag
 
 		private void NewBacktest_Click(object sender, System.EventArgs e)
 		{
-			new RunWalkForwardLag( "millo" , 500 ,
-				3 , 3 , 90 , 20 , 3 , 5000 , "MSFT" ,
-				new DateTime( 2003 , 1 , 1 ) ,
-				new DateTime( 2003 , 1 , 8 ) ,
-				1 ).Run();
 //			new RunWalkForwardLag( "ib_etf" , 500 ,
-//				4 , 4 , 200 , 14 , 50 , 90000 , "EWQ" ,
+//				4 , 2 , 200 , 3 , 4500 , 1000 , "EWQ" ,
 //				new DateTime( 2003 , 8 , 13 ) ,
 //				new DateTime( 2003 , 12 , 31 ) ,
-//				7.4 ).Run();
-//			new RunWalkForwardLag( "ib_etf" , 500 ,
+//				8 ).Run();
+			//			new RunWalkForwardLag( "millo" , 500 ,
+//				3 , 2 , 90 , 20 , 3 , 5000 , "MSFT" ,
+//				new DateTime( 2003 , 1 , 1 ) ,
+//				new DateTime( 2003 , 1 , 8 ) ,
+//				1 ).Run();
+
+			// fixed portfolio
+//			new RunWalkForwardLag( "DrvPstns" , 500 ,
+//				4 , 4 , 100 , 13 , 9 , 100 , "EWQ" ,
+//				new DateTime( 2001 , 1 , 1 ) ,
+//				new DateTime( 2003 , 12 , 31 ) ,
+//				7 ).Run();
+			// XLF vs SMH
+			// QQQQ vs SPY
+			new RunWalkForwardLag( "DrvPstns" , 500 ,
+				4 , 2 , 200 , 13 , 9 , 100 , "EWQ" ,
+				new DateTime( 2002 , 1 , 1 ) ,
+				new DateTime( 2003 , 12 , 31 ) ,
+				new QuantProject.Business.Strategies.EquityEvaluation.WinningPeriods() ,
+				8.5 ).Run();
+
+			//			new RunWalkForwardLag( "ib_etf" , 500 ,
 //				4 , 4 , 250 , 2 , 15 , 30000 , "EWQ" ,
 //				new DateTime( 2003 , 1 , 1 ) ,
 //				new DateTime( 2003 , 12 , 31 ) ,
