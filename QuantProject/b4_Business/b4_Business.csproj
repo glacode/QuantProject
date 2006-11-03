@@ -619,6 +619,16 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "a2_Strategies\EquityEvaluation\IEquityEvaluator.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "a2_Strategies\EquityEvaluation\WinningPeriods.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "a3_Testing\BackTester.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
