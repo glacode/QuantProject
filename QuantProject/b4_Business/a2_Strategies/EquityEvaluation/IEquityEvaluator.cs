@@ -25,7 +25,7 @@ using System;
 namespace QuantProject.Business.Strategies.EquityEvaluation
 {
 	/// <summary>
-	/// Interface to be implemented by equity evaluators
+	/// Interface to be implemented by equity line evaluators
 	/// </summary>
 	public interface IEquityEvaluator
 	{
