@@ -47,7 +47,7 @@ namespace QuantProject.Principale
 	/// </summary>
 	public class Principale : System.Windows.Forms.Form
 	{
-    public static RunEfficientPorfolio runEfficientPortfolio;
+//    public static RunEfficientPorfolio runEfficientPortfolio;
 		
 		private System.Windows.Forms.MainMenu mainMenu1;
     private System.Windows.Forms.MenuItem menuItem1;
@@ -303,12 +303,12 @@ namespace QuantProject.Principale
 											        new DateTime(2004,1,15),
 											        0.0, PortfolioType.ShortAndLong, 2);*/
                               
-    	QuantProject.Principale.Principale.runEfficientPortfolio = 
-    		new RunTestOptimizedCTOPorfolio("Test",150,5,45,10,50000,
-											        "^SPX",
-											        new DateTime(2004,3,1),
-											        new DateTime(2004,3,1).AddDays(45),
-											        0.0005, PortfolioType.ShortAndLong, 12);
+//    	QuantProject.Principale.Principale.runEfficientPortfolio = 
+//    		new RunTestOptimizedCTOPorfolio("Test",150,5,45,10,50000,
+//											        "^SPX",
+//											        new DateTime(2004,3,1),
+//											        new DateTime(2004,3,1).AddDays(45),
+//											        0.0005, PortfolioType.ShortAndLong, 12);
                               
     		/*new RunTestOptimizedCTCPortfolio("Test",150,6,90,10,20000,
     		                                 "^SPX",
@@ -317,7 +317,7 @@ namespace QuantProject.Principale
         	                        				5,2,0.0,
         	                        				PortfolioType.ShortAndLong, 0.50, 10);*/
     		                                 
-    	QuantProject.Principale.Principale.runEfficientPortfolio.Run();
+//    	QuantProject.Principale.Principale.runEfficientPortfolio.Run();
  /*     QuantProject.Principale.Principale.runEfficientPortfolio = 
         new RunTestOptimizedCTOPorfolio("Test",150,6,45,10,150000,
         "^SPX",
@@ -406,7 +406,7 @@ namespace QuantProject.Principale
       } 
       catch ( Exception ex )
       {
-      	QuantProject.Principale.Principale.runEfficientPortfolio.SaveScriptResults();
+//      	QuantProject.Principale.Principale.runEfficientPortfolio.SaveScriptResults();
       	writeExceptionToLogFile(ex);
       }
     }
@@ -420,11 +420,11 @@ namespace QuantProject.Principale
 	      w.Write("\r\nTime of exception : ");
 	      w.WriteLine("{0} {1}", DateTime.Now.ToLongDateString(),
 	                  DateTime.Now.ToLocalTime());
-	      w.Write("\r\nScript name: {0}",
-	              QuantProject.Principale.Principale.runEfficientPortfolio.ScriptName );
-	      w.Write("\r\nTimer date: {0}",
-	              QuantProject.Principale.Principale.runEfficientPortfolio.TimerLastDate.ToLongDateString() );
-	      
+//	      w.Write("\r\nScript name: {0}",
+//	              QuantProject.Principale.Principale.runEfficientPortfolio.ScriptName );
+//	      w.Write("\r\nTimer date: {0}",
+//	              QuantProject.Principale.Principale.runEfficientPortfolio.TimerLastDate.ToLongDateString() );
+//	      
 	      w.WriteLine("\n  :{0}", ex.ToString());
 	      w.WriteLine("\n  :{0}", ex.StackTrace.ToString());
 	      w.WriteLine ("\n-----------------------------------");
@@ -457,7 +457,7 @@ namespace QuantProject.Principale
 //      {//call here your scripts
 	//new RunWalkForwardOneRank().Run();			
         
-				//new RunOneRank().Run();
+				new RunOneRank().Run();
         //new RunEfficientCTCPorfolio("Test",400,5,90,10,10000,
         //	                         	"^SPX",
         //	                          new DateTime(2004,1,1),
@@ -465,7 +465,7 @@ namespace QuantProject.Principale
         //	                          3).Run();
         
         //this.Close();
-        runMilloScripts();
+//        runMilloScripts();
         
         //new RunEfficientCTOPorfolio("Test",200,5,60,2,500, "^SPX",
         //                            new DateTime(2004,1,1),
