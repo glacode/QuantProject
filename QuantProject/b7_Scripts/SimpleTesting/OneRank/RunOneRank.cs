@@ -83,7 +83,7 @@ namespace QuantProject.Scripts.SimpleTesting
 			HistoricalEndOfDayTimer historicalEndOfDayTimer =
 				new IndexBasedEndOfDayTimer(
 				new EndOfDayDateTime( this.startDateTime ,
-				EndOfDaySpecificTime.MarketOpen ) , "^spx" );
+				EndOfDaySpecificTime.MarketOpen ) , "^GSPC" );
 
 //			with IB commission
 //			this.account = new Account( "MSFT" , historicalEndOfDayTimer ,
@@ -94,7 +94,7 @@ namespace QuantProject.Scripts.SimpleTesting
 //				new IBCommissionManager() );
 
 //			with no commission
-			this.account = new Account( "SLR" , historicalEndOfDayTimer ,
+			this.account = new Account( "MSFT" , historicalEndOfDayTimer ,
 				new HistoricalEndOfDayDataStreamer( historicalEndOfDayTimer ,
 				this.historicalQuoteProvider ) ,
 				new HistoricalEndOfDayOrderExecutor( historicalEndOfDayTimer ,
@@ -104,7 +104,7 @@ namespace QuantProject.Scripts.SimpleTesting
 			Report report = new Report( this.account , this.historicalQuoteProvider );
 			report.Create( "WFT One Rank" , 1 ,
 				new EndOfDayDateTime( this.endDateTime , EndOfDaySpecificTime.MarketClose ) ,
-				"SLR" );
+				"MSFT" );
 			report.TransactionGrid.MouseUp +=
 				new MouseEventHandler( this.mouseEventHandler );
 //			ObjectArchiver.Archive( report.AccountReport ,
