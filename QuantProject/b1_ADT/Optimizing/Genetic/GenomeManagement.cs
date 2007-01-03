@@ -172,33 +172,41 @@ namespace QuantProject.ADT.Optimizing.Genetic
       return childs;
     }
 		
-    static public void MutateAllGenes(Genome genome, double mutationRate)
+    static public void MutateAllGenes(Genome genome)
 		{
 			for (int pos = 0 ; pos < genome.Size; pos++)
 			{
-				if (GenomeManagement.RandomGenerator.Next(0,101) < (int)(mutationRate*100))
-					genome.SetGeneValue(GenomeManagement.RandomGenerator.Next(genome.GetMinValueForGenes(pos),
-                                   genome.GetMaxValueForGenes(pos) + 1), pos);
+				genome.SetGeneValue( GenomeManagement.RandomGenerator.Next(genome.GetMinValueForGenes(pos),
+                              genome.GetMaxValueForGenes(pos) + 1), pos );
 			}
 		}
 		
-		static public void MutateOneGene(Genome genome, double mutationRate,
-		                          				int genePosition)
+		static public void MutateOneGene(Genome genome, int genePosition)
 		{
-		
-			if (GenomeManagement.RandomGenerator.Next(0,101) < (int)(mutationRate*100))
-				genome.SetGeneValue(GenomeManagement.RandomGenerator.Next(genome.GetMinValueForGenes(genePosition),
+			genome.SetGeneValue(GenomeManagement.RandomGenerator.Next(genome.GetMinValueForGenes(genePosition),
                                    genome.GetMaxValueForGenes(genePosition) + 1), genePosition);
-			
 		}
     
-    static public void MutateOneGene(Genome genome, double mutationRate,
-                                      int genePosition, int newValueOfGene)
+    static public void MutateOneGene(Genome genome,
+                                     int genePosition, int newValueOfGene)
     {
-		  if (GenomeManagement.RandomGenerator.Next(0,101) < (int)(mutationRate*100))
-              genome.SetGeneValue(newValueOfGene, genePosition);
-			
+		  genome.SetGeneValue(newValueOfGene, genePosition);
     }
+
+    static public void MutateGenes(Genome genome,
+                                   int[] positionsOfGenesToBeMutated,
+                                   int[] newValuesForGenes)
+    {
+      if(positionsOfGenesToBeMutated.Length > genome.Size ||
+         positionsOfGenesToBeMutated.Length != newValuesForGenes.Length)
+          throw new Exception("Bad parameters: too many positions of genes to be mutated or " +
+                              "newValueForGenes' length is different from positionsOfGenesToBeMutated's lenght");
+
+      for(int i = 0; i<positionsOfGenesToBeMutated.Length; i++)
+          genome.SetGeneValue(newValuesForGenes[i], positionsOfGenesToBeMutated[i]);
+      		
+    }
+
 
     #region MixGenesWithoutDuplicates
 

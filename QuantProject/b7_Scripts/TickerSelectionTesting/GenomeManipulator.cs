@@ -260,6 +260,34 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
       );
       
     }
-
+    
+    /// <summary>
+		/// Returns true if a given gene, when decoded by the
+		/// GenomeManagerForEfficientPortfolio, refers to a
+		/// ticker already contained in a given genome 
+		/// </summary> 
+		/// <param name="geneValueCorrespondingToATicker">Gene, corresponding to a certain ticker, that has to be checked</param>
+    /// <param name="genome">Genome containing or not the ticker geneCorrespondingToATicker refers to</param>
+    /// <param name="genesPointingToTickers">The int array that contains positions of genes pointing
+    /// to tickers inside genome</param>
+    public static bool IsTickerContainedInGenome(int geneValueCorrespondingToATicker,
+                                                 Genome genome, int[] genePositionsPointingToTickers)
+    {
+      bool returnValue = false;
+      for(int i = 0; i<genePositionsPointingToTickers.Length; i++)
+      {
+				returnValue = (genome.HasGene(geneValueCorrespondingToATicker, 
+      	                              genePositionsPointingToTickers[i]) ||
+        							(geneValueCorrespondingToATicker < 0 && 
+          						 genome.HasGene(Math.Abs(geneValueCorrespondingToATicker)-1,
+    		     													genePositionsPointingToTickers[i])  )   ||
+        							(geneValueCorrespondingToATicker >= 0 && 
+    	    							genome.HasGene(- Math.Abs(geneValueCorrespondingToATicker)- 1,
+    	                       genePositionsPointingToTickers[i]))   );
+      		if(returnValue)
+      			i = genePositionsPointingToTickers.Length;//exit from FOR
+      }
+      return returnValue;
+    }
 	}
 }

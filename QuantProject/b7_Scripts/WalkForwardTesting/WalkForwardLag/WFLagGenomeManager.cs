@@ -272,7 +272,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag
 			return
 				GenomeManagement.AlternateFixedCrossover(parent1, parent2);
 		}
-		public void Mutate( Genome genome , double mutationRate )
+		public void Mutate( Genome genome )
 		{
 //			int newValueForGene = GenomeManagement.RandomGenerator.Next(
 //				genome.MinValueForGenes ,
@@ -281,7 +281,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag
 				GenomeManagement.RandomGenerator.Next( genome.Size ); 
 			int newValueForGene =
 				this.GetNewGeneValue( genome , genePositionToBeMutated );
-			GenomeManagement.MutateOneGene( genome , mutationRate ,
+			GenomeManagement.MutateOneGene( genome ,
 				genePositionToBeMutated , newValueForGene );
 		}
 		#region Decode

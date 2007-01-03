@@ -46,6 +46,7 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOs
     private int maxLevelForOverboughtThreshold;
     private int divisorForThresholdComputation;
     private bool symmetricalThresholds = false;
+    private bool overboughtMoreThanOversoldForFixedPortfolio = false;
     private int numOfGenesDedicatedToThresholds;
    	private double currentOversoldThreshold = 0.0;
     private double currentOverboughtThreshold = 0.0;
@@ -62,7 +63,12 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOs
          this.divisorForThresholdComputation < this.maxLevelForOverboughtThreshold ||
          this.divisorForThresholdComputation < this.maxLevelForOversoldThreshold ||
          (this.symmetricalThresholds && (this.minLevelForOversoldThreshold != this.minLevelForOverboughtThreshold ||
-                                        this.maxLevelForOversoldThreshold != this.maxLevelForOverboughtThreshold) )  )
+                                        this.maxLevelForOversoldThreshold != this.maxLevelForOverboughtThreshold) ) ||
+         (this.overboughtMoreThanOversoldForFixedPortfolio && 
+            (this.minLevelForOverboughtThreshold > Convert.ToInt32(Convert.ToDouble(this.minLevelForOversoldThreshold)* Convert.ToDouble(this.divisorForThresholdComputation) /
+                                                     (Convert.ToDouble(this.divisorForThresholdComputation) - Convert.ToDouble(this.minLevelForOversoldThreshold) ) )  ||
+              this.maxLevelForOverboughtThreshold < Convert.ToInt32(Convert.ToDouble(this.maxLevelForOversoldThreshold) * Convert.ToDouble(this.divisorForThresholdComputation) /
+                                                     (Convert.ToDouble(this.divisorForThresholdComputation) - Convert.ToDouble(this.maxLevelForOversoldThreshold) ) ) ) ) ) 
 
           throw new Exception("Bad parameters for thresholds computation!");
     }
@@ -78,6 +84,7 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOs
 	                         int maxLevelForOverboughtThreshold,
                            int divisorForThresholdComputation,
                            bool symmetricalThresholds,
+                           bool overboughtMoreThanOversoldForFixedPortfolio,
                            PortfolioType inSamplePortfolioType)
                            :
                           base(setOfInitialTickers,
@@ -96,6 +103,7 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOs
       this.minLevelForOverboughtThreshold = minLevelForOverboughtThreshold;
       this.maxLevelForOverboughtThreshold = maxLevelForOverboughtThreshold;
       this.symmetricalThresholds = symmetricalThresholds;
+      this.overboughtMoreThanOversoldForFixedPortfolio = overboughtMoreThanOversoldForFixedPortfolio;
       if(this.symmetricalThresholds)//value for thresholds must be unique
  				numOfGenesDedicatedToThresholds = 1;
       else
@@ -363,56 +371,55 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOs
       // must be different from the others already stored
       int minValueForGene = genome.GetMinValueForGenes(genePosition);
       int maxValueForGene = genome.GetMaxValueForGenes(genePosition);
-      int returnValue = minValueForGene;
-      if( minValueForGene != maxValueForGene)
-      {
-	      returnValue = GenomeManagement.RandomGenerator.Next(minValueForGene,
-	        															maxValueForGene + 1);
-	      while(genePosition > this.numOfGenesDedicatedToThresholds - 1
-	        && GenomeManipulator.IsTickerContainedInGenome(returnValue,
-      	                                                 genome,
-      	                                                 this.numOfGenesDedicatedToThresholds,
-      	                                                 genome.Size - 1))
-	        //while in the given position has to be stored
-	        //a new gene pointing to a ticker and
-	        //the proposed returnValue points to a ticker
-	        //already stored in the given genome
-	      {
-	        // a new returnValue has to be generated
-	        returnValue = GenomeManagement.RandomGenerator.Next(minValueForGene,
-	        															maxValueForGene + 1);
-	      }
-      }
+      int returnValue = GenomeManagement.RandomGenerator.Next(minValueForGene,
+                                      maxValueForGene + 1);
+      
+      if(this.numOfGenesDedicatedToThresholds == 2 &&
+         this.overboughtMoreThanOversoldForFixedPortfolio && genePosition == 1)
+      //genePosition points to overbought threshold,
+      //dipendent from the oversold one such that the portfolio tends to be fix
+      	  returnValue = Convert.ToInt32(Convert.ToDouble(genome.GetGeneValue(0)) * Convert.ToDouble(this.divisorForThresholdComputation) /
+      					      (Convert.ToDouble(this.divisorForThresholdComputation) - Convert.ToDouble(genome.GetGeneValue(0))));
+      
+      while(genePosition > this.numOfGenesDedicatedToThresholds - 1
+	          && GenomeManipulator.IsTickerContainedInGenome(returnValue,
+      	                                                genome,
+      	                                                this.numOfGenesDedicatedToThresholds,
+      	                                                genome.Size - 1))
+	    //while in the given position has to be stored
+	    //a new gene pointing to a ticker and
+	    //the proposed returnValue points to a ticker
+	    //already stored in the given genome
+	              returnValue = GenomeManagement.RandomGenerator.Next(minValueForGene,
+	        														maxValueForGene + 1);
+	    
       return returnValue;
     }
         
-    public override void Mutate(Genome genome, double mutationRate)
+    public override void Mutate(Genome genome)
     {
       // in this implementation only one gene is mutated
       int genePositionToBeMutated = GenomeManagement.RandomGenerator.Next(genome.Size);
       int minValueForGene = genome.GetMinValueForGenes(genePositionToBeMutated);
       int maxValueForGene = genome.GetMaxValueForGenes(genePositionToBeMutated);
-      if(minValueForGenes != maxValueForGenes)
-      {
-	      int newValueForGene = GenomeManagement.RandomGenerator.Next(minValueForGene,
-	        																		maxValueForGene + 1);
-	       
-	      while(genePositionToBeMutated > this.numOfGenesDedicatedToThresholds - 1 &&
-	        GenomeManipulator.IsTickerContainedInGenome(newValueForGene,
-      	                                              genome,
-      	                                              this.numOfGenesDedicatedToThresholds,
-      	                                              genome.Size - 1))
-	        //while in the proposed genePositionToBeMutated has to be stored
-	        //a new gene pointing to a ticker and
-	        //the proposed newValueForGene points to a ticker
-	        //already stored in the given genome
-	      {
-	        newValueForGene = GenomeManagement.RandomGenerator.Next(minValueForGene,
-	        																		maxValueForGene +1);
-	      }
-	      GenomeManagement.MutateOneGene(genome, mutationRate,
-	        genePositionToBeMutated, newValueForGene);
-      }
+      int newValueForGene = GenomeManagement.RandomGenerator.Next(minValueForGene,
+	        																maxValueForGene +1);
+      while(genePositionToBeMutated > this.numOfGenesDedicatedToThresholds - 1 &&
+	          GenomeManipulator.IsTickerContainedInGenome(newValueForGene,
+      	                                            genome,
+      	                                            this.numOfGenesDedicatedToThresholds,
+      	                                            genome.Size - 1))
+	    //while in the proposed genePositionToBeMutated has to be stored
+	    //a new gene pointing to a ticker and
+	    //the proposed newValueForGene points to a ticker
+	    //already stored in the given genome
+	          newValueForGene = GenomeManagement.RandomGenerator.Next(minValueForGene,
+	        																	maxValueForGene +1);
+      //TODO add if when it is mutated a threshold 
+      //(just a single threshold or the pair of thresholds)
+	    if(genePositionToBeMutated > this.numOfGenesDedicatedToThresholds - 1)
+	        GenomeManagement.MutateOneGene(genome,
+	          genePositionToBeMutated, newValueForGene);
     }
   }
 }

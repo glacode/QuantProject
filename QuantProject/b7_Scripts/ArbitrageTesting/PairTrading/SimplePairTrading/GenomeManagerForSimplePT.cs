@@ -200,7 +200,7 @@ namespace QuantProject.Scripts.ArbitrageTesting.PairTrading.SimplePairTrading
       return returnValue;
     }
         
-    public void Mutate(Genome genome, double mutationRate)
+    public void Mutate(Genome genome)
     {
       int newValueForGene;
       int genePositionToBeMutated = GenomeManagement.RandomGenerator.Next(genome.Size); 
@@ -228,7 +228,7 @@ namespace QuantProject.Scripts.ArbitrageTesting.PairTrading.SimplePairTrading
         }
 
       }
-      GenomeManagement.MutateOneGene(genome, mutationRate,
+      GenomeManagement.MutateOneGene(genome,
         genePositionToBeMutated, newValueForGene);
     }
 

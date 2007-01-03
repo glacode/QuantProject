@@ -76,9 +76,9 @@ namespace QuantProject.ADT.Optimizing.Genetic
       //return GenomeManagement.MixGenesWithoutDuplicates(parent1, parent2);
     }
 		
-		public void Mutate(Genome genome, double mutationRate)
+		public void Mutate(Genome genome)
     {
-      GenomeManagement.MutateAllGenes(genome, mutationRate);
+      GenomeManagement.MutateAllGenes(genome);
     }
     
     public double GetFitnessValue(Genome genome)

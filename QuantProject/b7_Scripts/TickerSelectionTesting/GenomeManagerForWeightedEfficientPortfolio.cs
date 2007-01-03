@@ -142,27 +142,93 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
 
       return returnValue;
     }
-        
-    public override void Mutate(Genome genome, double mutationRate)
+    
+    #region override Mutate
+    
+    //OLD VERSION   
+//    public override void Mutate(Genome genome, double mutationRate)
+//    {
+//      // in this implementation only one gene is mutated
+//      int genePositionToBeMutated = GenomeManagement.RandomGenerator.Next(genome.Size);
+//      int newValueForGene = GenomeManagement.RandomGenerator.Next(genome.GetMinValueForGenes(genePositionToBeMutated),
+//                                                                  genome.GetMaxValueForGenes(genePositionToBeMutated) +1);
+//       
+//      while(genePositionToBeMutated%2 == 1 &&
+//            GenomeManipulator.IsTickerContainedInGenome(newValueForGene,genome))
+//      //while in the proposed genePositionToBeMutated has to be stored
+//      //a new gene pointing to a ticker and
+//      //the proposed newValueForGene points to a ticker
+//      //already stored in the given genome
+//      {
+//        newValueForGene = GenomeManagement.RandomGenerator.Next(genome.GetMinValueForGenes(genePositionToBeMutated),
+//                                                                genome.GetMaxValueForGenes(genePositionToBeMutated) +1);
+//      }
+//      GenomeManagement.MutateOneGene(genome, mutationRate,
+//        genePositionToBeMutated, newValueForGene);
+//    }
+		
+    private int mutate_MutateOnlyOneWeight_getNewWeight(Genome genome, int genePositionToBeMutated)
     {
-      // in this implementation only one gene is mutated
-      int genePositionToBeMutated = GenomeManagement.RandomGenerator.Next(genome.Size);
-      int newValueForGene = GenomeManagement.RandomGenerator.Next(genome.GetMinValueForGenes(genePositionToBeMutated),
-                                                                  genome.GetMaxValueForGenes(genePositionToBeMutated) +1);
-       
-      while(genePositionToBeMutated%2 == 1 &&
-            GenomeManipulator.IsTickerContainedInGenome(newValueForGene,genome))
-      //while in the proposed genePositionToBeMutated has to be stored
-      //a new gene pointing to a ticker and
-      //the proposed newValueForGene points to a ticker
-      //already stored in the given genome
-      {
-        newValueForGene = GenomeManagement.RandomGenerator.Next(genome.GetMinValueForGenes(genePositionToBeMutated),
-                                                                genome.GetMaxValueForGenes(genePositionToBeMutated) +1);
-      }
-      GenomeManagement.MutateOneGene(genome, mutationRate,
-        genePositionToBeMutated, newValueForGene);
+      int returnValue;
+      double partOfGeneToSubtractOrAdd = 0.25;
+      int geneValue = Math.Abs(genome.GetGeneValue(genePositionToBeMutated));
+      int subtractOrAdd = GenomeManagement.RandomGenerator.Next(2);
+      if(subtractOrAdd == 1)//subtract a part of the gene value from the gene value itself
+        returnValue = geneValue - Convert.ToInt32(partOfGeneToSubtractOrAdd*geneValue);
+      else
+        returnValue = Math.Min(genome.GetMaxValueForGenes(genePositionToBeMutated),
+                               geneValue + Convert.ToInt32(partOfGeneToSubtractOrAdd*geneValue));
+      return returnValue;
     }
+
+    private void mutate_MutateOnlyOneWeight(Genome genome)
+    {
+      int genePositionToBeMutated = GenomeManagement.RandomGenerator.Next(genome.Size);
+      while(genePositionToBeMutated%2 == 1 )
+        //while the proposed genePositionToBeMutated points to a ticker
+        genePositionToBeMutated = GenomeManagement.RandomGenerator.Next(genome.Size);
+	      
+      int newValueForGene = this.mutate_MutateOnlyOneWeight_getNewWeight(genome, genePositionToBeMutated);	
+	    
+      GenomeManagement.MutateOneGene(genome, genePositionToBeMutated, newValueForGene);
+    }
+    
+    private void mutate_MutateAllGenes(Genome genome)
+    {
+      for(int genePositionToBeMutated = 0;
+          genePositionToBeMutated < genome.Genes().Length;
+          genePositionToBeMutated ++)
+      {
+        int newValueForGene = 
+          GenomeManagement.RandomGenerator.Next(genome.GetMinValueForGenes(genePositionToBeMutated),
+            genome.GetMaxValueForGenes(genePositionToBeMutated) + 1);
+        while(genePositionToBeMutated%2 == 1 
+          && GenomeManipulator.IsTickerContainedInGenome(newValueForGene,genome))
+          //while in the given position has to be stored
+          //a new gene pointing to a ticker and
+          //the proposed newValueForGene points to a ticker
+          //already stored in the given genome
+          // a new newalueForGene has to be generated
+          newValueForGene = GenomeManagement.RandomGenerator.Next(genome.GetMinValueForGenes(genePositionToBeMutated),
+            genome.GetMaxValueForGenes(genePositionToBeMutated) + 1);
+		      
+        genome.SetGeneValue(newValueForGene, genePositionToBeMutated);
+      }
+    }
+        
+    //new version
+		//mutation means just a change in one single weight
+		//or in a complete new genome (with a probability of 50%)
+    public override void Mutate(Genome genome)
+    {
+    	int mutateOnlyOneWeight = GenomeManagement.RandomGenerator.Next(2);
+    	if(mutateOnlyOneWeight == 1)
+    	 	this.mutate_MutateOnlyOneWeight(genome);
+    	else//mutate all genome's genes
+    	  this.mutate_MutateAllGenes(genome); 
+    }
+
+    #endregion
 
   }
 

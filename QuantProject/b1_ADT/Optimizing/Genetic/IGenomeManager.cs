@@ -48,6 +48,6 @@ namespace QuantProject.ADT.Optimizing.Genetic
     double GetFitnessValue(Genome genome);
     object Decode(Genome genome);
 		Genome[] GetChilds(Genome parent1, Genome parent2);
-		void Mutate(Genome genome, double mutationRate);
+		void Mutate(Genome genome);
   }
 }

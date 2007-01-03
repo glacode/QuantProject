@@ -488,7 +488,10 @@ namespace QuantProject.ADT.Optimizing.Genetic
     private void mutateGenomes()
     {
       foreach(Genome g in this.nextGeneration)
-         this.genomeManager.Mutate(g,this.MutationRate);
+      {
+        if( GenomeManagement.RandomGenerator.Next(0,101) < (int)(this.mutationRate*100) ) 
+      		this.genomeManager.Mutate(g);
+      }
     }
     
     private void calculateFitnessAndMeaningForAllGenomes()

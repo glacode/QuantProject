@@ -294,7 +294,7 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
       return returnValue;
     }
         
-    public virtual void Mutate(Genome genome, double mutationRate)
+    public virtual void Mutate(Genome genome)
     {
       // in this implementation only one gene is mutated
       // the new value has to be different from all the other genes of the genome
@@ -311,7 +311,7 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
         newValueForGene = GenomeManagement.RandomGenerator.Next(genome.GetMinValueForGenes(genePositionToBeMutated),
                                                                 genome.GetMaxValueForGenes(genePositionToBeMutated) + 1);
       }
-      GenomeManagement.MutateOneGene(genome, mutationRate,
+      GenomeManagement.MutateOneGene(genome,
                                      genePositionToBeMutated, newValueForGene);
     }
     

@@ -139,7 +139,7 @@ namespace QuantProject.Data.Selectors.ByLinearIndipendence
       return returnValue;
     }
         
-    public void Mutate(Genome genome, double mutationRate)
+    public void Mutate(Genome genome)
     {
       
       int genePositionToBeMutated = GenomeManagement.RandomGenerator.Next(genome.Size);
@@ -151,7 +151,7 @@ namespace QuantProject.Data.Selectors.ByLinearIndipendence
         newValueForGene = GenomeManagement.RandomGenerator.Next(genome.GetMinValueForGenes(genePositionToBeMutated),
     	                                                        genome.GetMaxValueForGenes(genePositionToBeMutated) + 1);
       }
-      GenomeManagement.MutateOneGene(genome, mutationRate,
+      GenomeManagement.MutateOneGene(genome,
         genePositionToBeMutated, newValueForGene);
     }
 
