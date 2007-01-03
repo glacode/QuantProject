@@ -51,7 +51,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.LinearCombination
                                           accountPVO,                                
                                           0,0,
                                           "^GSPC",
-                                          0, 0, 0, 0, 0, 0, false, 0, 
+                                          0, 0, 0, 0, 0, 0, false, false, 0, 
                                           PortfolioType.ShortAndLong, 0.5)
 		{
 			this.chosenTickers = tickers;
