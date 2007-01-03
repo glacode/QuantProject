@@ -71,7 +71,7 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
       startDate, endDate, targetReturn,
       portfolioType, maxRunningHours)
     {
-      this.ScriptName = "OTCTypes_SR_NoCoeffPriceSel";
+      this.ScriptName = "OTCTypes_SR_WithCoeffOnlyMutationPriceSel";
       this.numDaysBetweenEachOptimization = numDaysBetweenEachOptimization;
       this.accounts = new Account[4];
     }
@@ -140,12 +140,12 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
     }
     public override void SaveScriptResults()
     {
-      string fileName = "From"+this.numberOfEligibleTickers +
-        "OptDays" + this.numDaysForOptimizationPeriod + "Portfolio" +
-        this.numberOfTickersToBeChosen + "GenNum" + 
+      string fileName = "From"+ this.tickerGroupID+ "_" +
+      	this.numberOfEligibleTickers +
+        "_OptDays" + this.numDaysForOptimizationPeriod + "_Portf" +
+        this.numberOfTickersToBeChosen + "_GenNum" + 
         this.generationNumberForGeneticOptimizer +
-        "PopSize" + this.populationSizeForGeneticOptimizer +
-        "Target" + Convert.ToString(this.targetReturn) + 
+        "_PopSize" + this.populationSizeForGeneticOptimizer +
         Convert.ToString(this.portfolioType);
       string dirNameWhereToSaveAccounts = System.Configuration.ConfigurationSettings.AppSettings["AccountsArchive"] +
         "\\" + this.ScriptName + "\\";
