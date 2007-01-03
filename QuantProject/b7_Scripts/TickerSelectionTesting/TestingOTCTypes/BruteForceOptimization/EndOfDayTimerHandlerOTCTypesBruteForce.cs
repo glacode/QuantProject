@@ -217,10 +217,10 @@ namespace QuantProject.Scripts.TickerSelectionTesting.TestingOTCTypes.BruteForce
       DataTable tickersFromGroup = temporizedGroup.GetTableOfSelectedTickers();
       
       SelectorByAverageRawOpenPrice byPrice = 
-      		new SelectorByAverageRawOpenPrice(tickersFromGroup,false,currentDate,
-      	                                  currentDate.AddDays(-30),
-      	                                  tickersFromGroup.Rows.Count,
-      	                                  20,500, 0.0001,100);
+      		new SelectorByAverageRawOpenPrice(tickersFromGroup,false,currentDate.AddDays(-30),
+      	                                  	currentDate,
+      	                                  	tickersFromGroup.Rows.Count,
+      	                                  	25,500, 0.0001,100);
       	                                  
       
       SelectorByLiquidity mostLiquidSelector =

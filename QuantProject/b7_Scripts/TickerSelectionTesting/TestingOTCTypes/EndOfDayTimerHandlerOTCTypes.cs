@@ -218,8 +218,8 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
       DataTable tickersFromGroup = temporizedGroup.GetTableOfSelectedTickers();
       
       SelectorByAverageRawOpenPrice byPrice = 
-      		new SelectorByAverageRawOpenPrice(tickersFromGroup,false,currentDate,
-      	                                  currentDate.AddDays(-30),
+      		new SelectorByAverageRawOpenPrice(tickersFromGroup,false,currentDate.AddDays(-30),
+      	                                  currentDate,
       	                                  tickersFromGroup.Rows.Count,
       	                                  20,500, 0.0001,100);
       	                                  
@@ -261,8 +261,8 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
                                                    this.seedForRandomGenerator);
         if(setGenomeCounter)
         	this.genomeCounter = new GenomeCounter(GO);
-        GO.MutationRate = 0.2;
-        GO.CrossoverRate = 0.95;
+        GO.MutationRate = 0.4;
+        GO.CrossoverRate = 0.0;
         GO.Run(false);
         this.addGenomeToBestGenomes(GO.BestGenome,currentDate.AddDays(-this.numDaysForOptimizationPeriod),
                                     currentDate,setOfTickersToBeOptimized.Rows.Count,-1, this.portfolioType,
