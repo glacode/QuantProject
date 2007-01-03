@@ -67,6 +67,7 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOs
     protected bool portfolioHasBeenOverbought;
     protected bool portfolioHasBeenOversold;
     protected bool symmetricalThresholds;
+    protected bool overboughtMoreThanOversoldForFixedPortfolio;
         
     public EndOfDayTimerHandlerPVO(string tickerGroupID, int numberOfEligibleTickers, 
                                 int numberOfTickersToBeChosen, int numDaysForOptimizationPeriod,
@@ -81,6 +82,7 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOs
                                 int maxLevelForOverboughtThreshold,
                                 int divisorForThresholdComputation,
                                 bool symmetricalThresholds,
+                                bool overboughtMoreThanOversoldForFixedPortfolio,
                                 int numDaysBetweenEachOptimization,
                                 PortfolioType portfolioType, double maxAcceptableCloseToCloseDrawdown):
     														base(tickerGroupID, numberOfEligibleTickers, 
@@ -97,6 +99,7 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOs
       this.maxLevelForOverboughtThreshold = maxLevelForOverboughtThreshold;
       this.divisorForThresholdComputation = divisorForThresholdComputation;
       this.symmetricalThresholds = symmetricalThresholds;
+      this.overboughtMoreThanOversoldForFixedPortfolio = overboughtMoreThanOversoldForFixedPortfolio;
       this.maxAcceptableCloseToCloseDrawdown = maxAcceptableCloseToCloseDrawdown;
       this.stopLossConditionReached = false;
       this.currentAccountValue = 0.0;
@@ -271,24 +274,24 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOs
       		new SelectorByAverageRawOpenPrice(tickersFromGroup,false,currentDate.AddDays(-30),
       	                                  currentDate,
       	                                  numOfTickersInGroupAtCurrentDate,
-      	                                  25,500, 0.0001,100);
+      	                                  20,500, 0.0001,100);
  
       SelectorByLiquidity mostLiquidSelector =
       	new SelectorByLiquidity(byPrice.GetTableOfSelectedTickers(),
         false,currentDate.AddDays(-this.numDaysForOptimizationPeriod), currentDate,
         this.numberOfEligibleTickers);
       
-      SelectorByCloseToCloseCorrelationToBenchmark byCorrelationToBenchmark =
-      	new SelectorByCloseToCloseCorrelationToBenchmark(mostLiquidSelector.GetTableOfSelectedTickers(),
-      	                                                 "^GSPC",false,
-      	                                                 currentDate.AddDays(-this.numDaysForOptimizationPeriod), currentDate,
-      	                                                 this.numberOfEligibleTickers/2,false);
-      
+//      SelectorByCloseToCloseCorrelationToBenchmark byCorrelationToBenchmark =
+//      	new SelectorByCloseToCloseCorrelationToBenchmark(mostLiquidSelector.GetTableOfSelectedTickers(),
+//      	                                                 "^GSPC",false,
+//      	                                                 currentDate.AddDays(-this.numDaysForOptimizationPeriod), currentDate,
+//      	                                                 this.numberOfEligibleTickers/2,false);
+//      
       
       SelectorByQuotationAtEachMarketDay quotedAtEachMarketDayFromLastSelection = 
-        new SelectorByQuotationAtEachMarketDay(byCorrelationToBenchmark.GetTableOfSelectedTickers(),
+        new SelectorByQuotationAtEachMarketDay(mostLiquidSelector.GetTableOfSelectedTickers(),
         false, currentDate.AddDays(-this.numDaysForOptimizationPeriod), currentDate,
-        this.numberOfEligibleTickers/2, this.benchmark);
+        this.numberOfEligibleTickers, this.benchmark);
      
       return quotedAtEachMarketDayFromLastSelection.GetTableOfSelectedTickers(); 
     	
@@ -334,6 +337,7 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOs
           this.maxLevelForOverboughtThreshold,
           this.divisorForThresholdComputation,
           this.symmetricalThresholds,
+          this.overboughtMoreThanOversoldForFixedPortfolio,
           this.portfolioType);
         GeneticOptimizer GO = new GeneticOptimizer(this.iGenomeManager,
           this.populationSizeForGeneticOptimizer, 
@@ -341,7 +345,7 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOs
           this.seedForRandomGenerator);
         if(setGenomeCounter)
           this.genomeCounter = new GenomeCounter(GO);
-        GO.MutationRate = 0.4;
+        GO.MutationRate = 0.2;
         GO.Run(false);
         
         this.chosenTickers = ((GenomeMeaningPVO)GO.BestGenome.Meaning).Tickers;
