@@ -62,7 +62,8 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOs
     protected double maxAcceptableCloseToCloseDrawdown;
     protected int numDaysForOscillatingPeriod;
     protected bool symmetricalThresholds = false;
-    
+    protected bool overboughtMoreThanOversoldForFixedPortfolio = false;
+        
     public RunPVO(string tickerGroupID, int maxNumOfEligibleTickersForOptimization, 
                                     int numberOfTickersToBeChosen, int numDaysForOptimizationPeriod, 
                                     int generationNumberForGeneticOptimizer,
@@ -75,6 +76,7 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOs
                                     int maxLevelForOverboughtThreshold,
                                     int divisorForThresholdComputation,
                                     bool symmetricalThresholds,
+                                    bool overboughtMoreThanOversoldForFixedPortfolio,
                                    	int numDaysBetweenEachOptimization,
                                     PortfolioType inSamplePortfolioType, double maxAcceptableCloseToCloseDrawdown, 
                                     double maxRunningHours):
@@ -92,6 +94,7 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOs
       this.maxLevelForOverboughtThreshold = maxLevelForOverboughtThreshold;
       this.divisorForThresholdComputation = divisorForThresholdComputation;
       this.symmetricalThresholds = symmetricalThresholds;
+      this.overboughtMoreThanOversoldForFixedPortfolio = overboughtMoreThanOversoldForFixedPortfolio;
       this.maxAcceptableCloseToCloseDrawdown = maxAcceptableCloseToCloseDrawdown;
       this.numDaysForOscillatingPeriod = numDaysForOscillatingPeriod;
       this.numDaysBetweenEachOptimization = numDaysBetweenEachOptimization;
@@ -113,6 +116,7 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOs
                                                               this.maxLevelForOverboughtThreshold,
                                                               this.divisorForThresholdComputation,
                                                               this.symmetricalThresholds,
+                                                              this.overboughtMoreThanOversoldForFixedPortfolio,
     	                                                        this.numDaysBetweenEachOptimization,
                                                               this.portfolioType, this.maxAcceptableCloseToCloseDrawdown);
     }
