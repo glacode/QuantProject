@@ -44,8 +44,10 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag
 	{
 		private string tickerGroupID;
 		private int numberEligibleTickers;
-		private int numberOfDrivingPositions;
-		private int numberOfPortfolioPositions;
+		private IWFLagWeightedPositionsChooser
+			wFLagWeightedPositionsChooser;
+//		private int numberOfDrivingPositions;
+//		private int numberOfPortfolioPositions;
 		private int numberDaysForInSampleOptimization;
 		private int numDaysBetweenEachOptimization;
 		private int generationNumberForGeneticOptimizer;
@@ -68,28 +70,23 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag
 
 		public RunWalkForwardLag(
 			string tickerGroupID ,
-			int numberEligibleTickers ,
-			int numberOfDrivingPositions ,
-			int numberOfPortfolioPositions ,
-			int numberDaysForInSampleOptimization ,
+			int maxNumberOfEligibleTickers ,
+			IWFLagWeightedPositionsChooser wFLagWeightedPositionsChooser ,
 			int numDaysBetweenEachOptimization ,
-			int generationNumberForGeneticOptimizer ,
-			int populationSizeForGeneticOptimizer ,
-			string benchmark ,
 			DateTime firstDateTime ,
 			DateTime lastDateTime ,
-			IEquityEvaluator equityEvaluator ,
 			double maxRunningHours )
 		{
 			this.tickerGroupID = tickerGroupID;
-			this.numberEligibleTickers = numberEligibleTickers;
-			this.numberOfDrivingPositions = numberOfDrivingPositions;
-			this.numberOfPortfolioPositions = numberOfPortfolioPositions;
-			this.numberDaysForInSampleOptimization = numberDaysForInSampleOptimization;
+			this.numberEligibleTickers = maxNumberOfEligibleTickers;
+			this.wFLagWeightedPositionsChooser = wFLagWeightedPositionsChooser;
+			this.numberDaysForInSampleOptimization =
+				wFLagWeightedPositionsChooser.NumberDaysForInSampleOptimization;
 			this.numDaysBetweenEachOptimization = numDaysBetweenEachOptimization;
 			this.generationNumberForGeneticOptimizer = generationNumberForGeneticOptimizer;
 			this.populationSizeForGeneticOptimizer = populationSizeForGeneticOptimizer;
-			this.benchmark = benchmark;
+			this.benchmark =
+				this.wFLagWeightedPositionsChooser.Benchmark;
 			this.firstDateTime = firstDateTime;
 			this.lastDateTime = lastDateTime;
 			this.equityEvaluator = equityEvaluator;
@@ -129,14 +126,9 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag
 				this.tickerGroupID ,
 				this.benchmark ,
 				this.numberEligibleTickers ,
-				this.numberOfPortfolioPositions ,
-				this.numberOfDrivingPositions ,
-				this.numberDaysForInSampleOptimization ,
+				this.wFLagWeightedPositionsChooser ,
 				this.numDaysBetweenEachOptimization ,
-				this.account ,
-				this.generationNumberForGeneticOptimizer ,
-				this.populationSizeForGeneticOptimizer ,
-				this.equityEvaluator );
+				this.account );
 		}
 		public static void WriteToTextLog( string message )
 		{
@@ -211,8 +203,10 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag
 			string defaultFileName =
 				this.getLongStringForDateTime( DateTime.Now ) + "_" +
 				"Group_" + this.tickerGroupID + "_" +
-				"DrvPstns_" + this.numberOfDrivingPositions + "_" +
-				"PrtfPstns_" + this.numberOfPortfolioPositions + "_" +
+				"DrvPstns_" +
+				this.wFLagWeightedPositionsChooser.NumberOfDrivingPositions + "_" +
+				"PrtfPstns_" +
+				this.wFLagWeightedPositionsChooser.NumberOfPortfolioPositions + "_" +
 				"GenNum_" + this.generationNumberForGeneticOptimizer + "_" +
 				"PopSize_" + this.populationSizeForGeneticOptimizer + "_" +
 				"From_" + this.getShortStringForDateTime(
@@ -285,13 +279,13 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag
 					( IEndOfDayTimer )sender );
 		}
 		#endregion
-		private void newChosenTickersEventHandler( object sender ,
-			WFLagNewChosenTickersEventArgs eventArgs )
+		private void newChosenPositionsEventHandler( object sender ,
+			WFLagNewChosenPositionsEventArgs eventArgs )
 		{
-			WFLagChosenPositions wFLagChosenPositions =
-				new WFLagChosenPositions( eventArgs.WFLagChosenTickers ,
-				this.endOfDayTimer.GetCurrentTime().DateTime );
-			this.wFLagLog.Add( wFLagChosenPositions );
+//			WFLagChosenPositions wFLagChosenPositions =
+//				new WFLagChosenPositions( eventArgs.WFLagChosenTickers ,
+//				this.endOfDayTimer.GetCurrentTime().DateTime );
+			this.wFLagLog.Add( eventArgs.WFLagChosenPositions );
 		}
 		private void run_addEventHandlers()
 		{
@@ -306,9 +300,9 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag
 			this.endOfDayTimer.MarketClose +=
 				new MarketCloseEventHandler(
 				this.marketCloseEventHandler );
-			this.endOfDayTimerHandler.NewChosenTickers +=
-				new NewChosenTickersEventHandler(
-				this.newChosenTickersEventHandler	);
+			this.endOfDayTimerHandler.NewChosenPositions +=
+				new NewChosenPositionsEventHandler(
+				this.newChosenPositionsEventHandler	);
 		}
 		public override void Run()
 		{

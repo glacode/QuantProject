@@ -35,8 +35,8 @@ using QuantProject.Scripts.SimpleTesting;
 
 namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag
 {
-	public delegate void NewChosenTickersEventHandler(
-	Object sender , WFLagNewChosenTickersEventArgs eventArgs );
+	public delegate void NewChosenPositionsEventHandler(
+	Object sender , WFLagNewChosenPositionsEventArgs eventArgs );
 
 	/// <summary>
 	/// Implements OneHourAfterMarketCloseEventHandler
@@ -48,17 +48,13 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag
 		private string tickerGroupID;
 		private string benchmark;
 		private int numberEligibleTickers;
-		private int numberOfPositionsToBeChosen;
-		private int numberOfDrivingPositions;
-		private int inSampleWindowDays;
+		IWFLagWeightedPositionsChooser wFLagWeightedPositionsChooser;
 		private int outOfSampleWindowDays;
 		private Account account;
-		private int generationNumberForGeneticOptimizer;
-		private int populationSizeForGeneticOptimizer;
-		private IEquityEvaluator equityEvaluator;
+//		private IEquityEvaluator equityEvaluator;
 
 		private WFLagEligibleTickers eligibleTickers;
-		private WFLagChosenTickers chosenTickers;
+//		private WFLagChosenTickers chosenTickers;
 
 		private HistoricalAdjustedQuoteProvider historicalAdjustedQuoteProvider;
 
@@ -66,50 +62,33 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag
 		private bool arePositionsUpToDateWithChosenTickers;
 
 		public event InSampleNewProgressEventHandler InSampleNewProgress;
-		public event NewChosenTickersEventHandler NewChosenTickers;
+		public event NewChosenPositionsEventHandler NewChosenPositions;
 
 		public WFLagEndOfDayTimerHandler(
 			string tickerGroupID ,
 			string benchmark ,
 			int numberEligibleTickers ,
-			int numberOfPositionsToBeChosen ,
-			int numberOfDrivingPositions ,
-			int inSampleWindowDays , int outOfSampleWindowDays ,
-			Account account ,
-			int generationNumberForGeneticOptimizer ,
-			int populationSizeForGeneticOptimizer ,
-			IEquityEvaluator equityEvaluator )
+			IWFLagWeightedPositionsChooser wFLagWeightedPositionsChooser ,
+			int outOfSampleWindowDays ,
+			Account account )
 		{
 			this.tickerGroupID = tickerGroupID;
 			this.benchmark = benchmark;
 			this.numberEligibleTickers = numberEligibleTickers;
-			this.numberOfPositionsToBeChosen = numberOfPositionsToBeChosen;
-			this.numberOfDrivingPositions = numberOfDrivingPositions;
-			this.inSampleWindowDays = inSampleWindowDays;
+			this.wFLagWeightedPositionsChooser = wFLagWeightedPositionsChooser;
 			this.outOfSampleWindowDays = outOfSampleWindowDays;
 			this.account = account;
-			this.generationNumberForGeneticOptimizer =
-				generationNumberForGeneticOptimizer;
-			this.populationSizeForGeneticOptimizer =
-				populationSizeForGeneticOptimizer;
-			this.equityEvaluator = equityEvaluator;
 
 			this.eligibleTickers = new WFLagEligibleTickers(
 				this.tickerGroupID ,
 				this.benchmark ,
 				this.numberEligibleTickers ,
-				this.inSampleWindowDays ,
+				this.wFLagWeightedPositionsChooser.NumberDaysForInSampleOptimization ,
 				this.account.EndOfDayTimer );
 
-			this.chosenTickers = new WFLagChosenTickers(
-				this.numberOfDrivingPositions ,
-				this.numberOfPositionsToBeChosen ,
-				this.inSampleWindowDays ,
-				this.account.EndOfDayTimer ,
-				this.generationNumberForGeneticOptimizer ,
-				this.populationSizeForGeneticOptimizer ,
-				this.equityEvaluator );
-			this.chosenTickers.NewProgress +=
+//			this.chosenTickers = new WFLagChosenTickers(
+//				this.wFLagWeightedPositionsChooser );
+			this.wFLagWeightedPositionsChooser.NewProgress +=
 				new NewProgressEventHandler( this.bestPerformingNewProgress );
 
 			this.historicalAdjustedQuoteProvider =
@@ -176,7 +155,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag
 		{
 			double totalReturn = 0;
 			foreach ( WeightedPosition weightedPosition in
-				this.chosenTickers.DrivingWeightedPositions.Values )
+				this.wFLagWeightedPositionsChooser.WFLagChosenPositions.DrivingWeightedPositions.Values )
 				totalReturn += this.getTodayReturn( weightedPosition );
 			return totalReturn < 0;
 		}
@@ -206,7 +185,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag
 				this.fiveMinutesBeforeMarketCloseEventHandler_openPosition_getOrderType(
 				weightedPosition , isToReverse );
 			double maxPositionValue = this.account.GetMarketValue() /
-				this.numberOfPositionsToBeChosen;
+				this.wFLagWeightedPositionsChooser.NumberOfPortfolioPositions;
 			long sharesToBeTraded = this.getMaxBuyableShares( weightedPosition );
 			this.account.AddOrder( new Order( orderType ,
 				new Instrument( ticker ) , sharesToBeTraded ) );
@@ -215,21 +194,21 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag
 		{
 			bool isToReverse = this.isToReverse();
 			foreach ( WeightedPosition weightedPosition
-									in this.chosenTickers.PortfolioWeightedPositions.Values )
+									in this.wFLagWeightedPositionsChooser.WFLagChosenPositions.PortfolioWeightedPositions.Values )
 				this.fiveMinutesBeforeMarketCloseEventHandler_openPosition( 
 					weightedPosition , isToReverse );
 			this.arePositionsUpToDateWithChosenTickers = true;
 		}
 		private void fiveMinutesBeforeMarketCloseEventHandler_openPositions()
 		{
-			if ( this.chosenTickers.DrivingWeightedPositions != null )
+			if ( this.wFLagWeightedPositionsChooser.WFLagChosenPositions != null )
 				this.fiveMinutesBeforeMarketCloseEventHandler_openPositions_actually();
 		}
 		private double getTodayReturnForDrivingPositions()
 		{
 			double totalReturn = 0;
 			foreach ( WeightedPosition weightedPosition in
-				this.chosenTickers.DrivingWeightedPositions.Values )
+				this.wFLagWeightedPositionsChooser.WFLagChosenPositions.DrivingWeightedPositions.Values )
 				totalReturn += this.getTodayReturn( weightedPosition );
 			return totalReturn;
 		}
@@ -316,7 +295,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag
 //		}
 		private WeightedPosition getWeightedPosition( string ticker )
 		{
-			return this.chosenTickers.PortfolioWeightedPositions.GetWeightedPosition(
+			return this.wFLagWeightedPositionsChooser.WFLagChosenPositions.PortfolioWeightedPositions.GetWeightedPosition(
 				ticker );
 		}
 		private bool isReversed()
@@ -397,10 +376,16 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag
 				RunWalkForwardLag.WriteToTextLog( outputMessage );
 //				Console.WriteLine( "Number of Eligible tickers: " +
 //					this.eligibleTickers.EligibleTickers.Rows.Count );
-				this.chosenTickers.SetWeightedPositions( this.eligibleTickers );
+//				this.chosenTickers.SetWeightedPositions( this.eligibleTickers ,
+//					this.account.EndOfDayTimer.GetCurrentTime() );
+				this.wFLagWeightedPositionsChooser.ChosePositions(
+					this.eligibleTickers ,
+					this.eligibleTickers ,
+					this.account.EndOfDayTimer.GetCurrentTime() );
 				this.arePositionsUpToDateWithChosenTickers = false;
-				this.NewChosenTickers( this ,
-					new WFLagNewChosenTickersEventArgs( this.chosenTickers ) );
+				this.NewChosenPositions( this ,
+					new WFLagNewChosenPositionsEventArgs(
+					this.wFLagWeightedPositionsChooser.WFLagChosenPositions ) );
 				this.lastOptimizationDate = this.now().DateTime;
 			}
 			//			oneHourAfterMarketCloseEventHandler_orderChosenTickers( ( IEndOfDayTimer ) sender );

@@ -135,13 +135,23 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag
 //				7 ).Run();
 			// XLF vs SMH
 			// QQQQ vs SPY
-			new RunWalkForwardLag( "DrvPstns" , 500 ,
-				4 , 2 , 200 , 13 , 9 , 100 , "EWQ" ,
-				new DateTime( 2002 , 1 , 1 ) ,
-				new DateTime( 2003 , 12 , 31 ) ,
-				new QuantProject.Business.Strategies.EquityEvaluation.WinningPeriods() ,
-				8.5 ).Run();
+			IWFLagWeightedPositionsChooser wFLagWeightedPositionsChooser =
+				new WFLagBruteForceFixedPortfolioWeightedPositionsChooser(
+				4 , new string[]{ "IWM" , "SPY" } ,	100 , "EWQ" ,
+				new QuantProject.Business.Strategies.EquityEvaluation.WinningPeriods() );
+			new RunWalkForwardLag( "DrvPstns" , 200 ,
+				wFLagWeightedPositionsChooser ,	9 ,
+				new DateTime( 2001 , 1 , 1 ) ,
+				new DateTime( 2001 , 6 , 1 ) ,
+				0.5 ).Run();
 
+//			new RunWalkForwardLag( "DrvPstns" , 500 ,
+//				4 , 2 , 365 , 13 , 9 , 100 , "EWQ" ,
+//				new DateTime( 2002 , 1 , 1 ) ,
+//				new DateTime( 2003 , 12 , 31 ) ,
+//				new QuantProject.Business.Strategies.EquityEvaluation.WinningPeriods() ,
+//				13 ).Run();
+//
 			//			new RunWalkForwardLag( "ib_etf" , 500 ,
 //				4 , 4 , 250 , 2 , 15 , 30000 , "EWQ" ,
 //				new DateTime( 2003 , 1 , 1 ) ,
