@@ -692,7 +692,6 @@
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
-                <Folder RelPath = "WalkForwardTesting\WalkForwardLag\EligibleTickers\" />
                 <File
                     RelPath = "WalkForwardTesting\WalkForwardLag\GeneticOptimizerTesting\WFLagGOTester.cs"
                     SubType = "Code"
