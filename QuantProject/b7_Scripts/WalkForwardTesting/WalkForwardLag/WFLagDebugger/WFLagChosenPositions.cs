@@ -91,7 +91,18 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag.WFLagDebugger
 			this.drivingWeightedPositions = wFLagChosenTickers.DrivingWeightedPositions;
 			this.portfolioWeightedPositions = wFLagChosenTickers.PortfolioWeightedPositions;
 			this.lastOptimizationDate = lastOptimizationDate;
-			this.generation = wFLagChosenTickers.Generation;
+		}
+
+		public WFLagChosenPositions( WeightedPositions drivingWeightedPositions ,
+			WeightedPositions portfolioWeightedPositions , DateTime lastOptimizationDate )
+		{
+			//			this.drivingPositions =
+			//				this.copy( wFLagChosenTickers.DrivingWeightedPositions );
+			//			this.portfolioPositions =
+			//				this.copy( wFLagChosenTickers.PortfolioWeightedPositions );
+			this.drivingWeightedPositions = drivingWeightedPositions;
+			this.portfolioWeightedPositions = portfolioWeightedPositions;
+			this.lastOptimizationDate = lastOptimizationDate;
 		}
 
 		#region deserialization related constructor and methods
