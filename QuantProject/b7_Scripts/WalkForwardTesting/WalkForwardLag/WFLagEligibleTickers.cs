@@ -57,12 +57,26 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag
 			int numberDaysForPerformanceCalculation ,
 			IEndOfDayTimer endOfDayTimer )
 		{
+			this.checkParametersForWFLagEligibleTickers( tickerGroupID ,	benchmark ,
+				numberEligibleTickersToBeChosen , numberDaysForPerformanceCalculation ,
+				endOfDayTimer );
 			this.tickerGroupID = tickerGroupID;
 			this.benchmark = benchmark;
 			this.numberEligibleTickersToBeChosen = numberEligibleTickersToBeChosen;
 			this.numberDaysForPerformanceCalculation = numberDaysForPerformanceCalculation;
 			this.endOfDayTimer = endOfDayTimer;
 			this.eligibleTickers = new DataTable();
+		}
+		private void checkParametersForWFLagEligibleTickers(
+			string tickerGroupID ,
+			string benchmark ,
+			int numberEligibleTickersToBeChosen ,
+			int numberDaysForPerformanceCalculation ,
+			IEndOfDayTimer endOfDayTimer )
+		{
+			if ( numberDaysForPerformanceCalculation <= 0 )
+				throw new Exception( "numberDaysForPerformanceCalculation value is " +
+					numberDaysForPerformanceCalculation + "\nIt must be > 0" );
 		}
 		#region setTickers
 		private DataTable setTickers_build_getSelectedTickers()
