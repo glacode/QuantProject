@@ -678,7 +678,7 @@
                     BuildAction = "Compile"
                 />
                 <File
-                    RelPath = "WalkForwardTesting\WalkForwardLag\WFLagNewChosenTickersEventArgs.cs"
+                    RelPath = "WalkForwardTesting\WalkForwardLag\WFLagNewChosenPositionsEventArgs.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
@@ -695,6 +695,16 @@
                 <Folder RelPath = "WalkForwardTesting\WalkForwardLag\EligibleTickers\" />
                 <File
                     RelPath = "WalkForwardTesting\WalkForwardLag\GeneticOptimizerTesting\WFLagGOTester.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "WalkForwardTesting\WalkForwardLag\WeightedPositionsChoosers\IWFLagWeightedPositionsChooser.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "WalkForwardTesting\WalkForwardLag\WeightedPositionsChoosers\WFLagBruteForceFixedPortfolioWeightedPositionsChooser.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
