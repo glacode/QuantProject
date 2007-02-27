@@ -128,7 +128,10 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOs
     
     protected override void run_addEventHandlers()
     {
-           
+      this.endOfDayTimer.MarketOpen +=
+        new MarketOpenEventHandler(
+        this.endOfDayTimerHandler.MarketOpenEventHandler);
+     
       this.endOfDayTimer.MarketClose +=
         new MarketCloseEventHandler(
         this.endOfDayTimerHandler.MarketCloseEventHandler);

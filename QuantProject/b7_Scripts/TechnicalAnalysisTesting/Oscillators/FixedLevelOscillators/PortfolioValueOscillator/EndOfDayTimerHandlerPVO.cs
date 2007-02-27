@@ -213,16 +213,9 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOs
     		}
         else if (currentChosenTickersValue <= 1.0 - currentOversoldThreshold)
     		{
-    			try
-          {
-            base.openPositions(this.chosenTickers);
-            this.portfolioHasBeenOverbought = false;
-          	this.portfolioHasBeenOversold = true;
-          }
-          catch(Exception ex)
-          {
-            ex = ex;
-          }
+          base.openPositions(this.chosenTickers);
+          this.portfolioHasBeenOverbought = false;
+          this.portfolioHasBeenOversold = true;
         }
     	}
     }
