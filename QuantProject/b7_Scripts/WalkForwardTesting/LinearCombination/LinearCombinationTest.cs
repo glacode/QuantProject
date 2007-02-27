@@ -45,10 +45,12 @@ namespace QuantProject.Scripts.WalkForwardTesting.LinearCombination
 	{
 		private DateTime firstDate;
 		private DateTime lastDate;
-		private GenomeRepresentation genomeRepresentation;
+		private GenomeRepresentation[] genomeRepresentations;
 //		private bool openToCloseDaily;
     private StrategyType strategyType;
     private int numDaysForOscillatorStrategy;
+    private double stopLoss;
+    private double takeProfit;
 
 		private IHistoricalQuoteProvider historicalQuoteProvider;
 		private HistoricalEndOfDayTimer historicalEndOfDayTimer;
@@ -57,31 +59,45 @@ namespace QuantProject.Scripts.WalkForwardTesting.LinearCombination
     private PortfolioType portfolioType;
 
 		public LinearCombinationTest( DateTime firstDate , DateTime lastDate ,
-			GenomeRepresentation genomeRepresentation , StrategyType strategyType,
+      GenomeRepresentation[] genomeRepresentations , StrategyType strategyType,
       PortfolioType portfolioType)
 		{
 			this.firstDate = firstDate;
 			this.lastDate = lastDate;
-			this.genomeRepresentation = genomeRepresentation;
+			this.genomeRepresentations = genomeRepresentations;
 //			this.openToCloseDaily = openToCloseDaily;
       this.strategyType = strategyType;
       this.portfolioType = portfolioType;
     }
     
     public LinearCombinationTest( DateTime firstDate , DateTime lastDate ,
-      GenomeRepresentation genomeRepresentation , StrategyType strategyType,
+      GenomeRepresentation[] genomeRepresentations , StrategyType strategyType,
       PortfolioType portfolioType,
       int numDaysForOscillatorStrategy)
     {
       this.firstDate = firstDate;
       this.lastDate = lastDate;
-      this.genomeRepresentation = genomeRepresentation;
+      this.genomeRepresentations = genomeRepresentations;
       //			this.openToCloseDaily = openToCloseDaily;
       this.strategyType = strategyType;
       this.portfolioType = portfolioType;
       this.numDaysForOscillatorStrategy = numDaysForOscillatorStrategy;
     }
-		
+    public LinearCombinationTest( DateTime firstDate , DateTime lastDate ,
+      GenomeRepresentation[] genomeRepresentations , StrategyType strategyType,
+      PortfolioType portfolioType,
+      int numDaysForOscillatorStrategy, double stopLoss, double takeProfit)
+    {
+      this.firstDate = firstDate;
+      this.lastDate = lastDate;
+      this.genomeRepresentations = genomeRepresentations;
+      //			this.openToCloseDaily = openToCloseDaily;
+      this.strategyType = strategyType;
+      this.portfolioType = portfolioType;
+      this.numDaysForOscillatorStrategy = numDaysForOscillatorStrategy;
+      this.stopLoss = stopLoss;
+      this.takeProfit = takeProfit;
+    }
     private void oneHourAfterMarketCloseEventHandler( Object sender ,
 			EndOfDayTimingEventArgs endOfDayTimingEventArgs )
 		{
@@ -97,11 +113,90 @@ namespace QuantProject.Scripts.WalkForwardTesting.LinearCombination
 			else
 				this.historicalQuoteProvider = new HistoricalAdjustedQuoteProvider();
 		}
+		
+    private void run_setStrategy_setBiasedOTC_PVONoThresholdsStrategy()
+    {
+      int numberOfTickersToBeChosen = 
+        GenomeRepresentation.GetSignedTickers(this.genomeRepresentations[0].SignedTickers).Length;
+      string[,] signedTickers = new string[this.genomeRepresentations.Length, numberOfTickersToBeChosen];
+      double[,] tickersPortfolioWeights = new double[this.genomeRepresentations.Length, numberOfTickersToBeChosen];
+      for(int i = 0; i < this.genomeRepresentations.Length; i++)
+      {
+        for(int j = 0; j < numberOfTickersToBeChosen; j++)
+        {
+          signedTickers[i,j] = 
+            GenomeRepresentation.GetSignedTickers(
+            this.genomeRepresentations[i].SignedTickers)[j];
+          tickersPortfolioWeights[i,j] = 
+            GenomeRepresentation.GetWeightsArray(
+            this.genomeRepresentations[i].WeightsForSignedTickers)[j];
+        }
+      }
+      this.endOfDayStrategy = new FixedLevelOscBiasedOTC_PVONoThresholdsStrategy(
+        this.account , signedTickers , tickersPortfolioWeights, 
+        this.genomeRepresentations.Length);
+    }
+
+    private void run_setStrategy_setBiasedPVONoThresholdsStrategy()
+    {
+      int numberOfTickersToBeChosen = 
+        GenomeRepresentation.GetSignedTickers(this.genomeRepresentations[0].SignedTickers).Length;
+      string[,] signedTickers = new string[this.genomeRepresentations.Length, numberOfTickersToBeChosen];
+      double[,] tickersPortfolioWeights = new double[this.genomeRepresentations.Length, numberOfTickersToBeChosen];
+      for(int i = 0; i < this.genomeRepresentations.Length; i++)
+      {
+        for(int j = 0; j < numberOfTickersToBeChosen; j++)
+        {
+          signedTickers[i,j] = 
+            GenomeRepresentation.GetSignedTickers(
+            this.genomeRepresentations[i].SignedTickers)[j];
+          tickersPortfolioWeights[i,j] = 
+            GenomeRepresentation.GetWeightsArray(
+            this.genomeRepresentations[i].WeightsForSignedTickers)[j];
+        }
+      }
+      this.endOfDayStrategy = new FixedLevelOscillatorBiasedPVONoThresholdsStrategy(
+        this.account , signedTickers , tickersPortfolioWeights, 
+        this.genomeRepresentations.Length,
+        this.stopLoss,
+        this.takeProfit);
+    }
+
+		private void run_setStrategy_setBiasedPVOStrategy()
+		{
+			int numberOfTickersToBeChosen = 
+				GenomeRepresentation.GetSignedTickers(this.genomeRepresentations[0].SignedTickers).Length;
+			string[,] signedTickers = new string[this.genomeRepresentations.Length, numberOfTickersToBeChosen];
+			double[,] tickersPortfolioWeights = new double[this.genomeRepresentations.Length, numberOfTickersToBeChosen];
+			double[] oversoldThresholds = new double[this.genomeRepresentations.Length];
+      double[] overboughtThresholds = new double[this.genomeRepresentations.Length];
+			for(int i = 0; i < this.genomeRepresentations.Length; i++)
+			{
+				for(int j = 0; j < numberOfTickersToBeChosen; j++)
+				{
+					signedTickers[i,j] = 
+						GenomeRepresentation.GetSignedTickers(
+						 this.genomeRepresentations[i].SignedTickers)[j];
+					tickersPortfolioWeights[i,j] = 
+						GenomeRepresentation.GetWeightsArray(
+						                                     this.genomeRepresentations[i].WeightsForSignedTickers)[j];
+				}
+				oversoldThresholds[i] = this.genomeRepresentations[i].OversoldThreshold;
+				overboughtThresholds[i] = this.genomeRepresentations[i].OverboughtThreshold;
+			}
+	  	this.endOfDayStrategy = new FixedLevelOscillatorBiasedPVOStrategy(
+            this.account , signedTickers , tickersPortfolioWeights, 
+            oversoldThresholds, overboughtThresholds,
+            overboughtThresholds.Length,
+            this.numDaysForOscillatorStrategy,this.stopLoss,
+            this.takeProfit);
+		}
+		
 		private void run_setStrategy()
 		{
-			string[] signedTickers = genomeRepresentation.SignedTickers.Split(";".ToCharArray());
+			string[] signedTickers = genomeRepresentations[0].SignedTickers.Split(";".ToCharArray());
 			double[] weightsForSignedTickers = 
-          GenomeRepresentation.GetWeightsArray(this.genomeRepresentation.WeightsForSignedTickers);
+				GenomeRepresentation.GetWeightsArray(this.genomeRepresentations[0].WeightsForSignedTickers);
       switch (this.strategyType)
       {
         case StrategyType.OpenToCloseDaily:
@@ -144,8 +239,20 @@ namespace QuantProject.Scripts.WalkForwardTesting.LinearCombination
         case StrategyType.PortfolioValueOscillator:
           this.endOfDayStrategy = new FixedLevelOscillatorPVOStrategy(
             this.account , signedTickers , weightsForSignedTickers, 
-            this.genomeRepresentation.OversoldThreshold, this.genomeRepresentation.OverboughtThreshold,
+            this.genomeRepresentations[0].OversoldThreshold, this.genomeRepresentations[0].OverboughtThreshold,
             this.numDaysForOscillatorStrategy );
+          break;
+          
+        case StrategyType.PortfolioValueOscillatorBiased:
+          this.run_setStrategy_setBiasedPVOStrategy();
+          break;
+        
+        case StrategyType.PortfolioValueOscillatorBiasedNoThresholds:
+          this.run_setStrategy_setBiasedPVONoThresholdsStrategy();
+          break;
+
+        case StrategyType.OTC_PVOBiasedNoThresholds:
+          this.run_setStrategy_setBiasedOTC_PVONoThresholdsStrategy();
           break;
       }
 		}
@@ -157,15 +264,15 @@ namespace QuantProject.Scripts.WalkForwardTesting.LinearCombination
 		private string run_getReportTitle()
 		{
 			string returnValue = "Fitness:" +
-				this.genomeRepresentation.Fitness.ToString() +
+				this.genomeRepresentations[0].Fitness.ToString() +
 				" | Tickers:" +
-				this.genomeRepresentation.SignedTickers  + " - " +
+				this.genomeRepresentations[0].SignedTickers  + " - " +
 				"from " + this.getDateString( this.firstDate ) +
 				" to " + this.getDateString( this.lastDate ) +
 				" opt. in sample from " + this.getDateString(
-				this.genomeRepresentation.FirstOptimizationDate ) +
+				this.genomeRepresentations[0].FirstOptimizationDate ) +
 				" to " + this.getDateString(
-				this.genomeRepresentation.LastOptimizationDate );
+				this.genomeRepresentations[0].LastOptimizationDate );
 			return returnValue;
 		}
 		
@@ -183,9 +290,9 @@ namespace QuantProject.Scripts.WalkForwardTesting.LinearCombination
       
     {
       double[] normalizedWeights = 
-        GenomeRepresentation.GetWeightsArray(this.genomeRepresentation.WeightsForSignedTickers);
+        GenomeRepresentation.GetWeightsArray(genomeRepresentation.WeightsForSignedTickers);
       string[] tickers = 
-        GenomeRepresentation.GetSignedTickers(this.genomeRepresentation.SignedTickers);
+        GenomeRepresentation.GetSignedTickers(genomeRepresentation.SignedTickers);
       for(int i = 0; i<tickers.Length; i++)
       {
         if(tickers[i].StartsWith("-"))
@@ -231,7 +338,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.LinearCombination
 				new EndOfDayDateTime( this.lastDate , EndOfDaySpecificTime.MarketClose ) ,
 			"^GSPC");
       WeightedPositions weightedPositions = 
-        this.run_getWeightedPositions(this.genomeRepresentation);
+        this.run_getWeightedPositions(this.genomeRepresentations[0]);
       this.run_addEquityLineForWeightedPositions(weightedPositions, Color.Brown,
                                                   report);
 

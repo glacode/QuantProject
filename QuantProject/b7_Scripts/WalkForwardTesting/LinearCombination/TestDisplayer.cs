@@ -51,14 +51,23 @@ namespace QuantProject.Scripts.WalkForwardTesting.LinearCombination
 		private System.ComponentModel.Container components = null;
 
 		// Glauco code
+		// Millo code: lastSelectedGenomeRepresentation has been
+		// changed into an array
 		private ArrayList bestGenomes;
-		private GenomeRepresentation lastSelectedGenomeRepresentation;
+		private GenomeRepresentation[] lastSelectedGenomeRepresentations;
     private System.Windows.Forms.RadioButton radioButtonOTCCTODaily;
     private System.Windows.Forms.RadioButton radioButtonExtremeCounterTrend;
     private System.Windows.Forms.RadioButton radioButtonImmediateTrendFollower;
     private StrategyType selectedStrategyType = StrategyType.OpenToCloseDaily;
     private System.Windows.Forms.Label labelPortfolioType;
     private System.Windows.Forms.RadioButton radioButtonPVO;
+    private System.Windows.Forms.RadioButton radioButtonPVOBiased;
+    private System.Windows.Forms.Label labelStopLoss;
+    private System.Windows.Forms.TextBox textBoxStopLoss;
+    private System.Windows.Forms.Label labelTakeProfit;
+    private System.Windows.Forms.TextBox textBoxTakeProfit;
+    private System.Windows.Forms.RadioButton radioButtonPVOBiasedNoThresholds;
+    private System.Windows.Forms.RadioButton radioButtonOTCPVOBiasedNoThresholds;
     private System.Windows.Forms.ComboBox comboBoxPortfolioType;
     
 		private void testDisplayer()
@@ -122,6 +131,22 @@ namespace QuantProject.Scripts.WalkForwardTesting.LinearCombination
       this.dgBestGenomes.TableStyles.Add(ts);
       this.dgBestGenomes.AllowSorting = true;
 		}
+		
+		private void testDisplayer_InitializeLastSelectedGenomeRepresentations(ArrayList bestGenomes)
+		{
+			//genomes with the same optimization's dates are grouped together
+			GenomeRepresentation firstGenomeRepresentation =
+				        ((GenomeRepresentation)bestGenomes[0]);
+			DateTime firstDate = firstGenomeRepresentation.FirstOptimizationDate;
+			int counterOfGenomesWithSameOptimizationDates = 0;
+			foreach(Object item in bestGenomes)
+				if(firstDate == ((GenomeRepresentation)item).FirstOptimizationDate)
+						counterOfGenomesWithSameOptimizationDates++;
+			this.lastSelectedGenomeRepresentations = new GenomeRepresentation[counterOfGenomesWithSameOptimizationDates];
+			this.lastSelectedGenomeRepresentations[0]=
+								((GenomeRepresentation)bestGenomes[0]);
+		}
+		
 		public TestDisplayer( DateTime firstDate , DateTime lastDate ,
 			ArrayList bestGenomes )
 		{
@@ -133,13 +158,12 @@ namespace QuantProject.Scripts.WalkForwardTesting.LinearCombination
 			//
 			InitializeComponent();
 
-			// Glauco code
-			this.lastSelectedGenomeRepresentation =
-				((GenomeRepresentation)bestGenomes[0]);
+			// Glauco code + Millo code
+			this.testDisplayer_InitializeLastSelectedGenomeRepresentations(bestGenomes);
 			this.dtpFirstDate.Value =
-				this.lastSelectedGenomeRepresentation.FirstOptimizationDate;
+				this.lastSelectedGenomeRepresentations[0].FirstOptimizationDate;
 			this.dtpLastDate.Value =
-				this.lastSelectedGenomeRepresentation.LastOptimizationDate;
+				this.lastSelectedGenomeRepresentations[0].LastOptimizationDate;
       this.bestGenomes = bestGenomes;
       this.comboBoxPortfolioType.Items.Add(PortfolioType.ShortAndLong);
       this.comboBoxPortfolioType.Items.Add(PortfolioType.OnlyLong);
@@ -188,6 +212,13 @@ namespace QuantProject.Scripts.WalkForwardTesting.LinearCombination
       this.comboBoxPortfolioType = new System.Windows.Forms.ComboBox();
       this.labelPortfolioType = new System.Windows.Forms.Label();
       this.radioButtonPVO = new System.Windows.Forms.RadioButton();
+      this.radioButtonPVOBiased = new System.Windows.Forms.RadioButton();
+      this.labelStopLoss = new System.Windows.Forms.Label();
+      this.textBoxStopLoss = new System.Windows.Forms.TextBox();
+      this.labelTakeProfit = new System.Windows.Forms.Label();
+      this.textBoxTakeProfit = new System.Windows.Forms.TextBox();
+      this.radioButtonPVOBiasedNoThresholds = new System.Windows.Forms.RadioButton();
+      this.radioButtonOTCPVOBiasedNoThresholds = new System.Windows.Forms.RadioButton();
       ((System.ComponentModel.ISupportInitialize)(this.dgBestGenomes)).BeginInit();
       this.SuspendLayout();
       // 
@@ -196,15 +227,15 @@ namespace QuantProject.Scripts.WalkForwardTesting.LinearCombination
       this.dgBestGenomes.DataMember = "";
       this.dgBestGenomes.Dock = System.Windows.Forms.DockStyle.Bottom;
       this.dgBestGenomes.HeaderForeColor = System.Drawing.SystemColors.ControlText;
-      this.dgBestGenomes.Location = new System.Drawing.Point(0, 205);
+      this.dgBestGenomes.Location = new System.Drawing.Point(0, 238);
       this.dgBestGenomes.Name = "dgBestGenomes";
-      this.dgBestGenomes.Size = new System.Drawing.Size(704, 168);
+      this.dgBestGenomes.Size = new System.Drawing.Size(704, 176);
       this.dgBestGenomes.TabIndex = 0;
       this.dgBestGenomes.MouseUp += new System.Windows.Forms.MouseEventHandler(this.dgBestGenomes_MouseUp);
       // 
       // radioButtonCloseToOpenDaily
       // 
-      this.radioButtonCloseToOpenDaily.Location = new System.Drawing.Point(64, 120);
+      this.radioButtonCloseToOpenDaily.Location = new System.Drawing.Point(64, 104);
       this.radioButtonCloseToOpenDaily.Name = "radioButtonCloseToOpenDaily";
       this.radioButtonCloseToOpenDaily.Size = new System.Drawing.Size(144, 24);
       this.radioButtonCloseToOpenDaily.TabIndex = 6;
@@ -213,7 +244,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.LinearCombination
       // 
       // radioButtonOpenToCloseWeekly
       // 
-      this.radioButtonOpenToCloseWeekly.Location = new System.Drawing.Point(64, 144);
+      this.radioButtonOpenToCloseWeekly.Location = new System.Drawing.Point(64, 128);
       this.radioButtonOpenToCloseWeekly.Name = "radioButtonOpenToCloseWeekly";
       this.radioButtonOpenToCloseWeekly.Size = new System.Drawing.Size(144, 24);
       this.radioButtonOpenToCloseWeekly.TabIndex = 5;
@@ -222,7 +253,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.LinearCombination
       // 
       // textBoxDaysFPOscillatorAndRevOneRank
       // 
-      this.textBoxDaysFPOscillatorAndRevOneRank.Location = new System.Drawing.Point(472, 128);
+      this.textBoxDaysFPOscillatorAndRevOneRank.Location = new System.Drawing.Point(480, 120);
       this.textBoxDaysFPOscillatorAndRevOneRank.Name = "textBoxDaysFPOscillatorAndRevOneRank";
       this.textBoxDaysFPOscillatorAndRevOneRank.Size = new System.Drawing.Size(56, 20);
       this.textBoxDaysFPOscillatorAndRevOneRank.TabIndex = 8;
@@ -230,13 +261,13 @@ namespace QuantProject.Scripts.WalkForwardTesting.LinearCombination
       // 
       // dtpFirstDate
       // 
-      this.dtpFirstDate.Location = new System.Drawing.Point(16, 24);
+      this.dtpFirstDate.Location = new System.Drawing.Point(48, 8);
       this.dtpFirstDate.Name = "dtpFirstDate";
       this.dtpFirstDate.TabIndex = 1;
       // 
       // label1
       // 
-      this.label1.Location = new System.Drawing.Point(32, 64);
+      this.label1.Location = new System.Drawing.Point(32, 48);
       this.label1.Name = "label1";
       this.label1.Size = new System.Drawing.Size(400, 40);
       this.label1.TabIndex = 3;
@@ -245,23 +276,23 @@ namespace QuantProject.Scripts.WalkForwardTesting.LinearCombination
       // 
       // dtpLastDate
       // 
-      this.dtpLastDate.Location = new System.Drawing.Point(264, 24);
+      this.dtpLastDate.Location = new System.Drawing.Point(264, 8);
       this.dtpLastDate.Name = "dtpLastDate";
       this.dtpLastDate.Size = new System.Drawing.Size(208, 20);
       this.dtpLastDate.TabIndex = 2;
       // 
       // radioButtonExtremeCounterTrend
       // 
-      this.radioButtonExtremeCounterTrend.Location = new System.Drawing.Point(232, 120);
+      this.radioButtonExtremeCounterTrend.Location = new System.Drawing.Point(64, 176);
       this.radioButtonExtremeCounterTrend.Name = "radioButtonExtremeCounterTrend";
-      this.radioButtonExtremeCounterTrend.Size = new System.Drawing.Size(192, 24);
+      this.radioButtonExtremeCounterTrend.Size = new System.Drawing.Size(144, 24);
       this.radioButtonExtremeCounterTrend.TabIndex = 10;
       this.radioButtonExtremeCounterTrend.Text = "Extreme counter trend";
       this.radioButtonExtremeCounterTrend.CheckedChanged += new System.EventHandler(this.radioButtonExtremeCounterTrend_CheckedChanged);
       // 
       // radioButtonOpenToCloseDaily
       // 
-      this.radioButtonOpenToCloseDaily.Location = new System.Drawing.Point(64, 96);
+      this.radioButtonOpenToCloseDaily.Location = new System.Drawing.Point(64, 80);
       this.radioButtonOpenToCloseDaily.Name = "radioButtonOpenToCloseDaily";
       this.radioButtonOpenToCloseDaily.Size = new System.Drawing.Size(144, 24);
       this.radioButtonOpenToCloseDaily.TabIndex = 4;
@@ -270,16 +301,16 @@ namespace QuantProject.Scripts.WalkForwardTesting.LinearCombination
       // 
       // radioButtonFixedPeriodOscillator
       // 
-      this.radioButtonFixedPeriodOscillator.Location = new System.Drawing.Point(232, 96);
+      this.radioButtonFixedPeriodOscillator.Location = new System.Drawing.Point(232, 80);
       this.radioButtonFixedPeriodOscillator.Name = "radioButtonFixedPeriodOscillator";
-      this.radioButtonFixedPeriodOscillator.Size = new System.Drawing.Size(192, 24);
+      this.radioButtonFixedPeriodOscillator.Size = new System.Drawing.Size(184, 24);
       this.radioButtonFixedPeriodOscillator.TabIndex = 7;
       this.radioButtonFixedPeriodOscillator.Text = "Fixed Period n-days oscillator";
       this.radioButtonFixedPeriodOscillator.CheckedChanged += new System.EventHandler(this.radioButtonFixedPeriodOscillator_CheckedChanged);
       // 
       // labelDays
       // 
-      this.labelDays.Location = new System.Drawing.Point(432, 136);
+      this.labelDays.Location = new System.Drawing.Point(424, 120);
       this.labelDays.Name = "labelDays";
       this.labelDays.Size = new System.Drawing.Size(32, 16);
       this.labelDays.TabIndex = 9;
@@ -287,7 +318,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.LinearCombination
       // 
       // radioButtonOTCCTODaily
       // 
-      this.radioButtonOTCCTODaily.Location = new System.Drawing.Point(64, 168);
+      this.radioButtonOTCCTODaily.Location = new System.Drawing.Point(64, 152);
       this.radioButtonOTCCTODaily.Name = "radioButtonOTCCTODaily";
       this.radioButtonOTCCTODaily.Size = new System.Drawing.Size(144, 24);
       this.radioButtonOTCCTODaily.TabIndex = 11;
@@ -295,7 +326,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.LinearCombination
       // 
       // radioButtonImmediateTrendFollower
       // 
-      this.radioButtonImmediateTrendFollower.Location = new System.Drawing.Point(232, 144);
+      this.radioButtonImmediateTrendFollower.Location = new System.Drawing.Point(232, 104);
       this.radioButtonImmediateTrendFollower.Name = "radioButtonImmediateTrendFollower";
       this.radioButtonImmediateTrendFollower.Size = new System.Drawing.Size(192, 24);
       this.radioButtonImmediateTrendFollower.TabIndex = 12;
@@ -304,7 +335,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.LinearCombination
       // 
       // comboBoxPortfolioType
       // 
-      this.comboBoxPortfolioType.Location = new System.Drawing.Point(472, 80);
+      this.comboBoxPortfolioType.Location = new System.Drawing.Point(472, 64);
       this.comboBoxPortfolioType.Name = "comboBoxPortfolioType";
       this.comboBoxPortfolioType.Size = new System.Drawing.Size(184, 21);
       this.comboBoxPortfolioType.TabIndex = 13;
@@ -312,7 +343,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.LinearCombination
       // 
       // labelPortfolioType
       // 
-      this.labelPortfolioType.Location = new System.Drawing.Point(472, 64);
+      this.labelPortfolioType.Location = new System.Drawing.Point(472, 48);
       this.labelPortfolioType.Name = "labelPortfolioType";
       this.labelPortfolioType.Size = new System.Drawing.Size(100, 16);
       this.labelPortfolioType.TabIndex = 14;
@@ -320,18 +351,84 @@ namespace QuantProject.Scripts.WalkForwardTesting.LinearCombination
       // 
       // radioButtonPVO
       // 
-      this.radioButtonPVO.Location = new System.Drawing.Point(232, 168);
+      this.radioButtonPVO.Location = new System.Drawing.Point(232, 128);
       this.radioButtonPVO.Name = "radioButtonPVO";
       this.radioButtonPVO.Size = new System.Drawing.Size(192, 24);
       this.radioButtonPVO.TabIndex = 15;
       this.radioButtonPVO.Text = "Portfolio Value Oscillator";
       this.radioButtonPVO.CheckedChanged += new System.EventHandler(this.radioButtonPVO_CheckedChanged);
       // 
+      // radioButtonPVOBiased
+      // 
+      this.radioButtonPVOBiased.Location = new System.Drawing.Point(232, 152);
+      this.radioButtonPVOBiased.Name = "radioButtonPVOBiased";
+      this.radioButtonPVOBiased.Size = new System.Drawing.Size(88, 24);
+      this.radioButtonPVOBiased.TabIndex = 16;
+      this.radioButtonPVOBiased.Text = "PVO Biased";
+      this.radioButtonPVOBiased.CheckedChanged += new System.EventHandler(this.radioButtonPVOBiased_CheckedChanged);
+      // 
+      // labelStopLoss
+      // 
+      this.labelStopLoss.Location = new System.Drawing.Point(424, 160);
+      this.labelStopLoss.Name = "labelStopLoss";
+      this.labelStopLoss.Size = new System.Drawing.Size(56, 16);
+      this.labelStopLoss.TabIndex = 18;
+      this.labelStopLoss.Text = "stop loss";
+      // 
+      // textBoxStopLoss
+      // 
+      this.textBoxStopLoss.Location = new System.Drawing.Point(480, 160);
+      this.textBoxStopLoss.Name = "textBoxStopLoss";
+      this.textBoxStopLoss.Size = new System.Drawing.Size(56, 20);
+      this.textBoxStopLoss.TabIndex = 17;
+      this.textBoxStopLoss.Text = "0.02";
+      // 
+      // labelTakeProfit
+      // 
+      this.labelTakeProfit.Location = new System.Drawing.Point(544, 160);
+      this.labelTakeProfit.Name = "labelTakeProfit";
+      this.labelTakeProfit.Size = new System.Drawing.Size(56, 16);
+      this.labelTakeProfit.TabIndex = 20;
+      this.labelTakeProfit.Text = "take profit";
+      // 
+      // textBoxTakeProfit
+      // 
+      this.textBoxTakeProfit.Location = new System.Drawing.Point(608, 160);
+      this.textBoxTakeProfit.Name = "textBoxTakeProfit";
+      this.textBoxTakeProfit.Size = new System.Drawing.Size(56, 20);
+      this.textBoxTakeProfit.TabIndex = 19;
+      this.textBoxTakeProfit.Text = "0.005";
+      // 
+      // radioButtonPVOBiasedNoThresholds
+      // 
+      this.radioButtonPVOBiasedNoThresholds.Location = new System.Drawing.Point(232, 176);
+      this.radioButtonPVOBiasedNoThresholds.Name = "radioButtonPVOBiasedNoThresholds";
+      this.radioButtonPVOBiasedNoThresholds.Size = new System.Drawing.Size(192, 24);
+      this.radioButtonPVOBiasedNoThresholds.TabIndex = 21;
+      this.radioButtonPVOBiasedNoThresholds.Text = "PVO Biased No Thresholds";
+      this.radioButtonPVOBiasedNoThresholds.CheckedChanged += new System.EventHandler(this.radioButtonPVOBiasedNoThresholds_CheckedChanged);
+      // 
+      // radioButtonOTCPVOBiasedNoThresholds
+      // 
+      this.radioButtonOTCPVOBiasedNoThresholds.Location = new System.Drawing.Point(232, 200);
+      this.radioButtonOTCPVOBiasedNoThresholds.Name = "radioButtonOTCPVOBiasedNoThresholds";
+      this.radioButtonOTCPVOBiasedNoThresholds.Size = new System.Drawing.Size(192, 24);
+      this.radioButtonOTCPVOBiasedNoThresholds.TabIndex = 22;
+      this.radioButtonOTCPVOBiasedNoThresholds.Text = "OTC_PVO Biased No Thresholds";
+      this.radioButtonOTCPVOBiasedNoThresholds.CheckedChanged += new System.EventHandler(this.radioButtonOTCPVOBiasedNoThresholds_CheckedChanged);
+      // 
       // TestDisplayer
       // 
       this.AutoScaleBaseSize = new System.Drawing.Size(5, 13);
-      this.ClientSize = new System.Drawing.Size(704, 373);
+      this.ClientSize = new System.Drawing.Size(704, 414);
       this.Controls.AddRange(new System.Windows.Forms.Control[] {
+                                                                  this.radioButtonOTCPVOBiasedNoThresholds,
+                                                                  this.radioButtonPVOBiasedNoThresholds,
+                                                                  this.labelTakeProfit,
+                                                                  this.textBoxTakeProfit,
+                                                                  this.labelStopLoss,
+                                                                  this.textBoxStopLoss,
+                                                                  this.radioButtonPVOBiased,
                                                                   this.radioButtonPVO,
                                                                   this.labelPortfolioType,
                                                                   this.comboBoxPortfolioType,
@@ -364,10 +461,11 @@ namespace QuantProject.Scripts.WalkForwardTesting.LinearCombination
 			DataGrid.HitTestInfo hitTestInfo = dataGrid.HitTest( point );
 			return hitTestInfo.Row>=0;
 		}
-		private GenomeRepresentation dgBestGenomes_MouseUp_getClickedGenomeRepresentation(
+		private GenomeRepresentation[] dgBestGenomes_MouseUp_getClickedGenomeRepresentation(
 			object sender, System.Windows.Forms.MouseEventArgs e )
 		{
-			GenomeRepresentation genomeRepresentation = null;
+			GenomeRepresentation[] genomeRepresentations = 
+						new GenomeRepresentation[this.lastSelectedGenomeRepresentations.Length];
 			DataGrid dataGrid = (DataGrid)sender;
 			Point point = new Point( e.X , e.Y );
 			DataGrid.HitTestInfo hitTestInfo = dataGrid.HitTest( point );
@@ -375,19 +473,30 @@ namespace QuantProject.Scripts.WalkForwardTesting.LinearCombination
 			//			DataRow dataRow = dataTable.Rows[ hitTestInfo.Row ];
 			if ( hitTestInfo.Row >= 0 )
 				// a grid row has been clicked, not the header
-				genomeRepresentation =
-				(GenomeRepresentation)bestGenomes[ hitTestInfo.Row ];
-			return genomeRepresentation;
+				// all best genomes with the same optimization's dates
+				// are saved in an array
+			{
+				genomeRepresentations[0] =
+						(GenomeRepresentation)bestGenomes[ hitTestInfo.Row ];
+				for(int i = 1; i < bestGenomes.Count - hitTestInfo.Row; i++)
+					if( genomeRepresentations[0].FirstOptimizationDate ==
+					   ((GenomeRepresentation)bestGenomes[hitTestInfo.Row+i]).FirstOptimizationDate )
+					// the next row has the same optimization's date of the
+					// original selected best genome by the user
+								genomeRepresentations[i] =
+									(GenomeRepresentation)bestGenomes[ hitTestInfo.Row + i];
+			}
+				return genomeRepresentations;
 		}
 		private void dgBestGenomes_MouseUp_rightButton_updateDates(
 			GenomeRepresentation newSelectedGenomeRepresentation )
 		{
 			TimeSpan currentFirstDateDisplacement =
 				( this.dtpFirstDate.Value -
-				this.lastSelectedGenomeRepresentation.FirstOptimizationDate );
+				 this.lastSelectedGenomeRepresentations[0].FirstOptimizationDate );
 			TimeSpan currentLastDateDisplacement =
 				( this.dtpLastDate.Value -
-				this.lastSelectedGenomeRepresentation.LastOptimizationDate );
+				 this.lastSelectedGenomeRepresentations[0].LastOptimizationDate );
 			this.dtpFirstDate.Value = newSelectedGenomeRepresentation.FirstOptimizationDate +
 				currentFirstDateDisplacement;
 			this.dtpLastDate.Value = newSelectedGenomeRepresentation.LastOptimizationDate +
@@ -395,17 +504,18 @@ namespace QuantProject.Scripts.WalkForwardTesting.LinearCombination
 		}
 		private void dgBestGenomes_MouseUp_rightButton(object sender, System.Windows.Forms.MouseEventArgs e)
 		{
-			GenomeRepresentation genomeRepresentation =
+			GenomeRepresentation[] genomeRepresentations =
 				this.dgBestGenomes_MouseUp_getClickedGenomeRepresentation( sender , e );
-			dgBestGenomes_MouseUp_rightButton_updateDates( genomeRepresentation );
-			string[] signedTickers = genomeRepresentation.SignedTickers.Split(";".ToCharArray());
+			dgBestGenomes_MouseUp_rightButton_updateDates( genomeRepresentations[0] );
+			//string[] signedTickers = genomeRepresentation.SignedTickers.Split(";".ToCharArray());
 			LinearCombinationTest linearCombinationTest =
 				new LinearCombinationTest( this.dtpFirstDate.Value ,
-				this.dtpLastDate.Value , genomeRepresentation ,
+				this.dtpLastDate.Value , genomeRepresentations ,
 				this.selectedStrategyType,
-        (PortfolioType)this.comboBoxPortfolioType.SelectedItem, Convert.ToInt32(this.textBoxDaysFPOscillatorAndRevOneRank.Text));
+        (PortfolioType)this.comboBoxPortfolioType.SelectedItem, Convert.ToInt32(this.textBoxDaysFPOscillatorAndRevOneRank.Text),
+        Convert.ToDouble(this.textBoxStopLoss.Text),Convert.ToDouble(this.textBoxTakeProfit.Text) );
 			linearCombinationTest.Run();
-			this.lastSelectedGenomeRepresentation = genomeRepresentation;
+			this.lastSelectedGenomeRepresentations = genomeRepresentations;
 		}
 		
     
@@ -432,10 +542,10 @@ namespace QuantProject.Scripts.WalkForwardTesting.LinearCombination
 			if ( aRowHasBeenClicked( sender , e ) )
 				// a grid row has been clicked, not the header
 			{
-				GenomeRepresentation newSelectedGenomeRepresentation =
+				GenomeRepresentation[] newSelectedGenomeRepresentations =
 					this.dgBestGenomes_MouseUp_getClickedGenomeRepresentation( sender , e );
-        this.lastSelectedGenomeRepresentation = newSelectedGenomeRepresentation;
-        dgBestGenomes_MouseUp_leftButton_updateForm( newSelectedGenomeRepresentation );
+        this.lastSelectedGenomeRepresentations = newSelectedGenomeRepresentations;
+        dgBestGenomes_MouseUp_leftButton_updateForm( newSelectedGenomeRepresentations[0] );
 			}
 		}
 		private void dgBestGenomes_MouseUp(object sender, System.Windows.Forms.MouseEventArgs e)
@@ -464,6 +574,12 @@ namespace QuantProject.Scripts.WalkForwardTesting.LinearCombination
         this.selectedStrategyType = StrategyType.ImmediateTrendFollower;
       else if(this.radioButtonPVO.Checked)
         this.selectedStrategyType = StrategyType.PortfolioValueOscillator;
+      else if(this.radioButtonPVOBiased.Checked)
+        this.selectedStrategyType = StrategyType.PortfolioValueOscillatorBiased;
+      else if(this.radioButtonPVOBiasedNoThresholds.Checked)
+        this.selectedStrategyType = StrategyType.PortfolioValueOscillatorBiasedNoThresholds;
+      else if(this.radioButtonOTCPVOBiasedNoThresholds.Checked)
+        this.selectedStrategyType = StrategyType.OTC_PVOBiasedNoThresholds;
     }
     
     private void radioButtonOpenToCloseDaily_CheckedChanged(object sender, System.EventArgs e)
@@ -499,6 +615,29 @@ namespace QuantProject.Scripts.WalkForwardTesting.LinearCombination
     }
 
     private void radioButtonPVO_CheckedChanged(object sender, System.EventArgs e)
+    {
+      this.update_selectedStrategyType();
+    }
+
+    private void radioButtonPVOBiased_CheckedChanged(object sender, System.EventArgs e)
+    {
+      this.update_selectedStrategyType();
+      this.labelStopLoss.Visible = this.radioButtonPVOBiased.Checked;
+      this.textBoxStopLoss.Visible = this.radioButtonPVOBiased.Checked;
+      this.labelTakeProfit.Visible = this.radioButtonPVOBiased.Checked;
+      this.textBoxTakeProfit.Visible = this.radioButtonPVOBiased.Checked;
+    }
+
+    private void radioButtonPVOBiasedNoThresholds_CheckedChanged(object sender, System.EventArgs e)
+    {
+      this.update_selectedStrategyType();
+      this.labelStopLoss.Visible = this.radioButtonPVOBiasedNoThresholds.Checked;
+      this.textBoxStopLoss.Visible = this.radioButtonPVOBiasedNoThresholds.Checked;
+      this.labelTakeProfit.Visible = this.radioButtonPVOBiasedNoThresholds.Checked;
+      this.textBoxTakeProfit.Visible = this.radioButtonPVOBiasedNoThresholds.Checked;
+    }
+
+    private void radioButtonOTCPVOBiasedNoThresholds_CheckedChanged(object sender, System.EventArgs e)
     {
       this.update_selectedStrategyType();
     }

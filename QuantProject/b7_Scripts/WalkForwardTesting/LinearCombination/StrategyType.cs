@@ -36,6 +36,9 @@ namespace QuantProject.Scripts.WalkForwardTesting.LinearCombination
     FixedPeriodOscillator,
     ExtremeCounterTrend,
     ImmediateTrendFollower,
-    PortfolioValueOscillator
+    PortfolioValueOscillator,
+    PortfolioValueOscillatorBiased,
+    PortfolioValueOscillatorBiasedNoThresholds,
+    OTC_PVOBiasedNoThresholds
   }
 }
