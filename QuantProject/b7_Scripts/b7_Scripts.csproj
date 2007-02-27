@@ -703,11 +703,6 @@
                     BuildAction = "Compile"
                 />
                 <File
-                    RelPath = "WalkForwardTesting\LinearCombination\TestDisplayer.resx"
-                    DependentUpon = "TestDisplayer.cs"
-                    BuildAction = "EmbeddedResource"
-                />
-                <File
                     RelPath = "WalkForwardTesting\LinearCombination\WalkForwardTest\RunWalkForwardLinearCombination.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
