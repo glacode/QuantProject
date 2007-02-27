@@ -260,6 +260,49 @@ namespace QuantProject.Business.Strategies
 				signedTickers , tickersWeights , commonMarketDays );
 		}
     
+		private static double getLastNightPortfolioReturn(float[] tickersLastNightReturns,
+		                                                  double[] tickersWeights)
+    {
+      double returnValue = 0.0;
+      for(int i = 0; i<tickersLastNightReturns.Length; i++)
+      	returnValue += tickersLastNightReturns[i]*(float)tickersWeights[i];
+      
+      return returnValue;
+    }
+		
+		private static float getLastNightPortfolioReturn_getLastNightReturnForTicker(string ticker,
+		                                            DateTime lastMarketDay, DateTime today)
+    {
+      Quotes tickerQuotes = new Quotes(ticker, lastMarketDay, today);
+      return 	  ( (float)tickerQuotes.Rows[1]["quOpen"] *
+            				(float)tickerQuotes.Rows[1]["quAdjustedClose"]/
+            				(float)tickerQuotes.Rows[1]["quClose"] ) /
+            		  (float)tickerQuotes.Rows[0]["quAdjustedClose"]  - 1;
+    }
+		
+		
+		/// <summary>
+    /// Gets portfolio's last night return for the given tickers
+    /// </summary>
+    /// <param name="signedTickers">Array of signed tickers that compose the portfolio</param>
+    /// <param name="tickersWeights">Array of weights for tickers - the same order has to be provided!</param>
+    /// <param name="lastMarketDay">The last market date before today</param>
+    /// <param name="today">today</param> 
+    public static double GetLastNightPortfolioReturn(string[] signedTickers,
+                                                     double[] tickersWeights,
+                                                     DateTime lastMarketDay,
+                                                     DateTime today)
+    {
+    	float[] tickersLastNightReturns = new float[signedTickers.Length];
+    	for(int i = 0; i<signedTickers.Length; i++)
+      {
+    		tickersLastNightReturns[i] = 
+    			getLastNightPortfolioReturn_getLastNightReturnForTicker(
+    			          SignedTicker.GetTicker(signedTickers[i]), lastMarketDay, today );
+      }
+    	return getLastNightPortfolioReturn(tickersLastNightReturns, tickersWeights);
+    }
+		
 		private static string[] getSignedTickersArray( ICollection signedTickers )
 		{
 			string[] signedTickersArray = new string[ signedTickers.Count ];
