@@ -75,6 +75,8 @@ namespace QuantProject.Scripts.WalkForwardTesting.LinearCombination
     {
       double returnValue = 999.0;
       if(timer.CurrentDateArrayPosition + 2 >= this.numDaysForOscillatingPeriod)
+      //if there are sufficient data for computing currentChosenTickersValue
+      //that's why the method has been overriden
       {
         try
         {
