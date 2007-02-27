@@ -283,6 +283,76 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "TechnicalAnalysisTesting\Oscillators\FixedLevelOscillators\PortfolioValueOscillator\BiasedPVO\EndOfDayTimerHandlerBiasedPVO.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "TechnicalAnalysisTesting\Oscillators\FixedLevelOscillators\PortfolioValueOscillator\BiasedPVO\RunBiasedPVO.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "TechnicalAnalysisTesting\Oscillators\FixedLevelOscillators\PortfolioValueOscillator\BiasedPVO\BiasedOTC_PVONoThresholds\EndOfDayTimerHandlerBiasedOTC_PVONoThresholds.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "TechnicalAnalysisTesting\Oscillators\FixedLevelOscillators\PortfolioValueOscillator\BiasedPVO\BiasedOTC_PVONoThresholds\GenomeManagerBiasedOTC_PVONoThresholds.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "TechnicalAnalysisTesting\Oscillators\FixedLevelOscillators\PortfolioValueOscillator\BiasedPVO\BiasedOTC_PVONoThresholds\RunBiasedOTC_PVONoThresholds.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "TechnicalAnalysisTesting\Oscillators\FixedLevelOscillators\PortfolioValueOscillator\BiasedPVO\BiasedPVONoThresholds\EndOfDayTimerHandlerBiasedPVONoThresholds.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "TechnicalAnalysisTesting\Oscillators\FixedLevelOscillators\PortfolioValueOscillator\BiasedPVO\BiasedPVONoThresholds\GenomeManagerBiasedPVONoThresholds.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "TechnicalAnalysisTesting\Oscillators\FixedLevelOscillators\PortfolioValueOscillator\BiasedPVO\BiasedPVONoThresholds\RunBiasedPVONoThresholds.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "TechnicalAnalysisTesting\Oscillators\FixedLevelOscillators\PortfolioValueOscillator\WeightedPVO\EndOfDayTimerHandlerWeightedPVO.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "TechnicalAnalysisTesting\Oscillators\FixedLevelOscillators\PortfolioValueOscillator\WeightedPVO\GenomeManagerWeightedPVO.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "TechnicalAnalysisTesting\Oscillators\FixedLevelOscillators\PortfolioValueOscillator\WeightedPVO\RunWeightedPVO.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "TechnicalAnalysisTesting\Oscillators\FixedLevelOscillators\PortfolioValueOscillator\WeightedPVO\WeightedBalancedPVO\EndOfDayTimerHandlerWeightedBalancedPVO.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "TechnicalAnalysisTesting\Oscillators\FixedLevelOscillators\PortfolioValueOscillator\WeightedPVO\WeightedBalancedPVO\GenomeManagerWeightedBalancedPVO.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "TechnicalAnalysisTesting\Oscillators\FixedLevelOscillators\PortfolioValueOscillator\WeightedPVO\WeightedBalancedPVO\RunWeightedBalancedPVO.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "TechnicalAnalysisTesting\Oscillators\FixedPeriodOscillators\EndOfDayTimerHandlerFPOscillatorCTC.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
@@ -553,6 +623,21 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "WalkForwardTesting\LinearCombination\FixedLevelOscBiasedOTC_PVONoThresholdsStrategy.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "WalkForwardTesting\LinearCombination\FixedLevelOscillatorBiasedPVONoThresholdsStrategy.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "WalkForwardTesting\LinearCombination\FixedLevelOscillatorBiasedPVOStrategy.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "WalkForwardTesting\LinearCombination\FixedLevelOscillatorPVOStrategy.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
@@ -616,6 +701,11 @@
                     RelPath = "WalkForwardTesting\LinearCombination\TestDisplayer.cs"
                     SubType = "Form"
                     BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "WalkForwardTesting\LinearCombination\TestDisplayer.resx"
+                    DependentUpon = "TestDisplayer.cs"
+                    BuildAction = "EmbeddedResource"
                 />
                 <File
                     RelPath = "WalkForwardTesting\LinearCombination\WalkForwardTest\RunWalkForwardLinearCombination.cs"

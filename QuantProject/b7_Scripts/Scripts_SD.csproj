@@ -188,6 +188,21 @@
     <Compile Include="WalkForwardTesting\WalkForwardLag\WFLagBruteForceOptimizableItemManager\WFLagFixedPortfolioBruteForceOptParamManagerWithNormalizedVolatility.cs" />
     <Compile Include="TechnicalAnalysisTesting\Oscillators\FixedLevelOscillators\PortfolioValueOscillator\BiasedPVO\EndOfDayTimerHandlerBiasedPVO.cs" />
     <Compile Include="TechnicalAnalysisTesting\Oscillators\FixedLevelOscillators\PortfolioValueOscillator\BiasedPVO\RunBiasedPVO.cs" />
+    <Compile Include="TechnicalAnalysisTesting\Oscillators\FixedLevelOscillators\PortfolioValueOscillator\WeightedPVO\EndOfDayTimerHandlerWeightedPVO.cs" />
+    <Compile Include="TechnicalAnalysisTesting\Oscillators\FixedLevelOscillators\PortfolioValueOscillator\WeightedPVO\GenomeManagerWeightedPVO.cs" />
+    <Compile Include="TechnicalAnalysisTesting\Oscillators\FixedLevelOscillators\PortfolioValueOscillator\WeightedPVO\RunWeightedPVO.cs" />
+    <Compile Include="TechnicalAnalysisTesting\Oscillators\FixedLevelOscillators\PortfolioValueOscillator\WeightedPVO\WeightedBalancedPVO\EndOfDayTimerHandlerWeightedBalancedPVO.cs" />
+    <Compile Include="TechnicalAnalysisTesting\Oscillators\FixedLevelOscillators\PortfolioValueOscillator\WeightedPVO\WeightedBalancedPVO\GenomeManagerWeightedBalancedPVO.cs" />
+    <Compile Include="TechnicalAnalysisTesting\Oscillators\FixedLevelOscillators\PortfolioValueOscillator\WeightedPVO\WeightedBalancedPVO\RunWeightedBalancedPVO.cs" />
+    <Compile Include="WalkForwardTesting\LinearCombination\FixedLevelOscillatorBiasedPVOStrategy.cs" />
+    <Compile Include="TechnicalAnalysisTesting\Oscillators\FixedLevelOscillators\PortfolioValueOscillator\BiasedPVO\BiasedPVONoThresholds\EndOfDayTimerHandlerBiasedPVONoThresholds.cs" />
+    <Compile Include="TechnicalAnalysisTesting\Oscillators\FixedLevelOscillators\PortfolioValueOscillator\BiasedPVO\BiasedPVONoThresholds\GenomeManagerBiasedPVONoThresholds.cs" />
+    <Compile Include="TechnicalAnalysisTesting\Oscillators\FixedLevelOscillators\PortfolioValueOscillator\BiasedPVO\BiasedPVONoThresholds\RunBiasedPVONoThresholds.cs" />
+    <Compile Include="WalkForwardTesting\LinearCombination\FixedLevelOscillatorBiasedPVONoThresholdsStrategy.cs" />
+    <Compile Include="TechnicalAnalysisTesting\Oscillators\FixedLevelOscillators\PortfolioValueOscillator\BiasedPVO\BiasedOTC_PVONoThresholds\EndOfDayTimerHandlerBiasedOTC_PVONoThresholds.cs" />
+    <Compile Include="TechnicalAnalysisTesting\Oscillators\FixedLevelOscillators\PortfolioValueOscillator\BiasedPVO\BiasedOTC_PVONoThresholds\GenomeManagerBiasedOTC_PVONoThresholds.cs" />
+    <Compile Include="TechnicalAnalysisTesting\Oscillators\FixedLevelOscillators\PortfolioValueOscillator\BiasedPVO\BiasedOTC_PVONoThresholds\RunBiasedOTC_PVONoThresholds.cs" />
+    <Compile Include="WalkForwardTesting\LinearCombination\FixedLevelOscBiasedOTC_PVONoThresholdsStrategy.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="EvaluatingOptimizationTechnique\" />
@@ -228,6 +243,10 @@
     <Folder Include="TickerSelectionTesting\TestingOTCTypes\BruteForceOptimization" />
     <Folder Include="WalkForwardTesting\WalkForwardLag\GeneticOptimizerTesting" />
     <Folder Include="TechnicalAnalysisTesting\Oscillators\FixedLevelOscillators\PortfolioValueOscillator\BiasedPVO" />
+    <Folder Include="TechnicalAnalysisTesting\Oscillators\FixedLevelOscillators\PortfolioValueOscillator\WeightedPVO" />
+    <Folder Include="TechnicalAnalysisTesting\Oscillators\FixedLevelOscillators\PortfolioValueOscillator\WeightedPVO\WeightedBalancedPVO" />
+    <Folder Include="TechnicalAnalysisTesting\Oscillators\FixedLevelOscillators\PortfolioValueOscillator\BiasedPVO\BiasedPVONoThresholds" />
+    <Folder Include="TechnicalAnalysisTesting\Oscillators\FixedLevelOscillators\PortfolioValueOscillator\BiasedPVO\BiasedOTC_PVONoThresholds" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.Targets" />
 </Project>
