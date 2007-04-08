@@ -60,37 +60,87 @@ namespace QuantProject.Data.Selectors
       this.minStdDeviation = minStdDeviation;
       this.maxStdDeviation = maxStdDeviation;
     }
+    
+    public SelectorByAverageRawOpenPrice(DataTable setOfTickersToBeSelected, 
+                                        bool orderInASCmode,
+                                        DateTime firstQuoteDate,
+                                        DateTime lastQuoteDate,
+                                        long maxNumOfReturnedTickers, double minPrice):
+                                        base(setOfTickersToBeSelected, 
+                                        orderInASCmode,
+                                        firstQuoteDate,
+                                        lastQuoteDate,
+                                        maxNumOfReturnedTickers)
+    {
+      this.minPrice = minPrice;
+      this.maxPrice = 0.0;
+      this.minStdDeviation = 0.0;
+      this.maxStdDeviation = 0.0;
+    }
+
+    public SelectorByAverageRawOpenPrice(string groupID, 
+                              bool orderInASCmode,
+                              DateTime firstQuoteDate,
+                              DateTime lastQuoteDate,
+                              long maxNumOfReturnedTickers, double minPrice,
+                              double maxPrice, double minStdDeviation,
+                              double maxStdDeviation):
+                                base(groupID, 
+                                    orderInASCmode,
+                                    firstQuoteDate,
+                                    lastQuoteDate,
+                                    maxNumOfReturnedTickers)
+    {
+      this.minPrice = minPrice;
+      this.maxPrice = maxPrice;
+      this.minStdDeviation = minStdDeviation;
+      this.maxStdDeviation = maxStdDeviation;
+    }
+
      public SelectorByAverageRawOpenPrice(string groupID, 
-                                bool orderInASCmode,
-                                DateTime firstQuoteDate,
-                                DateTime lastQuoteDate,
-                                long maxNumOfReturnedTickers, double minPrice,
-                                double maxPrice, double minStdDeviation,
-                                double maxStdDeviation):
-                                  base(groupID, 
-                                      orderInASCmode,
-                                      firstQuoteDate,
-                                      lastQuoteDate,
-                                      maxNumOfReturnedTickers)
+                            bool orderInASCmode,
+                            DateTime firstQuoteDate,
+                            DateTime lastQuoteDate,
+                            long maxNumOfReturnedTickers, double minPrice):
+                            base(groupID, 
+                            orderInASCmode,
+                            firstQuoteDate,
+                            lastQuoteDate,
+                            maxNumOfReturnedTickers)
      {
        this.minPrice = minPrice;
-       this.maxPrice = maxPrice;
-       this.minStdDeviation = minStdDeviation;
-       this.maxStdDeviation = maxStdDeviation;
+       this.maxPrice = 0.0;
+       this.minStdDeviation = 0.0;
+       this.maxStdDeviation = 0.0;
      }
-
 
     public DataTable GetTableOfSelectedTickers()
     {
-   
-      if(this.setOfTickersToBeSelected == null)
-        return QuantProject.DataAccess.Tables.Quotes.GetTickersByRawOpenPrice(this.isOrderedInASCMode,
-                  this.groupID, this.firstQuoteDate, this.lastQuoteDate, this.maxNumOfReturnedTickers,
-                  this.minPrice, this.maxPrice, this.minStdDeviation, this.maxStdDeviation);        
-      else
-        return QuantProject.Data.DataTables.Quotes.GetTickersByAverageRawOpenPrice(this.isOrderedInASCMode,
-      	          this.setOfTickersToBeSelected, this.firstQuoteDate, this.lastQuoteDate, this.maxNumOfReturnedTickers,
-      	          this.minPrice, this.maxPrice, this.minStdDeviation, this.maxStdDeviation);
+      DataTable returnValue;
+      if(this.maxPrice == 0.0 && this.minStdDeviation == 0.0 && this.maxStdDeviation == 0.0)
+      //selection only by average raw open price over a given minimum level
+      {
+        if(this.setOfTickersToBeSelected == null)
+          returnValue = QuantProject.DataAccess.Tables.Quotes.GetTickersByRawOpenPrice(this.isOrderedInASCMode,
+            this.groupID, this.firstQuoteDate, this.lastQuoteDate, this.maxNumOfReturnedTickers,
+            this.minPrice);        
+        else
+          returnValue = QuantProject.Data.DataTables.Quotes.GetTickersByAverageRawOpenPrice(this.isOrderedInASCMode,
+            this.setOfTickersToBeSelected, this.firstQuoteDate, this.lastQuoteDate, this.maxNumOfReturnedTickers,
+            this.minPrice);
+      }
+      else//selection is performed considering maxAveragePrice and min / max std Deviation
+      {
+        if(this.setOfTickersToBeSelected == null)
+          returnValue = QuantProject.DataAccess.Tables.Quotes.GetTickersByRawOpenPrice(this.isOrderedInASCMode,
+            this.groupID, this.firstQuoteDate, this.lastQuoteDate, this.maxNumOfReturnedTickers,
+            this.minPrice, this.maxPrice, this.minStdDeviation, this.maxStdDeviation);        
+        else
+          returnValue = QuantProject.Data.DataTables.Quotes.GetTickersByAverageRawOpenPrice(this.isOrderedInASCMode,
+            this.setOfTickersToBeSelected, this.firstQuoteDate, this.lastQuoteDate, this.maxNumOfReturnedTickers,
+            this.minPrice, this.maxPrice, this.minStdDeviation, this.maxStdDeviation);
+      }
+      return returnValue;
     }
     public void SelectAllTickers()
     {
