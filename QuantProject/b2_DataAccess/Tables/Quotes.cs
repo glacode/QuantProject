@@ -599,6 +599,32 @@ namespace QuantProject.DataAccess.Tables
     }
 
     /// <summary>
+    /// returns tickers ordered by the average raw open price that is over
+    /// a given minimum, at a given time interval
+    /// </summary>
+    public static DataTable GetTickersByRawOpenPrice( bool orderInASCMode, string groupID,
+                                                      DateTime firstQuoteDate,
+                                                      DateTime lastQuoteDate,
+                                                      long maxNumOfReturnedTickers, double minPrice )
+    {
+      string sql = "SELECT TOP " + maxNumOfReturnedTickers + " quotes.quTicker, tickers.tiCompanyName, " +
+        "Avg(quotes.quOpen) AS AverageRawOpenPrice " +
+        "FROM (quotes INNER JOIN tickers ON quotes.quTicker=tickers.tiTicker) " +
+        "INNER JOIN tickers_tickerGroups ON tickers.tiTicker=tickers_tickerGroups.ttTiId " +
+        "WHERE quotes.quDate Between " + SQLBuilder.GetDateConstant(firstQuoteDate) + " " +
+        "AND " + SQLBuilder.GetDateConstant(lastQuoteDate) + " " +
+        "AND " + "tickers_tickerGroups.ttTgId='" + groupID + "' " +
+        "GROUP BY quotes.quTicker, tickers.tiCompanyName " +
+        "HAVING Avg(quotes.quOpen) >= " + minPrice + " " + 
+        "ORDER BY Avg(quotes.quOpen)";
+      string sortDirection = " DESC";
+      if(orderInASCMode)
+        sortDirection = " ASC";
+      sql = sql + sortDirection;
+      return SqlExecutor.GetDataTable( sql );
+    }
+
+    /// <summary>
     /// returns tickers ordered by average raw open price level,
     /// with a given standard deviation, in a given time interval
     /// </summary>
