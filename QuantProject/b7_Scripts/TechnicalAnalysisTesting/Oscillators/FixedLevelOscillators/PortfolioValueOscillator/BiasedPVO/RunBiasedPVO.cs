@@ -96,7 +96,7 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOs
 		{
       this.numOfDifferentGenomesToEvaluateOutOfSample = numOfDifferentGenomesToEvaluateOutOfSample;
       this.minimumAcceptableGain = minimumAcceptableGain;
-      this.ScriptName = "PVO_Biased_NoWeightsPriceSel";
+      this.ScriptName = "PVO_Biased_WithWeightsPriceSel";
 		}
 
     #region auxiliary overriden methods for Run

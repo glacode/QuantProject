@@ -140,7 +140,9 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
     }
     public override void SaveScriptResults()
     {
-      string fileName = "From"+ this.tickerGroupID+ "_" +
+      string fileName = DateTime.Now.Hour.ToString().PadLeft(2,'0') + "_" + 
+        DateTime.Now.Minute.ToString().PadLeft(2,'0') + "_" + 
+        "From"+ this.tickerGroupID+ "_" +
       	this.numberOfEligibleTickers +
         "_OptDays" + this.numDaysForOptimizationPeriod + "_Portf" +
         this.numberOfTickersToBeChosen + "_GenNum" + 
