@@ -37,7 +37,7 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
 	/// GeneticOptimizer
 	/// </summary>
 	[Serializable]
-  public class GenomeManagerForEfficientOTCCTOPortfolio : GenomeManagerForWeightedEfficientPortfolio
+  public class GenomeManagerForEfficientOTCCTOPortfolio : GenomeManagerForEfficientPortfolio
   {
     
     public GenomeManagerForEfficientOTCCTOPortfolio(DataTable setOfInitialTickers,
