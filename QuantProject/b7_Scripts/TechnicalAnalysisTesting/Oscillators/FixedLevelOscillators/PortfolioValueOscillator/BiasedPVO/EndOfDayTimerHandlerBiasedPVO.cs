@@ -55,9 +55,9 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOs
     protected double currentTickersGainOrLoss = 0.0;
     protected Hashtable genomesCollector;
     protected bool takeProfitConditionReached;
+    protected string[,] bestGenomesChosenTickers;
+    protected double[,] bestGenomesChosenTickersPortfolioWeights;
     
-    new protected string[,] chosenTickers;
-    new protected double[,] chosenTickersPortfolioWeights;
     new protected double[] currentOversoldThreshold;
     new protected double[] currentOverboughtThreshold;
      
@@ -100,8 +100,8 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOs
       
       this.numOfDifferentGenomesToEvaluateOutOfSample = numOfDifferentGenomesToEvaluateOutOfSample;
       this.minimumAcceptableGain = minimumAcceptableGain;
-      this.chosenTickers = new string[numOfDifferentGenomesToEvaluateOutOfSample, numberOfTickersToBeChosen];
-      this.chosenTickersPortfolioWeights = new double[numOfDifferentGenomesToEvaluateOutOfSample, numberOfTickersToBeChosen];
+      this.bestGenomesChosenTickers = new string[numOfDifferentGenomesToEvaluateOutOfSample, numberOfTickersToBeChosen];
+      this.bestGenomesChosenTickersPortfolioWeights = new double[numOfDifferentGenomesToEvaluateOutOfSample, numberOfTickersToBeChosen];
       this.currentOversoldThreshold = new double[numOfDifferentGenomesToEvaluateOutOfSample];
       this.currentOverboughtThreshold = new double[numOfDifferentGenomesToEvaluateOutOfSample];
       this.genomesCollector = new Hashtable();
@@ -126,8 +126,8 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOs
         double[] tickerWeights = new double[this.numberOfTickersToBeChosen];
         for(int i = 0; i < this.numberOfTickersToBeChosen; i++)
         {
-          tickers[i] = this.chosenTickers[indexForChosenTickers,i];
-          tickerWeights[i] = this.chosenTickersPortfolioWeights[indexForChosenTickers,i];
+          tickers[i] = this.bestGenomesChosenTickers[indexForChosenTickers,i];
+          tickerWeights[i] = this.bestGenomesChosenTickersPortfolioWeights[indexForChosenTickers,i];
         }
         returnValue =
 	      	 SignedTicker.GetCloseToClosePortfolioReturn(
@@ -189,9 +189,8 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOs
       if(this.stopLossConditionReached ||
           this.takeProfitConditionReached ||
           this.numDaysElapsedSinceLastOptimization + 1 == this.numDaysBetweenEachOptimization )
-          //reversal conditions have not been reached but 
           //stop loss or take profit conditions yes
-          //or after the close it is necessary to run
+          //or after the next close it is necessary to run
           //another optimization
       {
         base.closePositions();
@@ -250,19 +249,23 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOs
     	//currentChosenTickersValue has been properly computed
     	{
         string[] tickers = new string[this.numberOfTickersToBeChosen];
+        double[] tickersWeights = new double[this.numberOfTickersToBeChosen];
         for(int i = 0; i < this.numberOfTickersToBeChosen; i++)
-          tickers[i] = this.chosenTickers[this.currentGenomeIndex,i];
-        if(this.currentTickersGainOrLoss >= 1.0 + currentOverboughtThreshold[this.currentGenomeIndex] &&
+        {
+          tickers[i] = this.bestGenomesChosenTickers[this.currentGenomeIndex,i];
+          tickersWeights[i] = this.bestGenomesChosenTickersPortfolioWeights[this.currentGenomeIndex,i];
+        }
+          if(this.currentTickersGainOrLoss >= 1.0 + currentOverboughtThreshold[this.currentGenomeIndex] &&
            this.portfolioType == PortfolioType.ShortAndLong)
     		{
           SignedTicker.ChangeSignOfEachTicker(tickers);
-          base.openPositions(tickers);
+          base.openPositions(tickers, tickersWeights);
           this.portfolioHasBeenOverbought = true;
           this.portfolioHasBeenOversold = false;
         }
         else if (this.currentTickersGainOrLoss <= 1.0 - currentOversoldThreshold[this.currentGenomeIndex])
     		{
-          base.openPositions(tickers);
+          base.openPositions(tickers, tickersWeights);
           this.portfolioHasBeenOverbought = false;
           this.portfolioHasBeenOversold = true;
         }
@@ -302,7 +305,7 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOs
     	 	//this.marketCloseEventHandler_reverseOrClose((IndexBasedEndOfDayTimer)sender);
      	  this.marketCloseEventHandler_closeIfItIsTimeToClose();
       else if ( this.account.Portfolio.Count == 0 &&
-    	         this.chosenTickers[0,0] != null )
+    	         this.bestGenomesChosenTickers[0,0] != null )
 			//portfolio is empty and optimization has been already launched    		
     		this.marketCloseEventHandler_openPositions((IndexBasedEndOfDayTimer)sender);
     }
@@ -323,16 +326,18 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOs
             counter < GO.PopulationSize)
       {
       	currentGenome = (Genome)GO.CurrentGeneration[GO.PopulationSize - 1 - counter];
-      	if(counter == 0 || 
-      	   !this.genomesCollector.ContainsKey(currentGenome.Fitness) )
-      	//it is the first genome to be added or no genome with the current
+      	if(   counter == 0 || 
+      	      !this.genomesCollector.ContainsKey(
+              ( (GenomeMeaning)currentGenome.Meaning ).HashCodeForTickerComposition   )   )
+//								currentGenome.Fitness)   )
+				//it is the first genome to be added or no genome with the current
       	// fitness has been added to the hashtable yet
       	{
       		for(int i = 0; i<this.numberOfTickersToBeChosen; i++)
       		{
-      			this.chosenTickers[addedGenomes,i] = 
+      			this.bestGenomesChosenTickers[addedGenomes,i] = 
       				((GenomeMeaningPVO)currentGenome.Meaning).Tickers[i];
-      			this.chosenTickersPortfolioWeights[addedGenomes,i] =
+      			this.bestGenomesChosenTickersPortfolioWeights[addedGenomes,i] =
       				((GenomeMeaningPVO)currentGenome.Meaning).TickersPortfolioWeights[i];
       		}
       		this.currentOversoldThreshold[addedGenomes] = 
@@ -340,8 +345,9 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOs
       		this.currentOverboughtThreshold[addedGenomes] = 
       				((GenomeMeaningPVO)currentGenome.Meaning).OverboughtThreshold;
       		
-      		this.genomesCollector.Add(currentGenome.Fitness, null);
-      		
+      		this.genomesCollector.Add(
+      		 ( (GenomeMeaning)currentGenome.Meaning ).HashCodeForTickerComposition, null);
+//						currentGenome.Fitness,null);
       		this.addPVOGenomeToBestGenomes(currentGenome,((GenomeManagerForEfficientPortfolio)this.iGenomeManager).FirstQuoteDate,
           ((GenomeManagerForEfficientPortfolio)this.iGenomeManager).LastQuoteDate, eligibleTickersForGO,
            this.numDaysForOscillatingPeriod, this.portfolioType, GO.GenerationCounter,
@@ -357,7 +363,7 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOs
     {
       DataTable setOfTickersToBeOptimized = this.getSetOfTickersToBeOptimized(currentDate);
       this.iGenomeManager =
-          new GenomeManagerPVO(setOfTickersToBeOptimized,
+          new GenomeManagerWeightedBalancedPVO(setOfTickersToBeOptimized,
           currentDate.AddDays(-this.numDaysForOptimizationPeriod), 
           currentDate, this.numberOfTickersToBeChosen,
           this.numDaysForOscillatingPeriod,
@@ -375,7 +381,9 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOs
           this.seedForRandomGenerator);
       if(setGenomeCounter)
         this.genomeCounter = new GenomeCounter(GO);
-      GO.MutationRate = 0.4;
+      
+      GO.MutationRate = 0.1;
+      GO.CrossoverRate = 0.85;
       GO.Run(false);
        
       this.setTickers_updateTickersWeightsAndThresholdsAndAddGenomesForLog(GO, setOfTickersToBeOptimized.Rows.Count);
