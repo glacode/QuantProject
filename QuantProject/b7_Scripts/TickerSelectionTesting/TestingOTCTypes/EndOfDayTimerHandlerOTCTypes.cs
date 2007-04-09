@@ -261,8 +261,8 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
                                                    this.seedForRandomGenerator);
         if(setGenomeCounter)
         	this.genomeCounter = new GenomeCounter(GO);
-        GO.MutationRate = 0.4;
-        GO.CrossoverRate = 0.0;
+        GO.MutationRate = 0.25;
+        GO.CrossoverRate = 0.90;
         GO.Run(false);
         this.addGenomeToBestGenomes(GO.BestGenome,currentDate.AddDays(-this.numDaysForOptimizationPeriod),
                                     currentDate,setOfTickersToBeOptimized.Rows.Count,-1, this.portfolioType,
