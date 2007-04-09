@@ -443,7 +443,6 @@ namespace QuantProject.Data.DataTables
     /// returns tickers with the average raw open price
     /// belonging to the specified range within the given set of tickers
     /// </summary>
-
     public static DataTable GetTickersByAverageRawOpenPrice( bool orderByASC,
                                                   DataTable setOfTickers,
                                                   DateTime firstQuoteDate,
@@ -475,7 +474,52 @@ namespace QuantProject.Data.DataTables
       return returnValue;
     }
 
-	private static void getTickersByAverageRawOpenPrice_deleteRows( DataTable setOfTickers,
+    /// <summary>
+    /// returns tickers with the average raw open price
+    /// being greater than a given value
+    /// </summary>
+    public static DataTable GetTickersByAverageRawOpenPrice( bool orderByASC,
+                                                            DataTable setOfTickers,
+                                                            DateTime firstQuoteDate,
+                                                            DateTime lastQuoteDate,
+                                                            long maxNumOfReturnedTickers,
+                                                            double minimumAverageRawOpenPrice)
+    {
+      if(!setOfTickers.Columns.Contains("AverageRawOpenPrice"))
+        setOfTickers.Columns.Add("AverageRawOpenPrice", System.Type.GetType("System.Double"));
+      foreach(DataRow row in setOfTickers.Rows)
+        row["AverageRawOpenPrice"] = 
+            QuantProject.DataAccess.Tables.Quotes.GetAverageRawOpenPrice( (string)row[0],
+                                                                          firstQuoteDate,
+                                                                          lastQuoteDate );
+      getTickersByAverageRawOpenPrice_deleteRows(setOfTickers, minimumAverageRawOpenPrice);
+      DataTable returnValue = ExtendedDataTable.CopyAndSort(setOfTickers,"AverageRawOpenPrice", orderByASC);
+      ExtendedDataTable.DeleteRows(returnValue, maxNumOfReturnedTickers);
+      return returnValue;
+    }
+
+    private static void getTickersByAverageRawOpenPrice_deleteRows( DataTable setOfTickers,
+                                                                    double minimumAverageRawOpenPrice )
+    {
+      int currentNumRows = setOfTickers.Rows.Count;
+      for(int i = 0;i<currentNumRows;i++)
+      {
+        if(setOfTickers.Rows[i].RowState != DataRowState.Deleted)
+        {
+          double averagePrice = (double)setOfTickers.Rows[i]["AverageRawOpenPrice"];
+          if( averagePrice < minimumAverageRawOpenPrice )
+          {
+            setOfTickers.Rows[i].Delete();
+            currentNumRows = setOfTickers.Rows.Count;
+            i--;//deletion causes the new ID row
+            //of the next row to be the ID row of the deleted Row
+            //so, only in this way, all the rows are checked
+          }
+        }
+      }
+    }
+
+	  private static void getTickersByAverageRawOpenPrice_deleteRows( DataTable setOfTickers,
                                                                    double minPrice, double maxPrice,
                                                                   double minStdDeviation,
                                                                   double maxStdDeviation)
