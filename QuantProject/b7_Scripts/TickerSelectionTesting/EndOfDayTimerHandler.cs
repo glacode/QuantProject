@@ -179,7 +179,7 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
     	for(int i = 0;i<this.chosenTickers.Length;i++)
     		this.chosenTickersPortfolioWeights[i]=1.0/this.chosenTickers.Length;
 		}
-     
+    
     protected virtual void addOrderForTicker(string[] tickers, 
                                              int tickerPosition )
     {
@@ -226,6 +226,7 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
     
     protected virtual void addChosenTickersToOrderList(string[] tickers)
     {
+      
       for( int i = 0; i<tickers.Length; i++)
       {
       	if(tickers[i] != null)
@@ -255,6 +256,12 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
       return returnValue;
     }
     
+    protected virtual void openPositions(string[] tickers, double[] tickersWeights)
+    {
+      this.chosenTickersPortfolioWeights = tickersWeights;
+      this.openPositions(tickers);
+    }
+
     protected virtual void openPositions(string[] tickers)
     {
       //add cash first
