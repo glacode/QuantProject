@@ -127,10 +127,7 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOs
 	  	//double[] asbolutePortfolioRatesOfReturns = new double[this.portfolioRatesOfReturn.Length];
 //	  	for( int i = 0; i<asbolutePortfolioRatesOfReturns.Length; i++ )
 //	  		asbolutePortfolioRatesOfReturns[i] = Math.Abs(this.portfolioRatesOfReturn[i]);
-	  	returnValue = 1.0/
-        //(  BasicFunctions.SimpleAverage(asbolutePortfolioRatesOfReturns) *
-          (  
-            Math.Abs( BasicFunctions.SimpleAverage(this.portfolioRatesOfReturn)));//) *
+	  	returnValue = BasicFunctions.SimpleAverage(this.portfolioRatesOfReturn);
             //BasicFunctions.StdDev(this.portfolioRatesOfReturn)  );  //);
       return returnValue;
     }
