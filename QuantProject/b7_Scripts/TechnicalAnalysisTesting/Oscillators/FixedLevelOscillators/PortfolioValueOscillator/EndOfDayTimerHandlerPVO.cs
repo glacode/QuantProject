@@ -287,7 +287,12 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOs
         this.numberOfEligibleTickers, this.benchmark);
      
       return quotedAtEachMarketDayFromLastSelection.GetTableOfSelectedTickers(); 
-    	
+    	//for debug
+//      SelectorByQuotationAtEachMarketDay quotedAtEachMarketDayFromLastSelection = 
+//        new SelectorByQuotationAtEachMarketDay(temporizedGroup.GetTableOfSelectedTickers(),
+//        false, currentDate.AddDays(-this.numDaysForOptimizationPeriod), currentDate,
+//        this.numberOfEligibleTickers, this.benchmark);
+//      return quotedAtEachMarketDayFromLastSelection.GetTableOfSelectedTickers();
     }
     protected void addPVOGenomeToBestGenomes(Genome genome,
                                               DateTime firstOptimizationDate,
