@@ -61,8 +61,8 @@ namespace QuantProject.Scripts.WalkForwardTesting.LinearCombination
                                         minimumAcceptableGain)
                                        
 		{
-			this.chosenTickers = tickers;
-			this.chosenTickersPortfolioWeights = tickersPortfolioWeights;
+			this.bestGenomesChosenTickers = tickers;
+			this.bestGenomesChosenTickersPortfolioWeights = tickersPortfolioWeights;
       this.currentOversoldThreshold = oversoldThreshold;
       this.currentOverboughtThreshold = overboughtThreshold;
       this.numDaysForOscillatingPeriod = numDaysForOscillatingPeriod;
@@ -94,8 +94,8 @@ namespace QuantProject.Scripts.WalkForwardTesting.LinearCombination
 	        double[] tickerWeights = new double[this.numberOfTickersToBeChosen];
 	        for(int i = 0; i < this.numberOfTickersToBeChosen; i++)
 	        {
-	          tickers[i] = this.chosenTickers[indexForChosenTickers,i];
-	          tickerWeights[i] = this.chosenTickersPortfolioWeights[indexForChosenTickers,i];
+	          tickers[i] = this.bestGenomesChosenTickers[indexForChosenTickers,i];
+	          tickerWeights[i] = this.bestGenomesChosenTickersPortfolioWeights[indexForChosenTickers,i];
 	        }
 	        returnValue =
 		      	 SignedTicker.GetCloseToClosePortfolioReturn(
