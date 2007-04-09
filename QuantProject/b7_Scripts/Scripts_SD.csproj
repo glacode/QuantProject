@@ -143,7 +143,6 @@
     <Compile Include="WalkForwardTesting\WalkForwardLag\WFLagDebugger\WFLagChosenPositions.cs" />
     <Compile Include="WalkForwardTesting\WalkForwardLag\WFLagDebugger\WFLagReportDebugger.cs" />
     <Compile Include="WalkForwardTesting\WalkForwardLag\WFLagDebugger\WFLagDebugPositions\WFLagDebugPositionsEndOfDayTimerHandler.cs" />
-    <Compile Include="WalkForwardTesting\WalkForwardLag\WFLagNewChosenTickersEventArgs.cs" />
     <Compile Include="WalkForwardTesting\WalkForwardLag\WFLagMain.cs" />
     <Compile Include="ArbitrageTesting\PairTrading\SimplePairTrading\InSample\OutputDisplayer.cs" />
     <Compile Include="ArbitrageTesting\PairTrading\SimplePairTrading\InSample\EndOfDayTimerHandlerSimplePTIS.cs" />
@@ -203,6 +202,11 @@
     <Compile Include="TechnicalAnalysisTesting\Oscillators\FixedLevelOscillators\PortfolioValueOscillator\BiasedPVO\BiasedOTC_PVONoThresholds\GenomeManagerBiasedOTC_PVONoThresholds.cs" />
     <Compile Include="TechnicalAnalysisTesting\Oscillators\FixedLevelOscillators\PortfolioValueOscillator\BiasedPVO\BiasedOTC_PVONoThresholds\RunBiasedOTC_PVONoThresholds.cs" />
     <Compile Include="WalkForwardTesting\LinearCombination\FixedLevelOscBiasedOTC_PVONoThresholdsStrategy.cs" />
+    <Compile Include="WalkForwardTesting\WalkForwardLag\WFLagNewChosenPositionsEventArgs.cs" />
+    <Compile Include="WalkForwardTesting\WalkForwardLag\WeightedPositionsChoosers\IWFLagWeightedPositionsChooser.cs" />
+    <Compile Include="WalkForwardTesting\WalkForwardLag\WeightedPositionsChoosers\WFLagBruteForceFixedPortfolioWeightedPositionsChooser.cs" />
+    <Compile Include="ArbitrageTesting\OverReactionHypothesis\SimpleOHTest\EndOfDayTimerHandlerSimpleOHTest.cs" />
+    <Compile Include="ArbitrageTesting\OverReactionHypothesis\SimpleOHTest\RunSimpleOHTest.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="EvaluatingOptimizationTechnique\" />
@@ -247,6 +251,9 @@
     <Folder Include="TechnicalAnalysisTesting\Oscillators\FixedLevelOscillators\PortfolioValueOscillator\WeightedPVO\WeightedBalancedPVO" />
     <Folder Include="TechnicalAnalysisTesting\Oscillators\FixedLevelOscillators\PortfolioValueOscillator\BiasedPVO\BiasedPVONoThresholds" />
     <Folder Include="TechnicalAnalysisTesting\Oscillators\FixedLevelOscillators\PortfolioValueOscillator\BiasedPVO\BiasedOTC_PVONoThresholds" />
+    <Folder Include="WalkForwardTesting\WalkForwardLag\WeightedPositionsChoosers" />
+    <Folder Include="ArbitrageTesting\OverReactionHypothesis" />
+    <Folder Include="ArbitrageTesting\OverReactionHypothesis\SimpleOHTest" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.Targets" />
 </Project>

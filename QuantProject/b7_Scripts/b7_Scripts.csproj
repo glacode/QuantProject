@@ -122,6 +122,16 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "ArbitrageTesting\OverReactionHypothesis\SimpleOHTest\EndOfDayTimerHandlerSimpleOHTest.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "ArbitrageTesting\OverReactionHypothesis\SimpleOHTest\RunSimpleOHTest.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "ArbitrageTesting\PairTrading\PairTradingCandidate.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
