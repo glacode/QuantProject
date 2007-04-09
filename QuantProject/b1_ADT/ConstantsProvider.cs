@@ -32,7 +32,7 @@ namespace QuantProject.ADT
 		public static DateTime MinQuoteDateTime = new DateTime( 1950 , 1 , 1 );
 		public static int CachePages = 1000;
 		public static int PagesToBeRemovedFromCache = 500; // for Garbage Collection
-		public static int SeedForRandomGenerator = 333; // for GeneticOptimizer and
+		public static int SeedForRandomGenerator = 33; // for GeneticOptimizer and
 																										// GenomeManagement
     public static int NumGenomesForRandomFitnessComputation = 100;
     // for GeneticOptimizer (used by CalculateRandomFitness() in order
@@ -45,7 +45,6 @@ namespace QuantProject.ADT
     public static string SeparatorForTickers = ";";
     //separator for tickers in GenomeRepresentation class
     public static string SeparatorForWeights = ">";
-    //separator for separating ticker by its weight in GenomeRepresentation class                                 
-    
+    //separator for separating ticker by its weight in GenomeRepresentation class 
 	}
 }
