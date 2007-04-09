@@ -21,6 +21,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
 using System;
+using System.Collections;
 
 namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
 {
@@ -36,6 +37,7 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
   	private double returnAtLastDayInSample;
   	private double averageReturnInSample;
   	private double varianceReturnInSample;
+    private string hashCodeForTickerComposition;
     
   	public string[] Tickers
     {
@@ -62,6 +64,11 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
       get{return this.tickersPortfolioWeights;}
     }
     
+    public string HashCodeForTickerComposition
+    {
+      get{return this.hashCodeForTickerComposition;}
+    }
+
     private void setDefaultTickersPortfolioWeights()
     {
     	this.tickersPortfolioWeights = new double[this.tickers.Length];
@@ -69,15 +76,29 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
     		this.tickersPortfolioWeights[i]=1.0/this.tickers.Length;
 		}
     
+    private void genomeMeaning_setHashCodeForTickerComposition()
+    {
+      ArrayList listOfTickers = new ArrayList(this.tickers);
+      listOfTickers.Sort();
+      foreach(string tickerCode in listOfTickers)
+        this.hashCodeForTickerComposition += tickerCode;
+    }
+
+    private void genomeMeaning(string[] tickers)
+    {
+      this.tickers = tickers;
+      this.genomeMeaning_setHashCodeForTickerComposition();
+    }
+
     public GenomeMeaning(string[] tickers)
     {
- 			this.tickers = tickers;
+ 			this.genomeMeaning(tickers);
  			this.setDefaultTickersPortfolioWeights();
 		}
     
     public GenomeMeaning(string[] tickers, double[] tickersPortfolioWeights)
     {
- 			this.tickers = tickers;
+ 			this.genomeMeaning(tickers);
  			this.tickersPortfolioWeights = tickersPortfolioWeights;
 		}
     
@@ -86,7 +107,7 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
   													 double averageReturnInSample,
   													 double varianceReturnInSample)
     {
- 			this.tickers = tickers;
+ 			this.genomeMeaning(tickers);
  			this.returnAtLastDayInSample = returnAtLastDayInSample;
  			this.averageReturnInSample = averageReturnInSample;
  			this.varianceReturnInSample = varianceReturnInSample;
@@ -99,7 +120,7 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
   													 double averageReturnInSample,
   													 double varianceReturnInSample)
     {
- 			this.tickers = tickers;
+ 			this.genomeMeaning(tickers);
  			this.tickersPortfolioWeights = tickersPortfolioWeights;
  			this.returnAtLastDayInSample = returnAtLastDayInSample;
  			this.averageReturnInSample = averageReturnInSample;
