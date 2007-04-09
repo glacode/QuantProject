@@ -114,6 +114,7 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOs
     protected override double getTickerWeight(int[] genes, int tickerPositionInGenes)
     {
     	double totalOfWeightsForTickersOfTheSameSign = 0.0;
+    	int numOfTickersOfTheSameSign = 0;
     	for(int j = this.numOfGenesDedicatedToThresholds; j < genes.Length; j++)
       {
         if( this.numOfGenesDedicatedToThresholds == 2 && j%2==0 &&
@@ -121,16 +122,28 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOs
         //ticker weight is contained in genes at even position when 
       	//thresholds are asymmetrical and current Index Points To A Ticker Of The Same Sign
         //0 has to be avoided !
-    								totalOfWeightsForTickersOfTheSameSign += Math.Abs(genes[j]) + 1.0;
-       	else if ( this.numOfGenesDedicatedToThresholds == 1 && j%2!=0 && 
+    		{						
+    			totalOfWeightsForTickersOfTheSameSign += Math.Abs(genes[j]) + 1.0;
+ 				  numOfTickersOfTheSameSign++;    	
+    		}
+    		else if ( this.numOfGenesDedicatedToThresholds == 1 && j%2!=0 &&
         	       this.getTickerWeight_currentIndexPointsToATickerOfTheSameSign(genes,j+1,tickerPositionInGenes) )
      		//ticker weight is contained in genes at odd position when 
       	//thresholds are symmetrical and current Index Points To A Ticker Of The Same Sign
         //0 has to be avoided !
-    								totalOfWeightsForTickersOfTheSameSign += Math.Abs(genes[j]) + 1.0;
+    		{
+    			totalOfWeightsForTickersOfTheSameSign += Math.Abs(genes[j]) + 1.0;
+    			numOfTickersOfTheSameSign++;
+    		}
       }
-      return ( Math.Abs(genes[tickerPositionInGenes-1]) + 1.0 ) /
-      	     ( 2 * totalOfWeightsForTickersOfTheSameSign );
+      double minimumWeight = 0.75*(0.5/numOfTickersOfTheSameSign);
+      //with 0.75 the minimum weight for 4 ticker can be 0.1875 (2 long and 2 short)
+      //or 0.125 (3 long and 1 short or viceversa)
+      double normalizingWeight = (  ( Math.Abs(genes[tickerPositionInGenes-1]) + 1.0 ) /
+                    												totalOfWeightsForTickersOfTheSameSign   ) * 
+                 								 (0.5 - numOfTickersOfTheSameSign*minimumWeight);
+      
+      return minimumWeight + normalizingWeight;
     }
   
     private int getNewGeneValue_getGeneValue(Genome genome, int genePosition)
