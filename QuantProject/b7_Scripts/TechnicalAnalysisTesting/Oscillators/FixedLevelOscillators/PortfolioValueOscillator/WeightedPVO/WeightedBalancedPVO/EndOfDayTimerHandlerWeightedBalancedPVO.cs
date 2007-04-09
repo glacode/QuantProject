@@ -150,7 +150,7 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOs
           this.seedForRandomGenerator);
         if(setGenomeCounter)
           this.genomeCounter = new GenomeCounter(GO);
-        GO.MutationRate = 0.2;
+        GO.MutationRate = 0.1;
         GO.Run(false);
         
         this.chosenTickers = ((GenomeMeaningPVO)GO.BestGenome.Meaning).Tickers;
