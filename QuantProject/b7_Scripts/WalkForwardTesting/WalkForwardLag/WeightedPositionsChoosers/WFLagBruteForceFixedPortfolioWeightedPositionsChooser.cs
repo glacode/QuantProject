@@ -33,7 +33,7 @@ using QuantProject.Business.Timing;
 using QuantProject.Scripts.WalkForwardTesting.WalkForwardLag.WFLagDebugger;
 
 
-namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag
+namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag.WeightedPositionsChoosers
 {
 	/// <summary>
 	/// Computes the best driving positions, for the given portfolio
