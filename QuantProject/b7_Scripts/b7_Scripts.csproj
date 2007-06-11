@@ -803,6 +803,11 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "WalkForwardTesting\WalkForwardLag\WeightedPositionsChoosers\WFLagGeneticFixedPortfolioWithNormalDrivingAndPortfolio\WFLagGeneticFixedPortfolioWithNormalDrivingAndPortfolio.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "WalkForwardTesting\WalkForwardLag\WFLagBruteForceOptimizableItemManager\WFLagBruteForceOptimizableParametersManager.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
