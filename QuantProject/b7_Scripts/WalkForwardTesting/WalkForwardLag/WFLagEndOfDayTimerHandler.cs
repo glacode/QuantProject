@@ -31,7 +31,8 @@ using QuantProject.Business.Financial.Instruments;
 using QuantProject.Business.Strategies;
 using QuantProject.Business.Strategies.EquityEvaluation;
 using QuantProject.Business.Timing;
-using QuantProject.Scripts.SimpleTesting;
+using QuantProject.Scripts.WalkForwardTesting.WalkForwardLag.WeightedPositionsChoosers;
+
 
 namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag
 {
@@ -48,6 +49,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag
 		private string tickerGroupID;
 		private string benchmark;
 		private int numberEligibleTickers;
+		QuantProject.Scripts.WalkForwardTesting.WalkForwardLag.WeightedPositionsChoosers.
 		IWFLagWeightedPositionsChooser wFLagWeightedPositionsChooser;
 		private int outOfSampleWindowDays;
 		private Account account;
