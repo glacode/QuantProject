@@ -27,6 +27,7 @@ using System.ComponentModel;
 using System.Windows.Forms;
 
 using QuantProject.Presentation;
+using QuantProject.Scripts.WalkForwardTesting.WalkForwardLag.WeightedPositionsChoosers;
 using QuantProject.Scripts.WalkForwardTesting.WalkForwardLag.WFLagDebugger;
 
 namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag
@@ -139,10 +140,15 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag
 				new WFLagBruteForceFixedPortfolioWeightedPositionsChooser(
 				4 , new string[]{ "IWM" , "SPY" } ,	100 , "EWQ" ,
 				new QuantProject.Business.Strategies.EquityEvaluation.WinningPeriods() );
+			wFLagWeightedPositionsChooser =
+				new WFLagGeneticFixedPortfolioWithNormalDrivingAndPortfolio(
+				4 , new string[]{ "IWM" , "SPY" } ,	100 , "EWQ" ,
+				new QuantProject.Business.Strategies.EquityEvaluation.WinningPeriods() ,
+				1000 , 15 );
 			new RunWalkForwardLag( "DrvPstns" , 200 ,
-				wFLagWeightedPositionsChooser ,	9 ,
+				wFLagWeightedPositionsChooser ,	13 ,
 				new DateTime( 2001 , 1 , 1 ) ,
-				new DateTime( 2001 , 6 , 1 ) ,
+				new DateTime( 2001 , 1 , 8 ) ,
 				0.5 ).Run();
 
 //			new RunWalkForwardLag( "DrvPstns" , 500 ,
