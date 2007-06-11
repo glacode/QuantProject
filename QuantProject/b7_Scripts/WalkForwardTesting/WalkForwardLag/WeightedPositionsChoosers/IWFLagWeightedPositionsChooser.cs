@@ -28,7 +28,7 @@ using QuantProject.Business.Timing;
 using QuantProject.Scripts.WalkForwardTesting.WalkForwardLag.WFLagDebugger;
 
 
-namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag
+namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag.WeightedPositionsChoosers
 {
 	/// <summary>
 	/// Interface to be implemented by any object used to chose in
