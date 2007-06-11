@@ -64,7 +64,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag
 				throw new Exception( "eligibleTickers is expected to have at least " +
 					"two rows. It has less than two rows!" );
       if ( firstQuoteDate >= lastQuoteDate )
-				throw new Exception( "firstQuoteDate has to be less than" +
+				throw new Exception( "firstQuoteDate has to be less than " +
 					"lastQuoteDate!" );
 		}
 		/// <summary>
