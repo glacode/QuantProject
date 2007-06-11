@@ -32,6 +32,7 @@ using QuantProject.Business.Strategies.EquityEvaluation;
 using QuantProject.Business.Timing;
 using QuantProject.Presentation;
 using QuantProject.Presentation.Reporting.WindowsForm;
+using QuantProject.Scripts.WalkForwardTesting.WalkForwardLag.WeightedPositionsChoosers;
 using QuantProject.Scripts.WalkForwardTesting.WalkForwardLag.WFLagDebugger;
 
 namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag
@@ -55,7 +56,6 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag
 		private string benchmark;
 		private DateTime firstDateTime;
 		private DateTime lastDateTime;
-		private IEquityEvaluator equityEvaluator;
 		private double maxRunningHours;
 
 		private IHistoricalQuoteProvider historicalQuoteProvider;
@@ -89,7 +89,6 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag
 				this.wFLagWeightedPositionsChooser.Benchmark;
 			this.firstDateTime = firstDateTime;
 			this.lastDateTime = lastDateTime;
-			this.equityEvaluator = equityEvaluator;
 
 			this.maxRunningHours = maxRunningHours;
 			this.wFLagLog =
