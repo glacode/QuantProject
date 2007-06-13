@@ -159,8 +159,9 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag.WeightedPositio
 			this.lastInSampleOptimizationDate =
 				now.DateTime;
 
-			WFLagGenomeManager genomeManager = 
-				new WFLagGenomeManager(
+			WFLagGenomeManagerForFixedPortfolioWithNormalDrivingAndPortfolio
+				genomeManager = 
+				new WFLagGenomeManagerForFixedPortfolioWithNormalDrivingAndPortfolio(
 				eligibleTickersForDrivingPositions.EligibleTickers ,
 				eligibleTickersForDrivingPositions.EligibleTickers ,
 				this.firstInSampleDrivingDate ,
