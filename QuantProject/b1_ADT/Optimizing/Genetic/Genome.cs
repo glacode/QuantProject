@@ -43,6 +43,7 @@ namespace QuantProject.ADT.Optimizing.Genetic
     private IGenomeManager genomeManager;
     private GeneticOptimizer geneticOptimizer;
 		private int generation;
+		private bool hasFitnessBeenAssigned;
     
     public bool HasBeenCloned
     {
@@ -66,15 +67,31 @@ namespace QuantProject.ADT.Optimizing.Genetic
 				if ( double.IsNaN( this.fitness ) )
 					throw new Exception(
 						"The fitness for this genome is not a number!" );
+				if ( ! this.hasFitnessBeenAssigned )
+				// the genome's fitness has not been assigned yet
+					this.fitness = this.genomeManager.GetFitnessValue(this);
 				return this.fitness;
 			}
-      set{this.fitness = value;}
+      set
+			{
+				this.fitness = value;
+				this.hasFitnessBeenAssigned = true;
+			}
     }
 
     public object Meaning
     {
-      get{return this.meaning;}
-      set{this.meaning = value;}
+			get
+			{
+				if ( this.meaning == null )
+				// the genome's meaning has not been assigned yet
+				this.meaning = this.genomeManager.Decode( this );
+				return this.meaning;
+			}
+			set
+			{
+				this.meaning = value;
+			}
     }
 
     public int Size

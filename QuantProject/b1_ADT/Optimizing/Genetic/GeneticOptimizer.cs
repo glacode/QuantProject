@@ -420,8 +420,6 @@ namespace QuantProject.ADT.Optimizing.Genetic
       {
         Genome g = new Genome(this.genomeManager, this);
         g.CreateGenes();
-        g.CalculateFitness();
-        g.AssignMeaning();
         this.currentGeneration.Add(g);
       }
     }
@@ -479,7 +477,6 @@ namespace QuantProject.ADT.Optimizing.Genetic
       this.createNextGeneration_addChildsWithRouletteSelection();
       this.mutateGenomes();
       this.createNextGeneration_transmitEliteToNextGeneration();
-      this.calculateFitnessAndMeaningForAllGenomes();
       this.updateCurrentGeneration();
       this.sortCurrentGenerationAndFireNewGenerationEvent();
       this.setSpecialFitnessForRouletteSelection();
@@ -493,22 +490,7 @@ namespace QuantProject.ADT.Optimizing.Genetic
       		this.genomeManager.Mutate(g);
       }
     }
-    
-    private void calculateFitnessAndMeaningForAllGenomes()
-    {
-      foreach(Genome g in this.nextGeneration)
-      {
-        if(!g.HasBeenCloned || g.HasBeenChanged)
-        //if it has been cloned and it has not been changed,
-        //it's useless 
-        //to calculate again fitness and meaning
-        {
-          g.CalculateFitness();
-          g.AssignMeaning();
-        }
-      }
-    }
-    
+ 
     private void updateCurrentGeneration()
     {
       this.nextGeneration.Sort(this.genomeComparer);
