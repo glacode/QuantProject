@@ -69,13 +69,11 @@ namespace QuantProject.ADT.Optimizing.Genetic
 						"The fitness for this genome is not a number!" );
 				if ( ! this.hasFitnessBeenAssigned )
 				// the genome's fitness has not been assigned yet
+				{
 					this.fitness = this.genomeManager.GetFitnessValue(this);
-				return this.fitness;
-			}
-      set
-			{
-				this.fitness = value;
-				this.hasFitnessBeenAssigned = true;
+					this.hasFitnessBeenAssigned = true;
+				}
+					return this.fitness;
 			}
     }
 
@@ -85,12 +83,8 @@ namespace QuantProject.ADT.Optimizing.Genetic
 			{
 				if ( this.meaning == null )
 				// the genome's meaning has not been assigned yet
-				this.meaning = this.genomeManager.Decode( this );
+					this.meaning = this.genomeManager.Decode( this );
 				return this.meaning;
-			}
-			set
-			{
-				this.meaning = value;
 			}
     }
 
@@ -171,8 +165,8 @@ namespace QuantProject.ADT.Optimizing.Genetic
     {
       Genome returnValue = new Genome(this.genomeManager, this.geneticOptimizer);
       returnValue.CopyValuesInGenes(this.genes);
-      returnValue.Fitness = this.Fitness;
-      returnValue.Meaning = this.Meaning;
+      returnValue.fitness = this.fitness;
+      returnValue.meaning = this.meaning;
       returnValue.generation = this.Generation;
       returnValue.hasBeenCloned = true;
       
