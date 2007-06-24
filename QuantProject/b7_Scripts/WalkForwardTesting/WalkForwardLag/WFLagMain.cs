@@ -138,11 +138,11 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag
 			// QQQQ vs SPY
 			IWFLagWeightedPositionsChooser wFLagWeightedPositionsChooser =
 				new WFLagBruteForceFixedPortfolioWeightedPositionsChooser(
-				4 , new string[]{ "IWM" , "SPY" } ,	100 , "EWQ" ,
+				4 , new string[]{ "IWM" , "-SPY" } , 100 , "EWQ" ,
 				new QuantProject.Business.Strategies.EquityEvaluation.WinningPeriods() );
 			wFLagWeightedPositionsChooser =
 				new WFLagGeneticFixedPortfolioWithNormalDrivingAndPortfolio(
-				4 , new string[]{ "IWM" , "SPY" } ,	100 , "EWQ" ,
+				4 , new string[]{ "IWM" , "-SPY" } , 100 , "EWQ" ,
 				new QuantProject.Business.Strategies.EquityEvaluation.WinningPeriods() ,
 				1000 , 15 );
 			new RunWalkForwardLag( "DrvPstns" , 200 ,
