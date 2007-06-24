@@ -58,6 +58,33 @@ namespace QuantProject.ADT.Statistics
 			}
 			return	sum;
 		}
+		/// <summary>
+		/// Returns the max value of the given data
+		/// </summary>
+		/// <param name="data">each data item must be convertible to a double</param>
+		/// <returns></returns>
+		static public double GetMax( ICollection data ) 
+		{
+			if ( data.Count < 1 )
+				throw new Exception( "The data collection does not contain " +
+					"any value!" );
+			double max = Double.MinValue;
+			foreach( object obj in data ) 
+			{
+				double valueToBeCompared;
+				try
+				{
+					valueToBeCompared =	Convert.ToDouble( obj );
+				}
+				catch
+				{
+					throw new Exception( "The data collection contains " +
+						"a data that cannot be converted to double!" );
+				}
+				max = Math.Max( max , valueToBeCompared );
+			}
+			return max;
+		}
 		static public double GetSum( ICollection data ) 
 		{
 			double sum = 0;
