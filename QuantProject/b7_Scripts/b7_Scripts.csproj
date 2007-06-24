@@ -773,6 +773,11 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "WalkForwardTesting\WalkForwardLag\WFLagMeaningForUndecodableGenomes.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "WalkForwardTesting\WalkForwardLag\WFLagNewChosenPositionsEventArgs.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
@@ -809,6 +814,11 @@
                 />
                 <File
                     RelPath = "WalkForwardTesting\WalkForwardLag\WeightedPositionsChoosers\WFLagGeneticFixedPortfolioWithNormalDrivingAndPortfolio\WFLagGenomeManagerForFixedPortfolioWithNormalDrivingAndPortfolio.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "WalkForwardTesting\WalkForwardLag\WeightedPositionsChoosers\WFLagGeneticWithEqualWeights\WFLagGeneticWithEqualWeights.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
