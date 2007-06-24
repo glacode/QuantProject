@@ -43,11 +43,11 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag
 	public class WFLagGenomeManagerForFixedPortfolioWithNormalDrivingAndPortfolio : IGenomeManager
 	{
 		private int numberOfDrivingPositions;
-		private int numberOfTickersInPortfolio;
-		private int numberOfEligibleTickersForDrivingWeightedPositions;
+		private string[] portfolioSignedTickers;
+//		private int numberOfEligibleTickersForDrivingWeightedPositions;
 		protected DataTable eligibleTickersForDrivingWeightedPositions;
 		protected DataTable eligibleTickersForPortfolioWeightedPositions;
-		private DateTime firstOptimizationDate;
+		private DateTime firstOptimizationDateForDrivingPositions;
 		private DateTime lastOptimizationDate;
 
 		private double minimumPositionWeight;
@@ -56,28 +56,18 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag
 
 		private IEquityEvaluator equityEvaluator;
 
+		private WFLagMeaningForUndecodableGenomes wFLagMeaningForUndecodableGenomes;
+		private string[] tickersForPortfolioPositions;
+
 
 		public int GenomeSize
 		{
 			get
 			{
-				return ( this.numberOfDrivingPositions + this.numberOfTickersInPortfolio );
+				return ( this.numberOfDrivingPositions );
 			}
 		}
 
-//		public int MinValueForGenes
-//		{
-//			get { return -this.numberOfEligibleTickersForDrivingWeightedPositions; }
-//		}
-//		public int MaxValueForGenes
-//		{
-//			get { return this.numberOfEligibleTickersForDrivingWeightedPositions - 1; }
-//		}
-//		public GeneticOptimizer CurrentGeneticOptimizer
-//		{
-//			get{ return this.currentGeneticOptimizer; }
-//			set{ this.currentGeneticOptimizer = value; }
-//		}
 
 		/// <summary>
 		/// This class implements IGenomeManager, in order to find the
@@ -95,25 +85,25 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag
 		/// <param name="numberOfDrivingPositions"></param>
 		/// <param name="numberOfTickersInPortfolio"></param>
 		public WFLagGenomeManagerForFixedPortfolioWithNormalDrivingAndPortfolio(
-			DataTable eligibleTickersForDrivingWeightedPositions ,
-			DataTable eligibleTickersForPortfolioWeightedPositions ,
-			DateTime firstOptimizationDate ,
-			DateTime lastOptimizationDate ,
 			int numberOfDrivingPositions ,
-			int numberOfTickersInPortfolio ,
+			DataTable eligibleTickersForDrivingWeightedPositions ,
+			string[] portfolioSignedTickers ,
+			DateTime firstOptimizationDateForDrivingPositions ,
+			DateTime lastOptimizationDate ,
 			IEquityEvaluator equityEvaluator ,
 			int seedForRandomGenerator )
 
 		{
 			this.numberOfDrivingPositions = numberOfDrivingPositions;
-			this.numberOfTickersInPortfolio = numberOfTickersInPortfolio;
-			this.numberOfEligibleTickersForDrivingWeightedPositions =
-				eligibleTickersForDrivingWeightedPositions.Rows.Count;
+//			this.numberOfEligibleTickersForDrivingWeightedPositions =
+//				eligibleTickersForDrivingWeightedPositions.Rows.Count;
 			this.eligibleTickersForDrivingWeightedPositions =
 				eligibleTickersForDrivingWeightedPositions;
-			this.eligibleTickersForPortfolioWeightedPositions =
-				eligibleTickersForPortfolioWeightedPositions;
-			this.firstOptimizationDate = firstOptimizationDate;
+//			this.eligibleTickersForPortfolioWeightedPositions =
+//				eligibleTickersForPortfolioWeightedPositions;
+			this.portfolioSignedTickers = portfolioSignedTickers;
+			this.firstOptimizationDateForDrivingPositions =
+					firstOptimizationDateForDrivingPositions;
 			this.lastOptimizationDate = lastOptimizationDate;
 
 			this.minimumPositionWeight = 0.2;	// TO DO this value should become a constructor parameter
@@ -129,17 +119,20 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag
 
 			this.wFLagCandidates = new WFLagCandidates(
 				this.eligibleTickersForDrivingWeightedPositions ,
-				this.firstOptimizationDate , this.lastOptimizationDate );
+				this.firstOptimizationDateForDrivingPositions , this.lastOptimizationDate );
+
+			this.wFLagMeaningForUndecodableGenomes =
+				new WFLagMeaningForUndecodableGenomes();
 		}
 		public int GetMinValueForGenes( int genePosition )
 		{
 			int minValueForGene =
-				-this.numberOfEligibleTickersForDrivingWeightedPositions;
+				-this.eligibleTickersForDrivingWeightedPositions.Rows.Count;
 			return minValueForGene;
 		}
 		public int GetMaxValueForGenes( int genePosition )
 		{
-			return this.numberOfEligibleTickersForDrivingWeightedPositions - 1;
+			return this.eligibleTickersForDrivingWeightedPositions.Rows.Count - 1;
 		}
 
 		#region GetFitnessValue
@@ -251,22 +244,21 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag
 		public double GetFitnessValue( Genome genome )
 		{
 			double fitnessValue;
-			WFLagWeightedPositions wFLagWeightedPositions =
-				( WFLagWeightedPositions )this.Decode( genome );
-			int genomeLength = genome.Genes().Length;
-			int decodedWeightedPositions =
-				wFLagWeightedPositions.DrivingWeightedPositions.Count +
-				wFLagWeightedPositions.PortfolioWeightedPositions.Count;
-			if ( decodedWeightedPositions < genomeLength )
-				// genome contains a duplicate gene either for
-				// driving positions or for portfolio positions
-				//fitnessValue = double.MinValue;
-				fitnessValue = -0.2;
-			else
+			object genomeMeaning = this.Decode( genome );
+			if ( genomeMeaning is WFLagWeightedPositions )
+			{
 				// all driving positions genes are distinct and
 				// all portfolio positions genes are distinct
-				fitnessValue =
-					this.GetFitnessValue( wFLagWeightedPositions );
+				WFLagWeightedPositions wFLagWeightedPositions =
+					(WFLagWeightedPositions)genomeMeaning;
+				fitnessValue = this.GetFitnessValue( wFLagWeightedPositions );
+			}
+			else
+			{
+				// genome contains a duplicate gene either for
+				// driving positions or for portfolio positions
+				fitnessValue = -0.4;
+			}
 			return fitnessValue;
 		}
 		#endregion
@@ -288,25 +280,114 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag
 				genePositionToBeMutated , newValueForGene );
 		}
 		#region Decode
-		private int getWeight( Genome genome , int genePosition )
+		private void getGenes_checkParameters( Genome genome , int firstGenePosition ,
+			int numberOfGenes )
 		{
-			int geneValue = 1;
-			if ( genome.GetGeneValue( genePosition ) < 0 )
-				// the position is short
-				geneValue = -1;
-			return geneValue;
+			if ( firstGenePosition < 0 )
+				throw new Exception( "firstGenePosition is less than zero!" );
+			if ( firstGenePosition >= genome.Size )
+				throw new Exception( "firstGenePosition is >= than genome.Size!" );
+			if ( numberOfGenes <0 )
+				throw new Exception( "firstGenePosition is less than zero!" );
+			if ( firstGenePosition + numberOfGenes > genome.Size )
+				throw new Exception( "firstGenePosition + numberOfGenes is >= genome.Size !!" );
 		}
-		private int[] getWeightRelatedGeneValuesForDrivingPositions(
+		private int[] getGenes( Genome genome , int firstGenePosition , int numberOfGenes )
+		{
+			getGenes_checkParameters( genome , firstGenePosition , numberOfGenes );
+			int[] genes = new int[ numberOfGenes ];
+			for ( int i = 0 ; i < numberOfGenes ; i++ )
+			{
+				int genePosition = firstGenePosition + i;
+				genes[ i ] =	this.getTickerIndex( genome , genePosition );
+			}
+			return genes;
+		}
+		private int[] getTickerRelatedGeneValuesForDrivingPositions(
 			Genome genome )
 		{
-			int[] weightRelatedGeneValuesForDrivingPositions =
-				new int[ this.numberOfDrivingPositions ];
-			for ( int genePosition = 0 ;
-				genePosition < this.numberOfDrivingPositions ; genePosition++ )
-				weightRelatedGeneValuesForDrivingPositions[ genePosition ] =
-					this.getWeight( genome , genePosition );
-			return weightRelatedGeneValuesForDrivingPositions;
+			return this.getGenes( genome , 0 , this.numberOfDrivingPositions );
 		}
+//		private int[] getTickerRelatedGeneValuesForPortfolioPositions(
+//			Genome genome )
+//		{
+//			return this.getGenes( genome , this.numberOfDrivingPositions ,
+//				this.numberOfPortfolioPositions );
+//		}
+		private void decodeTicker_checkParameters( int geneValue , DataTable eligibleTickers )
+		{
+			if ( geneValue >= eligibleTickers.Rows.Count )
+				throw new Exception( "geneValue is too (positive) large for eligibleTickers  !!" );
+			if ( geneValue < -eligibleTickers.Rows.Count )
+				throw new Exception( "geneValue is too (negative) large for eligibleTickers  !!" );
+		}
+		private string decodeTicker( int geneValue , DataTable eligibleTickers )
+		{
+			string ticker;
+			decodeTicker_checkParameters( geneValue , eligibleTickers );
+			if ( geneValue >= 0 )
+				// long ticker
+				ticker = ( string )eligibleTickers.Rows[ geneValue ][ 0 ];
+			else
+				// short ticker
+				ticker = ( string )eligibleTickers.Rows[ -(geneValue+1) ][ 0 ];
+			return ticker;
+		}
+		private string[] decodeTickers( int[] tickerRelatedGeneValues ,
+			DataTable eligibleTickers )
+		{
+			string[] tickers = new string[ tickerRelatedGeneValues.Length ];
+			for( int i = 0 ; i < tickerRelatedGeneValues.Length ; i++ )
+			{
+				int currentGeneValue = tickerRelatedGeneValues[ i ];
+				tickers[ i ] = decodeTicker( currentGeneValue , eligibleTickers );
+				
+				tickers[ i ] =
+					( string )eligibleTickers.Rows[ currentGeneValue ][ 0 ];
+			}
+			return tickers;
+		}
+		private string[] getTickersForDrivingPositions( Genome genome )
+		{
+			int[] geneValues = this.getTickerRelatedGeneValuesForDrivingPositions( genome );
+			return this.decodeTickers( geneValues , this.eligibleTickersForDrivingWeightedPositions );
+		}
+		#region getTickersForPortfolioPositions
+
+		private void setTickerForPortfolioPositions( int i )
+		{
+			string signedTicker = this.portfolioSignedTickers[ i ];
+			this.tickersForPortfolioPositions[ i ] = SignedTicker.GetTicker( signedTicker );
+		}
+		private void setTickersForPortfolioPositions()
+		{
+			this.tickersForPortfolioPositions = new string[ this.portfolioSignedTickers.Length ];
+			for( int i=0 ; i < portfolioSignedTickers.Length ; i++ )
+				this.setTickerForPortfolioPositions( i );
+		}
+		private string[] getTickersForPortfolioPositions()
+		{
+			if ( this.tickersForPortfolioPositions == null )
+				this.setTickersForPortfolioPositions();
+			return this.tickersForPortfolioPositions;
+		}
+		#endregion //getTickersForPortfolioPositions
+		private bool isDecodable( Genome genome )
+		{
+			return
+				( WeightedPositions.AreValidTickers( this.getTickersForDrivingPositions( genome ) ) );
+		}
+//		private int[] getWeightRelatedGeneValuesForDrivingPositions(
+//			Genome genome )
+//		{
+//			int[] weightRelatedGeneValuesForDrivingPositions =
+//				new int[ this.numberOfDrivingPositions ];
+//			for ( int genePosition = 0 ;
+//				genePosition < this.numberOfDrivingPositions ; genePosition++ )
+//				weightRelatedGeneValuesForDrivingPositions[ genePosition ] =
+//					this.getWeight( genome , genePosition );
+//			return weightRelatedGeneValuesForDrivingPositions;
+//		}
 		private int getTickerIndex( Genome genome , int genePosition )
 		{
 			int tickerIndex = genome.GetGeneValue( genePosition );
@@ -315,49 +396,33 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag
 				tickerIndex += -this.GetMinValueForGenes( genePosition );
 			return tickerIndex;
 		}
-		private int[] getTickerRelatedGeneValuesForDrivingPositions(
-			Genome genome )
+		private double getWeight( Genome genome , int genePosition )
 		{
-			int[] tickerRelatedGeneValuesForDrivingPositions =
-				new int[ this.numberOfDrivingPositions ];
-			for ( int genePosition = 0 ;
-				genePosition < this.numberOfDrivingPositions ; genePosition++ )
-				tickerRelatedGeneValuesForDrivingPositions[ genePosition ] =
-					this.getTickerIndex( genome , genePosition );
-			return tickerRelatedGeneValuesForDrivingPositions;
+			double weight = 1;
+			if ( genome.GetGeneValue( genePosition ) < 0 )
+				// the position is short
+				weight = -1;
+			return weight;
 		}
-		private int[] getWeightRelatedGeneValuesForPortfolioPositions(
-			Genome genome )
+		private double[] getWeights( Genome genome , int firstGenePosition , int numberOfGenes )
 		{
-			int[] weightRelatedGeneValuesForPortfolioPositions =
-				new int[ this.numberOfTickersInPortfolio ];
-			int firstPositionForPortfolioRelatedGenomes =
-				this.numberOfDrivingPositions;
-			for ( int i = 0 ; i < this.numberOfTickersInPortfolio ; i++ )
+			double[] weights = new double[ numberOfGenes ];
+			for ( int i = 0 ; i < numberOfGenes ; i++ )
 			{
-				int genePosition =
-					firstPositionForPortfolioRelatedGenomes + i;
-				weightRelatedGeneValuesForPortfolioPositions[ i ] =
-					this.getWeight( genome , genePosition );
+				int genePosition = firstGenePosition + i;
+				weights[ i ] = this.getWeight( genome , genePosition );
 			}
-			return weightRelatedGeneValuesForPortfolioPositions;
+			return weights;
 		}
-		private int[] getTickerRelatedGeneValuesForPortfolioPositions(
-			Genome genome )
+		private double[] getWeightsForDrivingPositions( Genome genome )
 		{
-			int[] tickerRelatedGeneValuesForPortfolioPositions =
-				new int[ this.numberOfTickersInPortfolio ];
-			int firstPositionForPortfolioRelatedGenomes =
-				this.numberOfDrivingPositions;
-			for ( int i = 0 ; i < this.numberOfTickersInPortfolio ; i++ )
-			{
-				int genePosition =
-					firstPositionForPortfolioRelatedGenomes + i;
-				tickerRelatedGeneValuesForPortfolioPositions[ i ] =
-					this.getTickerIndex( genome , genePosition );
-			}
-			return tickerRelatedGeneValuesForPortfolioPositions;
+			return this.getWeights( genome , 0 , this.numberOfDrivingPositions );
 		}
+//		private double[] getWeightsForPortfolioPositions( Genome genome )
+//		{
+//			return this.getWeights( genome , this.numberOfDrivingPositions ,
+//				this.numberOfPortfolioPositions );
+//		}
 		#region decodeWeightedPositions
 		#region getNormalizedWeightValues
 		private double getAdditionalWeight( int weightRelatedGeneValue )
@@ -406,79 +471,55 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag
 		{
 			return BasicFunctions.MultiplyBy( nonNormalizedWeightValues , normalizingFactor );
 		}
-		private double[] getNormalizedWeightValues( double[] nonNormalizedWeightValues )
+		private double[] getNormalizedWeights( double[] nonNormalizedWeights )
 		{
-			double normalizingFactor = this.getNormalizingFactor( nonNormalizedWeightValues );
-			return getNormalizedWeightValues( nonNormalizedWeightValues , normalizingFactor );
+			double normalizingFactor = this.getNormalizingFactor( nonNormalizedWeights );
+			return getNormalizedWeightValues( nonNormalizedWeights , normalizingFactor );
 		}
-		private double[] getNormalizedWeightValues( int[] weightRelatedGeneValues )
-		{
-			double[] nonNormalizedWeightValues =
-				this.getNonNormalizedWeightValues( weightRelatedGeneValues );
-			return this.getNormalizedWeightValues( nonNormalizedWeightValues );
-		}
+//		private double[] getNormalizedWeightValues( int[] weightRelatedGeneValues )
+//		{
+//			double[] nonNormalizedWeightValues =
+//				this.getNonNormalizedWeightValues( weightRelatedGeneValues );
+//			return this.getNormalizedWeightValues( nonNormalizedWeightValues );
+//		}
 		#endregion
-		private string[] decodeTickers( int[] tickerRelatedGeneValues ,
-			DataTable eligibleTickers )
+		private WeightedPositions decodeWeightedPositions( double[] weights ,
+			string[] tickers , DataTable eligibleTickers )
 		{
-			string[] tickers = new string[ tickerRelatedGeneValues.Length ];
-			for( int i = 0 ; i < tickerRelatedGeneValues.Length ; i++ )
-			{
-				int currentGeneValue = tickerRelatedGeneValues[ i ];
-				tickers[ i ] =
-					( string )eligibleTickers.Rows[ currentGeneValue ][ 0 ];
-			}
-			return tickers;
-		}
-		private WeightedPositions decodeWeightedPositions( int[] weightRelatedGeneValues ,
-			int[] tickerRelatedGeneValues , DataTable eligibleTickers )
-		{
-			double[] normalizedWeightValues = this.getNormalizedWeightValues( weightRelatedGeneValues );
-			string[] tickers = this.decodeTickers( tickerRelatedGeneValues , eligibleTickers );
+			double[] normalizedWeights = this.getNormalizedWeights( weights );
 			WeightedPositions weightedPositions =	new WeightedPositions(
-				normalizedWeightValues , tickers );
+				normalizedWeights , tickers );
 			return weightedPositions;
 		}
 		#endregion
 		private WeightedPositions decodeDrivingWeightedPositions(
 			Genome genome )
 		{
-			int[] weightRelatedGeneValuesForDrivingPositions =
-				this.getWeightRelatedGeneValuesForDrivingPositions( genome );
-			int[] tickerRelatedGeneValuesForDrivingPositions =
-				this.getTickerRelatedGeneValuesForDrivingPositions( genome );
+			double[] weightsForDrivingPositions =	this.getWeightsForDrivingPositions( genome );
+			string[] tickersForDrivingPositions =	this.getTickersForDrivingPositions( genome );
 			return decodeWeightedPositions(
-				weightRelatedGeneValuesForDrivingPositions ,
-				tickerRelatedGeneValuesForDrivingPositions ,
+				weightsForDrivingPositions ,
+				tickersForDrivingPositions ,
 				this.eligibleTickersForDrivingWeightedPositions );
-			//
-			//			double weight = this.decodeDrivingWeight( genome , geneIndex );
-			//			string ticker = this.decodeDrivingTicker( genome , geneIndex );
-			//			WeightedPosition weightedPosition = new WeightedPosition(
-			//				weight , ticker );
-			//			wFLagWeightedPositions.DrivingWeightedPositions.AddWeightedPosition(
-			//				weightedPosition );
+		}
+		private double[] getNormalizedWeightsForPortfolioPositions()
+		{
+			return WeightedPositions.GetBalancedWeights( this.portfolioSignedTickers ,
+				this.firstOptimizationDateForDrivingPositions.AddDays( 1 ) ,
+				this.lastOptimizationDate );
 		}
 		private WeightedPositions decodePortfolioWeightedPositions(
 			Genome genome )
 		{
-			int[] weightRelatedGeneValuesForPortfolioPositions =
-				this.getWeightRelatedGeneValuesForPortfolioPositions( genome );
-			int[] tickerRelatedGeneValuesForPortfolioPositions =
-				this.getTickerRelatedGeneValuesForPortfolioPositions( genome );
+			string[] tickersForPortfolioPositions =	this.getTickersForPortfolioPositions();
+			double[] portfolioPositionsWeights =
+				this.getNormalizedWeightsForPortfolioPositions();
 			return decodeWeightedPositions(
-				weightRelatedGeneValuesForPortfolioPositions ,
-				tickerRelatedGeneValuesForPortfolioPositions ,
+				portfolioPositionsWeights ,
+				tickersForPortfolioPositions ,
 				this.eligibleTickersForPortfolioWeightedPositions );
-			//
-			//			double weight = this.decodeDrivingWeight( genome , geneIndex );
-			//			string ticker = this.decodeDrivingTicker( genome , geneIndex );
-			//			WeightedPosition weightedPosition = new WeightedPosition(
-			//				weight , ticker );
-			//			wFLagWeightedPositions.DrivingWeightedPositions.AddWeightedPosition(
-			//				weightedPosition );
 		}
-		public virtual object Decode(Genome genome)
+		private WFLagWeightedPositions dedcodeDecodableGenome( Genome genome )
 		{
 			WeightedPositions drivingWeightedPositions =
 				this.decodeDrivingWeightedPositions( genome );
@@ -487,27 +528,29 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag
 			WFLagWeightedPositions wFLagWeightedPositions =
 				new WFLagWeightedPositions(
 				drivingWeightedPositions , portfolioWeightedPositions );
-
-			//			int[] drivingGeneValues = this.getDrivingGeneValues( genome );
-			//			for ( int geneIndex = 0 ; geneIndex < this.numberOfDrivingPositions * 2 ;
-			//				geneIndex += 2 )
-			//				this.decode_addDrivingPosition( genome , geneIndex , wFLagWeightedPositions );
-			//			for ( int geneIndex = this.numberOfDrivingPositions * 2 ;
-			//				geneIndex <
-			//				( this.numberOfDrivingPositions + this.numberOfTickersInPortfolio ) * 2 ;
-			//				geneIndex += 2 )
-			//				this.decode_addPortfolioPosition( genome , geneIndex , wFLagSignedTickers );
-			//			string[] arrayOfTickers = new string[genome.Genes().Length];
-			//			int indexOfTicker;
-			//			for(int index = 0; index < genome.Genes().Length; index++)
-			//			{
-			//				indexOfTicker = (int)genome.Genes().GetValue(index);
-			//				arrayOfTickers[index] =
-			//					this.decode_getSignedTickerForGeneValue(indexOfTicker);
-			//			}
 			return wFLagWeightedPositions;
 		}
-		#endregion
+		/// <summary>
+		/// A positive genome value means a long position. A negative genome value means a
+		/// short position.
+		/// The gene positive value n means the same ticker as the value -(n+1).
+		/// Thus, if there are p (>0) eligible tickers, genome values should range from -p to p-1
+		/// </summary>
+		/// <param name="genome"></param>
+		/// <returns></returns>
+		public virtual object Decode(Genome genome)
+		{
+			object meaning;
+			if ( this.isDecodable( genome ) )
+				// genome can be decoded to a WFLagWeightedPositions object
+				meaning = this.dedcodeDecodableGenome( genome );
+			else
+				// genome cannot be decoded to a WFLagWeightedPositions object
+				meaning = this.wFLagMeaningForUndecodableGenomes;
+			return meaning;
+
+		}
+		#endregion //Decode
 		#region GetNewGeneValue
 		public int GetNewGeneValue( Genome genome , int genePosition )
 		{
