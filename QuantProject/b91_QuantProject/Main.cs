@@ -32,6 +32,7 @@ using QuantProject.ADT.Optimizing.Genetic;
 
 using QuantProject.Scripts.SimpleTesting;
 using QuantProject.Scripts.WalkForwardTesting.WalkForwardOneRank;
+using QuantProject.Scripts.WalkForwardTesting.WalkForwardLag;
 using QuantProject.Scripts.CallingReportsForRunScripts;
 using QuantProject.Presentation.Reporting.WindowsForm;
 using QuantProject.ADT.Statistics;
@@ -371,8 +372,8 @@ namespace QuantProject.Principale
     [STAThread]
     static void Main() 
     {
-      try
-      {
+//      try
+//      {
         //new RunMSFTsimpleTest().Run();
 //		new RunMSFTsimpleTest_2().Run();
 				//new RunOneRankWithExcelReport().Run();
@@ -403,12 +404,12 @@ namespace QuantProject.Principale
 				//new RunEfficientCTOPorfolio().Run();
 				//new RunWalkForwardOneRank().Run();
 
-      } 
-      catch ( Exception ex )
-      {
-//      	QuantProject.Principale.Principale.runEfficientPortfolio.SaveScriptResults();
-      	writeExceptionToLogFile(ex);
-      }
+//      } 
+//      catch ( Exception ex )
+//      {
+////      	QuantProject.Principale.Principale.runEfficientPortfolio.SaveScriptResults();
+//      	writeExceptionToLogFile(ex);
+//      }
     }
     static private void writeExceptionToLogFile(Exception ex)
     {
@@ -455,9 +456,10 @@ namespace QuantProject.Principale
 
 //      try
 //      {//call here your scripts
-	//new RunWalkForwardOneRank().Run();			
+	//new RunWalkForwardOneRank().Run();
+			new WFLagMain().ShowDialog();
         
-				new RunOneRank().Run();
+//			new RunOneRank().Run();
         //new RunEfficientCTCPorfolio("Test",400,5,90,10,10000,
         //	                         	"^SPX",
         //	                          new DateTime(2004,1,1),
