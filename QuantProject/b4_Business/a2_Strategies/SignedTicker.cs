@@ -121,6 +121,37 @@ namespace QuantProject.Business.Strategies
 			return dailyReturn;
 		}
     
+//		#region GetCloseToCloseReturnsForUnsignedTicker
+//		/// <summary>
+//		/// Returns the (adjusted) close to close returns for the given unsigned ticker,
+//		/// starting from the firstQuoteDate and ending with the lastQuoteDate
+//		/// </summary>
+//		/// <param name="ticker"></param>
+//		/// <param name="firstQuoteDate"></param>
+//		/// <param name="lastQuoteDate"></param>
+//		/// <returns></returns>
+//		public static double GetCloseToCloseReturnsForUnsignedTicker(
+//			string ticker , DateTime firstQuoteDate , DateTime lastQuoteDate )
+//		{
+////			Quotes tickerQuotes =
+////				new Quotes( ticker , firstQuoteDate , lastQuoteDate );
+////			float[] tickerAdjustedCloses =
+////				QuantProject.Data.ExtendedDataTable.GetArrayOfFloatFromColumn(
+////				tickerQuotes , "quAdjustedClose");
+//			float[] tickerAdjustedCloses =
+//				Quotes.GetArrayOfCloseToCloseRatios( ticker , firstQuoteDate , lastQuoteDate , 1 );
+//			float[] closeToCloseTickerReturns =
+//				new float[ tickerAdjustedCloses.Length - 1 ];
+//			int i = 0; //index for ratesOfReturns array
+//			for( int idx = 0 ; idx < tickerAdjustedCloses.Length - 1 ; idx++ )
+//			{
+//				closeToCloseTickerReturns[ i ] =
+//					tickerAdjustedCloses[ idx + 1 ] /	tickerAdjustedCloses[ idx ] - 1;
+//				i++;
+//			}
+//			return closeToCloseTickerReturns;
+//		}
+//		#endregion //GetCloseToCloseReturnsForUnsignedTicker
     #region getCloseToClosePortfolioReturn_setReturns
 
     private static double getCloseToClosePortfolioReturn_setReturns_getReturn(int returnDay,
