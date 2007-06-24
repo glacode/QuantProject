@@ -41,7 +41,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag.WeightedPositio
 		public event NewProgressEventHandler NewProgress;
 
 		protected int numberOfDrivingPositions;
-		protected int numberOfPortfolioPositions;
+		private string[] portfolioSignedTickers;
 		protected int inSampleDays;
 		protected string benchmark;
 		protected IEquityEvaluator equityEvaluator;
@@ -51,7 +51,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag.WeightedPositio
 		protected WFLagChosenPositions wFLagChosenPositions;
 
 		// first in sample quote date for driving positions
-		protected DateTime firstInSampleDrivingDate;
+		protected DateTime firstInSampleDateForDrivingPositions;
 		// last in sample quote date for equity evaluation
 		protected DateTime lastInSampleOptimizationDate;
 
@@ -67,7 +67,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag.WeightedPositio
 		{
 			get
 			{
-				return this.numberOfPortfolioPositions;
+				return this.portfolioSignedTickers.Length;
 			}
 		}
 
@@ -105,7 +105,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag.WeightedPositio
 		/// possible trades will be numberDaysForInSampleOptimization-1</param></param>
 		public WFLagGeneticFixedPortfolioWithNormalDrivingAndPortfolio(
 			int numberOfDrivingPositions ,
-			string[] portfolioPositionTickers ,
+			string[] portfolioSignedTickers ,
 			int inSampleDays ,
 			string benchmark ,
 			IEquityEvaluator equityEvaluator ,
@@ -114,7 +114,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag.WeightedPositio
 			)
 		{
 			this.numberOfDrivingPositions = numberOfDrivingPositions;
-			this.numberOfPortfolioPositions = portfolioPositionTickers.Length;
+			this.portfolioSignedTickers = portfolioSignedTickers;
 			this.inSampleDays =	inSampleDays;
 			this.benchmark = benchmark;
 			this.equityEvaluator = equityEvaluator;
@@ -153,7 +153,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag.WeightedPositio
 			WFLagEligibleTickers eligibleTickersForDrivingPositions ,
 			EndOfDayDateTime now )
 		{
-			this.firstInSampleDrivingDate =
+			this.firstInSampleDateForDrivingPositions =
 				now.DateTime.AddDays(
 				-( this.NumberDaysForInSampleOptimization - 1 ) );
 			this.lastInSampleOptimizationDate =
@@ -162,12 +162,11 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag.WeightedPositio
 			WFLagGenomeManagerForFixedPortfolioWithNormalDrivingAndPortfolio
 				genomeManager = 
 				new WFLagGenomeManagerForFixedPortfolioWithNormalDrivingAndPortfolio(
-				eligibleTickersForDrivingPositions.EligibleTickers ,
-				eligibleTickersForDrivingPositions.EligibleTickers ,
-				this.firstInSampleDrivingDate ,
-				this.lastInSampleOptimizationDate ,
 				this.numberOfDrivingPositions ,
-				this.numberOfPortfolioPositions ,
+				eligibleTickersForDrivingPositions.EligibleTickers ,
+				this.portfolioSignedTickers ,
+				this.firstInSampleDateForDrivingPositions ,
+				this.lastInSampleOptimizationDate ,
 				this.equityEvaluator ,
 				QuantProject.ADT.ConstantsProvider.SeedForRandomGenerator );
 
