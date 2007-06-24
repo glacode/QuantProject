@@ -23,10 +23,12 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 using System;
 using System.Collections;
 
+using QuantProject.ADT.Statistics;
 using QuantProject.Business.DataProviders;
 using QuantProject.Business.Financial.Accounting;
 using QuantProject.Business.Strategies;
 using QuantProject.Business.Timing;
+using QuantProject.Data.DataTables;
 
 namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag
 {
@@ -311,5 +313,77 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag
 				getNormalizedWeights( nonNormalizedWeights , normalizingFactor );
 		}
 		#endregion
+		#region GetBalancedWeights
+		private static float[][] getTickerCloseToCloseReturnsForSignedTickers(
+			string[] signedTickers , DateTime firstDate , DateTime lastDate )
+		{
+			float[][] tickerReturns = new float[ signedTickers.Length ][];
+			for ( int i = 0 ;	i < signedTickers.Length ; i++ )
+			{
+				string ticker = SignedTicker.GetTicker( signedTickers[ i ] );
+				tickerReturns[ i ] = Quotes.GetArrayOfCloseToCloseRatios(
+					ticker , ref firstDate , lastDate , 1 );
+			}
+			return tickerReturns;
+		}
+		private static double getStandardDeviation( float[] returnsForTicker )
+		{
+			return BasicFunctions.GetStdDev( returnsForTicker );
+		}
+		private static double[] getStandardDeviations( float[][] returnsForTickers )
+		{
+			double[] standardDeviations = new double[ returnsForTickers.Length ];
+			for ( int i = 0 ;	i < standardDeviations.Length ; i++ )
+				standardDeviations[ i ] = getStandardDeviation( returnsForTickers[ i ] );
+			return standardDeviations;
+		}
+		private static double[] getStandardDeviations( string[] signedTickers ,
+			DateTime firstDate , DateTime lastDate )
+		{
+			float[][] returnsForTickers = getTickerCloseToCloseReturnsForSignedTickers(
+				signedTickers ,	firstDate , lastDate );
+			return getStandardDeviations( returnsForTickers );
+		}
+		private static double getNonNormalizedWeightsButBalancedForVolatility(
+			double[] standardDeviations , double maxStandardDeviation , int i )
+		{
+			return maxStandardDeviation / standardDeviations[ i ];
+		}
+		private static double[] getNonNormalizedWeightsButBalancedForVolatility(
+			double[] standardDeviations , double maxStandardDeviation )
+		{
+			double[] nonNormalizedWeightsButBalancedForVolatility =
+				new double[ standardDeviations.Length ];
+			for ( int i = 0 ; i < standardDeviations.Length ; i++ )
+				nonNormalizedWeightsButBalancedForVolatility[ i ] =
+					getNonNormalizedWeightsButBalancedForVolatility(
+					standardDeviations , maxStandardDeviation , i );
+			return nonNormalizedWeightsButBalancedForVolatility;
+		}
+		private static double[] getNonNormalizedWeightsButBalancedForVolatility(
+			double[] standardDeviations )
+		{
+			double maxStandardDeviation = BasicFunctions.GetMax( standardDeviations );
+			return getNonNormalizedWeightsButBalancedForVolatility(
+				standardDeviations , maxStandardDeviation );
+		}
+		/// <summary>
+		/// Returns weights balanced with respect to the close to close volatility,
+		/// in the given period
+		/// (the most volatile ticker is given the lighter weight)
+		/// </summary>
+		/// <param name="signedTickers"></param>
+		/// <returns></returns>
+		public static double[] GetBalancedWeights(
+			string[] signedTickers , DateTime firstDate , DateTime lastDate )
+		{
+			double[] standardDeviations = getStandardDeviations( signedTickers , firstDate , lastDate );
+			double[] nonNormalizedButBalancedWeights =
+				getNonNormalizedWeightsButBalancedForVolatility( standardDeviations );
+			double[] normalizedBalancedWeights =
+				GetNormalizedWeights( nonNormalizedButBalancedWeights );
+			return normalizedBalancedWeights;
+		}
+		#endregion //GetBalancedWeights
 	}
 }
