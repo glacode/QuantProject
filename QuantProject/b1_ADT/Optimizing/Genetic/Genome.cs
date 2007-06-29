@@ -60,6 +60,13 @@ namespace QuantProject.ADT.Optimizing.Genetic
       get{return this.hasBeenChanged;}
     }
     
+    private void setFitnessValue(double fitnessValue)
+    {
+      this.fitness = fitnessValue;
+      this.hasFitnessBeenAssigned = true;
+    }
+    
+    
     public double Fitness
     {
       get
@@ -69,11 +76,9 @@ namespace QuantProject.ADT.Optimizing.Genetic
 						"The fitness for this genome is not a number!" );
 				if ( ! this.hasFitnessBeenAssigned )
 				// the genome's fitness has not been assigned yet
-				{
-					this.fitness = this.genomeManager.GetFitnessValue(this);
-					this.hasFitnessBeenAssigned = true;
-				}
-					return this.fitness;
+					this.setFitnessValue(this.genomeManager.GetFitnessValue(this));
+				
+				return this.fitness;
 			}
     }
 
@@ -165,7 +170,7 @@ namespace QuantProject.ADT.Optimizing.Genetic
     {
       Genome returnValue = new Genome(this.genomeManager, this.geneticOptimizer);
       returnValue.CopyValuesInGenes(this.genes);
-      returnValue.fitness = this.fitness;
+      returnValue.setFitnessValue(this.fitness);
       returnValue.meaning = this.meaning;
       returnValue.generation = this.Generation;
       returnValue.hasBeenCloned = true;
