@@ -33,7 +33,7 @@ namespace QuantProject.Business.Strategies.EquityEvaluation
 		public WinningPeriods()
 		{
 		}
-		public double GetReturnsEvaluation( double[] returns )
+		public float GetReturnsEvaluation( float[] returns )
 		{
 			int winningPeriods = 0;
 			int losingPeriods = 0;
@@ -44,8 +44,8 @@ namespace QuantProject.Business.Strategies.EquityEvaluation
 				if ( returns[ i ] < 0 )
 					losingPeriods++;
 			}
-			return ( Convert.ToDouble( winningPeriods ) /
-				Convert.ToDouble( winningPeriods + losingPeriods ) );
+			return ( Convert.ToSingle( winningPeriods ) /
+				Convert.ToSingle( winningPeriods + losingPeriods ) );
 		}
 	}
 }
