@@ -24,9 +24,11 @@ using System;
 using System.Collections;
 using System.Data;
 
+using QuantProject.ADT.Histories;
 using QuantProject.ADT.Optimizing.Genetic;
 using QuantProject.ADT.Statistics;
 using QuantProject.Business.Strategies;
+using QuantProject.Business.Strategies.ReturnsManagement;
 using QuantProject.Business.Strategies.EquityEvaluation;
 
 namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag
@@ -44,20 +46,28 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag
 	{
 		private int numberOfDrivingPositions;
 		private string[] portfolioSignedTickers;
+		private History timeLineForOptimization; // this time line goes from
+		// the first optimization date for driving positions to the
+		// last optimization date; this optimization is meant to be
+		// launched one hour after the last market close
+
+//		private DateTime firstOptimizationDateForDrivingPositions;
+//		private DateTime lastOptimizationDate;
 //		private int numberOfEligibleTickersForDrivingWeightedPositions;
 		protected DataTable eligibleTickersForDrivingWeightedPositions;
 		protected DataTable eligibleTickersForPortfolioWeightedPositions;
-		private DateTime firstOptimizationDateForDrivingPositions;
-		private DateTime lastOptimizationDate;
+//		private DateTime firstOptimizationDateForDrivingPositions;
+//		private DateTime lastOptimizationDate;
 
 		private double minimumPositionWeight;
 
-		protected WFLagCandidates wFLagCandidates;
+//		protected WFLagCandidates wFLagCandidates;
 
 		private IEquityEvaluator equityEvaluator;
 
 		private WFLagMeaningForUndecodableGenomes wFLagMeaningForUndecodableGenomes;
 		private string[] tickersForPortfolioPositions;
+		private CloseToCloseReturnsManager closeToCloseReturnsManager;
 
 
 		public int GenomeSize
@@ -88,8 +98,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag
 			int numberOfDrivingPositions ,
 			DataTable eligibleTickersForDrivingWeightedPositions ,
 			string[] portfolioSignedTickers ,
-			DateTime firstOptimizationDateForDrivingPositions ,
-			DateTime lastOptimizationDate ,
+			History timeLineForOptimization ,
 			IEquityEvaluator equityEvaluator ,
 			int seedForRandomGenerator )
 
@@ -102,9 +111,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag
 //			this.eligibleTickersForPortfolioWeightedPositions =
 //				eligibleTickersForPortfolioWeightedPositions;
 			this.portfolioSignedTickers = portfolioSignedTickers;
-			this.firstOptimizationDateForDrivingPositions =
-					firstOptimizationDateForDrivingPositions;
-			this.lastOptimizationDate = lastOptimizationDate;
+			this.timeLineForOptimization = timeLineForOptimization;
 
 			this.minimumPositionWeight = 0.2;	// TO DO this value should become a constructor parameter
 			
@@ -117,9 +124,11 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag
 //				11 );
 			GenomeManagement.SetRandomGenerator( seedForRandomGenerator );
 
-			this.wFLagCandidates = new WFLagCandidates(
-				this.eligibleTickersForDrivingWeightedPositions ,
-				this.firstOptimizationDateForDrivingPositions , this.lastOptimizationDate );
+//			this.wFLagCandidates = new WFLagCandidates(
+//				this.eligibleTickersForDrivingWeightedPositions ,
+//				this.firstOptimizationDateForDrivingPositions , this.lastOptimizationDate );
+			this.closeToCloseReturnsManager =
+				new CloseToCloseReturnsManager( this.timeLineForOptimization );
 
 			this.wFLagMeaningForUndecodableGenomes =
 				new WFLagMeaningForUndecodableGenomes();
@@ -157,39 +166,19 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag
 			return multipliers;
 		}
 
-		private double[] getFitnessValue_getLinearCombinationReturns(
+		private float[] getFitnessValue_getLinearCombinationReturns(
 			WeightedPositions weightedPositions )
 		{
-//			ArrayList enumeratedweightedPositions =
-//				this.getEnumeratedWeightedPositions( weightedPositions );
-			int numberOfWeightedPositions = weightedPositions.Count;
-			string[] tickers = this.getTickers( weightedPositions );
-			float[] multipliers = this.getMultipliers( weightedPositions );
-			// arrays of close to close returns, one for each signed ticker
-			float[][] tickersReturns =
-				this.wFLagCandidates.GetTickersReturns( tickers );
-			double[] linearCombinationReturns =
-				new double[ tickersReturns[ 0 ].Length ];
-			for( int i = 0; i < linearCombinationReturns.Length ; i++ )
-				// computes linearCombinationReturns[ i ]
-			{
-				linearCombinationReturns[ i ] = 0;
-				for ( int j=0 ; j < weightedPositions.Count ; j++ )
-				{
-					double weightedPositionReturn =
-						tickersReturns[ j ][ i ] * multipliers[ j ];
-					linearCombinationReturns[ i ] += weightedPositionReturn;
-				}
-			}
-			return linearCombinationReturns;
+			return weightedPositions.GetReturns(
+				this.closeToCloseReturnsManager );
 		}
-		private double[] getFitnessValue_getStrategyReturn(
-			double[] drivingPositionsReturns , double[] portfolioPositionsReturns )
+		private float[] getFitnessValue_getStrategyReturn(
+			float[] drivingPositionsReturns , float[] portfolioPositionsReturns )
 		{
 			// strategyReturns contains one element less than drivingPositionsReturns,
 			// because there is no strategy for the very first period (at least
 			// one day signal is needed)
-			double[] strategyReturns = new double[ portfolioPositionsReturns.Length - 1 ];
+			float[] strategyReturns = new float[ portfolioPositionsReturns.Length - 1 ];
 			for ( int i = 0 ; i < portfolioPositionsReturns.Length - 1 ; i++ )
 				if ( drivingPositionsReturns[ i ] < 0 )
 					// the current linear combination of tickers, at period i
@@ -206,7 +195,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag
 			return strategyReturns;
 
 		}
-		private double getFitnessValue( double[] strategyReturns )
+		private float getFitnessValue( float[] strategyReturns )
 		{
 //			double fitnessValue =
 //				AdvancedFunctions.GetSharpeRatio(
@@ -214,7 +203,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag
 //			double fitnessValue =
 //				AdvancedFunctions.GetExpectancyScore(
 //				strategyReturns );
-			double fitnessValue =
+			float fitnessValue =
 				this.equityEvaluator.GetReturnsEvaluation(
 				strategyReturns );
 
@@ -226,19 +215,19 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag
 			return fitnessValue;
 		}
 
-		public double GetFitnessValue(
+		public float GetFitnessValue(
 			WFLagWeightedPositions wFLagWeightedPositions )
 		{
-			double[] drivingPositionsReturns =
+			float[] drivingPositionsReturns =
 				this.getFitnessValue_getLinearCombinationReturns(
 				wFLagWeightedPositions.DrivingWeightedPositions );
-			double[] portfolioPositionsReturns =
+			float[] portfolioPositionsReturns =
 				this.getFitnessValue_getLinearCombinationReturns(
 				wFLagWeightedPositions.PortfolioWeightedPositions );
-			double[] strategyReturns =
+			float[] strategyReturns =
 				this.getFitnessValue_getStrategyReturn(
 				drivingPositionsReturns , portfolioPositionsReturns );
-			double fitnessValue = this.getFitnessValue( strategyReturns );
+			float fitnessValue = this.getFitnessValue( strategyReturns );
 			return fitnessValue;
 		}
 		public double GetFitnessValue( Genome genome )
@@ -495,8 +484,8 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag
 		private WeightedPositions decodeDrivingWeightedPositions(
 			Genome genome )
 		{
-			double[] weightsForDrivingPositions =	this.getWeightsForDrivingPositions( genome );
 			string[] tickersForDrivingPositions =	this.getTickersForDrivingPositions( genome );
+			double[] weightsForDrivingPositions =	this.getWeightsForDrivingPositions( genome );
 			return decodeWeightedPositions(
 				weightsForDrivingPositions ,
 				tickersForDrivingPositions ,
@@ -505,8 +494,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag
 		private double[] getNormalizedWeightsForPortfolioPositions()
 		{
 			return WeightedPositions.GetBalancedWeights( this.portfolioSignedTickers ,
-				this.firstOptimizationDateForDrivingPositions.AddDays( 1 ) ,
-				this.lastOptimizationDate );
+				this.closeToCloseReturnsManager );
 		}
 		private WeightedPositions decodePortfolioWeightedPositions(
 			Genome genome )
