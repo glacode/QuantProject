@@ -1,13 +1,15 @@
 using System;
 using System.Collections;
 using System.Data;
+using System.Runtime.Serialization;
 using System.Text;
+
 using QuantProject.ADT;
+using QuantProject.ADT.Collections;
 using QuantProject.ADT.Statistics;
 using QuantProject.ADT.Histories;
 using QuantProject.DataAccess;
 using QuantProject.DataAccess.Tables;
-using System.Runtime.Serialization;
 
 namespace QuantProject.Data.DataTables
 {
@@ -719,15 +721,15 @@ namespace QuantProject.Data.DataTables
       return returnValue;
     }
     
-    public static float[] GetArrayOfCloseToCloseRatios(string ticker,
-                                                        ref DateTime firstQuoteDate,
-                                                        DateTime lastQuoteDate,
-                                                        int numDaysBetweenEachClose)
-    {
-      return GetArrayOfCloseToCloseRatios(ticker, ref firstQuoteDate, lastQuoteDate, numDaysBetweenEachClose,
-                                          0);
-    }
-    
+		public static float[] GetArrayOfCloseToCloseRatios(string ticker,
+			ref DateTime firstQuoteDate,
+			DateTime lastQuoteDate,
+			int numDaysBetweenEachClose)
+		{
+			return GetArrayOfCloseToCloseRatios(ticker, ref firstQuoteDate, lastQuoteDate, numDaysBetweenEachClose,
+				0);
+		}
+
     public static float[] GetArrayOfAdjustedCloseQuotes(string ticker,
                                                         DateTime firstQuoteDate,
                                                         DateTime lastQuoteDate)
@@ -735,6 +737,52 @@ namespace QuantProject.Data.DataTables
       Quotes tickerQuotes = new Quotes(ticker, firstQuoteDate, lastQuoteDate);
       return ExtendedDataTable.GetArrayOfFloatFromColumn(tickerQuotes,"quAdjustedClose");
     }
+		#region GetAdjustedCloseHistory
+		private static History getAdjustedCloseHistory( Quotes tickerQuotes )
+		{
+			History adjustedCloseHistory = new History();
+			foreach ( DataRow dataRow in tickerQuotes.Rows )
+				adjustedCloseHistory.Add( dataRow[ Quotes.Date ] ,
+					dataRow[ Quotes.AdjustedClose ] );
+			return adjustedCloseHistory;
+		}
+		/// <summary>
+		/// Returns the History of the adjusted close quotes, for the given ticker,
+		/// since the firstQuoteDate to the lastQuoteDate
+		/// </summary>
+		/// <param name="ticker"></param>
+		/// <param name="firstQuoteDate"></param>
+		/// <param name="lastQuoteDate"></param>
+		/// <returns></returns>
+		public static History GetAdjustedCloseHistory( string ticker,
+			DateTime firstQuoteDate,
+			DateTime lastQuoteDate )
+		{
+			Quotes tickerQuotes = new Quotes( ticker , firstQuoteDate , lastQuoteDate);
+			return getAdjustedCloseHistory( tickerQuotes );
+		}
+		#endregion GetAdjustedCloseHistory
+		#region GetArrayOfCloseToCloseRatios
+		/// <summary>
+		/// Returns the array of the adjusted close to adjusted close ratios, for
+		/// the given ticker, within the given period of time
+		/// </summary>
+		/// <param name="ticker"></param>
+		/// <param name="firstQuoteDate"></param>
+		/// <param name="lastQuoteDate"></param>
+		/// <returns></returns>
+		public static float[] GetArrayOfCloseToCloseRatios(
+			string ticker ,
+			DateTime firstQuoteDate ,
+			DateTime lastQuoteDate )
+		{
+			float[] arrayOfAdjustedCloseQuotes =
+				GetArrayOfAdjustedCloseQuotes( ticker , firstQuoteDate , lastQuoteDate );
+			float[] arrayOfCloseToCloseRatios =
+				FloatArrayManager.GetRatios( arrayOfAdjustedCloseQuotes );
+			return arrayOfCloseToCloseRatios;
+		}
+		#endregion
     
 		/// <summary>
 		/// returns dates when the ticker was exchanged, within a given
@@ -744,12 +792,12 @@ namespace QuantProject.Data.DataTables
 		/// <param name="firstDate">begin interval</param>
 		/// <param name="lastDate">end interval</param>
 		/// <returns></returns>
-		public static SortedList GetMarketDays( string ticker ,
+		public static History GetMarketDays( string ticker ,
 			DateTime firstDate , DateTime lastDate )
 		{
 			Quotes quotes = new Quotes( ticker , firstDate , lastDate );
 //			DateTime[] marketDays = new DateTime[ quotes.Rows.Count ];
-			SortedList marketDays = new SortedList();
+			History marketDays = new History();
 			int i = 0;
 			foreach ( DataRow dataRow in quotes.Rows )
 			{
