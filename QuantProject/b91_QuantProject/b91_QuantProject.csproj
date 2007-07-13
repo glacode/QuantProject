@@ -88,11 +88,6 @@
                     Package = "{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}"
                 />
                 <Reference
-                    Name = "b1_ADT"
-                    Project = "{B8A01161-3698-4591-B1EF-90F5FC7D8DBA}"
-                    Package = "{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}"
-                />
-                <Reference
                     Name = "b5_Presentation"
                     Project = "{D3DC9EA6-3B06-4255-B19A-5FC5B66A1402}"
                     Package = "{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}"
@@ -100,6 +95,11 @@
                 <Reference
                     Name = "b7_Scripts"
                     Project = "{451DB77D-D4C7-44D1-8047-2920D864A4CD}"
+                    Package = "{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}"
+                />
+                <Reference
+                    Name = "b1_ADT"
+                    Project = "{B8A01161-3698-4591-B1EF-90F5FC7D8DBA}"
                     Package = "{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}"
                 />
             </References>
