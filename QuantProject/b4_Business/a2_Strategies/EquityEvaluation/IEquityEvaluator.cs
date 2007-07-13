@@ -29,6 +29,6 @@ namespace QuantProject.Business.Strategies.EquityEvaluation
 	/// </summary>
 	public interface IEquityEvaluator
 	{
-		double GetReturnsEvaluation( double[] returns );
+		float GetReturnsEvaluation( float[] returns );
 	}
 }
