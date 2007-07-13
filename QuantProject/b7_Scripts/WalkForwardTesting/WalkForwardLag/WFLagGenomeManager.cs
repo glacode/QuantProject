@@ -161,7 +161,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag
 			return multipliers;
 		}
 
-		private double[] getFitnessValue_getLinearCombinationReturns(
+		private float[] getFitnessValue_getLinearCombinationReturns(
 			WeightedPositions weightedPositions )
 		{
 //			ArrayList enumeratedweightedPositions =
@@ -172,28 +172,28 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag
 			// arrays of close to close returns, one for each signed ticker
 			float[][] tickersReturns =
 				this.wFLagCandidates.GetTickersReturns( tickers );
-			double[] linearCombinationReturns =
-				new double[ tickersReturns[ 0 ].Length ];
+			float[] linearCombinationReturns =
+				new float[ tickersReturns[ 0 ].Length ];
 			for( int i = 0; i < linearCombinationReturns.Length ; i++ )
 				// computes linearCombinationReturns[ i ]
 			{
 				linearCombinationReturns[ i ] = 0;
 				for ( int j=0 ; j < weightedPositions.Count ; j++ )
 				{
-					double weightedPositionReturn =
+					float weightedPositionReturn =
 						tickersReturns[ j ][ i ] * multipliers[ j ];
 					linearCombinationReturns[ i ] += weightedPositionReturn;
 				}
 			}
 			return linearCombinationReturns;
 		}
-		private double[] getFitnessValue_getStrategyReturn(
-			double[] drivingPositionsReturns , double[] portfolioPositionsReturns )
+		private float[] getFitnessValue_getStrategyReturn(
+			float[] drivingPositionsReturns , float[] portfolioPositionsReturns )
 		{
 			// strategyReturns contains one element less than drivingPositionsReturns,
 			// because there is no strategy for the very first period (at least
 			// one day signal is needed)
-			double[] strategyReturns = new double[ portfolioPositionsReturns.Length - 1 ];
+			float[] strategyReturns = new float[ portfolioPositionsReturns.Length - 1 ];
 			for ( int i = 0 ; i < portfolioPositionsReturns.Length - 1 ; i++ )
 				if ( drivingPositionsReturns[ i ] < 0 )
 					// the current linear combination of tickers, at period i
@@ -210,7 +210,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag
 			return strategyReturns;
 
 		}
-		private double getFitnessValue( double[] strategyReturns )
+		private double getFitnessValue( float[] strategyReturns )
 		{
 //			double fitnessValue =
 //				AdvancedFunctions.GetSharpeRatio(
@@ -233,13 +233,13 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag
 		public double GetFitnessValue(
 			WFLagWeightedPositions wFLagWeightedPositions )
 		{
-			double[] drivingPositionsReturns =
+			float[] drivingPositionsReturns =
 				this.getFitnessValue_getLinearCombinationReturns(
 				wFLagWeightedPositions.DrivingWeightedPositions );
-			double[] portfolioPositionsReturns =
+			float[] portfolioPositionsReturns =
 				this.getFitnessValue_getLinearCombinationReturns(
 				wFLagWeightedPositions.PortfolioWeightedPositions );
-			double[] strategyReturns =
+			float[] strategyReturns =
 				this.getFitnessValue_getStrategyReturn(
 				drivingPositionsReturns , portfolioPositionsReturns );
 			double fitnessValue = this.getFitnessValue( strategyReturns );

@@ -154,7 +154,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag
 			return multipliers;
 		}
 
-		private double[] getFitnessValue_getLinearCombinationReturns(
+		private float[] getFitnessValue_getLinearCombinationReturns(
 			WeightedPositions weightedPositions )
 		{
 //			ArrayList enumeratedweightedPositions =
@@ -165,28 +165,28 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag
 			// arrays of close to close returns, one for each signed ticker
 			float[][] tickersReturns =
 				this.wFLagCandidates.GetTickersReturns( tickers );
-			double[] linearCombinationReturns =
-				new double[ tickersReturns[ 0 ].Length ];
+			float[] linearCombinationReturns =
+				new float[ tickersReturns[ 0 ].Length ];
 			for( int i = 0; i < linearCombinationReturns.Length ; i++ )
 				// computes linearCombinationReturns[ i ]
 			{
 				linearCombinationReturns[ i ] = 0;
 				for ( int j=0 ; j < weightedPositions.Count ; j++ )
 				{
-					double weightedPositionReturn =
+					float weightedPositionReturn =
 						tickersReturns[ j ][ i ] * multipliers[ j ];
 					linearCombinationReturns[ i ] += weightedPositionReturn;
 				}
 			}
 			return linearCombinationReturns;
 		}
-		private double[] getFitnessValue_getStrategyReturn(
-			double[] drivingPositionsReturns , double[] portfolioPositionsReturns )
+		private float[] getFitnessValue_getStrategyReturn(
+			float[] drivingPositionsReturns , float[] portfolioPositionsReturns )
 		{
 			// strategyReturns contains one element less than drivingPositionsReturns,
 			// because there is no strategy for the very first period (at least
 			// one day signal is needed)
-			double[] strategyReturns = new double[ portfolioPositionsReturns.Length - 1 ];
+			float[] strategyReturns = new float[ portfolioPositionsReturns.Length - 1 ];
 			for ( int i = 0 ; i < portfolioPositionsReturns.Length - 1 ; i++ )
 				if ( drivingPositionsReturns[ i ] < 0 )
 					// the current linear combination of tickers, at period i
@@ -203,21 +203,21 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag
 			return strategyReturns;
 
 		}
-		private double getFitnessValue( double[] strategyReturns )
+		private float getFitnessValue( float[] strategyReturns )
 		{
-//			double fitnessValue =
+//			float fitnessValue =
 //				AdvancedFunctions.GetSharpeRatio(
 //				strategyReturns );
-//			double fitnessValue =
+//			float fitnessValue =
 //				AdvancedFunctions.GetExpectancyScore(
 //				strategyReturns );
-			double fitnessValue =
+			float fitnessValue =
 				this.equityEvaluator.GetReturnsEvaluation(
 				strategyReturns );
 
-			//			double fitnessValue =
+			//			float fitnessValue =
 			//				this.getFitnessValue_withGoodFinal( strategyReturns );
-			//			double fitnessValue =
+			//			float fitnessValue =
 			//				BasicFunctions.GetSimpleAverage( strategyReturns ) /
 			//				( Math.Pow( BasicFunctions.GetStdDev( strategyReturns ) , 1.3 ) );
 			return fitnessValue;
@@ -226,17 +226,17 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag
 		public double GetFitnessValue(
 			WFLagWeightedPositions wFLagWeightedPositions )
 		{
-			double[] drivingPositionsReturns =
+			float[] drivingPositionsReturns =
 				this.getFitnessValue_getLinearCombinationReturns(
 				wFLagWeightedPositions.DrivingWeightedPositions );
-			double[] portfolioPositionsReturns =
+			float[] portfolioPositionsReturns =
 				this.getFitnessValue_getLinearCombinationReturns(
 				wFLagWeightedPositions.PortfolioWeightedPositions );
-			double[] strategyReturns =
+			float[] strategyReturns =
 				this.getFitnessValue_getStrategyReturn(
 				drivingPositionsReturns , portfolioPositionsReturns );
-			double fitnessValue = this.getFitnessValue( strategyReturns );
-			return fitnessValue;
+			float fitnessValue = this.getFitnessValue( strategyReturns );
+			return (double)fitnessValue;
 		}
 		public double GetFitnessValue( Genome genome )
 		{
@@ -250,7 +250,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag
 			if ( decodedWeightedPositions < genomeLength )
 				// genome contains a duplicate gene either for
 				// driving positions or for portfolio positions
-				//fitnessValue = double.MinValue;
+				//fitnessValue = float.MinValue;
 				fitnessValue = -0.2;
 			else
 				// all driving positions genes are distinct and
@@ -380,9 +380,9 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag
 				tickerIndex += -this.GetMinValueForGenes( genePosition );
 			return tickerIndex;
 		}
-		private double getWeight( Genome genome , int genePosition )
+		private float getWeight( Genome genome , int genePosition )
 		{
-			double weight = 1;
+			float weight = 1;
 			if ( genome.GetGeneValue( genePosition ) < 0 )
 				// the position is short
 				weight = -1;
