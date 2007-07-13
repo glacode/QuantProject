@@ -27,6 +27,7 @@ using QuantProject.ADT.Statistics;
 using QuantProject.Business.DataProviders;
 using QuantProject.Business.Financial.Accounting;
 using QuantProject.Business.Strategies;
+using QuantProject.Business.Strategies.ReturnsManagement;
 using QuantProject.Business.Timing;
 using QuantProject.Data.DataTables;
 
@@ -203,28 +204,6 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag
 		}
 		#endregion
 		#region GetCloseToClosePortfolioReturns
-//		private static double getCloseToCloseReturn( string ticker ,
-//			SortedList datesForReturnComputation , int i )
-//		{
-//			DateTime previousDate = (DateTime)datesForReturnComputation.GetByIndex( i );
-//			DateTime currentDate =
-//				(DateTime)datesForReturnComputation.GetByIndex( i + 1 );
-//			HistoricalAdjustedQuoteProvider historicalQuoteProvider =
-//				new HistoricalAdjustedQuoteProvider();
-//			double previousQuote = historicalQuoteProvider.GetMarketValue( ticker ,
-//				new EndOfDayDateTime( previousDate , EndOfDaySpecificTime.MarketClose ) );
-//			double currentQuote = historicalQuoteProvider.GetMarketValue( ticker ,
-//				new EndOfDayDateTime( currentDate , EndOfDaySpecificTime.MarketClose ) );
-//			double closeToCloseReturn = currentQuote / previousQuote - 1.0;
-//			return closeToCloseReturn;
-//		}
-//		private static double getMultiplier( string signedTicker )
-//		{
-//			double multiplier = 1.0;
-//			if ( IsShort( signedTicker ) )
-//				multiplier = -multiplier;
-//			return multiplier;
-//		}
 		private double getCloseToClosePortfolioReturn(
 			SortedList datesForReturnComputation , int i )
 		{
@@ -322,35 +301,34 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag
 			{
 				string ticker = SignedTicker.GetTicker( signedTickers[ i ] );
 				tickerReturns[ i ] = Quotes.GetArrayOfCloseToCloseRatios(
-					ticker , ref firstDate , lastDate , 1 );
+					ticker , firstDate , lastDate );
 			}
 			return tickerReturns;
 		}
-		private static double getStandardDeviation( float[] returnsForTicker )
+		private static float getTickerReturnsStandardDeviations( int tickerIndex ,
+			string[] signedTickers , ReturnsManager returnsManager )
 		{
-			return BasicFunctions.GetStdDev( returnsForTicker );
+			string ticker = SignedTicker.GetTicker( signedTickers[ tickerIndex ] );
+			return returnsManager.GetReturnsStandardDeviation( ticker );
 		}
-		private static double[] getStandardDeviations( float[][] returnsForTickers )
+		private static float[] getTickersReturnsStandardDeviations(
+			string[] signedTickers , ReturnsManager returnsManager )
 		{
-			double[] standardDeviations = new double[ returnsForTickers.Length ];
-			for ( int i = 0 ;	i < standardDeviations.Length ; i++ )
-				standardDeviations[ i ] = getStandardDeviation( returnsForTickers[ i ] );
-			return standardDeviations;
-		}
-		private static double[] getStandardDeviations( string[] signedTickers ,
-			DateTime firstDate , DateTime lastDate )
-		{
-			float[][] returnsForTickers = getTickerCloseToCloseReturnsForSignedTickers(
-				signedTickers ,	firstDate , lastDate );
-			return getStandardDeviations( returnsForTickers );
+			float[] tickersReturnsStandardDeviations =
+				new float[ signedTickers.Length ];
+			for ( int i = 0 ; i < signedTickers.Length ; i++ )
+				tickersReturnsStandardDeviations[ i ] =
+					getTickerReturnsStandardDeviations( i ,
+					signedTickers , returnsManager );
+			return tickersReturnsStandardDeviations;
 		}
 		private static double getNonNormalizedWeightsButBalancedForVolatility(
-			double[] standardDeviations , double maxStandardDeviation , int i )
+			float[] standardDeviations , float maxStandardDeviation , int i )
 		{
 			return maxStandardDeviation / standardDeviations[ i ];
 		}
 		private static double[] getNonNormalizedWeightsButBalancedForVolatility(
-			double[] standardDeviations , double maxStandardDeviation )
+			float[] standardDeviations , float maxStandardDeviation )
 		{
 			double[] nonNormalizedWeightsButBalancedForVolatility =
 				new double[ standardDeviations.Length ];
@@ -361,9 +339,10 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag
 			return nonNormalizedWeightsButBalancedForVolatility;
 		}
 		private static double[] getNonNormalizedWeightsButBalancedForVolatility(
-			double[] standardDeviations )
+			float[] standardDeviations )
 		{
-			double maxStandardDeviation = BasicFunctions.GetMax( standardDeviations );
+			float maxStandardDeviation =
+				(float)BasicFunctions.GetMax( standardDeviations );
 			return getNonNormalizedWeightsButBalancedForVolatility(
 				standardDeviations , maxStandardDeviation );
 		}
@@ -375,9 +354,11 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag
 		/// <param name="signedTickers"></param>
 		/// <returns></returns>
 		public static double[] GetBalancedWeights(
-			string[] signedTickers , DateTime firstDate , DateTime lastDate )
+			string[] signedTickers , ReturnsManager returnManager )
 		{
-			double[] standardDeviations = getStandardDeviations( signedTickers , firstDate , lastDate );
+			float[] standardDeviations =
+				getTickersReturnsStandardDeviations( signedTickers ,
+				returnManager );
 			double[] nonNormalizedButBalancedWeights =
 				getNonNormalizedWeightsButBalancedForVolatility( standardDeviations );
 			double[] normalizedBalancedWeights =
@@ -385,5 +366,82 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag
 			return normalizedBalancedWeights;
 		}
 		#endregion //GetBalancedWeights
+		#region GetReturn
+		private void getReturnCheckParameters( int i ,
+			ReturnsManager returnsManager )
+		{
+			if ( ( i < 0 ) || ( i > returnsManager.TimeLine.Count - 2 ) )
+				throw new Exception( "i is larger than the number of returns" );
+		}
+		private float getTickerReturn( string ticker , int i ,
+			ReturnsManager returnsManager )
+		{
+			return returnsManager.GetReturn( ticker , i );
+		}
+		private float getReturnActually( WeightedPosition weightedPosition ,
+			int i , ReturnsManager returnsManager )
+		{
+			float tickerReturn = this.getTickerReturn( weightedPosition.Ticker ,
+				i , returnsManager );
+			return tickerReturn * Convert.ToSingle( weightedPosition.Weight );
+
+
+//			int numberOfWeightedPositions = weightedPositions.Count;
+//			string[] tickers = this.getTickers( weightedPositions );
+//			float[] multipliers = this.getMultipliers( weightedPositions );
+//			// arrays of close to close returns, one for each signed ticker
+//			float[][] tickersReturns =
+//				this.wFLagCandidates.GetTickersReturns( tickers );
+//			Aggiungi!!! weightedPositions.GetReturns( this.closeToCloseReturnsManager )
+//								double[] linearCombinationReturns =
+//									new double[ tickersReturns[ 0 ].Length ];
+//			for( int i = 0; i < linearCombinationReturns.Length ; i++ )
+//				// computes linearCombinationReturns[ i ]
+//			{
+//				linearCombinationReturns[ i ] = 0;
+//				for ( int j=0 ; j < weightedPositions.Count ; j++ )
+//				{
+//					double weightedPositionReturn =
+//						tickersReturns[ j ][ i ] * multipliers[ j ];
+//					linearCombinationReturns[ i ] += weightedPositionReturn;
+//				}
+//			}
+//			return linearCombinationReturns;
+		}
+		private float getReturnActually( int i , ReturnsManager returnsManager )
+		{
+			float linearCombinationReturn = 0;
+			foreach ( WeightedPosition weightedPosition in this.Values )
+				linearCombinationReturn += this.getReturnActually( weightedPosition ,
+					i , returnsManager );
+			return linearCombinationReturn;
+		}
+		/// <summary>
+		/// returns the i_th return of the sum of the weighted positions
+		/// </summary>
+		/// <param name="i"></param>
+		/// <param name="returnsManager">used to efficiently store
+		/// ticker returns</param>
+		/// <returns></returns>
+		public float GetReturn( int i , ReturnsManager returnsManager )
+		{
+			this.getReturnCheckParameters( i , returnsManager );
+			return getReturnActually( i , returnsManager );
+		}
+		#endregion GetReturn
+		/// <summary>
+		/// Computes an array of floats representing the returns
+		/// of all weighted position
+		/// </summary>
+		/// <param name="returnsManager"></param>
+		/// <returns></returns>
+		public float[] GetReturns( ReturnsManager returnsManager )
+		{
+			float[] returns = new float[
+				returnsManager.TimeLine.Count - 1 ];
+			for ( int i = 0 ; i < returnsManager.TimeLine.Count ; i++ )
+				returns[ i ] = this.GetReturn( i , returnsManager );
+			return returns;
+		}
 	}
 }
