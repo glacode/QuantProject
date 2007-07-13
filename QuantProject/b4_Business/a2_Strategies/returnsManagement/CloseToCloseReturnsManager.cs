@@ -28,8 +28,8 @@ using QuantProject.Data.DataTables;
 namespace QuantProject.Business.Strategies.ReturnsManagement
 {
 	/// <summary>
-	/// This abstract class is used to keep and provide, in an efficient
-	/// way, array of returs (to be used by in sample optimizations)
+	/// This class is used to keep and provide, in an efficient way, array
+	/// of close to close returns (to be used by in sample optimizations)
 	/// </summary>
 	public class CloseToCloseReturnsManager : ReturnsManager
 	{
