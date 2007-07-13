@@ -157,7 +157,17 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "Collections\FloatArrayManager.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "Collections\QPHashtable.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Collections\Set.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
