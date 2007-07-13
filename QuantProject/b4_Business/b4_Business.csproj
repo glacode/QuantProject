@@ -637,6 +637,16 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "a2_Strategies\returnsManagement\CloseToCloseReturnsManager.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "a2_Strategies\returnsManagement\ReturnsManager.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "a3_Testing\BackTester.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
