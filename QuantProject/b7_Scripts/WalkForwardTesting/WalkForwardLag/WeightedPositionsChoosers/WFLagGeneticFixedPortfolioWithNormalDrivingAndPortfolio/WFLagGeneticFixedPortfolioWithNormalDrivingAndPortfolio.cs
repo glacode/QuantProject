@@ -23,9 +23,11 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 using System;
 
 using QuantProject.ADT;
+using QuantProject.ADT.Histories;
 using QuantProject.ADT.Optimizing.Genetic;
 using QuantProject.Business.Strategies.EquityEvaluation;
 using QuantProject.Business.Timing;
+using QuantProject.Data.DataTables;
 using QuantProject.Scripts.WalkForwardTesting.WalkForwardLag.WFLagDebugger;
 
 namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag.WeightedPositionsChoosers
@@ -50,10 +52,10 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag.WeightedPositio
 
 		protected WFLagChosenPositions wFLagChosenPositions;
 
-		// first in sample quote date for driving positions
-		protected DateTime firstInSampleDateForDrivingPositions;
-		// last in sample quote date for equity evaluation
-		protected DateTime lastInSampleOptimizationDate;
+//		// first in sample quote date for driving positions
+//		protected DateTime firstInSampleDateForDrivingPositions;
+//		// last in sample quote date for equity evaluation
+//		protected DateTime lastInSampleOptimizationDate;
 
 		public int NumberOfDrivingPositions
 		{
@@ -123,6 +125,16 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag.WeightedPositio
 				generationNumberForGeneticOptimizer;
 		}
 		#region setWeightedPositions_usingTheGeneticOptimizer
+		private History getTimeLineForOptimization( EndOfDayDateTime now )
+		{
+			DateTime firstInSampleDateForDrivingPositions =
+				now.DateTime.AddDays(
+				-( this.NumberDaysForInSampleOptimization - 1 ) );
+			DateTime lastInSampleOptimizationDate =
+				now.DateTime;
+			return Quotes.GetMarketDays( this.benchmark ,
+				firstInSampleDateForDrivingPositions , lastInSampleOptimizationDate );
+		}
 		private void newGenerationEventHandler(
 			object sender , NewGenerationEventArgs e )
 		{
@@ -153,11 +165,8 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag.WeightedPositio
 			WFLagEligibleTickers eligibleTickersForDrivingPositions ,
 			EndOfDayDateTime now )
 		{
-			this.firstInSampleDateForDrivingPositions =
-				now.DateTime.AddDays(
-				-( this.NumberDaysForInSampleOptimization - 1 ) );
-			this.lastInSampleOptimizationDate =
-				now.DateTime;
+			History timeLineForOptimization =
+				this.getTimeLineForOptimization( now );
 
 			WFLagGenomeManagerForFixedPortfolioWithNormalDrivingAndPortfolio
 				genomeManager = 
@@ -165,8 +174,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag.WeightedPositio
 				this.numberOfDrivingPositions ,
 				eligibleTickersForDrivingPositions.EligibleTickers ,
 				this.portfolioSignedTickers ,
-				this.firstInSampleDateForDrivingPositions ,
-				this.lastInSampleOptimizationDate ,
+				timeLineForOptimization ,
 				this.equityEvaluator ,
 				QuantProject.ADT.ConstantsProvider.SeedForRandomGenerator );
 
