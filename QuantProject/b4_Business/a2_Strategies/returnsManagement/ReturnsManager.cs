@@ -53,16 +53,23 @@ namespace QuantProject.Business.Strategies.ReturnsManagement
 			get { return this.timeLineForQuotes; }
 		}
 
+		/// <summary>
+		/// Number of returns, that is TimeLine's elements minus 1
+		/// </summary>
+		public int NumberOfReturns
+		{
+			get { return this.TimeLine.Count - 1; }
+		}
 		protected DateTime firstDateTime
 		{
-			get { return (DateTime)this.timeLineForQuotes[ 0 ]; }
+			get { return this.timeLineForQuotes.GetDateTime( 0 ); }
 		}
 		protected DateTime lastDateTime
 		{
 			get
 			{
 				int lastIndex = this.timeLineForQuotes.Count - 1;
-				return (DateTime)this.timeLineForQuotes[ lastIndex ];
+				return this.timeLineForQuotes.GetDateTime( lastIndex );
 			}
 		}
 
@@ -90,7 +97,7 @@ namespace QuantProject.Business.Strategies.ReturnsManagement
 		public ReturnsManager( History timeLine )
 		{
 			// TO DO: let WFLagEligibleTickers use this class also!!!
-			this.timeLineForQuotes = timeLineForQuotes;
+			this.timeLineForQuotes = timeLine;
 			this.commonInitialization();
 		}
 		private void commonInitialization()
@@ -121,33 +128,33 @@ namespace QuantProject.Business.Strategies.ReturnsManagement
 		private bool areMarketDaysForQuotesAllCovered( History returns )
 		{
 			bool areAllCovered = true;
-			foreach ( DateTime dateTime in this.timeLineForQuotes  )
+			foreach ( DateTime dateTime in this.timeLineForQuotes.TimeLine  )
 				if ( !returns.ContainsKey( dateTime ) )
 					areAllCovered = false;
 			return areAllCovered;
 		}
-		private float selectReturnOnValidDateTime( History returns ,
+		private float selectReturnWithRespectToTheTimeLine( History returns ,
 			int i )
 		{
 			DateTime currentDateTimeForReturn =
 				(DateTime)this.timeLineForQuotes.GetByIndex( i );
 			return (float)returns[ currentDateTimeForReturn ];
 		}
-		private float[] selectReturnsOnValidDateTimes( History returns )
+		private float[] selectReturnsWithRespectToTheTimeLine( History returns )
 		{
 			// TO DO: this method is n log n, it could be implemented to
 			// be have a linear complexity!!!
-			float[] returnsOnValidDateTimes =
+			float[] returnsWithRespectToTheTimeLine =
 				new float[ this.timeLineForQuotes.Count ];
 			for ( int i = 0 ; i < this.timeLineForQuotes.Count ; i++ )
-				returnsOnValidDateTimes[ i ] =
-					this.selectReturnOnValidDateTime( returns , i );
-			return returnsOnValidDateTimes;
+				returnsWithRespectToTheTimeLine[ i ] =
+					this.selectReturnWithRespectToTheTimeLine( returns , i );
+			return returnsWithRespectToTheTimeLine;
 		}
-		private void setReturnsActually( string ticker , History returns )
+		private void setReturnsActually( string ticker , History quotes )
 		{
 			float[] arrayOfReturns =
-				this.selectReturnsOnValidDateTimes( returns );
+				this.selectReturnsWithRespectToTheTimeLine( quotes );
 			this.tickersReturns.Add( ticker , arrayOfReturns );
 		}
 		private void setReturns( string ticker , History quotes )
@@ -175,7 +182,7 @@ namespace QuantProject.Business.Strategies.ReturnsManagement
 			return this.getAlreadySetReturns( ticker );
 		}
 		#endregion GetReturns
-		#region GetReturns
+		#region GetReturn
 		/// <summary>
 		/// Gives out the returnIndex_th return for the given ticker
 		/// </summary>
@@ -222,7 +229,7 @@ namespace QuantProject.Business.Strategies.ReturnsManagement
 		}
 		private float getReturnsStandardDeviation( string ticker )
 		{
-			return (float)this.tickersReturnsStandardDeviations[ ticker ];
+			return Convert.ToSingle( this.tickersReturnsStandardDeviations[ ticker ] );
 		}
 		/// <summary>
 		/// Returns the standard deviation of ticker returns (and stores
