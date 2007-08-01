@@ -92,6 +92,17 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag.WFLagDebugger
 			this.portfolioWeightedPositions = wFLagChosenTickers.PortfolioWeightedPositions;
 			this.lastOptimizationDate = lastOptimizationDate;
 		}
+		public WFLagChosenPositions( WFLagWeightedPositions wFLagWeightedPositions ,
+			DateTime lastOptimizationDate )
+		{
+			//			this.drivingPositions =
+			//				this.copy( wFLagChosenTickers.DrivingWeightedPositions );
+			//			this.portfolioPositions =
+			//				this.copy( wFLagChosenTickers.PortfolioWeightedPositions );
+			this.drivingWeightedPositions = wFLagWeightedPositions.DrivingWeightedPositions;
+			this.portfolioWeightedPositions = wFLagWeightedPositions.PortfolioWeightedPositions;
+			this.lastOptimizationDate = lastOptimizationDate;
+		}
 
 		public WFLagChosenPositions( WeightedPositions drivingWeightedPositions ,
 			WeightedPositions portfolioWeightedPositions , DateTime lastOptimizationDate )
