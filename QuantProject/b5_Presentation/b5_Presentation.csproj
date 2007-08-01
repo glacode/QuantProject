@@ -130,17 +130,17 @@
                     Package = "{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}"
                 />
                 <Reference
-                    Name = "NPlot"
-                    AssemblyName = "NPlot"
-                    HintPath = "..\..\..\..\..\Documents and Settings\Glauco\Desktop\NPlot\NPlot.dll"
-                />
-                <Reference
                     Name = "Microsoft.Office.Core"
                     Guid = "{2DF8D04C-5BFA-101B-BDE5-00AA0044DE52}"
                     VersionMajor = "2"
                     VersionMinor = "3"
                     Lcid = "0"
                     WrapperTool = "primary"
+                />
+                <Reference
+                    Name = "NPlot"
+                    AssemblyName = "NPlot"
+                    HintPath = "..\..\NPlot.dll"
                 />
             </References>
         </Build>
@@ -168,7 +168,7 @@
                 />
                 <File
                     RelPath = "Charting\Chart.cs"
-                    SubType = "UserControl"
+                    SubType = "Code"
                     BuildAction = "Compile"
                 />
                 <File
