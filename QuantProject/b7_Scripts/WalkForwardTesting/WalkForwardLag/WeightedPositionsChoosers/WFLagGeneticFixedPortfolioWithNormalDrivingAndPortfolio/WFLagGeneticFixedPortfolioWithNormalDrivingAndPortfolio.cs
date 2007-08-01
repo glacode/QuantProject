@@ -124,7 +124,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag.WeightedPositio
 			this.generationNumberForGeneticOptimizer =
 				generationNumberForGeneticOptimizer;
 		}
-		#region setWeightedPositions_usingTheGeneticOptimizer
+		#region setChosenPositions_usingTheGeneticOptimizer
 		private History getTimeLineForOptimization( EndOfDayDateTime now )
 		{
 			DateTime firstInSampleDateForDrivingPositions =
@@ -149,19 +149,34 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag.WeightedPositio
 //			this.portfolioWeightedPositions =
 //				wFLagWeightedPositions.PortfolioWeightedPositions;
 //		}
-		private void setSignedTickers_setTickersFromGenome(
-			IGenomeManager genomeManager ,
-			Genome genome )
+		private WFLagWeightedPositions getWFLagWeightedPositions_FromDecodableGenome(
+			IGenomeManager genomeManager , Genome genome )
 		{
+			object wFLagWeightedPositions =
+				genomeManager.Decode( genome );
+			if ( !(wFLagWeightedPositions is WFLagWeightedPositions) )
+				throw new Exception( "The genome is not a WFLagWeightedPositions. " +
+					"It should happen only if the genome is undecodable. This " +
+					"should never happen for the best genome." );
+			return (WFLagWeightedPositions)wFLagWeightedPositions;
+		}
+		private void setChosenPositions_FromDecodableGenome(
+			IGenomeManager genomeManager , Genome genome ,
+			EndOfDayDateTime now )
+		{
+			WFLagWeightedPositions wFLagWeightedPositions =
+				this.getWFLagWeightedPositions_FromDecodableGenome(
+				genomeManager , genome );
 			this.wFLagChosenPositions =
-				( WFLagChosenPositions )genomeManager.Decode( genome );
+				new WFLagChosenPositions(
+				wFLagWeightedPositions , now.DateTime );
 //			this.setWeightedPositions( wFLagWeightedPositions );
 			//			this.drivingWeightedPositions =
 			//				wFLagWeightedPositions.DrivingWeightedPositions;
 			//			this.portfolioWeightedPositions =
 			//				wFLagWeightedPositions.PortfolioWeightedPositions;
 		}
-		public virtual void setWeightedPositions_usingTheGeneticOptimizer(
+		public virtual void setChosenPositions_usingTheGeneticOptimizer(
 			WFLagEligibleTickers eligibleTickersForDrivingPositions ,
 			EndOfDayDateTime now )
 		{
@@ -192,13 +207,13 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag.WeightedPositio
 
 			geneticOptimizer.Run( false );
 
-			this.setSignedTickers_setTickersFromGenome(
-				genomeManager , geneticOptimizer.BestGenome );
+			this.setChosenPositions_FromDecodableGenome(
+				genomeManager , geneticOptimizer.BestGenome , now );
 
 //			this.generation = geneticOptimizer.BestGenome.Generation;
 
 		}
-		#endregion
+		#endregion //setChosenPositions_usingTheGeneticOptimizer
 		private void chosePositions_checkParameters(
 			WFLagEligibleTickers eligibleTickersForDrivingPositions ,
 			EndOfDayDateTime now )
@@ -227,7 +242,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag.WeightedPositio
 		{
 			this.chosePositions_checkParameters( eligibleTickersForDrivingPositions ,
 				now );
-			this.setWeightedPositions_usingTheGeneticOptimizer(
+			this.setChosenPositions_usingTheGeneticOptimizer(
 				eligibleTickersForDrivingPositions ,
 				now );
 		}
