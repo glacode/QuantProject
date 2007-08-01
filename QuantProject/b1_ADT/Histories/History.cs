@@ -35,6 +35,14 @@ namespace QuantProject.ADT.Histories
 	[Serializable]
 	public class History : AdvancedSortedList
 	{
+		/// <summary>
+		/// Returns the ICollection of DateTimes on which the
+		/// history is built
+		/// </summary>
+		public ICollection TimeLine
+		{
+			get { return this.Keys; }
+		}
 		public History() : base()
 		{
 		}
@@ -79,6 +87,15 @@ namespace QuantProject.ADT.Histories
 					this.Add( dateTime , interpolationMethod.GetValue( this , dateTime ) );
 		}
 
+		/// <summary>
+		/// Returns the i-1_th element in the history timeline
+		/// </summary>
+		/// <param name="index"></param>
+		/// <returns></returns>
+		public DateTime GetDateTime( int index )
+		{
+			return (DateTime)this.GetKey( index );
+		}
 		/// <summary>
 		/// Add an history item, if no collision (contemporary events) is expected
 		/// </summary>
