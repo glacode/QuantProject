@@ -439,7 +439,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag
 		{
 			float[] returns = new float[
 				returnsManager.TimeLine.Count - 1 ];
-			for ( int i = 0 ; i < returnsManager.TimeLine.Count ; i++ )
+			for ( int i = 0 ; i < returnsManager.NumberOfReturns ; i++ )
 				returns[ i ] = this.GetReturn( i , returnsManager );
 			return returns;
 		}
