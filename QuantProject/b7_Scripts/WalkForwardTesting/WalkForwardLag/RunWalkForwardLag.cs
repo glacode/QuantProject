@@ -167,8 +167,8 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag
 			if ( this.account.Transactions.Count == 0 )
 				this.account.AddCash( 30000 );
 		}
-		#region oneHourAfterMarketCloseEventHandler
-		private void oneHourAfterMarketCloseEventHandler_handleProgessBarForm(
+		#region marketCloseEventHandler
+		private void marketCloseEventHandler_handleProgessBarForm(
 			IEndOfDayTimer endOfDayTimer )
 		{
 			string progress = "Current out of sample date:" +
@@ -274,7 +274,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag
 			}
 			else
 				// the simulation has not reached the ending date, yet
-				this.oneHourAfterMarketCloseEventHandler_handleProgessBarForm(
+				this.marketCloseEventHandler_handleProgessBarForm(
 					( IEndOfDayTimer )sender );
 		}
 		#endregion
