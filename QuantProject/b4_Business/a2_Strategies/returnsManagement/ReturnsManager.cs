@@ -133,22 +133,23 @@ namespace QuantProject.Business.Strategies.ReturnsManagement
 					areAllCovered = false;
 			return areAllCovered;
 		}
-		private float selectReturnWithRespectToTheTimeLine( History returns ,
+		private float selectReturnWithRespectToTheTimeLine( History quotes ,
 			int i )
 		{
-			DateTime currentDateTimeForReturn =
-				(DateTime)this.timeLineForQuotes.GetByIndex( i );
-			return (float)returns[ currentDateTimeForReturn ];
+			float currentQuote = (float)quotes.GetByIndex( i );
+			float nextQuote = (float)quotes.GetByIndex( i + 1 );
+			float currentReturn = nextQuote / currentQuote - 1;
+			return currentReturn;
 		}
-		private float[] selectReturnsWithRespectToTheTimeLine( History returns )
+		private float[] selectReturnsWithRespectToTheTimeLine( History quotes )
 		{
 			// TO DO: this method is n log n, it could be implemented to
 			// be have a linear complexity!!!
 			float[] returnsWithRespectToTheTimeLine =
-				new float[ this.timeLineForQuotes.Count ];
-			for ( int i = 0 ; i < this.timeLineForQuotes.Count ; i++ )
+				new float[ this.timeLineForQuotes.Count - 1 ];
+			for ( int i = 0 ; i < this.timeLineForQuotes.Count - 1 ; i++ )
 				returnsWithRespectToTheTimeLine[ i ] =
-					this.selectReturnWithRespectToTheTimeLine( returns , i );
+					this.selectReturnWithRespectToTheTimeLine( quotes , i );
 			return returnsWithRespectToTheTimeLine;
 		}
 		private void setReturnsActually( string ticker , History quotes )
