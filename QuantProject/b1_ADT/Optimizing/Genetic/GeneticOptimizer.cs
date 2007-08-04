@@ -296,6 +296,9 @@ namespace QuantProject.ADT.Optimizing.Genetic
 
     private void sortCurrentGenerationAndFireNewGenerationEvent()
     {
+      // comment out the following line if you have an exception
+      // in the Sort method and you want to break to the proper line
+      // double fitness = ((Genome) this.currentGeneration[ 0 ]).Fitness;
       this.currentGeneration.Sort(this.genomeComparer);
       if(this.NewGeneration != null)
         this.NewGeneration( this , new NewGenerationEventArgs(
