@@ -25,6 +25,7 @@ using System;
 using QuantProject.ADT;
 using QuantProject.ADT.Histories;
 using QuantProject.ADT.Optimizing.Genetic;
+using QuantProject.Business.Strategies;
 using QuantProject.Business.Strategies.EquityEvaluation;
 using QuantProject.Business.Timing;
 using QuantProject.Data.DataTables;
@@ -43,7 +44,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag.WeightedPositio
 		public event NewProgressEventHandler NewProgress;
 
 		protected int numberOfDrivingPositions;
-		private string[] portfolioSignedTickers;
+		private SignedTickers portfolioSignedTickers;
 		protected int inSampleDays;
 		protected string benchmark;
 		protected IEquityEvaluator equityEvaluator;
@@ -69,7 +70,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag.WeightedPositio
 		{
 			get
 			{
-				return this.portfolioSignedTickers.Length;
+				return this.portfolioSignedTickers.Count;
 			}
 		}
 
@@ -107,7 +108,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag.WeightedPositio
 		/// possible trades will be numberDaysForInSampleOptimization-1</param></param>
 		public WFLagGeneticFixedPortfolioWithNormalDrivingAndPortfolio(
 			int numberOfDrivingPositions ,
-			string[] portfolioSignedTickers ,
+			SignedTickers portfolioSignedTickers ,
 			int inSampleDays ,
 			string benchmark ,
 			IEquityEvaluator equityEvaluator ,
