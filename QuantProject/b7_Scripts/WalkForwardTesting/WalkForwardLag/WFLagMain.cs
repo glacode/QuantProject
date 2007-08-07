@@ -26,6 +26,7 @@ using System.Collections;
 using System.ComponentModel;
 using System.Windows.Forms;
 
+using QuantProject.Business.Strategies;
 using QuantProject.Presentation;
 using QuantProject.Scripts.WalkForwardTesting.WalkForwardLag.WeightedPositionsChoosers;
 using QuantProject.Scripts.WalkForwardTesting.WalkForwardLag.WFLagDebugger;
@@ -142,13 +143,13 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag
 				new QuantProject.Business.Strategies.EquityEvaluation.WinningPeriods() );
 			wFLagWeightedPositionsChooser =
 				new WFLagGeneticFixedPortfolioWithNormalDrivingAndPortfolio(
-				4 , new string[]{ "IWM" , "-SPY" } , 100 , "EWQ" ,
+				4 , new SignedTickers( "IWM;-SPY" ) , 100 , "EWQ" ,
 				new QuantProject.Business.Strategies.EquityEvaluation.WinningPeriods() ,
-				1000 , 15 );
+				10000 , 30 );
 			new RunWalkForwardLag( "DrvPstns" , 200 ,
-				wFLagWeightedPositionsChooser ,	13 ,
+				wFLagWeightedPositionsChooser ,	7 ,
 				new DateTime( 2001 , 1 , 1 ) ,
-				new DateTime( 2001 , 1 , 8 ) ,
+				new DateTime( 2001 , 1 , 19 ) ,
 				0.5 ).Run();
 
 //			new RunWalkForwardLag( "DrvPstns" , 500 ,
