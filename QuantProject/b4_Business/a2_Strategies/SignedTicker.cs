@@ -51,11 +51,109 @@ namespace QuantProject.Business.Strategies
 		{
 			get { return this.positionType; }
 		}
+		public double Multiplier
+		{
+			get
+			{
+				double multiplier = 1;
+				if ( this.IsShort )
+					multiplier = -1;
+				return multiplier;
+			}
+		}
+		public bool IsShort
+		{
+			get
+			{
+				bool isShort = ( this.positionType == PositionType.Short );
+				return isShort;
+			}
+		}
+		public bool IsLong
+		{
+			get
+			{
+				return !this.IsShort;
+			}
+		}
+		public SignedTicker OppositeSignedTicker
+		{
+			get
+			{
+				SignedTicker oppositeSignedTicker =
+					new SignedTicker( this.Ticker ,
+					this.getOppositePositionType( this.PositionType ) );
+				return oppositeSignedTicker;
+			}
+		}
+		private PositionType getOppositePositionType( PositionType positionType )
+		{
+			PositionType oppositePositionType;
+			if ( this.IsLong )
+				oppositePositionType = PositionType.Short;
+			else
+				// this.IsShort
+				oppositePositionType = PositionType.Long;
+			return oppositePositionType;
+		}
 		public SignedTicker( string ticker , PositionType positionType )
 		{
 			this.ticker = ticker;
 			this.positionType = positionType;
 		}
+		public SignedTicker( string signedTicker )
+		{
+			this.signedTicker_checkParams( signedTicker );
+			this.ticker = this.getTicker( signedTicker );
+			this.positionType = this.getPositionType( signedTicker );
+		}
+		private bool isValidSignedTicker( string signedTicker )
+		{
+			bool isActuallyValidSignedTicker = false;
+			string firstCharacter = signedTicker.Substring( 0 , 1 );
+			if ( ( firstCharacter.CompareTo( "A" ) != - 1 ) &&
+				( ( firstCharacter.CompareTo( "Z" ) != 1 ) ) )
+				// the first signedTickers' character is an upcase letter
+				isActuallyValidSignedTicker = true;
+			if ( ( firstCharacter == "^" ) )
+				isActuallyValidSignedTicker = true;
+			if ( ( firstCharacter == "-" ) )
+				isActuallyValidSignedTicker = true;
+			return isActuallyValidSignedTicker;
+		}
+		private void signedTicker_checkParams( string signedTicker )
+		{
+			if ( !this.isValidSignedTicker( signedTicker ) )
+				throw new Exception( "signedTickers is not a valid string to " +
+					"identify and construct a new SignedTicker object!" );
+		}
+		private bool isStringForLongSignedTicker( string signedTicker )
+		{
+			return !(signedTicker.IndexOf( "-" ) == 0 );
+		}
+		private string getTicker( string signedTicker )
+		{
+			string ticker;
+			if ( this.isStringForLongSignedTicker( signedTicker ) )
+				ticker = signedTicker;
+			else
+				// signedTicker is a string for a short SignedTicker and
+				// signedTicker begins with a '-' sign
+				ticker = signedTicker.Substring( 1 );
+			return ticker;
+		}
+		private PositionType getPositionType( string signedTicker )
+		{
+			PositionType positionType;
+			if ( this.isStringForLongSignedTicker( signedTicker ) )
+				positionType = PositionType.Long;
+			else
+				// signedTicker is a string for a short SignedTicker and
+				// signedTicker begins with a '-' sign
+				positionType = PositionType.Short;
+			return positionType;
+		}
+		
 		public static string GetSignedTicker( Position position )
 		{
 			string signedTicker = position.Instrument.Key;
@@ -70,34 +168,27 @@ namespace QuantProject.Business.Strategies
 				ticker = signedTicker.Substring( 1 );
 			return ticker;
 		}
-		public static bool IsShort( string signedTicker )
+//		public static bool IsShort( string signedTicker )
+//		{
+//			return ( signedTicker.StartsWith( "-" ) );
+//		}
+//		public static bool IsLong( string signedTicker )
+//		{
+//			return ( !SignedTicker.IsShort( signedTicker ) );
+//		}
+		public OrderType MarketOrderType
 		{
-			return ( signedTicker.StartsWith( "-" ) );
+			get
+			{
+				OrderType orderType = OrderType.MarketBuy;
+				if ( this.IsShort )
+					orderType = OrderType.MarketSellShort;
+				return orderType;
+			}
 		}
-		public static bool IsLong( string signedTicker )
+		public double GetCloseToCloseDailyReturn( DateTime today )
 		{
-			return ( !SignedTicker.IsShort( signedTicker ) );
-		}
-		public static string GetOppositeSignedTicker( string signedTicker )
-		{
-			string oppositeSignedTicker = "";
-			if ( SignedTicker.IsShort( signedTicker ) )
-				oppositeSignedTicker = SignedTicker.GetTicker( signedTicker );
-			if ( SignedTicker.IsLong( signedTicker ) )
-				oppositeSignedTicker = "-" + SignedTicker.GetTicker( signedTicker );
-			return oppositeSignedTicker;
-		}
-		public static OrderType GetMarketOrderType( string signedTicker )
-		{
-			OrderType orderType = OrderType.MarketBuy;
-			if ( SignedTicker.IsShort( signedTicker ) )
-				orderType = OrderType.MarketSellShort;
-			return orderType;
-		}
-		public static double GetCloseToCloseDailyReturn(
-			string signedTicker , DateTime today )
-		{
-			string ticker = SignedTicker.GetTicker( signedTicker );
+			string ticker = this.Ticker;
 			HistoricalAdjustedQuoteProvider historicalAdjustedQuoteProvider =
 				new HistoricalAdjustedQuoteProvider();
 			double todayMarketValueAtClose =
@@ -112,7 +203,7 @@ namespace QuantProject.Business.Strategies
 			double dalyReturnForLongPosition =
 				( todayMarketValueAtClose / yesterdayMarketValueAtClose ) - 1;
 			double dailyReturn;
-			if ( SignedTicker.IsShort( signedTicker ) )
+			if ( this.IsShort )
 				// signedTicker represents a short position
 				dailyReturn = - dalyReturnForLongPosition;
 			else
@@ -154,14 +245,17 @@ namespace QuantProject.Business.Strategies
 //		#endregion //GetCloseToCloseReturnsForUnsignedTicker
     #region getCloseToClosePortfolioReturn_setReturns
 
-    private static double getCloseToClosePortfolioReturn_setReturns_getReturn(int returnDay,
-                        string[] signedTickers,double[] tickersWeights,Quotes[] tickersQuotes )
+    private static double getCloseToClosePortfolioReturn_setReturns_getReturn(
+			int returnDay, string[] signedTickers ,
+			double[] tickersWeights, Quotes[] tickersQuotes )
     {
       double returnValue = 0.0;
       float signOfTicker = 1.0f;
       for(int indexForTicker = 0; indexForTicker<signedTickers.Length; indexForTicker++)
       {
-        if(SignedTicker.IsLong(signedTickers[indexForTicker]))
+				SignedTicker signedTicker =
+					new SignedTicker( signedTickers[indexForTicker] );
+        if( signedTicker.IsLong )
           signOfTicker = 1.0f;
         else
           signOfTicker = -1.0f;
@@ -249,29 +343,29 @@ namespace QuantProject.Business.Strategies
 		/// <param name="tickersWeights">Array of weights for tickers - the same order has to be provided!</param>
 		/// <param name="startDate">Start date for the period for which return has to be computed</param>
 		/// <param name="endDate">End date for the period for which return has to be computed</param>
-		public static double GetCloseToClosePortfolioReturn( string[] signedTickers ,
-			double[] tickersWeights ,
-			SortedList commonMarketDays )
-		{
-			const double initialEquity = 1.0;
-			double equityValue = initialEquity;
-			Quotes[] tickersQuotes = new Quotes[ signedTickers.Length ];
-			for( int i = 0 ; i < signedTickers.Length ; i++ )
-			{
-				tickersQuotes[ i ] =
-					new Quotes( SignedTicker.GetTicker( (string)signedTickers[ i ] ) ,
-					commonMarketDays );
-			}
-			double[] returns = new double[ tickersQuotes[0].Rows.Count ];
-			getCloseToClosePortfolioReturn_setReturns( returns , signedTickers ,
-				tickersWeights , tickersQuotes);
-			for( int i = 0 ; i < returns.Length ; i++ )
-				equityValue = 
-							equityValue + equityValue * returns[i];
-			
-			return (equityValue - initialEquity)/initialEquity;
-		}
-		
+//		public static double GetCloseToClosePortfolioReturn( string[] signedTickers ,
+//			double[] tickersWeights ,
+//			SortedList commonMarketDays )
+//		{
+//			const double initialEquity = 1.0;
+//			double equityValue = initialEquity;
+//			Quotes[] tickersQuotes = new Quotes[ signedTickers.Length ];
+//			for( int i = 0 ; i < signedTickers.Length ; i++ )
+//			{
+//				tickersQuotes[ i ] =
+//					new Quotes( SignedTicker.GetTicker( (string)signedTickers[ i ] ) ,
+//					commonMarketDays );
+//			}
+//			double[] returns = new double[ tickersQuotes[0].Rows.Count ];
+//			getCloseToClosePortfolioReturn_setReturns( returns , signedTickers ,
+//				tickersWeights , tickersQuotes);
+//			for( int i = 0 ; i < returns.Length ; i++ )
+//				equityValue = 
+//							equityValue + equityValue * returns[i];
+//			
+//			return (equityValue - initialEquity)/initialEquity;
+//		}
+//		
 		/// <summary>
 		/// Gets portfolio's return, for the given tickers, considering only
 		/// the market days contained in commonMarketDays
@@ -279,18 +373,18 @@ namespace QuantProject.Business.Strategies
 		/// <param name="signedTickers"></param>
 		/// <param name="commonMarketDays"></param>
 		/// <returns></returns>
-		public static double GetCloseToClosePortfolioReturn(
-			string[] signedTickers,
-			SortedList commonMarketDays )
-		{
-			double[] tickersWeights = new double[signedTickers.Length];
-			for(int i = 0; i<signedTickers.Length; i++)
-				tickersWeights[i] = 1.0/signedTickers.Length;
-			
-			return GetCloseToClosePortfolioReturn(
-				signedTickers , tickersWeights , commonMarketDays );
-		}
-    
+//		public static double GetCloseToClosePortfolioReturn(
+//			string[] signedTickers,
+//			SortedList commonMarketDays )
+//		{
+//			double[] tickersWeights = new double[signedTickers.Length];
+//			for(int i = 0; i<signedTickers.Length; i++)
+//				tickersWeights[i] = 1.0/signedTickers.Length;
+//			
+//			return GetCloseToClosePortfolioReturn(
+//				signedTickers , tickersWeights , commonMarketDays );
+//		}
+//    
 		private static double getLastNightPortfolioReturn(float[] tickersLastNightReturns,
 		                                                  double[] tickersWeights)
     {
@@ -372,36 +466,36 @@ namespace QuantProject.Business.Strategies
 			double closeToCloseReturn = currentQuote / previousQuote - 1.0;
 			return closeToCloseReturn;
 		}
-		private static double getMultiplier( string signedTicker )
-		{
-			double multiplier = 1.0;
-			if ( IsShort( signedTicker ) )
-				multiplier = -multiplier;
-			return multiplier;
-		}
-		private static double getCloseToClosePortfolioReturn(
-			string[] signedTickers , SortedList datesForReturnComputation , int i )
-		{
-			double dailyReturn = 0.0;
-			foreach ( String signedTicker in signedTickers )
-				dailyReturn += getMultiplier( signedTicker ) *
-					getCloseToCloseReturn( GetTicker( signedTicker ) ,
-					datesForReturnComputation , i ) /
-					signedTickers.Length;  // every position is considered with same weight
-			return dailyReturn;
-		}
-		private static double[] getCloseToClosePortfolioReturns(
-			string[] signedTickers , SortedList datesForReturnComputation )
-		{
-			// the return for first DateTime cannot be computed so the returned
-			// array will have one element less the datesForReturnComputation
-			double[] closeToClosePortfolioReturns =
-				new double[ datesForReturnComputation.Count - 1 ];
-			for ( int i=0 ; i < closeToClosePortfolioReturns.Length ; i++ )
-				closeToClosePortfolioReturns[ i ] =	getCloseToClosePortfolioReturn(
-					signedTickers , datesForReturnComputation , i );
-			return closeToClosePortfolioReturns;
-		}
+//		private static double getMultiplier( string signedTicker )
+//		{
+//			double multiplier;
+//			if ( IsShort( signedTicker ) )
+//				multiplier = -multiplier;
+//			return multiplier;
+//		}
+//		private static double getCloseToClosePortfolioReturn(
+//			string[] signedTickers , SortedList datesForReturnComputation , int i )
+//		{
+//			double dailyReturn = 0.0;
+//			foreach ( String signedTicker in signedTickers )
+//				dailyReturn += getMultiplier( signedTicker ) *
+//					getCloseToCloseReturn( GetTicker( signedTicker ) ,
+//					datesForReturnComputation , i ) /
+//					signedTickers.Length;  // every position is considered with same weight
+//			return dailyReturn;
+//		}
+//		private static double[] getCloseToClosePortfolioReturns(
+//			string[] signedTickers , SortedList datesForReturnComputation )
+//		{
+//			// the return for first DateTime cannot be computed so the returned
+//			// array will have one element less the datesForReturnComputation
+//			double[] closeToClosePortfolioReturns =
+//				new double[ datesForReturnComputation.Count - 1 ];
+//			for ( int i=0 ; i < closeToClosePortfolioReturns.Length ; i++ )
+//				closeToClosePortfolioReturns[ i ] =	getCloseToClosePortfolioReturn(
+//					signedTickers , datesForReturnComputation , i );
+//			return closeToClosePortfolioReturns;
+//		}
 		private static double[] getCloseToClosePortfolioReturns(
 			ICollection signedTickers,	SortedList datesForReturnComputation )
 		{
@@ -450,6 +544,12 @@ namespace QuantProject.Business.Strategies
         if(signedTickers[i] != null)
           signedTickers[i] = GetOppositeSignedTicker(signedTickers[i]);
       }
+		}
+		public static string GetOppositeSignedTicker( string stringForSignedTicker )
+		{
+			SignedTicker signedTicker = new SignedTicker( stringForSignedTicker );
+			SignedTicker oppositeSignedTicker = signedTicker.OppositeSignedTicker;
+			return oppositeSignedTicker.Ticker;
 		}
 	}
 }
