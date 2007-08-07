@@ -128,16 +128,17 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag.WFLagDebugger
 			Hashtable virtualQuantities = new Hashtable();
 			double valueForEachPosition = 30000 /
 				positions.Count;
-			foreach( string signedTicker in	positions )
+			foreach( string stringForSignedTicker in	positions )
 			{
-				string ticker = SignedTicker.GetTicker( signedTicker );
+				SignedTicker signedTicker = new SignedTicker( stringForSignedTicker );
+				string ticker = signedTicker.Ticker;
 				EndOfDayDateTime endOfDayDateTime =
 					new EndOfDayDateTime( dateTime , EndOfDaySpecificTime.MarketClose );
 				double tickerQuote =
 					this.historicalQuoteProvider.GetMarketValue(
 					ticker , endOfDayDateTime );
 				double virtualQuantity = valueForEachPosition / tickerQuote;
-				if ( SignedTicker.IsShort( signedTicker ) )
+				if ( signedTicker.IsShort )
 					virtualQuantity = -virtualQuantity;
 				virtualQuantities.Add( ticker , virtualQuantity );
 			}

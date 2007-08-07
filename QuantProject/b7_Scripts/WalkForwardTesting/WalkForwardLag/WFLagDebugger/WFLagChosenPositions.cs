@@ -241,10 +241,10 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag.WFLagDebugger
 //		}
 		#region setWeightedPositionsFromQPHashtables
 		private double getWeightedPositions_getWeight(
-			double absoluteWeightForEachPosition , string signedTicker )
+			double absoluteWeightForEachPosition , SignedTicker signedTicker )
 		{
 			double weight = absoluteWeightForEachPosition;
-			if ( SignedTicker.IsShort( signedTicker ) )
+			if ( signedTicker.IsShort )
 				weight = - absoluteWeightForEachPosition;
 			return weight;
 		}
@@ -258,7 +258,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag.WFLagDebugger
 			foreach ( string signedTicker in signedTickers.Keys )
 			{
 				weights[ i ] = this.getWeightedPositions_getWeight(
-					absoluteWeightForEachPosition , signedTicker );
+					absoluteWeightForEachPosition , new SignedTicker( signedTicker ) );
 				tickers[ i ] = SignedTicker.GetTicker( signedTicker );
 				i++;
 			}
