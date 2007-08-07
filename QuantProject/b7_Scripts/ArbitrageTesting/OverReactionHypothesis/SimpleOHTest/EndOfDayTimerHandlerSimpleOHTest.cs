@@ -83,15 +83,14 @@ namespace QuantProject.Scripts.ArbitrageTesting.OverReactionHypothesis.SimpleOHT
     private void addOrderForTicker(string[] tickers, 
                                    int tickerPosition )
     {
-      string ticker = 
-        SignedTicker.GetTicker(tickers[tickerPosition]);
+			SignedTicker signedTicker = new SignedTicker( tickers[tickerPosition] );
+      string ticker = signedTicker.Ticker;
       double cashForSinglePosition = 
         this.account.CashAmount / this.chosenTickers.Length;
       long quantity =
         Convert.ToInt64( Math.Floor( cashForSinglePosition / this.account.DataStreamer.GetCurrentBid( ticker ) ) );
       Order order = 
-        new Order( 
-        SignedTicker.GetMarketOrderType(tickers[tickerPosition]),
+        new Order( signedTicker.MarketOrderType ,
         new Instrument( ticker ) , quantity );
       this.orders.Add(order);
     }	
