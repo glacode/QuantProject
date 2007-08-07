@@ -45,7 +45,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag
 	public class WFLagGenomeManagerForFixedPortfolioWithNormalDrivingAndPortfolio : IGenomeManager
 	{
 		private int numberOfDrivingPositions;
-		private string[] portfolioSignedTickers;
+		private SignedTickers portfolioSignedTickers;
 		private History timeLineForOptimization; // this time line goes from
 		// the first optimization date for driving positions to the
 		// last optimization date; this optimization is meant to be
@@ -97,7 +97,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag
 		public WFLagGenomeManagerForFixedPortfolioWithNormalDrivingAndPortfolio(
 			int numberOfDrivingPositions ,
 			DataTable eligibleTickersForDrivingWeightedPositions ,
-			string[] portfolioSignedTickers ,
+			SignedTickers portfolioSignedTickers ,
 			History timeLineForOptimization ,
 			IEquityEvaluator equityEvaluator ,
 			int seedForRandomGenerator )
@@ -345,13 +345,13 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag
 
 		private void setTickerForPortfolioPositions( int i )
 		{
-			string signedTicker = this.portfolioSignedTickers[ i ];
-			this.tickersForPortfolioPositions[ i ] = SignedTicker.GetTicker( signedTicker );
+			SignedTicker signedTicker = this.portfolioSignedTickers[ i ];
+			this.tickersForPortfolioPositions[ i ] = signedTicker.Ticker;
 		}
 		private void setTickersForPortfolioPositions()
 		{
-			this.tickersForPortfolioPositions = new string[ this.portfolioSignedTickers.Length ];
-			for( int i=0 ; i < portfolioSignedTickers.Length ; i++ )
+			this.tickersForPortfolioPositions = new string[ this.portfolioSignedTickers.Count ];
+			for( int i=0 ; i < portfolioSignedTickers.Count ; i++ )
 				this.setTickerForPortfolioPositions( i );
 		}
 		private string[] getTickersForPortfolioPositions()
