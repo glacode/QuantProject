@@ -306,17 +306,17 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag
 			return tickerReturns;
 		}
 		private static float getTickerReturnsStandardDeviations( int tickerIndex ,
-			string[] signedTickers , ReturnsManager returnsManager )
+			SignedTickers signedTickers , ReturnsManager returnsManager )
 		{
-			string ticker = SignedTicker.GetTicker( signedTickers[ tickerIndex ] );
+			string ticker = signedTickers[ tickerIndex ].Ticker;
 			return returnsManager.GetReturnsStandardDeviation( ticker );
 		}
 		private static float[] getTickersReturnsStandardDeviations(
-			string[] signedTickers , ReturnsManager returnsManager )
+			SignedTickers signedTickers , ReturnsManager returnsManager )
 		{
 			float[] tickersReturnsStandardDeviations =
-				new float[ signedTickers.Length ];
-			for ( int i = 0 ; i < signedTickers.Length ; i++ )
+				new float[ signedTickers.Count ];
+			for ( int i = 0 ; i < signedTickers.Count ; i++ )
 				tickersReturnsStandardDeviations[ i ] =
 					getTickerReturnsStandardDeviations( i ,
 					signedTickers , returnsManager );
@@ -346,15 +346,8 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag
 			return getNonNormalizedWeightsButBalancedForVolatility(
 				standardDeviations , maxStandardDeviation );
 		}
-		/// <summary>
-		/// Returns weights balanced with respect to the close to close volatility,
-		/// in the given period
-		/// (the most volatile ticker is given the lighter weight)
-		/// </summary>
-		/// <param name="signedTickers"></param>
-		/// <returns></returns>
-		public static double[] GetBalancedWeights(
-			string[] signedTickers , ReturnsManager returnManager )
+		private static double[] getUnsignedNormalizedBalancedWeights(
+			SignedTickers signedTickers , ReturnsManager returnManager )
 		{
 			float[] standardDeviations =
 				getTickersReturnsStandardDeviations( signedTickers ,
@@ -364,6 +357,46 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag
 			double[] normalizedBalancedWeights =
 				GetNormalizedWeights( nonNormalizedButBalancedWeights );
 			return normalizedBalancedWeights;
+		}
+		private static double[] getSignedNormalizedBalancedWeights(
+			double[] multipliers ,
+			double[] unsignedNormalizedBalancedWeights )
+		{
+			double[] signedNormalizedBalancedWeights =
+				new double[ unsignedNormalizedBalancedWeights.Length ];
+			for( int i = 0 ; i < unsignedNormalizedBalancedWeights.Length ; i++ )
+				signedNormalizedBalancedWeights[ i ] =
+					multipliers[ i ] * unsignedNormalizedBalancedWeights[ i ];
+			return signedNormalizedBalancedWeights;
+		}
+		private static double[] getSignedNormalizedBalancedWeights(
+			SignedTickers signedTickers ,
+			double[] unsignedNormalizedBalancedWeights )
+		{
+			double[] multipliers =
+				signedTickers.Multipliers;
+			double[] signedNormalizedBalancedWeights =
+				getSignedNormalizedBalancedWeights( multipliers ,
+				unsignedNormalizedBalancedWeights );
+			return signedNormalizedBalancedWeights;
+		}
+		/// <summary>
+		/// Returns weights balanced with respect to the close to close volatility,
+		/// in the given period
+		/// (the most volatile ticker is given the lighter weight)
+		/// </summary>
+		/// <param name="signedTickers"></param>
+		/// <returns></returns>
+		public static double[] GetBalancedWeights(
+			SignedTickers signedTickers , ReturnsManager returnManager )
+		{
+			double[] unsignedNormalizedBalancedWeights =
+				getUnsignedNormalizedBalancedWeights(
+				signedTickers , returnManager );
+			double[] balancedWeights =
+				getSignedNormalizedBalancedWeights(
+				signedTickers , unsignedNormalizedBalancedWeights );
+			return balancedWeights;
 		}
 		#endregion //GetBalancedWeights
 		#region GetReturn
