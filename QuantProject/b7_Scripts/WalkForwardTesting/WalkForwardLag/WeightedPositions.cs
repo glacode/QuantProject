@@ -47,7 +47,40 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag
 		{
 			get { return getType(); }
 		}
-		public WeightedPositions( double[] normalizedWeightValues ,
+		
+		private int numberOfLongPositions = int.MaxValue;
+		private int numberOfShortPositions = int.MaxValue;
+		
+		public int NumberOfLongPositions {
+			get {
+				if(this.numberOfLongPositions == int.MaxValue)
+				//that is private field has not been assigned yet
+				{
+					this.numberOfLongPositions = 0;
+					foreach(WeightedPosition weightedPosition in this)
+						if(weightedPosition.IsLong)
+							this.numberOfLongPositions++;
+				}
+				return this.numberOfLongPositions;
+			}
+		}
+
+		public int NumberOfShortPositions {
+			get {
+				if(this.numberOfShortPositions == int.MaxValue)
+				//that is private field has not been assigned yet
+				{
+					this.numberOfShortPositions = 0;
+					foreach(WeightedPosition weightedPosition in this)
+						if(weightedPosition.IsShort)
+							this.numberOfShortPositions++;
+				}
+				return this.numberOfShortPositions;
+			}
+		}
+			
+		
+		private void weightedPositions_default( double[] normalizedWeightValues ,
 			string[] tickers )
 		{
 			this.checkParameters( normalizedWeightValues , tickers );
@@ -57,10 +90,32 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag
 				double weight = normalizedWeightValues[ i ];
 				if ( !this.ContainsKey( ticker ) )
 					this.Add( ticker , new WeightedPosition( weight , ticker ) );
-				else
-					((WeightedPosition)this[ ticker ]).Weight += weight;
 			}
 		}
+
+		public WeightedPositions( double[] normalizedWeightValues ,
+			string[] tickers )
+		{
+			this.weightedPositions_default( normalizedWeightValues,
+																		 tickers );
+		}
+		
+		public WeightedPositions( double[] normalizedUnsignedWeightValues,
+		                          SignedTickers signedTickers )
+		{
+			string[] unsignedTickers = new string [ signedTickers.Count ];
+			double[] normalizedSignedWeightValues = 
+				new double[ normalizedUnsignedWeightValues.Length ];
+			for(int i = 0; i < signedTickers.Count; i++)
+			{
+				unsignedTickers[i] = signedTickers[i].Ticker;
+				normalizedSignedWeightValues[i] = 
+					 signedTickers[i].Multiplier * normalizedUnsignedWeightValues[i];
+			}
+			this.weightedPositions_default(normalizedSignedWeightValues,
+																		 unsignedTickers);
+		}
+		
 		#region checkParameters
 		private void checkParameters_checkDoubleTickers( string[] tickers )
 		{
