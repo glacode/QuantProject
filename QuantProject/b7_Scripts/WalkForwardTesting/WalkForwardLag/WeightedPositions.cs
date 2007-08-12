@@ -152,6 +152,18 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag
 		{
 			return (WeightedPosition)this.GetByIndex( i );
 		}
+		public WeightedPosition this[ int index ]  
+		{
+			get  
+			{
+				return (WeightedPosition)this.GetByIndex( index );
+			}
+			set  
+			{
+				this.SetByIndex( index, value );
+			}
+		}
+
 		#region GetEquityLine
 		/// <summary>
 		/// Returns a virtual amount of quantities for each virtual ticker.
@@ -531,5 +543,22 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag
 				returns[ i ] = this.GetReturn( i , returnsManager );
 			return returns;
 		}
+		/// <summary>
+    /// Gets the Open To Close return for the current instance of WeightedPositions
+    /// </summary>
+    /// <param name="marketDate">Market date for which return has to be computed</param>
+    public double GetOpenToCloseReturn(DateTime marketDate)
+    {
+      Quotes[] tickersQuotes = new Quotes[this.Count];
+      for(int i = 0; i<this.Count; i++)
+				tickersQuotes[i] = new Quotes( this[i].Ticker,marketDate,marketDate );
+      double openToCloseReturn = 0.0;
+      for(int i = 0; i < this.Count ; i++)
+        	openToCloseReturn += 
+        		        		( (float)tickersQuotes[i].Rows[0]["quClose"] /
+        	  						(float)tickersQuotes[i].Rows[0]["quOpen"] - 1.0f ) *
+        	  						(float)this[i].Weight;
+      return openToCloseReturn;
+    }
 	}
 }
