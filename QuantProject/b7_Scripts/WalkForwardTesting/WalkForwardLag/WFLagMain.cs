@@ -151,6 +151,11 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag
 				4 , new SignedTickers( "IWM;-SPY" ) , 100 , "EWQ" ,
 				new QuantProject.Business.Strategies.EquityEvaluation.SharpeRatio() ,
 				10000 , 30 );
+			wFLagWeightedPositionsChooser =
+				new WFLagGeneticFixedPortfolioWithNormalDrivingAndPortfolio(
+				4 , new SignedTickers( "IWM;-SPY" ) , 100 , "EWQ" ,
+				new QuantProject.Business.Strategies.EquityEvaluation.ExpectancyScore() ,
+				10000 , 30 );
 			new RunWalkForwardLag( "DrvPstns" , 200 ,
 				wFLagWeightedPositionsChooser ,	7 ,
 				new DateTime( 2001 , 1 , 1 ) ,
