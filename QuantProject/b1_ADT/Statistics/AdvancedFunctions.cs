@@ -135,8 +135,9 @@ namespace QuantProject.ADT.Statistics
 			double averageLosingReturn;
 			double probabilityOfWinning;
 			double probabilityOfLosing;
-			foreach ( double singleReturn in returns )
+			foreach ( object numericSingleReturn in returns )
 			{
+				double singleReturn = Convert.ToDouble( numericSingleReturn );
 				if ( singleReturn > 0 )
 				{
 					winningPeriods++;
