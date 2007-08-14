@@ -2,7 +2,7 @@
 /*
 QuantProject - Quantitative Finance Library
 
-WinningPeriods.cs
+SharpeRatio.cs
 Copyright (C) 2006
 Glauco Siliprandi
 
