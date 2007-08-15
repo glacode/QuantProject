@@ -560,5 +560,14 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag
         	  						(float)this[i].Weight;
       return openToCloseReturn;
     }
+		/// <summary>
+		/// Reverse the sign of each weight for each position in the current instance:
+		/// long positions become then short positions and viceversa
+		/// </summary>
+		public void Reverse()
+		{
+			foreach(WeightedPosition weightedPosition in this)
+				weightedPosition.Weight = - weightedPosition.Weight;
+		}
 	}
 }
