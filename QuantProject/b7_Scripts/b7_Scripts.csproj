@@ -733,11 +733,6 @@
                     BuildAction = "Compile"
                 />
                 <File
-                    RelPath = "WalkForwardTesting\WalkForwardLag\WeightedPositions.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
                     RelPath = "WalkForwardTesting\WalkForwardLag\WFLagCandidates.cs"
                     SubType = "Code"
                     BuildAction = "Compile"

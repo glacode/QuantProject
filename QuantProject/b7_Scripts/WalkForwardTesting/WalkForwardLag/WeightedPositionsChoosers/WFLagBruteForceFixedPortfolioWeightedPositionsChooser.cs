@@ -27,7 +27,7 @@ using QuantProject.ADT;
 //using QuantProject.ADT.Collections;
 using QuantProject.ADT.Optimizing.BruteForce;
 //using QuantProject.ADT.Optimizing.Genetic;
-//using QuantProject.Business.Strategies;
+using QuantProject.Business.Strategies;
 using QuantProject.Business.Strategies.EquityEvaluation;
 using QuantProject.Business.Timing;
 using QuantProject.Scripts.WalkForwardTesting.WalkForwardLag.WFLagDebugger;

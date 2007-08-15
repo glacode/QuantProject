@@ -23,6 +23,7 @@ using System;
 using System.Data;
 
 using QuantProject.ADT.Statistics;
+using QuantProject.Business.Strategies;
 using QuantProject.Business.Strategies.EquityEvaluation;
 
 namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag

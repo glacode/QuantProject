@@ -31,7 +31,7 @@ using QuantProject.Business.Strategies.ReturnsManagement;
 using QuantProject.Business.Timing;
 using QuantProject.Data.DataTables;
 
-namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag
+namespace QuantProject.Business.Strategies
 {
 	[Serializable]
 	/// <summary>

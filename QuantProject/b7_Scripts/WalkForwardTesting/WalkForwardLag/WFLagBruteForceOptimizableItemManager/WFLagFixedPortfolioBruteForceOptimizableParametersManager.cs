@@ -25,6 +25,7 @@ using System.Data;
 
 using QuantProject.ADT.Optimizing.BruteForce;
 using QuantProject.ADT.Statistics.Combinatorial;
+using QuantProject.Business.Strategies;
 using QuantProject.Business.Strategies.EquityEvaluation;
 
 namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag
