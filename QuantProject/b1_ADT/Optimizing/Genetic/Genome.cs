@@ -38,7 +38,7 @@ namespace QuantProject.ADT.Optimizing.Genetic
     private double fitness;
     private object meaning;
     private bool hasBeenCloned;
-    private bool hasBeenChanged;
+    private bool hasBeenMutated;
     
     private IGenomeManager genomeManager;
     private GeneticOptimizer geneticOptimizer;
@@ -52,12 +52,13 @@ namespace QuantProject.ADT.Optimizing.Genetic
     }
     
     /// <summary>
-    /// Returns true if a gene has been set
-    /// by calling SetGeneValue
+    /// Returns true if a gene has been mutated
+    /// through a IGenomeManager Mutate method
     /// </summary>
-    public bool HasBeenChanged
+    public bool HasBeenMutated
     {
-      get{return this.hasBeenChanged;}
+      get{return this.hasBeenMutated;}
+      set{this.hasBeenMutated = value;}
     }
     
     private void setFitnessValue(double fitnessValue)
@@ -203,7 +204,6 @@ namespace QuantProject.ADT.Optimizing.Genetic
       //whenever at least one gene has been written,
 			//the current generation number is stored
       this.generation = this.geneticOptimizer.GenerationCounter;
-      this.hasBeenChanged = true;
     }
     
     public int GetGeneValue(int genePosition)

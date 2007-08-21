@@ -335,13 +335,13 @@ namespace QuantProject.ADT.Optimizing.Genetic
             genes = genes + " " + gene.ToString();
 				System.Console.WriteLine("\r\n" + this.GenerationCounter + " " + genomeNumber + " " + genes + " " + 
                 ((Genome)this.currentGeneration[i]).Fitness + " " +
-                ((Genome)this.currentGeneration[i]).HasBeenChanged.ToString() + " " +
+                ((Genome)this.currentGeneration[i]).HasBeenMutated.ToString() + " " +
                 ((Genome)this.currentGeneration[i]).HasBeenCloned.ToString() + " " +
                 ((Genome)this.currentGeneration[i]).Generation + " " +
                    this.BestGenome.Fitness);
 //        w.Write("\r\n" + this.GenerationCounter + " " + genomeNumber + " " + genes + " " + 
 //                ((Genome)this.currentGeneration[i]).Fitness + " " +
-//                ((Genome)this.currentGeneration[i]).HasBeenChanged.ToString() + " " +
+//                ((Genome)this.currentGeneration[i]).HasBeenMutated.ToString() + " " +
 //                ((Genome)this.currentGeneration[i]).HasBeenCloned.ToString() + " " +
 //                ((Genome)this.currentGeneration[i]).Generation + " " +
 //                 this.BestGenome.Fitness);
@@ -490,7 +490,10 @@ namespace QuantProject.ADT.Optimizing.Genetic
       foreach(Genome g in this.nextGeneration)
       {
         if( GenomeManagement.RandomGenerator.Next(0,101) < (int)(this.mutationRate*100) ) 
-      		this.genomeManager.Mutate(g);
+        {
+        	this.genomeManager.Mutate(g);
+        	g.HasBeenMutated = true;
+        }
       }
     }
  
