@@ -243,98 +243,7 @@ namespace QuantProject.Business.Strategies
 //			return closeToCloseTickerReturns;
 //		}
 //		#endregion //GetCloseToCloseReturnsForUnsignedTicker
-    #region getCloseToClosePortfolioReturn_setReturns
-
-    private static double getCloseToClosePortfolioReturn_setReturns_getReturn(
-			int returnDay, string[] signedTickers ,
-			double[] tickersWeights, Quotes[] tickersQuotes )
-    {
-      double returnValue = 0.0;
-      float signOfTicker = 1.0f;
-      for(int indexForTicker = 0; indexForTicker<signedTickers.Length; indexForTicker++)
-      {
-				SignedTicker signedTicker =
-					new SignedTicker( signedTickers[indexForTicker] );
-        if( signedTicker.IsLong )
-          signOfTicker = 1.0f;
-        else
-          signOfTicker = -1.0f;
-      	
-        returnValue +=
-          signOfTicker *
-          ((float)tickersQuotes[indexForTicker].Rows[returnDay][Quotes.AdjustedCloseToCloseRatio] - 1.0f)*
-          (float)tickersWeights[indexForTicker];
-      }
-      return returnValue;
-    }
-
-    private static void getCloseToClosePortfolioReturn_setReturns(double[] returnsToSet,
-                                                                  string[] signedTickers,
-                                                                  double[] tickersWeights,
-                                                                  Quotes[] tickersQuotes )
-    {
-      for(int i = 0; i < returnsToSet.Length; i++)
-      {
-        returnsToSet[i] =
-          getCloseToClosePortfolioReturn_setReturns_getReturn(
-             i,signedTickers,tickersWeights,tickersQuotes);
-      }
-    }
     
-    #endregion
-
-    /// <summary>
-    /// Gets portfolio's return for a given period, for given tickers
-    /// </summary>
-    /// <param name="signedTickers">Array of signed tickers that compose the portfolio</param>
-    /// <param name="tickersWeights">Array of weights for tickers - the same order has to be provided!</param>
-    /// <param name="startDate">Start date for the period for which return has to be computed</param>
-    /// <param name="endDate">End date for the period for which return has to be computed</param>
-    public static double GetCloseToClosePortfolioReturn(string[] signedTickers,
-                                                        double[] tickersWeights,
-                                                        DateTime startDate,
-                                                        DateTime endDate )
-    {
-      const double initialEquity = 1.0;
-      double equityValue = initialEquity;
-      Quotes[] tickersQuotes = new Quotes[signedTickers.Length];
-      for(int i = 0; i<signedTickers.Length; i++)
-      {
-        tickersQuotes[i] = new Quotes(SignedTicker.GetTicker(signedTickers[i]),
-                                      startDate, endDate);
-        if(tickersQuotes[i].Rows.Count == 0)
-        //no quotes are available at the given period
-          throw new MissingQuotesException(SignedTicker.GetTicker(signedTickers[i]),
-        	       													 startDate, endDate);
-      }
-      double[] returns = new double[tickersQuotes[0].Rows.Count];
-      getCloseToClosePortfolioReturn_setReturns(returns,signedTickers,
-                                                tickersWeights, tickersQuotes);
-      for(int i = 0; i < returns.Length; i++)
-        equityValue = 
-          equityValue + equityValue * returns[i];
-
-      return (equityValue - initialEquity)/initialEquity;
-    }
-		
-    /// <summary>
-    /// Gets portfolio's return for a given period, for the given tickers
-    /// </summary>
-    /// <param name="signedTickers">Array of signed tickers that compose the portfolio (each ticker has the same weight)</param>
-    /// <param name="startDate">Start date for the period for which return has to be computed</param>
-    /// <param name="endDate">End date for the period for which return has to be computed</param>
-		public static double GetCloseToClosePortfolioReturn(string[] signedTickers,
-			DateTime startDate,
-			DateTime endDate )
-		{
-			double[] tickersWeights = new double[signedTickers.Length];
-			for(int i = 0; i<signedTickers.Length; i++)
-				tickersWeights[i] = 1.0/signedTickers.Length;
-			
-			return GetCloseToClosePortfolioReturn(
-				signedTickers,tickersWeights, startDate, endDate);
-    	
-		}
     
 		/// <summary>
 		/// Gets portfolio's return for a given period, for given tickers
@@ -385,48 +294,6 @@ namespace QuantProject.Business.Strategies
 //				signedTickers , tickersWeights , commonMarketDays );
 //		}
 //    
-		private static double getLastNightPortfolioReturn(float[] tickersLastNightReturns,
-		                                                  double[] tickersWeights)
-    {
-      double returnValue = 0.0;
-      for(int i = 0; i<tickersLastNightReturns.Length; i++)
-      	returnValue += tickersLastNightReturns[i]*(float)tickersWeights[i];
-      
-      return returnValue;
-    }
-		
-		private static float getLastNightPortfolioReturn_getLastNightReturnForTicker(string ticker,
-		                                            DateTime lastMarketDay, DateTime today)
-    {
-      Quotes tickerQuotes = new Quotes(ticker, lastMarketDay, today);
-      return 	  ( (float)tickerQuotes.Rows[1]["quOpen"] *
-            				(float)tickerQuotes.Rows[1]["quAdjustedClose"]/
-            				(float)tickerQuotes.Rows[1]["quClose"] ) /
-            		  (float)tickerQuotes.Rows[0]["quAdjustedClose"]  - 1;
-    }
-		
-		
-		/// <summary>
-    /// Gets portfolio's last night return for the given tickers
-    /// </summary>
-    /// <param name="signedTickers">Array of signed tickers that compose the portfolio</param>
-    /// <param name="tickersWeights">Array of weights for tickers - the same order has to be provided!</param>
-    /// <param name="lastMarketDay">The last market date before today</param>
-    /// <param name="today">today</param> 
-    public static double GetLastNightPortfolioReturn(string[] signedTickers,
-                                                     double[] tickersWeights,
-                                                     DateTime lastMarketDay,
-                                                     DateTime today)
-    {
-    	float[] tickersLastNightReturns = new float[signedTickers.Length];
-    	for(int i = 0; i<signedTickers.Length; i++)
-      {
-    		tickersLastNightReturns[i] = 
-    			getLastNightPortfolioReturn_getLastNightReturnForTicker(
-    			          SignedTicker.GetTicker(signedTickers[i]), lastMarketDay, today );
-      }
-    	return getLastNightPortfolioReturn(tickersLastNightReturns, tickersWeights);
-    }
 		
 		private static string[] getSignedTickersArray( ICollection signedTickers )
 		{
