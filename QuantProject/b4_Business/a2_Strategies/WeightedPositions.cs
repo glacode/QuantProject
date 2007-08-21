@@ -29,6 +29,7 @@ using QuantProject.Business.Financial.Accounting;
 using QuantProject.Business.Strategies;
 using QuantProject.Business.Strategies.ReturnsManagement;
 using QuantProject.Business.Timing;
+using QuantProject.Data;
 using QuantProject.Data.DataTables;
 
 namespace QuantProject.Business.Strategies
@@ -78,7 +79,20 @@ namespace QuantProject.Business.Strategies
 				return this.numberOfShortPositions;
 			}
 		}
-			
+		
+		public SignedTickers Tickers {
+			get {
+				string[] arrayOfTickersWithSign = new string[this.Count];
+				for(int i = 0; i < this.Count; i++)
+				{
+					if(this[i].IsShort)
+						arrayOfTickersWithSign[i] = "-" + this[i].Ticker;
+					else
+						arrayOfTickersWithSign[i] = this[i].Ticker;
+				}
+				return new SignedTickers(arrayOfTickersWithSign);
+			}
+		}
 		
 		private void weightedPositions_default( double[] normalizedWeightValues ,
 			string[] tickers )
@@ -116,6 +130,25 @@ namespace QuantProject.Business.Strategies
 																		 unsignedTickers);
 		}
 		
+		/// <summary>
+		/// It creates a new instance with all equal weights for
+		/// the given SignedTickers object
+		/// </summary>
+		public WeightedPositions( SignedTickers signedTickers )
+		{
+			string[] unsignedTickers = new string [ signedTickers.Count ];
+			double[] allEqualSignedWeights = 
+				new double[ signedTickers.Count ];
+			for(int i = 0; i < signedTickers.Count; i++)
+			{
+				unsignedTickers[i] = signedTickers[i].Ticker;
+				allEqualSignedWeights[i] = 
+					signedTickers[i].Multiplier / (double)signedTickers.Count;
+			}
+			this.weightedPositions_default( allEqualSignedWeights,
+																			unsignedTickers );
+		}
+
 		#region checkParameters
 		private void checkParameters_checkDoubleTickers( string[] tickers )
 		{
@@ -560,6 +593,88 @@ namespace QuantProject.Business.Strategies
         	  						(float)this[i].Weight;
       return openToCloseReturn;
     }
+		
+    #region getLastNightReturn
+  	private double getLastNightReturn( float[] weightedPositionsLastNightReturns )
+		{
+			double returnValue = 0.0;
+			for(int i = 0; i<weightedPositionsLastNightReturns.Length; i++)
+				returnValue += weightedPositionsLastNightReturns[i]*((WeightedPosition)this[i]).Weight;
+			return returnValue;
+		}
+		private float getLastNightReturn_getLastNightReturnForTicker(string ticker,
+			DateTime lastMarketDay, DateTime today)
+		{
+			Quotes tickerQuotes = new Quotes(ticker, lastMarketDay, today);
+			return 	(  ( (float)tickerQuotes.Rows[1]["quOpen"] *
+									(float)tickerQuotes.Rows[1]["quAdjustedClose"] /
+									(float)tickerQuotes.Rows[1]["quClose"]            ) /
+								(float)tickerQuotes.Rows[0]["quAdjustedClose"]  - 1     );
+		}
+		#endregion
+  	
+  	/// <summary>
+		/// Gets the last night return for the current instance
+		/// </summary>
+		/// <param name="lastMarketDay">The last market date before today</param>
+		/// <param name="today">today</param> 
+		public double GetLastNightReturn( DateTime lastMarketDay , DateTime today )
+		{
+			float[] weightedPositionsLastNightReturns = new float[this.Count];
+			for(int i = 0; i<this.Count; i++)
+				weightedPositionsLastNightReturns[i] = 
+					this.getLastNightReturn_getLastNightReturnForTicker(
+					((WeightedPosition)this[i]).Ticker, lastMarketDay, today );
+			return getLastNightReturn( weightedPositionsLastNightReturns );
+		}
+				
+		private double getCloseToCloseReturn_setReturns_getReturn(
+			int returnDayIndex, Quotes[] tickersQuotes )
+    {
+      double returnValue = 0.0;
+      for(int indexForTicker = 0; indexForTicker<this.Count; indexForTicker++)
+      	returnValue +=
+          ((float)tickersQuotes[indexForTicker].Rows[returnDayIndex][Quotes.AdjustedCloseToCloseRatio] - 1.0f)*
+        	(float)this[indexForTicker].Weight;
+      return returnValue;
+    }
+    private void getCloseToCloseReturn_setReturns( double[] returnsToSet,
+                                                   Quotes[] tickersQuotes )
+    {
+      for(int i = 0; i < returnsToSet.Length; i++)
+      {
+        returnsToSet[i] =
+          getCloseToCloseReturn_setReturns_getReturn(i,tickersQuotes);
+      }
+    }
+    /// <summary>
+    /// Gets portfolio's return for a given period, for the current instance
+    /// of weighted positions
+    /// </summary>
+    /// <param name="startDate">Start date for the period for which return has to be computed</param>
+    /// <param name="endDate">End date for the period for which return has to be computed</param>
+    public double GetCloseToCloseReturn(DateTime startDate,DateTime endDate )
+    {
+      const double initialEquity = 1.0;
+      double equityValue = initialEquity;
+      Quotes[] tickersQuotes = new Quotes[this.Count];
+      for(int i = 0; i < this.Count; i++)
+      {
+      	tickersQuotes[i] = new Quotes( this[i].Ticker,startDate, endDate );
+        if(tickersQuotes[i].Rows.Count == 0)
+        //no quotes are available at the given period
+          throw new MissingQuotesException(this[i].Ticker,
+        	       													 startDate, endDate);
+      }
+      double[] returns = new double[tickersQuotes[0].Rows.Count];
+      getCloseToCloseReturn_setReturns(returns,tickersQuotes);
+      for(int i = 0; i < returns.Length; i++)
+        equityValue = 
+          equityValue + equityValue * returns[i];
+
+      return (equityValue - initialEquity)/initialEquity;
+    }
+		
 		/// <summary>
 		/// Reverse the sign of each weight for each position in the current instance:
 		/// long positions become then short positions and viceversa
