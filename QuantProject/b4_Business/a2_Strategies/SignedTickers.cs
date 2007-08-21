@@ -39,6 +39,21 @@ namespace QuantProject.Business.Strategies
 				return multipliers;
 			}
 		}
+		public string[] ArrayForSignedTickers
+		{
+			get
+			{
+				string[] arrayForSignedTickers = new string[ List.Count ];
+				for ( int i = 0 ; i < List.Count ; i++ )
+				{
+					if( ((SignedTicker)(List[ i ])).IsLong )
+						arrayForSignedTickers[ i ] = ((SignedTicker)(List[ i ])).Ticker;
+					else //ticker is short
+						arrayForSignedTickers[ i ] = "-"+((SignedTicker)(List[ i ])).Ticker;
+				}
+				return arrayForSignedTickers;
+			}
+		}
 		public SignedTickers()
 		{
 			//
