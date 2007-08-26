@@ -80,7 +80,7 @@ namespace QuantProject.Business.Strategies
 			}
 		}
 		
-		public SignedTickers Tickers {
+		public SignedTickers SignedTickers {
 			get {
 				string[] arrayOfTickersWithSign = new string[this.Count];
 				for(int i = 0; i < this.Count; i++)
