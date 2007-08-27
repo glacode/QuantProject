@@ -54,6 +54,21 @@ namespace QuantProject.Business.Strategies
 				return arrayForSignedTickers;
 			}
 		}
+		/// <summary>
+		/// Array of the tickers (without sign)
+		/// </summary>
+		public string[] Tickers
+		{
+			get
+			{
+				string[] arrayForTickers = new string[ List.Count ];
+				for ( int i = 0 ; i < List.Count ; i++ )
+				{
+					arrayForTickers[ i ] = ((SignedTicker)(List[ i ])).Ticker;
+				}
+				return arrayForTickers;
+			}
+		}
 		public SignedTickers()
 		{
 			//
