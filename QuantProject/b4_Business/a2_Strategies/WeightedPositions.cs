@@ -58,7 +58,7 @@ namespace QuantProject.Business.Strategies
 				//that is private field has not been assigned yet
 				{
 					this.numberOfLongPositions = 0;
-					foreach(WeightedPosition weightedPosition in this)
+					foreach(WeightedPosition weightedPosition in this.Values)
 						if(weightedPosition.IsLong)
 							this.numberOfLongPositions++;
 				}
@@ -72,7 +72,7 @@ namespace QuantProject.Business.Strategies
 				//that is private field has not been assigned yet
 				{
 					this.numberOfShortPositions = 0;
-					foreach(WeightedPosition weightedPosition in this)
+					foreach(WeightedPosition weightedPosition in this.Values)
 						if(weightedPosition.IsShort)
 							this.numberOfShortPositions++;
 				}
@@ -681,7 +681,7 @@ namespace QuantProject.Business.Strategies
 		/// </summary>
 		public void Reverse()
 		{
-			foreach(WeightedPosition weightedPosition in this)
+			foreach(WeightedPosition weightedPosition in this.Values)
 				weightedPosition.Weight = - weightedPosition.Weight;
 		}
 	}
