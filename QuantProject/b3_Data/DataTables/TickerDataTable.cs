@@ -159,8 +159,8 @@ namespace QuantProject.Data.DataTables
         {
           QuantProject.Data.DataTables.Quotes quotesOfCurrentTicker =
                               new QuantProject.Data.DataTables.Quotes((string)row[0]);
-          firstAvailableQuoteDate = quotesOfCurrentTicker.GetFirstValidQuoteDate(firstQuoteDate);
-          lastAvailableQuoteDate =  quotesOfCurrentTicker.GetFirstValidQuoteDate(lastQuoteDate);
+          firstAvailableQuoteDate = quotesOfCurrentTicker.GetQuoteDateOrPreceding(firstQuoteDate);
+          lastAvailableQuoteDate =  quotesOfCurrentTicker.GetQuoteDateOrPreceding(lastQuoteDate);
           firstQuote = quotesOfCurrentTicker.GetAdjustedClose(firstAvailableQuoteDate);
           lastQuote = quotesOfCurrentTicker.GetAdjustedClose(lastAvailableQuoteDate);
           row["SimpleReturn"] = (lastQuote - firstQuote) / firstQuote;
