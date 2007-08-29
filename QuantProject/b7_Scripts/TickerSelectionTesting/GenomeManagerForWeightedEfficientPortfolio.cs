@@ -170,15 +170,28 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
     private int mutate_MutateOnlyOneWeight_getNewWeight(Genome genome, int genePositionToBeMutated)
     {
       int returnValue;
-      double partOfGeneToSubtractOrAdd = 0.25;
-      int geneValue = Math.Abs(genome.GetGeneValue(genePositionToBeMutated));
+      double partOfGeneToSubtractOrAdd = 0.03;
+      int geneValue = genome.GetGeneValue(genePositionToBeMutated);
       int subtractOrAdd = GenomeManagement.RandomGenerator.Next(2);
       if(subtractOrAdd == 1)//subtract a part of the gene value from the gene value itself
-        returnValue = geneValue - Convert.ToInt32(partOfGeneToSubtractOrAdd*geneValue);
-      else
-        returnValue = Math.Min(genome.GetMaxValueForGenes(genePositionToBeMutated),
-                               geneValue + Convert.ToInt32(partOfGeneToSubtractOrAdd*geneValue));
+      {
+      	if( geneValue < 0 )
+      		returnValue = Math.Max( geneValue - Convert.ToInt32(partOfGeneToSubtractOrAdd*Math.Abs(geneValue)),
+      		                        genome.GetMinValueForGenes(genePositionToBeMutated) );
+      	else // geneValue >= 0
+      		returnValue = geneValue - Convert.ToInt32(partOfGeneToSubtractOrAdd*Math.Abs(geneValue));
+      }
+      else//add a part of the gene value to the gene value itself
+      {
+      	if( geneValue < 0 )
+      		returnValue = geneValue + Convert.ToInt32(partOfGeneToSubtractOrAdd*Math.Abs(geneValue));
+      	else // geneValue >= 0
+      		returnValue = Math.Min(genome.GetMaxValueForGenes(genePositionToBeMutated),
+                               	 geneValue + Convert.ToInt32(partOfGeneToSubtractOrAdd*geneValue));
+      }
+      
       return returnValue;
+    
     }
 
     private void mutate_MutateOnlyOneWeight(Genome genome)
@@ -210,7 +223,7 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
           //already stored in the given genome
           // a new newalueForGene has to be generated
           newValueForGene = GenomeManagement.RandomGenerator.Next(genome.GetMinValueForGenes(genePositionToBeMutated),
-            genome.GetMaxValueForGenes(genePositionToBeMutated) + 1);
+            										genome.GetMaxValueForGenes(genePositionToBeMutated) + 1);
 		      
         genome.SetGeneValue(newValueForGene, genePositionToBeMutated);
       }
