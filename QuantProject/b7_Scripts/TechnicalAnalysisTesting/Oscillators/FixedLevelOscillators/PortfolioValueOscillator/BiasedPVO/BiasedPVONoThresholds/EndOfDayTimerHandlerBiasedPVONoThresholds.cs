@@ -37,6 +37,8 @@ using QuantProject.ADT.Optimizing.Genetic;
 using QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios;
 using QuantProject.Scripts.WalkForwardTesting.LinearCombination;
 using QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOscillators.PortfolioValueOscillator;
+using QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOscillators.PortfolioValueOscillator.BiasedPVO.BiasedOTC_PVONoThresholds; 
+
 
 namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOscillators.PortfolioValueOscillator.BiasedPVO.BiasedPVONoThresholds
 {
@@ -46,18 +48,10 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOs
   /// Oscillator, with no thresholds
   /// </summary>
   [Serializable]
-  public class EndOfDayTimerHandlerBiasedPVONoThresholds : EndOfDayTimerHandlerPVO
+  public class EndOfDayTimerHandlerBiasedPVONoThresholds : EndOfDayTimerHandlerBiasedOTC_PVONoThresholds
   {
-    protected int numOfDifferentGenomesToEvaluateOutOfSample;
     protected double minimumAcceptableGain;
-    protected int currentGenomeIndex = 0;
-    protected double currentTickersGainOrLoss = 0.0;
-    protected Hashtable genomesCollector;
-    protected bool takeProfitConditionReached;
-    
-    new protected string[,] chosenTickers;
-    new protected double[,] chosenTickersPortfolioWeights;
-        
+
     public EndOfDayTimerHandlerBiasedPVONoThresholds(string tickerGroupID, int numberOfEligibleTickers, 
                                 int numberOfTickersToBeChosen, int numDaysForOptimizationPeriod,
                                 Account account,                                
@@ -73,106 +67,38 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOs
                                 account,                                
                                 generationNumberForGeneticOptimizer,
                                 populationSizeForGeneticOptimizer,
-                                benchmark,
-                                2,
-                                0,
-                                0,
-                                0,
-                                0,
-                                1,
-                                true,
-                                false,
-                                numDaysBetweenEachOptimization,
-                                portfolioType, maxAcceptableCloseToCloseDrawdown)
+                                benchmark,numOfDifferentGenomesToEvaluateOutOfSample,
+                                numDaysBetweenEachOptimization,portfolioType)
+                                
     {
-      this.numOfDifferentGenomesToEvaluateOutOfSample = numOfDifferentGenomesToEvaluateOutOfSample;
       this.minimumAcceptableGain = minimumAcceptableGain;
-      this.chosenTickers = new string[numOfDifferentGenomesToEvaluateOutOfSample, numberOfTickersToBeChosen];
-      this.chosenTickersPortfolioWeights = new double[numOfDifferentGenomesToEvaluateOutOfSample, numberOfTickersToBeChosen];
-      this.genomesCollector = new Hashtable();
+			this.maxAcceptableCloseToCloseDrawdown = maxAcceptableCloseToCloseDrawdown;
     }
     
 	  #region MarketCloseEventHandler
     
-    protected virtual double getCurrentChosenTickersGainOrLoss(IndexBasedEndOfDayTimer timer,
-                                                int indexForChosenTickers)
-    {
-      double returnValue = 999.0;
-      try
-      {
-		    DateTime date = 
-	          (DateTime)timer.IndexQuotes.Rows[timer.CurrentDateArrayPosition]["quDate"];
-	      string[] tickers = new string[this.numberOfTickersToBeChosen];
-        double[] tickerWeights = new double[this.numberOfTickersToBeChosen];
-        for(int i = 0; i < this.numberOfTickersToBeChosen; i++)
-        {
-          tickers[i] = this.chosenTickers[indexForChosenTickers,i];
-          tickerWeights[i] = this.chosenTickersPortfolioWeights[indexForChosenTickers,i];
-        }
-        returnValue =
-	      	 SignedTicker.GetCloseToClosePortfolioReturn(
-	      	     tickers, tickerWeights,
-	      	     date,date);
-      }
-    	catch(MissingQuotesException ex)
-    	{
-    		ex = ex;
-    	}
-    	return returnValue;
-    }   
-
-	  //sets currentGenomeIndex with the genome's index that crosses an overbought/oversold threshold with the
-    //highest degree and sets currentTickersGainOrLoss accordingly
-    private void marketCloseEventHandler_openPositions_chooseBestGenome(IndexBasedEndOfDayTimer timer)
-    {
-      //default genome index is the first
-      //genome (with the highest plain fitness), if no other genome
-      //presents a gain or a loss greater than the first genome
-      double currentTickersGainOrLoss = 0.0;
-      double currentMaxAbsoluteMove = 0.0;
-      double currentAbsoluteMove = 0.0;
-      for(int i = 0; i < this.numOfDifferentGenomesToEvaluateOutOfSample; i++)
-      {
-        currentTickersGainOrLoss = this.getCurrentChosenTickersGainOrLoss(timer, i);
-      	currentAbsoluteMove =
-        	Math.Abs( currentTickersGainOrLoss );
-        if(currentAbsoluteMove != 999.0 && 
-           currentAbsoluteMove > currentMaxAbsoluteMove)
-          //currentAbsoluteMove has been properly computed and it is
-        	//greater than the current greatest move up to date
-        {
-          currentMaxAbsoluteMove = currentAbsoluteMove;
-        	this.currentGenomeIndex = i;
-        	this.currentTickersGainOrLoss = currentTickersGainOrLoss;
-        }
-      }
-    }
-
-
-    private void marketCloseEventHandler_openPositions(IndexBasedEndOfDayTimer timer)
-    {
-      this.currentTickersGainOrLoss = 999.0;
-    	this.marketCloseEventHandler_openPositions_chooseBestGenome(timer);
-      if(this.currentTickersGainOrLoss != 999.0)
-    	//currentChosenTickersValue has been properly computed
-    	{
-        string[] tickers = new string[this.numberOfTickersToBeChosen];
-        for(int i = 0; i < this.numberOfTickersToBeChosen; i++)
-          tickers[i] = this.chosenTickers[this.currentGenomeIndex,i];
-        if(this.currentTickersGainOrLoss > 0.0)
-    		{
-          SignedTicker.ChangeSignOfEachTicker(tickers);
-          base.openPositions(tickers);
-        }
-        else //(currentChosenTickersGainOrLoss < 0.0)
-    		{
-          base.openPositions(tickers);
-        }
-        this.currentAccountValue = this.account.GetMarketValue();
-    	}
-    }
-        
-    private void marketCloseEventHandler_closeIfItIsTimeToClose_updateStopLossAndTakeProfitConditions()
+		protected override double getCurrentWeightedPositionsGainOrLoss(IndexBasedEndOfDayTimer timer,
+			int indexForChosenWeightedPositions)
+		{
+			double returnValue = 999.0;
+			try
+			{
+				DateTime today = 
+					(DateTime)timer.IndexQuotes.Rows[timer.CurrentDateArrayPosition]["quDate"];
+				DateTime lastMarketDay = 
+					(DateTime)timer.IndexQuotes.Rows[timer.CurrentDateArrayPosition - 1]["quDate"];
+				returnValue =
+					this.weightedPositionsToEvaluateOutOfSample[indexForChosenWeightedPositions].GetCloseToCloseReturn(
+					lastMarketDay, today);
+			}
+			catch(MissingQuotesException ex)
+			{
+				ex = ex;
+			}
+			return returnValue;
+		}   
+	          
+    protected virtual void marketCloseEventHandler_closeIfItIsTimeToClose_updateStopLossAndTakeProfitConditions()
     {
       this.previousAccountValue = this.currentAccountValue;
       this.currentAccountValue = this.account.GetMarketValue();
@@ -197,7 +123,7 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOs
       }
     }   
 
-    private void marketCloseEventHandler_closeIfItIsTimeToClose()
+    protected virtual void marketCloseEventHandler_closeIfItIsTimeToClose()
     {
       this.marketCloseEventHandler_closeIfItIsTimeToClose_updateStopLossAndTakeProfitConditions();
       if(this.stopLossConditionReached ||
@@ -208,8 +134,7 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOs
           //or after the close it is necessary to run
           //another optimization
       {
-        base.closePositions();
-        this.orders.Clear();
+        AccountManager.ClosePositions(this.account);
       }
     }
     
@@ -220,7 +145,7 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOs
     	 	//this.marketCloseEventHandler_reverseOrClose((IndexBasedEndOfDayTimer)sender);
      	  this.marketCloseEventHandler_closeIfItIsTimeToClose();
       else if ( this.account.Portfolio.Count == 0 &&
-    	         this.chosenTickers[0,0] != null )
+    	         this.weightedPositionsToEvaluateOutOfSample != null )
 			//portfolio is empty and optimization has been already launched    		
     		this.marketCloseEventHandler_openPositions((IndexBasedEndOfDayTimer)sender);
     }
@@ -230,42 +155,7 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOs
 
     #region OneHourAfterMarketCloseEventHandler
         
-    private void setTickers_updateTickersListAndAddGenomesForLog(GeneticOptimizer GO,
-                                                                 int eligibleTickersForGO)
-    {
-    	int addedGenomes = 0;
-      int counter = 0;
-      Genome currentGenome = null;
-      this.genomesCollector.Clear();
-      while(addedGenomes < this.numOfDifferentGenomesToEvaluateOutOfSample && 
-            counter < GO.PopulationSize)
-      {
-      	currentGenome = (Genome)GO.CurrentGeneration[GO.PopulationSize - 1 - counter];
-      	if(counter == 0 || 
-      	   !this.genomesCollector.ContainsKey(currentGenome.Fitness) )
-      	//it is the first genome to be added or no genome with the current
-      	// fitness has been added to the hashtable yet
-      	{
-      		for(int i = 0; i<this.numberOfTickersToBeChosen; i++)
-      		{
-      			this.chosenTickers[addedGenomes,i] = 
-      				((GenomeMeaningPVO)currentGenome.Meaning).Tickers[i];
-      			this.chosenTickersPortfolioWeights[addedGenomes,i] =
-      				((GenomeMeaningPVO)currentGenome.Meaning).TickersPortfolioWeights[i];
-      		}
-      		     		
-      		this.genomesCollector.Add(currentGenome.Fitness, null);
-      		
-      		this.addPVOGenomeToBestGenomes(currentGenome,((GenomeManagerForEfficientPortfolio)this.iGenomeManager).FirstQuoteDate,
-          ((GenomeManagerForEfficientPortfolio)this.iGenomeManager).LastQuoteDate, eligibleTickersForGO,
-           2, this.portfolioType, GO.GenerationCounter,
-           0.0, 0.0);
-      	  addedGenomes ++ ;
-      	}
-      	counter ++ ;
-      }  
-    }
-    
+        
     protected override void setTickers(DateTime currentDate,
       bool setGenomeCounter)
     {
