@@ -45,32 +45,32 @@ namespace QuantProject.Scripts.ArbitrageTesting.OverReactionHypothesis.SimpleOHT
   {
     private string tickerGroupID;
     private int numberOfEligibleTickers;
+		private int lengthInDaysForPerformance;
     private string benchmark;
     private Account account;
-    private int numOfWorstTickers;
-    private int numOfBestTickers;
     private int numOfTickersForBuying;
     private int numOfTickersForShortSelling;
-    private string[] bestTickers;
-    private string[] worstTickers;
+    private string[] bestTickers = null;
+    private string[] worstTickers = null;
     private string[] chosenTickers;
     private string[] lastOrderedTickers;
     private ArrayList orders;
+		private bool thereAreEnoughBestTickers;
+		private bool thereAreEnoughWorstTickers;
+		private int closesElapsedWithSomeOpenPosition;
+
     
-    public EndOfDayTimerHandlerSimpleOHTest(string tickerGroupID, int numberOfEligibleTickers, 
-                                            int numOfBestTickers, 
-																			      int numOfWorstTickers, int numOfTickersForBuying,
+    public EndOfDayTimerHandlerSimpleOHTest(string tickerGroupID, int numberOfEligibleTickers,
+																						int lengthInDaysForPerformance,
+                                            int numOfTickersForBuying,
 																			      int numOfTickersForShortSelling,
 																			      Account account, string benchmark)
     {
       this.tickerGroupID = tickerGroupID;
       this.numberOfEligibleTickers = numberOfEligibleTickers;
+			this.lengthInDaysForPerformance = lengthInDaysForPerformance;
       this.account = account;
       this.benchmark = benchmark;
-      this.numOfBestTickers = numOfBestTickers;
-      this.bestTickers = new string[this.numOfBestTickers];
-      this.numOfWorstTickers = numOfWorstTickers;
-      this.worstTickers = new string[this.numOfWorstTickers];
       this.numOfTickersForBuying = numOfTickersForBuying;
       this.numOfTickersForShortSelling = numOfTickersForShortSelling;
       this.chosenTickers = new string[this.numOfTickersForBuying + this.numOfTickersForShortSelling];
@@ -115,74 +115,31 @@ namespace QuantProject.Scripts.ArbitrageTesting.OverReactionHypothesis.SimpleOHT
       foreach(object item in this.orders)
         this.account.AddOrder((Order)item);
     }
-    
-    private double setChosenTickers_getGainOrLossFromPreviousClose(string signedTicker)
-    {
-      IndexBasedEndOfDayTimer currentTimer = (IndexBasedEndOfDayTimer)this.account.EndOfDayTimer;
-      ExtendedDateTime nowAtOpen = 
-        new ExtendedDateTime(currentTimer.GetCurrentTime().DateTime,
-        BarComponent.Open);
-      ExtendedDateTime previousClose =
-        new ExtendedDateTime(currentTimer.GetPreviousDateTime(),
-        BarComponent.Close);
-      double currentValueAtOpen =
-        HistoricalDataProvider.GetAdjustedMarketValue(SignedTicker.GetTicker(signedTicker), nowAtOpen);
-      double previousValueAtClose = 
-        HistoricalDataProvider.GetAdjustedMarketValue(SignedTicker.GetTicker(signedTicker), previousClose);
-      
-      return (currentValueAtOpen - previousValueAtClose) / previousValueAtClose; 
-    }
 
     private void setChosenTickers_addTickersForShorting()
     {
-      DataTable worstTickersOrderedByGainAtOpen = new DataTable();
-      worstTickersOrderedByGainAtOpen.Columns.Add("ticker", Type.GetType("System.String"));
-      worstTickersOrderedByGainAtOpen.Columns.Add("gainAtOpen", Type.GetType("System.Double"));
-      object[] values = new object[2];
-      for (int i = 0; i<this.worstTickers.Length; i++)
-      {
-        values[0] = this.worstTickers[i];
-        values[1] = this.setChosenTickers_getGainOrLossFromPreviousClose(this.worstTickers[i]);
-        worstTickersOrderedByGainAtOpen.Rows.Add(values);
-      }
-      DataRow[] orderedRows = new DataRow[this.bestTickers.Length];
-      orderedRows = worstTickersOrderedByGainAtOpen.Select("", "gainAtOpen DESC");
-      for(int i = 0;i<this.numOfTickersForBuying; i++)
-          if( (double)orderedRows[i]["gainAtOpen"] > 0 )
-          //at open, current ticker is gaining
-             this.chosenTickers[this.numOfTickersForBuying + i] = "-" +
-                                              (string)orderedRows[i]["ticker"];
+      for( int i = 0;i<this.numOfTickersForShortSelling; i++)
+            this.chosenTickers[this.numOfTickersForBuying + i] = "-" + this.bestTickers[i];
     }
       
     private void setChosenTickers_addTickersForBuying()
     {
-      DataTable bestTickersOrderedByLossAtOpen = new DataTable();
-      bestTickersOrderedByLossAtOpen.Columns.Add("ticker", Type.GetType("System.String"));
-      bestTickersOrderedByLossAtOpen.Columns.Add("lossAtOpen", Type.GetType("System.Double"));
-      object[] values = new object[2];
-      for (int i = 0; i<this.bestTickers.Length; i++)
-      {
-        values[0] = this.bestTickers[i];
-        values[1] = - this.setChosenTickers_getGainOrLossFromPreviousClose(this.bestTickers[i]);
-        bestTickersOrderedByLossAtOpen.Rows.Add(values);
-      }
-      DataRow[] orderedRows = new DataRow[this.bestTickers.Length];
-      orderedRows = bestTickersOrderedByLossAtOpen.Select("", "lossAtOpen DESC");
-      for( int i = 0; i<this.numOfTickersForShortSelling; i++)
-           if( (double)orderedRows[i]["lossAtOpen"] > 0 )
-           //at open, current ticker is losing
-              this.chosenTickers[i] = (string)orderedRows[i]["ticker"];
+      for( int i = 0; i<this.numOfTickersForBuying; i++ )
+            this.chosenTickers[i] = this.worstTickers[i];
     }
 
-    private void setChosenTickers()
+    private void setChosenTickersBothForLongAndShort()
     {
-      for(int i = 0; i<this.chosenTickers.Length;i++)
-        this.chosenTickers[i] = null;
-      if( this.bestTickers[0] != null &&
-          this.worstTickers[0] != null )
+			if( this.thereAreEnoughBestTickers && 
+					this.thereAreEnoughWorstTickers )
       {
-        this.setChosenTickers_addTickersForBuying();
-        this.setChosenTickers_addTickersForShorting();
+				try
+				{
+					this.setChosenTickers_addTickersForBuying();
+					this.setChosenTickers_addTickersForShorting();
+				}
+				catch(Exception ex)
+				{ex = ex;}
       }
     }
 
@@ -194,17 +151,17 @@ namespace QuantProject.Scripts.ArbitrageTesting.OverReactionHypothesis.SimpleOHT
     public void MarketOpenEventHandler(
       Object sender , EndOfDayTimingEventArgs endOfDayTimingEventArgs )
     {
-      if(this.orders.Count == 0 && this.account.Transactions.Count == 0)
-        this.account.AddCash(30000);
-      this.setChosenTickers();
-      bool allTickerHasBeenChosen = true;
-      for( int i = 0; i<this.chosenTickers.Length; i++)
-      {
-        if(this.chosenTickers[i] == null)
-          allTickerHasBeenChosen = false;
-      }
-      if(allTickerHasBeenChosen)
-        this.openPositions(this.chosenTickers);
+			if(this.orders.Count == 0 && this.account.Transactions.Count == 0)
+				this.account.AddCash(30000);
+			this.setChosenTickersBothForLongAndShort();
+			bool allTickersHasBeenChosenForLongAndShort = true;
+			for( int i = 0; i<this.chosenTickers.Length; i++)
+			{
+				if(this.chosenTickers[i] == null)
+					allTickersHasBeenChosenForLongAndShort = false;
+			}
+			if(allTickersHasBeenChosenForLongAndShort)
+				this.openPositions(this.chosenTickers);
     }
 
     #endregion
@@ -228,13 +185,42 @@ namespace QuantProject.Scripts.ArbitrageTesting.OverReactionHypothesis.SimpleOHT
     public void MarketCloseEventHandler(
       Object sender , EndOfDayTimingEventArgs endOfDayTimingEventArgs )
     {
-     	this.closePositions();
+     	if(this.account.Portfolio.Count > 0)
+			{
+				this.closesElapsedWithSomeOpenPosition++;
+				if(this.closesElapsedWithSomeOpenPosition == this.lengthInDaysForPerformance)
+				{
+					this.closePositions();
+					this.OneHourAfterMarketCloseEventHandler(sender,endOfDayTimingEventArgs);
+					this.MarketOpenEventHandler(sender, endOfDayTimingEventArgs);
+					this.closesElapsedWithSomeOpenPosition = 0;
+				}
+			}
+			else//this.account.Portfolio.Count == 0 
+			{
+				if( ((IndexBasedEndOfDayTimer)sender).CurrentDateArrayPosition >= this.lengthInDaysForPerformance )
+				{
+					this.OneHourAfterMarketCloseEventHandler(sender,endOfDayTimingEventArgs);
+					this.MarketOpenEventHandler(sender, endOfDayTimingEventArgs);
+				}
+			}
     }
 
     #endregion
 
     #region OneHourAfterMarketCloseEventHandler
-     
+    
+		private void oneHourAfterMarketCloseEventHandler_clear()
+		{
+			this.orders.Clear();
+			this.thereAreEnoughBestTickers = false;
+			this.thereAreEnoughWorstTickers = false;
+			
+			for(int i = 0; i<this.chosenTickers.Length;i++)
+				this.chosenTickers[i] = null;
+		}
+ 
+
     /// <summary>
     /// Handles a "One hour after market close" event.
     /// </summary>
@@ -243,50 +229,69 @@ namespace QuantProject.Scripts.ArbitrageTesting.OverReactionHypothesis.SimpleOHT
     public void OneHourAfterMarketCloseEventHandler(
       Object sender , EndOfDayTimingEventArgs endOfDayTimingEventArgs )
     {
-      this.orders.Clear();
-      DateTime currentDate = endOfDayTimingEventArgs.EndOfDayDateTime.DateTime;
-      SelectorByGroup temporizedGroup = new SelectorByGroup(this.tickerGroupID,
-                                            currentDate);
-      DataTable tickersFromGroup = temporizedGroup.GetTableOfSelectedTickers();
-      //remark from here for DEBUG
-      SelectorByAverageRawOpenPrice byPrice = 
-        new SelectorByAverageRawOpenPrice( tickersFromGroup,false,currentDate.AddDays(-10),
-                                    currentDate,
-                                    tickersFromGroup.Rows.Count,
-                                    25 );
+			this.oneHourAfterMarketCloseEventHandler_clear(); 
+			DateTime currentDate = endOfDayTimingEventArgs.EndOfDayDateTime.DateTime;
+			int currentDateArrayPositionInTimer = ((IndexBasedEndOfDayTimer)sender).CurrentDateArrayPosition;
+			DateTime firstDateForPerformanceComputation =
+				(DateTime)((IndexBasedEndOfDayTimer)sender).IndexQuotes.Rows[currentDateArrayPositionInTimer - this.lengthInDaysForPerformance]["quDate"];
+			SelectorByGroup temporizedGroup = new SelectorByGroup(this.tickerGroupID,
+				currentDate);
+			DataTable tickersFromGroup = temporizedGroup.GetTableOfSelectedTickers();
+			//remark from here for DEBUG
       
-      SelectorByLiquidity mostLiquidSelector =
-        new SelectorByLiquidity(byPrice.GetTableOfSelectedTickers(),
-        false,currentDate.AddDays(-30), currentDate,
-        this.numberOfEligibleTickers);
+			SelectorByQuotationAtEachMarketDay quotedAtEachMarketDayFromGroup = 
+				new SelectorByQuotationAtEachMarketDay(tickersFromGroup,
+				false, currentDate.AddDays(-30), currentDate,
+				tickersFromGroup.Rows.Count, this.benchmark);
+
+			SelectorByAverageRawOpenPrice byPrice = 
+				new SelectorByAverageRawOpenPrice( quotedAtEachMarketDayFromGroup.GetTableOfSelectedTickers(),
+				false, currentDate.AddDays(-10), currentDate,
+				tickersFromGroup.Rows.Count, 25 );
       
-      SelectorByOpenToCloseVolatility lessVolatile = 
-      	new SelectorByOpenToCloseVolatility(mostLiquidSelector.GetTableOfSelectedTickers(),
-      	                                    true,currentDate.AddDays(-30), currentDate,
-      	                                    this.numberOfEligibleTickers/2);
+			SelectorByLiquidity mostLiquidSelector =
+				new SelectorByLiquidity(byPrice.GetTableOfSelectedTickers(),
+				false,currentDate.AddDays(-30), currentDate,
+				this.numberOfEligibleTickers);
+      
+			SelectorByCloseToCloseVolatility lessVolatile = 
+				new SelectorByCloseToCloseVolatility(mostLiquidSelector.GetTableOfSelectedTickers(),
+				true,currentDate.AddDays(-30), currentDate,
+				this.numberOfEligibleTickers/2);
  
-      SelectorByQuotationAtEachMarketDay quotedAtEachMarketDayFromMostLiquid = 
-        new SelectorByQuotationAtEachMarketDay(lessVolatile.GetTableOfSelectedTickers(),
-        false, currentDate.AddDays(-30), currentDate,
-        this.numberOfEligibleTickers/2, this.benchmark);
-     
-      SelectorByAverageCloseToClosePerformance bestTickersFromQuoted =
-        new SelectorByAverageCloseToClosePerformance(quotedAtEachMarketDayFromMostLiquid.GetTableOfSelectedTickers(),
-        false,currentDate,currentDate,this.bestTickers.Length);
+			SelectorByAbsolutePerformance bestTickersFromLessVolatile =
+				new SelectorByAbsolutePerformance(lessVolatile.GetTableOfSelectedTickers(),
+				false,firstDateForPerformanceComputation,currentDate,this.bestTickers.Length);
 
-      SelectorByAverageCloseToClosePerformance worstTickersFromQuoted =
-        new SelectorByAverageCloseToClosePerformance(quotedAtEachMarketDayFromMostLiquid.GetTableOfSelectedTickers(),
-        true,currentDate,currentDate,this.worstTickers.Length);
+			SelectorByAbsolutePerformance worstTickersFromLessVolatile =
+				new SelectorByAbsolutePerformance(lessVolatile.GetTableOfSelectedTickers(),
+				true,firstDateForPerformanceComputation,currentDate,this.bestTickers.Length);
 
-      DataTable tableOfBestTickers = bestTickersFromQuoted.GetTableOfSelectedTickers();
-      for(int i = 0;i<this.bestTickers.Length;i++)
-        if(tableOfBestTickers.Rows[i][0] != null)
-          this.bestTickers[i] = (string)tableOfBestTickers.Rows[i][0];
-
-      DataTable tableOfWorstTickers = worstTickersFromQuoted.GetTableOfSelectedTickers();
-      for(int i = 0;i<this.worstTickers.Length;i++)
-        if(tableOfWorstTickers.Rows[i][0] != null)
-          this.worstTickers[i] = (string)tableOfWorstTickers.Rows[i][0];
+			DataTable tableOfBestTickers = bestTickersFromLessVolatile.GetTableOfSelectedTickers();
+			if(tableOfBestTickers.Rows.Count >= this.bestTickers.Length)
+			{	
+				this.thereAreEnoughBestTickers = true;
+				for(int i = 0;i<this.bestTickers.Length;i++)
+				{
+					if( (double)tableOfBestTickers.Rows[i]["SimpleReturn"] > 0.0 )
+						this.bestTickers[i] = (string)tableOfBestTickers.Rows[i][0];
+					else//not all best tickers have gained
+						this.thereAreEnoughBestTickers = false;
+				}
+			}
+			
+			DataTable tableOfWorstTickers = worstTickersFromLessVolatile.GetTableOfSelectedTickers();
+			if(tableOfWorstTickers.Rows.Count >= this.worstTickers.Length)
+			{	
+				this.thereAreEnoughWorstTickers = true;
+				for(int i = 0;i<this.worstTickers.Length;i++)
+				{
+					if( (double)tableOfWorstTickers.Rows[i]["SimpleReturn"] < 0.0 )
+						this.worstTickers[i] = (string)tableOfWorstTickers.Rows[i][0];
+					else//not all best tickers have lost
+						this.thereAreEnoughWorstTickers = false;
+				}
+			}
 //     //for DEBUG
 //     //remark from here for real running
 //       SelectorByLiquidity mostLiquidSelector =

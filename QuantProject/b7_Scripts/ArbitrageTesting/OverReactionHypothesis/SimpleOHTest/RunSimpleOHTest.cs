@@ -36,13 +36,13 @@ namespace QuantProject.Scripts.ArbitrageTesting.OverReactionHypothesis.SimpleOHT
 	/// <summary>
 	/// Script that implements the SimpleOHTest strategy:
 	/// at each open, l long positions and s short positions will be open,
-	/// buying and shorting, accordingly, the l tickers among the 
-	/// b best that more moves down (at open) and the s tickers among the w worst
-	/// that more moves up (at open).
+	/// buying and shorting, accordingly, the l worst tickers 
+	/// and the s best tickers.
+	/// For chosing the best and worst tickers just the 
+	/// previous close to close ratio is considered.
 	/// The fundamental of the strategy should be the fact (to be verified ...) 
-	/// that overreactions may be followed by opposite overreactions.
-	/// For chosing the b best and w worst tickers it is considered just the 
-	/// previous close.
+	/// that great moves are probably overreactions that may be followed by opposite moves (corrections).
+	
 	/// At each close, open positions are closed.
 	/// </summary>
   [Serializable]
@@ -52,8 +52,7 @@ namespace QuantProject.Scripts.ArbitrageTesting.OverReactionHypothesis.SimpleOHT
     private string tickerGroupID;
     private string benchmark;
     private int numberOfEligibleTickers;
-    private int numOfBestTickers;
-    private int numOfWorstTickers;
+		private int lengthInDaysForPerformance;
     private int numOfTickersForBuying;
     private int numOfTickersForShortSelling;
     private DateTime startDate;
@@ -65,8 +64,8 @@ namespace QuantProject.Scripts.ArbitrageTesting.OverReactionHypothesis.SimpleOHT
     private IEndOfDayTimer endOfDayTimer;
 
     public RunSimpleOHTest(string tickerGroupID, string benchmark,
-      int numberOfEligibleTickers, int numOfBestTickers, 
-      int numOfWorstTickers, int numOfTickersForBuying,
+      int numberOfEligibleTickers, int lengthInDaysForPerformance,
+			int numOfTickersForBuying,
       int numOfTickersForShortSelling,
       DateTime startDate, DateTime endDate,
       double maxRunningHours)
@@ -74,15 +73,15 @@ namespace QuantProject.Scripts.ArbitrageTesting.OverReactionHypothesis.SimpleOHT
       this.tickerGroupID = tickerGroupID;
       this.benchmark = benchmark;
       this.numberOfEligibleTickers = numberOfEligibleTickers;
-      this.numOfBestTickers = numOfBestTickers;
-      this.numOfWorstTickers = numOfWorstTickers;
+			this.lengthInDaysForPerformance = lengthInDaysForPerformance;
       this.numOfTickersForBuying = numOfTickersForBuying;
       this.numOfTickersForShortSelling = numOfTickersForShortSelling;
       this.startDate = startDate;
       this.endDate = endDate;
       this.maxRunningHours = maxRunningHours;
       this.scriptName = "SimpleOHTest";
-      this.historicalQuoteProvider = new HistoricalRawQuoteProvider();
+//      this.historicalQuoteProvider = new HistoricalRawQuoteProvider();
+			this.historicalQuoteProvider = new HistoricalAdjustedQuoteProvider();
       this.endOfDayTimer = new IndexBasedEndOfDayTimer(
         new EndOfDayDateTime( this.startDate ,
         EndOfDaySpecificTime.MarketOpen ) , this.benchmark );
@@ -92,27 +91,23 @@ namespace QuantProject.Scripts.ArbitrageTesting.OverReactionHypothesis.SimpleOHT
     public void Run()
     {
       this.startingTimeForScript = DateTime.Now;
-      this.account = new Account( "SimpleOH" , this.endOfDayTimer ,
+      
+			this.account = new Account( "SimpleOH" , this.endOfDayTimer ,
         new HistoricalEndOfDayDataStreamer( this.endOfDayTimer ,
         this.historicalQuoteProvider ) ,
         new HistoricalEndOfDayOrderExecutor( this.endOfDayTimer ,
         this.historicalQuoteProvider ) );
-      EndOfDayTimerHandlerSimpleOHTest endOfDayTimerHandler =
+      
+			EndOfDayTimerHandlerSimpleOHTest endOfDayTimerHandler =
         new EndOfDayTimerHandlerSimpleOHTest(this.tickerGroupID, this.numberOfEligibleTickers,
-        this.numOfBestTickers, this.numOfWorstTickers,
-        this.numOfTickersForBuying, this.numOfTickersForShortSelling, 
+        this.lengthInDaysForPerformance, this.numOfTickersForBuying, this.numOfTickersForShortSelling, 
         this.account, this.benchmark);
-      this.endOfDayTimer.MarketOpen += new MarketOpenEventHandler(
-        endOfDayTimerHandler.MarketOpenEventHandler );
-
+ 
       this.endOfDayTimer.MarketClose += new MarketCloseEventHandler(
         endOfDayTimerHandler.MarketCloseEventHandler );
 
       this.endOfDayTimer.MarketClose += new MarketCloseEventHandler(
         this.checkDateForReport);
-
-      this.endOfDayTimer.OneHourAfterMarketClose += new OneHourAfterMarketCloseEventHandler(
-        endOfDayTimerHandler.OneHourAfterMarketCloseEventHandler );
       
       this.endOfDayTimer.Start();
     }
@@ -134,14 +129,19 @@ namespace QuantProject.Scripts.ArbitrageTesting.OverReactionHypothesis.SimpleOHT
 
     public void SaveScriptResults()
     {
-      string fileName = DateTime.Now.Hour.ToString().PadLeft(2,'0') + "_" + 
+      TimeSpan span;
+			span = DateTime.Now.Subtract(this.startingTimeForScript);
+			int secondsElapsed = span.Hours * 3600 + span.Minutes * 60 + span.Seconds;
+			string fileName = 
+				"SecondsElapsed_" + 
+				secondsElapsed.ToString() + "_" +
+				DateTime.Now.Hour.ToString().PadLeft(2,'0') + "_" + 
         DateTime.Now.Minute.ToString().PadLeft(2,'0') + "_" +
         this.scriptName +  "_From_" + this.tickerGroupID +
         "_elig_" + this.numberOfEligibleTickers + 
-      	"_best_" + this.numOfBestTickers +
-      	"_worst_" + this.numOfWorstTickers +
-      	"_forLong_" + this.numOfTickersForBuying +
-      	"_forShort_" + this.numOfTickersForShortSelling;
+      	"_Long_" + this.numOfTickersForBuying +
+      	"_Short_" + this.numOfTickersForShortSelling +
+				"_lenInDays_" + this.lengthInDaysForPerformance;
       string dirNameWhereToSaveReports = System.Configuration.ConfigurationSettings.AppSettings["ReportsArchive"] +
         "\\" + this.scriptName + "\\";
           
@@ -149,8 +149,8 @@ namespace QuantProject.Scripts.ArbitrageTesting.OverReactionHypothesis.SimpleOHT
       AccountReport accountReport = this.account.CreateReport(fileName,1,
         this.endOfDayTimer.GetCurrentTime(),
         this.benchmark,
-        new HistoricalRawQuoteProvider() );
-//        new HistoricalAdjustedQuoteProvider());
+//        new HistoricalRawQuoteProvider() );
+        new HistoricalAdjustedQuoteProvider());
       this.checkDateForReport_createDirIfNotPresent(dirNameWhereToSaveReports);
       ObjectArchiver.Archive(accountReport,
         dirNameWhereToSaveReports + 
