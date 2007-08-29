@@ -196,261 +196,262 @@ namespace QuantProject.Scripts.WalkForwardTesting.LinearCombination
 		/// the contents of this method with the code editor.
 		/// </summary>
 		private void InitializeComponent() {
-      this.dgBestGenomes = new System.Windows.Forms.DataGrid();
-      this.radioButtonCloseToOpenDaily = new System.Windows.Forms.RadioButton();
-      this.radioButtonOpenToCloseWeekly = new System.Windows.Forms.RadioButton();
-      this.textBoxDaysFPOscillatorAndRevOneRank = new System.Windows.Forms.TextBox();
-      this.dtpFirstDate = new System.Windows.Forms.DateTimePicker();
-      this.label1 = new System.Windows.Forms.Label();
-      this.dtpLastDate = new System.Windows.Forms.DateTimePicker();
-      this.radioButtonExtremeCounterTrend = new System.Windows.Forms.RadioButton();
-      this.radioButtonOpenToCloseDaily = new System.Windows.Forms.RadioButton();
-      this.radioButtonFixedPeriodOscillator = new System.Windows.Forms.RadioButton();
-      this.labelDays = new System.Windows.Forms.Label();
-      this.radioButtonOTCCTODaily = new System.Windows.Forms.RadioButton();
-      this.radioButtonImmediateTrendFollower = new System.Windows.Forms.RadioButton();
-      this.comboBoxPortfolioType = new System.Windows.Forms.ComboBox();
-      this.labelPortfolioType = new System.Windows.Forms.Label();
-      this.radioButtonPVO = new System.Windows.Forms.RadioButton();
-      this.radioButtonPVOBiased = new System.Windows.Forms.RadioButton();
-      this.labelStopLoss = new System.Windows.Forms.Label();
-      this.textBoxStopLoss = new System.Windows.Forms.TextBox();
-      this.labelTakeProfit = new System.Windows.Forms.Label();
-      this.textBoxTakeProfit = new System.Windows.Forms.TextBox();
-      this.radioButtonPVOBiasedNoThresholds = new System.Windows.Forms.RadioButton();
-      this.radioButtonOTCPVOBiasedNoThresholds = new System.Windows.Forms.RadioButton();
-      ((System.ComponentModel.ISupportInitialize)(this.dgBestGenomes)).BeginInit();
-      this.SuspendLayout();
-      // 
-      // dgBestGenomes
-      // 
-      this.dgBestGenomes.DataMember = "";
-      this.dgBestGenomes.Dock = System.Windows.Forms.DockStyle.Bottom;
-      this.dgBestGenomes.HeaderForeColor = System.Drawing.SystemColors.ControlText;
-      this.dgBestGenomes.Location = new System.Drawing.Point(0, 238);
-      this.dgBestGenomes.Name = "dgBestGenomes";
-      this.dgBestGenomes.Size = new System.Drawing.Size(704, 176);
-      this.dgBestGenomes.TabIndex = 0;
-      this.dgBestGenomes.MouseUp += new System.Windows.Forms.MouseEventHandler(this.dgBestGenomes_MouseUp);
-      // 
-      // radioButtonCloseToOpenDaily
-      // 
-      this.radioButtonCloseToOpenDaily.Location = new System.Drawing.Point(64, 104);
-      this.radioButtonCloseToOpenDaily.Name = "radioButtonCloseToOpenDaily";
-      this.radioButtonCloseToOpenDaily.Size = new System.Drawing.Size(144, 24);
-      this.radioButtonCloseToOpenDaily.TabIndex = 6;
-      this.radioButtonCloseToOpenDaily.Text = "Close To Open Daily";
-      this.radioButtonCloseToOpenDaily.CheckedChanged += new System.EventHandler(this.radioButtonCloseToOpenDaily_CheckedChanged);
-      // 
-      // radioButtonOpenToCloseWeekly
-      // 
-      this.radioButtonOpenToCloseWeekly.Location = new System.Drawing.Point(64, 128);
-      this.radioButtonOpenToCloseWeekly.Name = "radioButtonOpenToCloseWeekly";
-      this.radioButtonOpenToCloseWeekly.Size = new System.Drawing.Size(144, 24);
-      this.radioButtonOpenToCloseWeekly.TabIndex = 5;
-      this.radioButtonOpenToCloseWeekly.Text = "Open To Close Weekly";
-      this.radioButtonOpenToCloseWeekly.CheckedChanged += new System.EventHandler(this.radioButtonOpenToCloseWeekly_CheckedChanged);
-      // 
-      // textBoxDaysFPOscillatorAndRevOneRank
-      // 
-      this.textBoxDaysFPOscillatorAndRevOneRank.Location = new System.Drawing.Point(480, 120);
-      this.textBoxDaysFPOscillatorAndRevOneRank.Name = "textBoxDaysFPOscillatorAndRevOneRank";
-      this.textBoxDaysFPOscillatorAndRevOneRank.Size = new System.Drawing.Size(56, 20);
-      this.textBoxDaysFPOscillatorAndRevOneRank.TabIndex = 8;
-      this.textBoxDaysFPOscillatorAndRevOneRank.Text = "1";
-      // 
-      // dtpFirstDate
-      // 
-      this.dtpFirstDate.Location = new System.Drawing.Point(48, 8);
-      this.dtpFirstDate.Name = "dtpFirstDate";
-      this.dtpFirstDate.TabIndex = 1;
-      // 
-      // label1
-      // 
-      this.label1.Location = new System.Drawing.Point(32, 48);
-      this.label1.Name = "label1";
-      this.label1.Size = new System.Drawing.Size(400, 40);
-      this.label1.TabIndex = 3;
-      this.label1.Text = "Left click data grid rows to reset dates to the optimization period. Right click " +
-        "to preserve date displacements and backtest.";
-      // 
-      // dtpLastDate
-      // 
-      this.dtpLastDate.Location = new System.Drawing.Point(264, 8);
-      this.dtpLastDate.Name = "dtpLastDate";
-      this.dtpLastDate.Size = new System.Drawing.Size(208, 20);
-      this.dtpLastDate.TabIndex = 2;
-      // 
-      // radioButtonExtremeCounterTrend
-      // 
-      this.radioButtonExtremeCounterTrend.Location = new System.Drawing.Point(64, 176);
-      this.radioButtonExtremeCounterTrend.Name = "radioButtonExtremeCounterTrend";
-      this.radioButtonExtremeCounterTrend.Size = new System.Drawing.Size(144, 24);
-      this.radioButtonExtremeCounterTrend.TabIndex = 10;
-      this.radioButtonExtremeCounterTrend.Text = "Extreme counter trend";
-      this.radioButtonExtremeCounterTrend.CheckedChanged += new System.EventHandler(this.radioButtonExtremeCounterTrend_CheckedChanged);
-      // 
-      // radioButtonOpenToCloseDaily
-      // 
-      this.radioButtonOpenToCloseDaily.Location = new System.Drawing.Point(64, 80);
-      this.radioButtonOpenToCloseDaily.Name = "radioButtonOpenToCloseDaily";
-      this.radioButtonOpenToCloseDaily.Size = new System.Drawing.Size(144, 24);
-      this.radioButtonOpenToCloseDaily.TabIndex = 4;
-      this.radioButtonOpenToCloseDaily.Text = "Open To Close Daily";
-      this.radioButtonOpenToCloseDaily.CheckedChanged += new System.EventHandler(this.radioButtonOpenToCloseDaily_CheckedChanged);
-      // 
-      // radioButtonFixedPeriodOscillator
-      // 
-      this.radioButtonFixedPeriodOscillator.Location = new System.Drawing.Point(232, 80);
-      this.radioButtonFixedPeriodOscillator.Name = "radioButtonFixedPeriodOscillator";
-      this.radioButtonFixedPeriodOscillator.Size = new System.Drawing.Size(184, 24);
-      this.radioButtonFixedPeriodOscillator.TabIndex = 7;
-      this.radioButtonFixedPeriodOscillator.Text = "Fixed Period n-days oscillator";
-      this.radioButtonFixedPeriodOscillator.CheckedChanged += new System.EventHandler(this.radioButtonFixedPeriodOscillator_CheckedChanged);
-      // 
-      // labelDays
-      // 
-      this.labelDays.Location = new System.Drawing.Point(424, 120);
-      this.labelDays.Name = "labelDays";
-      this.labelDays.Size = new System.Drawing.Size(32, 16);
-      this.labelDays.TabIndex = 9;
-      this.labelDays.Text = "days";
-      // 
-      // radioButtonOTCCTODaily
-      // 
-      this.radioButtonOTCCTODaily.Location = new System.Drawing.Point(64, 152);
-      this.radioButtonOTCCTODaily.Name = "radioButtonOTCCTODaily";
-      this.radioButtonOTCCTODaily.Size = new System.Drawing.Size(144, 24);
-      this.radioButtonOTCCTODaily.TabIndex = 11;
-      this.radioButtonOTCCTODaily.Text = "OTC - CTO Daily";
-      // 
-      // radioButtonImmediateTrendFollower
-      // 
-      this.radioButtonImmediateTrendFollower.Location = new System.Drawing.Point(232, 104);
-      this.radioButtonImmediateTrendFollower.Name = "radioButtonImmediateTrendFollower";
-      this.radioButtonImmediateTrendFollower.Size = new System.Drawing.Size(192, 24);
-      this.radioButtonImmediateTrendFollower.TabIndex = 12;
-      this.radioButtonImmediateTrendFollower.Text = "Immediate Trend Follower";
-      this.radioButtonImmediateTrendFollower.CheckedChanged += new System.EventHandler(this.radioButtonImmediateTrendFollower_CheckedChanged);
-      // 
-      // comboBoxPortfolioType
-      // 
-      this.comboBoxPortfolioType.Location = new System.Drawing.Point(472, 64);
-      this.comboBoxPortfolioType.Name = "comboBoxPortfolioType";
-      this.comboBoxPortfolioType.Size = new System.Drawing.Size(184, 21);
-      this.comboBoxPortfolioType.TabIndex = 13;
-      this.comboBoxPortfolioType.Text = "comboBoxPortfolioType";
-      // 
-      // labelPortfolioType
-      // 
-      this.labelPortfolioType.Location = new System.Drawing.Point(472, 48);
-      this.labelPortfolioType.Name = "labelPortfolioType";
-      this.labelPortfolioType.Size = new System.Drawing.Size(100, 16);
-      this.labelPortfolioType.TabIndex = 14;
-      this.labelPortfolioType.Text = "Type of portfolio";
-      // 
-      // radioButtonPVO
-      // 
-      this.radioButtonPVO.Location = new System.Drawing.Point(232, 128);
-      this.radioButtonPVO.Name = "radioButtonPVO";
-      this.radioButtonPVO.Size = new System.Drawing.Size(192, 24);
-      this.radioButtonPVO.TabIndex = 15;
-      this.radioButtonPVO.Text = "Portfolio Value Oscillator";
-      this.radioButtonPVO.CheckedChanged += new System.EventHandler(this.radioButtonPVO_CheckedChanged);
-      // 
-      // radioButtonPVOBiased
-      // 
-      this.radioButtonPVOBiased.Location = new System.Drawing.Point(232, 152);
-      this.radioButtonPVOBiased.Name = "radioButtonPVOBiased";
-      this.radioButtonPVOBiased.Size = new System.Drawing.Size(88, 24);
-      this.radioButtonPVOBiased.TabIndex = 16;
-      this.radioButtonPVOBiased.Text = "PVO Biased";
-      this.radioButtonPVOBiased.CheckedChanged += new System.EventHandler(this.radioButtonPVOBiased_CheckedChanged);
-      // 
-      // labelStopLoss
-      // 
-      this.labelStopLoss.Location = new System.Drawing.Point(424, 160);
-      this.labelStopLoss.Name = "labelStopLoss";
-      this.labelStopLoss.Size = new System.Drawing.Size(56, 16);
-      this.labelStopLoss.TabIndex = 18;
-      this.labelStopLoss.Text = "stop loss";
-      // 
-      // textBoxStopLoss
-      // 
-      this.textBoxStopLoss.Location = new System.Drawing.Point(480, 160);
-      this.textBoxStopLoss.Name = "textBoxStopLoss";
-      this.textBoxStopLoss.Size = new System.Drawing.Size(56, 20);
-      this.textBoxStopLoss.TabIndex = 17;
-      this.textBoxStopLoss.Text = "0.02";
-      // 
-      // labelTakeProfit
-      // 
-      this.labelTakeProfit.Location = new System.Drawing.Point(544, 160);
-      this.labelTakeProfit.Name = "labelTakeProfit";
-      this.labelTakeProfit.Size = new System.Drawing.Size(56, 16);
-      this.labelTakeProfit.TabIndex = 20;
-      this.labelTakeProfit.Text = "take profit";
-      // 
-      // textBoxTakeProfit
-      // 
-      this.textBoxTakeProfit.Location = new System.Drawing.Point(608, 160);
-      this.textBoxTakeProfit.Name = "textBoxTakeProfit";
-      this.textBoxTakeProfit.Size = new System.Drawing.Size(56, 20);
-      this.textBoxTakeProfit.TabIndex = 19;
-      this.textBoxTakeProfit.Text = "0.005";
-      // 
-      // radioButtonPVOBiasedNoThresholds
-      // 
-      this.radioButtonPVOBiasedNoThresholds.Location = new System.Drawing.Point(232, 176);
-      this.radioButtonPVOBiasedNoThresholds.Name = "radioButtonPVOBiasedNoThresholds";
-      this.radioButtonPVOBiasedNoThresholds.Size = new System.Drawing.Size(192, 24);
-      this.radioButtonPVOBiasedNoThresholds.TabIndex = 21;
-      this.radioButtonPVOBiasedNoThresholds.Text = "PVO Biased No Thresholds";
-      this.radioButtonPVOBiasedNoThresholds.CheckedChanged += new System.EventHandler(this.radioButtonPVOBiasedNoThresholds_CheckedChanged);
-      // 
-      // radioButtonOTCPVOBiasedNoThresholds
-      // 
-      this.radioButtonOTCPVOBiasedNoThresholds.Location = new System.Drawing.Point(232, 200);
-      this.radioButtonOTCPVOBiasedNoThresholds.Name = "radioButtonOTCPVOBiasedNoThresholds";
-      this.radioButtonOTCPVOBiasedNoThresholds.Size = new System.Drawing.Size(192, 24);
-      this.radioButtonOTCPVOBiasedNoThresholds.TabIndex = 22;
-      this.radioButtonOTCPVOBiasedNoThresholds.Text = "OTC_PVO Biased No Thresholds";
-      this.radioButtonOTCPVOBiasedNoThresholds.CheckedChanged += new System.EventHandler(this.radioButtonOTCPVOBiasedNoThresholds_CheckedChanged);
-      // 
-      // TestDisplayer
-      // 
-      this.AutoScaleBaseSize = new System.Drawing.Size(5, 13);
-      this.ClientSize = new System.Drawing.Size(704, 414);
-      this.Controls.AddRange(new System.Windows.Forms.Control[] {
-                                                                  this.radioButtonOTCPVOBiasedNoThresholds,
-                                                                  this.radioButtonPVOBiasedNoThresholds,
-                                                                  this.labelTakeProfit,
-                                                                  this.textBoxTakeProfit,
-                                                                  this.labelStopLoss,
-                                                                  this.textBoxStopLoss,
-                                                                  this.radioButtonPVOBiased,
-                                                                  this.radioButtonPVO,
-                                                                  this.labelPortfolioType,
-                                                                  this.comboBoxPortfolioType,
-                                                                  this.radioButtonImmediateTrendFollower,
-                                                                  this.radioButtonOTCCTODaily,
-                                                                  this.radioButtonExtremeCounterTrend,
-                                                                  this.labelDays,
-                                                                  this.textBoxDaysFPOscillatorAndRevOneRank,
-                                                                  this.radioButtonFixedPeriodOscillator,
-                                                                  this.radioButtonCloseToOpenDaily,
-                                                                  this.radioButtonOpenToCloseWeekly,
-                                                                  this.radioButtonOpenToCloseDaily,
-                                                                  this.label1,
-                                                                  this.dtpLastDate,
-                                                                  this.dtpFirstDate,
-                                                                  this.dgBestGenomes});
-      this.Name = "TestDisplayer";
-      this.Text = "TestDisplayer";
-      ((System.ComponentModel.ISupportInitialize)(this.dgBestGenomes)).EndInit();
-      this.ResumeLayout(false);
+			this.dgBestGenomes = new System.Windows.Forms.DataGrid();
+			this.radioButtonCloseToOpenDaily = new System.Windows.Forms.RadioButton();
+			this.radioButtonOpenToCloseWeekly = new System.Windows.Forms.RadioButton();
+			this.textBoxDaysFPOscillatorAndRevOneRank = new System.Windows.Forms.TextBox();
+			this.dtpFirstDate = new System.Windows.Forms.DateTimePicker();
+			this.label1 = new System.Windows.Forms.Label();
+			this.dtpLastDate = new System.Windows.Forms.DateTimePicker();
+			this.radioButtonExtremeCounterTrend = new System.Windows.Forms.RadioButton();
+			this.radioButtonOpenToCloseDaily = new System.Windows.Forms.RadioButton();
+			this.radioButtonFixedPeriodOscillator = new System.Windows.Forms.RadioButton();
+			this.labelDays = new System.Windows.Forms.Label();
+			this.radioButtonOTCCTODaily = new System.Windows.Forms.RadioButton();
+			this.radioButtonImmediateTrendFollower = new System.Windows.Forms.RadioButton();
+			this.comboBoxPortfolioType = new System.Windows.Forms.ComboBox();
+			this.labelPortfolioType = new System.Windows.Forms.Label();
+			this.radioButtonPVO = new System.Windows.Forms.RadioButton();
+			this.radioButtonPVOBiased = new System.Windows.Forms.RadioButton();
+			this.labelStopLoss = new System.Windows.Forms.Label();
+			this.textBoxStopLoss = new System.Windows.Forms.TextBox();
+			this.labelTakeProfit = new System.Windows.Forms.Label();
+			this.textBoxTakeProfit = new System.Windows.Forms.TextBox();
+			this.radioButtonPVOBiasedNoThresholds = new System.Windows.Forms.RadioButton();
+			this.radioButtonOTCPVOBiasedNoThresholds = new System.Windows.Forms.RadioButton();
+			((System.ComponentModel.ISupportInitialize)(this.dgBestGenomes)).BeginInit();
+			this.SuspendLayout();
+			// 
+			// dgBestGenomes
+			// 
+			this.dgBestGenomes.DataMember = "";
+			this.dgBestGenomes.Dock = System.Windows.Forms.DockStyle.Bottom;
+			this.dgBestGenomes.HeaderForeColor = System.Drawing.SystemColors.ControlText;
+			this.dgBestGenomes.Location = new System.Drawing.Point(0, 238);
+			this.dgBestGenomes.Name = "dgBestGenomes";
+			this.dgBestGenomes.Size = new System.Drawing.Size(704, 176);
+			this.dgBestGenomes.TabIndex = 0;
+			this.dgBestGenomes.MouseUp += new System.Windows.Forms.MouseEventHandler(this.dgBestGenomes_MouseUp);
+			// 
+			// radioButtonCloseToOpenDaily
+			// 
+			this.radioButtonCloseToOpenDaily.Location = new System.Drawing.Point(64, 104);
+			this.radioButtonCloseToOpenDaily.Name = "radioButtonCloseToOpenDaily";
+			this.radioButtonCloseToOpenDaily.Size = new System.Drawing.Size(144, 24);
+			this.radioButtonCloseToOpenDaily.TabIndex = 6;
+			this.radioButtonCloseToOpenDaily.Text = "Close To Open Daily";
+			this.radioButtonCloseToOpenDaily.CheckedChanged += new System.EventHandler(this.radioButtonCloseToOpenDaily_CheckedChanged);
+			// 
+			// radioButtonOpenToCloseWeekly
+			// 
+			this.radioButtonOpenToCloseWeekly.Location = new System.Drawing.Point(64, 128);
+			this.radioButtonOpenToCloseWeekly.Name = "radioButtonOpenToCloseWeekly";
+			this.radioButtonOpenToCloseWeekly.Size = new System.Drawing.Size(144, 24);
+			this.radioButtonOpenToCloseWeekly.TabIndex = 5;
+			this.radioButtonOpenToCloseWeekly.Text = "Open To Close Weekly";
+			this.radioButtonOpenToCloseWeekly.CheckedChanged += new System.EventHandler(this.radioButtonOpenToCloseWeekly_CheckedChanged);
+			// 
+			// textBoxDaysFPOscillatorAndRevOneRank
+			// 
+			this.textBoxDaysFPOscillatorAndRevOneRank.Location = new System.Drawing.Point(480, 120);
+			this.textBoxDaysFPOscillatorAndRevOneRank.Name = "textBoxDaysFPOscillatorAndRevOneRank";
+			this.textBoxDaysFPOscillatorAndRevOneRank.Size = new System.Drawing.Size(56, 20);
+			this.textBoxDaysFPOscillatorAndRevOneRank.TabIndex = 8;
+			this.textBoxDaysFPOscillatorAndRevOneRank.Text = "1";
+			// 
+			// dtpFirstDate
+			// 
+			this.dtpFirstDate.Location = new System.Drawing.Point(48, 8);
+			this.dtpFirstDate.Name = "dtpFirstDate";
+			this.dtpFirstDate.TabIndex = 1;
+			// 
+			// label1
+			// 
+			this.label1.Location = new System.Drawing.Point(32, 48);
+			this.label1.Name = "label1";
+			this.label1.Size = new System.Drawing.Size(400, 40);
+			this.label1.TabIndex = 3;
+			this.label1.Text = "Left click data grid rows to reset dates to the optimization period. Right click " +
+				"to preserve date displacements and backtest.";
+			// 
+			// dtpLastDate
+			// 
+			this.dtpLastDate.Location = new System.Drawing.Point(264, 8);
+			this.dtpLastDate.Name = "dtpLastDate";
+			this.dtpLastDate.Size = new System.Drawing.Size(208, 20);
+			this.dtpLastDate.TabIndex = 2;
+			// 
+			// radioButtonExtremeCounterTrend
+			// 
+			this.radioButtonExtremeCounterTrend.Location = new System.Drawing.Point(64, 176);
+			this.radioButtonExtremeCounterTrend.Name = "radioButtonExtremeCounterTrend";
+			this.radioButtonExtremeCounterTrend.Size = new System.Drawing.Size(144, 24);
+			this.radioButtonExtremeCounterTrend.TabIndex = 10;
+			this.radioButtonExtremeCounterTrend.Text = "Extreme counter trend";
+			this.radioButtonExtremeCounterTrend.CheckedChanged += new System.EventHandler(this.radioButtonExtremeCounterTrend_CheckedChanged);
+			// 
+			// radioButtonOpenToCloseDaily
+			// 
+			this.radioButtonOpenToCloseDaily.Location = new System.Drawing.Point(64, 80);
+			this.radioButtonOpenToCloseDaily.Name = "radioButtonOpenToCloseDaily";
+			this.radioButtonOpenToCloseDaily.Size = new System.Drawing.Size(144, 24);
+			this.radioButtonOpenToCloseDaily.TabIndex = 4;
+			this.radioButtonOpenToCloseDaily.Text = "Open To Close Daily";
+			this.radioButtonOpenToCloseDaily.CheckedChanged += new System.EventHandler(this.radioButtonOpenToCloseDaily_CheckedChanged);
+			// 
+			// radioButtonFixedPeriodOscillator
+			// 
+			this.radioButtonFixedPeriodOscillator.Location = new System.Drawing.Point(232, 80);
+			this.radioButtonFixedPeriodOscillator.Name = "radioButtonFixedPeriodOscillator";
+			this.radioButtonFixedPeriodOscillator.Size = new System.Drawing.Size(184, 24);
+			this.radioButtonFixedPeriodOscillator.TabIndex = 7;
+			this.radioButtonFixedPeriodOscillator.Text = "Fixed Period n-days oscillator";
+			this.radioButtonFixedPeriodOscillator.CheckedChanged += new System.EventHandler(this.radioButtonFixedPeriodOscillator_CheckedChanged);
+			// 
+			// labelDays
+			// 
+			this.labelDays.Location = new System.Drawing.Point(424, 120);
+			this.labelDays.Name = "labelDays";
+			this.labelDays.Size = new System.Drawing.Size(32, 16);
+			this.labelDays.TabIndex = 9;
+			this.labelDays.Text = "days";
+			// 
+			// radioButtonOTCCTODaily
+			// 
+			this.radioButtonOTCCTODaily.Location = new System.Drawing.Point(64, 152);
+			this.radioButtonOTCCTODaily.Name = "radioButtonOTCCTODaily";
+			this.radioButtonOTCCTODaily.Size = new System.Drawing.Size(144, 24);
+			this.radioButtonOTCCTODaily.TabIndex = 11;
+			this.radioButtonOTCCTODaily.Text = "OTC - CTO Daily";
+			this.radioButtonOTCCTODaily.CheckedChanged += new System.EventHandler(this.radioButtonOTCCTODaily_CheckedChanged);
+			// 
+			// radioButtonImmediateTrendFollower
+			// 
+			this.radioButtonImmediateTrendFollower.Location = new System.Drawing.Point(232, 104);
+			this.radioButtonImmediateTrendFollower.Name = "radioButtonImmediateTrendFollower";
+			this.radioButtonImmediateTrendFollower.Size = new System.Drawing.Size(192, 24);
+			this.radioButtonImmediateTrendFollower.TabIndex = 12;
+			this.radioButtonImmediateTrendFollower.Text = "Immediate Trend Follower";
+			this.radioButtonImmediateTrendFollower.CheckedChanged += new System.EventHandler(this.radioButtonImmediateTrendFollower_CheckedChanged);
+			// 
+			// comboBoxPortfolioType
+			// 
+			this.comboBoxPortfolioType.Location = new System.Drawing.Point(472, 64);
+			this.comboBoxPortfolioType.Name = "comboBoxPortfolioType";
+			this.comboBoxPortfolioType.Size = new System.Drawing.Size(184, 21);
+			this.comboBoxPortfolioType.TabIndex = 13;
+			this.comboBoxPortfolioType.Text = "comboBoxPortfolioType";
+			// 
+			// labelPortfolioType
+			// 
+			this.labelPortfolioType.Location = new System.Drawing.Point(472, 48);
+			this.labelPortfolioType.Name = "labelPortfolioType";
+			this.labelPortfolioType.Size = new System.Drawing.Size(100, 16);
+			this.labelPortfolioType.TabIndex = 14;
+			this.labelPortfolioType.Text = "Type of portfolio";
+			// 
+			// radioButtonPVO
+			// 
+			this.radioButtonPVO.Location = new System.Drawing.Point(232, 128);
+			this.radioButtonPVO.Name = "radioButtonPVO";
+			this.radioButtonPVO.Size = new System.Drawing.Size(192, 24);
+			this.radioButtonPVO.TabIndex = 15;
+			this.radioButtonPVO.Text = "Portfolio Value Oscillator";
+			this.radioButtonPVO.CheckedChanged += new System.EventHandler(this.radioButtonPVO_CheckedChanged);
+			// 
+			// radioButtonPVOBiased
+			// 
+			this.radioButtonPVOBiased.Location = new System.Drawing.Point(232, 152);
+			this.radioButtonPVOBiased.Name = "radioButtonPVOBiased";
+			this.radioButtonPVOBiased.Size = new System.Drawing.Size(88, 24);
+			this.radioButtonPVOBiased.TabIndex = 16;
+			this.radioButtonPVOBiased.Text = "PVO Biased";
+			this.radioButtonPVOBiased.CheckedChanged += new System.EventHandler(this.radioButtonPVOBiased_CheckedChanged);
+			// 
+			// labelStopLoss
+			// 
+			this.labelStopLoss.Location = new System.Drawing.Point(424, 160);
+			this.labelStopLoss.Name = "labelStopLoss";
+			this.labelStopLoss.Size = new System.Drawing.Size(56, 16);
+			this.labelStopLoss.TabIndex = 18;
+			this.labelStopLoss.Text = "stop loss";
+			// 
+			// textBoxStopLoss
+			// 
+			this.textBoxStopLoss.Location = new System.Drawing.Point(480, 160);
+			this.textBoxStopLoss.Name = "textBoxStopLoss";
+			this.textBoxStopLoss.Size = new System.Drawing.Size(56, 20);
+			this.textBoxStopLoss.TabIndex = 17;
+			this.textBoxStopLoss.Text = "0.02";
+			// 
+			// labelTakeProfit
+			// 
+			this.labelTakeProfit.Location = new System.Drawing.Point(544, 160);
+			this.labelTakeProfit.Name = "labelTakeProfit";
+			this.labelTakeProfit.Size = new System.Drawing.Size(56, 16);
+			this.labelTakeProfit.TabIndex = 20;
+			this.labelTakeProfit.Text = "take profit";
+			// 
+			// textBoxTakeProfit
+			// 
+			this.textBoxTakeProfit.Location = new System.Drawing.Point(608, 160);
+			this.textBoxTakeProfit.Name = "textBoxTakeProfit";
+			this.textBoxTakeProfit.Size = new System.Drawing.Size(56, 20);
+			this.textBoxTakeProfit.TabIndex = 19;
+			this.textBoxTakeProfit.Text = "0.005";
+			// 
+			// radioButtonPVOBiasedNoThresholds
+			// 
+			this.radioButtonPVOBiasedNoThresholds.Location = new System.Drawing.Point(232, 176);
+			this.radioButtonPVOBiasedNoThresholds.Name = "radioButtonPVOBiasedNoThresholds";
+			this.radioButtonPVOBiasedNoThresholds.Size = new System.Drawing.Size(192, 24);
+			this.radioButtonPVOBiasedNoThresholds.TabIndex = 21;
+			this.radioButtonPVOBiasedNoThresholds.Text = "PVO Biased No Thresholds";
+			this.radioButtonPVOBiasedNoThresholds.CheckedChanged += new System.EventHandler(this.radioButtonPVOBiasedNoThresholds_CheckedChanged);
+			// 
+			// radioButtonOTCPVOBiasedNoThresholds
+			// 
+			this.radioButtonOTCPVOBiasedNoThresholds.Location = new System.Drawing.Point(232, 200);
+			this.radioButtonOTCPVOBiasedNoThresholds.Name = "radioButtonOTCPVOBiasedNoThresholds";
+			this.radioButtonOTCPVOBiasedNoThresholds.Size = new System.Drawing.Size(192, 24);
+			this.radioButtonOTCPVOBiasedNoThresholds.TabIndex = 22;
+			this.radioButtonOTCPVOBiasedNoThresholds.Text = "OTC_PVO Biased No Thresholds";
+			this.radioButtonOTCPVOBiasedNoThresholds.CheckedChanged += new System.EventHandler(this.radioButtonOTCPVOBiasedNoThresholds_CheckedChanged);
+			// 
+			// TestDisplayer
+			// 
+			this.AutoScaleBaseSize = new System.Drawing.Size(5, 13);
+			this.ClientSize = new System.Drawing.Size(704, 414);
+			this.Controls.AddRange(new System.Windows.Forms.Control[] {
+																																	this.radioButtonOTCPVOBiasedNoThresholds,
+																																	this.radioButtonPVOBiasedNoThresholds,
+																																	this.labelTakeProfit,
+																																	this.textBoxTakeProfit,
+																																	this.labelStopLoss,
+																																	this.textBoxStopLoss,
+																																	this.radioButtonPVOBiased,
+																																	this.radioButtonPVO,
+																																	this.labelPortfolioType,
+																																	this.comboBoxPortfolioType,
+																																	this.radioButtonImmediateTrendFollower,
+																																	this.radioButtonOTCCTODaily,
+																																	this.radioButtonExtremeCounterTrend,
+																																	this.labelDays,
+																																	this.textBoxDaysFPOscillatorAndRevOneRank,
+																																	this.radioButtonFixedPeriodOscillator,
+																																	this.radioButtonCloseToOpenDaily,
+																																	this.radioButtonOpenToCloseWeekly,
+																																	this.radioButtonOpenToCloseDaily,
+																																	this.label1,
+																																	this.dtpLastDate,
+																																	this.dtpFirstDate,
+																																	this.dgBestGenomes});
+			this.Name = "TestDisplayer";
+			this.Text = "TestDisplayer";
+			((System.ComponentModel.ISupportInitialize)(this.dgBestGenomes)).EndInit();
+			this.ResumeLayout(false);
 
-    }
+		}
 		#endregion
 
 		private bool aRowHasBeenClicked(
@@ -641,6 +642,11 @@ namespace QuantProject.Scripts.WalkForwardTesting.LinearCombination
     {
       this.update_selectedStrategyType();
     }
+
+		private void radioButtonOTCCTODaily_CheckedChanged(object sender, System.EventArgs e)
+		{
+			this.update_selectedStrategyType();
+		}
     
 	}
 }
