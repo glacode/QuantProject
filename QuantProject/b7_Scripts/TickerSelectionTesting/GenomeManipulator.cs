@@ -289,5 +289,68 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
       }
       return returnValue;
     }
+// // 
+//    /// <summary>
+//		/// Returns true if a given gene value,
+//		/// for which the meaning is a ticker code, has the same sign
+//		/// of all the other genes that point to tickers
+//		/// contained in a given genome.
+//		/// </summary> 
+//		/// <param name="newGeneValuePointingToTicker">Gene's value for which sign has to be checked</param>
+//		/// <param name="newGeneValuePosition">Position for the new gene value inside the genome to be checked</param>
+//    /// <param name="positionsForTickersInsideGenomeToBeChecked">Positions for genes pointing to tickers, inside genome, to be checked</param>
+//    /// <param name="genomeToBeModified">The genome inside which check has to be done, before
+//    /// 																		a mutation or a new gene assignment
+//    /// 																		through the parameter newGeneValuePointingToTicker</param>
+//    public static bool WillGenomeHaveTickersOfSameSign(int newGeneValuePointingToTicker,
+//                                                       int newGeneValuePosition,
+//                                                 			 int[] positionsForTickersInsideGenomeToBeChecked,
+//                                                 			 Genome genomeToBeModified)
+//    {
+//      bool returnValue = true;
+//			foreach(int position in positionsForTickersInsideGenome)
+//			{
+//				if( (position != newGeneValuePosition) &&
+//				    ( (newGeneValuePointingToTicker < 0 && genomeToBeModified.GetGeneValue(position) >= 0 ) ||
+//				    	(newGeneValuePointingToTicker >= 0 && genomeToBeModified.GetGeneValue(position) < 0 )   )   )
+//				// if the current position is different from the newGeneValuePosition
+//				// and
+//				// newGeneValuePointingToTicker points to a short (long) position and
+//			  // a the gene in the current position points to a long (short) one 
+//							  returnValue = false;
+//			}
+//			return returnValue;
+//    }
+//    
+//		/// <summary>
+//		/// Returns true if a given gene value,
+//		/// for which the meaning is a ticker code, has the same sign
+//		/// of all the other genes that point to tickers
+//		/// contained in a given genome.
+//		/// </summary> 
+//		/// <param name="newGeneValuePointingToTicker">Gene's value for which sign has to be checked</param>
+//		/// <param name="newGeneValuePosition">Position for the new gene value inside the genome to be checked</param>
+//		/// <param name="genomeToBeModified">The genome to be checked, before
+//    /// 																 a mutation or a new gene assignment 
+//    /// 																 through the parameter newGeneValuePointingToTicker</param>
+//		public static bool WillGenomeHaveTickersOfSameSign(int newGeneValuePointingToTicker,
+//                                                       int newGeneValuePosition,
+//																											 Genome genomeToBeModified)
+//		{
+//			bool returnValue = true;
+//			for( int position = 0; position < genomeToBeModified.Size; position++ )
+//			{
+//				if( (position != newGeneValuePosition) && 
+//				    (	(newGeneValuePointingToTicker < 0 && genomeToBeModified.GetGeneValue(position) >= 0 ) ||
+//				    	(newGeneValuePointingToTicker >= 0 && genomeToBeModified.GetGeneValue(position) < 0 )		)  )
+//				// if the current position is different from the newGeneValuePosition
+//				// and
+//				// newGeneValuePointingToTicker points to a short (long) position and
+//			  // a the gene in the current position points to a long (short) one
+//							returnValue = false;
+//			}
+//			return returnValue; 
+//		}
+
 	}
 }
