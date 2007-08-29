@@ -1,7 +1,7 @@
 <VisualStudioProject>
     <CSHARP
         ProjectType = "Local"
-        ProductVersion = "7.0.9466"
+        ProductVersion = "7.0.9955"
         SchemaVersion = "1.0"
         ProjectGuid = "{451DB77D-D4C7-44D1-8047-2920D864A4CD}"
     >
@@ -118,6 +118,26 @@
                 />
                 <File
                     RelPath = "SimpleScriptsContainer.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "ArbitrageTesting\OverReactionHypothesis\DoubleOverReaction_OTC\EndOfDayTimerHandlerDOR_OTC.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "ArbitrageTesting\OverReactionHypothesis\DoubleOverReaction_OTC\RunDOR_OTC.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "ArbitrageTesting\OverReactionHypothesis\DoubleOverReaction_WeekEndBounce\EndOfDayTimerHandlerDOR_WeekEndBounce.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "ArbitrageTesting\OverReactionHypothesis\DoubleOverReaction_WeekEndBounce\RunDOR_WeekEndBounce.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
@@ -378,6 +398,16 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "TechnicalAnalysisTesting\TrendFollowing\BestAndWorst\EndOfDayTimerHandlerBWFollower.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "TechnicalAnalysisTesting\TrendFollowing\BestAndWorst\RunBestAndWorstFollower.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "TechnicalAnalysisTesting\TrendFollowing\ImmediateTrendFollower\EndOfDayTimerHandlerITF.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
@@ -389,6 +419,16 @@
                 />
                 <File
                     RelPath = "TechnicalAnalysisTesting\TrendFollowing\ImmediateTrendFollower\RunImmediateTrendFollower.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "TechnicalAnalysisTesting\TrendFollowing\OTC_CTOTrendFollower\EndOfDayTimerHandlerOTC_CTOTrendFollower.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "TechnicalAnalysisTesting\TrendFollowing\OTC_CTOTrendFollower\RunEfficientOTC_CTOTrendFollower.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
@@ -423,12 +463,22 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "TickerSelectionTesting\EndOfDayTimerHandlerCTO_WorstAtDay.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "TickerSelectionTesting\EndOfDayTimerHandlerLastChosenPortfolio.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
                 <File
                     RelPath = "TickerSelectionTesting\EndOfDayTimerHandlerOTC.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "TickerSelectionTesting\EndOfDayTimerHandlerOTC_WorstAtNight.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
@@ -508,7 +558,17 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "TickerSelectionTesting\RunEfficientCTO_WorstAtDayPortfolio.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "TickerSelectionTesting\RunEfficientCTOPortfolio.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "TickerSelectionTesting\RunEfficientOTC_WorstAtNightPortfolio.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
@@ -711,6 +771,11 @@
                     RelPath = "WalkForwardTesting\LinearCombination\TestDisplayer.cs"
                     SubType = "Form"
                     BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "WalkForwardTesting\LinearCombination\TestDisplayer.resx"
+                    DependentUpon = "TestDisplayer.cs"
+                    BuildAction = "EmbeddedResource"
                 />
                 <File
                     RelPath = "WalkForwardTesting\LinearCombination\WalkForwardTest\RunWalkForwardLinearCombination.cs"
