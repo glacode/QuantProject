@@ -115,6 +115,17 @@ namespace QuantProject.ADT.Statistics
                                 2.0);
       //negative semivariance is a special case of Lower partial moment
     }
+		
+		public static double GetProbabilityOfWinning( ICollection returns )
+		{
+			double numberOfReturns = returns.Count;
+			double winningPeriods = 0;
+			foreach ( double singleReturn in returns )
+				if ( singleReturn > 0 )
+						winningPeriods++;
+			
+			return winningPeriods / numberOfReturns; 
+		}
 
 		public static double GetSharpeRatio( ICollection returns )
 		{
