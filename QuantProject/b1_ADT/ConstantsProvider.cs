@@ -39,7 +39,7 @@ namespace QuantProject.ADT
     //to update averageRandomFitness and standardDeviationOfRandomFitness properties
     public static DateTime DefaultDateForTickersAddedToGroups = new DateTime(1980,1,1);
     //conventional date for new tickers added to groups 
-    public static double AmountOfVariableWeightToBeAssignedToTickers = 0.5;
+    public static double AmountOfVariableWeightToBeAssignedToTickers = 0.40;
     //total weight to be assigned to portfolio's tickers through genetic optimizer,
     //this constant is used at the moment only by GenomeManagerForWeightedEfficientPortfolio  
     public static string SeparatorForTickers = ";";
