@@ -33,6 +33,7 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
   {
     OnlyLong,
     OnlyShort,
-    ShortAndLong
+    ShortAndLong,
+		OnlyMixed
   }
 }
