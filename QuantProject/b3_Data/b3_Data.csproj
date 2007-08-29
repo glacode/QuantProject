@@ -1,7 +1,7 @@
 <VisualStudioProject>
     <CSHARP
         ProjectType = "Local"
-        ProductVersion = "7.0.9466"
+        ProductVersion = "7.0.9955"
         SchemaVersion = "1.0"
         ProjectGuid = "{6AC0A2C1-B926-4921-A685-F5AA80E81C94}"
     >
@@ -143,7 +143,7 @@
                 />
                 <File
                     RelPath = "ExtendedDataTable.cs"
-                    SubType = "Component"
+                    SubType = "Code"
                     BuildAction = "Compile"
                 />
                 <File

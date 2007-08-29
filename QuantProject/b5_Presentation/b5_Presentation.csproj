@@ -1,7 +1,7 @@
 <VisualStudioProject>
     <CSHARP
         ProjectType = "Local"
-        ProductVersion = "7.0.9466"
+        ProductVersion = "7.0.9955"
         SchemaVersion = "1.0"
         ProjectGuid = "{D3DC9EA6-3B06-4255-B19A-5FC5B66A1402}"
     >
@@ -130,14 +130,6 @@
                     Package = "{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}"
                 />
                 <Reference
-                    Name = "Microsoft.Office.Core"
-                    Guid = "{2DF8D04C-5BFA-101B-BDE5-00AA0044DE52}"
-                    VersionMajor = "2"
-                    VersionMinor = "3"
-                    Lcid = "0"
-                    WrapperTool = "primary"
-                />
-                <Reference
                     Name = "NPlot"
                     AssemblyName = "NPlot"
                     HintPath = "..\..\NPlot.dll"
@@ -195,6 +187,11 @@
                     RelPath = "Reporting\WindowsForm\Report.cs"
                     SubType = "Form"
                     BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Reporting\WindowsForm\Report.resx"
+                    DependentUpon = "Report.cs"
+                    BuildAction = "EmbeddedResource"
                 />
                 <File
                     RelPath = "Reporting\WindowsForm\ReportGrid.cs"
