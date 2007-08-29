@@ -88,10 +88,7 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
     //if MaxNumberOfHoursForScript has elapsed and the script
     //is still running, it will be stopped.
     
-    public string[] LastOrderedTickers
-    {
-      get { return this.endOfDayTimerHandler.LastOrderedTickers; }
-    }
+    
     public PortfolioType TypeOfPortfolio
     {
       get { return this.portfolioType; }
@@ -213,15 +210,23 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
     		this.SaveScriptResults();
     }
     
-    public virtual void SaveScriptResults()
+    public virtual string SaveScriptResults_CreateFileName()
     {
-      string fileName = "From_" + this.tickerGroupID + "_" +
+      return   DateTime.Now.Hour.ToString().PadLeft(2,'0') + "_" + 
+        								DateTime.Now.Minute.ToString().PadLeft(2,'0') + "_" + 
+      									"From_" + this.tickerGroupID + "_" +
                       + this.numberOfEligibleTickers +
                       "_OptDays" + this.numDaysForOptimizationPeriod + "_Port" +
                       this.numberOfTickersToBeChosen + "GenNum" + 
                       this.generationNumberForGeneticOptimizer +
                       "PopSize" + this.populationSizeForGeneticOptimizer +
         							Convert.ToString(this.portfolioType);
+    }
+    
+    
+    public virtual void SaveScriptResults()
+    {
+    	string fileName = this.SaveScriptResults_CreateFileName();
       string dirNameWhereToSaveReports = System.Configuration.ConfigurationSettings.AppSettings["ReportsArchive"] +
                          								"\\" + this.ScriptName + "\\";
       string dirNameWhereToSaveTransactions = System.Configuration.ConfigurationSettings.AppSettings["TransactionsArchive"] +

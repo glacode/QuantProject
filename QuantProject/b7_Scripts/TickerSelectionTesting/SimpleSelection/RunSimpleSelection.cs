@@ -81,11 +81,7 @@ namespace QuantProject.Scripts.TickerSelectionTesting.SimpleSelection
     protected double maxRunningHours;
     //if MaxNumberOfHoursForScript has elapsed and the script
     //is still running, it will be stopped.
-    
-    public string[] LastOrderedTickers
-    {
-      get { return this.endOfDayTimerHandler.LastOrderedTickers; }
-    }
+        
     public PortfolioType TypeOfPortfolio
     {
       get { return this.portfolioType; }
@@ -146,8 +142,7 @@ namespace QuantProject.Scripts.TickerSelectionTesting.SimpleSelection
       this.maxRunningHours = maxRunningHours;
       //this.numIntervalDays = 3;
 		}
-    
-    
+        
     #region Run
  		
     protected virtual void run_initializeEndOfDayTimer()

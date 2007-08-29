@@ -23,9 +23,11 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 using System;
 using System.Data;
 using System.Collections;
+
 using QuantProject.ADT.Statistics;
 using QuantProject.Data;
 using QuantProject.Data.DataTables;
+using QuantProject.Business.Strategies;
 using QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios;
 
 namespace QuantProject.Scripts.TickerSelectionTesting.SimpleSelection
@@ -158,17 +160,17 @@ namespace QuantProject.Scripts.TickerSelectionTesting.SimpleSelection
     /// If PortfolioType is ShortAndLong, half of numberOfTickers is for short and
     /// the remaining half for long. Tickers for short trading are signed!
     /// </summary>
-    public string[] GetBestTickers(int numberOfTickers)
+    public SignedTickers GetBestTickers(int numberOfTickers)
     {
-      string[] returnValue = new string[numberOfTickers];
+      string[] arrayOfSignedTickers = new string[numberOfTickers];
       if(this.portfolioType == PortfolioType.OnlyLong)
-        this.getBestTickers_setReturnValueForOnlyLong(returnValue);  
+        this.getBestTickers_setReturnValueForOnlyLong(arrayOfSignedTickers);  
       else if(this.portfolioType == PortfolioType.OnlyShort)
-        this.getBestTickers_setReturnValueForOnlyShort(returnValue);
+        this.getBestTickers_setReturnValueForOnlyShort(arrayOfSignedTickers);
       else if(this.portfolioType == PortfolioType.ShortAndLong)
-        this.getBestTickers_setReturnValueForShortAndLong(returnValue);
+        this.getBestTickers_setReturnValueForShortAndLong(arrayOfSignedTickers);
       
-      return returnValue;
+      return new SignedTickers(arrayOfSignedTickers);
     }
     
     

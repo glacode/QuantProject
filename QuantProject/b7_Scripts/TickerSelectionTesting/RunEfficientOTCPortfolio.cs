@@ -52,7 +52,8 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
   [Serializable]
   public class RunEfficientOTCPortfolio : RunEfficientPortfolio
   {
-    protected int numDaysBetweenEachOptimization;	
+    protected int numDaysBetweenEachOptimization;
+		
     public RunEfficientOTCPortfolio(string tickerGroupID, int numberOfEligibleTickers, 
       int numberOfTickersToBeChosen, int numDaysForOptimizationPeriod, 
       int generationNumberForGeneticOptimizer,
@@ -68,11 +69,13 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
       portfolioType, maxRunningHours)
     {
       //this.ScriptName = "OpenCloseScriptsSharpeRatioWithCoeff";
+      //this.ScriptName = "OTC_SharpeRatioWithCoeff_OnlyMutation";
       //this.ScriptName = "OpenCloseScriptsSharpeRatio";
-      this.ScriptName = "OpenCloseScriptsSharpeRatioNoCoeff";
+      this.ScriptName = "OTC_SharpeRatioNoCoeff";
+			//this.ScriptName = "OTC_ExpectancyScoreNoCoeff";
       //this.ScriptName = "OpenCloseScripts";
       this.numDaysBetweenEachOptimization = numDaysBetweenEachOptimization;
-    }
+		}
     
         
     // delete remark delimitations for having ib commission 
@@ -109,8 +112,8 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
     
     protected override void run_initializeHistoricalQuoteProvider()
     {
-      //this.historicalQuoteProvider = new HistoricalRawQuoteProvider();
-      this.historicalQuoteProvider = new HistoricalAdjustedQuoteProvider();
+      this.historicalQuoteProvider = new HistoricalRawQuoteProvider();
+//      this.historicalQuoteProvider = new HistoricalAdjustedQuoteProvider();
     }
     
     protected override void run_addEventHandlers()
@@ -131,8 +134,6 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
         new OneHourAfterMarketCloseEventHandler(
         this.endOfDayTimerHandler.OneHourAfterMarketCloseEventHandler );
     }
-    
-    
     
     //necessary far calling RunEfficientPortfolio.Run()
     //in classes that inherit from this class

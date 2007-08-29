@@ -70,7 +70,7 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
       startDate, endDate, targetReturn,
       portfolioType, maxRunningHours)
     {
-      this.ScriptName = "MultidayOpenCloseScripts";
+      this.ScriptName = "MultidayOpenCloseScripts_SharpeNoCoeff";
       this.numDaysBetweenEachOptimization = numDaysPortfolioLife;
     }
     
