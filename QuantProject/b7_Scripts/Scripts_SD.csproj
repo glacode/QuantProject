@@ -5,7 +5,7 @@
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{B5AAC5AA-DCC1-4698-A362-D399AB9A90C4}</ProjectGuid>
     <RootNamespace>Scripts</RootNamespace>
-    <AssemblyName>Scripts</AssemblyName>
+    <AssemblyName>QuantProject.Scripts</AssemblyName>
     <OutputType>Library</OutputType>
     <WarningLevel>4</WarningLevel>
     <NoStdLib>False</NoStdLib>
@@ -13,12 +13,13 @@
     <RunPostBuildEvent>OnSuccessfulBuild</RunPostBuildEvent>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <DebugSymbols>True</DebugSymbols>
+    <DebugSymbols>true</DebugSymbols>
     <Optimize>False</Optimize>
     <AllowUnsafeBlocks>False</AllowUnsafeBlocks>
     <CheckForOverflowUnderflow>True</CheckForOverflowUnderflow>
     <OutputPath>..\bin\Debug\</OutputPath>
-    <TreatWarningsAsErrors>False</TreatWarningsAsErrors>
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+    <DebugType>Full</DebugType>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugSymbols>False</DebugSymbols>
@@ -27,6 +28,14 @@
     <CheckForOverflowUnderflow>False</CheckForOverflowUnderflow>
     <OutputPath>..\bin\Release\</OutputPath>
     <TreatWarningsAsErrors>False</TreatWarningsAsErrors>
+    <DebugType>None</DebugType>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Platform)' == 'AnyCPU' ">
+    <RegisterForComInterop>False</RegisterForComInterop>
+    <GenerateSerializationAssemblies>Auto</GenerateSerializationAssemblies>
+    <BaseAddress>4194304</BaseAddress>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <FileAlignment>4096</FileAlignment>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -36,6 +45,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ArbitrageTesting\OverReactionHypothesis\DoubleOverReaction_OTC\EndOfDayTimerHandlerDOR_OTC.cs" />
+    <Compile Include="ArbitrageTesting\OverReactionHypothesis\DoubleOverReaction_OTC\RunDOR_OTC.cs" />
     <Compile Include="AssemblyInfo.cs" />
     <Compile Include="MyTradingSystem.cs" />
     <Compile Include="CallingReportsForRunScripts\ShowReportFromFile.cs" />
@@ -156,8 +167,6 @@
     <Compile Include="WalkForwardTesting\WalkForwardLag\WFLagDebugger\WFLagDebugGenome.cs" />
     <Compile Include="TickerSelectionTesting\GenomeManagerForEfficientOTCCTOPortfolio.cs" />
     <Compile Include="WalkForwardTesting\LinearCombination\OTC_CTODailyStrategy.cs" />
-    <EmbeddedResource Include="QuantProject.Scripts.WalkForwardTesting.LinearCombination.TestDisplayer.resources" />
-    <None Include="MultiTesting\MultiTestOneRank\" />
     <None Include="SimpleTesting\MSFTSimpleTest_2\TsMSFTsimpleTest_2.cs" />
     <Compile Include="SimpleScriptsContainer.cs" />
     <Compile Include="WalkForwardTesting\WalkForwardLag\WFLagLogDebugger\WFLagLogDebugger.cs" />
@@ -168,7 +177,6 @@
     <Compile Include="TechnicalAnalysisTesting\TrendFollowing\ImmediateTrendFollower\EndOfDayTimerHandlerITF.cs" />
     <Compile Include="TechnicalAnalysisTesting\TrendFollowing\ImmediateTrendFollower\GenomeManagerITF.cs" />
     <Compile Include="TechnicalAnalysisTesting\TrendFollowing\ImmediateTrendFollower\RunImmediateTrendFollower.cs" />
-    <Compile Include="WalkForwardTesting\WalkForwardLag\WeightedPositions.cs" />
     <Compile Include="WalkForwardTesting\WalkForwardLag\WFLagGenomeManagerWithWeights.cs" />
     <Compile Include="WalkForwardTesting\WalkForwardLag\WFLagWeightedPositions.cs" />
     <Compile Include="WalkForwardTesting\LinearCombination\ImmediateTrendFollowerStrategy.cs" />
@@ -207,8 +215,22 @@
     <Compile Include="WalkForwardTesting\WalkForwardLag\WeightedPositionsChoosers\WFLagBruteForceFixedPortfolioWeightedPositionsChooser.cs" />
     <Compile Include="ArbitrageTesting\OverReactionHypothesis\SimpleOHTest\EndOfDayTimerHandlerSimpleOHTest.cs" />
     <Compile Include="ArbitrageTesting\OverReactionHypothesis\SimpleOHTest\RunSimpleOHTest.cs" />
+    <Compile Include="TechnicalAnalysisTesting\TrendFollowing\BestAndWorst\EndOfDayTimerHandlerBWFollower.cs" />
+    <Compile Include="TechnicalAnalysisTesting\TrendFollowing\BestAndWorst\RunBestAndWorstFollower.cs" />
+    <Compile Include="TickerSelectionTesting\RunEfficientOTC_WorstAtNightPortfolio.cs" />
+    <Compile Include="TickerSelectionTesting\EndOfDayTimerHandlerOTC_WorstAtNight.cs" />
+    <Compile Include="ArbitrageTesting\OverReactionHypothesis\DoubleOverReaction_WeekEndBounce\EndOfDayTimerHandlerDOR_WeekEndBounce.cs" />
+    <Compile Include="ArbitrageTesting\OverReactionHypothesis\DoubleOverReaction_WeekEndBounce\RunDOR_WeekEndBounce.cs" />
+    <Compile Include="TickerSelectionTesting\EndOfDayTimerHandlerCTO_WorstAtDay.cs" />
+    <Compile Include="TickerSelectionTesting\RunEfficientCTO_WorstAtDayPortfolio.cs" />
+    <Compile Include="WalkForwardTesting\WalkForwardLag\WeightedPositionsChoosers\WFLagGeneticFixedPortfolioWithNormalDrivingAndPortfolio\WFLagGeneticFixedPortfolioWithNormalDrivingAndPortfolio.cs" />
+    <Compile Include="WalkForwardTesting\WalkForwardLag\WeightedPositionsChoosers\WFLagGeneticFixedPortfolioWithNormalDrivingAndPortfolio\WFLagGenomeManagerForFixedPortfolioWithNormalDrivingAndPortfolio.cs" />
+    <Compile Include="WalkForwardTesting\WalkForwardLag\WFLagMeaningForUndecodableGenomes.cs" />
+    <Compile Include="TechnicalAnalysisTesting\TrendFollowing\OTC_CTOTrendFollower\EndOfDayTimerHandlerOTC_CTOTrendFollower.cs" />
+    <Compile Include="TechnicalAnalysisTesting\TrendFollowing\OTC_CTOTrendFollower\RunEfficientOTC_CTOTrendFollower.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="ArbitrageTesting\OverReactionHypothesis\DoubleOverReaction_OTC" />
     <Folder Include="EvaluatingOptimizationTechnique\" />
     <Folder Include="EvaluatingOptimizationTechnique\EfficientPortfolio\" />
     <Folder Include="TickerSelectionTesting\SimpleSelection\" />
@@ -254,6 +276,10 @@
     <Folder Include="WalkForwardTesting\WalkForwardLag\WeightedPositionsChoosers" />
     <Folder Include="ArbitrageTesting\OverReactionHypothesis" />
     <Folder Include="ArbitrageTesting\OverReactionHypothesis\SimpleOHTest" />
+    <Folder Include="TechnicalAnalysisTesting\TrendFollowing\BestAndWorst" />
+    <Folder Include="ArbitrageTesting\OverReactionHypothesis\DoubleOverReaction_WeekEndBounce" />
+    <Folder Include="WalkForwardTesting\WalkForwardLag\WeightedPositionsChoosers\WFLagGeneticFixedPortfolioWithNormalDrivingAndPortfolio" />
+    <Folder Include="TechnicalAnalysisTesting\TrendFollowing\OTC_CTOTrendFollower" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.Targets" />
 </Project>

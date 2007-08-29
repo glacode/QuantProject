@@ -13,12 +13,13 @@
     <RunPostBuildEvent>OnSuccessfulBuild</RunPostBuildEvent>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <DebugSymbols>True</DebugSymbols>
+    <DebugSymbols>true</DebugSymbols>
     <Optimize>False</Optimize>
     <AllowUnsafeBlocks>False</AllowUnsafeBlocks>
     <CheckForOverflowUnderflow>True</CheckForOverflowUnderflow>
     <OutputPath>..\bin\Debug\</OutputPath>
-    <TreatWarningsAsErrors>False</TreatWarningsAsErrors>
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+    <DebugType>Full</DebugType>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugSymbols>False</DebugSymbols>
@@ -27,6 +28,13 @@
     <CheckForOverflowUnderflow>False</CheckForOverflowUnderflow>
     <OutputPath>..\bin\Release\</OutputPath>
     <TreatWarningsAsErrors>False</TreatWarningsAsErrors>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Platform)' == 'AnyCPU' ">
+    <RegisterForComInterop>False</RegisterForComInterop>
+    <GenerateSerializationAssemblies>Auto</GenerateSerializationAssemblies>
+    <BaseAddress>4194304</BaseAddress>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <FileAlignment>4096</FileAlignment>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -119,7 +127,6 @@
     <Compile Include="a1_Financial\a3_Ordering\Orders.cs" />
     <Compile Include="a1_Financial\a3_Ordering\OrderStatus.cs" />
     <Compile Include="a1_Financial\a3_Ordering\OrderType.cs" />
-    <Compile Include="a2_Strategies\AccountStrategy.cs" />
     <Compile Include="a2_Strategies\Signal.cs" />
     <Compile Include="a2_Strategies\Signals.cs" />
     <Compile Include="a2_Strategies\TradingSystem.cs" />
@@ -155,6 +162,14 @@
     <Compile Include="a2_Strategies\WeightedPosition.cs" />
     <Compile Include="a2_Strategies\EquityEvaluation\IEquityEvaluator.cs" />
     <Compile Include="a2_Strategies\EquityEvaluation\WinningPeriods.cs" />
+    <Compile Include="a2_Strategies\returnsManagement\CloseToCloseReturnsManager.cs" />
+    <Compile Include="a2_Strategies\returnsManagement\ReturnsManager.cs" />
+    <Compile Include="a2_Strategies\SignedTickers.cs" />
+    <Compile Include="a2_Strategies\AccountStrategy.cs" />
+    <Compile Include="a2_Strategies\AccountManager.cs" />
+    <Compile Include="a2_Strategies\WeightedPositions.cs" />
+    <Compile Include="a2_Strategies\EquityEvaluation\ExpectancyScore.cs" />
+    <Compile Include="a2_Strategies\EquityEvaluation\SharpeRatio.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\b1_ADT\ADT_SD.csproj">
@@ -170,6 +185,7 @@
       <Name>b3_Data</Name>
     </ProjectReference>
     <Folder Include="a2_Strategies\EquityEvaluation" />
+    <Folder Include="a2_Strategies\returnsManagement" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.Targets" />
 </Project>

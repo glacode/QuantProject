@@ -13,12 +13,13 @@
     <RunPostBuildEvent>OnSuccessfulBuild</RunPostBuildEvent>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <DebugSymbols>True</DebugSymbols>
+    <DebugSymbols>true</DebugSymbols>
     <Optimize>False</Optimize>
     <AllowUnsafeBlocks>False</AllowUnsafeBlocks>
     <CheckForOverflowUnderflow>True</CheckForOverflowUnderflow>
     <OutputPath>..\bin\Debug\</OutputPath>
-    <TreatWarningsAsErrors>False</TreatWarningsAsErrors>
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+    <DebugType>Full</DebugType>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugSymbols>False</DebugSymbols>
@@ -27,6 +28,13 @@
     <CheckForOverflowUnderflow>False</CheckForOverflowUnderflow>
     <OutputPath>..\bin\Release\</OutputPath>
     <TreatWarningsAsErrors>False</TreatWarningsAsErrors>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Platform)' == 'AnyCPU' ">
+    <RegisterForComInterop>False</RegisterForComInterop>
+    <GenerateSerializationAssemblies>Auto</GenerateSerializationAssemblies>
+    <BaseAddress>4194304</BaseAddress>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <FileAlignment>4096</FileAlignment>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -77,6 +85,8 @@
     <Compile Include="Statistics\Combinatorial\Combination.cs" />
     <Compile Include="ExtendedMath.cs" />
     <Compile Include="Collections\CollectionManager.cs" />
+    <Compile Include="Collections\FloatArrayManager.cs" />
+    <Compile Include="Collections\Set.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Optimizing\BruteForce" />
