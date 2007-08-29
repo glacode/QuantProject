@@ -28,6 +28,7 @@ using QuantProject.Business.Financial.Accounting;
 using QuantProject.Business.Financial.Instruments;
 using QuantProject.Business.Financial.Ordering;
 using QuantProject.Business.Timing;
+using QuantProject.Business.Strategies;
 using QuantProject.Data.DataProviders;
 using QuantProject.Data.Selectors;
 using QuantProject.ADT.Optimizing.Genetic;
@@ -43,8 +44,6 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
   [Serializable]
   public class EndOfDayTimerHandlerOTCCTO : EndOfDayTimerHandler
   {
-    protected int numDaysBetweenEachOptimization;
-    private int numDaysElapsedSinceLastOptimization;
     protected int seedForRandomGenerator;
     
     public EndOfDayTimerHandlerOTCCTO(string tickerGroupID, int numberOfEligibleTickers, 
@@ -76,24 +75,10 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
     {
     	//temporarily the if condition
     	//if(this.numDaysElapsedSinceLastOptimization == 0)
-    	this.closePositions();	
-      this.openPositions(this.chosenTickers);
+    	AccountManager.ClosePositions(this.account);	
+      this.openPositions();
     }
-    private void reverseSignOfChosenTickers()
-    {
-      for(int i = 0; i<this.chosenTickers.Length; i++)
-      {
-        if(this.chosenTickers[i] != null)
-        {
-          if(this.chosenTickers[i].StartsWith("-"))
-            this.chosenTickers[i] =
-              GenomeManagerForEfficientPortfolio.GetCleanTickerCode(this.chosenTickers[i]);
-          else
-            this.chosenTickers[i] = "-" + this.chosenTickers[i];
-        }
-      }
-    }
-                
+      
     public override void MarketCloseEventHandler(
       Object sender , EndOfDayTimingEventArgs endOfDayTimingEventArgs )
     {
@@ -101,11 +86,15 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
     	//temporarily
     	//if(this.numDaysElapsedSinceLastOptimization ==
     	//   this.numDaysBetweenEachOptimization)
-    	this.closePositions();
-      this.orders.Clear();
-      this.reverseSignOfChosenTickers();
-      this.openPositions(this.chosenTickers);
-      this.reverseSignOfChosenTickers();
+    	AccountManager.ClosePositions(this.account);
+    	try{
+    		this.chosenWeightedPositions.Reverse();
+      	this.openPositions();
+    	}
+    	catch(Exception ex){
+				ex = ex;
+    	}
+    	this.chosenWeightedPositions.Reverse();
     }
     
     
@@ -144,7 +133,7 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
     {
       
       DataTable setOfTickersToBeOptimized = this.getSetOfTickersToBeOptimized(currentDate);
-      if(setOfTickersToBeOptimized.Rows.Count > this.chosenTickers.Length*2)
+      if(setOfTickersToBeOptimized.Rows.Count > this.numberOfTickersToBeChosen*2)
         //the optimization process is possible only if the initial set of tickers is 
         //as large as the number of tickers to be chosen                     
       
@@ -167,8 +156,8 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
         GO.Run(false);
         this.addGenomeToBestGenomes(GO.BestGenome,currentDate.AddDays(-this.numDaysForOptimizationPeriod),
                                     currentDate, setOfTickersToBeOptimized.Rows.Count);
-        this.chosenTickers = ((GenomeMeaning)GO.BestGenome.Meaning).Tickers;
-        this.chosenTickersPortfolioWeights = ((GenomeMeaning)GO.BestGenome.Meaning).TickersPortfolioWeights;
+         this.chosenWeightedPositions = new WeightedPositions( ((GenomeMeaning)GO.BestGenome.Meaning).TickersPortfolioWeights,
+					new SignedTickers( ((GenomeMeaning)GO.BestGenome.Meaning).Tickers) );
       }
       //else it will be buyed again the previous optimized portfolio
       //that's it the actual chosenTickers member
@@ -192,7 +181,6 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
       Object sender , EndOfDayTimingEventArgs endOfDayTimingEventArgs )
     {
     	this.seedForRandomGenerator++;
-    	this.orders.Clear();
     	//this.oneHourAfterMarketCloseEventHandler_updatePrices();
       if(this.numDaysElapsedSinceLastOptimization == 
     	   this.numDaysBetweenEachOptimization - 1)

@@ -86,15 +86,15 @@ namespace QuantProject.Scripts.ArbitrageTesting.OverReactionHypothesis.DoubleOve
     private void addOrderForTicker(string[] tickers, 
                                    int tickerPosition )
     {
-      string ticker = 
+      SignedTickers signedTickers = new SignedTickers(tickers);
+			string ticker = 
         SignedTicker.GetTicker(tickers[tickerPosition]);
       double cashForSinglePosition = 
         this.account.CashAmount / this.chosenTickers.Length;
       long quantity =
         Convert.ToInt64( Math.Floor( cashForSinglePosition / this.account.DataStreamer.GetCurrentBid( ticker ) ) );
       Order order = 
-        new Order( 
-        SignedTicker.GetMarketOrderType(tickers[tickerPosition]),
+				new Order(signedTickers[tickerPosition].MarketOrderType,
         new Instrument( ticker ) , quantity );
       this.orders.Add(order);
     }	

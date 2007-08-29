@@ -46,20 +46,18 @@ namespace QuantProject.Scripts.WalkForwardTesting.LinearCombination
 	{
     
 		public FixedLevelOscillatorBiasedPVONoThresholdsStrategy( Account accountPVO ,
-			                                     string[,] tickers,
-			                                     double[,] tickersPortfolioWeights,
+			                                     WeightedPositions[] weightedPositionsToEvaluateOutOfSample,
                                            int numOfDifferentGenomesToEvaluateOutOfSample,
                                            double maxAcceptableCloseToCloseDrawdown,
                                            double minimumAcceptableGain):
                                         base("", 0, 
-                                        tickers.GetUpperBound(1)+1, 0, accountPVO, 0, 0,
+                                        weightedPositionsToEvaluateOutOfSample[0].Count, 0, accountPVO, 0, 0,
                                         "", numOfDifferentGenomesToEvaluateOutOfSample,0,
                                         PortfolioType.ShortAndLong,maxAcceptableCloseToCloseDrawdown,
                                         minimumAcceptableGain)
                                        
 		{
-			this.chosenTickers = tickers;
-			this.chosenTickersPortfolioWeights = tickersPortfolioWeights;
+			this.weightedPositionsToEvaluateOutOfSample = weightedPositionsToEvaluateOutOfSample;
     }
 		
     public void FiveMinutesBeforeMarketCloseEventHandler( Object sender ,
@@ -67,36 +65,30 @@ namespace QuantProject.Scripts.WalkForwardTesting.LinearCombination
     {
     }
     		
-    protected override double getCurrentChosenTickersGainOrLoss(IndexBasedEndOfDayTimer timer,
-		                                                       int indexForChosenTickers)
+    protected override double getCurrentWeightedPositionsGainOrLoss(IndexBasedEndOfDayTimer timer,
+		                                                       int indexForChosenWeightedPositions)
     {
       double returnValue = 999.0;
       if(timer.CurrentDateArrayPosition + 2 >= this.numDaysForOscillatingPeriod)
       //if there are sufficient data for computing currentChosenTickersValue
       //that's why the method has been overriden
       {
-	      try
-	      {
-			    DateTime date = 
-		          (DateTime)timer.IndexQuotes.Rows[timer.CurrentDateArrayPosition]["quDate"];
-		      string[] tickers = new string[this.numberOfTickersToBeChosen];
-	        double[] tickerWeights = new double[this.numberOfTickersToBeChosen];
-	        for(int i = 0; i < this.numberOfTickersToBeChosen; i++)
-	        {
-	          tickers[i] = this.chosenTickers[indexForChosenTickers,i];
-	          tickerWeights[i] = this.chosenTickersPortfolioWeights[indexForChosenTickers,i];
-	        }
-	        returnValue =
-		      	 SignedTicker.GetCloseToClosePortfolioReturn(
-		      	     tickers, tickerWeights,
-		      	     date,date);
-	      }
-	    	catch(MissingQuotesException ex)
-	    	{
-	    		ex = ex;
-	    	}
-      }
-      return returnValue;
+				try
+				{
+					DateTime today = 
+						(DateTime)timer.IndexQuotes.Rows[timer.CurrentDateArrayPosition]["quDate"];
+					DateTime lastMarketDay = 
+						(DateTime)timer.IndexQuotes.Rows[timer.CurrentDateArrayPosition - 1]["quDate"];
+					returnValue =
+						this.weightedPositionsToEvaluateOutOfSample[indexForChosenWeightedPositions].GetCloseToCloseReturn(
+						lastMarketDay, today);
+				}
+				catch(MissingQuotesException ex)
+				{
+					ex = ex;
+				}
+			}		
+			return returnValue;
     }   
 
     public override void OneHourAfterMarketCloseEventHandler( Object sender ,

@@ -47,24 +47,22 @@ namespace QuantProject.Scripts.WalkForwardTesting.LinearCombination
 	{
     
 		public FixedLevelOscBiasedOTC_PVONoThresholdsStrategy( Account accountPVO ,
-			                                     string[,] tickers,
-			                                     double[,] tickersPortfolioWeights,
+		                                                      WeightedPositions[] weightedPositionsToEvaluateOutOfSample,
                                            int numOfDifferentGenomesToEvaluateOutOfSample):
                                         base("", 0, 
-                                        tickers.GetUpperBound(1)+1, 0, accountPVO, 0, 0,
+                                        weightedPositionsToEvaluateOutOfSample[0].Count, 0, accountPVO, 0, 0,
                                         "", numOfDifferentGenomesToEvaluateOutOfSample,0,
                                         PortfolioType.ShortAndLong)
                                        
 		{
-			this.chosenTickers = tickers;
-			this.chosenTickersPortfolioWeights = tickersPortfolioWeights;
+			this.weightedPositionsToEvaluateOutOfSample = weightedPositionsToEvaluateOutOfSample;
     }
 		
     public override void MarketOpenEventHandler(
       Object sender , EndOfDayTimingEventArgs endOfDayTimingEventArgs )
     {
       if(this.account.Portfolio.Count == 0)
-        this.marketOpenEventHandler_openPositions((IndexBasedEndOfDayTimer)sender);
+        this.openPositions((IndexBasedEndOfDayTimer)sender);
     }
 
     public void FiveMinutesBeforeMarketCloseEventHandler( Object sender ,
@@ -72,12 +70,12 @@ namespace QuantProject.Scripts.WalkForwardTesting.LinearCombination
     {
     }
     		
-    protected override double getCurrentChosenTickersGainOrLoss(IndexBasedEndOfDayTimer timer,
-		                                                       int indexForChosenTickers)
+    protected override double getCurrentWeightedPositionsGainOrLoss(IndexBasedEndOfDayTimer timer,
+		                                                       int indexForChosenWeightedPositions)
     {
       double returnValue = 999.0;
       if(timer.CurrentDateArrayPosition >= 1)
-      //if there are sufficient data for computing currentChosenTickersValue
+      //if there are sufficient data for computing currentChosenWeightedPositionsValue
       //that's why the method has been overriden
       {
 	      try
@@ -87,17 +85,8 @@ namespace QuantProject.Scripts.WalkForwardTesting.LinearCombination
           DateTime lastMarketDay = 
             (DateTime)timer.IndexQuotes.Rows[timer.CurrentDateArrayPosition - 1]["quDate"];
 	      
-          string[] tickers = new string[this.numberOfTickersToBeChosen];
-          double[] tickerWeights = new double[this.numberOfTickersToBeChosen];
-          for(int i = 0; i < this.numberOfTickersToBeChosen; i++)
-          {
-            tickers[i] = this.chosenTickers[indexForChosenTickers,i];
-            tickerWeights[i] = this.chosenTickersPortfolioWeights[indexForChosenTickers,i];
-          }
-          returnValue =
-            SignedTicker.GetLastNightPortfolioReturn(
-            tickers, tickerWeights,
-            lastMarketDay, today);
+          returnValue = this.weightedPositionsToEvaluateOutOfSample[indexForChosenWeightedPositions].GetLastNightReturn(
+																																            lastMarketDay, today);
 	      }
 	    	catch(MissingQuotesException ex)
 	    	{
@@ -110,7 +99,6 @@ namespace QuantProject.Scripts.WalkForwardTesting.LinearCombination
     public override void OneHourAfterMarketCloseEventHandler( Object sender ,
 			EndOfDayTimingEventArgs endOfDayTimingEventArgs)
 		{
-      
 		}
 	}
 }

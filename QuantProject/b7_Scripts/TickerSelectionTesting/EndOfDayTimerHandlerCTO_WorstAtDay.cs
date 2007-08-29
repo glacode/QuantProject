@@ -32,6 +32,7 @@ using QuantProject.Business.Strategies;
 using QuantProject.Data.DataProviders;
 using QuantProject.Data.Selectors;
 using QuantProject.ADT.Optimizing.Genetic;
+using QuantProject.Scripts.WalkForwardTesting.WalkForwardLag;
 
 namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
 {
@@ -46,8 +47,6 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
   [Serializable]
   public class EndOfDayTimerHandlerCTO_WorstAtDay : EndOfDayTimerHandler
   {
-    protected int numDaysBetweenEachOptimization;
-    private int numDaysElapsedSinceLastOptimization;
     protected int seedForRandomGenerator;
     protected GeneticOptimizer currentGO;
 		protected int numOfGenomesForOTCScanning;
@@ -81,7 +80,7 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
     public override void MarketOpenEventHandler(
       Object sender , EndOfDayTimingEventArgs endOfDayTimingEventArgs )
     {
-      this.closePositions();
+      AccountManager.ClosePositions(this.account);
     }
 		
     private void marketCloseEventHandler_chooseTheWorstOTCGenome()
@@ -106,11 +105,14 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
 				  		((Genome)this.currentGO.CurrentGeneration[populationSize - i - 1]).Fitness;
 				  try{
 		  		//retrieves loss at day for the CurrentCombination
-			  		lossOfCurrentCombination =
-			  			- SignedTicker.GetOpenToClosePortfolioReturn(
-			  			 ((GenomeMeaning)((Genome)this.currentGO.CurrentGeneration[populationSize - i - 1]).Meaning).Tickers,
-			  			 ((GenomeMeaning)((Genome)this.currentGO.CurrentGeneration[populationSize - i - 1]).Meaning).TickersPortfolioWeights,
-			  			 today);//- because fitness in GenomeOTCCTO is just the reversal of what needed
+						SignedTickers signedTickers = 
+							new SignedTickers( ((GenomeMeaning)((Genome)this.currentGO.CurrentGeneration[populationSize - i - 1]).Meaning).Tickers);
+		  			WeightedPositions weightedPositions =
+		  				new WeightedPositions( ((GenomeMeaning)((Genome)this.currentGO.CurrentGeneration[populationSize - i - 1]).Meaning).TickersPortfolioWeights, 
+		  				                      	signedTickers);
+		  			lossOfCurrentCombination =
+			  			- weightedPositions.GetOpenToCloseReturn( today );
+		  			//- because fitness in GenomeOTCCTO is just the reversal of what needed
 				  	numOfGenomesScanned++;
 				  	if(lossOfCurrentCombination < lossOfCurrentWorstCombination)
 				  	{
@@ -124,27 +126,20 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
 		  		}
 		  	}
 		  }
-		  this.chosenTickers =
-		  	((GenomeMeaning)((Genome)this.currentGO.CurrentGeneration[indexOfWorstCombination]).Meaning).Tickers;
-    	SignedTicker.ChangeSignOfEachTicker(this.chosenTickers);//it is used a fitness that is
-			//the reversal of qwhat needed
-			this.chosenTickersPortfolioWeights = 
-    		((GenomeMeaning)((Genome)this.currentGO.CurrentGeneration[indexOfWorstCombination]).Meaning).TickersPortfolioWeights;
+			this.chosenWeightedPositions = new WeightedPositions( ((GenomeMeaning)((Genome)this.currentGO.CurrentGeneration[indexOfWorstCombination]).Meaning).TickersPortfolioWeights,
+				new SignedTickers( ((GenomeMeaning)((Genome)this.currentGO.CurrentGeneration[indexOfWorstCombination]).Meaning).Tickers));
+			
 		}
     
                 
     public override void MarketCloseEventHandler(
       Object sender , EndOfDayTimingEventArgs endOfDayTimingEventArgs )
     {
-      if(this.orders.Count == 0 && this.account.Transactions.Count == 0)
-        this.account.AddCash(30000);      
-      
-			if(this.currentGO != null)
+     	if(this.currentGO != null)
 			//so a list of genomes is available
 				this.marketCloseEventHandler_chooseTheWorstOTCGenome();
       
-			this.openPositions(this.chosenTickers);
-
+			this.openPositions();
     }
 
 		#region OneHourAfterMarketCloseEventHandler
@@ -178,7 +173,7 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
     {
       
       DataTable setOfTickersToBeOptimized = this.getSetOfTickersToBeOptimized(currentDate);
-      if(setOfTickersToBeOptimized.Rows.Count > this.chosenTickers.Length*2)
+      if(setOfTickersToBeOptimized.Rows.Count > this.numberOfTickersToBeChosen * 2)
         //the optimization process is possible only if the initial set of tickers is 
         //as large as the number of tickers to be chosen                     
       
@@ -202,9 +197,9 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
         GO.Run(false);
         this.addGenomeToBestGenomes(GO.BestGenome,currentDate.AddDays(-this.numDaysForOptimizationPeriod),
                                     currentDate, setOfTickersToBeOptimized.Rows.Count);
-        this.chosenTickers = ((GenomeMeaning)GO.BestGenome.Meaning).Tickers;
-        this.chosenTickersPortfolioWeights = ((GenomeMeaning)GO.BestGenome.Meaning).TickersPortfolioWeights;
-        this.currentGO = GO;
+				this.chosenWeightedPositions = new WeightedPositions( ((GenomeMeaning)GO.BestGenome.Meaning).TickersPortfolioWeights,
+					new SignedTickers( ((GenomeMeaning)GO.BestGenome.Meaning).Tickers) );
+				this.currentGO = GO;
       }
       //else it will be buyed again the previous optimized portfolio
       //that's it the actual chosenTickers member
@@ -228,7 +223,6 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
       Object sender , EndOfDayTimingEventArgs endOfDayTimingEventArgs )
     {
     	this.seedForRandomGenerator++;
-    	this.orders.Clear();
     	//this.oneHourAfterMarketCloseEventHandler_updatePrices();
       if(this.numDaysElapsedSinceLastOptimization == 
     	   this.numDaysBetweenEachOptimization - 1)
@@ -243,8 +237,6 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
       }
     	
     }
-		   
     #endregion
-		
   }
 }

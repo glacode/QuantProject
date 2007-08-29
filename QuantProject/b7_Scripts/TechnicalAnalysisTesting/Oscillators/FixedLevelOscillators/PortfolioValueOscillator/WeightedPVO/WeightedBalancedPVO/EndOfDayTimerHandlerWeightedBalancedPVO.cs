@@ -126,7 +126,7 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOs
       bool setGenomeCounter)
     {
       DataTable setOfTickersToBeOptimized = this.getSetOfTickersToBeOptimized(currentDate);
-      if(setOfTickersToBeOptimized.Rows.Count > this.chosenTickers.Length*2)
+      if(setOfTickersToBeOptimized.Rows.Count > this.numberOfTickersToBeChosen*2)
         //the optimization process is meaningful only if the initial set of tickers is 
         //larger than the number of tickers to be chosen                     
       
@@ -153,8 +153,8 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOs
         GO.MutationRate = 0.1;
         GO.Run(false);
         
-        this.chosenTickers = ((GenomeMeaningPVO)GO.BestGenome.Meaning).Tickers;
-        this.chosenTickersPortfolioWeights = ((GenomeMeaningPVO)GO.BestGenome.Meaning).TickersPortfolioWeights;
+				this.chosenWeightedPositions = new WeightedPositions( ((GenomeMeaningPVO)GO.BestGenome.Meaning).TickersPortfolioWeights,
+					new SignedTickers( ((GenomeMeaningPVO)GO.BestGenome.Meaning).Tickers) );
         this.currentOversoldThreshold = ((GenomeMeaningPVO)GO.BestGenome.Meaning).OversoldThreshold;
         this.currentOverboughtThreshold = ((GenomeMeaningPVO)GO.BestGenome.Meaning).OverboughtThreshold;
         this.addPVOGenomeToBestGenomes(GO.BestGenome,((GenomeManagerForEfficientPortfolio)this.iGenomeManager).FirstQuoteDate,

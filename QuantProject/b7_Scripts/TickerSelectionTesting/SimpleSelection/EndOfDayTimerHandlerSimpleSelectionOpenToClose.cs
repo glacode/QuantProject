@@ -28,6 +28,7 @@ using QuantProject.Business.Financial.Accounting;
 using QuantProject.Business.Financial.Instruments;
 using QuantProject.Business.Financial.Ordering;
 using QuantProject.Business.Timing;
+using QuantProject.Business.Strategies;
 using QuantProject.Data.DataProviders;
 using QuantProject.Data.Selectors;
 using QuantProject.Data.DataTables;
@@ -42,9 +43,7 @@ namespace QuantProject.Scripts.TickerSelectionTesting.SimpleSelection
   [Serializable]
   public class EndOfDayTimerHandlerSimpleSelectionOpenToClose : EndOfDayTimerHandlerSimpleSelection
   {
-    protected int numDaysBetweenEachOptimization;
-    private int numDaysElapsedSinceLastOptimization;
-   
+    
     public EndOfDayTimerHandlerSimpleSelectionOpenToClose(string tickerGroupID, int numberOfEligibleTickers, 
                                 int numberOfTickersToBeChosen, int numDaysForOptimizationPeriod, Account account,
                                 string benchmark, double targetReturn,
@@ -67,7 +66,7 @@ namespace QuantProject.Scripts.TickerSelectionTesting.SimpleSelection
     public override void MarketCloseEventHandler(
       Object sender , EndOfDayTimingEventArgs endOfDayTimingEventArgs )
     {
-      this.closePositions();
+      AccountManager.ClosePositions(this.account);
     }
 
     #region OneHourAfterMarketCloseEventHandler
@@ -114,7 +113,7 @@ namespace QuantProject.Scripts.TickerSelectionTesting.SimpleSelection
     {
       
       DataTable setOfTickersToBeOptimized = this.getSetOfTickersToBeOptimized(currentDate);
-      if(setOfTickersToBeOptimized.Rows.Count >= this.chosenTickers.Length)
+      if(setOfTickersToBeOptimized.Rows.Count >= this.numberOfTickersToBeChosen)
         //the optimization process is possible only if the initial set of tickers is 
         //as large as the number of tickers to be chosen                     
       
@@ -124,7 +123,7 @@ namespace QuantProject.Scripts.TickerSelectionTesting.SimpleSelection
                                              currentDate.AddDays(-this.numDaysForOptimizationPeriod),
                                              currentDate, this.targetReturn, 
                                              this.portfolioType);
-        this.chosenTickers = OTCScreener.GetBestTickers(this.numberOfTickersToBeChosen);
+        this.chosenWeightedPositions = new WeightedPositions(OTCScreener.GetBestTickers(this.numberOfTickersToBeChosen));
       }
       //else it will be buyed again the previous optimized portfolio
       //that's it the actual chosenTickers member
@@ -147,8 +146,6 @@ namespace QuantProject.Scripts.TickerSelectionTesting.SimpleSelection
     public override void OneHourAfterMarketCloseEventHandler(
       Object sender , EndOfDayTimingEventArgs endOfDayTimingEventArgs )
     {
-      this.orders.Clear();
-      //this.oneHourAfterMarketCloseEventHandler_updatePrices();
       if(this.numDaysElapsedSinceLastOptimization == 
         this.numDaysBetweenEachOptimization - 1)
       {

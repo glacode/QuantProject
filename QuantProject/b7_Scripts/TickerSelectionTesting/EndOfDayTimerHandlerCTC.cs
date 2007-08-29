@@ -28,6 +28,7 @@ using QuantProject.Business.Financial.Accounting;
 using QuantProject.Business.Financial.Instruments;
 using QuantProject.Business.Financial.Ordering;
 using QuantProject.Business.Timing;
+using QuantProject.Business.Strategies;
 using QuantProject.Data.DataProviders;
 using QuantProject.Data.Selectors;
 using QuantProject.ADT.Optimizing.Genetic;
@@ -49,12 +50,7 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
     protected int daysCounterWithPositions;
     protected int daysCounterWithNoPositions;
     protected double maxAcceptableCloseToCloseDrawdown;
-    protected bool stopLossConditionReached;
-    protected double currentAccountValue;
-    protected double previousAccountValue;
-    protected int numDaysBetweenEachOptimization;
-    private int numDaysElapsedSinceLastOptimization;
-    
+        
     public EndOfDayTimerHandlerCTC(string tickerGroupID, int numberOfEligibleTickers, 
                                 int numberOfTickersToBeChosen, int numDaysForOptimizationPeriod,
                                 Account account,                                
@@ -120,7 +116,7 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
         //num days of portfolio life or 
         //max acceptable close to close drawdown reached
         {
-          this.closePositions();
+          AccountManager.ClosePositions(this.account);
           this.daysCounterWithPositions = 0;
           //positionsJustClosed = true;
         }
@@ -131,7 +127,7 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
 				if(this.daysCounterWithNoPositions == this.numDaysWithNoPositions ||
            this.Account.Transactions.Count <= 1)
 				{
-					this.openPositions(this.chosenTickers);
+					AccountManager.OpenPositions(this.chosenWeightedPositions,this.account);
         	this.daysCounterWithNoPositions = 0;
 				}
 			}
@@ -187,7 +183,7 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
                                       bool setGenomeCounter)
     {
       DataTable setOfTickersToBeOptimized = this.getSetOfTickersToBeOptimized(currentDate);
-      if(setOfTickersToBeOptimized.Rows.Count > this.chosenTickers.Length*2)
+      if(setOfTickersToBeOptimized.Rows.Count > this.numberOfTickersToBeChosen*2)
         //the optimization process is meaningful only if the initial set of tickers is 
         //larger than the number of tickers to be chosen                     
       
@@ -215,9 +211,9 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
         this.addGenomeToBestGenomes(GO.BestGenome,((GenomeManagerForEfficientCTCPortfolio)genManEfficientCTCPortfolio).FirstQuoteDate,
                                     ((GenomeManagerForEfficientCTCPortfolio)genManEfficientCTCPortfolio).LastQuoteDate,
                                     	setOfTickersToBeOptimized.Rows.Count);
-        this.chosenTickers = ((GenomeMeaning)GO.BestGenome.Meaning).Tickers;
-        this.chosenTickersPortfolioWeights = ((GenomeMeaning)GO.BestGenome.Meaning).TickersPortfolioWeights;
-      }
+				this.chosenWeightedPositions = new WeightedPositions( ((GenomeMeaning)GO.BestGenome.Meaning).TickersPortfolioWeights,
+					new SignedTickers( ((GenomeMeaning)GO.BestGenome.Meaning).Tickers) );
+			}
       //else it will be buyed again the previous optimized portfolio
       //that's it the actual chosenTickers member
     }
@@ -242,7 +238,6 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
       
       //this.oneHourAfterMarketCloseEventHandler_updatePrices();
       this.numDaysElapsedSinceLastOptimization++;
-      this.orders.Clear();
       if(this.numDaysElapsedSinceLastOptimization == 
             this.numDaysBetweenEachOptimization)
       //num days without optimization has elapsed or

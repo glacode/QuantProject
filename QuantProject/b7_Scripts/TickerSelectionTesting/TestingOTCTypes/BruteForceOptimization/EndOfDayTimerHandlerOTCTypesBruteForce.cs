@@ -47,11 +47,8 @@ namespace QuantProject.Scripts.TickerSelectionTesting.TestingOTCTypes.BruteForce
   [Serializable]
   public class EndOfDayTimerHandlerOTCTypesBruteForce : EndOfDayTimerHandler
   {
-    private int numDaysBetweenEachOptimization;
-    private int numDaysElapsedSinceLastOptimization;
     private int seedForRandomGenerator;
     private Account[] accounts;
-    private string[,] lastOrderedTickersForTheAccount;
     int numOfClosesWithOpenPositionsFor2DaysStrategy;
     
     
@@ -70,88 +67,22 @@ namespace QuantProject.Scripts.TickerSelectionTesting.TestingOTCTypes.BruteForce
     	this.numDaysElapsedSinceLastOptimization = 0;
     	this.seedForRandomGenerator = ConstantsProvider.SeedForRandomGenerator;
       this.accounts = accounts;
-      this.lastOrderedTickersForTheAccount = new string[this.accounts.Length,
-                                                     this.numberOfTickersToBeChosen];
     }
  
     private void openPositionsForTheAccountWhenPortfolioIsEmpty(int accountNumber)
     {
       if(this.accounts[accountNumber].Portfolio.Count == 0)
-      {
-        this.orders.Clear();
-        this.addChosenTickersToOrderListForTheGivenAccount(accountNumber);
-        for(int i = 0; i<this.orders.Count;i++)
-        {
-          this.accounts[accountNumber].AddOrder((Order)this.orders[i]);
-          this.lastOrderedTickersForTheAccount[accountNumber, i] = 
-            SignedTicker.GetTicker(((Order)this.orders[i]).Instrument.Key);
-        }
-      }
+         AccountManager.OpenPositions(this.chosenWeightedPositions, this.accounts[accountNumber]);
     }
-
-    protected void addOrderForTickerForTheGivenAccount(int tickerPosition,
-                                                       int accountNumber )
-    {
-    	string tickerCode = 
-    		GenomeManagerForEfficientPortfolio.GetCleanTickerCode(this.chosenTickers[tickerPosition]);
-      double cashForSinglePosition = 
-      	this.accounts[accountNumber].CashAmount * this.chosenTickersPortfolioWeights[tickerPosition];
-      long quantity =
-      	Convert.ToInt64( Math.Floor( cashForSinglePosition / this.accounts[accountNumber].DataStreamer.GetCurrentBid( tickerCode ) ) );
-      Order order;
-      if(this.portfolioType == PortfolioType.OnlyShort ||
-         		(this.portfolioType == PortfolioType.ShortAndLong &&
-          this.chosenTickers[tickerPosition] != tickerCode))
-        order = new Order( OrderType.MarketSellShort, new Instrument( tickerCode ) , quantity );  
-      else      		
-      	order = new Order( OrderType.MarketBuy, new Instrument( tickerCode ) , quantity );
-      
-      this.orders.Add(order);
-    }
-    
-    protected void addChosenTickersToOrderListForTheGivenAccount(int accountNumber)
-    {
-      for( int i = 0; i<this.chosenTickers.Length; i++)
-      {
-      	if(this.chosenTickers[i] != null)
-          this.addOrderForTickerForTheGivenAccount( i, accountNumber );
-      }
-    }
-    
  
     private void closePositionsForTheAccount(int accountNumber)
     {
-      string ticker;
-      if(this.accounts[accountNumber].Portfolio.Count >0)
-      {
-        for(int j = 0; j<this.numberOfTickersToBeChosen; j++)
-        {
-          ticker = this.lastOrderedTickersForTheAccount[accountNumber, j];
-          if( ticker != null)
-          {
-            if(this.accounts[accountNumber].Portfolio[ticker]!=null)
-              this.accounts[accountNumber].ClosePosition(ticker); 
-          }
-        }
-      }
+      AccountManager.ClosePositions(this.accounts[accountNumber]);
     }
 
     private void marketCloseEventHandler_reversePositionsForTheAccount(int accountNumber)
     {
-      this.closePositionsForTheAccount(accountNumber);
-      SignedTicker.ChangeSignOfEachTicker(this.chosenTickers);
-      try
-      {
-        this.openPositionsForTheAccountWhenPortfolioIsEmpty(accountNumber);
-      }
-      catch(Exception ex)
-      {
-        ex = ex;
-      }
-      finally
-      {
-        SignedTicker.ChangeSignOfEachTicker(this.chosenTickers);
-      }
+      AccountManager.ReversePositions(this.accounts[accountNumber]);
     }
 
     /// <summary>
@@ -165,8 +96,8 @@ namespace QuantProject.Scripts.TickerSelectionTesting.TestingOTCTypes.BruteForce
       for(int i = 0; i<this.accounts.Length; i++)
       {
         //add cash first for each account
-        if(this.orders.Count == 0 && this.accounts[i].Transactions.Count == 0)
-          this.accounts[i].AddCash(30000);  
+        if( this.accounts[i].Transactions.Count == 0)
+          this.accounts[i].AddCash(15000);  
         
         if(i<=1)//daily classical and multiday
            this.openPositionsForTheAccountWhenPortfolioIsEmpty(i);
@@ -206,9 +137,7 @@ namespace QuantProject.Scripts.TickerSelectionTesting.TestingOTCTypes.BruteForce
           this.marketCloseEventHandler_reversePositionsForTheAccount(i);
       }
     }
-    
-    
-
+   
 		#region OneHourAfterMarketCloseEventHandler
       
     protected DataTable getSetOfTickersToBeOptimized(DateTime currentDate)
@@ -249,7 +178,7 @@ namespace QuantProject.Scripts.TickerSelectionTesting.TestingOTCTypes.BruteForce
     {
       
       DataTable setOfTickersToBeOptimized = this.getSetOfTickersToBeOptimized(currentDate);
-      if(setOfTickersToBeOptimized.Rows.Count > this.chosenTickers.Length*2)
+      if(setOfTickersToBeOptimized.Rows.Count > this.numberOfTickersToBeChosen*2)
         //the optimization process is possible only if the initial set of tickers is 
         //as large as the number of tickers to be chosen                     
       
@@ -259,17 +188,16 @@ namespace QuantProject.Scripts.TickerSelectionTesting.TestingOTCTypes.BruteForce
       		new OTCBruteForceOptimizableParametersManager(
       		           setOfTickersToBeOptimized,
       		           currentDate.AddDays(-this.numDaysForOptimizationPeriod),
-      		           currentDate,this.chosenTickers.Length);
+      		           currentDate,this.numberOfTickersToBeChosen);
         
       	BruteForceOptimizer BFO = new BruteForceOptimizer(otcBruteForceParamManager);
       	BFO.Run();
-        this.chosenTickers = 
-        	((GenomeMeaning)otcBruteForceParamManager.Decode(BFO.BestParameters)).Tickers;
         	//this.setTickers_getChosenTickers(BFO.BestParameters);
-      	this.addGenomeToBestGenomes(BFO.BestParameters,this.chosenTickers,
+      	this.addGenomeToBestGenomes(BFO.BestParameters,this.chosenWeightedPositions.SignedTickers,
       	                            currentDate.AddDays(-this.numDaysForOptimizationPeriod),
       	                            currentDate,setOfTickersToBeOptimized.Rows.Count);
-       	this.chosenTickersPortfolioWeights = this.setTickers_getWeights(this.chosenTickers);
+				this.chosenWeightedPositions = 
+					new WeightedPositions(new SignedTickers(((GenomeMeaning)otcBruteForceParamManager.Decode(BFO.BestParameters)).Tickers));
         
       }
       //else it will be buyed again the previous optimized portfolio
@@ -285,7 +213,6 @@ namespace QuantProject.Scripts.TickerSelectionTesting.TestingOTCTypes.BruteForce
       Object sender , EndOfDayTimingEventArgs endOfDayTimingEventArgs )
     {
     	this.seedForRandomGenerator++;
-    	this.orders.Clear();
       if(this.numDaysElapsedSinceLastOptimization == 
     	   this.numDaysBetweenEachOptimization - 1)
     	{
@@ -297,9 +224,7 @@ namespace QuantProject.Scripts.TickerSelectionTesting.TestingOTCTypes.BruteForce
       {
         this.numDaysElapsedSinceLastOptimization++;
       }
-    	
     }
-		   
     #endregion
 		
   }

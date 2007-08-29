@@ -48,11 +48,6 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.TrendFollowing.Immediate
   {
     private int numDaysForReturnCalculation;
     private double maxAcceptableCloseToCloseDrawdown;
-    private bool stopLossConditionReached;
-    private double currentAccountValue;
-    private double previousAccountValue;
-    private int numDaysBetweenEachOptimization;
-    private int numDaysElapsedSinceLastOptimization;
     private int daysCounterWithPositions;
     private DateTime lastCloseDate;
     private IGenomeManager iGenomeManager;
@@ -112,9 +107,7 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.TrendFollowing.Immediate
 	      DateTime finalDateForHalfPeriod = 
 	        (DateTime)timer.IndexQuotes.Rows[timer.CurrentDateArrayPosition]["quDate"];
       	returnValue =
-	      	 SignedTicker.GetCloseToClosePortfolioReturn(
-	      	     this.chosenTickers, this.chosenTickersPortfolioWeights,
-	      	     initialDateForHalfPeriod,finalDateForHalfPeriod);
+	      	 chosenWeightedPositions.GetCloseToCloseReturn(initialDateForHalfPeriod,finalDateForHalfPeriod);
       }
     	catch(MissingQuotesException ex)
     	{
@@ -131,20 +124,20 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.TrendFollowing.Immediate
     	//last half period gain has been properly computed
     	{
     		if(lastHalfPeriodGain > 0.0)
-    			base.openPositions(this.chosenTickers);
+    			AccountManager.OpenPositions(chosenWeightedPositions, this.account);
     		else//the last HalfPeriodGain has been negative
     		{
-    			SignedTicker.ChangeSignOfEachTicker(this.chosenTickers);
+    			chosenWeightedPositions.Reverse();
     			//short the portfolio
     			try{
-            base.openPositions(this.chosenTickers);
+            AccountManager.OpenPositions(chosenWeightedPositions, this.account);
           }
     			catch(Exception ex)
           { 
             ex = ex; 
           }
     			finally{
-            SignedTicker.ChangeSignOfEachTicker(this.chosenTickers);
+            chosenWeightedPositions.Reverse();
           }
     		}
     	}
@@ -156,7 +149,7 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.TrendFollowing.Immediate
          this.stopLossConditionReached)
       {
       //Close if halfPeriod has elapsed or stop loss condition reached
-          base.closePositions();
+          AccountManager.ClosePositions(this.account);
           this.daysCounterWithPositions = 0;
       }
     }    
@@ -168,7 +161,7 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.TrendFollowing.Immediate
       if(this.account.Portfolio.Count > 0)
         this.daysCounterWithPositions++;
       this.marketCloseEventHandler_closePositions();
-      if(this.chosenTickers[0] != null)
+      if(chosenWeightedPositions != null)
       //tickers to buy have been chosen
       {
       	if(this.account.Portfolio.Count == 0)
@@ -243,7 +236,7 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.TrendFollowing.Immediate
       bool setGenomeCounter)
     {
       DataTable setOfTickersToBeOptimized = this.getSetOfTickersToBeOptimized(currentDate);
-      if(setOfTickersToBeOptimized.Rows.Count > this.chosenTickers.Length*2)
+      if(setOfTickersToBeOptimized.Rows.Count > this.numberOfTickersToBeChosen*2)
         //the optimization process is meaningful only if the initial set of tickers is 
         //larger than the number of tickers to be chosen                     
       
@@ -265,8 +258,8 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.TrendFollowing.Immediate
         this.addGenomeToBestGenomes(GO.BestGenome,((GenomeManagerForEfficientPortfolio)this.iGenomeManager).FirstQuoteDate,
           ((GenomeManagerForEfficientPortfolio)this.iGenomeManager).LastQuoteDate, setOfTickersToBeOptimized.Rows.Count,
           this.numDaysForReturnCalculation);
-        this.chosenTickers = ((GenomeMeaning)GO.BestGenome.Meaning).Tickers;
-        this.chosenTickersPortfolioWeights = ((GenomeMeaning)GO.BestGenome.Meaning).TickersPortfolioWeights;
+				this.chosenWeightedPositions = new WeightedPositions( ((GenomeMeaning)GO.BestGenome.Meaning).TickersPortfolioWeights,
+					new SignedTickers( ((GenomeMeaning)GO.BestGenome.Meaning).Tickers) );
       }
       //else it will be buyed again the previous optimized portfolio
       //that's it the actual chosenTickers member
@@ -283,7 +276,6 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.TrendFollowing.Immediate
       this.lastCloseDate = endOfDayTimingEventArgs.EndOfDayDateTime.DateTime;
       this.seedForRandomGenerator++;
       this.numDaysElapsedSinceLastOptimization++;
-      this.orders.Clear();
       if((this.numDaysElapsedSinceLastOptimization - 1 == 
             this.numDaysBetweenEachOptimization)) //|| this.isTheFirstClose )
       //num days without optimization has elapsed or

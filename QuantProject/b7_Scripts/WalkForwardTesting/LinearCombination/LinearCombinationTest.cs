@@ -116,47 +116,32 @@ namespace QuantProject.Scripts.WalkForwardTesting.LinearCombination
 		
     private void run_setStrategy_setBiasedOTC_PVONoThresholdsStrategy()
     {
-      int numberOfTickersToBeChosen = 
-        GenomeRepresentation.GetSignedTickers(this.genomeRepresentations[0].SignedTickers).Length;
-      string[,] signedTickers = new string[this.genomeRepresentations.Length, numberOfTickersToBeChosen];
-      double[,] tickersPortfolioWeights = new double[this.genomeRepresentations.Length, numberOfTickersToBeChosen];
-      for(int i = 0; i < this.genomeRepresentations.Length; i++)
+    	WeightedPositions[] weightedPositions = new WeightedPositions[this.genomeRepresentations.Length];
+    	for(int i = 0; i<this.genomeRepresentations.Length;i++)
       {
-        for(int j = 0; j < numberOfTickersToBeChosen; j++)
-        {
-          signedTickers[i,j] = 
-            GenomeRepresentation.GetSignedTickers(
-            this.genomeRepresentations[i].SignedTickers)[j];
-          tickersPortfolioWeights[i,j] = 
-            GenomeRepresentation.GetWeightsArray(
-            this.genomeRepresentations[i].WeightsForSignedTickers)[j];
-        }
+      	weightedPositions[i] = 
+      		new WeightedPositions(GenomeRepresentation.GetWeightsArray(this.genomeRepresentations[i].WeightsForSignedTickers),
+      		                      new SignedTickers(this.genomeRepresentations[i].SignedTickers));
+      		                      
       }
+     
       this.endOfDayStrategy = new FixedLevelOscBiasedOTC_PVONoThresholdsStrategy(
-        this.account , signedTickers , tickersPortfolioWeights, 
+        this.account , weightedPositions, 
         this.genomeRepresentations.Length);
     }
 
     private void run_setStrategy_setBiasedPVONoThresholdsStrategy()
     {
-      int numberOfTickersToBeChosen = 
-        GenomeRepresentation.GetSignedTickers(this.genomeRepresentations[0].SignedTickers).Length;
-      string[,] signedTickers = new string[this.genomeRepresentations.Length, numberOfTickersToBeChosen];
-      double[,] tickersPortfolioWeights = new double[this.genomeRepresentations.Length, numberOfTickersToBeChosen];
-      for(int i = 0; i < this.genomeRepresentations.Length; i++)
-      {
-        for(int j = 0; j < numberOfTickersToBeChosen; j++)
-        {
-          signedTickers[i,j] = 
-            GenomeRepresentation.GetSignedTickers(
-            this.genomeRepresentations[i].SignedTickers)[j];
-          tickersPortfolioWeights[i,j] = 
-            GenomeRepresentation.GetWeightsArray(
-            this.genomeRepresentations[i].WeightsForSignedTickers)[j];
-        }
-      }
+			WeightedPositions[] weightedPositions = new WeightedPositions[this.genomeRepresentations.Length];
+			for(int i = 0; i<this.genomeRepresentations.Length;i++)
+			{
+				weightedPositions[i] = 
+					new WeightedPositions(GenomeRepresentation.GetWeightsArray(this.genomeRepresentations[i].WeightsForSignedTickers),
+					new SignedTickers(this.genomeRepresentations[i].SignedTickers));
+      		                      
+			}
       this.endOfDayStrategy = new FixedLevelOscillatorBiasedPVONoThresholdsStrategy(
-        this.account , signedTickers , tickersPortfolioWeights, 
+        this.account , weightedPositions, 
         this.genomeRepresentations.Length,
         this.stopLoss,
         this.takeProfit);
@@ -164,28 +149,20 @@ namespace QuantProject.Scripts.WalkForwardTesting.LinearCombination
 
 		private void run_setStrategy_setBiasedPVOStrategy()
 		{
-			int numberOfTickersToBeChosen = 
-				GenomeRepresentation.GetSignedTickers(this.genomeRepresentations[0].SignedTickers).Length;
-			string[,] signedTickers = new string[this.genomeRepresentations.Length, numberOfTickersToBeChosen];
-			double[,] tickersPortfolioWeights = new double[this.genomeRepresentations.Length, numberOfTickersToBeChosen];
+			WeightedPositions[] weightedPositions = new WeightedPositions[this.genomeRepresentations.Length];
 			double[] oversoldThresholds = new double[this.genomeRepresentations.Length];
       double[] overboughtThresholds = new double[this.genomeRepresentations.Length];
-			for(int i = 0; i < this.genomeRepresentations.Length; i++)
+			for(int i = 0; i<this.genomeRepresentations.Length;i++)
 			{
-				for(int j = 0; j < numberOfTickersToBeChosen; j++)
-				{
-					signedTickers[i,j] = 
-						GenomeRepresentation.GetSignedTickers(
-						 this.genomeRepresentations[i].SignedTickers)[j];
-					tickersPortfolioWeights[i,j] = 
-						GenomeRepresentation.GetWeightsArray(
-						                                     this.genomeRepresentations[i].WeightsForSignedTickers)[j];
-				}
+				weightedPositions[i] = 
+					new WeightedPositions(GenomeRepresentation.GetWeightsArray(this.genomeRepresentations[i].WeightsForSignedTickers),
+					new SignedTickers(this.genomeRepresentations[i].SignedTickers));
 				oversoldThresholds[i] = this.genomeRepresentations[i].OversoldThreshold;
 				overboughtThresholds[i] = this.genomeRepresentations[i].OverboughtThreshold;
 			}
-	  	this.endOfDayStrategy = new FixedLevelOscillatorBiasedPVOStrategy(
-            this.account , signedTickers , tickersPortfolioWeights, 
+			
+		 	this.endOfDayStrategy = new FixedLevelOscillatorBiasedPVOStrategy(
+            this.account , weightedPositions, 
             oversoldThresholds, overboughtThresholds,
             overboughtThresholds.Length,
             this.numDaysForOscillatorStrategy,this.stopLoss,
@@ -194,51 +171,49 @@ namespace QuantProject.Scripts.WalkForwardTesting.LinearCombination
 		
 		private void run_setStrategy()
 		{
-			string[] signedTickers = genomeRepresentations[0].SignedTickers.Split(";".ToCharArray());
-			double[] weightsForSignedTickers = 
-				GenomeRepresentation.GetWeightsArray(this.genomeRepresentations[0].WeightsForSignedTickers);
-      switch (this.strategyType)
+			WeightedPositions weightedPositions = 
+				this.run_getWeightedPositions(this.genomeRepresentations[0]);
+			switch (this.strategyType)
       {
         case StrategyType.OpenToCloseDaily:
           this.endOfDayStrategy = new OpenToCloseDailyStrategy(
-					                            this.account , signedTickers,
-					                            weightsForSignedTickers );
+					                            this.account , weightedPositions );
           break;
         case StrategyType.OpenToCloseWeekly:
           this.endOfDayStrategy = new OpenToCloseWeeklyStrategy(
-                                      this.account , signedTickers );
+                                      this.account , weightedPositions );
           break;
         case StrategyType.CloseToOpenDaily:
           this.endOfDayStrategy = new CloseToOpenDailyStrategy(
-                                      this.account , signedTickers );
+                                      this.account , weightedPositions );
           break;
         
         case StrategyType.OpenToCloseCloseToOpenDaily:
           this.endOfDayStrategy = new OTC_CTODailyStrategy(
-            this.account , signedTickers , weightsForSignedTickers);
+            this.account , weightedPositions);
           break;
         
         case StrategyType.FixedPeriodOscillator:
           this.endOfDayStrategy = new FixedPeriodOscillatorStrategy(
-			            this.account , signedTickers , weightsForSignedTickers,
+			            this.account , weightedPositions,
 			            this.numDaysForOscillatorStrategy , 
 			            this.numDaysForOscillatorStrategy );
           break;
         
         case StrategyType.ExtremeCounterTrend:
           this.endOfDayStrategy = new ExtremeCounterTrendStrategy(
-            this.account , signedTickers , weightsForSignedTickers, this.numDaysForOscillatorStrategy,
+            this.account , weightedPositions, this.numDaysForOscillatorStrategy,
             this.portfolioType);
           break;
         
         case StrategyType.ImmediateTrendFollower:
           this.endOfDayStrategy = new ImmediateTrendFollowerStrategy(
-            this.account , signedTickers , weightsForSignedTickers, this.numDaysForOscillatorStrategy );
+            this.account , weightedPositions, this.numDaysForOscillatorStrategy );
           break;
         
         case StrategyType.PortfolioValueOscillator:
           this.endOfDayStrategy = new FixedLevelOscillatorPVOStrategy(
-            this.account , signedTickers , weightsForSignedTickers, 
+            this.account , weightedPositions, 
             this.genomeRepresentations[0].OversoldThreshold, this.genomeRepresentations[0].OverboughtThreshold,
             this.numDaysForOscillatorStrategy );
           break;
@@ -281,7 +256,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.LinearCombination
     {
       EquityLine equityLineForWeightedPositions =
         weightedPositions.GetVirtualEquityLine(
-        30000 , report.AccountReport.EquityLine );
+        15000 , report.AccountReport.EquityLine );
       report.AddEquityLine( equityLineForWeightedPositions ,
         color );
     }

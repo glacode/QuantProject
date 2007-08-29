@@ -38,66 +38,32 @@ namespace QuantProject.Scripts.WalkForwardTesting.LinearCombination
 	public class CloseToOpenDailyStrategy : IEndOfDayStrategy
 	{
 		private Account account;
-		private string[] signedTickers;
+		private WeightedPositions weightedPositions;
 
 		public CloseToOpenDailyStrategy( Account account ,
-			string[] signedTickers)
+			WeightedPositions weightedPositions)
 		{
 			this.account = account;
-			this.signedTickers = signedTickers;
+			this.weightedPositions = weightedPositions;
 		}
-		private long marketCloseEventHandler_addOrder_getQuantity(
-			string ticker )
-		{
-			double accountValue = this.account.GetMarketValue();
-			double currentTickerAsk =
-				this.account.DataStreamer.GetCurrentAsk( ticker );
-			double maxPositionValueForThisTicker =
-				accountValue/this.signedTickers.Length;
-			long quantity = Convert.ToInt64(	Math.Floor(
-				maxPositionValueForThisTicker /	currentTickerAsk ) );
-			return quantity;
-		}
-		private void marketCloseEventHandler_addOrder( string signedTicker )
-		{
-			OrderType orderType = GenomeRepresentation.GetOrderType( signedTicker );
-			string ticker = GenomeRepresentation.GetTicker( signedTicker );
-			long quantity = marketCloseEventHandler_addOrder_getQuantity( ticker );
-			Order order = new Order( orderType , new Instrument( ticker ) ,
-				quantity );
-			this.account.AddOrder( order );
-		}
-		private void marketCloseEventHandler_addOrders()
-		{
-			foreach ( string signedTicker in this.signedTickers )
-				marketCloseEventHandler_addOrder( signedTicker );
-		}
+		
 		public void MarketOpenEventHandler(
 			Object sender , EndOfDayTimingEventArgs endOfDayTimingEventArgs )
 		{
-			this.marketOpen_closePositions();
-		}
-		private void marketOpen_closePositions()
-		{
-			ArrayList tickers = new ArrayList();
-			foreach ( Position position in this.account.Portfolio.Positions )
-				tickers.Add( position.Instrument.Key );
-			foreach ( string ticker in tickers )
-				this.account.ClosePosition( ticker );
+			AccountManager.ClosePositions(this.account);
 		}
 		public void FiveMinutesBeforeMarketCloseEventHandler( Object sender ,
 			EndOfDayTimingEventArgs endOfDayTimingEventArgs)
 		{
 		}
-
 		public void MarketCloseEventHandler( Object sender ,
 			EndOfDayTimingEventArgs endOfDayTimingEventArgs)
 		{
       if ( ( this.account.CashAmount == 0 ) &&
         ( this.account.Transactions.Count == 0 ) )
         // cash has not been added yet
-        this.account.AddCash( 30000 );
-      marketCloseEventHandler_addOrders();
+        this.account.AddCash( 15000 );
+      AccountManager.OpenPositions(this.weightedPositions, this.account);
 		}
 		public void OneHourAfterMarketCloseEventHandler( Object sender ,
 			EndOfDayTimingEventArgs endOfDayTimingEventArgs)

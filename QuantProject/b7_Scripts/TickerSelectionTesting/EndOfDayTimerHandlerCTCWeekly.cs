@@ -28,6 +28,7 @@ using QuantProject.Business.Financial.Accounting;
 using QuantProject.Business.Financial.Instruments;
 using QuantProject.Business.Financial.Ordering;
 using QuantProject.Business.Timing;
+using QuantProject.Business.Strategies;
 using QuantProject.Data.DataProviders;
 using QuantProject.Data.Selectors;
 using QuantProject.ADT.Optimizing.Genetic;
@@ -45,10 +46,7 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
   {
     protected int numDaysForReturnCalculation;
     protected double maxAcceptableCloseToCloseDrawdown;
-    protected bool stopLossConditionReached;
-    protected double currentAccountValue;
-    protected double previousAccountValue;
-    
+        
     public EndOfDayTimerHandlerCTCWeekly(string tickerGroupID, int numberOfEligibleTickers, 
                                 int numberOfTickersToBeChosen, int numDaysForOptimizationPeriod,
                                 Account account,                                
@@ -67,11 +65,7 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
     {
       this.numDaysForReturnCalculation = numDaysForReturnCalculation;
       this.maxAcceptableCloseToCloseDrawdown = maxAcceptableCloseToCloseDrawdown;
-      this.stopLossConditionReached = false;
-      this.currentAccountValue = 0.0;
-      this.previousAccountValue = 0.0;
     }
-	
 
     #region MarketCloseEventHandler
     
@@ -99,12 +93,12 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
     	
     	if(endOfDayTimingEventArgs.EndOfDayDateTime.DateTime.DayOfWeek == 
     	   DayOfWeek.Monday)
-    		this.openPositions(this.chosenTickers);
+    		this.openPositions();
     	
     	if(this.stopLossConditionReached ||
     	   endOfDayTimingEventArgs.EndOfDayDateTime.DateTime.DayOfWeek == 
     	   DayOfWeek.Friday)
-    		this.closePositions();
+    		AccountManager.ClosePositions(this.account);
     	
     }
     
@@ -129,7 +123,7 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
     protected virtual void setTickers(DateTime currentDate)
     {
       DataTable setOfTickersToBeOptimized = this.getSetOfTickersToBeOptimized(currentDate);
-      if(setOfTickersToBeOptimized.Rows.Count > this.chosenTickers.Length*2)
+      if(setOfTickersToBeOptimized.Rows.Count > this.numberOfTickersToBeChosen*2)
         //the optimization process is meaningful only if the initial set of tickers is 
         //larger than the number of tickers to be chosen                     
       
@@ -151,8 +145,8 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
                                                     this.generationNumberForGeneticOptimizer);
         //GO.KeepOnRunningUntilConvergenceIsReached = true;
         GO.Run(false);
-        this.chosenTickers = ((GenomeMeaning)GO.BestGenome.Meaning).Tickers;
-        this.chosenTickersPortfolioWeights = ((GenomeMeaning)GO.BestGenome.Meaning).TickersPortfolioWeights;
+				this.chosenWeightedPositions = new WeightedPositions( ((GenomeMeaning)GO.BestGenome.Meaning).TickersPortfolioWeights,
+					new SignedTickers( ((GenomeMeaning)GO.BestGenome.Meaning).Tickers) );
       }
       //else it will be buyed again the previous optimized portfolio
       //that's it the actual chosenTickers member
@@ -171,7 +165,6 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
     	   endOfDayTimingEventArgs.EndOfDayDateTime.DateTime.DayOfWeek == 
     	   DayOfWeek.Friday)
       {
-        this.orders.Clear();
         this.setTickers(endOfDayTimingEventArgs.EndOfDayDateTime.DateTime);
         //it sets tickers to be chosen at next Monday
       }

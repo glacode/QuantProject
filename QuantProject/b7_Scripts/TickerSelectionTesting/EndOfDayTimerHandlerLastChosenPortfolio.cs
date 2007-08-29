@@ -28,6 +28,7 @@ using QuantProject.Business.Financial.Accounting;
 using QuantProject.Business.Financial.Instruments;
 using QuantProject.Business.Financial.Ordering;
 using QuantProject.Business.Timing;
+using QuantProject.Business.Strategies;
 using QuantProject.Data.DataProviders;
 using QuantProject.Data.Selectors;
 
@@ -53,8 +54,8 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
   	                                             	string benchmark,
   	                                             	EndOfDayDateTime firstDate,
   	                                             	EndOfDayDateTime lastDate):
-  															base(chosenTickers, portfolioType, account,	
-  		   														 benchmark)
+  		base(new WeightedPositions( new SignedTickers(chosenTickers) ),
+  		     portfolioType, account, benchmark)
     {
     	this.firstDate = firstDate;
     	this.lastDate = lastDate;
@@ -70,7 +71,7 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
     {
     	if(endOfDayTimingEventArgs.EndOfDayDateTime.CompareTo(this.firstDate) == 0)
     	{
-    		this.openPositions(this.chosenTickers);
+    		this.openPositions();
     	}
     }
 		
@@ -81,7 +82,7 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
     	//if(endOfDayTimingEventArgs.EndOfDayDateTime.CompareTo(this.lastDate) == 0)
       //	this.closePositions();
       if(endOfDayTimingEventArgs.EndOfDayDateTime.DateTime.CompareTo(this.lastDate.DateTime.AddDays(-1)) == 0)
-      		this.closePositions();
+      		AccountManager.ClosePositions(this.account);
     }
     
 		

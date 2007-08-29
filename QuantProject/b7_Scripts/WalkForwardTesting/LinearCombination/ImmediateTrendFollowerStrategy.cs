@@ -38,27 +38,28 @@ namespace QuantProject.Scripts.WalkForwardTesting.LinearCombination
 	/// reversal of the ExtremeCounterTrend strategy 
 	/// </summary>
 	[Serializable]
-	public class ImmediateTrendFollowerStrategy : IEndOfDayStrategy
+	public class ImmediateTrendFollowerStrategy : EndOfDayTimerHandler, IEndOfDayStrategy
 	{
-		private Account account;
-		private string[] signedTickers;
-		private double[] weightsForSignedTickers;
 		private int numDaysForReturnCalculation;
     private int numOfClosesElapsed = 0;
     private int numOfDaysWithOpenPosition = 0;
 
 		public ImmediateTrendFollowerStrategy( Account account ,
-			                              string[] signedTickers,
-			                              double[] weightsForSignedTickers,
-                                    int numDaysForReturnCalculation)
+			                              WeightedPositions weightedPositions,
+			                              int numDaysForReturnCalculation) :
+    																base("", 0, 
+                                weightedPositions.Count, 0, account,
+                                0,
+                                0,
+                                "^GSPC", 0.0,
+                                PortfolioType.ShortAndLong)
 		{
 			this.account = account;
-			this.signedTickers = signedTickers;
-			this.weightsForSignedTickers = weightsForSignedTickers;
+			this.chosenWeightedPositions = weightedPositions;
       this.numDaysForReturnCalculation = numDaysForReturnCalculation;
 		}
     
-    public void MarketOpenEventHandler(
+    public override void MarketOpenEventHandler(
       Object sender , EndOfDayTimingEventArgs endOfDayTimingEventArgs )
     {
     }
@@ -68,33 +69,6 @@ namespace QuantProject.Scripts.WalkForwardTesting.LinearCombination
     {
     }
 
-    private long marketCloseEventHandler_addOrder_getQuantity(
-			int indexForSignedTicker)
-		{
-			double accountValue = this.account.GetMarketValue();
-			double currentTickerAsk =
-				this.account.DataStreamer.GetCurrentAsk( SignedTicker.GetTicker(this.signedTickers[indexForSignedTicker]) );
-			double maxPositionValueForThisTicker =
-				accountValue*this.weightsForSignedTickers[indexForSignedTicker];
-			long quantity = Convert.ToInt64(	Math.Floor(
-				maxPositionValueForThisTicker /	currentTickerAsk ) );
-			return quantity;
-		}
-		private void marketCloseEventHandler_addOrder( int indexForSignedTicker )
-		{
-			OrderType orderType = GenomeRepresentation.GetOrderType( this.signedTickers[indexForSignedTicker] );
-			string ticker = GenomeRepresentation.GetTicker( this.signedTickers[indexForSignedTicker] );
-			long quantity = marketCloseEventHandler_addOrder_getQuantity( indexForSignedTicker );
-			Order order = new Order( orderType , new Instrument( ticker ) ,
-				quantity );
-			this.account.AddOrder( order );
-		}
-		private void marketCloseEventHandler_addOrders()
-		{
-			for(int i = 0; i<this.signedTickers.Length; i++)
-				marketCloseEventHandler_addOrder( i );
-		}
-  
     private double marketCloseEventHandler_openPositions_getLastHalfPeriodGain(IndexBasedEndOfDayTimer timer)
     {
       double returnValue = 999.0;
@@ -105,8 +79,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.LinearCombination
 	      DateTime finalDateForHalfPeriod = 
 	        (DateTime)timer.IndexQuotes.Rows[timer.CurrentDateArrayPosition]["quDate"];
       	returnValue =
-	      	 SignedTicker.GetCloseToClosePortfolioReturn(
-	      	     this.signedTickers,initialDateForHalfPeriod,finalDateForHalfPeriod);
+	      	 this.chosenWeightedPositions.GetCloseToCloseReturn(initialDateForHalfPeriod,finalDateForHalfPeriod);
       }
     	catch(MissingQuotesException ex)
     	{
@@ -124,39 +97,26 @@ namespace QuantProject.Scripts.WalkForwardTesting.LinearCombination
     	{
     		if(lastHalfPeriodGain > 0.0)
           //the portfolio had a gain for the last half period
-    			this.marketCloseEventHandler_addOrders();
+    			this.openPositions();
     		else//the portfolio had a loss for the last half period
     		{
-    			SignedTicker.ChangeSignOfEachTicker(this.signedTickers);
+    			this.chosenWeightedPositions.Reverse();
     			//short the portfolio
-    			try{this.marketCloseEventHandler_addOrders();}
+    			try{this.openPositions();}
     			catch(Exception ex){ex = ex;}
-    			finally{SignedTicker.ChangeSignOfEachTicker(this.signedTickers);}
+    			finally{this.chosenWeightedPositions.Reverse();}
     		}
     	}
     }
-    
-    private void marketCloseEventHandler_closePositions()
-    {
-      ArrayList tickers = new ArrayList();
-      foreach ( Position position in this.account.Portfolio.Positions )
-        tickers.Add( position.Instrument.Key );
-      foreach ( string ticker in tickers )
-        this.account.ClosePosition( ticker );
-      this.numOfDaysWithOpenPosition = 0;
-    }
         
-    public void MarketCloseEventHandler(
+    public override void MarketCloseEventHandler(
       Object sender , EndOfDayTimingEventArgs endOfDayTimingEventArgs )
     {
-      if(this.account.Transactions.Count == 0)
-        this.account.AddCash(30000);
-      
       if(this.account.Portfolio.Count > 0)
         this.numOfDaysWithOpenPosition++;
       
       if(this.numOfDaysWithOpenPosition == this.numDaysForReturnCalculation)
-          this.marketCloseEventHandler_closePositions();
+      	AccountManager.ClosePositions(this.account);
       
       if(this.account.Portfolio.Count == 0 &&
           (this.numOfClosesElapsed + 1) >= this.numDaysForReturnCalculation)
@@ -167,7 +127,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.LinearCombination
       this.numOfClosesElapsed++;
     }
 		
-    public void OneHourAfterMarketCloseEventHandler( Object sender ,
+    public override void OneHourAfterMarketCloseEventHandler( Object sender ,
 			EndOfDayTimingEventArgs endOfDayTimingEventArgs)
 		{
       

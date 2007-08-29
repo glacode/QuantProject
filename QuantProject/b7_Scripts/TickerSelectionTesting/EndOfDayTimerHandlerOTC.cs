@@ -27,6 +27,7 @@ using QuantProject.ADT;
 using QuantProject.Business.Financial.Accounting;
 using QuantProject.Business.Financial.Instruments;
 using QuantProject.Business.Financial.Ordering;
+using QuantProject.Business.Strategies;
 using QuantProject.Business.Timing;
 using QuantProject.Data.DataProviders;
 using QuantProject.Data.Selectors;
@@ -43,10 +44,8 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
   [Serializable]
   public class EndOfDayTimerHandlerOTC : EndOfDayTimerHandler
   {
-    protected int numDaysBetweenEachOptimization;
-    private int numDaysElapsedSinceLastOptimization;
     protected int seedForRandomGenerator;
-    
+		    
     public EndOfDayTimerHandlerOTC(string tickerGroupID, int numberOfEligibleTickers, 
                                 int numberOfTickersToBeChosen, int numDaysForOptimizationPeriod, Account account,
                                 int generationNumberForGeneticOptimizer,
@@ -63,50 +62,8 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
     	this.numDaysBetweenEachOptimization = numDaysBetweenEachOptimization;  
     	this.numDaysElapsedSinceLastOptimization = 0;
     	this.seedForRandomGenerator = ConstantsProvider.SeedForRandomGenerator;
-    }
-    
-    private double marketOpenEventHandler_currCombinationHasLost_getValue(ExtendedDateTime extendedDateTime)
-    {
-      double returnValue = 0.0;
-      string signedTicker;
-      string unsignedTicker;
-      double tickerMarketValue;
-      for(int i = 0; i<this.chosenTickers.Length; i++)
-      {
-        signedTicker = this.chosenTickers[i];
-        unsignedTicker = 
-            GenomeManagerForEfficientPortfolio.GetCleanTickerCode(signedTicker);
-        tickerMarketValue = 
-          HistoricalDataProvider.GetAdjustedMarketValue(unsignedTicker,extendedDateTime);
-        if(signedTicker == unsignedTicker)
-        //long position for the ticker
-          returnValue += this.chosenTickersPortfolioWeights[i]*tickerMarketValue;
-        else//short position for the ticker
-          returnValue -= this.chosenTickersPortfolioWeights[i]*tickerMarketValue;
-      }
-      return returnValue;
-      
-    }
-    
-    private bool marketOpenEventHandler_currCombinationHasLost()
-    {
-      bool returnValue = false;
-      IndexBasedEndOfDayTimer currentTimer = (IndexBasedEndOfDayTimer)this.account.EndOfDayTimer;
-      ExtendedDateTime now = 
-        new ExtendedDateTime(currentTimer.GetCurrentTime().DateTime,
-                             BarComponent.Open);
-      ExtendedDateTime previousClose =
-        new ExtendedDateTime(currentTimer.GetPreviousDateTime(),
-                             BarComponent.Close);
-      double currentCombinationValue_Now = 
-          this.marketOpenEventHandler_currCombinationHasLost_getValue(now);
-      double currentCombinationValue_AtPreviousMarketClose = 
-          this.marketOpenEventHandler_currCombinationHasLost_getValue(previousClose);
-      if(currentCombinationValue_Now < currentCombinationValue_AtPreviousMarketClose)
-        returnValue = true;
-      return returnValue;
-    }
-       
+		}
+   
     /// <summary>
     /// Handles a "Market Open" event.
     /// </summary>
@@ -115,24 +72,14 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
     public override void MarketOpenEventHandler(
       Object sender , EndOfDayTimingEventArgs endOfDayTimingEventArgs )
     {
-      if(this.orders.Count == 0 && this.account.Transactions.Count == 0)
-          this.account.AddCash(30000);
-      bool allTickerHasBeenChosen = true;
-      for( int i = 0; i<this.chosenTickers.Length; i++)
-      {
-        if(this.chosenTickers[i] == null)
-            allTickerHasBeenChosen = false;
-      }
-      if(allTickerHasBeenChosen && 
-         this.marketOpenEventHandler_currCombinationHasLost())
-          this.openPositions(this.chosenTickers);
-    }
+    	this.openPositions();
+	  }
 		
                 
     public override void MarketCloseEventHandler(
       Object sender , EndOfDayTimingEventArgs endOfDayTimingEventArgs )
     {
-    	this.closePositions();
+    	AccountManager.ClosePositions(this.account);
     }
     
     
@@ -152,8 +99,22 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
         new SelectorByQuotationAtEachMarketDay(mostLiquid.GetTableOfSelectedTickers(),
         false, currentDate.AddDays(-this.numDaysForOptimizationPeriod), currentDate,
         this.numberOfEligibleTickers, this.benchmark);
-     
-      return quotedAtEachMarketDayFromMostLiquid.GetTableOfSelectedTickers();
+      
+      SelectorByAverageRawOpenPrice byPrice = 
+      	new SelectorByAverageRawOpenPrice(quotedAtEachMarketDayFromMostLiquid.GetTableOfSelectedTickers(),
+      	                                  false,currentDate.AddDays(-30),
+      	                                  currentDate,
+      	                                  this.numberOfEligibleTickers,
+      	                                  35);
+      DataTable tickersByPrice = byPrice.GetTableOfSelectedTickers();
+      
+      SelectorByOpenCloseCorrelationToBenchmark tickersLessCorrelatedToBenchmark = 
+      	new SelectorByOpenCloseCorrelationToBenchmark(tickersByPrice,
+      	                                              "^GSPC",true,
+      	                                              currentDate.AddDays(-this.numDaysForOptimizationPeriod), currentDate,
+      	                                              tickersByPrice.Rows.Count/2);
+      
+	    return tickersLessCorrelatedToBenchmark.GetTableOfSelectedTickers();
 
     }
     
@@ -162,7 +123,7 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
     {
       
       DataTable setOfTickersToBeOptimized = this.getSetOfTickersToBeOptimized(currentDate);
-      if(setOfTickersToBeOptimized.Rows.Count > this.chosenTickers.Length*2)
+      if(setOfTickersToBeOptimized.Rows.Count > this.numberOfTickersToBeChosen*2)
         //the optimization process is possible only if the initial set of tickers is 
         //as large as the number of tickers to be chosen                     
       
@@ -187,12 +148,13 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
                                                    this.seedForRandomGenerator);
         if(setGenomeCounter)
         	this.genomeCounter = new GenomeCounter(GO);
-        
+        GO.CrossoverRate = 0.0;
+        GO.MutationRate = 0.70;
         GO.Run(false);
         this.addGenomeToBestGenomes(GO.BestGenome,currentDate.AddDays(-this.numDaysForOptimizationPeriod),
                                     currentDate, setOfTickersToBeOptimized.Rows.Count);
-        this.chosenTickers = ((GenomeMeaning)GO.BestGenome.Meaning).Tickers;
-        this.chosenTickersPortfolioWeights = ((GenomeMeaning)GO.BestGenome.Meaning).TickersPortfolioWeights;
+        this.chosenWeightedPositions = new WeightedPositions( ((GenomeMeaning)GO.BestGenome.Meaning).TickersPortfolioWeights,
+					new SignedTickers( ((GenomeMeaning)GO.BestGenome.Meaning).Tickers) );
       }
       //else it will be buyed again the previous optimized portfolio
       //that's it the actual chosenTickers member
@@ -216,7 +178,6 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
       Object sender , EndOfDayTimingEventArgs endOfDayTimingEventArgs )
     {
     	this.seedForRandomGenerator++;
-    	this.orders.Clear();
     	//this.oneHourAfterMarketCloseEventHandler_updatePrices();
       if(this.numDaysElapsedSinceLastOptimization == 
     	   this.numDaysBetweenEachOptimization - 1)

@@ -38,69 +38,36 @@ namespace QuantProject.Scripts.WalkForwardTesting.LinearCombination
 	public class OpenToCloseDailyStrategy : IEndOfDayStrategy
 	{
 		private Account account;
-		private string[] signedTickers;
-		private double[] weightsForSignedTickers;
+		private WeightedPositions chosenWeightedPositions;
 
 		public OpenToCloseDailyStrategy( Account account ,
-			string[] signedTickers, double[] weightsForSignedTickers)
+			WeightedPositions chosenWeightedPositions)
 		{
 			this.account = account;
-			this.signedTickers = signedTickers;
-			this.weightsForSignedTickers = weightsForSignedTickers;
+			this.chosenWeightedPositions = chosenWeightedPositions;
 		}
-		private long marketOpenEventHandler_addOrder_getQuantity(
-			int indexForSignedTicker )
-		{
-			double accountValue = this.account.GetMarketValue();
-			double currentTickerAsk =
-				this.account.DataStreamer.GetCurrentAsk( SignedTicker.GetTicker(this.signedTickers[indexForSignedTicker]) );
-			double maxPositionValueForThisTicker =
-				accountValue*this.weightsForSignedTickers[indexForSignedTicker];
-			long quantity = Convert.ToInt64(	Math.Floor(
-				maxPositionValueForThisTicker /	currentTickerAsk ) );
-			return quantity;
-		}
-		private void marketOpenEventHandler_addOrder( int indexForSignedTicker )
-		{
-			OrderType orderType = GenomeRepresentation.GetOrderType( this.signedTickers[indexForSignedTicker] );
-			string ticker = GenomeRepresentation.GetTicker( this.signedTickers[indexForSignedTicker] );
-			long quantity = marketOpenEventHandler_addOrder_getQuantity( indexForSignedTicker );
-			Order order = new Order( orderType , new Instrument( ticker ) ,
-				quantity );
-			this.account.AddOrder( order );
-		}
-		private void marketOpenEventHandler_addOrders()
-		{
-			for(int i = 0; i<this.signedTickers.Length; i++)
-				marketOpenEventHandler_addOrder( i );
-		}
+		
 		public void MarketOpenEventHandler(
 			Object sender , EndOfDayTimingEventArgs endOfDayTimingEventArgs )
 		{
 			if ( ( this.account.CashAmount == 0 ) &&
 				( this.account.Transactions.Count == 0 ) )
 				// cash has not been added yet
-				this.account.AddCash( 30000 );
-			marketOpenEventHandler_addOrders();
+				this.account.AddCash( 15000 );
+			AccountManager.OpenPositions(this.chosenWeightedPositions, this.account);
 		}
-		private void fiveMinutesBeforeMarketCloseEventHandler_closePositions()
-		{
-			ArrayList tickers = new ArrayList();
-			foreach ( Position position in this.account.Portfolio.Positions )
-				tickers.Add( position.Instrument.Key );
-			foreach ( string ticker in tickers )
-				this.account.ClosePosition( ticker );
-		}
+		
 		public void FiveMinutesBeforeMarketCloseEventHandler( Object sender ,
 			EndOfDayTimingEventArgs endOfDayTimingEventArgs)
 		{
-			this.fiveMinutesBeforeMarketCloseEventHandler_closePositions();
+			AccountManager.ClosePositions(this.account);
 		}
 
 		public void MarketCloseEventHandler( Object sender ,
 			EndOfDayTimingEventArgs endOfDayTimingEventArgs)
 		{
 		}
+		
 		public void OneHourAfterMarketCloseEventHandler( Object sender ,
 			EndOfDayTimingEventArgs endOfDayTimingEventArgs)
 		{

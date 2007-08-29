@@ -56,11 +56,6 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOs
     protected double currentOversoldThreshold;
     protected double currentOverboughtThreshold;
     protected double maxAcceptableCloseToCloseDrawdown;
-    protected bool stopLossConditionReached;
-    protected double currentAccountValue;
-    protected double previousAccountValue;
-    protected int numDaysBetweenEachOptimization;
-    protected int numDaysElapsedSinceLastOptimization;
     protected DateTime lastCloseDate;
     protected IGenomeManager iGenomeManager;
     protected int seedForRandomGenerator;
@@ -117,18 +112,14 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOs
     {
       this.previousAccountValue = this.currentAccountValue;
       this.currentAccountValue = this.account.GetMarketValue();
-      if((this.currentAccountValue - this.previousAccountValue)
-           /this.previousAccountValue < -this.maxAcceptableCloseToCloseDrawdown)
-      {
+      if( (this.currentAccountValue - this.previousAccountValue)/
+          this.previousAccountValue < -this.maxAcceptableCloseToCloseDrawdown )
         this.stopLossConditionReached = true;
-      }
       else
-      {
         this.stopLossConditionReached = false;
-      }
     }    
 
-    protected virtual double getCurrentChosenTickersValue(IndexBasedEndOfDayTimer timer)
+    protected virtual double getCurrentChosenWeightedPositionsValue(IndexBasedEndOfDayTimer timer)
     {
       double returnValue = 999.0;
       try
@@ -140,9 +131,8 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOs
         DateTime finalDate = 
 	        (DateTime)timer.IndexQuotes.Rows[timer.CurrentDateArrayPosition]["quDate"];
       	returnValue =
-	      	 SignedTicker.GetCloseToClosePortfolioReturn(
-	      	     this.chosenTickers, this.chosenTickersPortfolioWeights,
-	      	     initialDate,finalDate) + 1.0;
+	      	 this.chosenWeightedPositions.GetCloseToCloseReturn( initialDate,   	     
+	      	     																		finalDate) + 1.0;
       }
     	catch(MissingQuotesException ex)
     	{
@@ -153,15 +143,15 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOs
 
     private void marketCloseEventHandler_reverseIfNeeded(IndexBasedEndOfDayTimer timer)
     {
-      double currentChosenTickersValue = 
-        this.getCurrentChosenTickersValue(timer);
-      if(currentChosenTickersValue != 999.0)
+      double currentChosenWeightedPositionsTickersValue = 
+        this.getCurrentChosenWeightedPositionsValue(timer);
+      if(currentChosenWeightedPositionsTickersValue != 999.0)
         //currentChosenTickersValue has been properly computed
       {
       	if(this.portfolioType == PortfolioType.ShortAndLong)
       	//it is possible to reverse positions
       	{
-      		if(currentChosenTickersValue >= 1.0 + currentOverboughtThreshold &&
+      		if(currentChosenWeightedPositionsTickersValue >= 1.0 + currentOverboughtThreshold &&
       	    this.portfolioHasBeenOversold)
       		//open positions derive from an overSold period but now
       		//an the overbought threshold has been reached
@@ -170,7 +160,7 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOs
       			this.portfolioHasBeenOversold = false;
       			this.portfolioHasBeenOverbought = true;
       		}
-      		if(currentChosenTickersValue <= 1.0 - currentOversoldThreshold &&
+      		if(currentChosenWeightedPositionsTickersValue <= 1.0 - currentOversoldThreshold &&
       	    this.portfolioHasBeenOverbought)
       		//open positions derive from an overSold period but now
       		//an the overbought threshold has been reached
@@ -183,22 +173,23 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOs
       }
     }
 
-    private void marketCloseEventHandler_openPositions(IndexBasedEndOfDayTimer timer)
+    protected void marketCloseEventHandler_openPositions(IndexBasedEndOfDayTimer timer)
     {
-      double currentChosenTickersValue = 
-      		this.getCurrentChosenTickersValue(timer);
-    	if(currentChosenTickersValue != 999.0)
+      if(this.account.CashAmount == 0.0 && this.account.Transactions.Count == 0)
+				this.account.AddCash(15000);
+			double currentChosenWeightedPositionsValue = 
+      		this.getCurrentChosenWeightedPositionsValue(timer);
+    	if(currentChosenWeightedPositionsValue != 999.0)
     	//currentChosenTickersValue has been properly computed
     	{
-    		if(currentChosenTickersValue >= 1.0 + currentOverboughtThreshold &&
+    		if(currentChosenWeightedPositionsValue >= 1.0 + currentOverboughtThreshold &&
            this.portfolioType == PortfolioType.ShortAndLong)
     		{
-          SignedTicker.ChangeSignOfEachTicker(this.chosenTickers);
-         
-          //short the portfolio
+    			this.chosenWeightedPositions.Reverse();
           try
           {
-            base.openPositions(this.chosenTickers);
+            AccountManager.OpenPositions( this.chosenWeightedPositions,
+          	                            	this.account );
             this.portfolioHasBeenOverbought = true;
           	this.portfolioHasBeenOversold = false;
           }
@@ -208,12 +199,13 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOs
           }
           finally
           {
-            SignedTicker.ChangeSignOfEachTicker(this.chosenTickers);
+            this.chosenWeightedPositions.Reverse();
           }
     		}
-        else if (currentChosenTickersValue <= 1.0 - currentOversoldThreshold)
+        else if (currentChosenWeightedPositionsValue <= 1.0 - currentOversoldThreshold)
     		{
-          base.openPositions(this.chosenTickers);
+          AccountManager.OpenPositions( this.chosenWeightedPositions,
+          	                            	this.account );
           this.portfolioHasBeenOverbought = false;
           this.portfolioHasBeenOversold = true;
         }
@@ -225,9 +217,9 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOs
       if(this.stopLossConditionReached ||
         this.numDaysElapsedSinceLastOptimization + 1 == this.numDaysBetweenEachOptimization )
       {    
-        base.closePositions();
+    		AccountManager.ClosePositions(this.account);
         //a new optimization is needed, now
-        this.chosenTickers[0] = null;
+        this.chosenWeightedPositions = null;
         //when positions are closed, these parameters
         //have to be reset to false
         this.portfolioHasBeenOverbought = false;
@@ -240,14 +232,14 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOs
     {
       //this.marketCloseEventHandler_updateStopLossCondition();  
       this.marketCloseEventHandler_closePositionsIfNeeded();
-      if(this.chosenTickers[0] != null)
+      if(this.chosenWeightedPositions != null)
       //tickers to buy have been chosen by the optimizer
       {
       	if(this.account.Portfolio.Count == 0)
       			this.marketCloseEventHandler_openPositions((IndexBasedEndOfDayTimer)sender);
         		//positions are opened only if thresholds are reached
         else//there are some opened positions
-            this.marketCloseEventHandler_reverseIfNeeded((IndexBasedEndOfDayTimer)sender);;
+            this.marketCloseEventHandler_reverseIfNeeded((IndexBasedEndOfDayTimer)sender);
       }
          
     }
@@ -319,7 +311,7 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOs
       bool setGenomeCounter)
     {
       DataTable setOfTickersToBeOptimized = this.getSetOfTickersToBeOptimized(currentDate);
-      if(setOfTickersToBeOptimized.Rows.Count > this.chosenTickers.Length*2)
+      if(setOfTickersToBeOptimized.Rows.Count > this.numberOfTickersToBeChosen*2)
         //the optimization process is meaningful only if the initial set of tickers is 
         //larger than the number of tickers to be chosen                     
       
@@ -346,8 +338,8 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOs
         GO.MutationRate = 0.2;
         GO.Run(false);
         
-        this.chosenTickers = ((GenomeMeaningPVO)GO.BestGenome.Meaning).Tickers;
-        this.chosenTickersPortfolioWeights = ((GenomeMeaningPVO)GO.BestGenome.Meaning).TickersPortfolioWeights;
+        this.chosenWeightedPositions = new WeightedPositions( ((GenomeMeaningPVO)GO.BestGenome.Meaning).TickersPortfolioWeights,
+					new SignedTickers( ((GenomeMeaningPVO)GO.BestGenome.Meaning).Tickers) );
         this.currentOversoldThreshold = ((GenomeMeaningPVO)GO.BestGenome.Meaning).OversoldThreshold;
         this.currentOverboughtThreshold = ((GenomeMeaningPVO)GO.BestGenome.Meaning).OverboughtThreshold;
         this.addPVOGenomeToBestGenomes(GO.BestGenome,((GenomeManagerForEfficientPortfolio)this.iGenomeManager).FirstQuoteDate,
@@ -370,7 +362,6 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOs
       this.lastCloseDate = endOfDayTimingEventArgs.EndOfDayDateTime.DateTime;
       this.seedForRandomGenerator++;
       this.numDaysElapsedSinceLastOptimization++;
-      this.orders.Clear();
       if((this.numDaysElapsedSinceLastOptimization == 
             this.numDaysBetweenEachOptimization))
       //num days without optimization has elapsed

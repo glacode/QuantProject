@@ -42,20 +42,18 @@ namespace QuantProject.Scripts.WalkForwardTesting.LinearCombination
 	{
 		   
 		public FixedLevelOscillatorPVOStrategy( Account accountPVO ,
-			                                     string[] tickers,
-			                                     double[] tickersPortfolioWeights,
+			                                     WeightedPositions weightedPositions,
                                            double oversoldThreshold,
                                            double overboughtThreshold,
                                            int numDaysForOscillatingPeriod):
-                                          base("", 0, tickers.Length, 0,
+                                          base("", 0, weightedPositions.Count, 0,
                                           accountPVO,                                
                                           0,0,
                                           "^GSPC",
                                           0, 0, 0, 0, 0, 0, false, false, 0, 
                                           PortfolioType.ShortAndLong, 0.5)
 		{
-			this.chosenTickers = tickers;
-			this.chosenTickersPortfolioWeights = tickersPortfolioWeights;
+			this.chosenWeightedPositions = chosenWeightedPositions;
       this.currentOversoldThreshold = oversoldThreshold;
       this.currentOverboughtThreshold = overboughtThreshold;
       this.numDaysForOscillatingPeriod = numDaysForOscillatingPeriod;
@@ -71,7 +69,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.LinearCombination
       
     }    
 		
-    protected override double getCurrentChosenTickersValue(IndexBasedEndOfDayTimer timer)
+    protected override double getCurrentChosenWeightedPositionsValue(IndexBasedEndOfDayTimer timer)
     {
       double returnValue = 999.0;
       if(timer.CurrentDateArrayPosition + 2 >= this.numDaysForOscillatingPeriod)
@@ -87,9 +85,8 @@ namespace QuantProject.Scripts.WalkForwardTesting.LinearCombination
           DateTime finalDate = 
             (DateTime)timer.IndexQuotes.Rows[timer.CurrentDateArrayPosition]["quDate"];
           returnValue =
-            SignedTicker.GetCloseToClosePortfolioReturn(
-            this.chosenTickers, this.chosenTickersPortfolioWeights,
-            initialDate,finalDate) + 1.0;
+            this.chosenWeightedPositions.GetCloseToCloseReturn(initialDate,finalDate) 
+          	+ 1.0;
         }
         catch(Exception ex)
         {

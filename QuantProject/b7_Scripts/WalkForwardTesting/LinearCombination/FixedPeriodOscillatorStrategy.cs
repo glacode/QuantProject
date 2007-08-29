@@ -36,12 +36,9 @@ namespace QuantProject.Scripts.WalkForwardTesting.LinearCombination
 	/// Close To Close Oscillator strategy
 	/// </summary>
 	[Serializable]
-	public class FixedPeriodOscillatorStrategy : IEndOfDayStrategy
+	public class FixedPeriodOscillatorStrategy : EndOfDayTimerHandler, IEndOfDayStrategy
 	{
-		private Account account;
-		private string[] signedTickers;
-		private double[] weightsForSignedTickers;
-    private int daysForRightPeriod;
+		private int daysForRightPeriod;
     private int daysForReversalPeriod;
     //length for movement upwards or downwards of the given tickers
     private int daysCounterWithRightPositions;
@@ -51,78 +48,28 @@ namespace QuantProject.Scripts.WalkForwardTesting.LinearCombination
      
 
 		public FixedPeriodOscillatorStrategy( Account account ,
-			                                     string[] signedTickers,
-			                                     double[] weightsForSignedTickers,
+			                                     WeightedPositions weightedPositions,
                                            int daysForRightPeriod,
-                                           int daysForReversalPeriod)
+                                           int daysForReversalPeriod):
+    																		 base("", 0, 
+                                weightedPositions.Count, 0, account,
+                                0,
+                                0,
+                                "^GSPC", 0.0,
+                                PortfolioType.ShortAndLong)
 		{
 			this.account = account;
-			this.signedTickers = signedTickers;
-			this.weightsForSignedTickers = weightsForSignedTickers;
+			this.chosenWeightedPositions = weightedPositions;
       this.daysForRightPeriod = daysForRightPeriod;
       this.daysForReversalPeriod = daysForReversalPeriod;
 		}
-		private long marketCloseEventHandler_addOrder_getQuantity(
-			int indexForSignedTicker)
-		{
-			double accountValue = this.account.GetMarketValue();
-			double currentTickerAsk =
-				this.account.DataStreamer.GetCurrentAsk( SignedTicker.GetTicker(this.signedTickers[indexForSignedTicker]) );
-			double maxPositionValueForThisTicker =
-				accountValue*this.weightsForSignedTickers[indexForSignedTicker];
-			long quantity = Convert.ToInt64(	Math.Floor(
-				maxPositionValueForThisTicker /	currentTickerAsk ) );
-			return quantity;
-		}
-		private void marketCloseEventHandler_addOrder( int indexForSignedTicker )
-		{
-			OrderType orderType = GenomeRepresentation.GetOrderType( this.signedTickers[indexForSignedTicker] );
-			string ticker = GenomeRepresentation.GetTicker( this.signedTickers[indexForSignedTicker] );
-			long quantity = marketCloseEventHandler_addOrder_getQuantity( indexForSignedTicker );
-			Order order = new Order( orderType , new Instrument( ticker ) ,
-				quantity );
-			this.account.AddOrder( order );
-		}
-		private void marketCloseEventHandler_addOrders()
-		{
-			for(int i = 0; i<this.signedTickers.Length; i++)
-				marketCloseEventHandler_addOrder( i );
-		}
-		
-    public void MarketOpenEventHandler(
+				
+    public override void MarketOpenEventHandler(
 			Object sender , EndOfDayTimingEventArgs endOfDayTimingEventArgs )
 		{
+    	
 		}
-		
-    private void marketCloseEventHandler_closePositions()
-		{
-			ArrayList tickers = new ArrayList();
-			foreach ( Position position in this.account.Portfolio.Positions )
-				tickers.Add( position.Instrument.Key );
-			foreach ( string ticker in tickers )
-				this.account.ClosePosition( ticker );
-		}
-		
-    public void FiveMinutesBeforeMarketCloseEventHandler( Object sender ,
-			EndOfDayTimingEventArgs endOfDayTimingEventArgs)
-		{
-		}
-
-    private void marketCloseEventHandler_reverseSignOfTickers()
-    {
-      for(int i = 0; i<this.signedTickers.Length; i++)
-      {
-        if(this.signedTickers[i] != null)
-        {
-          if(this.signedTickers[i].StartsWith("-"))
-            this.signedTickers[i] =
-              GenomeManagerForEfficientPortfolio.GetCleanTickerCode(this.signedTickers[i]);
-          else
-            this.signedTickers[i] = "-" + this.signedTickers[i];
-        }
-      }
-    }
-
+		    
     private void marketCloseEventHandler_updateCounters(bool isTheFirstClose)
     {
       if(this.account.Portfolio.Count > 0 && isTheFirstClose == false)
@@ -134,7 +81,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.LinearCombination
       }
     }
 
-		public void MarketCloseEventHandler( Object sender ,
+		public override void MarketCloseEventHandler( Object sender ,
 			EndOfDayTimingEventArgs endOfDayTimingEventArgs)
 		{
       bool firstClose = false;
@@ -146,8 +93,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.LinearCombination
           // it is the first close
         {
           firstClose = true;
-          this.account.AddCash( 30000 );
-          this.marketCloseEventHandler_addOrders();
+          this.openPositions();
         }
 
         this.marketCloseEventHandler_updateCounters(firstClose);
@@ -156,10 +102,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.LinearCombination
            this.daysCounterWithRightPositions == this.daysForRightPeriod)
       
         {
-          this.marketCloseEventHandler_closePositions();
-          this.daysCounterWithRightPositions = 0;
-          this.marketCloseEventHandler_reverseSignOfTickers();
-          this.marketCloseEventHandler_addOrders();
+        	AccountManager.ReversePositions(this.account);
           this.isReversalPeriodOn = true;
         }
       
@@ -167,10 +110,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.LinearCombination
            this.daysCounterWithReversalPositions == this.daysForReversalPeriod)
       
         {
-          this.marketCloseEventHandler_closePositions();
-          this.daysCounterWithReversalPositions = 0;
-          this.marketCloseEventHandler_reverseSignOfTickers();
-          this.marketCloseEventHandler_addOrders();
+          AccountManager.ReversePositions(this.account);
           this.isReversalPeriodOn = false;
         }
       }
@@ -179,7 +119,13 @@ namespace QuantProject.Scripts.WalkForwardTesting.LinearCombination
 
 		}
 		
-    public void OneHourAfterMarketCloseEventHandler( Object sender ,
+    public override void OneHourAfterMarketCloseEventHandler( Object sender ,
+			EndOfDayTimingEventArgs endOfDayTimingEventArgs)
+		{
+      
+		}
+    
+    public void FiveMinutesBeforeMarketCloseEventHandler( Object sender ,
 			EndOfDayTimingEventArgs endOfDayTimingEventArgs)
 		{
       

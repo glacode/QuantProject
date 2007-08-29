@@ -38,65 +38,33 @@ namespace QuantProject.Scripts.WalkForwardTesting.LinearCombination
 	public class OpenToCloseWeeklyStrategy : IEndOfDayStrategy
 	{
 		private Account account;
-		private string[] signedTickers;
+		private WeightedPositions weightedPositions;
 
 		public OpenToCloseWeeklyStrategy( Account account ,
-			string[] signedTickers)
+			WeightedPositions weightedPositions)
 		{
 			this.account = account;
-			this.signedTickers = signedTickers;
+			this.weightedPositions = weightedPositions;
 		}
-		private long marketOpenEventHandler_addOrder_getQuantity(
-			string ticker )
-		{
-			double accountValue = this.account.GetMarketValue();
-			double currentTickerAsk =
-				this.account.DataStreamer.GetCurrentAsk( ticker );
-			double maxPositionValueForThisTicker =
-				accountValue/this.signedTickers.Length;
-			long quantity = Convert.ToInt64(	Math.Floor(
-				maxPositionValueForThisTicker /	currentTickerAsk ) );
-			return quantity;
-		}
-		private void marketOpenEventHandler_addOrder( string signedTicker )
-		{
-			OrderType orderType = GenomeRepresentation.GetOrderType( signedTicker );
-			string ticker = GenomeRepresentation.GetTicker( signedTicker );
-			long quantity = marketOpenEventHandler_addOrder_getQuantity( ticker );
-			Order order = new Order( orderType , new Instrument( ticker ) ,
-				quantity );
-			this.account.AddOrder( order );
-		}
-		private void marketOpenEventHandler_addOrders()
-		{
-			foreach ( string signedTicker in this.signedTickers )
-				marketOpenEventHandler_addOrder( signedTicker );
-		}
+		
 		public void MarketOpenEventHandler(
 			Object sender , EndOfDayTimingEventArgs endOfDayTimingEventArgs )
 		{
 			if ( ( this.account.CashAmount == 0 ) &&
 				( this.account.Transactions.Count == 0 ) )
 				// cash has not been added yet
-				this.account.AddCash( 30000 );
+				this.account.AddCash( 15000 );
 			if ( endOfDayTimingEventArgs.EndOfDayDateTime.DateTime.DayOfWeek ==
 				DayOfWeek.Monday )
-				marketOpenEventHandler_addOrders();
+				AccountManager.OpenPositions(this.weightedPositions, this.account);
 		}
-		private void fiveMinutesBeforeMarketCloseEventHandler_closePositions()
-		{
-			ArrayList tickers = new ArrayList();
-			foreach ( Position position in this.account.Portfolio.Positions )
-				tickers.Add( position.Instrument.Key );
-			foreach ( string ticker in tickers )
-				this.account.ClosePosition( ticker );
-		}
+		
 		public void FiveMinutesBeforeMarketCloseEventHandler( Object sender ,
 			EndOfDayTimingEventArgs endOfDayTimingEventArgs)
 		{
 			if ( endOfDayTimingEventArgs.EndOfDayDateTime.DateTime.DayOfWeek ==
 				DayOfWeek.Friday )
-				this.fiveMinutesBeforeMarketCloseEventHandler_closePositions();
+				AccountManager.ClosePositions(this.account);
 		}
 
 		public void MarketCloseEventHandler( Object sender ,
