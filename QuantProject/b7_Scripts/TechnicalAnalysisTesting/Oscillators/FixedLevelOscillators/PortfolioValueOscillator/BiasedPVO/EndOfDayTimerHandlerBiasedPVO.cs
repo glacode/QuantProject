@@ -38,6 +38,7 @@ using QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios;
 using QuantProject.Scripts.WalkForwardTesting.LinearCombination;
 using QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOscillators.PortfolioValueOscillator;
 using QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOscillators.PortfolioValueOscillator.WeightedPVO.WeightedBalancedPVO;
+using QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOscillators.PortfolioValueOscillator.BiasedPVO.BiasedPVONoThresholds;
 
 namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOscillators.PortfolioValueOscillator.BiasedPVO
 {
@@ -47,21 +48,11 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOs
   /// Oscillator
   /// </summary>
   [Serializable]
-  public class EndOfDayTimerHandlerBiasedPVO : EndOfDayTimerHandlerPVO
+  public class EndOfDayTimerHandlerBiasedPVO : EndOfDayTimerHandlerBiasedPVONoThresholds
   {
-    protected int numOfDifferentGenomesToEvaluateOutOfSample;
-    protected double minimumAcceptableGain;
-    protected int currentGenomeIndex = 0;
-    protected double currentTickersGainOrLoss = 0.0;
-    protected Hashtable genomesCollector;
-    protected bool takeProfitConditionReached;
-    protected string[,] bestGenomesChosenTickers;
-    protected double[,] bestGenomesChosenTickersPortfolioWeights;
-    
-    new protected double[] currentOversoldThreshold;
     new protected double[] currentOverboughtThreshold;
-     
-    
+		new protected double[] currentOversoldThreshold;
+
     public EndOfDayTimerHandlerBiasedPVO(string tickerGroupID, int numberOfEligibleTickers, 
                                 int numberOfTickersToBeChosen, int numDaysForOptimizationPeriod,
                                 Account account,                                
@@ -80,129 +71,34 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOs
                                 int numDaysBetweenEachOptimization,
                                 PortfolioType portfolioType, double maxAcceptableCloseToCloseDrawdown,
                                 double minimumAcceptableGain):
-    														base(tickerGroupID, numberOfEligibleTickers, 
-                                numberOfTickersToBeChosen, numDaysForOptimizationPeriod,
-                                account,                                
-                                generationNumberForGeneticOptimizer,
-                                populationSizeForGeneticOptimizer,
-                                benchmark,
-                                numDaysForOscillatingPeriod,
-                                minLevelForOversoldThreshold,
-                                maxLevelForOversoldThreshold,
-                                minLevelForOverboughtThreshold,
-                                maxLevelForOverboughtThreshold,
-                                divisorForThresholdComputation,
-                                symmetricalThresholds,
-                                overboughtMoreThanOversoldForFixedPortfolio,
-                                numDaysBetweenEachOptimization,
-                                portfolioType, maxAcceptableCloseToCloseDrawdown)
+																base(tickerGroupID, numberOfEligibleTickers, 
+																numberOfTickersToBeChosen, numDaysForOptimizationPeriod,
+																account, generationNumberForGeneticOptimizer,
+																populationSizeForGeneticOptimizer, benchmark,
+																numOfDifferentGenomesToEvaluateOutOfSample,
+																numDaysBetweenEachOptimization,
+																portfolioType, maxAcceptableCloseToCloseDrawdown,
+																minimumAcceptableGain)
     {
-      
-      this.numOfDifferentGenomesToEvaluateOutOfSample = numOfDifferentGenomesToEvaluateOutOfSample;
-      this.minimumAcceptableGain = minimumAcceptableGain;
-      this.bestGenomesChosenTickers = new string[numOfDifferentGenomesToEvaluateOutOfSample, numberOfTickersToBeChosen];
-      this.bestGenomesChosenTickersPortfolioWeights = new double[numOfDifferentGenomesToEvaluateOutOfSample, numberOfTickersToBeChosen];
-      this.currentOversoldThreshold = new double[numOfDifferentGenomesToEvaluateOutOfSample];
-      this.currentOverboughtThreshold = new double[numOfDifferentGenomesToEvaluateOutOfSample];
-      this.genomesCollector = new Hashtable();
+			this.currentOverboughtThreshold = new double[numOfDifferentGenomesToEvaluateOutOfSample];
+			this.currentOversoldThreshold = new double[numOfDifferentGenomesToEvaluateOutOfSample];
+			this.numDaysForOscillatingPeriod = numDaysForOscillatingPeriod;
+      this.minLevelForOversoldThreshold = minLevelForOversoldThreshold;
+      this.maxLevelForOversoldThreshold = maxLevelForOversoldThreshold;
+      this.minLevelForOverboughtThreshold = minLevelForOverboughtThreshold;
+      this.maxLevelForOverboughtThreshold = maxLevelForOverboughtThreshold;
+			this.divisorForThresholdComputation = divisorForThresholdComputation;
+			this.symmetricalThresholds =symmetricalThresholds;
+      this.overboughtMoreThanOversoldForFixedPortfolio = overboughtMoreThanOversoldForFixedPortfolio;
     }
 	
 
     #region MarketCloseEventHandler
     
-    protected virtual double getCurrentChosenTickersGainOrLoss(IndexBasedEndOfDayTimer timer,
-                                                int indexForChosenTickers)
-    {
-      double returnValue = 999.0;
-      try
-      {
-		    DateTime initialDate = 
-	          (DateTime)timer.IndexQuotes.Rows[timer.CurrentDateArrayPosition - this.numDaysForOscillatingPeriod + 2]["quDate"];
-	      //so to replicate exactly in sample scheme, where only numOscillatingDay - 1 returns
-        //are computed
-        DateTime finalDate = 
-	        (DateTime)timer.IndexQuotes.Rows[timer.CurrentDateArrayPosition]["quDate"];
-      	string[] tickers = new string[this.numberOfTickersToBeChosen];
-        double[] tickerWeights = new double[this.numberOfTickersToBeChosen];
-        for(int i = 0; i < this.numberOfTickersToBeChosen; i++)
-        {
-          tickers[i] = this.bestGenomesChosenTickers[indexForChosenTickers,i];
-          tickerWeights[i] = this.bestGenomesChosenTickersPortfolioWeights[indexForChosenTickers,i];
-        }
-        returnValue =
-	      	 SignedTicker.GetCloseToClosePortfolioReturn(
-	      	     tickers, tickerWeights,
-	      	     initialDate,finalDate) + 1.0;
-      }
-    	catch(MissingQuotesException ex)
-    	{
-    		ex = ex;
-    	}
-    	return returnValue;
-    }   
-
-    private void marketCloseEventHandler_reverseOrClose(IndexBasedEndOfDayTimer timer)
-    {
-      double currentChosenTickersGainOrLoss = 
-        this.getCurrentChosenTickersGainOrLoss(timer, this.currentGenomeIndex);
-      this.marketCloseEventHandler_updateStopLossAndTakeProfitConditions();
-      if(currentChosenTickersGainOrLoss != 999.0)
-        //currentChosenTickersValue has been properly computed
-      {
-    		if(currentChosenTickersGainOrLoss >= 1.0 + currentOverboughtThreshold[this.currentGenomeIndex] &&
-    	    this.portfolioHasBeenOversold)
-    		//open positions derive from an overSold period but now
-    		//the overbought threshold has been reached
-    		{
-    			this.reversePositions();
-    			this.portfolioHasBeenOversold = false;
-    			this.portfolioHasBeenOverbought = true;
-    		}
-    		else if(currentChosenTickersGainOrLoss <= 1.0 - currentOversoldThreshold[this.currentGenomeIndex] &&
-    	    			this.portfolioHasBeenOverbought)
-    		//open positions derive from an overBought period but now
-    		//the overSold threshold has been reached
-    		{
-    			this.reversePositions();
-    			this.portfolioHasBeenOversold = true;
-    			this.portfolioHasBeenOverbought = false;
-    		}
-      	else if(this.stopLossConditionReached ||
-         	 			this.takeProfitConditionReached ||
-        	 			this.numDaysElapsedSinceLastOptimization + 1 == this.numDaysBetweenEachOptimization )
-      	//reversal conditions have not been reached but 
-      	//stop loss or take profit conditions yes
-      	//or after the close it is necessary to run
-      	//another optimization
-      	{
-	        base.closePositions();
-          this.orders.Clear();
-	        this.portfolioHasBeenOverbought = false;
-	        this.portfolioHasBeenOversold = false;
-      	}
-      }
-    }
-
-    private void marketCloseEventHandler_closeIfItIsTimeToClose()
-    {
-      this.marketCloseEventHandler_updateStopLossAndTakeProfitConditions();
-      if(this.stopLossConditionReached ||
-          this.takeProfitConditionReached ||
-          this.numDaysElapsedSinceLastOptimization + 1 == this.numDaysBetweenEachOptimization )
-          //stop loss or take profit conditions yes
-          //or after the next close it is necessary to run
-          //another optimization
-      {
-        base.closePositions();
-        this.orders.Clear();
-        this.portfolioHasBeenOverbought = false;
-        this.portfolioHasBeenOversold = false;
-      }
-    }
-
+		
     //sets currentGenomeIndex with the genome's index that crosses an overbought/oversold threshold with the
     //highest degree and sets currentTickersGainOrLoss accordingly
-    private void marketCloseEventHandler_openPositions_chooseBestGenome(IndexBasedEndOfDayTimer timer)
+    protected override void openPositions_chooseBestGenome(IndexBasedEndOfDayTimer timer)
     {
       //default index is the first
       //genome (with the highest plain fitness), if no other genome
@@ -211,103 +107,79 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOs
       double currentDegreeOfCrossingThreshold = 0.0;
       for(int i = 0; i < this.numOfDifferentGenomesToEvaluateOutOfSample; i++)
       {
-        double currentChosenTickersGainOrLoss = 
-                 this.getCurrentChosenTickersGainOrLoss(timer, i);
-        if(currentChosenTickersGainOrLoss != 999.0)
+        double currentChosenWeightedPositionsGainOrLoss = 
+                 this.getCurrentWeightedPositionsGainOrLoss(timer, i);
+        if(currentChosenWeightedPositionsGainOrLoss != 999.0)
           //currentChosenTickersValue has been properly computed
         {
           //computing degree of crossing threshold 
-          if(currentChosenTickersGainOrLoss >= 1.0 + this.currentOverboughtThreshold[i])
+          if(currentChosenWeightedPositionsGainOrLoss >= 1.0 + this.currentOverboughtThreshold[i])
           {
             currentDegreeOfCrossingThreshold = 
-              (currentChosenTickersGainOrLoss - 1.0 - this.currentOverboughtThreshold[i])/
+              (currentChosenWeightedPositionsGainOrLoss - 1.0 - this.currentOverboughtThreshold[i])/
             		(1 + this.currentOverboughtThreshold[i]);
  
           }
-          else if (currentChosenTickersGainOrLoss <= 1.0 - this.currentOversoldThreshold[i])
+          else if (currentChosenWeightedPositionsGainOrLoss <= 1.0 - this.currentOversoldThreshold[i])
           {
             currentDegreeOfCrossingThreshold = 
-              (1.0 - this.currentOversoldThreshold[i] - currentChosenTickersGainOrLoss)/
+              (1.0 - this.currentOversoldThreshold[i] - currentChosenWeightedPositionsGainOrLoss)/
             		(1.0 - this.currentOversoldThreshold[i]);
           }
           if(currentDegreeOfCrossingThreshold > currentMaxDegreeOfCrossingThreshold)
           {
           	currentMaxDegreeOfCrossingThreshold = currentDegreeOfCrossingThreshold;
           	this.currentGenomeIndex = i;
-          	this.currentTickersGainOrLoss = currentChosenTickersGainOrLoss;
+          	this.currentWeightedPositionsGainOrLoss = currentChosenWeightedPositionsGainOrLoss;
           }
         }
       }
-   }
+    }
 
-
-    private void marketCloseEventHandler_openPositions(IndexBasedEndOfDayTimer timer)
+    protected override void openPositions(IndexBasedEndOfDayTimer timer)
     {
-      this.currentTickersGainOrLoss = 999.0; //
-    	this.marketCloseEventHandler_openPositions_chooseBestGenome(timer);
-      if(this.currentTickersGainOrLoss != 999.0)
-    	//currentChosenTickersValue has been properly computed
+      this.currentWeightedPositionsGainOrLoss = 999.0; //
+    	this.openPositions_chooseBestGenome(timer);
+      if(this.currentWeightedPositionsGainOrLoss != 999.0)
+    	//currentWeightedPositionsGainOrLoss has been properly computed
     	{
-        string[] tickers = new string[this.numberOfTickersToBeChosen];
-        double[] tickersWeights = new double[this.numberOfTickersToBeChosen];
-        for(int i = 0; i < this.numberOfTickersToBeChosen; i++)
-        {
-          tickers[i] = this.bestGenomesChosenTickers[this.currentGenomeIndex,i];
-          tickersWeights[i] = this.bestGenomesChosenTickersPortfolioWeights[this.currentGenomeIndex,i];
-        }
-          if(this.currentTickersGainOrLoss >= 1.0 + currentOverboughtThreshold[this.currentGenomeIndex] &&
+        if(this.currentWeightedPositionsGainOrLoss >= 1.0 + currentOverboughtThreshold[this.currentGenomeIndex] &&
            this.portfolioType == PortfolioType.ShortAndLong)
     		{
-          SignedTicker.ChangeSignOfEachTicker(tickers);
-          base.openPositions(tickers, tickersWeights);
-          this.portfolioHasBeenOverbought = true;
-          this.portfolioHasBeenOversold = false;
+					this.weightedPositionsToEvaluateOutOfSample[this.currentGenomeIndex].Reverse();
+					try{
+						AccountManager.OpenPositions(this.weightedPositionsToEvaluateOutOfSample[this.currentGenomeIndex],
+							this.account);
+						this.portfolioHasBeenOverbought = true;
+						this.portfolioHasBeenOversold = false;
+					}
+					catch(Exception ex){
+						ex=ex;
+					}
+					finally{
+						this.weightedPositionsToEvaluateOutOfSample[this.currentGenomeIndex].Reverse();
+					}
         }
-        else if (this.currentTickersGainOrLoss <= 1.0 - currentOversoldThreshold[this.currentGenomeIndex])
+        else if (this.currentWeightedPositionsGainOrLoss <= 1.0 - currentOversoldThreshold[this.currentGenomeIndex])
     		{
-          base.openPositions(tickers, tickersWeights);
+					AccountManager.OpenPositions(this.weightedPositionsToEvaluateOutOfSample[this.currentGenomeIndex],
+						this.account);
           this.portfolioHasBeenOverbought = false;
           this.portfolioHasBeenOversold = true;
         }
         this.currentAccountValue = this.account.GetMarketValue();
     	}
     }
-        
-    private void marketCloseEventHandler_updateStopLossAndTakeProfitConditions()
-    {
-      this.previousAccountValue = this.currentAccountValue;
-      this.currentAccountValue = this.account.GetMarketValue();
-      double portfolioGainOrLoss = (this.currentAccountValue - this.previousAccountValue)
-           													/this.previousAccountValue;
-      
-      if( portfolioGainOrLoss < -this.maxAcceptableCloseToCloseDrawdown )
-      {
-        this.stopLossConditionReached = true;
-        this.takeProfitConditionReached = false;
-      }
-      else if (portfolioGainOrLoss >= this.minimumAcceptableGain)
-               
-      {
-        this.stopLossConditionReached = false;
-        this.takeProfitConditionReached = true;
-      }
-      else
-      {
-      	this.stopLossConditionReached = false;
-        this.takeProfitConditionReached = false;
-      }
-    }   
-
+   
     public override void MarketCloseEventHandler(
       Object sender , EndOfDayTimingEventArgs endOfDayTimingEventArgs )
     {
      	if(this.account.Portfolio.Count > 0)
-    	 	//this.marketCloseEventHandler_reverseOrClose((IndexBasedEndOfDayTimer)sender);
      	  this.marketCloseEventHandler_closeIfItIsTimeToClose();
       else if ( this.account.Portfolio.Count == 0 &&
-    	         this.bestGenomesChosenTickers[0,0] != null )
+    	          this.weightedPositionsToEvaluateOutOfSample != null )
 			//portfolio is empty and optimization has been already launched    		
-    		this.marketCloseEventHandler_openPositions((IndexBasedEndOfDayTimer)sender);
+    		this.openPositions((IndexBasedEndOfDayTimer)sender);
     }
 
     #endregion
@@ -333,18 +205,13 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOs
 				//it is the first genome to be added or no genome with the current
       	// fitness has been added to the hashtable yet
       	{
-      		for(int i = 0; i<this.numberOfTickersToBeChosen; i++)
-      		{
-      			this.bestGenomesChosenTickers[addedGenomes,i] = 
-      				((GenomeMeaningPVO)currentGenome.Meaning).Tickers[i];
-      			this.bestGenomesChosenTickersPortfolioWeights[addedGenomes,i] =
-      				((GenomeMeaningPVO)currentGenome.Meaning).TickersPortfolioWeights[i];
-      		}
+					this.weightedPositionsToEvaluateOutOfSample[addedGenomes] = new WeightedPositions(
+						((GenomeMeaningPVO)currentGenome.Meaning).TickersPortfolioWeights, 
+						new SignedTickers( ((GenomeMeaningPVO)currentGenome.Meaning).Tickers ) );
       		this.currentOversoldThreshold[addedGenomes] = 
       				((GenomeMeaningPVO)currentGenome.Meaning).OversoldThreshold;
       		this.currentOverboughtThreshold[addedGenomes] = 
       				((GenomeMeaningPVO)currentGenome.Meaning).OverboughtThreshold;
-      		
       		this.genomesCollector.Add(
       		 ( (GenomeMeaning)currentGenome.Meaning ).HashCodeForTickerComposition, null);
 //						currentGenome.Fitness,null);
