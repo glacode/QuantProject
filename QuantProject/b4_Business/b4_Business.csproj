@@ -1,7 +1,7 @@
 <VisualStudioProject>
     <CSHARP
         ProjectType = "Local"
-        ProductVersion = "7.0.9466"
+        ProductVersion = "7.0.9955"
         SchemaVersion = "1.0"
         ProjectGuid = "{6EE31501-376E-491B-869E-F06D5B7C9C30}"
     >
@@ -362,6 +362,11 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "a1_Financial\a2_Accounting\h5_Reporting\SummaryRows\AverageNumberOfTransactionsPerDay.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "a1_Financial\a2_Accounting\h5_Reporting\SummaryRows\AverageShortTradePercentageReturn.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
@@ -583,6 +588,11 @@
                 />
                 <File
                     RelPath = "a1_Financial\a3_Ordering\OrderType.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "a2_Strategies\AccountManager.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
