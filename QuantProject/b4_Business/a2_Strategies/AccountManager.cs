@@ -69,11 +69,11 @@ namespace QuantProject.Business.Strategies
 
 		#region OpenPositions
     static private  void addWeightedPositionToOrderList(WeightedPosition weightedPosition, 
-		                                                    Account account)
+		                                                    Account account, double valueToInvestInPositions)
     {
     	string ticker = weightedPosition.Ticker;
       double cashForSinglePosition = 
-      	account.CashAmount * Math.Abs( weightedPosition.Weight );
+      	valueToInvestInPositions * Math.Abs( weightedPosition.Weight );
       long quantity =
         Convert.ToInt64( Math.Floor( cashForSinglePosition / account.DataStreamer.GetCurrentBid( ticker ) ) );
       Order order = 
@@ -91,8 +91,9 @@ namespace QuantProject.Business.Strategies
     	if(weightedPositions == null || account == null)
 				throw new Exception("Both parameters have to be set to valid objects!");
 			orders.Clear();
+			double valueToInvestInPositions = account.CashAmount;
     	foreach(WeightedPosition weightedPosition in weightedPositions.Values)
-      	addWeightedPositionToOrderList( weightedPosition, account );
+      	addWeightedPositionToOrderList( weightedPosition, account, valueToInvestInPositions );
       foreach(object item in orders)
       	account.AddOrder( (Order)item );
     }
