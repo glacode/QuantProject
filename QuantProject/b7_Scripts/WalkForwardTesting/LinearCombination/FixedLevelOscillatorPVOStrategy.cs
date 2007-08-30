@@ -42,11 +42,11 @@ namespace QuantProject.Scripts.WalkForwardTesting.LinearCombination
 	{
 		   
 		public FixedLevelOscillatorPVOStrategy( Account accountPVO ,
-			                                     WeightedPositions weightedPositions,
+			                                     WeightedPositions chosenWeightedPositions,
                                            double oversoldThreshold,
                                            double overboughtThreshold,
                                            int numDaysForOscillatingPeriod):
-                                          base("", 0, weightedPositions.Count, 0,
+                                          base("", 0, chosenWeightedPositions.Count, 0,
                                           accountPVO,                                
                                           0,0,
                                           "^GSPC",
@@ -64,11 +64,6 @@ namespace QuantProject.Scripts.WalkForwardTesting.LinearCombination
     {
     }
 
-    protected override void marketCloseEventHandler_closePositionsIfNeeded()
-    {
-      
-    }    
-		
     protected override double getCurrentChosenWeightedPositionsValue(IndexBasedEndOfDayTimer timer)
     {
       double returnValue = 999.0;
