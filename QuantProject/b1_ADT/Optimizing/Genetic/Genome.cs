@@ -199,8 +199,15 @@ namespace QuantProject.ADT.Optimizing.Genetic
          geneValue > this.GetMaxValueForGenes(genePosition) )
       	throw new IndexOutOfRangeException("Gene value not valid for the gene at" +
       	                                   " the given position!");
+      if( geneValue != this.GetGeneValue(genePosition) )
+			// if a new value is stored in the given position, then
+			// fitness has to be calculated again, and so meaning
+			{
+				this.hasFitnessBeenAssigned = false;
+				this.meaning = null;
+			}
       
-      this.genes[genePosition] = geneValue;
+			this.genes[genePosition] = geneValue;
       //whenever at least one gene has been written,
 			//the current generation number is stored
       this.generation = this.geneticOptimizer.GenerationCounter;
