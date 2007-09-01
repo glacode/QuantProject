@@ -63,9 +63,8 @@ namespace QuantProject.Business.Strategies
 			{
 				string[] arrayForTickers = new string[ List.Count ];
 				for ( int i = 0 ; i < List.Count ; i++ )
-				{
-					arrayForTickers[ i ] = ((SignedTicker)(List[ i ])).Ticker;
-				}
+//					arrayForTickers[ i ] = ((SignedTicker)(List[ i ])).Ticker;
+					arrayForTickers[ i ] = this[ i ].Ticker;
 				return arrayForTickers;
 			}
 		}
