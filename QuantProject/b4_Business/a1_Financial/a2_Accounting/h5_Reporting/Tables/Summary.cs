@@ -1,5 +1,8 @@
 using System;
 using System.Data;
+using System.Reflection;
+using System.Runtime.Serialization;
+
 using QuantProject.ADT;
 using QuantProject.Business.DataProviders;
 using QuantProject.Business.Financial.Instruments;
@@ -12,7 +15,7 @@ namespace QuantProject.Business.Financial.Accounting.Reporting.Tables
 	/// Summary description for Summary.
 	/// </summary>
   [Serializable]
-  public class Summary : ReportTable
+  public class Summary : ReportTable, ISerializable
   {
     private AccountReport accountReport;
 		private IHistoricalQuoteProvider historicalQuoteProvider;
@@ -43,6 +46,8 @@ namespace QuantProject.Business.Financial.Accounting.Reporting.Tables
 		private NumberWinningPeriods numberWinningPeriods;
 		private NumberLosingPeriods numberLosingPeriods;
 		private PercentageWinningPeriods percentageWinningPeriods;
+		private AverageNumberOfTransactionsPerDay averageNumberOfTransactionsPerDay;
+
 		public AccountReport AccountReport
     {
       get { return accountReport; }
@@ -162,7 +167,10 @@ namespace QuantProject.Business.Financial.Accounting.Reporting.Tables
 		{
 			get { return this.numberWinningShortTrades; }
 		}
-
+		public AverageNumberOfTransactionsPerDay AverageNumberOfTransactionsPerDay
+		{
+			get { return this.averageNumberOfTransactionsPerDay; }
+		}
 
 
 		private void summary( AccountReport accountReport )
@@ -182,6 +190,59 @@ namespace QuantProject.Business.Financial.Accounting.Reporting.Tables
 			this.historicalQuoteProvider = historicalDataProvider;
 			this.summary( accountReport );
 		}
+
+		/// <summary>
+		/// This constructor allows custom deserialization (see the ISerializable
+		/// interface documentation)
+		/// </summary>
+		/// <param name="info"></param>
+		/// <param name="context"></param>
+		protected Summary( SerializationInfo info , StreamingContext context ) :
+							base( "Summary" )
+		{
+			// get the set of serializable members for this class and its base classes
+			Type thisType = this.GetType();
+			MemberInfo[] mi = FormatterServices.GetSerializableMembers(
+				thisType , context);
+
+			// deserialize the fields from the info object
+			for (Int32 i = 0 ; i < mi.Length; i++) 
+			{
+				FieldInfo fieldInfo = (FieldInfo) mi[i];
+
+				// set the field to the deserialized value
+				try
+				{
+					fieldInfo.SetValue( this ,
+						info.GetValue( fieldInfo.Name, fieldInfo.FieldType ) );
+				}
+				catch(Exception ex)
+				{ex = ex;}
+			}
+		}
+
+		#region GetObjectData
+		/// <summary>
+		/// serialize the set of serializable members for this class and base classes
+		/// </summary>
+		/// <param name="info"></param>
+		/// <param name="context"></param>
+		void ISerializable.GetObjectData(
+			SerializationInfo info, StreamingContext context) 
+		{
+			// get the set of serializable members for this class and base classes
+			Type thisType = this.GetType();
+			MemberInfo[] mi = 
+				FormatterServices.GetSerializableMembers( thisType , context);
+
+			// serialize the fields to the info object
+			for (Int32 i = 0 ; i < mi.Length; i++) 
+			{
+				info.AddValue(mi[i].Name, ((FieldInfo) mi[i]).GetValue(this));
+			}
+		}
+		#endregion
+
     #region "getSummary"
     private void getSummaryTable_setColumns( DataTable equityDataTable )
     {
@@ -224,7 +285,8 @@ namespace QuantProject.Business.Financial.Accounting.Reporting.Tables
 			this.totalNumberOfShortTrades = new TotalNumberOfShortTrades( this );
 			this.numberWinningShortTrades = new NumberWinningShortTrades( this );
 			this.totalCommissionAmount = new TotalCommissionAmount( this );
-			//      this.DataTable = getSummaryDataTable();
+			this.averageNumberOfTransactionsPerDay = new AverageNumberOfTransactionsPerDay(this);
+			//this.DataTable = getSummaryDataTable();
     }
 
     #endregion
