@@ -24,27 +24,57 @@ using System;
 namespace QuantProject.Data
 {
 	/// <summary>
-	/// Thrown when needed if an object DataTables.Quotes has no quotes
-	/// for a given TimeFrame
+	/// This kind of exception is intended to be thrown
+	/// when a ticker or an array of ticker 
+	/// doesn't have the expected number of available
+	/// quotes for a given time frame
 	/// </summary>
 	public class MissingQuotesException : Exception
 	{
 		private string ticker;
+		private string[] tickers = null;
 		private DateTime initialDateTime;
 		private DateTime finalDateTime;
+		private string message_getMessageForMissingQuotesForTickers()
+		{
+			string tickersSeparatedBySemicolon = null;
+			foreach (string ticker in this.tickers)
+				tickersSeparatedBySemicolon += ticker + ";" ;
+			return "Not all these tickers: " + 
+						tickersSeparatedBySemicolon + 
+				    " have the same number of " +
+				    "available quotes, " +
+						"between " + this.initialDateTime.ToShortDateString() + 
+						" and " + this.finalDateTime.ToShortDateString();
+		}
 		public override string Message
 		{
 			get
 			{
-				return "No quotes available for ticker " +
-					this.ticker + ", between " + this.initialDateTime.ToShortDateString() + 
-					" and " + this.finalDateTime.ToShortDateString();
+				if( this.tickers == null )
+				//this.tickers has not been set, and so the exception
+				//refers to only one single ticker
+					return "No quotes available for ticker " +
+						this.ticker + ", between " + this.initialDateTime.ToShortDateString() + 
+						" and " + this.finalDateTime.ToShortDateString();
+				else // this.tickers has been set, so the
+						// exception refers to two ore more tickers.
+						// In other words, not all the tickers have the same
+					  // number of quotes for the given period
+					return message_getMessageForMissingQuotesForTickers();
 			}
 		}
 		public MissingQuotesException(
 		         string ticker,DateTime initialDateTime, DateTime finalDateTime )
 		{
 			this.ticker = ticker;
+			this.initialDateTime = initialDateTime;
+			this.finalDateTime = finalDateTime;
+		}
+		public MissingQuotesException(
+		      string[] tickers,DateTime initialDateTime, DateTime finalDateTime )
+		{
+			this.tickers = tickers;
 			this.initialDateTime = initialDateTime;
 			this.finalDateTime = finalDateTime;
 		}
