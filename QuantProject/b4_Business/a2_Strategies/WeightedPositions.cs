@@ -658,12 +658,17 @@ namespace QuantProject.Business.Strategies
       const double initialEquity = 1.0;
       double equityValue = initialEquity;
       Quotes[] tickersQuotes = new Quotes[this.Count];
+      int numberOfQuotesOfPreviousTicker = 0;
       for(int i = 0; i < this.Count; i++)
       {
       	tickersQuotes[i] = new Quotes( this[i].Ticker,startDate, endDate );
-        if(tickersQuotes[i].Rows.Count == 0)
-        //no quotes are available at the given period
-          throw new MissingQuotesException(this[i].Ticker,
+      	if( i == 0 )
+      		numberOfQuotesOfPreviousTicker = tickersQuotes[i].Rows.Count;
+      	else if ( (i > 0 && ( tickersQuotes[i].Rows.Count > numberOfQuotesOfPreviousTicker)) ||
+									 tickersQuotes[i].Rows.Count == 0)
+      	// not all the tickers have the same available n. of quotes
+      	// for the given period or a ticker has no quotes
+          throw new MissingQuotesException(this.SignedTickers.Tickers,
         	       													 startDate, endDate);
       }
       double[] returns = new double[tickersQuotes[0].Rows.Count];
