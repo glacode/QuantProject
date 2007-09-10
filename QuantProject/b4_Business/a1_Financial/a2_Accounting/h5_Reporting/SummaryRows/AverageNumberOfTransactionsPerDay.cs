@@ -39,7 +39,9 @@ namespace QuantProject.Business.Financial.Accounting.Reporting.SummaryRows
 		public AverageNumberOfTransactionsPerDay( Summary summary ) : base( 1 )
 		{
 			this.rowDescription = "Average n. of transactions per day";
-			int totalNumberOfTransactions = summary.AccountReport.Account.Transactions.Count;
+			//int totalNumberOfTransactions = summary.AccountReport.Account.Transactions.Count;
+			//there must be a mistake somewhere: why the previous line is not right?
+			int totalNumberOfTransactions = summary.AccountReport.TransactionTable.DataTable.Rows.Count;
 			TimeSpan timeSpanForScript = 
 			summary.AccountReport.EndDateTime.DateTime.Subtract(summary.AccountReport.StartDateTime);
 			this.rowValue = (double)totalNumberOfTransactions / (double)timeSpanForScript.Days;
