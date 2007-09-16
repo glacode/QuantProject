@@ -40,6 +40,14 @@ namespace QuantProject.Business.DataProviders
 		/// <param name="instrumentKey">instrument identifier</param>
 		/// <param name="endOfDayDateTime">end of day date time for the market evaluation</param>
 		/// <returns></returns>
-    double GetMarketValue( string instrumentKey , EndOfDayDateTime endOfDayDateTime );
+    double GetMarketValue( string instrumentKey ,
+			EndOfDayDateTime endOfDayDateTime );
+		/// <summary>
+		/// Returns the historical market values for the given instrument:
+		/// a quote is returned for every EndOfDayDateTime in
+		/// endOfDayHistory
+		/// </summary>
+		EndOfDayHistory GetEndOfDayQuotes( string ticker ,
+			EndOfDayHistory endOfDayHistory );
 	}
 }
