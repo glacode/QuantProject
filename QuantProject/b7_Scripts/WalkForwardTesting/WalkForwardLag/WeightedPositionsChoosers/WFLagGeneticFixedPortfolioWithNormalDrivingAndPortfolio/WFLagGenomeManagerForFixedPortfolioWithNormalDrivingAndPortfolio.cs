@@ -27,9 +27,11 @@ using System.Data;
 using QuantProject.ADT.Histories;
 using QuantProject.ADT.Optimizing.Genetic;
 using QuantProject.ADT.Statistics;
+using QuantProject.Business.DataProviders;
 using QuantProject.Business.Financial.Accounting;
 using QuantProject.Business.Strategies;
 using QuantProject.Business.Strategies.ReturnsManagement;
+using QuantProject.Business.Strategies.ReturnsManagement.Time;
 using QuantProject.Business.Strategies.EquityEvaluation;
 
 namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag
@@ -47,8 +49,8 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag
 	{
 		private int numberOfDrivingPositions;
 		private SignedTickers portfolioSignedTickers;
-		private History timeLineForOptimization; // this time line goes from
-		// the first optimization date for driving positions to the
+		private ReturnIntervals returnIntervalsForOptimization; // this time line
+		// goes from the first optimization date for driving positions to the
 		// last optimization date; this optimization is meant to be
 		// launched one hour after the last market close
 
@@ -68,7 +70,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag
 
 		private WFLagMeaningForUndecodableGenomes wFLagMeaningForUndecodableGenomes;
 		private string[] tickersForPortfolioPositions;
-		private CloseToCloseReturnsManager closeToCloseReturnsManager;
+		private ReturnsManager closeToCloseReturnsManager;
 
 
 		public int GenomeSize
@@ -99,7 +101,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag
 			int numberOfDrivingPositions ,
 			DataTable eligibleTickersForDrivingWeightedPositions ,
 			SignedTickers portfolioSignedTickers ,
-			History timeLineForOptimization ,
+			ReturnIntervals returnIntervalsForOptimization ,
 			IEquityEvaluator equityEvaluator ,
 			int seedForRandomGenerator )
 
@@ -112,7 +114,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag
 //			this.eligibleTickersForPortfolioWeightedPositions =
 //				eligibleTickersForPortfolioWeightedPositions;
 			this.portfolioSignedTickers = portfolioSignedTickers;
-			this.timeLineForOptimization = timeLineForOptimization;
+			this.returnIntervalsForOptimization = returnIntervalsForOptimization;
 
 //			this.minimumPositionWeight = 0.2;	// TO DO this value should become a constructor parameter
 			
@@ -124,12 +126,11 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag
 //			GenomeManagement.SetRandomGenerator(
 //				11 );
 			GenomeManagement.SetRandomGenerator( seedForRandomGenerator );
-
-//			this.wFLagCandidates = new WFLagCandidates(
-//				this.eligibleTickersForDrivingWeightedPositions ,
-//				this.firstOptimizationDateForDrivingPositions , this.lastOptimizationDate );
+			IHistoricalQuoteProvider historicalQuoteProvider =
+				new HistoricalAdjustedQuoteProvider();
 			this.closeToCloseReturnsManager =
-				new CloseToCloseReturnsManager( this.timeLineForOptimization );
+				new ReturnsManager( this.returnIntervalsForOptimization ,
+				historicalQuoteProvider );
 
 			this.wFLagMeaningForUndecodableGenomes =
 				new WFLagMeaningForUndecodableGenomes();
