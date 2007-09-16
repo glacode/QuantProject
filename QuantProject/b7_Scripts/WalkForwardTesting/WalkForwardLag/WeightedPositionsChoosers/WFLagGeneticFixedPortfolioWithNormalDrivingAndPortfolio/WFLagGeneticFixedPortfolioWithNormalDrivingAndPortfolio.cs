@@ -27,6 +27,7 @@ using QuantProject.ADT.Histories;
 using QuantProject.ADT.Optimizing.Genetic;
 using QuantProject.Business.Strategies;
 using QuantProject.Business.Strategies.EquityEvaluation;
+using QuantProject.Business.Strategies.ReturnsManagement.Time;
 using QuantProject.Business.Timing;
 using QuantProject.Data.DataTables;
 using QuantProject.Scripts.WalkForwardTesting.WalkForwardLag.WFLagDebugger;
@@ -126,15 +127,21 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag.WeightedPositio
 				generationNumberForGeneticOptimizer;
 		}
 		#region setChosenPositions_usingTheGeneticOptimizer
-		private History getTimeLineForOptimization( EndOfDayDateTime now )
+		private ReturnIntervals getReturnIntervals( EndOfDayDateTime now )
 		{
 			DateTime firstInSampleDateForDrivingPositions =
 				now.DateTime.AddDays(
 				-( this.NumberDaysForInSampleOptimization - 1 ) );
 			DateTime lastInSampleOptimizationDate =
 				now.DateTime;
-			return Quotes.GetMarketDays( this.benchmark ,
-				firstInSampleDateForDrivingPositions , lastInSampleOptimizationDate );
+			ReturnIntervals returnIntervals =
+				new CloseToCloseIntervals(
+				new EndOfDayDateTime( firstInSampleDateForDrivingPositions ,
+				EndOfDaySpecificTime.MarketClose ) ,
+				new EndOfDayDateTime( lastInSampleOptimizationDate ,
+				EndOfDaySpecificTime.MarketClose ) ,
+				this.benchmark );
+			return returnIntervals;
 		}
 		private void newGenerationEventHandler(
 			object sender , NewGenerationEventArgs e )
@@ -181,8 +188,8 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag.WeightedPositio
 			WFLagEligibleTickers eligibleTickersForDrivingPositions ,
 			EndOfDayDateTime now )
 		{
-			History timeLineForOptimization =
-				this.getTimeLineForOptimization( now );
+			ReturnIntervals returnIntervals =
+				this.getReturnIntervals( now );
 
 			WFLagGenomeManagerForFixedPortfolioWithNormalDrivingAndPortfolio
 				genomeManager = 
@@ -190,7 +197,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag.WeightedPositio
 				this.numberOfDrivingPositions ,
 				eligibleTickersForDrivingPositions.EligibleTickers ,
 				this.portfolioSignedTickers ,
-				timeLineForOptimization ,
+				returnIntervals ,
 				this.equityEvaluator ,
 				QuantProject.ADT.ConstantsProvider.SeedForRandomGenerator );
 
