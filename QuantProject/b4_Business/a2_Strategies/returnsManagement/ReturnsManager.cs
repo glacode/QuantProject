@@ -26,18 +26,22 @@ using System.Collections;
 using QuantProject.ADT.Collections;
 using QuantProject.ADT.Histories;
 using QuantProject.ADT.Statistics;
+using QuantProject.Business.DataProviders;
+using QuantProject.Business.Strategies.ReturnsManagement.Time;
+using QuantProject.Business.Timing;
 using QuantProject.Data.DataTables;
 
 namespace QuantProject.Business.Strategies.ReturnsManagement
 {
 	/// <summary>
-	/// This abstract class is used to keep and provide, in an efficient
-	/// way, array of returns (to be used by in sample optimizations)
+	/// This class is used to keep and provide, in an efficient
+	/// way, array of returns on EndOfDayIntervals (to be used
+	/// by in sample optimizations)
 	/// </summary>
-	public abstract class ReturnsManager
+	public class ReturnsManager
 	{
-		protected History timeLineForQuotes; // if we have n market days for quotes,
-		// we will then have n-1 returns
+		private ReturnIntervals returnIntervals; // a return for each interval
+		private IHistoricalQuoteProvider historicalQuoteProvider; 
 		
 		private Set tickersMissingQuotes;
 
@@ -45,34 +49,33 @@ namespace QuantProject.Business.Strategies.ReturnsManagement
 		private Hashtable tickersReturnsStandardDeviations;
 
 		/// <summary>
-		/// Dates when quotes are computed. If TimeLine contains
-		/// n elements, then returns are n-1 elements
+		/// End of day intervals on which returns are computed
 		/// </summary>
-		public History TimeLine
+		public ReturnIntervals ReturnIntervals
 		{
-			get { return this.timeLineForQuotes; }
+			get { return this.returnIntervals; }
 		}
 
 		/// <summary>
-		/// Number of returns, that is TimeLine's elements minus 1
+		/// Number of returns, that is number of intervals
 		/// </summary>
 		public int NumberOfReturns
 		{
-			get { return this.TimeLine.Count - 1; }
+			get { return this.returnIntervals.Count; }
 		}
-		protected DateTime firstDateTime
-		{
-			get { return this.timeLineForQuotes.GetDateTime( 0 ); }
-		}
-		protected DateTime lastDateTime
-		{
-			get
-			{
-				int lastIndex = this.timeLineForQuotes.Count - 1;
-				return this.timeLineForQuotes.GetDateTime( lastIndex );
-			}
-		}
-
+//		protected DateTime firstDateTime
+//		{
+//			get { return this.timeLineForQuotes.GetDateTime( 0 ); }
+//		}
+//		protected DateTime lastDateTime
+//		{
+//			get
+//			{
+//				int lastIndex = this.timeLineForQuotes.Count - 1;
+//				return this.timeLineForQuotes.GetDateTime( lastIndex );
+//			}
+//		}
+//
 		/// <summary>
 		/// Abstract class used to store and efficiently provide arrays of
 		/// returns for several tickers, on dates within a given interval
@@ -86,19 +89,21 @@ namespace QuantProject.Business.Strategies.ReturnsManagement
 		/// dates when the benchmark is quoted; if n quotes are given
 		/// for the benchmark, each array of returns will have exactly
 		/// n-1 elements</param>
-		public ReturnsManager( DateTime firstDate , DateTime lastDate ,
-			string benchmark )
+//		public ReturnsManager( DateTime firstDate , DateTime lastDate ,
+//			string benchmark )
+//		{
+//			// TO DO: let WFLagEligibleTickers use this class also!!!
+//			this.timeLineForQuotes =
+//				this.getMarketDaysForQuotes( firstDate , lastDate , benchmark );
+//			this.commonInitialization();
+//		}
+		public ReturnsManager( ReturnIntervals returnIntervals ,
+			IHistoricalQuoteProvider historicalQuoteProvider )
 		{
 			// TO DO: let WFLagEligibleTickers use this class also!!!
-			this.timeLineForQuotes =
-				this.getMarketDaysForQuotes( firstDate , lastDate , benchmark );
+			this.returnIntervals = returnIntervals;
 			this.commonInitialization();
-		}
-		public ReturnsManager( History timeLine )
-		{
-			// TO DO: let WFLagEligibleTickers use this class also!!!
-			this.timeLineForQuotes = timeLine;
-			this.commonInitialization();
+			this.historicalQuoteProvider = historicalQuoteProvider;
 		}
 		private void commonInitialization()
 		{
@@ -116,59 +121,64 @@ namespace QuantProject.Business.Strategies.ReturnsManagement
 
 		private bool isAValidIndexForAReturn( int index )
 		{
-			return ( ( index >= 0 ) && ( index <= this.TimeLine.Count - 2 ) );
+			return ( ( index >= 0 ) &&
+				( index <= this.ReturnIntervals.Count - 1 ) );
 		}
 		#region GetReturns
 		private bool areReturnsAlreadySet( string ticker )
 		{
 			return this.tickersReturns.ContainsKey( ticker );
 		}
-		protected abstract History getQuotes( string ticker );
+//		protected abstract History getQuotes( string ticker );
 		#region setReturns
-		private bool areMarketDaysForQuotesAllCovered( History returns )
+		private float selectReturnWithRespectToTheGivenIterval(
+			EndOfDayHistory endOfDayQuotes , int i )
 		{
-			bool areAllCovered = true;
-			foreach ( DateTime dateTime in this.timeLineForQuotes.TimeLine  )
-				if ( !returns.ContainsKey( dateTime ) )
-					areAllCovered = false;
-			return areAllCovered;
+			ReturnInterval returnInterval =
+				this.returnIntervals[ i ];
+			double firstQuote = (double)endOfDayQuotes[ returnInterval.Begin ];
+			double lastQuote = (double)endOfDayQuotes[ returnInterval.End ];
+			float intervalReturn = Convert.ToSingle( firstQuote / lastQuote - 1 );
+			return intervalReturn;
 		}
-		private float selectReturnWithRespectToTheTimeLine( History quotes ,
-			int i )
-		{
-			float currentQuote = (float)quotes.GetByIndex( i );
-			float nextQuote = (float)quotes.GetByIndex( i + 1 );
-			float currentReturn = nextQuote / currentQuote - 1;
-			return currentReturn;
-		}
-		private float[] selectReturnsWithRespectToTheTimeLine( History quotes )
+		private float[] selectReturnsWithRespectToTheGivenIntervals(
+			EndOfDayHistory endOfDayQuotes )
 		{
 			// TO DO: this method is n log n, it could be implemented to
 			// be have a linear complexity!!!
-			float[] returnsWithRespectToTheTimeLine =
-				new float[ this.timeLineForQuotes.Count - 1 ];
-			for ( int i = 0 ; i < this.timeLineForQuotes.Count - 1 ; i++ )
-				returnsWithRespectToTheTimeLine[ i ] =
-					this.selectReturnWithRespectToTheTimeLine( quotes , i );
-			return returnsWithRespectToTheTimeLine;
+			float[] returnsWithRespectToTheGivenIntervals =
+				new float[ this.returnIntervals.Count ];
+			for ( int i = 0 ; i < this.returnIntervals.Count - 1 ; i++ )
+				returnsWithRespectToTheGivenIntervals[ i ] =
+					this.selectReturnWithRespectToTheGivenIterval( endOfDayQuotes , i );
+			return returnsWithRespectToTheGivenIntervals;
 		}
-		private void setReturnsActually( string ticker , History quotes )
+		private void setReturnsActually( string ticker ,
+			EndOfDayHistory endOfDayQuotes )
 		{
 			float[] arrayOfReturns =
-				this.selectReturnsWithRespectToTheTimeLine( quotes );
+				this.selectReturnsWithRespectToTheGivenIntervals( endOfDayQuotes );
 			this.tickersReturns.Add( ticker , arrayOfReturns );
 		}
-		private void setReturns( string ticker , History quotes )
+		private void setReturns( string ticker ,
+			EndOfDayHistory endOfDayQuotes )
 		{
-			if ( this.areMarketDaysForQuotesAllCovered( quotes ) )
-				this.setReturnsActually( ticker , quotes );
+			if ( this.returnIntervals.AreIntervalBordersAllCoveredBy(
+				endOfDayQuotes ) )
+				this.setReturnsActually( ticker , endOfDayQuotes );
 			else
 				this.tickersMissingQuotes.Add( ticker );
 		}
 		private void setReturns( string ticker )
 		{
-			History quotes = this.getQuotes( ticker );
-			this.setReturns( ticker , quotes );
+//			EndOfDayDateTime firstEndOfDayDateTime =
+//				this.returnIntervals[ 0 ].Begin;
+//			EndOfDayDateTime lastEndOfDayDateTime =
+//				this.returnIntervals.LastEndOfDayDateTime;
+			EndOfDayHistory endOfDayQuotes =
+				this.historicalQuoteProvider.GetEndOfDayQuotes( ticker ,
+				this.returnIntervals.BordersHistory );
+			this.setReturns( ticker , endOfDayQuotes );
 		}
 		#endregion setReturns
 		private float[] getAlreadySetReturns( string ticker )
