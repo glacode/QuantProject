@@ -31,12 +31,12 @@ namespace QuantProject.Business.DataProviders
 	/// Returns historical adjusted quotes
 	/// </summary>
 	[Serializable]
-	public class HistoricalAdjustedQuoteProvider : IHistoricalQuoteProvider
+	public class HistoricalAdjustedQuoteProvider : HistoricalQuoteProvider
 	{
 		public HistoricalAdjustedQuoteProvider()
 		{
 		}
-		public double GetMarketValue( string instrumentKey ,
+		public override double GetMarketValue( string instrumentKey ,
 			EndOfDayDateTime endOfDayDateTime )
 		{
 			return HistoricalDataProvider.GetAdjustedMarketValue( instrumentKey ,

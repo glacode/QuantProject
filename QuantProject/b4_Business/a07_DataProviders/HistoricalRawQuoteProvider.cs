@@ -31,12 +31,12 @@ namespace QuantProject.Business.DataProviders
 	/// Returns historical raw quotes
 	/// </summary>
 	[Serializable]
-  public class HistoricalRawQuoteProvider : IHistoricalQuoteProvider
+  public class HistoricalRawQuoteProvider : HistoricalQuoteProvider
 	{
 		public HistoricalRawQuoteProvider()
 		{
 		}
-		public double GetMarketValue( string instrumentKey ,
+		public override double GetMarketValue( string instrumentKey ,
 			EndOfDayDateTime endOfDayDateTime )
 		{
 			return HistoricalDataProvider.GetRawMarketValue( instrumentKey ,
