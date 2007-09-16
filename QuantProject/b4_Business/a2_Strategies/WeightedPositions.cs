@@ -503,8 +503,8 @@ namespace QuantProject.Business.Strategies
 		private void getReturnCheckParameters( int i ,
 			ReturnsManager returnsManager )
 		{
-			if ( ( i < 0 ) || ( i > returnsManager.TimeLine.Count - 2 ) )
-				throw new Exception( "i is larger than the number of returns" );
+			if ( ( i < 0 ) || ( i > returnsManager.ReturnIntervals.Count - 1 ) )
+				throw new Exception( "i is larger than the max return index" );
 		}
 		private float getTickerReturn( string ticker , int i ,
 			ReturnsManager returnsManager )
@@ -571,7 +571,7 @@ namespace QuantProject.Business.Strategies
 		public float[] GetReturns( ReturnsManager returnsManager )
 		{
 			float[] returns = new float[
-				returnsManager.TimeLine.Count - 1 ];
+				returnsManager.ReturnIntervals.Count ];
 			for ( int i = 0 ; i < returnsManager.NumberOfReturns ; i++ )
 				returns[ i ] = this.GetReturn( i , returnsManager );
 			return returns;
