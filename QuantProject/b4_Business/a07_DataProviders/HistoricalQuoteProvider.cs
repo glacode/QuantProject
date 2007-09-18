@@ -29,6 +29,7 @@ namespace QuantProject.Business.DataProviders
 	/// <summary>
 	/// Abstract base class for historical quotes providers
 	/// </summary>
+	[Serializable]
 	public abstract class HistoricalQuoteProvider : IHistoricalQuoteProvider
 	{
 		public HistoricalQuoteProvider()
