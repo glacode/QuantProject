@@ -138,7 +138,7 @@ namespace QuantProject.Business.Strategies.ReturnsManagement
 				this.returnIntervals[ i ];
 			double firstQuote = (double)endOfDayQuotes[ returnInterval.Begin ];
 			double lastQuote = (double)endOfDayQuotes[ returnInterval.End ];
-			float intervalReturn = Convert.ToSingle( firstQuote / lastQuote - 1 );
+			float intervalReturn = Convert.ToSingle( lastQuote / firstQuote - 1 );
 			return intervalReturn;
 		}
 		private float[] selectReturnsWithRespectToTheGivenIntervals(
