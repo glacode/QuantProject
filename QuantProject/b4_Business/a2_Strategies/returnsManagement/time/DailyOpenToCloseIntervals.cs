@@ -59,7 +59,7 @@ namespace QuantProject.Business.Strategies.ReturnsManagement.Time
 		}
 		private void setIntervals( History marketDaysForBenchmark )
 		{
-			for( int i = 0 ; i < marketDaysForBenchmark.Count - 1 ; i++ )
+			for( int i = 0 ; i < marketDaysForBenchmark.Count ; i++ )
 				this.addInterval( marketDaysForBenchmark , i );
 		}
 		protected override void setIntervals()
