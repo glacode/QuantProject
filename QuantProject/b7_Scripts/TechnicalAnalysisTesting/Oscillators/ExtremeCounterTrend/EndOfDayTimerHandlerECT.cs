@@ -86,6 +86,12 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.ExtremeCount
       this.seedForRandomGenerator = ConstantsProvider.SeedForRandomGenerator;
     }
 	
+    public override void MarketOpenEventHandler(
+      Object sender , EndOfDayTimingEventArgs endOfDayTimingEventArgs )
+    {
+    	;
+    }
+    
 
     #region MarketCloseEventHandler
     

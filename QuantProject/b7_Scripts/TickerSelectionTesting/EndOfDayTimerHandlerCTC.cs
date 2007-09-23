@@ -82,6 +82,11 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
       this.numDaysBetweenEachOptimization = numDaysBetweenEachOptimization;
     }
 	
+    public override void MarketOpenEventHandler(
+      Object sender , EndOfDayTimingEventArgs endOfDayTimingEventArgs )
+    {
+    	;
+    }
 
     #region MarketCloseEventHandler
     

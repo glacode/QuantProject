@@ -67,6 +67,12 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
       this.maxAcceptableCloseToCloseDrawdown = maxAcceptableCloseToCloseDrawdown;
     }
 
+    public override void MarketOpenEventHandler(
+      Object sender , EndOfDayTimingEventArgs endOfDayTimingEventArgs )
+    {
+    	;
+    }
+    
     #region MarketCloseEventHandler
     
    

@@ -79,6 +79,11 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.TrendFollowing.Immediate
       this.seedForRandomGenerator = ConstantsProvider.SeedForRandomGenerator;
     }
 	
+    public override void MarketOpenEventHandler(
+      Object sender , EndOfDayTimingEventArgs endOfDayTimingEventArgs )
+    {
+    	;
+    }
 
     #region MarketCloseEventHandler
     

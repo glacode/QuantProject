@@ -105,6 +105,11 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOs
       this.portfolioHasBeenOversold = false;
     }
 	
+    public override void MarketOpenEventHandler(
+      Object sender , EndOfDayTimingEventArgs endOfDayTimingEventArgs )
+    {
+    	;
+    }
 
     #region MarketCloseEventHandler
     
