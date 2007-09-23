@@ -148,7 +148,7 @@ namespace QuantProject.Business.Strategies.ReturnsManagement
 			// be have a linear complexity!!!
 			float[] returnsWithRespectToTheGivenIntervals =
 				new float[ this.returnIntervals.Count ];
-			for ( int i = 0 ; i < this.returnIntervals.Count - 1 ; i++ )
+			for ( int i = 0 ; i < this.returnIntervals.Count ; i++ )
 				returnsWithRespectToTheGivenIntervals[ i ] =
 					this.selectReturnWithRespectToTheGivenIterval( endOfDayQuotes , i );
 			return returnsWithRespectToTheGivenIntervals;
