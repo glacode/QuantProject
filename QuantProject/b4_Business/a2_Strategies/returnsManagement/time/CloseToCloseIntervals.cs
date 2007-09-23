@@ -32,6 +32,8 @@ namespace QuantProject.Business.Strategies.ReturnsManagement.Time
 	/// </summary>
 	public class CloseToCloseIntervals : ReturnIntervals
 	{
+		private int intervalLength = 1;//default intervals are daily
+		
 		/// <summary>
 		/// Creates the close to close intervals for the given benchmark, from
 		/// the first EndOfDayDateTime to the last EndOfDayDateTime
@@ -43,14 +45,33 @@ namespace QuantProject.Business.Strategies.ReturnsManagement.Time
 			EndOfDayDateTime lastEndOfDayDateTime , string benchmark ) :
 			base( firstEndOfDayDateTime , lastEndOfDayDateTime , benchmark )
 		{
+			
 		}
+		/// <summary>
+		/// Creates the close to close intervals for the given benchmark, from
+		/// the first EndOfDayDateTime to the last EndOfDayDateTime:
+		/// each interval begins at a given market day "i" and ends at
+		/// market day "i + intervalLength"
+		/// </summary>
+		/// <param name="firstEndOfDayDateTime"></param>
+		/// <param name="lastEndOfDayDateTime"></param>
+		/// <param name="benchmark"></param>
+		/// <param name="intervalLength"></param> 
+		public CloseToCloseIntervals( EndOfDayDateTime firstEndOfDayDateTime ,
+			EndOfDayDateTime lastEndOfDayDateTime , 
+			string benchmark , int intervalLength ) :
+			base( firstEndOfDayDateTime , lastEndOfDayDateTime , benchmark )
+		{
+			this.intervalLength = intervalLength;
+		}
+		
 		#region setIntervals
 		private void addInterval( History marketDaysForBenchmark , int i )
 		{
 			DateTime dateTimeForIntervalBegin =
 				(DateTime)marketDaysForBenchmark.GetKey( i );
 			DateTime dateTimeForIntervalEnd =
-				(DateTime)marketDaysForBenchmark.GetKey( i + 1 );
+				(DateTime)marketDaysForBenchmark.GetKey( i + this.intervalLength );
 			ReturnInterval returnInterval = new ReturnInterval(
 				new EndOfDayDateTime( dateTimeForIntervalBegin ,
 				EndOfDaySpecificTime.MarketClose ) ,
@@ -60,7 +81,9 @@ namespace QuantProject.Business.Strategies.ReturnsManagement.Time
 		}
 		private void setIntervals( History marketDaysForBenchmark )
 		{
-			for( int i = 0 ; i < marketDaysForBenchmark.Count - 1 ; i++ )
+			for( int i = 0 ;
+			     i < marketDaysForBenchmark.Count - this.intervalLength;
+			     i = i + this.intervalLength )
 				this.addInterval( marketDaysForBenchmark , i );
 		}
 		protected override void setIntervals()
