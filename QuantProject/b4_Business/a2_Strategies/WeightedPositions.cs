@@ -599,7 +599,7 @@ namespace QuantProject.Business.Strategies
 		{
 			double returnValue = 0.0;
 			for(int i = 0; i<weightedPositionsLastNightReturns.Length; i++)
-				returnValue += weightedPositionsLastNightReturns[i]*((WeightedPosition)this[i]).Weight;
+				returnValue += weightedPositionsLastNightReturns[i] * this[i].Weight;
 			return returnValue;
 		}
 		private float getLastNightReturn_getLastNightReturnForTicker(string ticker,
@@ -624,7 +624,7 @@ namespace QuantProject.Business.Strategies
 			for(int i = 0; i<this.Count; i++)
 				weightedPositionsLastNightReturns[i] = 
 					this.getLastNightReturn_getLastNightReturnForTicker(
-					((WeightedPosition)this[i]).Ticker, lastMarketDay, today );
+						this[i].Ticker, lastMarketDay, today );
 			return getLastNightReturn( weightedPositionsLastNightReturns );
 		}
 				
