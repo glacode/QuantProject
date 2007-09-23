@@ -88,7 +88,9 @@ namespace QuantProject.Business.Strategies
     static public void OpenPositions(WeightedPositions weightedPositions,
                                      Account account)
     {
-    	if(weightedPositions == null || account == null)
+			if(account.CashAmount == 0.0 && account.Transactions.Count == 0)
+				account.AddCash(15000);
+			if(weightedPositions == null || account == null)
 				throw new Exception("Both parameters have to be set to valid objects!");
 			orders.Clear();
 			double valueToInvestInPositions = account.CashAmount;
