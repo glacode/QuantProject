@@ -1,7 +1,7 @@
 <VisualStudioProject>
     <CSHARP
         ProjectType = "Local"
-        ProductVersion = "7.0.9466"
+        ProductVersion = "7.0.9955"
         SchemaVersion = "1.0"
         ProjectGuid = "{6EE31501-376E-491B-869E-F06D5B7C9C30}"
     >
@@ -683,6 +683,21 @@
                 />
                 <File
                     RelPath = "a2_Strategies\returnsManagement\time\CloseToCloseIntervals.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "a2_Strategies\returnsManagement\time\CloseToOpenIntervals.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "a2_Strategies\returnsManagement\time\DailyOpenToCloseIntervals.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "a2_Strategies\returnsManagement\time\OpenToCloseCloseToOpenIntervals.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
