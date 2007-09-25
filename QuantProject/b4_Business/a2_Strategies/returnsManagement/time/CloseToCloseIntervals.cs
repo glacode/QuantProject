@@ -22,7 +22,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 using System;
 
-using QuantProject.ADT.Histories;
 using QuantProject.Business.Timing;
 
 namespace QuantProject.Business.Strategies.ReturnsManagement.Time
@@ -32,7 +31,7 @@ namespace QuantProject.Business.Strategies.ReturnsManagement.Time
 	/// </summary>
 	public class CloseToCloseIntervals : ReturnIntervals
 	{
-		private int intervalLength = 1;//default intervals are daily
+		private int intervalLength;
 		
 		/// <summary>
 		/// Creates the close to close intervals for the given benchmark, from
@@ -45,7 +44,7 @@ namespace QuantProject.Business.Strategies.ReturnsManagement.Time
 			EndOfDayDateTime lastEndOfDayDateTime , string benchmark ) :
 			base( firstEndOfDayDateTime , lastEndOfDayDateTime , benchmark )
 		{
-			
+			this.intervalLength = 1;//default intervals are daily
 		}
 		/// <summary>
 		/// Creates the close to close intervals for the given benchmark, from
@@ -62,16 +61,18 @@ namespace QuantProject.Business.Strategies.ReturnsManagement.Time
 			string benchmark , int intervalLength ) :
 			base( firstEndOfDayDateTime , lastEndOfDayDateTime , benchmark )
 		{
+			if(intervalLength < 1)
+				throw new Exception("Interval length has to be greater than 0!");
 			this.intervalLength = intervalLength;
 		}
 		
 		#region setIntervals
-		private void addInterval( History marketDaysForBenchmark , int i )
+		private void addInterval( int i )
 		{
 			DateTime dateTimeForIntervalBegin =
-				(DateTime)marketDaysForBenchmark.GetKey( i );
+				(DateTime)this.marketDaysForBenchmark.GetKey( i );
 			DateTime dateTimeForIntervalEnd =
-				(DateTime)marketDaysForBenchmark.GetKey( i + this.intervalLength );
+				(DateTime)this.marketDaysForBenchmark.GetKey( i + this.intervalLength );
 			ReturnInterval returnInterval = new ReturnInterval(
 				new EndOfDayDateTime( dateTimeForIntervalBegin ,
 				EndOfDaySpecificTime.MarketClose ) ,
@@ -79,20 +80,14 @@ namespace QuantProject.Business.Strategies.ReturnsManagement.Time
 				EndOfDaySpecificTime.MarketClose ) );
 			this.Add( returnInterval );
 		}
-		private void setIntervals( History marketDaysForBenchmark )
-		{
-			for( int i = 0 ;
-			     i < marketDaysForBenchmark.Count - this.intervalLength;
-			     i = i + this.intervalLength )
-				this.addInterval( marketDaysForBenchmark , i );
-		}
 		protected override void setIntervals()
 		{
-			History marketDaysForBenchmark =
-				QuantProject.Data.DataTables.Quotes.GetMarketDays( this.benchmark ,
-				firstEndOfDayDateTime.DateTime , lastEndOfDayDateTime.DateTime );
-			this.setIntervals( marketDaysForBenchmark );
+			for( int i = 0 ;
+			     i < this.marketDaysForBenchmark.Count - this.intervalLength;
+			     i = i + this.intervalLength )
+				this.addInterval( i );
 		}
+		
 		#endregion setIntervals
 //		private History getTimeLineForOptimization( EndOfDayDateTime now )
 //		{

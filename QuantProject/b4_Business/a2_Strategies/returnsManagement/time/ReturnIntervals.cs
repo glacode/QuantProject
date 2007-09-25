@@ -23,6 +23,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 using System;
 using System.Collections;
 
+using QuantProject.ADT.Histories;
 using QuantProject.Business.Timing;
 
 namespace QuantProject.Business.Strategies.ReturnsManagement.Time
@@ -36,7 +37,7 @@ namespace QuantProject.Business.Strategies.ReturnsManagement.Time
 		protected EndOfDayDateTime firstEndOfDayDateTime;
 		protected EndOfDayDateTime lastEndOfDayDateTime;
 		protected string benchmark;
-
+		protected History marketDaysForBenchmark;
 		private EndOfDayHistory bordersHistory;
 
 		public ReturnInterval this[ int index ]  
@@ -88,9 +89,19 @@ namespace QuantProject.Business.Strategies.ReturnsManagement.Time
 			this.firstEndOfDayDateTime = firstEndOfDayDateTime;
 			this.lastEndOfDayDateTime = lastEndOfDayDateTime;
 			this.benchmark = benchmark;
+			this.setMarketDaysForBenchmark();
 			this.setIntervals();
 		}
+		
+		protected virtual void setMarketDaysForBenchmark()
+		{
+			this.marketDaysForBenchmark =
+				QuantProject.Data.DataTables.Quotes.GetMarketDays( this.benchmark ,
+				firstEndOfDayDateTime.DateTime , lastEndOfDayDateTime.DateTime );
+		}
+		
 		protected abstract void setIntervals();
+		
 		/// <summary>
 		/// True iff for each interval border, there is an EndOfDayDateTime
 		/// value in the history's eod date times that is exactly the same

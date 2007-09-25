@@ -22,7 +22,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 using System;
 
-using QuantProject.ADT.Histories;
 using QuantProject.Business.Timing;
 
 namespace QuantProject.Business.Strategies.ReturnsManagement.Time
@@ -45,12 +44,12 @@ namespace QuantProject.Business.Strategies.ReturnsManagement.Time
 		{
 		}
 		#region setIntervals
-		private void addInterval( History marketDaysForBenchmark , int i )
+		private void addInterval( int i )
 		{
 			DateTime dateTimeForIntervalBegin =
-				(DateTime)marketDaysForBenchmark.GetKey( i );
+				(DateTime)this.marketDaysForBenchmark.GetKey( i );
 			DateTime dateTimeForIntervalEnd = 
-				(DateTime)marketDaysForBenchmark.GetKey( i + 1 );
+				(DateTime)this.marketDaysForBenchmark.GetKey( i + 1 );
 			ReturnInterval returnInterval = new ReturnInterval(
 				new EndOfDayDateTime( dateTimeForIntervalBegin ,
 				EndOfDaySpecificTime.MarketClose ) ,
@@ -58,17 +57,10 @@ namespace QuantProject.Business.Strategies.ReturnsManagement.Time
 				EndOfDaySpecificTime.MarketOpen ) );
 			this.Add( returnInterval );
 		}
-		private void setIntervals( History marketDaysForBenchmark )
-		{
-			for( int i = 0 ; i < marketDaysForBenchmark.Count - 1 ; i++ )
-				this.addInterval( marketDaysForBenchmark , i );
-		}
 		protected override void setIntervals()
 		{
-			History marketDaysForBenchmark =
-				QuantProject.Data.DataTables.Quotes.GetMarketDays( this.benchmark ,
-				firstEndOfDayDateTime.DateTime , lastEndOfDayDateTime.DateTime );
-			this.setIntervals( marketDaysForBenchmark );
+			for( int i = 0 ; i < marketDaysForBenchmark.Count - 1 ; i++ )
+				this.addInterval( i );
 		}
 		#endregion setIntervals
 	}
