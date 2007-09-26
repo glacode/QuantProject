@@ -79,6 +79,22 @@ namespace QuantProject.ADT.Histories
 			return returnValue;
 		}
 
+		/// <summary>
+		/// Returns true iif current history contains all the
+		/// dates contained in the given comparingHistory
+		/// </summary>
+		/// <param name="comparingHistory">Provides the relevant dates to be checked
+		/// in the current History</param>
+		/// <returns></returns>
+		public bool ContainsAllTheDatesIn( History comparingHistory )
+		{
+			bool returnValue = true;
+			foreach ( DateTime dateTime in comparingHistory.Keys )
+				if ( ! this.ContainsKey( dateTime ) )
+					returnValue = false;
+			return returnValue;
+		}
+		
 		public void Interpolate( ICollection dateTimeCollection ,
 			IInterpolationMethod interpolationMethod )
 		{
