@@ -22,7 +22,9 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 using System;
 using System.Data;
+
 using QuantProject.ADT;
+using QuantProject.ADT.Histories;
 using QuantProject.DataAccess.Tables;
 
 
@@ -213,50 +215,102 @@ namespace QuantProject.Data.DataTables
       tableToWhichRowIsToBeAdded.Rows.Add(newRow);
     }
     
+    //new implementation
     public static DataTable GetTickersQuotedInEachMarketDay(string marketIndex, string groupID,
                                                             DateTime firstQuoteDate,
                                                             DateTime lastQuoteDate,
                                                             long maxNumOfReturnedTickers)
     {
-      int marketDaysForTheGivenMarket = 
-                    TickerDataTable.getNumberOfTradingDays(marketIndex, firstQuoteDate, lastQuoteDate);
-      DataTable groupOfTicker = QuantProject.DataAccess.Tables.Tickers_tickerGroups.GetTickers(groupID);
+      History marketDaysForIndex = Quotes.GetMarketDays(marketIndex,
+    	                                                  firstQuoteDate , lastQuoteDate);
+     	DataTable groupOfTicker = QuantProject.DataAccess.Tables.Tickers_tickerGroups.GetTickers(groupID);
       TickerDataTable.addColumnNumberOfQuotes(groupOfTicker);
       QuantProject.Data.DataTables.GroupQuotes tickerQuotes = 
                 new QuantProject.Data.DataTables.GroupQuotes(
                 groupID, firstQuoteDate, lastQuoteDate);
       DataTable returnValue = groupOfTicker.Clone(); 
+      History marketDaysForTicker;
       foreach(DataRow row in groupOfTicker.Rows)
       {
-        if(tickerQuotes.GetNumberOfDaysWithEffectiveTrades((string)row[0]) == marketDaysForTheGivenMarket)
+        marketDaysForTicker = Quotes.GetMarketDays( (string)row[0],
+    	                        firstQuoteDate , lastQuoteDate);
+      	if( marketDaysForTicker.ContainsAllTheDatesIn(marketDaysForIndex) )
         //the current ticker has been effectively traded in each market day
-          TickerDataTable.getTickersQuotedInEachMarketDay_addRow(row, marketDaysForTheGivenMarket,
-                                                                 returnValue);
+          TickerDataTable.getTickersQuotedInEachMarketDay_addRow(
+      			row, marketDaysForTicker.Count, returnValue);
       }
       ExtendedDataTable.DeleteRows(returnValue, maxNumOfReturnedTickers);
       return returnValue;              
-     
     }
-    
+    //new implementation
     public static DataTable GetTickersQuotedInEachMarketDay(string marketIndex, DataTable setOfTickers,
                                                             DateTime firstQuoteDate,
                                                             DateTime lastQuoteDate,
                                                             long maxNumOfReturnedTickers)
     {
-      int marketDaysForTheGivenMarket = 
-        TickerDataTable.getNumberOfTradingDays(marketIndex, firstQuoteDate, lastQuoteDate);
+      History marketDaysForIndex = Quotes.GetMarketDays(marketIndex,
+    	                                                  firstQuoteDate , lastQuoteDate);
       TickerDataTable.addColumnNumberOfQuotes(setOfTickers);
-      DataTable returnValue = setOfTickers.Clone(); 
+      DataTable returnValue = setOfTickers.Clone();
+      History marketDaysForTicker;
       foreach(DataRow row in setOfTickers.Rows)
       {
-        if(QuantProject.DataAccess.Tables.Quotes.GetNumberOfDaysWithEffectiveTrades((string)row[0],firstQuoteDate,lastQuoteDate) == marketDaysForTheGivenMarket)
-          //the current ticker has the same number of quotes as the market index
-          TickerDataTable.getTickersQuotedInEachMarketDay_addRow(row, marketDaysForTheGivenMarket,
-                                                                  returnValue);         
+        marketDaysForTicker = Quotes.GetMarketDays( (string)row[0],
+    	                        firstQuoteDate , lastQuoteDate);
+      	if( marketDaysForTicker.ContainsAllTheDatesIn(marketDaysForIndex) )
+          //the current ticker has been effectively traded in each market day
+          TickerDataTable.getTickersQuotedInEachMarketDay_addRow(
+      			row, marketDaysForTicker.Count, returnValue);         
       }
       ExtendedDataTable.DeleteRows(returnValue, maxNumOfReturnedTickers);
       return returnValue;              
     }
+    
+    //OLD IMPLEMENTATION OF GetTickersQuotedInEachMarketDay
+//    public static DataTable GetTickersQuotedInEachMarketDay(string marketIndex, string groupID,
+//                                                            DateTime firstQuoteDate,
+//                                                            DateTime lastQuoteDate,
+//                                                            long maxNumOfReturnedTickers)
+//    {
+//      int marketDaysForTheGivenMarket = 
+//                    TickerDataTable.getNumberOfTradingDays(marketIndex, firstQuoteDate, lastQuoteDate);
+//      DataTable groupOfTicker = QuantProject.DataAccess.Tables.Tickers_tickerGroups.GetTickers(groupID);
+//      TickerDataTable.addColumnNumberOfQuotes(groupOfTicker);
+//      QuantProject.Data.DataTables.GroupQuotes tickerQuotes = 
+//                new QuantProject.Data.DataTables.GroupQuotes(
+//                groupID, firstQuoteDate, lastQuoteDate);
+//      DataTable returnValue = groupOfTicker.Clone(); 
+//      foreach(DataRow row in groupOfTicker.Rows)
+//      {
+//        if(tickerQuotes.GetNumberOfDaysWithEffectiveTrades((string)row[0]) == marketDaysForTheGivenMarket)
+//        //the current ticker has been effectively traded in each market day
+//          TickerDataTable.getTickersQuotedInEachMarketDay_addRow(row, marketDaysForTheGivenMarket,
+//                                                                 returnValue);
+//      }
+//      ExtendedDataTable.DeleteRows(returnValue, maxNumOfReturnedTickers);
+//      return returnValue;              
+//     
+//    }
+//    
+//    public static DataTable GetTickersQuotedInEachMarketDay(string marketIndex, DataTable setOfTickers,
+//                                                            DateTime firstQuoteDate,
+//                                                            DateTime lastQuoteDate,
+//                                                            long maxNumOfReturnedTickers)
+//    {
+//      int marketDaysForTheGivenMarket = 
+//        TickerDataTable.getNumberOfTradingDays(marketIndex, firstQuoteDate, lastQuoteDate);
+//      TickerDataTable.addColumnNumberOfQuotes(setOfTickers);
+//      DataTable returnValue = setOfTickers.Clone(); 
+//      foreach(DataRow row in setOfTickers.Rows)
+//      {
+//        if(QuantProject.DataAccess.Tables.Quotes.GetNumberOfDaysWithEffectiveTrades((string)row[0],firstQuoteDate,lastQuoteDate) == marketDaysForTheGivenMarket)
+//          //the current ticker has the same number of quotes as the market index
+//          TickerDataTable.getTickersQuotedInEachMarketDay_addRow(row, marketDaysForTheGivenMarket,
+//                                                                  returnValue);         
+//      }
+//      ExtendedDataTable.DeleteRows(returnValue, maxNumOfReturnedTickers);
+//      return returnValue;              
+//    }
 
     private static void getTickersQuotedNotAtEachMarketDay_addRow(DataRow rowToBeAdded,
                                                                   int numberOfTradingDays,
