@@ -31,8 +31,6 @@ namespace QuantProject.Business.Strategies.ReturnsManagement.Time
 	/// </summary>
 	public class CloseToCloseIntervals : ReturnIntervals
 	{
-		private int intervalLength;
-		
 		/// <summary>
 		/// Creates the close to close intervals for the given benchmark, from
 		/// the first EndOfDayDateTime to the last EndOfDayDateTime
@@ -44,7 +42,7 @@ namespace QuantProject.Business.Strategies.ReturnsManagement.Time
 			EndOfDayDateTime lastEndOfDayDateTime , string benchmark ) :
 			base( firstEndOfDayDateTime , lastEndOfDayDateTime , benchmark )
 		{
-			this.intervalLength = 1;//default intervals are daily
+			
 		}
 		/// <summary>
 		/// Creates the close to close intervals for the given benchmark, from
@@ -59,11 +57,10 @@ namespace QuantProject.Business.Strategies.ReturnsManagement.Time
 		public CloseToCloseIntervals( EndOfDayDateTime firstEndOfDayDateTime ,
 			EndOfDayDateTime lastEndOfDayDateTime , 
 			string benchmark , int intervalLength ) :
-			base( firstEndOfDayDateTime , lastEndOfDayDateTime , benchmark )
+			base( firstEndOfDayDateTime , lastEndOfDayDateTime , benchmark ,
+			      intervalLength)
 		{
-			if(intervalLength < 1)
-				throw new Exception("Interval length has to be greater than 0!");
-			this.intervalLength = intervalLength;
+			
 		}
 		
 		#region setIntervals

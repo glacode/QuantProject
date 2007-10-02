@@ -39,6 +39,7 @@ namespace QuantProject.Business.Strategies.ReturnsManagement.Time
 		protected string benchmark;
 		protected History marketDaysForBenchmark;
 		private EndOfDayHistory bordersHistory;
+		protected int intervalLength;
 
 		public ReturnInterval this[ int index ]  
 		{
@@ -76,6 +77,21 @@ namespace QuantProject.Business.Strategies.ReturnsManagement.Time
 				return this.bordersHistory;
 			}
 		}
+		
+		private void returnIntervals_initialize(EndOfDayDateTime firstEndOfDayDateTime ,
+			EndOfDayDateTime lastEndOfDayDateTime , string benchmark,
+			int intervalLength)
+		{
+			if(intervalLength < 1)
+				throw new Exception("Interval length has to be greater than 0!");
+			this.intervalLength = intervalLength;
+			this.firstEndOfDayDateTime = firstEndOfDayDateTime;
+			this.lastEndOfDayDateTime = lastEndOfDayDateTime;
+			this.benchmark = benchmark;
+			this.setMarketDaysForBenchmark();
+			this.setIntervals();
+		}
+
 		/// <summary>
 		/// Creates the proper intervals, for the given benchmark, from
 		/// the first EndOfDayDateTime to the last EndOfDayDateTime
@@ -86,11 +102,24 @@ namespace QuantProject.Business.Strategies.ReturnsManagement.Time
 		public ReturnIntervals( EndOfDayDateTime firstEndOfDayDateTime ,
 			EndOfDayDateTime lastEndOfDayDateTime , string benchmark )
 		{
-			this.firstEndOfDayDateTime = firstEndOfDayDateTime;
-			this.lastEndOfDayDateTime = lastEndOfDayDateTime;
-			this.benchmark = benchmark;
-			this.setMarketDaysForBenchmark();
-			this.setIntervals();
+			this.returnIntervals_initialize( firstEndOfDayDateTime,
+				lastEndOfDayDateTime, benchmark, 1 );//default intervals are daily
+		}
+		
+		/// <summary>
+		/// Creates the proper intervals, for the given benchmark, from
+		/// the first EndOfDayDateTime to the last EndOfDayDateTime
+		/// </summary>
+		/// <param name="firstEndOfDayDateTime"></param>
+		/// <param name="lastEndOfDayDateTime"></param>
+		/// <param name="benchmark"></param>
+		/// <param name="intervalLength"></param> 
+		public ReturnIntervals( EndOfDayDateTime firstEndOfDayDateTime ,
+			EndOfDayDateTime lastEndOfDayDateTime , string benchmark,
+		  int intervalLength)
+		{
+			this.returnIntervals_initialize( firstEndOfDayDateTime,
+				lastEndOfDayDateTime, benchmark, intervalLength );
 		}
 		
 		protected virtual void setMarketDaysForBenchmark()
