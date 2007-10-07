@@ -833,6 +833,11 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "WalkForwardTesting\WalkForwardLag\WFLagMeaningForUndecodableEncoded.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "WalkForwardTesting\WalkForwardLag\WFLagMeaningForUndecodableGenomes.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
@@ -863,7 +868,27 @@
                     BuildAction = "Compile"
                 />
                 <File
-                    RelPath = "WalkForwardTesting\WalkForwardLag\WeightedPositionsChoosers\WFLagBruteForceFixedPortfolioWeightedPositionsChooser.cs"
+                    RelPath = "WalkForwardTesting\WalkForwardLag\WeightedPositionsChoosers\WFLagFitnessEvaluator.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "WalkForwardTesting\WalkForwardLag\WeightedPositionsChoosers\BruteForce\WFLagBruteForceWeightedPositionsChooserForBalancedFixedPortfolioAndBalancedDriving.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "WalkForwardTesting\WalkForwardLag\WeightedPositionsChoosers\Decoding\IWFLagDecoder.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "WalkForwardTesting\WalkForwardLag\WeightedPositionsChoosers\Decoding\WFLagDecoderForFixedPortfolioWithBalancedVolatilityAndDrivingWithBalancedVolatility.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "WalkForwardTesting\WalkForwardLag\WeightedPositionsChoosers\OptimizableParametersManagers\WFLagBruteForceOptimizableParametersManagerForBalancedFixedPortfolioAndBalancedDriving.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
@@ -882,26 +907,7 @@
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
-                <File
-                    RelPath = "WalkForwardTesting\WalkForwardLag\WFLagBruteForceOptimizableItemManager\WFLagBruteForceOptimizableParametersManager.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "WalkForwardTesting\WalkForwardLag\WFLagBruteForceOptimizableItemManager\WFLagFixedPortfolioBruteForceOptimizableParametersManager.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "WalkForwardTesting\WalkForwardLag\WFLagBruteForceOptimizableItemManager\WFLagFixedPortfolioBruteForceOptParamManagerWithNormalizedVolatility.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "WalkForwardTesting\WalkForwardLag\WFLagBruteForceOptimizableItemManager\WFLagFixedPortfolioBruteForceOptParamManagerWithPortfolioNormalizedVolatility.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
+                <Folder RelPath = "WalkForwardTesting\WalkForwardLag\WFLagBruteForceOptimizableItemManager\" />
                 <File
                     RelPath = "WalkForwardTesting\WalkForwardLag\WFLagDebugger\WFLagChosenPositions.cs"
                     SubType = "Code"
