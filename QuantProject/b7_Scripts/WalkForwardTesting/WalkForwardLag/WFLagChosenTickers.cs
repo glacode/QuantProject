@@ -203,78 +203,87 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag
 
 		}
 		#endregion
-		#region setWeightedPositions_usingTheBruteForceOptimizer
-		private void newBruteForceOptimizerProgressEventHandler(
-			object sender , NewProgressEventArgs e )
-		{
-			this.NewProgress( sender , e );
-		}
-		public virtual void setWeightedPositions_usingTheBruteForceOptimizer(
-			WFLagEligibleTickers eligibleTickers )
-		{
-			this.firstOptimizationDate =
-				this.endOfDayTimer.GetCurrentTime().DateTime.AddDays(
-				-( this.inSampleDays - 1 ) );
-			this.lastOptimizationDate =
-				this.endOfDayTimer.GetCurrentTime().DateTime;
-
-			WFLagBruteForceOptimizableParametersManager
-				wFLagBruteForceOptimizableItemManager= 
-				new WFLagBruteForceOptimizableParametersManager(
-				eligibleTickers.EligibleTickers ,
-				eligibleTickers.EligibleTickers ,
-				this.firstOptimizationDate ,
-				this.lastOptimizationDate ,
-				this.numberOfDrivingPositions ,
-				this.numberOfPositionsToBeChosen ,
-				this.equityEvaluator );
-
-			BruteForceOptimizer bruteForceOptimizer = new BruteForceOptimizer(
-				wFLagBruteForceOptimizableItemManager );
-
-			bruteForceOptimizer.NewProgress +=
-				new NewProgressEventHandler(
-				this.newBruteForceOptimizerProgressEventHandler );
-
-			bruteForceOptimizer.Run();
-
-			BruteForceOptimizableParameters bestParameters =
-				bruteForceOptimizer.BestParameters;
-
-			WFLagWeightedPositions wFLagWeightedPositions =
-				( WFLagWeightedPositions )wFLagBruteForceOptimizableItemManager.Decode(
-				bestParameters );
-
-			this.setWeightedPositions( wFLagWeightedPositions );
-		}
-		#endregion
-		#region setWeightedPositions_withFixedPortfolio
+//		#region setWeightedPositions_usingTheBruteForceOptimizer
 //		private void newBruteForceOptimizerProgressEventHandler(
 //			object sender , NewProgressEventArgs e )
 //		{
 //			this.NewProgress( sender , e );
 //		}
-		public virtual void setWeightedPositions_withFixedPortfolio(
-			WFLagEligibleTickers eligibleTickers ,
-			string longPortfolioTicker , string shortPortfolioTicker )
-		{
-			this.firstOptimizationDate =
-				this.endOfDayTimer.GetCurrentTime().DateTime.AddDays(
-				-( this.inSampleDays - 1 ) );
-			this.lastOptimizationDate =
-				this.endOfDayTimer.GetCurrentTime().DateTime;
-
-//			WFLagFixedPortfolioBruteForceOptimizableParametersManager
-//				wFLagFixedPortfolioBruteForceOptimizableParametersManager= 
-//				new WFLagFixedPortfolioBruteForceOptimizableParametersManager(
+//		public virtual void setWeightedPositions_usingTheBruteForceOptimizer(
+//			WFLagEligibleTickers eligibleTickers )
+//		{
+//			this.firstOptimizationDate =
+//				this.endOfDayTimer.GetCurrentTime().DateTime.AddDays(
+//				-( this.inSampleDays - 1 ) );
+//			this.lastOptimizationDate =
+//				this.endOfDayTimer.GetCurrentTime().DateTime;
+//
+//			WFLagBruteForceOptimizableParametersManager
+//				wFLagBruteForceOptimizableItemManager= 
+//				new WFLagBruteForceOptimizableParametersManager(
 //				eligibleTickers.EligibleTickers ,
-//				longPortfolioTicker ,
-//				shortPortfolioTicker ,
+//				eligibleTickers.EligibleTickers ,
 //				this.firstOptimizationDate ,
 //				this.lastOptimizationDate ,
-//				this.numberOfDrivingPositions );
+//				this.numberOfDrivingPositions ,
+//				this.numberOfPositionsToBeChosen ,
+//				this.equityEvaluator );
 //
-//			WFLagFixedPortfolioBruteForceOptParamManagerWithPortfolioNormalizedVolatility
+//			BruteForceOptimizer bruteForceOptimizer = new BruteForceOptimizer(
+//				wFLagBruteForceOptimizableItemManager );
+//
+//			bruteForceOptimizer.NewProgress +=
+//				new NewProgressEventHandler(
+//				this.newBruteForceOptimizerProgressEventHandler );
+//
+//			bruteForceOptimizer.Run();
+//
+//			BruteForceOptimizableParameters bestParameters =
+//				bruteForceOptimizer.BestParameters;
+//
+//			WFLagWeightedPositions wFLagWeightedPositions =
+//				( WFLagWeightedPositions )wFLagBruteForceOptimizableItemManager.Decode(
+//				bestParameters );
+//
+//			this.setWeightedPositions( wFLagWeightedPositions );
+//		}
+//		#endregion
+//		#region setWeightedPositions_withFixedPortfolio
+////		private void newBruteForceOptimizerProgressEventHandler(
+////			object sender , NewProgressEventArgs e )
+////		{
+////			this.NewProgress( sender , e );
+////		}
+//		public virtual void setWeightedPositions_withFixedPortfolio(
+//			WFLagEligibleTickers eligibleTickers ,
+//			string longPortfolioTicker , string shortPortfolioTicker )
+//		{
+//			this.firstOptimizationDate =
+//				this.endOfDayTimer.GetCurrentTime().DateTime.AddDays(
+//				-( this.inSampleDays - 1 ) );
+//			this.lastOptimizationDate =
+//				this.endOfDayTimer.GetCurrentTime().DateTime;
+//
+////			WFLagFixedPortfolioBruteForceOptimizableParametersManager
+////				wFLagFixedPortfolioBruteForceOptimizableParametersManager= 
+////				new WFLagFixedPortfolioBruteForceOptimizableParametersManager(
+////				eligibleTickers.EligibleTickers ,
+////				longPortfolioTicker ,
+////				shortPortfolioTicker ,
+////				this.firstOptimizationDate ,
+////				this.lastOptimizationDate ,
+////				this.numberOfDrivingPositions );
+////
+////			WFLagFixedPortfolioBruteForceOptParamManagerWithPortfolioNormalizedVolatility
+////				wFLagFixedPortfolioBruteForceOptimizableParametersManager= 
+////				new WFLagFixedPortfolioBruteForceOptParamManagerWithNormalizedVolatility(
+////				eligibleTickers.EligibleTickers ,
+////				longPortfolioTicker ,
+////				shortPortfolioTicker ,
+////				this.firstOptimizationDate ,
+////				this.lastOptimizationDate ,
+////				this.numberOfDrivingPositions );
+//			WFLagFixedPortfolioBruteForceOptParamManagerWithNormalizedVolatility
 //				wFLagFixedPortfolioBruteForceOptimizableParametersManager= 
 //				new WFLagFixedPortfolioBruteForceOptParamManagerWithNormalizedVolatility(
 //				eligibleTickers.EligibleTickers ,
@@ -282,52 +291,43 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag
 //				shortPortfolioTicker ,
 //				this.firstOptimizationDate ,
 //				this.lastOptimizationDate ,
-//				this.numberOfDrivingPositions );
-			WFLagFixedPortfolioBruteForceOptParamManagerWithNormalizedVolatility
-				wFLagFixedPortfolioBruteForceOptimizableParametersManager= 
-				new WFLagFixedPortfolioBruteForceOptParamManagerWithNormalizedVolatility(
-				eligibleTickers.EligibleTickers ,
-				longPortfolioTicker ,
-				shortPortfolioTicker ,
-				this.firstOptimizationDate ,
-				this.lastOptimizationDate ,
-				this.numberOfDrivingPositions ,
-				this.equityEvaluator );
-
-			BruteForceOptimizer bruteForceOptimizer = new BruteForceOptimizer(
-				wFLagFixedPortfolioBruteForceOptimizableParametersManager );
-
-			bruteForceOptimizer.NewProgress +=
-				new NewProgressEventHandler(
-				this.newBruteForceOptimizerProgressEventHandler );
-
-			bruteForceOptimizer.Run( 100000 ,
-				wFLagFixedPortfolioBruteForceOptimizableParametersManager.TotalIterations );
-
-			BruteForceOptimizableParameters bestParameters =
-				bruteForceOptimizer.BestParameters;
-
-			WFLagWeightedPositions wFLagWeightedPositions =
-				( WFLagWeightedPositions )wFLagFixedPortfolioBruteForceOptimizableParametersManager.Decode(
-				bestParameters );
-
-			this.setWeightedPositions( wFLagWeightedPositions );
-		}
-		#endregion
-		public virtual void SetWeightedPositions(
-			WFLagEligibleTickers eligibleTickers )
-		{
-//			this.setWeightedPositions_usingTheGeneticOptimizer(
-//				eligibleTickers );
-//			this.setWeightedPositions_usingTheBruteForceOptimizer(
-//				eligibleTickers );
-			this.setWeightedPositions_withFixedPortfolio(
-				eligibleTickers , "SPY" , "IWM" );
+//				this.numberOfDrivingPositions ,
+//				this.equityEvaluator );
+//
+//			BruteForceOptimizer bruteForceOptimizer = new BruteForceOptimizer(
+//				wFLagFixedPortfolioBruteForceOptimizableParametersManager );
+//
+//			bruteForceOptimizer.NewProgress +=
+//				new NewProgressEventHandler(
+//				this.newBruteForceOptimizerProgressEventHandler );
+//
+//			bruteForceOptimizer.Run( 100000 ,
+//				wFLagFixedPortfolioBruteForceOptimizableParametersManager.TotalIterations );
+//
+//			BruteForceOptimizableParameters bestParameters =
+//				bruteForceOptimizer.BestParameters;
+//
+//			WFLagWeightedPositions wFLagWeightedPositions =
+//				( WFLagWeightedPositions )wFLagFixedPortfolioBruteForceOptimizableParametersManager.Decode(
+//				bestParameters );
+//
+//			this.setWeightedPositions( wFLagWeightedPositions );
+//		}
+//		#endregion
+//		public virtual void SetWeightedPositions(
+//			WFLagEligibleTickers eligibleTickers )
+//		{
+////			this.setWeightedPositions_usingTheGeneticOptimizer(
+////				eligibleTickers );
+////			this.setWeightedPositions_usingTheBruteForceOptimizer(
+////				eligibleTickers );
 //			this.setWeightedPositions_withFixedPortfolio(
-//				eligibleTickers , "XLF" , "SMH" );
-//			this.setWeightedPositions_withFixedPortfolio(
-//				eligibleTickers , "QQQQ" , "SPY" );
-		}
+//				eligibleTickers , "SPY" , "IWM" );
+////			this.setWeightedPositions_withFixedPortfolio(
+////				eligibleTickers , "XLF" , "SMH" );
+////			this.setWeightedPositions_withFixedPortfolio(
+////				eligibleTickers , "QQQQ" , "SPY" );
+//		}
 		#endregion
 	}
 }
