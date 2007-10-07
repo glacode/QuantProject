@@ -178,14 +178,14 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag
 				bestGenomeForSingleGeneration + "\t; bestForMultiple:\t" +
 				bestGenomeForMultipleGenerations );
 		}
-		public override void SetWeightedPositions(
-									WFLagEligibleTickers eligibleTickers )
-		{
-			for ( int i=10 ; i<80 ; i++ )
-				this.setWeightedPositions( eligibleTickers , i );
-			System.Windows.Forms.MessageBox.Show(
-				"Test is complete! Check the console output." );
-		}
+//		public override void SetWeightedPositions(
+//									WFLagEligibleTickers eligibleTickers )
+//		{
+//			for ( int i=10 ; i<80 ; i++ )
+//				this.setWeightedPositions( eligibleTickers , i );
+//			System.Windows.Forms.MessageBox.Show(
+//				"Test is complete! Check the console output." );
+//		}
 		#endregion
 	}
 }
