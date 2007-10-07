@@ -108,7 +108,6 @@ namespace QuantProject.Business.Strategies.ReturnsManagement
 		private void commonInitialization()
 		{
 			this.tickersMissingQuotes = new Set();
-
 			this.tickersReturns = new Hashtable();
 			this.tickersReturnsStandardDeviations = new Hashtable();
 		}
@@ -171,10 +170,6 @@ namespace QuantProject.Business.Strategies.ReturnsManagement
 		}
 		private void setReturns( string ticker )
 		{
-//			EndOfDayDateTime firstEndOfDayDateTime =
-//				this.returnIntervals[ 0 ].Begin;
-//			EndOfDayDateTime lastEndOfDayDateTime =
-//				this.returnIntervals.LastEndOfDayDateTime;
 			EndOfDayHistory endOfDayQuotes =
 				this.historicalQuoteProvider.GetEndOfDayQuotes( ticker ,
 				this.returnIntervals.BordersHistory );
@@ -188,9 +183,12 @@ namespace QuantProject.Business.Strategies.ReturnsManagement
 		public float[] GetReturns( string ticker )
 		{
 			if ( !this.areReturnsAlreadySet( ticker ) )
-				// returns for this tickerhave not been set yet
+			{
+				// returns for this ticker have not been set yet
 				this.setReturns( ticker );
-			return this.getAlreadySetReturns( ticker );
+			}			
+			float[] setReturns = this.getAlreadySetReturns( ticker );
+			return setReturns;
 		}
 		#endregion GetReturns
 		#region GetReturn
@@ -217,7 +215,9 @@ namespace QuantProject.Business.Strategies.ReturnsManagement
 		public float GetReturn( string ticker , int returnIndex )
 		{
 			this.getReturnCheckParameters( ticker , returnIndex );
-			return this.getReturnActually( ticker , returnIndex );
+			float actualReturn =
+				this.getReturnActually( ticker , returnIndex );
+			return actualReturn;
 		}
 		#endregion GetReturn
 
