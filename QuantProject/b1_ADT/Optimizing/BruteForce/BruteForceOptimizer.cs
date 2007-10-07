@@ -80,10 +80,10 @@ namespace QuantProject.ADT.Optimizing.BruteForce
 				(BruteForceOptimizableParameters)this.bruteForceOptimizableParametersManager.Current;
 			while( this.bruteForceOptimizableParametersManager.MoveNext() )
 			{
-				BruteForceOptimizableParameters bruteForceOptimizableParameter =
+				BruteForceOptimizableParameters bruteForceOptimizableParameters =
 					(BruteForceOptimizableParameters)this.bruteForceOptimizableParametersManager.Current;
-				if ( this.bestParameters.Fitness < bruteForceOptimizableParameter.Fitness )
-					this.bestParameters = bruteForceOptimizableParameter;
+				if ( this.bestParameters.Fitness < bruteForceOptimizableParameters.Fitness )
+					this.bestParameters = bruteForceOptimizableParameters;
 				this.handleProgress();
 			}
 		}
