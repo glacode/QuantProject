@@ -32,7 +32,7 @@ using QuantProject.Scripts.WalkForwardTesting.WalkForwardLag;
 namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag.WFLagDebugger
 {
 	/// <summary>
-	/// Creates a copy of the relevant data for the WFLagChosenTickers object
+	/// Data to be logged (out of sample) for each new optimization
 	/// </summary>
 	[Serializable]
 	public class WFLagChosenPositions : ISerializable
@@ -92,27 +92,47 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag.WFLagDebugger
 			this.portfolioWeightedPositions = wFLagChosenTickers.PortfolioWeightedPositions;
 			this.lastOptimizationDate = lastOptimizationDate;
 		}
+		/// <summary>
+		/// Data to be logged (out of sample) for each new optimization
+		/// </summary>
+		/// <param name="wFLagWeightedPositions">driving and portfolio
+		/// positions chosen</param>
+		/// <param name="generationWhenTheBestGenomeWasFound">generation when the
+		/// genetic optimizer found the best genome. This parameter is meaningless
+		/// if the optimizer does not use generations</param>
+		/// <param name="lastOptimizationDate"></param>
 		public WFLagChosenPositions( WFLagWeightedPositions wFLagWeightedPositions ,
+			int generationWhenTheBestGenomeWasFound ,
 			DateTime lastOptimizationDate )
 		{
 			//			this.drivingPositions =
 			//				this.copy( wFLagChosenTickers.DrivingWeightedPositions );
 			//			this.portfolioPositions =
 			//				this.copy( wFLagChosenTickers.PortfolioWeightedPositions );
-			this.drivingWeightedPositions = wFLagWeightedPositions.DrivingWeightedPositions;
-			this.portfolioWeightedPositions = wFLagWeightedPositions.PortfolioWeightedPositions;
-			this.lastOptimizationDate = lastOptimizationDate;
+			this.initialize( wFLagWeightedPositions.DrivingWeightedPositions ,
+				wFLagWeightedPositions.PortfolioWeightedPositions ,
+				generationWhenTheBestGenomeWasFound , lastOptimizationDate );
 		}
 
 		public WFLagChosenPositions( WeightedPositions drivingWeightedPositions ,
 			WeightedPositions portfolioWeightedPositions , DateTime lastOptimizationDate )
 		{
-			//			this.drivingPositions =
-			//				this.copy( wFLagChosenTickers.DrivingWeightedPositions );
-			//			this.portfolioPositions =
-			//				this.copy( wFLagChosenTickers.PortfolioWeightedPositions );
-			this.drivingWeightedPositions = drivingWeightedPositions;
-			this.portfolioWeightedPositions = portfolioWeightedPositions;
+			// -1 is used because the optimizer was not genetic, so there is
+			// no generation number to log
+			this.initialize( drivingWeightedPositions ,
+				portfolioWeightedPositions ,
+				-1 , lastOptimizationDate );
+		}
+		private void initialize( WeightedPositions drivingWeightedPositions ,
+			WeightedPositions portfolioWeightedPositions ,
+			int generationWhenTheBestGenomeWasFound ,
+			DateTime lastOptimizationDate )
+		{
+			this.drivingWeightedPositions =
+				drivingWeightedPositions;
+			this.portfolioWeightedPositions =
+				portfolioWeightedPositions;
+			this.generation = generationWhenTheBestGenomeWasFound;
 			this.lastOptimizationDate = lastOptimizationDate;
 		}
 

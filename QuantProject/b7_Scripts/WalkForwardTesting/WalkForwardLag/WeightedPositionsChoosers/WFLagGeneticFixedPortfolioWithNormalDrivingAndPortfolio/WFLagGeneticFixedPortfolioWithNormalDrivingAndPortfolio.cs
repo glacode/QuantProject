@@ -177,7 +177,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag.WeightedPositio
 				genomeManager , genome );
 			this.wFLagChosenPositions =
 				new WFLagChosenPositions(
-				wFLagWeightedPositions , now.DateTime );
+				wFLagWeightedPositions , genome.Generation , now.DateTime );
 //			this.setWeightedPositions( wFLagWeightedPositions );
 			//			this.drivingWeightedPositions =
 			//				wFLagWeightedPositions.DrivingWeightedPositions;
