@@ -393,23 +393,25 @@ namespace QuantProject.Business.Strategies
 		}
 		#endregion
 		#region GetBalancedWeights
-		private static float[][] getTickerCloseToCloseReturnsForSignedTickers(
-			string[] signedTickers , DateTime firstDate , DateTime lastDate )
-		{
-			float[][] tickerReturns = new float[ signedTickers.Length ][];
-			for ( int i = 0 ;	i < signedTickers.Length ; i++ )
-			{
-				string ticker = SignedTicker.GetTicker( signedTickers[ i ] );
-				tickerReturns[ i ] = Quotes.GetArrayOfCloseToCloseRatios(
-					ticker , firstDate , lastDate );
-			}
-			return tickerReturns;
-		}
+//		private static float[][] getTickerCloseToCloseReturnsForSignedTickers(
+//			string[] signedTickers , DateTime firstDate , DateTime lastDate )
+//		{
+//			float[][] tickerReturns = new float[ signedTickers.Length ][];
+//			for ( int i = 0 ;	i < signedTickers.Length ; i++ )
+//			{
+//				string ticker = SignedTicker.GetTicker( signedTickers[ i ] );
+//				tickerReturns[ i ] = Quotes.GetArrayOfCloseToCloseRatios(
+//					ticker , firstDate , lastDate );
+//			}
+//			return tickerReturns;
+//		}
 		private static float getTickerReturnsStandardDeviations( int tickerIndex ,
 			SignedTickers signedTickers , ReturnsManager returnsManager )
 		{
 			string ticker = signedTickers[ tickerIndex ].Ticker;
-			return returnsManager.GetReturnsStandardDeviation( ticker );
+			float returnsStandardDeviation =
+				returnsManager.GetReturnsStandardDeviation( ticker );
+			return returnsStandardDeviation;
 		}
 		private static float[] getTickersReturnsStandardDeviations(
 			SignedTickers signedTickers , ReturnsManager returnsManager )
@@ -518,28 +520,6 @@ namespace QuantProject.Business.Strategies
 				i , returnsManager );
 			return tickerReturn * Convert.ToSingle( weightedPosition.Weight );
 
-
-//			int numberOfWeightedPositions = weightedPositions.Count;
-//			string[] tickers = this.getTickers( weightedPositions );
-//			float[] multipliers = this.getMultipliers( weightedPositions );
-//			// arrays of close to close returns, one for each signed ticker
-//			float[][] tickersReturns =
-//				this.wFLagCandidates.GetTickersReturns( tickers );
-//			Aggiungi!!! weightedPositions.GetReturns( this.closeToCloseReturnsManager )
-//								double[] linearCombinationReturns =
-//									new double[ tickersReturns[ 0 ].Length ];
-//			for( int i = 0; i < linearCombinationReturns.Length ; i++ )
-//				// computes linearCombinationReturns[ i ]
-//			{
-//				linearCombinationReturns[ i ] = 0;
-//				for ( int j=0 ; j < weightedPositions.Count ; j++ )
-//				{
-//					double weightedPositionReturn =
-//						tickersReturns[ j ][ i ] * multipliers[ j ];
-//					linearCombinationReturns[ i ] += weightedPositionReturn;
-//				}
-//			}
-//			return linearCombinationReturns;
 		}
 		private float getReturnActually( int i , ReturnsManager returnsManager )
 		{
@@ -559,7 +539,8 @@ namespace QuantProject.Business.Strategies
 		public float GetReturn( int i , ReturnsManager returnsManager )
 		{
 			this.getReturnCheckParameters( i , returnsManager );
-			return getReturnActually( i , returnsManager );
+			float currentReturn = this.getReturnActually( i , returnsManager );
+			return currentReturn;
 		}
 		#endregion GetReturn
 		/// <summary>
@@ -572,8 +553,29 @@ namespace QuantProject.Business.Strategies
 		{
 			float[] returns = new float[
 				returnsManager.ReturnIntervals.Count ];
-			for ( int i = 0 ; i < returnsManager.NumberOfReturns ; i++ )
-				returns[ i ] = this.GetReturn( i , returnsManager );
+
+
+			// weights[] is set to avoid several double to float conversions
+			float[] weights = new float[ this.Count ];
+			float[][] tickersReturns = new float[ this.Count ][];
+			for ( int positionIndex = 0 ; positionIndex < this.Count ; positionIndex++ )
+			{
+				weights[ positionIndex ] =
+					Convert.ToSingle( ((WeightedPosition)(this[ positionIndex ])).Weight );
+				tickersReturns[ positionIndex ] = returnsManager.GetReturns(
+					((WeightedPosition)(this[ positionIndex ])).Ticker );
+			}
+
+			for ( int intervalIndex = 0 ;
+				intervalIndex < returnsManager.NumberOfReturns ; intervalIndex++ )
+			{
+				returns[ intervalIndex ] = 0;
+				for ( int positionIndex = 0 ; positionIndex < this.Count ;
+					positionIndex++ )
+					returns[ intervalIndex ] +=
+						tickersReturns[ positionIndex ][ intervalIndex ] *
+						weights[ positionIndex ];
+			}
 			return returns;
 		}
 		/// <summary>
