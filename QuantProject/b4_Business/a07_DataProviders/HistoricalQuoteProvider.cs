@@ -47,8 +47,10 @@ namespace QuantProject.Business.DataProviders
 		public bool WasExchanged( string ticker ,
 			EndOfDayDateTime endOfDayDateTime )
 		{
-			return QuantProject.Data.DataProviders.HistoricalDataProvider.WasExchanged(
+			bool wasExchanged =
+				QuantProject.Data.DataProviders.HistoricalDataProvider.WasExchanged(
 				ticker , endOfDayDateTime.GetNearestExtendedDateTime() );
+			return wasExchanged;
 		}
 		#region GetEndOfDayQuotes
 		private void addQuoteActually( string ticker ,
@@ -65,8 +67,10 @@ namespace QuantProject.Business.DataProviders
 			EndOfDayDateTime currentEndOfDayDateTime =
 				(EndOfDayDateTime)endOfDayHistory.GetByIndex( historyIndex );
 			if ( this.WasExchanged( ticker , currentEndOfDayDateTime ) )
+			{
 				this.addQuoteActually( ticker , currentEndOfDayDateTime ,
 					endOfDayQuotes );
+			}
 			else
 				throw new Exception( "The ticker " + ticker + " is not " +
 					"exchanged at the following end of day date time: " +

@@ -39,8 +39,10 @@ namespace QuantProject.Business.DataProviders
 		public override double GetMarketValue( string instrumentKey ,
 			EndOfDayDateTime endOfDayDateTime )
 		{
-			return HistoricalDataProvider.GetAdjustedMarketValue( instrumentKey ,
+			double marketValue =
+				HistoricalDataProvider.GetAdjustedMarketValue( instrumentKey ,
 				endOfDayDateTime.GetNearestExtendedDateTime() );
+			return marketValue;
 		}
 	}
 }
