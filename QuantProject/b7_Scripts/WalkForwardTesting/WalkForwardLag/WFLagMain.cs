@@ -29,6 +29,7 @@ using System.Windows.Forms;
 using QuantProject.Business.Strategies;
 using QuantProject.Presentation;
 using QuantProject.Scripts.WalkForwardTesting.WalkForwardLag.WeightedPositionsChoosers;
+using QuantProject.Scripts.WalkForwardTesting.WalkForwardLag.WeightedPositionsChoosers.Decoding;
 using QuantProject.Scripts.WalkForwardTesting.WalkForwardLag.WFLagDebugger;
 
 namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag
@@ -138,29 +139,33 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag
 			// XLF vs SMH
 			// QQQQ vs SPY
 			IWFLagWeightedPositionsChooser wFLagWeightedPositionsChooser =
-				new WFLagBruteForceFixedPortfolioWeightedPositionsChooser(
-				4 , new string[]{ "IWM" , "-SPY" } , 100 , "EWQ" ,
-				new QuantProject.Business.Strategies.EquityEvaluation.WinningPeriods() );
-			wFLagWeightedPositionsChooser =
+//				new WFLagBruteForceFixedPortfolioWeightedPositionsChooser(
+//				4 , new string[]{ "IWM" , "-SPY" } , 100 , "EWQ" ,
+//				new QuantProject.Business.Strategies.EquityEvaluation.WinningPeriods() );
+//			wFLagWeightedPositionsChooser =
 				new WFLagGeneticFixedPortfolioWithNormalDrivingAndPortfolio(
 				4 , new SignedTickers( "IWM;-SPY" ) , 100 , "EWQ" ,
 				new QuantProject.Business.Strategies.EquityEvaluation.WinningPeriods() ,
 				10000 , 30 );
+//			wFLagWeightedPositionsChooser =
+//				new WFLagGeneticFixedPortfolioWithNormalDrivingAndPortfolio(
+//				4 , new SignedTickers( "IWM;-SPY" ) , 100 , "EWQ" ,
+//				new QuantProject.Business.Strategies.EquityEvaluation.SharpeRatio() ,
+//				10000 , 30 );
 			wFLagWeightedPositionsChooser =
-				new WFLagGeneticFixedPortfolioWithNormalDrivingAndPortfolio(
-				4 , new SignedTickers( "IWM;-SPY" ) , 100 , "EWQ" ,
-				new QuantProject.Business.Strategies.EquityEvaluation.SharpeRatio() ,
-				10000 , 30 );
-			wFLagWeightedPositionsChooser =
-				new WFLagGeneticFixedPortfolioWithNormalDrivingAndPortfolio(
-				4 , new SignedTickers( "IWM;-SPY" ) , 100 , "EWQ" ,
-				new QuantProject.Business.Strategies.EquityEvaluation.ExpectancyScore() ,
-				10000 , 30 );
+				new WFLagBruteForceWeightedPositionsChooserForBalancedFixedPortfolioAndBalancedDriving(
+				3 , new SignedTickers( "IWM;-SPY" ) , 100 , "EWQ" ,
+				new QuantProject.Business.Strategies.EquityEvaluation.SharpeRatio() );
+//			new RunWalkForwardLag( "DrvPstns" , 200 ,
+//				wFLagWeightedPositionsChooser ,	7 ,
+//				new DateTime( 2001 , 1 , 1 ) ,
+//				new DateTime( 2001 , 1 , 8 ) ,
+//				0.5 ).Run();
 			new RunWalkForwardLag( "DrvPstns" , 200 ,
 				wFLagWeightedPositionsChooser ,	7 ,
-				new DateTime( 2001 , 1 , 1 ) ,
-				new DateTime( 2001 , 1 , 19 ) ,
-				0.5 ).Run();
+				new DateTime( 2001 , 1 , 4 ) ,
+				new DateTime( 2001 , 1 , 9 ) ,
+				0.2 ).Run();
 
 //			new RunWalkForwardLag( "DrvPstns" , 500 ,
 //				4 , 2 , 365 , 13 , 9 , 100 , "EWQ" ,
