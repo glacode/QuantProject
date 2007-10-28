@@ -1,5 +1,7 @@
-﻿Microsoft Visual Studio Solution File, Format Version 9.00
-# SharpDevelop 2.0.0.1462
+﻿
+Microsoft Visual Studio Solution File, Format Version 9.00
+# Visual Studio 2005
+# SharpDevelop 2.2.1.2648
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "b1_ADT", "b1_ADT\ADT_SD.csproj", "{6A426DC3-013E-4D38-A1AE-7BE128BF2DD7}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "b2_DataAccess", "b2_DataAccess\DataAccess_SD.csproj", "{3D38C64D-1118-4C16-A88E-5F2FFD6481BA}"

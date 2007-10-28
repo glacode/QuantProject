@@ -37,6 +37,10 @@
     <FileAlignment>4096</FileAlignment>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Interop.Excel">
+      <HintPath>..\..\Interop.Excel.dll</HintPath>
+      <SpecificVersion>False</SpecificVersion>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
@@ -46,10 +50,6 @@
       <HintPath>..\..\Interop.VBIDE.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Interop.Excel">
-      <HintPath>..\..\Interop.Excel.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
     <Reference Include="Interop.Office">
       <HintPath>..\..\Interop.Office.dll</HintPath>
       <Private>True</Private>
@@ -57,6 +57,15 @@
     <Reference Include="System.Runtime.Serialization.Formatters.Soap" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="a05_Timing\EndOfDayHistory.cs" />
+    <Compile Include="a07_DataProviders\HistoricalQuoteProvider.cs" />
+    <Compile Include="a1_Financial\a2_Accounting\h5_Reporting\SummaryRows\AverageNumberOfTransactionsPerDay.cs" />
+    <Compile Include="a2_Strategies\returnsManagement\time\CloseToCloseIntervals.cs" />
+    <Compile Include="a2_Strategies\returnsManagement\time\CloseToOpenIntervals.cs" />
+    <Compile Include="a2_Strategies\returnsManagement\time\DailyOpenToCloseIntervals.cs" />
+    <Compile Include="a2_Strategies\returnsManagement\time\OpenToCloseCloseToOpenIntervals.cs" />
+    <Compile Include="a2_Strategies\returnsManagement\time\ReturnInterval.cs" />
+    <Compile Include="a2_Strategies\returnsManagement\time\ReturnIntervals.cs" />
     <Compile Include="AssemblyInfo.cs" />
     <Compile Include="a0_Validation\IValidator.cs" />
     <Compile Include="a0_Validation\SospiciousDataRowEventArgs.cs" />
@@ -162,7 +171,6 @@
     <Compile Include="a2_Strategies\WeightedPosition.cs" />
     <Compile Include="a2_Strategies\EquityEvaluation\IEquityEvaluator.cs" />
     <Compile Include="a2_Strategies\EquityEvaluation\WinningPeriods.cs" />
-    <Compile Include="a2_Strategies\returnsManagement\CloseToCloseReturnsManager.cs" />
     <Compile Include="a2_Strategies\returnsManagement\ReturnsManager.cs" />
     <Compile Include="a2_Strategies\SignedTickers.cs" />
     <Compile Include="a2_Strategies\AccountStrategy.cs" />
@@ -170,6 +178,12 @@
     <Compile Include="a2_Strategies\WeightedPositions.cs" />
     <Compile Include="a2_Strategies\EquityEvaluation\ExpectancyScore.cs" />
     <Compile Include="a2_Strategies\EquityEvaluation\SharpeRatio.cs" />
+    <None Include="a2_Strategies\returnsManagement\time\CVS\Entries" />
+    <None Include="a2_Strategies\returnsManagement\time\CVS\Entries.Extra" />
+    <None Include="a2_Strategies\returnsManagement\time\CVS\Entries.Extra.Old" />
+    <None Include="a2_Strategies\returnsManagement\time\CVS\Entries.Old" />
+    <None Include="a2_Strategies\returnsManagement\time\CVS\Repository" />
+    <None Include="a2_Strategies\returnsManagement\time\CVS\Root" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\b1_ADT\ADT_SD.csproj">
@@ -186,6 +200,8 @@
     </ProjectReference>
     <Folder Include="a2_Strategies\EquityEvaluation" />
     <Folder Include="a2_Strategies\returnsManagement" />
+    <Folder Include="a2_Strategies\returnsManagement\time" />
+    <Folder Include="a2_Strategies\returnsManagement\time\CVS" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.Targets" />
 </Project>
