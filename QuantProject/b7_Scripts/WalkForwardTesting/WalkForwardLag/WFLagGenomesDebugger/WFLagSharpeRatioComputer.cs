@@ -95,28 +95,28 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag.WFLagDebugger
 			return strategyReturns;
 		}
 		private static SortedList getCommonMarketDays(
-			WFLagChosenPositions wFLagChosenPositions ,
+			WFLagWeightedPositions wFLagWeightedPositions ,
 			DateTime firstDate , DateTime lastDate )
 		{
 			string[] tickers =
 				WFLagChosenPositionsDebugInfo.GetDrivingAndPortfolioTickers(
-				wFLagChosenPositions );
+				wFLagWeightedPositions );
 			SortedList commonMarketDays =
 				QuantProject.Data.DataTables.Quotes.GetCommonMarketDays(
 				tickers , firstDate , lastDate );
 			return commonMarketDays;
 		}
 		private static double[] getStrategyReturns(
-			WFLagChosenPositions wFLagChosenPositions ,
+			WFLagWeightedPositions wFLagWeightedPositions ,
 			DateTime firstDate , DateTime lastDate )
 		{
 			SortedList commonMarketDays =
-				getCommonMarketDays( wFLagChosenPositions , firstDate , lastDate );
+				getCommonMarketDays( wFLagWeightedPositions , firstDate , lastDate );
 			double[] drivingPositionsReturns =
-				wFLagChosenPositions.DrivingWeightedPositions.GetCloseToClosePortfolioReturns(
+				wFLagWeightedPositions.DrivingWeightedPositions.GetCloseToClosePortfolioReturns(
 				commonMarketDays );
 			double[] portfolioPositionsReturns =
-				wFLagChosenPositions.PortfolioWeightedPositions.GetCloseToClosePortfolioReturns(
+				wFLagWeightedPositions.PortfolioWeightedPositions.GetCloseToClosePortfolioReturns(
 				commonMarketDays );
 			double[] strategyReturns = getStrategyReturns(
 				drivingPositionsReturns , portfolioPositionsReturns );
@@ -125,14 +125,14 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag.WFLagDebugger
 
 
 		public static double GetSharpeRatio(
-			WFLagChosenPositions wFLagChosenPositions ,
+			WFLagWeightedPositions wFLagWeightedPositions ,
 			DateTime firstDate , DateTime lastDate )
 		{
 			double sharpeRatio = double.MinValue;
 			try
 			{
 				double[] strategyReturns = getStrategyReturns(
-					wFLagChosenPositions , firstDate , lastDate );
+					wFLagWeightedPositions , firstDate , lastDate );
 				sharpeRatio = AdvancedFunctions.GetSharpeRatio( strategyReturns );
 			}
 			catch( MissingQuoteException ex )
@@ -143,14 +143,14 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag.WFLagDebugger
 			return sharpeRatio;
 		}
 		public static double GetExpectancyScore(
-			WFLagChosenPositions wFLagChosenPositions ,
+			WFLagWeightedPositions wFLagWeightedPositions ,
 			DateTime firstDate , DateTime lastDate )
 		{
 			double expectancyScore = double.MinValue;
 			try
 			{
 				double[] strategyReturns = getStrategyReturns(
-					wFLagChosenPositions , firstDate , lastDate );
+					wFLagWeightedPositions , firstDate , lastDate );
 				expectancyScore =
 					AdvancedFunctions.GetExpectancyScore( strategyReturns );
 			}
