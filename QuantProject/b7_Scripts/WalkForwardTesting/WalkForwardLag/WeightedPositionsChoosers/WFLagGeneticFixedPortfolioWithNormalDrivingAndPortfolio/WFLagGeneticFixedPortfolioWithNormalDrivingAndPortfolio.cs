@@ -52,7 +52,9 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag.WeightedPositio
 		protected int populationSizeForGeneticOptimizer;
 		protected int generationNumberForGeneticOptimizer;
 
-		protected WFLagChosenPositions wFLagChosenPositions;
+		protected GeneticOptimizer geneticOptimizer;
+		protected WFLagWeightedPositions wFLagChosenPositions;
+		private EndOfDayDateTime timeWhenChosePositionsIsRequested;
 
 //		// first in sample quote date for driving positions
 //		protected DateTime firstInSampleDateForDrivingPositions;
@@ -82,6 +84,14 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag.WeightedPositio
 				return this.inSampleDays;
 			}
 		}
+		public int GenerationWhenChosenPositionsWereFound
+		{
+			get
+			{
+				return this.geneticOptimizer.BestGenome.Generation;
+			}
+		}
+
 
 		public string Benchmark
 		{
@@ -91,7 +101,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag.WeightedPositio
 			}
 		}
 
-		public WFLagChosenPositions WFLagChosenPositions
+		public WFLagWeightedPositions WFLagChosenPositions
 		{
 			get
 			{
@@ -143,9 +153,18 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag.WeightedPositio
 				this.benchmark );
 			return returnIntervals;
 		}
+
 		private void newGenerationEventHandler(
 			object sender , NewGenerationEventArgs e )
 		{
+			// comment out this line if no debug is done
+			WFLagGenerationDebugger wFLagGenerationDebugger =
+				new WFLagGenerationDebugger(
+				e.Generation ,
+				this.timeWhenChosePositionsIsRequested.DateTime ,
+				this.NumberDaysForInSampleOptimization ,
+				this.benchmark );
+			wFLagGenerationDebugger.Debug();
 			this.NewProgress( sender ,
 				new NewProgressEventArgs( e.GenerationCounter , e.GenerationNumber ) );
 		}
@@ -172,12 +191,15 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag.WeightedPositio
 			IGenomeManager genomeManager , Genome genome ,
 			EndOfDayDateTime now )
 		{
-			WFLagWeightedPositions wFLagWeightedPositions =
+			this.wFLagChosenPositions =
 				this.getWFLagWeightedPositions_FromDecodableGenome(
 				genomeManager , genome );
-			this.wFLagChosenPositions =
-				new WFLagChosenPositions(
-				wFLagWeightedPositions , genome.Generation , now.DateTime );
+//			WFLagWeightedPositions wFLagWeightedPositions =
+//				this.getWFLagWeightedPositions_FromDecodableGenome(
+//				genomeManager , genome );
+//			this.wFLagChosenPositions =
+//				new WFLagChosenPositions(
+//				wFLagWeightedPositions , genome.Generation , now.DateTime );
 //			this.setWeightedPositions( wFLagWeightedPositions );
 			//			this.drivingWeightedPositions =
 			//				wFLagWeightedPositions.DrivingWeightedPositions;
@@ -201,7 +223,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag.WeightedPositio
 				this.equityEvaluator ,
 				QuantProject.ADT.ConstantsProvider.SeedForRandomGenerator );
 
-			GeneticOptimizer geneticOptimizer = new GeneticOptimizer(
+			this.geneticOptimizer = new GeneticOptimizer(
 				0.85 ,
 				0.02 ,
 				0.001 ,
@@ -210,13 +232,13 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag.WeightedPositio
 				genomeManager ,
 				ConstantsProvider.SeedForRandomGenerator );
 
-			geneticOptimizer.NewGeneration +=
+			this.geneticOptimizer.NewGeneration +=
 				new NewGenerationEventHandler( this.newGenerationEventHandler );
 
-			geneticOptimizer.Run( false );
+			this.geneticOptimizer.Run( false );
 
 			this.setChosenPositions_FromDecodableGenome(
-				genomeManager , geneticOptimizer.BestGenome , now );
+				genomeManager , this.geneticOptimizer.BestGenome , now );
 
 //			this.generation = geneticOptimizer.BestGenome.Generation;
 
@@ -248,6 +270,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag.WeightedPositio
 			WFLagEligibleTickers eligibleTickersForPortfolioPositions ,
 			EndOfDayDateTime now )
 		{
+			this.timeWhenChosePositionsIsRequested = now;
 			this.chosePositions_checkParameters( eligibleTickersForDrivingPositions ,
 				now );
 			this.setChosenPositions_usingTheGeneticOptimizer(
