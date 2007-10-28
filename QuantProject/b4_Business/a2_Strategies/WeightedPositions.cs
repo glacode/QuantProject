@@ -46,7 +46,12 @@ namespace QuantProject.Business.Strategies
 		/// </summary>
 		public static System.Type Type
 		{
-			get { return getType(); }
+			get
+			{
+				WeightedPositions weightedPositions =
+					WeightedPositions.TestInstance;
+				return weightedPositions.GetType();
+			}
 		}
 		
 		private int numberOfLongPositions = int.MaxValue;
@@ -113,6 +118,18 @@ namespace QuantProject.Business.Strategies
 			this.weightedPositions_default( normalizedWeightValues,
 																		 tickers );
 		}
+		
+		public static WeightedPositions TestInstance
+		{
+			get
+			{
+				double[] weights = {1.0};
+				string[] tickers = {"DUMMY"};
+				WeightedPositions testInstance = new WeightedPositions( weights , tickers );
+				return testInstance;				
+			}
+		}
+		
 		
 		public WeightedPositions( double[] normalizedUnsignedWeightValues,
 		                          SignedTickers signedTickers )
@@ -286,21 +303,6 @@ namespace QuantProject.Business.Strategies
 					virtualQuantities ) );
 			}
 			return equityLine;
-		}
-		#endregion
-		#region getType
-		private static WeightedPositions getSimpleDummyInstance()
-		{
-			double[] weights = {1.0};
-			string[] tickers = {"DUMMY"};
-			WeightedPositions dummyInstance = new WeightedPositions( weights , tickers );
-			return dummyInstance;
-		}
-		private static System.Type getType()
-		{
-			WeightedPositions weightedPositions =
-				WeightedPositions.getSimpleDummyInstance();
-			return weightedPositions.GetType();
 		}
 		#endregion
 		#region GetCloseToClosePortfolioReturns
