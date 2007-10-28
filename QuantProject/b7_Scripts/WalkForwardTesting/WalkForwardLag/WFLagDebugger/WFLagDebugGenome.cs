@@ -18,7 +18,7 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
-*/
+ */
 
 using System;
 using System.Drawing;
@@ -36,9 +36,10 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag.WFLagDebugger
 	/// </summary>
 	public class WFLagDebugGenome : System.Windows.Forms.Form
 	{
+		DateTime lastOptimizationDate;
 		int inSampleDays;
 		string benchmark;
-		WFLagChosenPositions wFLagChosenPositions;
+		WFLagWeightedPositions wFLagWeightedPositions;
 		
 		private WFLagChosenPositionsDebugInfo wFLagChosenPositionsDebugInfo;
 
@@ -63,8 +64,9 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag.WFLagDebugger
 		/// </summary>
 		private System.ComponentModel.Container components = null;
 
-		public WFLagDebugGenome( WFLagChosenPositions wFLagChosenPositions ,
-			int inSampleDays , string benchmark )
+		public WFLagDebugGenome( WFLagWeightedPositions wFLagWeightedPositions ,
+		                        DateTime lastOptimizationDate ,
+		                        int inSampleDays , string benchmark )
 		{
 			//
 			// Required for Windows Form Designer support
@@ -74,9 +76,10 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag.WFLagDebugger
 			//
 			// TODO: Add any constructor code after InitializeComponent call
 			//
+			this.lastOptimizationDate = lastOptimizationDate;
 			this.inSampleDays = inSampleDays;
 			this.benchmark = benchmark;
-			this.wFLagChosenPositions = wFLagChosenPositions;
+			this.wFLagWeightedPositions = wFLagWeightedPositions;
 		}
 
 		/// <summary>
@@ -206,16 +209,16 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag.WFLagDebugger
 			this.AutoScaleBaseSize = new System.Drawing.Size(5, 13);
 			this.ClientSize = new System.Drawing.Size(616, 437);
 			this.Controls.AddRange(new System.Windows.Forms.Control[] {
-																																	this.dataGridPortfolioPositions,
-																																	this.dataGridDrivingPositions,
-																																	this.labelPortfolioPositions,
-																																	this.labelDrivingPositions,
-																																	this.PreSampleDays,
-																																	this.testPreSample,
-																																	this.PostSampleDays,
-																																	this.TestPostSample,
-																																	this.TestInSample,
-																																	this.TestPreInSampleAndPost});
+			                       	this.dataGridPortfolioPositions,
+			                       	this.dataGridDrivingPositions,
+			                       	this.labelPortfolioPositions,
+			                       	this.labelDrivingPositions,
+			                       	this.PreSampleDays,
+			                       	this.testPreSample,
+			                       	this.PostSampleDays,
+			                       	this.TestPostSample,
+			                       	this.TestInSample,
+			                       	this.TestPreInSampleAndPost});
 			this.Name = "WFLagDebugGenome";
 			this.Text = "WFLagDebugGenome";
 			this.Load += new System.EventHandler(this.WFLagDebugGenome_Load);
@@ -235,7 +238,8 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag.WFLagDebugger
 		private DateTime getPreSampleLastDateTime()
 		{
 			DateTime preSampleLastDateTime =
-				this.wFLagChosenPositions.LastOptimizationDate.AddDays( -this.inSampleDays );
+				this.lastOptimizationDate.AddDays(
+					-this.inSampleDays );
 			return preSampleLastDateTime;
 		}
 		private int getPostSampleDays()
@@ -272,42 +276,42 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag.WFLagDebugger
 //			}
 //		}
 		private void run( DateTime inSampleLastDateTime ,
-			int preSampleDays , int inSampleDays , int postSampleDays )
+		                 int preSampleDays , int inSampleDays , int postSampleDays )
 		{
 //			WFLagChosenPositions wFLagChosenPositions =
 //				this.wFLagLog.GetChosenPositions(
 //				this.transactionDateTime );
 			WFLagDebugPositions wFLagDebugPositions =
-				new WFLagDebugPositions( this.wFLagChosenPositions ,
-				inSampleLastDateTime , preSampleDays ,
-				inSampleDays , postSampleDays ,
-				this.benchmark );
+				new WFLagDebugPositions( this.wFLagWeightedPositions ,
+				                        inSampleLastDateTime , preSampleDays ,
+				                        inSampleDays , postSampleDays ,
+				                        this.benchmark );
 			wFLagDebugPositions.Run();
 		}
 		private void TestPreInSampleAndPost_Click(object sender, System.EventArgs e)
 		{
 			WFLagDebugPositions wFLagDebugPositions =
-				new WFLagDebugPositions( this.wFLagChosenPositions ,
-				this.wFLagChosenPositions.LastOptimizationDate , 30 ,
-				this.inSampleDays ,
-				Convert.ToInt32(  this.PostSampleDays.Text ) ,
-				this.benchmark );
+				new WFLagDebugPositions( this.wFLagWeightedPositions ,
+				                        this.lastOptimizationDate , 30 ,
+				                        this.inSampleDays ,
+				                        Convert.ToInt32(  this.PostSampleDays.Text ) ,
+				                        this.benchmark );
 			wFLagDebugPositions.Run();
 		}
 
 		private void TestInSample_Click(object sender, System.EventArgs e)
-		{		
+		{
 			WFLagDebugPositions wFLagDebugPositions =
-				new WFLagDebugPositions( this.wFLagChosenPositions ,
-				this.wFLagChosenPositions.LastOptimizationDate , 0 ,
-				this.inSampleDays , 0 ,
-				this.benchmark );
+				new WFLagDebugPositions( this.wFLagWeightedPositions ,
+				                        this.lastOptimizationDate , 0 ,
+				                        this.inSampleDays , 0 ,
+				                        this.benchmark );
 			wFLagDebugPositions.Run();
 		}
 		private void TestPostSample_Click(object sender, System.EventArgs e)
 		{
-			this.run( this.wFLagChosenPositions.LastOptimizationDate ,
-				0 , 0 , this.getPostSampleDays() );
+			this.run( this.lastOptimizationDate ,
+			         0 , 0 , this.getPostSampleDays() );
 		}
 
 		private void testPreSample_Click(object sender, System.EventArgs e)
@@ -315,26 +319,26 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag.WFLagDebugger
 			try
 			{
 				this.run( this.getPreSampleLastDateTime() ,
-					0 , this.getPreSampleDays() , 0 );
+				         0 , this.getPreSampleDays() , 0 );
 			}
 			catch( MissingQuoteException ex )
 			{
 				MessageBox.Show( "The pre sample backtest cannot be " +
-					"performed, because there are missing quotes.\n" +
-					ex.Message );
+				                "performed, because there are missing quotes.\n" +
+				                ex.Message );
 			}
 		}
 
 		private void setDataGridDrivingPositions()
 		{
 			ArrayList drivingWeightedPositions =
-				new ArrayList( this.wFLagChosenPositions.DrivingWeightedPositions.Values );
+				new ArrayList( this.wFLagWeightedPositions.DrivingWeightedPositions.Values );
 			this.dataGridDrivingPositions.DataSource = drivingWeightedPositions;
 		}
 		private void setDataGridPortfolioPositions()
 		{
 			ArrayList portfolioWeightedPositions =
-				new ArrayList( this.wFLagChosenPositions.PortfolioWeightedPositions.Values );
+				new ArrayList( this.wFLagWeightedPositions.PortfolioWeightedPositions.Values );
 			this.dataGridPortfolioPositions.DataSource = portfolioWeightedPositions;
 		}
 		private void WFLagDebugGenome_Load(object sender, System.EventArgs e)
