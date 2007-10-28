@@ -40,10 +40,15 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag.WeightedPositio
 			WFLagEligibleTickers eligibleTickersForDrivingPositions ,
 			WFLagEligibleTickers eligibleTickersForPortfolioPositions ,
 			EndOfDayDateTime now );
-		WFLagChosenPositions WFLagChosenPositions { get; }
+		WFLagWeightedPositions WFLagChosenPositions { get; }
 		int NumberOfDrivingPositions { get; }
 		int NumberOfPortfolioPositions { get; }
 		int NumberDaysForInSampleOptimization { get; }
+		/// <summary>
+		/// If the chooser doesn't use a genetic optimizer, this property
+		/// is meaningless, thus it will be set to a negative number
+		/// </summary>
+		int GenerationWhenChosenPositionsWereFound { get; }
 		string Benchmark { get; }  // TO DO: remove this one from the interface
 	}
 }
