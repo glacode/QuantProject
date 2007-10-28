@@ -39,7 +39,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag.WFLagDebugger
 		private string benchmark;
 
 		private TransactionHistory transactionHistory;
-		private History chosenPositionsHistory;
+		private History logItemsHistory;
 	
 		public int InSampleDays
 		{
@@ -58,13 +58,13 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag.WFLagDebugger
 
 		public History ChosenPositionsHistory
 		{
-			get { return this.chosenPositionsHistory; }
+			get { return this.logItemsHistory; }
 		}
 		public WFLagLog( int inSampleDays , string benchmark )
 		{
 			this.inSampleDays = inSampleDays;
 			this.benchmark = benchmark;
-			this.chosenPositionsHistory = new History();
+			this.logItemsHistory = new History();
 		}
 		/// <summary>
 		/// This constructor allows custom deserialization (see the ISerializable
@@ -112,21 +112,21 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag.WFLagDebugger
 		}
 		#endregion
 
-		public void Add( WFLagChosenPositions wFLagChosenPositions )
+		public void Add( WFLagLogItem wFLagLogItem )
 		{
-			this.chosenPositionsHistory.Add(
-				wFLagChosenPositions.LastOptimizationDate ,
-				wFLagChosenPositions );
+			this.logItemsHistory.Add(
+				wFLagLogItem.LastOptimizationDate ,
+				wFLagLogItem );
 		}
-		public WFLagChosenPositions GetChosenPositions(
+		public WFLagLogItem GetLogItem(
 			DateTime transactionDateTime )
 		{
 			DateTime maxDateTimeForSettingRequestedChosenPosition =
 				transactionDateTime.AddDays( - 1 );
-			WFLagChosenPositions wFLagChosenPositions =
-				(WFLagChosenPositions)this.chosenPositionsHistory.GetByKeyOrPrevious(
+			WFLagLogItem wFLagLogItem =
+				(WFLagLogItem)this.logItemsHistory.GetByKeyOrPrevious(
 				maxDateTimeForSettingRequestedChosenPosition );
-			return wFLagChosenPositions;
+			return wFLagLogItem;
 		}
 	}
 }
