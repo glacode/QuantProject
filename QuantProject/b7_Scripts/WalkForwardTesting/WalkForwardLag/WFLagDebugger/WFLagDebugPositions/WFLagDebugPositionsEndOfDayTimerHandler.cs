@@ -37,14 +37,14 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag.WFLagDebugger
 	public class WFLagDebugPositionsEndOfDayTimerHandler
 	{
 		private Account account;
-		private WFLagChosenPositions wFLagChosenPositions;
+		private WFLagWeightedPositions wFLagWeightedPositions;
 
 		public WFLagDebugPositionsEndOfDayTimerHandler(
 			Account account ,
-			WFLagChosenPositions wFLagChosenPositions )
+			WFLagWeightedPositions wFLagWeightedPositions )
 		{
 			this.account = account;
-			this.wFLagChosenPositions = wFLagChosenPositions;
+			this.wFLagWeightedPositions = wFLagWeightedPositions;
 		}
 		#region FiveMinutesBeforeMarketCloseEventHandler
 		private double todayTotalGainForLinearCombination()
@@ -52,7 +52,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag.WFLagDebugger
 			double todayTotalGain = 0;
 			DateTime today = this.account.EndOfDayTimer.GetCurrentTime().DateTime;
 			foreach ( WeightedPosition weightedPosition in
-				this.wFLagChosenPositions.DrivingWeightedPositions.Values )
+				this.wFLagWeightedPositions.DrivingWeightedPositions.Values )
 				todayTotalGain +=
 					weightedPosition.GetCloseToCloseDailyReturn( today );
 //			todayTotalGain += totalGainForSignedTicker( signedTicker );
@@ -75,7 +75,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag.WFLagDebugger
 		{
 			Position firstAccountPosition = this.getFirstAccountPosition();
 			WeightedPosition weightedPosition =
-				this.wFLagChosenPositions.PortfolioWeightedPositions.GetWeightedPosition(
+				this.wFLagWeightedPositions.PortfolioWeightedPositions.GetWeightedPosition(
 				firstAccountPosition.Instrument.Key );
 			bool isReversed =
 				( ( weightedPosition.IsLong && firstAccountPosition.IsShort ) ||
@@ -151,7 +151,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag.WFLagDebugger
 		{
 			//			this.chosenTickers.SetTickers( this.bestPerformingTickers , this.account );
 			foreach ( WeightedPosition weightedPosition in
-				this.wFLagChosenPositions.PortfolioWeightedPositions.Values )
+				this.wFLagWeightedPositions.PortfolioWeightedPositions.Values )
 				this.fiveMinutesBeforeMarketCloseEventHandler_openPosition(
 					weightedPosition );
 		}
