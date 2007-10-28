@@ -57,21 +57,24 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag.WFLagDebugger
 				this.wFLagLog.ChosenPositionsHistory.Values;
     }
 		private void computeList_setChosenPositionsDebugInfoList_addDebugInfo(
-			WFLagChosenPositions wFLagChosenPositions )
+			WFLagLogItem wFLagLogItem )
 		{
 			WFLagChosenPositionsDebugInfo wFLagChosenPositionsDebugInfo =
-				new WFLagChosenPositionsDebugInfo( wFLagChosenPositions ,
-				this.wFLagLog );
+				new WFLagChosenPositionsDebugInfo(
+					wFLagLogItem.WFLagWeightedPositions ,
+					wFLagLogItem.LastOptimizationDate ,
+					wFLagLogItem.Generation ,
+					this.wFLagLog );
 			this.chosenPositionsDebugInfoList.Add( wFLagChosenPositionsDebugInfo );
 		}
 
 		private void computeList_setChosenPositionsDebugInfoList()
 		{
 			this.chosenPositionsDebugInfoList = new ArrayList();
-			foreach ( WFLagChosenPositions wFLagChosenPositions in
+			foreach ( WFLagLogItem wFLagLogItem in
 				this.chosenPositionsCollection )
 				this.computeList_setChosenPositionsDebugInfoList_addDebugInfo(
-					wFLagChosenPositions );
+					wFLagLogItem );
 		}
 		private void computeList()
 		{
