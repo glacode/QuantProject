@@ -893,6 +893,11 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "WalkForwardTesting\WalkForwardLag\WeightedPositionsChoosers\WFLagGeneticFixedPortfolioWithNormalDrivingAndPortfolio\WFLagGenerationDebugger.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "WalkForwardTesting\WalkForwardLag\WeightedPositionsChoosers\WFLagGeneticFixedPortfolioWithNormalDrivingAndPortfolio\WFLagGeneticFixedPortfolioWithNormalDrivingAndPortfolio.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
@@ -909,17 +914,17 @@
                 />
                 <Folder RelPath = "WalkForwardTesting\WalkForwardLag\WFLagBruteForceOptimizableItemManager\" />
                 <File
-                    RelPath = "WalkForwardTesting\WalkForwardLag\WFLagDebugger\WFLagChosenPositions.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
                     RelPath = "WalkForwardTesting\WalkForwardLag\WFLagDebugger\WFLagDebugGenome.cs"
                     SubType = "Form"
                     BuildAction = "Compile"
                 />
                 <File
                     RelPath = "WalkForwardTesting\WalkForwardLag\WFLagDebugger\WFLagLog.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "WalkForwardTesting\WalkForwardLag\WFLagDebugger\WFLagLogItem.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
