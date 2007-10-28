@@ -32,20 +32,20 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag
 	/// </summary>
 	public class WFLagNewChosenPositionsEventArgs : EventArgs
 	{
-		private WFLagChosenPositions wFLagChosenPositions;
+		private WFLagLogItem wFLagLogItem;
 
-		public WFLagChosenPositions WFLagChosenPositions
+		public WFLagLogItem WFLagLogItem
 		{
 			get
 			{
-				return this.wFLagChosenPositions;
+				return this.wFLagLogItem;
 			}
 		}
 
 		public WFLagNewChosenPositionsEventArgs(
-			WFLagChosenPositions wFLagChosenPositions )
+			WFLagLogItem wFLagLogItem )
 		{
-			this.wFLagChosenPositions = wFLagChosenPositions;
+			this.wFLagLogItem = wFLagLogItem;
 		}
 	}
 }
