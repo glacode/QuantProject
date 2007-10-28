@@ -63,6 +63,13 @@
     <Compile Include="TickerSelectionTesting\RunEfficientCTCPortfolio.cs" />
     <Compile Include="TickerSelectionTesting\RunEfficientCTOPortfolio.cs" />
     <Compile Include="WalkForwardTesting\MSFTwalkForward\TsMSFTwalkForward.cs" />
+    <Compile Include="WalkForwardTesting\WalkForwardLag\WeightedPositionsChoosers\BruteForce\WFLagBruteForceWeightedPositionsChooserForBalancedFixedPortfolioAndBalancedDriving.cs" />
+    <Compile Include="WalkForwardTesting\WalkForwardLag\WeightedPositionsChoosers\Decoding\IWFLagDecoder.cs" />
+    <Compile Include="WalkForwardTesting\WalkForwardLag\WeightedPositionsChoosers\Decoding\WFLagDecoderForFixedPortfolioWithBalancedVolatilityAndDrivingWithBalancedVolatility.cs" />
+    <Compile Include="WalkForwardTesting\WalkForwardLag\WeightedPositionsChoosers\OptimizableParametersManagers\WFLagBruteForceOptimizableParametersManagerForBalancedFixedPortfolioAndBalancedDriving.cs" />
+    <Compile Include="WalkForwardTesting\WalkForwardLag\WeightedPositionsChoosers\WFLagFitnessEvaluator.cs" />
+    <Compile Include="WalkForwardTesting\WalkForwardLag\WFLagDebugger\WFLagLogItem.cs" />
+    <Compile Include="WalkForwardTesting\WalkForwardLag\WFLagMeaningForUndecodableEncoded.cs" />
     <Compile Include="WalkForwardTesting\WalkForwardOneRank\BestPerformingTickers.cs" />
     <Compile Include="WalkForwardTesting\WalkForwardOneRank\ChosenTickers.cs" />
     <Compile Include="WalkForwardTesting\WalkForwardOneRank\ComparableAccount.cs" />
@@ -151,7 +158,6 @@
     <Compile Include="WalkForwardTesting\WalkForwardLag\WFLagDebugger\WFLagDebugPositions\WFLagDebugPositions.cs" />
     <Compile Include="TechnicalAnalysisTesting\Oscillators\FixedPeriodOscillators\GenomeManagerForFPOscillatorCTC.cs" />
     <Compile Include="WalkForwardTesting\WalkForwardLag\WFLagDebugger\WFLagRunDebugger.cs" />
-    <Compile Include="WalkForwardTesting\WalkForwardLag\WFLagDebugger\WFLagChosenPositions.cs" />
     <Compile Include="WalkForwardTesting\WalkForwardLag\WFLagDebugger\WFLagReportDebugger.cs" />
     <Compile Include="WalkForwardTesting\WalkForwardLag\WFLagDebugger\WFLagDebugPositions\WFLagDebugPositionsEndOfDayTimerHandler.cs" />
     <Compile Include="WalkForwardTesting\WalkForwardLag\WFLagMain.cs" />
@@ -184,15 +190,11 @@
     <Compile Include="TechnicalAnalysisTesting\Oscillators\FixedLevelOscillators\PortfolioValueOscillator\GenomeManagerPVO.cs" />
     <Compile Include="TechnicalAnalysisTesting\Oscillators\FixedLevelOscillators\PortfolioValueOscillator\GenomeMeaningPVO.cs" />
     <Compile Include="TechnicalAnalysisTesting\Oscillators\FixedLevelOscillators\PortfolioValueOscillator\RunPVO.cs" />
-    <Compile Include="WalkForwardTesting\WalkForwardLag\WFLagBruteForceOptimizableItemManager\WFLagBruteForceOptimizableParametersManager.cs" />
     <Compile Include="TickerSelectionTesting\TestingOTCTypes\BruteForceOptimization\RunEfficientOTCTypesBruteForce.cs" />
     <Compile Include="TickerSelectionTesting\TestingOTCTypes\BruteForceOptimization\EndOfDayTimerHandlerOTCTypesBruteForce.cs" />
     <Compile Include="TickerSelectionTesting\TestingOTCTypes\BruteForceOptimization\OTCBruteForceOptimizableParametersManager.cs" />
     <Compile Include="WalkForwardTesting\WalkForwardLag\GeneticOptimizerTesting\WFLagGOTester.cs" />
     <Compile Include="WalkForwardTesting\LinearCombination\FixedLevelOscillatorPVOStrategy.cs" />
-    <Compile Include="WalkForwardTesting\WalkForwardLag\WFLagBruteForceOptimizableItemManager\WFLagFixedPortfolioBruteForceOptimizableParametersManager.cs" />
-    <Compile Include="WalkForwardTesting\WalkForwardLag\WFLagBruteForceOptimizableItemManager\WFLagFixedPortfolioBruteForceOptParamManagerWithPortfolioNormalizedVolatility.cs" />
-    <Compile Include="WalkForwardTesting\WalkForwardLag\WFLagBruteForceOptimizableItemManager\WFLagFixedPortfolioBruteForceOptParamManagerWithNormalizedVolatility.cs" />
     <Compile Include="TechnicalAnalysisTesting\Oscillators\FixedLevelOscillators\PortfolioValueOscillator\BiasedPVO\EndOfDayTimerHandlerBiasedPVO.cs" />
     <Compile Include="TechnicalAnalysisTesting\Oscillators\FixedLevelOscillators\PortfolioValueOscillator\BiasedPVO\RunBiasedPVO.cs" />
     <Compile Include="TechnicalAnalysisTesting\Oscillators\FixedLevelOscillators\PortfolioValueOscillator\WeightedPVO\EndOfDayTimerHandlerWeightedPVO.cs" />
@@ -212,7 +214,6 @@
     <Compile Include="WalkForwardTesting\LinearCombination\FixedLevelOscBiasedOTC_PVONoThresholdsStrategy.cs" />
     <Compile Include="WalkForwardTesting\WalkForwardLag\WFLagNewChosenPositionsEventArgs.cs" />
     <Compile Include="WalkForwardTesting\WalkForwardLag\WeightedPositionsChoosers\IWFLagWeightedPositionsChooser.cs" />
-    <Compile Include="WalkForwardTesting\WalkForwardLag\WeightedPositionsChoosers\WFLagBruteForceFixedPortfolioWeightedPositionsChooser.cs" />
     <Compile Include="ArbitrageTesting\OverReactionHypothesis\SimpleOHTest\EndOfDayTimerHandlerSimpleOHTest.cs" />
     <Compile Include="ArbitrageTesting\OverReactionHypothesis\SimpleOHTest\RunSimpleOHTest.cs" />
     <Compile Include="TechnicalAnalysisTesting\TrendFollowing\BestAndWorst\EndOfDayTimerHandlerBWFollower.cs" />
@@ -234,6 +235,9 @@
     <Folder Include="EvaluatingOptimizationTechnique\" />
     <Folder Include="EvaluatingOptimizationTechnique\EfficientPortfolio\" />
     <Folder Include="TickerSelectionTesting\SimpleSelection\" />
+    <Folder Include="WalkForwardTesting\WalkForwardLag\WeightedPositionsChoosers\BruteForce" />
+    <Folder Include="WalkForwardTesting\WalkForwardLag\WeightedPositionsChoosers\Decoding" />
+    <Folder Include="WalkForwardTesting\WalkForwardLag\WeightedPositionsChoosers\OptimizableParametersManagers" />
     <Folder Include="WalkForwardTesting\WalkForwardMultiOneRank\" />
     <Folder Include="TechnicalAnalysisTesting\" />
     <Folder Include="TechnicalAnalysisTesting\Oscillators\" />
