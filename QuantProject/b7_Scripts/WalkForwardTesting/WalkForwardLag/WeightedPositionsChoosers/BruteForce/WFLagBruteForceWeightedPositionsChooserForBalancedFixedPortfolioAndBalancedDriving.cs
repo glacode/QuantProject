@@ -60,11 +60,10 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag.WeightedPositio
 
 		private IWFLagDecoder wFLagDecoder;
 		private ReturnsManager returnsManager;
-		private WFLagChosenPositions wFLagChosenPositions;
-		private WeightedPositions drivingWeightedPositions;
-		private WeightedPositions portfolioWeightedPositions;
 		private DateTime firstOptimizationDate;
 		private DateTime lastOptimizationDate;
+		
+		private WFLagWeightedPositions wFLagChosenPositions;
 
 		public int NumberOfDrivingPositions
 		{
@@ -87,6 +86,15 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag.WeightedPositio
 				return this.inSampleDays;
 			}
 		}
+		public int GenerationWhenChosenPositionsWereFound
+		{
+			get
+			{
+				// this chooser doesn't use a genetic optimizer
+				// thus this property is meaningless for this chooser
+				return -999;	
+			}
+		}		
 		public string Benchmark
 		{
 			get
@@ -98,14 +106,14 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag.WeightedPositio
 		{
 			get
 			{
-				return this.drivingWeightedPositions;
+				return this.wFLagChosenPositions.DrivingWeightedPositions;
 			}
 		}
 		public WeightedPositions PortfolioWeightedPositions
 		{
 			get
 			{
-				return this.portfolioWeightedPositions;
+				return this.wFLagChosenPositions.PortfolioWeightedPositions;
 			}
 		}
 		public DateTime FirstOptimizationDate
@@ -122,7 +130,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag.WeightedPositio
 				return this.lastOptimizationDate;
 			}
 		}
-		public WFLagChosenPositions WFLagChosenPositions
+		public WFLagWeightedPositions WFLagChosenPositions
 		{
 			get
 			{
@@ -157,14 +165,14 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag.WeightedPositio
 //			this.NewProgress( sender ,
 //				new NewProgressEventArgs( e.GenerationCounter , e.GenerationNumber ) );
 //		}
-		private void setWeightedPositions(
-			WFLagWeightedPositions wFLagWeightedPositions )
-		{
-			this.drivingWeightedPositions =
-				wFLagWeightedPositions.DrivingWeightedPositions;
-			this.portfolioWeightedPositions =
-				wFLagWeightedPositions.PortfolioWeightedPositions;
-		}
+//		private void setWeightedPositions(
+//			WFLagWeightedPositions wFLagWeightedPositions )
+//		{
+//			this.drivingWeightedPositions =
+//				wFLagWeightedPositions.DrivingWeightedPositions;
+//			this.portfolioWeightedPositions =
+//				wFLagWeightedPositions.PortfolioWeightedPositions;
+//		}
 //		private void setSignedTickers_setTickersFromGenome(
 //			IGenomeManager genomeManager ,
 //			Genome genome )
@@ -368,11 +376,11 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag.WeightedPositio
 			BruteForceOptimizableParameters bestParameters =
 				bruteForceOptimizer.BestParameters;
 
-			WFLagWeightedPositions wFLagWeightedPositions =
+			this.wFLagChosenPositions =
 				( WFLagWeightedPositions )wFLagFixedPortfolioBruteForceOptimizableParametersManager.Decode(
 				bestParameters );
 
-			this.setWeightedPositions( wFLagWeightedPositions );
+//			this.setWeightedPositions( wFLagWeightedPositions );
 		}
 		#endregion
 		public virtual void ChosePositions(
@@ -383,10 +391,9 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag.WeightedPositio
 			this.setDecoder( eligibleTickersForDrivingPositions , now );
 			this.setWeightedPositions_withFixedPortfolio(
 				eligibleTickersForDrivingPositions , "SPY" , "IWM" , now );
-			this.wFLagChosenPositions = new WFLagChosenPositions(
+			this.wFLagChosenPositions = new WFLagWeightedPositions(
 				this.DrivingWeightedPositions ,
-				this.PortfolioWeightedPositions ,
-				now.DateTime );
+				this.PortfolioWeightedPositions );
 		}
 		#endregion
 	}
