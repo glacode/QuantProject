@@ -32,6 +32,7 @@ using QuantProject.Business.Strategies;
 using QuantProject.Business.Strategies.EquityEvaluation;
 using QuantProject.Business.Timing;
 using QuantProject.Scripts.WalkForwardTesting.WalkForwardLag.WeightedPositionsChoosers;
+using QuantProject.Scripts.WalkForwardTesting.WalkForwardLag.WFLagDebugger;
 
 
 namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag
@@ -376,18 +377,19 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag
 				string outputMessage = "Number of Eligible tickers: " +
 					this.eligibleTickers.EligibleTickers.Rows.Count;
 				RunWalkForwardLag.WriteToTextLog( outputMessage );
-//				Console.WriteLine( "Number of Eligible tickers: " +
-//					this.eligibleTickers.EligibleTickers.Rows.Count );
-//				this.chosenTickers.SetWeightedPositions( this.eligibleTickers ,
-//					this.account.EndOfDayTimer.GetCurrentTime() );
 				this.wFLagWeightedPositionsChooser.ChosePositions(
 					this.eligibleTickers ,
 					this.eligibleTickers ,
-					this.account.EndOfDayTimer.GetCurrentTime() );
+					this.now() );
 				this.arePositionsUpToDateWithChosenTickers = false;
-				this.NewChosenPositions( this ,
-					new WFLagNewChosenPositionsEventArgs(
-					this.wFLagWeightedPositionsChooser.WFLagChosenPositions ) );
+				WFLagLogItem wFLagLogItem =
+					new WFLagLogItem(
+						this.wFLagWeightedPositionsChooser.WFLagChosenPositions ,
+						this.wFLagWeightedPositionsChooser.GenerationWhenChosenPositionsWereFound ,
+						this.now().DateTime );
+				this.NewChosenPositions(
+					this , new WFLagNewChosenPositionsEventArgs(
+						wFLagLogItem ) );
 				this.lastOptimizationDate = this.now().DateTime;
 			}
 			//			oneHourAfterMarketCloseEventHandler_orderChosenTickers( ( IEndOfDayTimer ) sender );
