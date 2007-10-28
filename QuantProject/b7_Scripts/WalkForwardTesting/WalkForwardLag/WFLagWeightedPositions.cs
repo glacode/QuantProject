@@ -26,13 +26,13 @@ using QuantProject.Business.Strategies;
 
 namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag
 {
-	[Serializable]
 	/// <summary>
 	/// This class identifies all the weighted positions to apply
 	/// the lag strategy out of sample: it contains both the
 	/// driving positions and the portfolio positions. Each genome
 	/// can be decoded to an instance of this class
 	/// </summary>
+	[Serializable]
 	public class WFLagWeightedPositions
 	{
 		private WeightedPositions drivingWeightedPositions;
@@ -47,6 +47,15 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag
 			get { return this.portfolioWeightedPositions; }
 		}
 
+		public static WFLagWeightedPositions TestInstance
+		{
+			get
+			{
+				WFLagWeightedPositions  testInstance = new WFLagWeightedPositions(
+					WeightedPositions.TestInstance , WeightedPositions.TestInstance );
+				return testInstance;
+			}
+		}
 		public WFLagWeightedPositions(
 			WeightedPositions drivingWeightedPositions ,
 			WeightedPositions portfolioWeightedPositions )
