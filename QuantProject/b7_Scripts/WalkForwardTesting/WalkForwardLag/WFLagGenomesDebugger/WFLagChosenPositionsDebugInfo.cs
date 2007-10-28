@@ -34,7 +34,9 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag.WFLagDebugger
 	{
 		private double dummyValue;
 		private int maxPreSampleDays;
-		private WFLagChosenPositions wFLagChosenPositions;
+		private WFLagWeightedPositions wFLagWeightedPositions;
+		private int generation;
+		private DateTime lastOptimizationDate;
 		private WFLagLog wFLagLog;
 		private double inSampleSharpeRatio;
 		private double preSampleSharpeRatio30;
@@ -46,15 +48,21 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag.WFLagDebugger
 
 		public string DrivingPositions
 		{
-			get { return this.wFLagChosenPositions.DrivingWeightedPositions.ToString(); }
+			get
+			{
+				return this.wFLagWeightedPositions.DrivingWeightedPositions.ToString();
+			}
 		}
 		public string PortfolioPositions
 		{
-			get { return this.wFLagChosenPositions.PortfolioWeightedPositions.ToString(); }
+			get
+			{
+				return this.wFLagWeightedPositions.PortfolioWeightedPositions.ToString();
+			}
 		}
 		public DateTime LastOptimization
 		{
-			get { return this.wFLagChosenPositions.LastOptimizationDate; }
+			get { return this.lastOptimizationDate; }
 		}
 		public int InSampleDays
 		{
@@ -66,7 +74,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag.WFLagDebugger
 		/// </summary>
 		public int Generation
 		{
-			get { return this.wFLagChosenPositions.Generation; }
+			get { return this.generation; }
 		}
 		public double InSampleSharpeRatio
 		{
@@ -106,7 +114,9 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag.WFLagDebugger
 			get { return this.postSampleSharpeRatio150; }
 		}
 		public WFLagChosenPositionsDebugInfo(
-			WFLagChosenPositions wFLagChosenPositions ,
+			WFLagWeightedPositions wFLagWeightedPositions ,
+			DateTime lastOptimizationDate ,
+			int generation ,
 			WFLagLog wFLagLog )
 		{
 			//
@@ -114,7 +124,9 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag.WFLagDebugger
 			//
 			this.dummyValue = -999;
 
-			this.wFLagChosenPositions = wFLagChosenPositions;
+			this.wFLagWeightedPositions = wFLagWeightedPositions;
+			this.generation = generation;
+			this.lastOptimizationDate = lastOptimizationDate;
 			this.wFLagLog = wFLagLog;
 			this.inSampleSharpeRatio = this.getInSampleSharpeRatio();
 			this.inSampleExpectancyScore = this.getInSampleExpectancyScore();
@@ -128,20 +140,20 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag.WFLagDebugger
 			this.postSampleSharpeRatio150 = this.getPostSampleSharpeRatio( 150 );
 		}
 		public static string[] GetDrivingAndPortfolioTickers(
-			WFLagChosenPositions wFLagChosenPositions )
+			WFLagWeightedPositions wFLagWeightedPositions )
 		{
-			int size = wFLagChosenPositions.DrivingWeightedPositions.Count +
-				wFLagChosenPositions.PortfolioWeightedPositions.Count;
+			int size = wFLagWeightedPositions.DrivingWeightedPositions.Count +
+				wFLagWeightedPositions.PortfolioWeightedPositions.Count;
 			string[] drivingAndPortfolioTickers = new string[ size ];
 			int i = 0;
 			foreach ( string signedTicker in
-				wFLagChosenPositions.DrivingWeightedPositions.Keys )
+				wFLagWeightedPositions.DrivingWeightedPositions.Keys )
 			{
 				drivingAndPortfolioTickers[ i ] = SignedTicker.GetTicker( signedTicker );
 				i++;
 			}
 			foreach ( string signedTicker in
-				wFLagChosenPositions.PortfolioWeightedPositions.Keys )
+				wFLagWeightedPositions.PortfolioWeightedPositions.Keys )
 			{
 				drivingAndPortfolioTickers[ i ] = SignedTicker.GetTicker( signedTicker );
 				i++;
@@ -152,13 +164,13 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag.WFLagDebugger
 		/// returns the chosen positions. A method is used instead of a property, because
 		/// we don't want this as a column displayed in the grid
 		/// </summary>
-		public WFLagChosenPositions GetChosenPositions()
+		public WFLagWeightedPositions GetChosenPositions()
 		{
-			return this.wFLagChosenPositions;
+			return this.wFLagWeightedPositions;
 		}
 		private ArrayList getMinDatesForTickers()
 		{
-			string[] tickers = GetDrivingAndPortfolioTickers( this.wFLagChosenPositions );
+			string[] tickers = GetDrivingAndPortfolioTickers( this.wFLagWeightedPositions );
 			ArrayList minDatesForTickers = new ArrayList();
 			foreach ( string ticker in tickers )
 				minDatesForTickers.Add(
@@ -196,14 +208,14 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag.WFLagDebugger
 		{
 			DateTime firstDateTime = this.getInSampleFirstDate();
 			return WFLagSharpeRatioComputer.GetSharpeRatio(
-				this.wFLagChosenPositions , firstDateTime ,
+				this.wFLagWeightedPositions , firstDateTime ,
 				this.LastOptimization );
 		}
 		private double getInSampleExpectancyScore()
 		{
 			DateTime firstDateTime = this.getInSampleFirstDate();
 			return WFLagSharpeRatioComputer.GetExpectancyScore(
-				this.wFLagChosenPositions , firstDateTime ,
+				this.wFLagWeightedPositions , firstDateTime ,
 				this.LastOptimization );
 		}
 		private double getPreSampleSharpeRatio( int days )
@@ -214,7 +226,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag.WFLagDebugger
 				DateTime lastDateTime = this.getInSampleFirstDate();
 				DateTime firstDateTime = lastDateTime.AddDays( -days - 1 );  // I subtract one more day, so I have days daily returns
 				preSampleSharpeRatio = WFLagSharpeRatioComputer.GetSharpeRatio(
-					this.wFLagChosenPositions , firstDateTime ,
+					this.wFLagWeightedPositions , firstDateTime ,
 					lastDateTime );
 			}
 			return preSampleSharpeRatio;
@@ -226,7 +238,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag.WFLagDebugger
 			// consider that the real out of sample jumps out that day
 			DateTime lastDateTime = firstDateTime.AddDays( days + 1 );  // I add one day, so I have days daily returns
 			return WFLagSharpeRatioComputer.GetSharpeRatio(
-				this.wFLagChosenPositions , firstDateTime ,
+				this.wFLagWeightedPositions , firstDateTime ,
 				lastDateTime );
 		}
 	}
