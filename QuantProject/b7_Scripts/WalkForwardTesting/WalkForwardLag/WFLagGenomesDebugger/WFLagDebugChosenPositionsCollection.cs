@@ -134,31 +134,39 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag.WFLagDebugger
 //			DataTable dataTable = (DataTable)dataGrid.DataSource;
 			return hitTestInfo.Row;
 		}
-		private WFLagChosenPositions rightClickEventHandler_getWFLagChosenPositions(
+		private WFLagChosenPositionsDebugInfo
+			rightClickEventHandler_getWFLagChosenPositionsDebugInfo(
 			DataGrid dataGrid , int rowNumber )
 		{
 //			DataTable dataTable = (DataTable)dataGrid.DataSource;
 			WFLagChosenPositionsDebugInfo wFLagChosenPositionsDebugInfo =
 				(WFLagChosenPositionsDebugInfo)(this.chosenPositionsDebugInfoList[ rowNumber ]);
-			WFLagChosenPositions wFLagChosenPositions =
-				wFLagChosenPositionsDebugInfo.GetChosenPositions();
-			return wFLagChosenPositions;
+			return wFLagChosenPositionsDebugInfo;
 		}
 
-		private WFLagChosenPositions rightClickEventHandler_getWFLagChosenPositions(
+		private WFLagChosenPositionsDebugInfo
+			rightClickEventHandler_getWFLagChosenPositionsDebugInfo(
 			object sender, System.Windows.Forms.MouseEventArgs e )
 		{
 			int rowNumber = rightClickEventHandler_getRowNumber(
 				sender , e );
-			WFLagChosenPositions wFLagChosenPositions =
-				this.rightClickEventHandler_getWFLagChosenPositions( (DataGrid)sender , rowNumber );
-			return wFLagChosenPositions;
+			WFLagChosenPositionsDebugInfo wFLagChosenPositionsDebugInfo =
+				this.rightClickEventHandler_getWFLagChosenPositionsDebugInfo(
+					(DataGrid)sender , rowNumber );
+			return wFLagChosenPositionsDebugInfo;
 		}
 		private void rightClickEventHandler(object sender, System.Windows.Forms.MouseEventArgs e)
 		{
-			WFLagChosenPositions wFLagChosenPositions =
-				this.rightClickEventHandler_getWFLagChosenPositions( sender , e );
-			WFLagDebugGenome wFLagDebugGenome = new WFLagDebugGenome( wFLagChosenPositions ,
+//			wFLagWeightedPositions wFLagChosenPositions =
+//				this.rightClickEventHandler_getWFLagChosenPositions( sender , e );
+			WFLagChosenPositionsDebugInfo wFLagChosenPositionsDebugInfo =
+				rightClickEventHandler_getWFLagChosenPositionsDebugInfo(
+					sender , e );
+			WFLagWeightedPositions wFLagWeightedPositions =
+				wFLagChosenPositionsDebugInfo.GetChosenPositions();
+			WFLagDebugGenome wFLagDebugGenome = new WFLagDebugGenome(
+				wFLagWeightedPositions ,
+				wFLagChosenPositionsDebugInfo.LastOptimization ,
 				this.inSampleDays , this.benchmark );
 			wFLagDebugGenome.Show();
 		}
