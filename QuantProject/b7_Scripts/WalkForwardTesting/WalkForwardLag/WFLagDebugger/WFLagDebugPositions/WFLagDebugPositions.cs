@@ -40,7 +40,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag.WFLagDebugger
 	/// </summary>
 	public class WFLagDebugPositions
 	{
-		private WFLagChosenPositions wFLagChosenPositions;
+		private WFLagWeightedPositions wFLagWeightedPositions;
 		private DateTime preSampleFirstDateTime;
 		private DateTime inSampleFirstDateTime;
 		private DateTime inSampleLastDateTime;
@@ -63,14 +63,14 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag.WFLagDebugger
 		/// <param name="preSampleDays"></param>
 		/// <param name="postSampleDays"></param>
 		public WFLagDebugPositions(
-			WFLagChosenPositions wFLagChosenPositions ,
+			WFLagWeightedPositions wFLagWeightedPositions ,
 			DateTime inSampleLastDateTime ,
 			int preSampleDays ,
 			int inSampleDays ,
 			int postSampleDays ,
 			string benchmark )
 		{
-			this.wFLagChosenPositions = wFLagChosenPositions;
+			this.wFLagWeightedPositions = wFLagWeightedPositions;
 			this.inSampleLastDateTime = inSampleLastDateTime;
 			this.inSampleFirstDateTime =
 				this.inSampleLastDateTime.AddDays( -inSampleDays + 1 );
@@ -106,7 +106,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag.WFLagDebugger
 		{
 			this.endOfDayTimerHandler =
 				new WFLagDebugPositionsEndOfDayTimerHandler(
-				this.account , this.wFLagChosenPositions );
+				this.account , this.wFLagWeightedPositions );
 		}
 		public void marketOpenEventHandler(	Object sender ,
 			EndOfDayTimingEventArgs endOfDayTimingEventArgs )
@@ -233,15 +233,15 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag.WFLagDebugger
 //					this.wFLagChosenPositions.DrivingWeightedPositions.Keys ,
 //					Color.YellowGreen ,	report );
 				this.addEquityLineForWeightedPositions(
-					this.wFLagChosenPositions.DrivingWeightedPositions ,
+					this.wFLagWeightedPositions.DrivingWeightedPositions ,
 					Color.YellowGreen ,	report );
 				this.addEquityLineForWeightedPositions(
-					this.wFLagChosenPositions.PortfolioWeightedPositions ,
+					this.wFLagWeightedPositions.PortfolioWeightedPositions ,
 					Color.Brown ,	report );
 				//				this.addEquityLineForSignedTickers(
 				//					this.wFLagChosenPositions.PortfolioWeightedPositions.Keys ,
 				//					Color.Brown ,	report );
-				report.Show();
+				report.ShowDialog();
 			}
 		}
 		#endregion
