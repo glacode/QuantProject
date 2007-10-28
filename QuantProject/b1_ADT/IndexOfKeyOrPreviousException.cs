@@ -13,7 +13,7 @@ namespace QuantProject.ADT
 		{
 			string message = "The given key is less than the first object " +
 				"in the AdvancedSortedList";
-			message = message;
+			message = message + "";
 //			MessageBox.Show( this.message );
 		}
 	}
