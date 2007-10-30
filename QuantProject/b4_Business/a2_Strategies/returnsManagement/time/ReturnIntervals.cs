@@ -78,12 +78,23 @@ namespace QuantProject.Business.Strategies.ReturnsManagement.Time
 			}
 		}
 		
+		private void returnIntervals_initialize_checkParameters(
+			EndOfDayDateTime firstEndOfDayDateTime ,
+			EndOfDayDateTime lastEndOfDayDateTime , string benchmark,
+			int intervalLength)
+		{
+			if(lastEndOfDayDateTime.CompareTo(firstEndOfDayDateTime) < 1)
+				throw new Exception("lastEndOfDayDateTime has to be greater than firstEndOfDayDateTime!");
+			if(intervalLength < 1)
+				throw new Exception("Interval length has to be greater than 0!");
+		}
+		
 		private void returnIntervals_initialize(EndOfDayDateTime firstEndOfDayDateTime ,
 			EndOfDayDateTime lastEndOfDayDateTime , string benchmark,
 			int intervalLength)
 		{
-			if(intervalLength < 1)
-				throw new Exception("Interval length has to be greater than 0!");
+			this.returnIntervals_initialize_checkParameters(
+				firstEndOfDayDateTime, lastEndOfDayDateTime, benchmark, intervalLength);
 			this.intervalLength = intervalLength;
 			this.firstEndOfDayDateTime = firstEndOfDayDateTime;
 			this.lastEndOfDayDateTime = lastEndOfDayDateTime;
