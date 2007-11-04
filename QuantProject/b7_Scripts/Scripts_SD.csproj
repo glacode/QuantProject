@@ -68,6 +68,7 @@
     <Compile Include="WalkForwardTesting\WalkForwardLag\WeightedPositionsChoosers\Decoding\WFLagDecoderForFixedPortfolioWithBalancedVolatilityAndDrivingWithBalancedVolatility.cs" />
     <Compile Include="WalkForwardTesting\WalkForwardLag\WeightedPositionsChoosers\OptimizableParametersManagers\WFLagBruteForceOptimizableParametersManagerForBalancedFixedPortfolioAndBalancedDriving.cs" />
     <Compile Include="WalkForwardTesting\WalkForwardLag\WeightedPositionsChoosers\WFLagFitnessEvaluator.cs" />
+    <Compile Include="WalkForwardTesting\WalkForwardLag\WeightedPositionsChoosers\WFLagGeneticFixedPortfolioWithNormalDrivingAndPortfolio\WFLagGenerationDebugger.cs" />
     <Compile Include="WalkForwardTesting\WalkForwardLag\WFLagDebugger\WFLagLogItem.cs" />
     <Compile Include="WalkForwardTesting\WalkForwardLag\WFLagMeaningForUndecodableEncoded.cs" />
     <Compile Include="WalkForwardTesting\WalkForwardOneRank\BestPerformingTickers.cs" />
