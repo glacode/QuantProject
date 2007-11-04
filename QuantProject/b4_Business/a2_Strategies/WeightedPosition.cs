@@ -117,7 +117,10 @@ namespace QuantProject.Business.Strategies
 //				dailyReturn = dalyReturnForLongPosition;
 			return dailyReturn;
 		}
-    
-
+		public override string ToString()
+		{
+			string toString = this.Ticker + ";" + this.Weight;
+			return toString;
+		}
 	}
 }
