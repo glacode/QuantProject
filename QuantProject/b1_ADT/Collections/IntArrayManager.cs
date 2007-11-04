@@ -70,7 +70,7 @@ namespace QuantProject.ADT.Collections
 				int currentPosition = firstPosition + i;
 				subArray[ i ] =	arrayOfInt[ currentPosition ];
 			}
-			return arrayOfInt;
+			return subArray;
 		}
 		#endregion SubArray
 
