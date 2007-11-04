@@ -99,6 +99,24 @@ namespace QuantProject.Business.Strategies
 			}
 		}
 		
+		public static WeightedPositions TestInstance
+		{
+			get
+			{
+				double[] weights = {1.0};
+				string[] tickers = {"DUMMY"};
+				WeightedPositions testInstance = new WeightedPositions( weights , tickers );
+				return testInstance;				
+			}
+		}
+		
+		/// <summary>
+		/// text description of these weighted positions. Useful for debugging
+		/// </summary>
+		public string Description
+		{
+			get { return this.ToString(); }
+		}
 		private void weightedPositions_default( double[] normalizedWeightValues ,
 			string[] tickers )
 		{
@@ -118,18 +136,6 @@ namespace QuantProject.Business.Strategies
 			this.weightedPositions_default( normalizedWeightValues,
 																		 tickers );
 		}
-		
-		public static WeightedPositions TestInstance
-		{
-			get
-			{
-				double[] weights = {1.0};
-				string[] tickers = {"DUMMY"};
-				WeightedPositions testInstance = new WeightedPositions( weights , tickers );
-				return testInstance;				
-			}
-		}
-		
 		
 		public WeightedPositions( double[] normalizedUnsignedWeightValues,
 		                          SignedTickers signedTickers )
@@ -692,6 +698,13 @@ namespace QuantProject.Business.Strategies
 		{
 			foreach(WeightedPosition weightedPosition in this.Values)
 				weightedPosition.Weight = - weightedPosition.Weight;
+		}
+		public override string ToString()
+		{
+			string toString = "";
+			for ( int i = 0 ; i < this.Count ; i++ )
+				toString += ((WeightedPosition)( this[ i ] )).ToString() + "--";
+			return toString;
 		}
 	}
 }
