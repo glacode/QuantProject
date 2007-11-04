@@ -63,19 +63,6 @@ namespace QuantProject.Business.Strategies.ReturnsManagement
 		{
 			get { return this.returnIntervals.Count; }
 		}
-//		protected DateTime firstDateTime
-//		{
-//			get { return this.timeLineForQuotes.GetDateTime( 0 ); }
-//		}
-//		protected DateTime lastDateTime
-//		{
-//			get
-//			{
-//				int lastIndex = this.timeLineForQuotes.Count - 1;
-//				return this.timeLineForQuotes.GetDateTime( lastIndex );
-//			}
-//		}
-//
 		/// <summary>
 		/// Abstract class used to store and efficiently provide arrays of
 		/// returns for several tickers, on dates within a given interval
@@ -89,14 +76,6 @@ namespace QuantProject.Business.Strategies.ReturnsManagement
 		/// dates when the benchmark is quoted; if n quotes are given
 		/// for the benchmark, each array of returns will have exactly
 		/// n-1 elements</param>
-//		public ReturnsManager( DateTime firstDate , DateTime lastDate ,
-//			string benchmark )
-//		{
-//			// TO DO: let WFLagEligibleTickers use this class also!!!
-//			this.timeLineForQuotes =
-//				this.getMarketDaysForQuotes( firstDate , lastDate , benchmark );
-//			this.commonInitialization();
-//		}
 		public ReturnsManager( ReturnIntervals returnIntervals ,
 			IHistoricalQuoteProvider historicalQuoteProvider )
 		{
@@ -111,12 +90,6 @@ namespace QuantProject.Business.Strategies.ReturnsManagement
 			this.tickersReturns = new Hashtable();
 			this.tickersReturnsStandardDeviations = new Hashtable();
 		}
-		private History getMarketDaysForQuotes( DateTime firstDate ,
-			DateTime lastDate , string benchmark )
-		{
-			return Quotes.GetMarketDays( benchmark ,
-				firstDate , lastDate );
-		}
 
 		private bool isAValidIndexForAReturn( int index )
 		{
@@ -128,7 +101,6 @@ namespace QuantProject.Business.Strategies.ReturnsManagement
 		{
 			return this.tickersReturns.ContainsKey( ticker );
 		}
-//		protected abstract History getQuotes( string ticker );
 		#region setReturns
 		private float selectReturnWithRespectToTheGivenIterval(
 			EndOfDayHistory endOfDayQuotes , int i )
