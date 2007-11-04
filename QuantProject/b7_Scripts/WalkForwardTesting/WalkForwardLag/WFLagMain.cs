@@ -151,7 +151,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag
 				new WFLagGeneticFixedPortfolioWithNormalDrivingAndPortfolio(
 				4 , new SignedTickers( "IWM;-SPY" ) , 100 , "EWQ" ,
 				new QuantProject.Business.Strategies.EquityEvaluation.SharpeRatio() ,
-				1000 , 3 );
+				10000 , 30 );
 //			wFLagWeightedPositionsChooser =
 //				new WFLagBruteForceWeightedPositionsChooserForBalancedFixedPortfolioAndBalancedDriving(
 //				4 , new SignedTickers( "IWM;-SPY" ) , 100 , "EWQ" ,
@@ -161,6 +161,8 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag
 //				new DateTime( 2001 , 1 , 1 ) ,
 //				new DateTime( 2001 , 1 , 8 ) ,
 //				0.5 ).Run();
+
+			new RunSimpleLag().Run();
 			new RunWalkForwardLag( "DrvPstns" , 200 ,
 				wFLagWeightedPositionsChooser ,	7 ,
 				new DateTime( 2001 , 1 , 4 ) ,
