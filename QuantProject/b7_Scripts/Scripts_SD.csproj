@@ -63,6 +63,7 @@
     <Compile Include="TickerSelectionTesting\RunEfficientCTCPortfolio.cs" />
     <Compile Include="TickerSelectionTesting\RunEfficientCTOPortfolio.cs" />
     <Compile Include="WalkForwardTesting\MSFTwalkForward\TsMSFTwalkForward.cs" />
+    <Compile Include="WalkForwardTesting\WalkForwardLag\RunSimpleLag.cs" />
     <Compile Include="WalkForwardTesting\WalkForwardLag\WeightedPositionsChoosers\BruteForce\WFLagBruteForceWeightedPositionsChooserForBalancedFixedPortfolioAndBalancedDriving.cs" />
     <Compile Include="WalkForwardTesting\WalkForwardLag\WeightedPositionsChoosers\Decoding\IWFLagDecoder.cs" />
     <Compile Include="WalkForwardTesting\WalkForwardLag\WeightedPositionsChoosers\Decoding\WFLagDecoderForFixedPortfolioWithBalancedVolatilityAndDrivingWithBalancedVolatility.cs" />
