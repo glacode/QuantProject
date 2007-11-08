@@ -75,9 +75,26 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag
 //			string[] drivingTickers = { "^OEX" , "BDH" , "HHH" , "IIH" };
 
 			// bad driving positions, despite having two optimal tickers
-			double[] drivingWeights = { -0.272826060576681 , 0.304736475342285 , -0.0953627582891244 , 0.32707470579191 };
-			string[] drivingTickers = { "^DJT" , "^OEX" , "BDH" , "EWJ" };
+//			double[] drivingWeights = { -0.272826060576681 , 0.304736475342285 , -0.0953627582891244 , 0.32707470579191 };
+//			string[] drivingTickers = { "^DJT" , "^OEX" , "BDH" , "EWJ" };
 //			Description	"^DJT;-0.272826060576681--^OEX;0.304736475342285--BDH;-0.0953627582891244--EWJ;0.32707470579191--"	string
+
+			// two optimal driving positions
+			double[] drivingWeights = { 0.550560760218599 , -0.172289820708961 };
+			string[] drivingTickers = { "^OEX" , "BDH" };
+
+			// three optimal driving positions
+//			double[] drivingWeights = { 0.550560760218599 , -0.172289820708961 , -0.16220520521007 };
+//			string[] drivingTickers = { "^OEX" , "BDH" , "HHH" };
+
+			// two optimal driving with similar weights
+//			double[] drivingWeights = { 0.304736475342285 , -0.0953627582891244 };
+//			string[] drivingTickers = { "^OEX" , "BDH" };
+			
+			// single optimal driving
+//			double[] drivingWeights = { 1 };
+//			string[] drivingTickers = { "IIH" };
+			
 
 
 			double[] portfolioWeights = { 0.442536856335084 , -0.557463143664916 };
