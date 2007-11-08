@@ -178,12 +178,6 @@
     <Compile Include="a2_Strategies\WeightedPositions.cs" />
     <Compile Include="a2_Strategies\EquityEvaluation\ExpectancyScore.cs" />
     <Compile Include="a2_Strategies\EquityEvaluation\SharpeRatio.cs" />
-    <None Include="a2_Strategies\returnsManagement\time\CVS\Entries" />
-    <None Include="a2_Strategies\returnsManagement\time\CVS\Entries.Extra" />
-    <None Include="a2_Strategies\returnsManagement\time\CVS\Entries.Extra.Old" />
-    <None Include="a2_Strategies\returnsManagement\time\CVS\Entries.Old" />
-    <None Include="a2_Strategies\returnsManagement\time\CVS\Repository" />
-    <None Include="a2_Strategies\returnsManagement\time\CVS\Root" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\b1_ADT\ADT_SD.csproj">
@@ -201,7 +195,6 @@
     <Folder Include="a2_Strategies\EquityEvaluation" />
     <Folder Include="a2_Strategies\returnsManagement" />
     <Folder Include="a2_Strategies\returnsManagement\time" />
-    <Folder Include="a2_Strategies\returnsManagement\time\CVS" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.Targets" />
 </Project>
