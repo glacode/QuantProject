@@ -196,7 +196,7 @@ namespace QuantProject.Business.Strategies.ReturnsManagement
 		#region GetReturnsStandardDeviation
 		private bool isReturnsStandardDeviationAlreadySet( string ticker )
 		{
-			return this.tickersReturns.ContainsKey( ticker );
+			return this.tickersReturnsStandardDeviations.ContainsKey( ticker );
 		}
 		private void setReturnsStandardDeviation(
 			string ticker , float[] tickerReturns )
