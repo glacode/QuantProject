@@ -24,6 +24,7 @@ using System;
 using System.Collections;
 using QuantProject.ADT.Histories;
 using QuantProject.ADT.Statistics;
+using QuantProject.Data.DataTables;
 using QuantProject.Business.Financial.Accounting.Reporting.Tables;
 
 namespace QuantProject.Business.Financial.Accounting.Reporting.SummaryRows
@@ -36,15 +37,17 @@ namespace QuantProject.Business.Financial.Accounting.Reporting.SummaryRows
 	[Serializable]
 	public class AverageNumberOfTransactionsPerDay : DoubleSummaryRow
 	{
-		public AverageNumberOfTransactionsPerDay( Summary summary ) : base( 1 )
+		public AverageNumberOfTransactionsPerDay( Summary summary ) : base( 2 )
 		{
-			this.rowDescription = "Average n. of transactions per day";
+			this.rowDescription = "Average n. of transactions per market day";
 			//int totalNumberOfTransactions = summary.AccountReport.Account.Transactions.Count;
 			//there must be a mistake somewhere: why the previous line is not right?
 			int totalNumberOfTransactions = summary.AccountReport.TransactionTable.DataTable.Rows.Count;
-			TimeSpan timeSpanForScript = 
-			summary.AccountReport.EndDateTime.DateTime.Subtract(summary.AccountReport.StartDateTime);
-			this.rowValue = (double)totalNumberOfTransactions / (double)timeSpanForScript.Days;
+			History marketDays = Quotes.GetMarketDays(
+				summary.AccountReport.Benchmark,
+				summary.AccountReport.StartDateTime,
+				summary.AccountReport.EndDateTime.DateTime);
+			this.rowValue = (double)totalNumberOfTransactions / (double)marketDays.Count;
 		}
 	}
 }
