@@ -45,8 +45,8 @@ namespace QuantProject.ADT.Optimizing.Genetic
     int GetMaxValueForGenes(int genePosition);
     int GetMinValueForGenes(int genePosition);
     int GetNewGeneValue(Genome genome, int genePosition); 
-    double GetFitnessValue(Genome genome);
     object Decode(Genome genome);
+		double GetFitnessValue(Genome genome);
 		Genome[] GetChilds(Genome parent1, Genome parent2);
 		void Mutate(Genome genome);
   }
