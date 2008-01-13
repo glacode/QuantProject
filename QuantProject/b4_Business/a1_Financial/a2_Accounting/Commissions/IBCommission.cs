@@ -40,8 +40,11 @@ namespace QuantProject.Business.Financial.Accounting.Commissions
 					returnValue = 0;
 				else
 				{
-					returnValue = this.transaction.Quantity * 0.01;
-					returnValue = Math.Max( returnValue , 1.0 );
+					returnValue = this.transaction.Quantity * 0.005;
+					//USD 0.005 per share
+					returnValue = Math.Min( Math.Max( returnValue , 1.0 ),
+																	0.005 * this.transaction.Amount);
+					//0.5% of trade value plus exchange, ECN, and specialist fees
 				}
 				return returnValue;
 			}
