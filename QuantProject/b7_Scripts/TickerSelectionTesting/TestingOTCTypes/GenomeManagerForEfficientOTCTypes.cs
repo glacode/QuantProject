@@ -37,79 +37,82 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
 	/// GeneticOptimizer
 	/// </summary>
 	[Serializable]
-  public class GenomeManagerForEfficientOTCTypes : GenomeManagerForEfficientPortfolio
+  public class GenomeManagerForEfficientOTCTypes : GenomeManagerForEfficientOTCCTOPortfolio
   {
-    private GenomeManagerForEfficientCTOPortfolio genManCTO;
+//    private GenomeManagerForEfficientCTOPortfolio genManCTO;
+//		private string benchmark;
+
     public GenomeManagerForEfficientOTCTypes(DataTable setOfInitialTickers,
                                                  DateTime firstQuoteDate,
                                                  DateTime lastQuoteDate,
                                                  int numberOfTickersInPortfolio,
                                                  double targetPerformance,
-                                                 PortfolioType portfolioType)
+                                                 PortfolioType portfolioType,
+																								 string benchmark)
                                 :base(setOfInitialTickers,
                                      firstQuoteDate,
                                      lastQuoteDate,
                                      numberOfTickersInPortfolio,
                                      targetPerformance,
-                                     portfolioType)
+                                     portfolioType,
+																		 benchmark)
                           
     {
-      this.retrieveData();
-      this.genManCTO = new GenomeManagerForEfficientCTOPortfolio(setOfInitialTickers,
-                                     firstQuoteDate,
-                                     lastQuoteDate,
-                                     numberOfTickersInPortfolio,
-                                     targetPerformance,
-                                     portfolioType);
+//      this.benchmark = benchmark;
+//			this.retrieveData();
+//      this.genManCTO = new GenomeManagerForEfficientCTOPortfolio(setOfInitialTickers,
+//                                     firstQuoteDate,
+//                                     lastQuoteDate,
+//                                     numberOfTickersInPortfolio,
+//                                     targetPerformance,
+//                                     portfolioType,
+//																		 benchmark);
     }
     //rate of return = rawClose/rawOpen - 1
-    protected override float[] getArrayOfRatesOfReturn(string ticker)
-    {
-      float[] returnValue = null;
-      Quotes tickerQuotes = new Quotes(ticker, this.firstQuoteDate, this.lastQuoteDate);
-      returnValue = ExtendedDataTable.GetRatesOfReturnsFromColumns(tickerQuotes, "quClose", "quOpen");
-      this.numberOfExaminedReturns = returnValue.Length;
-      
-      return returnValue;
-    }
-    
-    public override double GetFitnessValue(Genome genome)
-    {
-      double returnValue = 0;
-      this.portfolioRatesOfReturn = this.getPortfolioRatesOfReturn(genome.Genes());
-      double averagePortfolioRateOfReturn = 
-        BasicFunctions.SimpleAverage(this.portfolioRatesOfReturn);
-        
-      double portfolioVariance = 
-        BasicFunctions.Variance(this.portfolioRatesOfReturn);
-
-      if(!Double.IsInfinity(portfolioVariance) &&
-        !Double.IsInfinity(averagePortfolioRateOfReturn) &&
-        !Double.IsNaN(portfolioVariance) &&
-        !Double.IsNaN(averagePortfolioRateOfReturn) &&
-        portfolioVariance > 0.0)
-        //both variance and rate of return are 
-        //double values computed in the right way:
-        // so it's possible to assign fitness
-      {
-        this.variance = portfolioVariance;
-        this.rateOfReturn = averagePortfolioRateOfReturn;
-        //returnValue = this.getFitnessValue_calculate();
-        returnValue = this.getFitnessValue_calculate() -
-                      this.genManCTO.GetFitnessValue(genome);
-        
-      }
-      
-      return returnValue;
-    }
-
-    
-    protected override double getFitnessValue_calculate()
-    {
-      return this.RateOfReturn/Math.Sqrt(this.Variance);
-    }
-    
-    
-  }
-
+//    protected override float[] getArrayOfRatesOfReturn(string ticker)
+//    {
+//      float[] returnValue = null;
+//      Quotes tickerQuotes = new Quotes(ticker, this.firstQuoteDate, this.lastQuoteDate);
+//      returnValue = ExtendedDataTable.GetRatesOfReturnsFromColumns(tickerQuotes, "quClose", "quOpen");
+//      this.numberOfExaminedReturns = returnValue.Length;
+//      
+//      return returnValue;
+//    }
+//    
+//    public override double GetFitnessValue(Genome genome)
+//    {
+//      double returnValue = 0;
+//      this.portfolioRatesOfReturn = this.getPortfolioRatesOfReturn(genome.Genes());
+//      double averagePortfolioRateOfReturn = 
+//        BasicFunctions.SimpleAverage(this.portfolioRatesOfReturn);
+//        
+//      double portfolioVariance = 
+//        BasicFunctions.Variance(this.portfolioRatesOfReturn);
+//
+//      if(!Double.IsInfinity(portfolioVariance) &&
+//        !Double.IsInfinity(averagePortfolioRateOfReturn) &&
+//        !Double.IsNaN(portfolioVariance) &&
+//        !Double.IsNaN(averagePortfolioRateOfReturn) &&
+//        portfolioVariance > 0.0)
+//        //both variance and rate of return are 
+//        //double values computed in the right way:
+//        // so it's possible to assign fitness
+//      {
+//        this.variance = portfolioVariance;
+//        this.rateOfReturn = averagePortfolioRateOfReturn;
+//        //returnValue = this.getFitnessValue_calculate();
+//        returnValue = this.getFitnessValue_calculate() -
+//                      this.genManCTO.GetFitnessValue(genome);
+//        
+//      }
+//      
+//      return returnValue;
+//    }
+//
+//    
+//    protected override double getFitnessValue_calculate()
+//    {
+//      return this.RateOfReturn/Math.Sqrt(this.Variance);
+//    }
+   }
 }

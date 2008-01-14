@@ -23,10 +23,16 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 using System;
 using System.Data;
 using System.Collections;
+
 using QuantProject.ADT.Statistics;
 using QuantProject.ADT.Optimizing.Genetic;
 using QuantProject.Data;
 using QuantProject.Data.DataTables;
+using QuantProject.Business.DataProviders;
+using QuantProject.Business.Timing;
+using QuantProject.Business.Strategies;
+using QuantProject.Business.Strategies.ReturnsManagement;
+using QuantProject.Business.Strategies.ReturnsManagement.Time;
 using QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios;
 
 namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.ExtremeCounterTrend
@@ -40,119 +46,76 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.ExtremeCount
   public class GenomeManagerECT : GenomeManagerForEfficientPortfolio
   {
     private int numDaysForReturnCalculation;
+    private ReturnsManager returnsManager;
     
     public GenomeManagerECT(DataTable setOfInitialTickers,
-                                                 DateTime firstQuoteDate,
-                                                 DateTime lastQuoteDate,
-                                                 int numberOfTickersInPortfolio,
-                                                 int numDaysForReturnCalculation,
-                                                 PortfolioType portfolioType)
-                                                 :
-                                                base(setOfInitialTickers,
-                                                firstQuoteDate,
-                                                lastQuoteDate,
-                                                numberOfTickersInPortfolio,
-                                                0.0,
-                                                portfolioType)
+	                           DateTime firstQuoteDate,
+	                           DateTime lastQuoteDate,
+	                           int numberOfTickersInPortfolio,
+	                           int numDaysForReturnCalculation,
+	                           PortfolioType portfolioType,
+	                           string benchmark)
+	                           :
+	                          base(setOfInitialTickers,
+	                          firstQuoteDate,
+	                          lastQuoteDate,
+	                          numberOfTickersInPortfolio,
+	                          0.0,
+	                          portfolioType,
+	                         	benchmark)
                                 
                           
     {
       this.numDaysForReturnCalculation = numDaysForReturnCalculation;
-      this.retrieveData();
+      this.setReturnsManager();
     }
     
-    protected override float[] getArrayOfRatesOfReturn(string ticker)
+    private void setReturnsManager()
     {
-      float[] returnValue = null;
-      Quotes tickerQuotes = new Quotes(ticker, this.firstQuoteDate, this.lastQuoteDate);
-      returnValue = ExtendedDataTable.GetArrayOfFloatFromColumn(tickerQuotes,
-    	                                                          Quotes.AdjustedCloseToCloseRatio);
-      
-      
-      for(int i = 0; i<returnValue.Length; i++)
-        returnValue[i] = returnValue[i] - 1.0f;
-      
-      this.numberOfExaminedReturns = returnValue.Length;
-      
-      return returnValue;
-    }
-
-//delete remarks if this object inherits from
-//simple genomeManagerForEfficientPortfolio (no coefficients)
-
-//    public override object Decode(Genome genome)
-//    {
-//    	
-//    	string[] arrayOfTickers = new string[genome.Genes().Length];
-//      int indexOfTicker;
-//      for(int index = 0; index < genome.Genes().Length; index++)
-//      {
-//        indexOfTicker = (int)genome.Genes().GetValue(index);
-//        arrayOfTickers[index] = this.decode_getTickerCodeForLongOrShortTrade(indexOfTicker);
-//      }
-//      GenomeMeaning meaning = new GenomeMeaning(arrayOfTickers);
-//      return meaning;
-//    }
-  
-
-		//fitness is a sharpe-ratio based indicator for the equity line resulting
-		//from applying the strategy
-	  public override double GetFitnessValue(Genome genome)
-    {
-      this.portfolioRatesOfReturn = this.getPortfolioRatesOfReturn(genome.Genes());
-      
-      double[] equityLine = this.getFitnessValue_getEquityLineRates();
-//      double sharpeRatioAll = BasicFunctions.SimpleAverage(equityLine)/
-//                              BasicFunctions.StdDev(equityLine);
-//      double modifiedSharpeRatioAll = BasicFunctions.SimpleAverage(equityLine)/
-//                                      Math.Pow(BasicFunctions.StdDev(equityLine),0.9);
-
-//      double[] equityLineSecondHalf = new double[equityLine.Length/2];
-//      for(int i = 0; i<equityLine.Length/2; i++)
-//        equityLineSecondHalf[i] = equityLine[i+equityLine.Length/2];
-//      double sharpeRatioSecondHalf = BasicFunctions.SimpleAverage(equityLineSecondHalf)/
-//                              Math.Pow(BasicFunctions.StdDev(equityLineSecondHalf),1.2);
-//      return sharpeRatioAll;//*sharpeRatioSecondHalf; 
-//      return modifiedSharpeRatioAll;
-      //return AdvancedFunctions.GetExpectancyScore(equityLine);
-      return AdvancedFunctions.GetSharpeRatio(equityLine);
-
+			EndOfDayDateTime firstEndOfDayDateTime =
+				new EndOfDayDateTime(firstQuoteDate, EndOfDaySpecificTime.MarketClose);
+			EndOfDayDateTime lastEndOfDayDateTime =
+				new EndOfDayDateTime(lastQuoteDate, EndOfDaySpecificTime.MarketClose);
+			this.returnsManager =
+				 new ReturnsManager( new CloseToCloseIntervals(
+																 firstEndOfDayDateTime, 
+																 lastEndOfDayDateTime, 
+																 this.benchmark,
+																 this.numDaysForReturnCalculation) ,
+														 new HistoricalAdjustedQuoteProvider() );
     }
     
-    private double[] getFitnessValue_getEquityLineRates()
-    {
-    	double[] returnValue = new double[this.PortfolioRatesOfReturn.Length];
-      double K;//initial capital invested at the beginning of the period
-      for(int i = this.numDaysForReturnCalculation - 1;
-          i<this.PortfolioRatesOfReturn.Length - this.numDaysForReturnCalculation;
-          i += this.numDaysForReturnCalculation)
+    private float[] getStrategyReturns_getReturnsActually(
+    									float[] plainReturns)
+		{
+			float[] returnValue = new float[plainReturns.Length];
+			returnValue[0] = 0; //a the very first day the
+			//first strategy return is equal to 0 because no position
+			//has been entered
+			float coefficient = 0;
+    	for(int i = 0; i < returnValue.Length - 1; i++)
       {
-        K = 1.0;
-        for(int j=this.numDaysForReturnCalculation - 1;
-            j > -1; j--)
-        {
-          K = K + K * this.PortfolioRatesOfReturn[i-j];
-        }
-       
-        for(int t=1;t<this.numDaysForReturnCalculation + 1;t++)
-        {  
-          if(K < 1.0)
-            // if gain of first half period is negative 
-             returnValue[i+t] = this.PortfolioRatesOfReturn[i+t];
-          else if(K > 1.0 && this.PortfolioType == PortfolioType.ShortAndLong)
-            //if gain of first half period is positive and
-            //original positions can be reversed
-             returnValue[i+t] = - this.PortfolioRatesOfReturn[i+t];
-          else if(K > 1.0 && this.PortfolioType != PortfolioType.ShortAndLong)
-            //if gain of first half period is positive and
-            //original positions can't be reversed
-             returnValue[i+t] = 0.0;//out of the market
-        }  
-           
+    		if( plainReturns[i] > 0 )
+    		//portfolio is overbought
+    			coefficient = -1;
+    		else if( plainReturns[i] <= 0 )
+ 				//portfolio is oversold   			
+        	coefficient = 1;
+    		
+    		returnValue[i + 1] = coefficient * plainReturns[i + 1];
       }
       return returnValue;
-    }
-	
+		}
+    
+    protected override float[] getStrategyReturns()
+		{
+			EndOfDayDateTime firstEndOfDayDateTime =
+				new EndOfDayDateTime(firstQuoteDate, EndOfDaySpecificTime.MarketClose);
+			EndOfDayDateTime lastEndOfDayDateTime =
+				new EndOfDayDateTime(lastQuoteDate, EndOfDaySpecificTime.MarketClose);
+	  	float[] plainReturns = this.weightedPositionsFromGenome.GetReturns(
+              							 this.returnsManager);
+			return this.getStrategyReturns_getReturnsActually(plainReturns);
+		}
   }
-
 }

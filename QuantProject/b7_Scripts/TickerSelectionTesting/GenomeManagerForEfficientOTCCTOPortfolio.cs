@@ -22,11 +22,12 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 using System;
 using System.Data;
-using System.Collections;
-using QuantProject.ADT.Statistics;
-using QuantProject.ADT.Optimizing.Genetic;
-using QuantProject.Data;
-using QuantProject.Data.DataTables;
+
+using QuantProject.Business.DataProviders;
+using QuantProject.Business.Timing;
+using QuantProject.Business.Strategies;
+using QuantProject.Business.Strategies.ReturnsManagement;
+using QuantProject.Business.Strategies.ReturnsManagement.Time;
 
 
 namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
@@ -37,59 +38,65 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
 	/// GeneticOptimizer
 	/// </summary>
 	[Serializable]
-  public class GenomeManagerForEfficientOTCCTOPortfolio : GenomeManagerForWeightedEfficientPortfolio
+  public class GenomeManagerForEfficientOTCCTOPortfolio : GenomeManagerForEfficientPortfolio
   {
-    
+    private ReturnsManager returnsManager;
+  	
     public GenomeManagerForEfficientOTCCTOPortfolio(DataTable setOfInitialTickers,
                                                  DateTime firstQuoteDate,
                                                  DateTime lastQuoteDate,
                                                  int numberOfTickersInPortfolio,
                                                  double targetPerformance,
-                                                 PortfolioType portfolioType)
+                                                 PortfolioType portfolioType,
+                                                 string benchmark)
                                 :base(setOfInitialTickers,
                                      firstQuoteDate,
                                      lastQuoteDate,
                                      numberOfTickersInPortfolio,
                                      targetPerformance,
-                                     portfolioType)
+                                     portfolioType,
+                                     benchmark)
                           
     {
-      this.retrieveData();
+      this.setReturnsManager(firstQuoteDate, lastQuoteDate);
     }
-    
-    protected override float[] getArrayOfRatesOfReturn(string ticker)
-    {
-      Quotes tickerQuotes = new Quotes(ticker, this.firstQuoteDate, this.lastQuoteDate);
-      float[] returnValue = new float[2*tickerQuotes.Rows.Count - 1];
-      int j = 0;
-      for(int i = 0;i<tickerQuotes.Rows.Count; i++)
-      {
-        //open to close
-        returnValue[j] = (float)tickerQuotes.Rows[i]["quClose"]/
-                         (float)tickerQuotes.Rows[i]["quOpen"] - 1;
-        //close to open
-        if(i<tickerQuotes.Rows.Count-1)
-        {
-          returnValue[j+1] = 
-            -(( (float)tickerQuotes.Rows[i+1]["quOpen"]*
-            (float)tickerQuotes.Rows[i+1]["quAdjustedClose"]/
-            (float)tickerQuotes.Rows[i+1]["quClose"] )
-            /(float)tickerQuotes.Rows[i]["quAdjustedClose"] - 1);
-        }
-        j += 2 ;
-      }
-      this.numberOfExaminedReturns = returnValue.Length;
-      return returnValue;
-    }
-    
-    
-    protected override double getFitnessValue_calculate()
-    {
-      return this.RateOfReturn/Math.Sqrt(this.Variance);
-      //return AdvancedFunctions.GetExpectancyScore(this.PortfolioRatesOfReturn);
-    }
-    
-    
-  }
+    //if the genome manager derives from genome manager without weights,
+		//delete override key word
+		protected ReturnIntervals getReturnIntervals(EndOfDayDateTime firstEndOfDayDateTime,
+																													EndOfDayDateTime lastEndOfDayDateTime)
+		{
+			return 
+				new OpenToCloseCloseToOpenIntervals(
+				firstEndOfDayDateTime, 
+				lastEndOfDayDateTime, 
+				this.benchmark);
+		}
 
+  	private void setReturnsManager(DateTime firstQuoteDate,
+                                   DateTime lastQuoteDate)
+    {
+    	EndOfDayDateTime firstEndOfDayDateTime =
+				new EndOfDayDateTime(firstQuoteDate, EndOfDaySpecificTime.MarketOpen);
+			EndOfDayDateTime lastEndOfDayDateTime =
+				new EndOfDayDateTime(lastQuoteDate, EndOfDaySpecificTime.MarketClose);
+    	this.returnsManager = 
+    		new ReturnsManager( this.getReturnIntervals(firstEndOfDayDateTime,
+																 lastEndOfDayDateTime),
+														new HistoricalAdjustedQuoteProvider() );
+    }
+  	
+  	protected override float[] getStrategyReturns()
+		{
+  		float[] returnValue;
+  		returnValue = this.weightedPositionsFromGenome.GetReturns(
+              this.returnsManager ) ;
+	   	for(int i = 0; i<returnValue.Length; i++)
+	  		if(i%2 != 0)
+	  		//returnValue[i] is a CloseToOpen return:
+	  		//the strategy implies to reverse positions at night
+	  			returnValue[i] = - returnValue[i];
+	  	
+	  	return returnValue;
+		}
+  }
 }

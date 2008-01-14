@@ -38,14 +38,14 @@ namespace QuantProject.Data.Selectors.ByLinearIndipendence
 	[Serializable]
   public class GenomeManagerForMaxLinearIndipendenceSelector : IGenomeManager
   {
-    private DataTable setOfInitialTickers;
-    private Candidate[] candidates;
-    private DateTime firstQuoteDate;
-    private DateTime lastQuoteDate;
-    private int genomeSize;
-    private int minValueForGenes;
-    private int maxValueForGenes;
-    private double[,] correlationMatrix;
+    protected DataTable setOfInitialTickers;
+    protected Candidate[] candidates;
+    protected DateTime firstQuoteDate;
+    protected DateTime lastQuoteDate;
+    protected int genomeSize;
+    protected int minValueForGenes;
+    protected int maxValueForGenes;
+    protected double[,] correlationMatrix;
     
     //IGenomeManager implementation for properties 
     public int GenomeSize
@@ -165,7 +165,7 @@ namespace QuantProject.Data.Selectors.ByLinearIndipendence
       return returnValue;
     }
 
-    private double getFitnessValue_getCorrelationCoefficient(int i, int j)
+    protected double getFitnessValue_getCorrelationCoefficient(int i, int j)
     {
       int row = i;
       int column = j;

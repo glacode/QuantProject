@@ -22,11 +22,12 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 using System;
 using System.Data;
-using System.Collections;
-using QuantProject.ADT.Statistics;
-using QuantProject.ADT.Optimizing.Genetic;
-using QuantProject.Data;
-using QuantProject.Data.DataTables;
+
+using QuantProject.Business.DataProviders;
+using QuantProject.Business.Timing;
+using QuantProject.Business.Strategies;
+using QuantProject.Business.Strategies.ReturnsManagement;
+using QuantProject.Business.Strategies.ReturnsManagement.Time;
 
 
 namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
@@ -39,118 +40,46 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
 	[Serializable]
   public class GenomeManagerForEfficientCTOPortfolio : GenomeManagerForEfficientPortfolio
   {
-    private GenomeManagerForEfficientOTCPortfolio genManOTC;
-    public GenomeManagerForEfficientCTOPortfolio(DataTable setOfInitialTickers,
+    private ReturnsManager returnsManager;
+  	
+  	public GenomeManagerForEfficientCTOPortfolio(DataTable setOfInitialTickers,
                                                  DateTime firstQuoteDate,
                                                  DateTime lastQuoteDate,
                                                  int numberOfTickersInPortfolio,
                                                  double targetPerformance,
-                                                 PortfolioType portfolioType)
+                                                 PortfolioType portfolioType,
+																								 string benchmark)
                                 :base(setOfInitialTickers,
                                      firstQuoteDate,
                                      lastQuoteDate,
                                      numberOfTickersInPortfolio,
                                      targetPerformance,
-                                     portfolioType)
+                                     portfolioType,
+                                     benchmark)
                           
     {
-      this.retrieveData();
-      this.genManOTC = new GenomeManagerForEfficientOTCPortfolio(setOfInitialTickers,
-                                     firstQuoteDate,
-                                     lastQuoteDate,
-                                     numberOfTickersInPortfolio,
-                                     targetPerformance,
-                                     portfolioType);
+    	this.setReturnsManager(firstQuoteDate, lastQuoteDate); 
     }
-    private float[] getArrayOfRatesOfReturn_getCloseToOpenRates(Quotes tickerQuotes)
+  	
+     private void setReturnsManager(DateTime firstQuoteDate,
+                                   DateTime lastQuoteDate)
     {
-      float[] returnValue = new float[tickerQuotes.Rows.Count - 1];
-      for(int i = 0;i<tickerQuotes.Rows.Count - 1; i++)
-      {
-        returnValue[i] = 
-          ( (float)tickerQuotes.Rows[i+1]["quOpen"]*
-             (float)tickerQuotes.Rows[i+1]["quAdjustedClose"]/
-              (float)tickerQuotes.Rows[i+1]["quClose"] )
-          /(float)tickerQuotes.Rows[i]["quAdjustedClose"] - 1;
-      }
-      return returnValue;
-    }
-    protected override float[] getArrayOfRatesOfReturn(string ticker)
-    {
-      float[] returnValue = null;
-      Quotes tickerQuotes = new Quotes(ticker, this.firstQuoteDate, this.lastQuoteDate);
-      returnValue = this.getArrayOfRatesOfReturn_getCloseToOpenRates(tickerQuotes);
-      this.numberOfExaminedReturns = returnValue.Length;
-      
-      return returnValue;
-    }
-    public override double GetFitnessValue(Genome genome)
-    {
-      double returnValue = 0;
-      this.portfolioRatesOfReturn = this.getPortfolioRatesOfReturn(genome.Genes());
-      double averagePortfolioRateOfReturn = 
-        BasicFunctions.SimpleAverage(this.portfolioRatesOfReturn);
-        
-      double portfolioVariance = 
-        BasicFunctions.Variance(this.portfolioRatesOfReturn);
-
-      if(!Double.IsInfinity(portfolioVariance) &&
-        !Double.IsInfinity(averagePortfolioRateOfReturn) &&
-        !Double.IsNaN(portfolioVariance) &&
-        !Double.IsNaN(averagePortfolioRateOfReturn) &&
-        portfolioVariance > 0.0)
-        //both variance and rate of return are 
-        //double values computed in the right way:
-        // so it's possible to assign fitness
-      {
-        this.variance = portfolioVariance;
-        this.rateOfReturn = averagePortfolioRateOfReturn;
-        returnValue = this.getFitnessValue_calculate();
-//        returnValue = this.getFitnessValue_calculate() -
-//                      this.genManOTC.GetFitnessValue(genome);
-        
-      }
-      
-      return returnValue;
-    }
-
-    
-    /*using LPM
-    protected override double getFitnessValue_calculate()
-    {
-      double returnValue = 0;                                            
-      
-      double a, b, c;
-      a = 0.002; b = 2.0; c = 2.0;
-      
-      //returnValue = Math.Pow((a/this.Variance),b) *
-      //                 Math.Pow((this.rateOfReturn - this.targetPerformance),
-      //                          c);
-      //this.lowerPartialMoment = AdvancedFunctions.LowerPartialMoment(this.portfolioRatesOfReturn,
-      //                                                      BasicFunctions.SimpleAverage(this.portfolioRatesOfReturn),
-      //                                                      3.0);
-      this.lowerPartialMoment = AdvancedFunctions.NegativeSemiVariance(this.portfolioRatesOfReturn);
-      a = 1.0;
-      returnValue = Math.Pow((a/this.lowerPartialMoment),b) *
-                       Math.Pow(Math.Max(0.0,(this.rateOfReturn - this.targetPerformance)),
-                                c);
-      
-      if(this.portfolioType == PortfolioType.OnlyShort)
-        returnValue = - returnValue; 
-      
-      if(Double.IsInfinity(returnValue) || Double.IsNaN(returnValue))
-      		throw new Exception("Fitness value not computed correctly!");
-      
-      return returnValue;
-    }
-    */
-    
-    protected override double getFitnessValue_calculate()
-    {
-      return this.RateOfReturn/Math.Sqrt(this.Variance);
+    	EndOfDayDateTime firstEndOfDayDateTime =
+				new EndOfDayDateTime(firstQuoteDate, EndOfDaySpecificTime.MarketOpen);
+			EndOfDayDateTime lastEndOfDayDateTime =
+				new EndOfDayDateTime(lastQuoteDate, EndOfDaySpecificTime.MarketClose);
+    	this.returnsManager = 
+    		new ReturnsManager( new CloseToOpenIntervals(
+															  firstEndOfDayDateTime, 
+																lastEndOfDayDateTime, 
+																this.benchmark),
+														new HistoricalAdjustedQuoteProvider() );
     }
     
-    
+  	protected override float[] getStrategyReturns()
+		{
+  		return this.weightedPositionsFromGenome.GetReturns(this.returnsManager);
+		}
+  	
   }
-
 }

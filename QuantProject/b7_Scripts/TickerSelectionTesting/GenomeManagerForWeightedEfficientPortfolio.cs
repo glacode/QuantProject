@@ -23,12 +23,17 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 using System;
 using System.Data;
 using System.Collections;
+
 using QuantProject.ADT;
 using QuantProject.ADT.Statistics;
 using QuantProject.ADT.Optimizing.Genetic;
 using QuantProject.Data;
 using QuantProject.Data.DataTables;
-using QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios;
+using QuantProject.Business.DataProviders;
+using QuantProject.Business.Timing;
+using QuantProject.Business.Strategies;
+using QuantProject.Business.Strategies.ReturnsManagement;
+using QuantProject.Business.Strategies.ReturnsManagement.Time;
 
 namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
 {
@@ -37,63 +42,71 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
   /// efficient portfolios in which tickers are weighted differently
   /// </summary>
   [Serializable]
-  public class GenomeManagerForWeightedEfficientPortfolio : GenomeManagerForEfficientPortfolio
+  public abstract class GenomeManagerForWeightedEfficientPortfolio : GenomeManagerForEfficientPortfolio
   {
+    private ReturnsManager returnsManager;
+  	
     public GenomeManagerForWeightedEfficientPortfolio(DataTable setOfInitialTickers,
       DateTime firstQuoteDate,
       DateTime lastQuoteDate,
       int numberOfTickersInPortfolio,
       double targetPerformance,
-      PortfolioType portfolioType):base(setOfInitialTickers,
+      PortfolioType portfolioType,
+      string benchmark):base(setOfInitialTickers,
                                         firstQuoteDate,
                                         lastQuoteDate,
                                         numberOfTickersInPortfolio,
                                         targetPerformance,
-                                        portfolioType)
+                                        portfolioType, benchmark)
                           
     {
       this.genomeSize = 2*this.genomeSize;
       //at even position the gene is used for finding
       //the coefficient for the ticker represented at the next odd position
+      this.setReturnsManager(firstQuoteDate, lastQuoteDate);
+	  }
+ 		
+		protected abstract ReturnIntervals getReturnIntervals(EndOfDayDateTime firstEndOfDayDateTime,
+																												  EndOfDayDateTime lastEndOfDayDateTime);
+
+    private void setReturnsManager(DateTime firstQuoteDate,
+                                   DateTime lastQuoteDate)
+    {
+    	EndOfDayDateTime firstEndOfDayDateTime =
+				new EndOfDayDateTime(firstQuoteDate, EndOfDaySpecificTime.MarketOpen);
+			EndOfDayDateTime lastEndOfDayDateTime =
+				new EndOfDayDateTime(lastQuoteDate, EndOfDaySpecificTime.MarketClose);
+    	this.returnsManager = 
+    		new ReturnsManager( this.getReturnIntervals(firstEndOfDayDateTime,
+																 lastEndOfDayDateTime) ,
+														new HistoricalAdjustedQuoteProvider() );
     }
     
-    #region override getPortfolioRatesOfReturn
-    
-    protected override double getTickerWeight(int[] genes, int tickerPositionInGenes)
-    {
-      double minimumWeight = (1.0 - ConstantsProvider.AmountOfVariableWeightToBeAssignedToTickers)/
-                             (genes.Length / 2);
-      double totalOfValuesForWeightsInGenes = 0.0;
-      for(int j = 0; j<genes.Length; j++)
-      {
-        if(j%2==0)
-          //ticker weight is contained in genes at even position
-          totalOfValuesForWeightsInGenes += Math.Abs(genes[j]) + 1.0;
-        //0 has to be avoided !
-      }
-      double freeWeight = (Math.Abs(genes[tickerPositionInGenes-1]) + 1.0)/totalOfValuesForWeightsInGenes;
-      return minimumWeight + freeWeight * (1.0 - minimumWeight * genes.Length / 2);
-    }
- 
-    protected override double[] getPortfolioRatesOfReturn(int[] genes)
-    {
-      double[] returnValue = new double[this.numberOfExaminedReturns];
-      for(int i = 0; i<returnValue.Length; i++)    
-      {  
-        for(int j = 0; j<genes.Length; j++)
-        {
-        	if(j%2==1)
-        	//ticker ID is contained in genes at odd position
-	        	returnValue[i] +=
-	        	this.getPortfolioRatesOfReturn_getRateOfTickerToBeAddedToTheArray(genes,j,i);
-        }
-      }
-      return returnValue;
-    }
-
-    #endregion
-
+  	//this is a very generic implementation that will
+ 		//be overriden by inherited classes specifying 
+ 		//the strategy and the type of returns
+  	protected override float[] getStrategyReturns()
+		{
+			return this.weightedPositionsFromGenome.GetReturns(this.returnsManager);
+		}
+  	
     #region override Decode
+
+		protected override double getTickerWeight(int[] genes, int tickerPositionInGenes)
+		{
+			double minimumWeight = (1.0 - ConstantsProvider.AmountOfVariableWeightToBeAssignedToTickers)/
+				(genes.Length / 2);
+			double totalOfValuesForWeightsInGenes = 0.0;
+			for(int j = 0; j<genes.Length; j++)
+			{
+				if(j%2==0)
+					//ticker weight is contained in genes at even position
+					totalOfValuesForWeightsInGenes += Math.Abs(genes[j]) + 1.0;
+				//0 has to be avoided !
+			}
+			double freeWeight = (Math.Abs(genes[tickerPositionInGenes-1]) + 1.0)/totalOfValuesForWeightsInGenes;
+			return minimumWeight + freeWeight * (1.0 - minimumWeight * genes.Length / 2);
+		}
 
     public override object Decode(Genome genome)
     {
@@ -113,12 +126,8 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
         }
       }
       GenomeMeaning meaning = new GenomeMeaning(arrayOfTickers,
-																				        arrayOfTickersWeights,
-																				        this.PortfolioRatesOfReturn[this.portfolioRatesOfReturn.Length - 1],
-																				        this.RateOfReturn,
-																				        this.Variance);
+                                                arrayOfTickersWeights);
       return meaning;
-      
     }
     #endregion
 
@@ -139,7 +148,6 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
       	returnValue = GenomeManagement.RandomGenerator.Next(genome.GetMinValueForGenes(genePosition),
                                                             genome.GetMaxValueForGenes(genePosition) + 1);
       }
-
       return returnValue;
     }
     
@@ -189,9 +197,7 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
       		returnValue = Math.Min(genome.GetMaxValueForGenes(genePositionToBeMutated),
                                	 geneValue + Convert.ToInt32(partOfGeneToSubtractOrAdd*geneValue));
       }
-      
       return returnValue;
-    
     }
 
     private void mutate_MutateOnlyOneWeight(Genome genome)
@@ -244,5 +250,4 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
     #endregion
 
   }
-
 }
