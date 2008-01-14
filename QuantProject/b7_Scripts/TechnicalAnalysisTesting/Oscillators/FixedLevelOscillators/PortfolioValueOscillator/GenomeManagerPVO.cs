@@ -23,11 +23,18 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 using System;
 using System.Data;
 using System.Collections;
+
 using QuantProject.ADT;
 using QuantProject.ADT.Statistics;
 using QuantProject.ADT.Optimizing.Genetic;
 using QuantProject.Data;
 using QuantProject.Data.DataTables;
+using QuantProject.Business.DataProviders;
+using QuantProject.Business.Timing;
+using QuantProject.Business.Strategies;
+using QuantProject.Business.Strategies.ReturnsManagement;
+using QuantProject.Business.Strategies.ReturnsManagement.Time;
+using QuantProject.Business.Strategies.TickersRelationships;
 using QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios;
 
 namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOscillators.PortfolioValueOscillator
@@ -40,22 +47,21 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOs
 	[Serializable]
   public class GenomeManagerPVO : GenomeManagerForEfficientPortfolio
   {
-    private int minLevelForOversoldThreshold;
-    private int maxLevelForOversoldThreshold;
-    private int minLevelForOverboughtThreshold;
-    private int maxLevelForOverboughtThreshold;
-    private int divisorForThresholdComputation;
-    private bool symmetricalThresholds = false;
-    private bool overboughtMoreThanOversoldForFixedPortfolio = false;
-    private int numOfGenesDedicatedToThresholds;
-   	private double currentOversoldThreshold = 0.0;
-    private double currentOverboughtThreshold = 0.0;
-    private int numDaysForOscillatingPeriod;
-    
-    private double[] portfolioValues;//the values for each unit, invested
-                                     //at the beginning of the optimization period,
-    																//throughout the period itself
-    
+    protected int minLevelForOversoldThreshold;
+    protected int maxLevelForOversoldThreshold;
+    protected int minLevelForOverboughtThreshold;
+    protected int maxLevelForOverboughtThreshold;
+    protected int divisorForThresholdComputation;
+    protected bool symmetricalThresholds = false;
+    protected bool overboughtMoreThanOversoldForFixedPortfolio = false;
+    protected int numOfGenesDedicatedToThresholds;
+   	protected double currentOversoldThreshold = 0.0;
+    protected double currentOverboughtThreshold = 0.0;
+    protected int numDaysForOscillatingPeriod;
+    protected ReturnsManager returnsManager;
+    protected CorrelationProvider correlationProvider;//used for experimental
+    //tests using 2 tickers and PearsonCorrelationCoefficient as fitness
+        
     private void genomeManagerPVO_checkParametersForThresholdsComputation()
     {
       if(this.maxLevelForOverboughtThreshold < this.minLevelForOverboughtThreshold || 
@@ -85,14 +91,16 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOs
                            int divisorForThresholdComputation,
                            bool symmetricalThresholds,
                            bool overboughtMoreThanOversoldForFixedPortfolio,
-                           PortfolioType inSamplePortfolioType)
+                           PortfolioType inSamplePortfolioType,
+                           string benchmark)
                            :
                           base(setOfInitialTickers,
                           firstQuoteDate,
                           lastQuoteDate,
                           numberOfTickersInPortfolio,
                           0.0,
-                          inSamplePortfolioType)
+                          inSamplePortfolioType,
+                         	benchmark)
                                 
                           
     {
@@ -109,7 +117,25 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOs
       else
       	numOfGenesDedicatedToThresholds = 2;
     	this.genomeManagerPVO_checkParametersForThresholdsComputation();
-      this.retrieveData();
+    	this.setReturnsManager(firstQuoteDate , lastQuoteDate);
+    }
+    
+    protected virtual void setReturnsManager(DateTime firstQuoteDate,
+                                   DateTime lastQuoteDate)
+    {
+    	EndOfDayDateTime firstEndOfDayDateTime =
+				new EndOfDayDateTime(firstQuoteDate,
+    		EndOfDaySpecificTime.MarketClose);
+			EndOfDayDateTime lastEndOfDayDateTime =
+				new EndOfDayDateTime(lastQuoteDate,
+				EndOfDaySpecificTime.MarketClose);
+    	this.returnsManager = 
+    		new ReturnsManager( new CloseToCloseIntervals(
+															  firstEndOfDayDateTime, 
+																lastEndOfDayDateTime, 
+																this.benchmark,
+															  this.numDaysForOscillatingPeriod),
+														new HistoricalAdjustedQuoteProvider() );
     }
     
     public override int GenomeSize
@@ -192,41 +218,45 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOs
     }																
   	
     #endregion
-												
-    protected override float[] getArrayOfRatesOfReturn(string ticker)
-    {
-      float[] returnValue = null;
-      Quotes tickerQuotes = new Quotes(ticker, this.firstQuoteDate, this.lastQuoteDate);
-      tickerQuotes.RecalculateCloseToCloseRatios();
-      returnValue = QuantProject.ADT.ExtendedDataTable.GetArrayOfFloatFromColumn(tickerQuotes,
-    	                                                          Quotes.AdjustedCloseToCloseRatio);
-      for(int i = 0; i<returnValue.Length; i++)
-        returnValue[i] = returnValue[i] - 1.0f;
-      
-      this.numberOfExaminedReturns = returnValue.Length;
-      
-      return returnValue;
-    }
-    //starting from this.numDaysForOscillatingPeriod day,
-    //it computes for each day ahead the value of the
-    //portfolio opened numDaysForOscillatingPeriod days ago
-    private double[] getPortfolioMovingValues()
-    {
-    	double[] returnValue = new double[this.portfolioRatesOfReturn.Length];
-      double[] valuesInOscillatingPeriod = new double[this.numDaysForOscillatingPeriod];
-      valuesInOscillatingPeriod[0] = 1.0;
-      for(int i = this.numDaysForOscillatingPeriod; i<returnValue.Length; i++)
+		
+    
+    #region getStrategyReturns
+    
+    private float[] getStrategyReturns_getReturnsActually(
+    									float[] plainReturns)
+		{
+			
+			float[] returnValue = new float[plainReturns.Length];
+			returnValue[0] = 0; //a the very first day the
+			//strategy return is equal to 0 because no position
+			//has been entered
+			float coefficient = 0;
+    	for(int i = 0; i < returnValue.Length - 1; i++)
       {
-        for(int j = 1;
-            j < this.numDaysForOscillatingPeriod; j++)
-      			  valuesInOscillatingPeriod[j] = 
-      			    valuesInOscillatingPeriod[j - 1] + 
-                valuesInOscillatingPeriod[j - 1] * 
-                  this.portfolioRatesOfReturn[i-this.numDaysForOscillatingPeriod+j];
-        returnValue[i-1] = valuesInOscillatingPeriod[this.numDaysForOscillatingPeriod -1];
+    		if( plainReturns[i] >= (float)this.currentOverboughtThreshold )
+    		//portfolio has been overbought
+    			coefficient = -1;
+    		else if( plainReturns[i] <= - (float)this.currentOversoldThreshold )
+ 				//portfolio has been oversold   			
+        	coefficient = 1;
+    		//else the previous coeff is kept or, if no threshold has been
+    		//reached, then no positions will be opened (coefficient = 0) 
+    		returnValue[i + 1] = coefficient * plainReturns[i + 1];
       }
       return returnValue;
-    }
+			
+			//return plainReturns;
+		}
+    
+    protected override float[] getStrategyReturns()
+		{
+			float[] plainReturns = this.weightedPositionsFromGenome.GetReturns(
+             								 this.returnsManager);
+			return this.getStrategyReturns_getReturnsActually(plainReturns);
+		}
+    	
+    #endregion
+       
 
     private void getFitnessValue_setCurrentThresholds(Genome genome)
     {
@@ -240,77 +270,80 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOs
                                         	Convert.ToDouble(this.divisorForThresholdComputation);
     }
     
-    private int getFitnessValue_getDaysOnTheMarket(double[] equityLine)
+    protected int getFitnessValue_getDaysOnTheMarket()
     {
       int returnValue = 0;
-      foreach(double equityReturn in equityLine)
-        if(equityReturn != 0.0)
+      foreach(float strategyReturn in this.strategyReturns)
+        if(strategyReturn != 0)
         //the applied strategy gets positions on the market
           returnValue++;
 
       return returnValue;
     }
-
+		
+    private double getFitnessValue_calculate_calculateActually()
+    {
+    	return this.AverageOfStrategyReturns/Math.Sqrt(this.VarianceOfStrategyReturns);
+			//return Math.Sqrt(this.VarianceOfStrategyReturns);
+    }
+    
+    
+    protected override double getFitnessValue_calculate()
+    {
+			double returnValue = -1.0;
+				if(this.getFitnessValue_getDaysOnTheMarket() >
+          this.strategyReturns.Length / 2)
+	    	//if the genome represents a portfolio that stays on the market
+	      //at least half of the theoretical days
+						returnValue = 
+							this.getFitnessValue_calculate_calculateActually();
+			return returnValue;
+    }
+    
+    protected string getFitnessValue_getFirstTickerFromGenome(Genome genome)
+    {
+    	GenomeMeaningPVO genomeMeaning = (GenomeMeaningPVO)genome.Meaning;
+    	return genomeMeaning.Tickers[0];
+    }
+    protected string getFitnessValue_getSecondTickerFromGenome(Genome genome)
+    {
+    	GenomeMeaningPVO genomeMeaning = (GenomeMeaningPVO)genome.Meaning;
+    	return genomeMeaning.Tickers[1];
+    }
+    
 		//fitness is a sharpe-ratio based indicator for the equity line resulting
 		//from applying the strategy
 	  public override double GetFitnessValue(Genome genome)
     {
-      double returnValue = -1.0;
-	  	this.portfolioRatesOfReturn = this.getPortfolioRatesOfReturn(genome.Genes());
-      this.portfolioValues = this.getPortfolioMovingValues();
-      this.getFitnessValue_setCurrentThresholds(genome);
-      double[] equityLine = this.getFitnessValue_getEquityLineRates();
-      double fitness = Double.NaN;
-      if(this.getFitnessValue_getDaysOnTheMarket(equityLine) >
-          equityLine.Length / 2)
-      //if the genome represents a portfolio that stays on the market
-      //at least half of the theoretical days
-        fitness = AdvancedFunctions.GetSharpeRatio(equityLine);
-      if(!double.IsNaN(fitness) && !double.IsInfinity(fitness))
-      	returnValue = fitness;
-      
-      return returnValue;
-    }
-    
-    private double[] getFitnessValue_getEquityLineRates()
-    {
-    	double[] returnValue = new double[this.PortfolioRatesOfReturn.Length];
-    	double coefficient = 0.0;
-    	for(int i = 0; i<this.PortfolioRatesOfReturn.Length - 1;i++)
-      {
-    		if(this.portfolioValues[i] >= 
-    		   1.0 + this.currentOverboughtThreshold)
-    		//portfolio is overbought
-    			coefficient = -1.0;
-        else if(this.portfolioValues[i] <= 
-    		        1.0 - this.currentOversoldThreshold &&
-                this.portfolioValues[i] > 0.0)
- 				//portfolio is oversold   			
-        	coefficient = 1.0;
-    		  		
-    		returnValue[i + 1] = 
-    			coefficient * this.PortfolioRatesOfReturn[i + 1];
-      }
-      return returnValue;
-    }
-	  
-    protected override double getTickerWeight(int[] genes, int tickerPositionInGenes)
-    {
-      return 1.0/(genes.Length - this.numOfGenesDedicatedToThresholds);
-    }
+//OLD CLASSICAL IMPLEMENTATION (sharpeRatio applied to strategyReturns)
+//      this.getFitnessValue_setCurrentThresholds(genome);
+//      return base.GetFitnessValue(genome);
 
-    protected override double[] getPortfolioRatesOfReturn(int[] genes)
-    {
-      double[] returnValue = new double[this.numberOfExaminedReturns];
-      for(int i = 0; i<returnValue.Length; i++)    
-      {  
-        for(int j=this.numOfGenesDedicatedToThresholds; j<genes.Length; j++)//the first numOfGenesDedicatedToThresholds are for thresholds
-          returnValue[i] +=
-            this.getPortfolioRatesOfReturn_getRateOfTickerToBeAddedToTheArray(genes,j,i);
-      }
-      return returnValue;
+//NEW implementation: fitness is just the pearson correlation
+//applied to two tickers. This kind of fitness is only valid
+//for experimental tests with 2-tickers portfolios
+			double returnValue = -2.0;
+			if(this.correlationProvider == null)
+				this.correlationProvider = new CloseToCloseCorrelationProvider(
+					QuantProject.ADT.ExtendedDataTable.GetArrayOfStringFromColumn(this.setOfTickers, 0),
+					this.returnsManager, 0.0001f, 0.5f);
+			string firstTicker = this.getFitnessValue_getFirstTickerFromGenome(genome);
+			string secondTicker = this.getFitnessValue_getSecondTickerFromGenome(genome);
+			if(  ( firstTicker.StartsWith("-") && !secondTicker.StartsWith("-") ) ||
+			   	 ( secondTicker.StartsWith("-") && !firstTicker.StartsWith("-") )     )
+			//tickers have to be opposite in sign	
+			{
+				double correlationIndex = correlationProvider.GetPearsonCorrelation(
+					SignedTicker.GetTicker(firstTicker),
+					SignedTicker.GetTicker(secondTicker) );
+				if(correlationIndex < 0.96)
+				//	if correlation index is not too high to be 
+				//  probably originated by the same instrument
+					returnValue = correlationIndex;
+			}
+			return returnValue;
     }
-
+    	  
     public override object Decode(Genome genome)
     {
       string[] arrayOfTickers = 
@@ -325,15 +358,20 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOs
         arrayOfTickers[genePosition - this.numOfGenesDedicatedToThresholds] = 
                   this.decode_getTickerCodeForLongOrShortTrade(geneForTicker);
       }
+      	
+      double[] arrayOfWeights = ExtendedMath.ArrayOfAbs(
+				WeightedPositions.GetBalancedWeights(new SignedTickers(arrayOfTickers),
+	                                     this.returnsManager) );
+      
       if(this.symmetricalThresholds)
-      		meaning = new GenomeMeaningPVO(
-                                      arrayOfTickers,
+      		meaning = new GenomeMeaningPVO(arrayOfTickers,
+																			arrayOfWeights,
                                       Convert.ToDouble(genome.Genes()[0])/Convert.ToDouble(this.divisorForThresholdComputation),
                                       Convert.ToDouble(genome.Genes()[0])/Convert.ToDouble(this.divisorForThresholdComputation),
                                      	this.numDaysForOscillatingPeriod);
       else
-      		meaning = new GenomeMeaningPVO(
-                                      arrayOfTickers,
+      		meaning = new GenomeMeaningPVO(arrayOfTickers,
+																			arrayOfWeights,
                                       Convert.ToDouble(genome.Genes()[0])/Convert.ToDouble(this.divisorForThresholdComputation),
                                       Convert.ToDouble(genome.Genes()[1])/Convert.ToDouble(this.divisorForThresholdComputation),
                                      	this.numDaysForOscillatingPeriod);

@@ -60,6 +60,7 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOs
     //to be used by the optimizer
     protected int numDaysBetweenEachOptimization;
     protected double maxAcceptableCloseToCloseDrawdown;
+    protected double minimumAcceptableGain;
     protected int numDaysForOscillatingPeriod;
     protected bool symmetricalThresholds = false;
     protected bool overboughtMoreThanOversoldForFixedPortfolio = false;
@@ -79,6 +80,7 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOs
                                     bool overboughtMoreThanOversoldForFixedPortfolio,
                                    	int numDaysBetweenEachOptimization,
                                     PortfolioType inSamplePortfolioType, double maxAcceptableCloseToCloseDrawdown, 
+                                    double minimumAcceptableGain,
                                     double maxRunningHours):
 																base(tickerGroupID, maxNumOfEligibleTickersForOptimization, 
                                     numberOfTickersToBeChosen, numDaysForOptimizationPeriod, 
@@ -96,6 +98,7 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOs
       this.symmetricalThresholds = symmetricalThresholds;
       this.overboughtMoreThanOversoldForFixedPortfolio = overboughtMoreThanOversoldForFixedPortfolio;
       this.maxAcceptableCloseToCloseDrawdown = maxAcceptableCloseToCloseDrawdown;
+      this.minimumAcceptableGain = minimumAcceptableGain;
       this.numDaysForOscillatingPeriod = numDaysForOscillatingPeriod;
       this.numDaysBetweenEachOptimization = numDaysBetweenEachOptimization;
 		}
@@ -118,7 +121,8 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOs
                                                               this.symmetricalThresholds,
                                                               this.overboughtMoreThanOversoldForFixedPortfolio,
     	                                                        this.numDaysBetweenEachOptimization,
-                                                              this.portfolioType, this.maxAcceptableCloseToCloseDrawdown);
+                                                              this.portfolioType, this.maxAcceptableCloseToCloseDrawdown,
+                                                              this.minimumAcceptableGain);
     }
     
     protected override void run_initializeHistoricalQuoteProvider()

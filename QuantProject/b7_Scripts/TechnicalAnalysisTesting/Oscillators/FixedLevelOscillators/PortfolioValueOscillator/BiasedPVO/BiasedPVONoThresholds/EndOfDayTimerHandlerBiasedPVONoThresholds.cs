@@ -29,6 +29,9 @@ using QuantProject.Business.Financial.Instruments;
 using QuantProject.Business.Financial.Ordering;
 using QuantProject.Business.Timing;
 using QuantProject.Business.Strategies;
+using QuantProject.Business.Strategies.ReturnsManagement;
+using QuantProject.Business.Strategies.ReturnsManagement.Time;
+using QuantProject.Business.DataProviders;
 using QuantProject.Data;
 using QuantProject.Data.DataProviders;
 using QuantProject.Data.Selectors;
@@ -77,19 +80,26 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOs
     
 	  #region MarketCloseEventHandler
     
-		protected override double getCurrentWeightedPositionsGainOrLoss(IndexBasedEndOfDayTimer timer,
-			int indexForChosenWeightedPositions)
+		protected override double getCurrentWeightedPositionsGainOrLoss(
+	  	IndexBasedEndOfDayTimer timer,
+	  	ReturnsManager returnsManager,
+	  	int indexForChosenWeightedPositions)
 		{
 			double returnValue = 999.0;
 			try
 			{
+				DateTime firstDayOfOscillatingPeriod = 
+					(DateTime)timer.IndexQuotes.Rows[timer.CurrentDateArrayPosition - this.numDaysForOscillatingPeriod]["quDate"];
 				DateTime today = 
 					(DateTime)timer.IndexQuotes.Rows[timer.CurrentDateArrayPosition]["quDate"];
-				DateTime lastMarketDay = 
-					(DateTime)timer.IndexQuotes.Rows[timer.CurrentDateArrayPosition - 1]["quDate"];
-				returnValue =
-					this.weightedPositionsToEvaluateOutOfSample[indexForChosenWeightedPositions].GetCloseToCloseReturn(
-					lastMarketDay, today);
+				ReturnsManager returnsManager = new ReturnsManager(new CloseToCloseIntervals(
+					new EndOfDayDateTime(firstDayOfOscillatingPeriod,
+					EndOfDaySpecificTime.MarketClose) , 
+					new EndOfDayDateTime(finalDateForHalfPeriod,
+					EndOfDaySpecificTime.MarketClose) ,
+					this.benchmark , this.numDaysForReturnCalculation ) ,
+					new HistoricalAdjustedQuoteProvider() );
+				returnValue = this.chosenWeightedPositions.GetReturn(0,returnsManager);
 			}
 			catch(MissingQuotesException ex)
 			{
@@ -105,7 +115,7 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOs
       double portfolioGainOrLoss = (this.currentAccountValue - this.previousAccountValue)
            													/this.previousAccountValue;
       
-      if( portfolioGainOrLoss < -this.maxAcceptableCloseToCloseDrawdown )
+      if( portfolioGainOrLoss <= -this.maxAcceptableCloseToCloseDrawdown )
       {
         this.stopLossConditionReached = true;
         this.takeProfitConditionReached = false;
@@ -129,8 +139,7 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOs
       if(this.stopLossConditionReached ||
           this.takeProfitConditionReached ||
           this.numDaysElapsedSinceLastOptimization + 1 == this.numDaysBetweenEachOptimization )
-          //reversal conditions have not been reached but 
-          //stop loss or take profit conditions yes
+          //stop loss or take profit conditions have been reached
           //or after the close it is necessary to run
           //another optimization
       {
@@ -145,7 +154,7 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOs
     	 	//this.marketCloseEventHandler_reverseOrClose((IndexBasedEndOfDayTimer)sender);
      	  this.marketCloseEventHandler_closeIfItIsTimeToClose();
       else if ( this.account.Portfolio.Count == 0 &&
-    	         this.weightedPositionsToEvaluateOutOfSample != null )
+    	         this.weightedPositionsToEvaluateOutOfSample[0] != null )
 			//portfolio is empty and optimization has been already launched    		
     		this.marketCloseEventHandler_openPositions((IndexBasedEndOfDayTimer)sender);
     }
@@ -164,7 +173,7 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOs
           new GenomeManagerBiasedPVONoThresholds(setOfTickersToBeOptimized,
           currentDate.AddDays(-this.numDaysForOptimizationPeriod), 
           currentDate, this.numberOfTickersToBeChosen,
-          this.portfolioType);
+          this.portfolioType,this.benchmark);
       GeneticOptimizer GO = new GeneticOptimizer(this.iGenomeManager,
           this.populationSizeForGeneticOptimizer, 
           this.generationNumberForGeneticOptimizer,

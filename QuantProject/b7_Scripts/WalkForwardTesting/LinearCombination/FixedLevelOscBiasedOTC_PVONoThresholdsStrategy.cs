@@ -27,6 +27,7 @@ using QuantProject.Business.Financial.Accounting;
 using QuantProject.Business.Financial.Instruments;
 using QuantProject.Business.Financial.Ordering;
 using QuantProject.Business.Strategies;
+using QuantProject.Business.Strategies.ReturnsManagement;
 using QuantProject.Business.Timing;
 using QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios;
 using QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOscillators.PortfolioValueOscillator.BiasedPVO;
@@ -70,8 +71,10 @@ namespace QuantProject.Scripts.WalkForwardTesting.LinearCombination
     {
     }
     		
-    protected override double getCurrentWeightedPositionsGainOrLoss(IndexBasedEndOfDayTimer timer,
-		                                                       int indexForChosenWeightedPositions)
+    protected override double getCurrentWeightedPositionsGainOrLoss(
+			IndexBasedEndOfDayTimer timer,
+			ReturnsManager returnsManager,
+      int indexForChosenWeightedPositions )
     {
       double returnValue = 999.0;
       if(timer.CurrentDateArrayPosition >= 1)
@@ -80,13 +83,9 @@ namespace QuantProject.Scripts.WalkForwardTesting.LinearCombination
       {
 	      try
 	      {
-          DateTime today = 
-            (DateTime)timer.IndexQuotes.Rows[timer.CurrentDateArrayPosition]["quDate"];
-          DateTime lastMarketDay = 
-            (DateTime)timer.IndexQuotes.Rows[timer.CurrentDateArrayPosition - 1]["quDate"];
-	      
-          returnValue = this.weightedPositionsToEvaluateOutOfSample[indexForChosenWeightedPositions].GetLastNightReturn(
-																																            lastMarketDay, today);
+          returnValue = 
+          	this.weightedPositionsToEvaluateOutOfSample[indexForChosenWeightedPositions].GetReturn(
+		    		0 , returnsManager);
 	      }
 	    	catch(MissingQuotesException ex)
 	    	{

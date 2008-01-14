@@ -24,11 +24,14 @@ using System.Data;
 using System.Collections;
 
 using QuantProject.ADT;
+using QuantProject.Business.DataProviders;
 using QuantProject.Business.Financial.Accounting;
 using QuantProject.Business.Financial.Instruments;
 using QuantProject.Business.Financial.Ordering;
 using QuantProject.Business.Timing;
 using QuantProject.Business.Strategies;
+using QuantProject.Business.Strategies.ReturnsManagement;
+using QuantProject.Business.Strategies.ReturnsManagement.Time;
 using QuantProject.Data;
 using QuantProject.Data.DataProviders;
 using QuantProject.Data.Selectors;
@@ -86,19 +89,17 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOs
       this.genomesCollector = new Hashtable();
     }
   
-    protected virtual double getCurrentWeightedPositionsGainOrLoss(IndexBasedEndOfDayTimer timer,
-                                                int indexForChosenWeightedPositions)
+    protected virtual double getCurrentWeightedPositionsGainOrLoss(
+			IndexBasedEndOfDayTimer timer,
+			ReturnsManager returnsManager,
+      int indexForChosenWeightedPositions )
     {
       double returnValue = 999.0;
       try
       {
-		    DateTime today = 
-	          (DateTime)timer.IndexQuotes.Rows[timer.CurrentDateArrayPosition]["quDate"];
-        DateTime lastMarketDay = 
-          (DateTime)timer.IndexQuotes.Rows[timer.CurrentDateArrayPosition - 1]["quDate"];
-        returnValue =
-	      	 this.weightedPositionsToEvaluateOutOfSample[indexForChosenWeightedPositions].GetLastNightReturn(
-	      	      	     lastMarketDay, today);
+		    returnValue =
+	      	 this.weightedPositionsToEvaluateOutOfSample[indexForChosenWeightedPositions].GetReturn(
+		    		0 , returnsManager);
       }
     	catch(MissingQuotesException ex)
     	{
@@ -117,9 +118,17 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOs
       double currentWeightedPositionsGainOrLoss = 0.0;
       double currentMaxAbsoluteMove = 0.0;
       double currentAbsoluteMove = 0.0;
+      DateTime today = timer.GetCurrentTime().DateTime;
+		  DateTime lastMarketDay = timer.GetPreviousDateTime();
+		  ReturnsManager returnsManager = new ReturnsManager(
+		  	new CloseToOpenIntervals(new EndOfDayDateTime(lastMarketDay, EndOfDaySpecificTime.MarketClose),
+		  	                         new EndOfDayDateTime(today, EndOfDaySpecificTime.MarketOpen),
+		  	                         this.benchmark),
+		  	new HistoricalAdjustedQuoteProvider() );
       for(int i = 0; i < this.numOfDifferentGenomesToEvaluateOutOfSample; i++)
       {
-        currentWeightedPositionsGainOrLoss = this.getCurrentWeightedPositionsGainOrLoss(timer, i);
+        currentWeightedPositionsGainOrLoss = this.getCurrentWeightedPositionsGainOrLoss(
+      																			 timer, returnsManager, i);
       	currentAbsoluteMove =
         	Math.Abs( currentWeightedPositionsGainOrLoss );
         if(currentAbsoluteMove != 999.0 && 
@@ -218,7 +227,7 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOs
           new GenomeManagerBiasedOTC_PVONoThresholds(setOfTickersToBeOptimized,
           currentDate.AddDays(-this.numDaysForOptimizationPeriod), 
           currentDate, this.numberOfTickersToBeChosen,
-          this.portfolioType);
+          this.portfolioType, this.benchmark);
       GeneticOptimizer GO = new GeneticOptimizer(this.iGenomeManager,
           this.populationSizeForGeneticOptimizer, 
           this.generationNumberForGeneticOptimizer,

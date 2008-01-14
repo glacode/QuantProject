@@ -82,7 +82,8 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOs
                            int divisorForThresholdComputation,
                            bool symmetricalThresholds,
                            bool overboughtMoreThanOversoldForFixedPortfolio,
-                           PortfolioType inSamplePortfolioType)
+                           PortfolioType inSamplePortfolioType,
+                           string benchmark)
                            :
                           base(setOfInitialTickers,
                            firstQuoteDate,
@@ -96,7 +97,8 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOs
                            divisorForThresholdComputation,
                            symmetricalThresholds,
                            overboughtMoreThanOversoldForFixedPortfolio,
-                           inSamplePortfolioType)
+                           inSamplePortfolioType,
+                           benchmark)
     
     {
     	

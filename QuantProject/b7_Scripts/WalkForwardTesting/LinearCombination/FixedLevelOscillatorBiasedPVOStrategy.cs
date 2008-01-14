@@ -27,6 +27,7 @@ using QuantProject.Business.Financial.Accounting;
 using QuantProject.Business.Financial.Instruments;
 using QuantProject.Business.Financial.Ordering;
 using QuantProject.Business.Strategies;
+using QuantProject.Business.Strategies.ReturnsManagement;
 using QuantProject.Business.Timing;
 using QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios;
 using QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOscillators.PortfolioValueOscillator.BiasedPVO;
@@ -52,10 +53,15 @@ namespace QuantProject.Scripts.WalkForwardTesting.LinearCombination
                                            int numDaysForOscillatingPeriod,
                                            double maxAcceptableCloseToCloseDrawdown,
                                            double minimumAcceptableGain):
-                                        base("", 0, 
-                                        weightedPositionsToEvaluateOutOfSample[0].Count, 0, accountPVO, 0, 0,
-                                        "", numOfDifferentGenomesToEvaluateOutOfSample,
-                                        numDaysForOscillatingPeriod,1,1,1,1,1,false,false,0,
+                                        base("", 0, 0, 0, 
+                                        weightedPositionsToEvaluateOutOfSample[0].Count, 0, accountPVO, null, 0, 0,
+                                        "^GSPC", numOfDifferentGenomesToEvaluateOutOfSample,
+																				false,0,
+																				1.0,
+																				1000.0,
+																				false,
+																				false,
+                                        numDaysForOscillatingPeriod,numDaysForOscillatingPeriod,1,1,1,1,1,false,false,0,
                                         PortfolioType.ShortAndLong,maxAcceptableCloseToCloseDrawdown,
                                         minimumAcceptableGain)
                                        
@@ -72,11 +78,13 @@ namespace QuantProject.Scripts.WalkForwardTesting.LinearCombination
     {
     }
     		
-    protected override double getCurrentWeightedPositionsGainOrLoss(IndexBasedEndOfDayTimer timer,
-																																		int indexForChosenWeightedPositions)
+    protected override double getCurrentWeightedPositionsGainOrLoss(
+			IndexBasedEndOfDayTimer timer,
+	  	ReturnsManager returnsManager,
+	  	int indexForChosenWeightedPositions)
     {
       double returnValue = 999.0;
-      if(timer.CurrentDateArrayPosition + 2 >= this.numDaysForOscillatingPeriod)
+      if(timer.CurrentDateArrayPosition - this.numDaysForOscillatingPeriod >= 0)
       //if there are sufficient data for computing currentChosenTickersValue
       //that's why the method has been overriden
       {
@@ -87,8 +95,8 @@ namespace QuantProject.Scripts.WalkForwardTesting.LinearCombination
 					DateTime lastMarketDay = 
 						(DateTime)timer.IndexQuotes.Rows[timer.CurrentDateArrayPosition - 1]["quDate"];
 					returnValue =
-						this.weightedPositionsToEvaluateOutOfSample[indexForChosenWeightedPositions].GetCloseToCloseReturn(
-						lastMarketDay, today);
+						this.weightedPositionsToEvaluateOutOfSample[indexForChosenWeightedPositions].GetReturn(
+						0, returnsManager);
 				}
 				catch(MissingQuotesException ex)
 				{

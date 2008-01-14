@@ -23,11 +23,18 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 using System;
 using System.Data;
 using System.Collections;
+
 using QuantProject.ADT;
 using QuantProject.ADT.Statistics;
 using QuantProject.ADT.Optimizing.Genetic;
 using QuantProject.Data;
 using QuantProject.Data.DataTables;
+using QuantProject.Business.DataProviders;
+using QuantProject.Business.Timing;
+using QuantProject.Business.Strategies;
+using QuantProject.Business.Strategies.ReturnsManagement;
+using QuantProject.Business.Strategies.ReturnsManagement.Time;
+
 using QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios;
 
 namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOscillators.PortfolioValueOscillator.BiasedPVO.BiasedOTC_PVONoThresholds
@@ -40,110 +47,74 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOs
 	[Serializable]
   public class GenomeManagerBiasedOTC_PVONoThresholds : GenomeManagerForEfficientPortfolio
   {
-
+		private ReturnsManager returnsManager;
+  	
     public GenomeManagerBiasedOTC_PVONoThresholds(DataTable setOfInitialTickers,
                            DateTime firstQuoteDate,
                            DateTime lastQuoteDate,
                            int numberOfTickersInPortfolio,
-                           PortfolioType inSamplePortfolioType)
+                           PortfolioType inSamplePortfolioType,
+                           string benchmark)
                            :
                           base(setOfInitialTickers,
                           firstQuoteDate,
                           lastQuoteDate,
                           numberOfTickersInPortfolio,
                           0.0,
-                          inSamplePortfolioType)
+                          inSamplePortfolioType,
+                          benchmark)
                                 
                           
     {
-    	this.retrieveData();
+			this.setReturnsManager();
     }
     
-    #region Get Min and Max Value
-
-    public override int GetMinValueForGenes(int genePosition)
-    {
-    	int returnValue;
-      switch (this.portfolioType)
+		private void setReturnsManager()
+		{
+			EndOfDayDateTime firstEndOfDayDateTime =
+				new EndOfDayDateTime(firstQuoteDate, EndOfDaySpecificTime.MarketClose);
+			EndOfDayDateTime lastEndOfDayDateTime =
+				new EndOfDayDateTime(lastQuoteDate, EndOfDaySpecificTime.MarketClose);
+			this.returnsManager = 
+				new ReturnsManager( new OpenToCloseCloseToOpenIntervals(
+																firstEndOfDayDateTime, 
+																lastEndOfDayDateTime, 
+																this.benchmark) ,
+														new HistoricalAdjustedQuoteProvider() ); 
+		}
+		
+  	private float[] getStrategyReturns_getReturnsActually(
+    									float[] plainReturns)
+		{
+			float[] returnValue = new float[plainReturns.Length];
+			returnValue[0] = 0; //at the very first day the
+			//first strategy return is equal to 0 because no position
+			//has been entered
+			float coefficient = 0;
+    	for(int i = 0; i < returnValue.Length - 1; i++)
       {
-        case PortfolioType.OnlyLong :
-          returnValue = 0;
-          break;
-        default://For ShortAndLong or OnlyShort portfolios
-          returnValue = - this.originalNumOfTickers;
-          break;
+    		if( plainReturns[i] >= 0 )
+    		//portfolio is overbought
+    			coefficient = -1;
+    		else if( plainReturns[i] <= 0 )
+ 				//portfolio is oversold   			
+        	coefficient = 1;
+    		//else 
+    		// coefficient = coefficient; the previous coeff is kept
+    		returnValue[i + 1] = coefficient * plainReturns[i + 1];
       }
-    	return returnValue;
-    }
-
-    public override int GetMaxValueForGenes(int genePosition)
-    {
-      int returnValue;
-      switch (this.portfolioType)
-      {
-        case PortfolioType.OnlyShort :
-          returnValue = - 1;
-          break;
-        default ://For ShortAndLong or OnlyLong portfolios
-          returnValue = this.originalNumOfTickers - 1;
-          break;
-      }
-    	return returnValue;
-    }																
-  	
-    #endregion
-												
-    protected override float[] getArrayOfRatesOfReturn(string ticker)
-    {
-      Quotes tickerQuotes = new Quotes(ticker, this.firstQuoteDate, this.lastQuoteDate);
-      float[] returnValue = new float[2*tickerQuotes.Rows.Count - 1];
-      int j = 0;
-      for(int i = 0;i<tickerQuotes.Rows.Count; i++)
-      {
-        //open to close
-        returnValue[j] = (float)tickerQuotes.Rows[i]["quClose"]/
-          (float)tickerQuotes.Rows[i]["quOpen"] - 1;
-        //close to open
-        if(i<tickerQuotes.Rows.Count-1)
-        {
-          returnValue[j+1] = 
-            ( (float)tickerQuotes.Rows[i+1]["quOpen"]*
-            (float)tickerQuotes.Rows[i+1]["quAdjustedClose"]/
-            (float)tickerQuotes.Rows[i+1]["quClose"] )
-            /(float)tickerQuotes.Rows[i]["quAdjustedClose"] - 1;
-        }
-        j += 2 ;
-      }
-      this.numberOfExaminedReturns = returnValue.Length;
       return returnValue;
-    }
+		}
     
-    //fitness is a number that indicates how much the portfolio
-    //tends to preserve equity (no gain and no loss), with a low std dev
-	  public override double GetFitnessValue(Genome genome)
-    {
-      double returnValue = -1.0;
-	  	this.portfolioRatesOfReturn = this.getPortfolioRatesOfReturn( genome.Genes() );
-	  	//double[] asbolutePortfolioRatesOfReturns = new double[this.portfolioRatesOfReturn.Length];
-//	  	for( int i = 0; i<asbolutePortfolioRatesOfReturns.Length; i++ )
-//	  		asbolutePortfolioRatesOfReturns[i] = Math.Abs(this.portfolioRatesOfReturn[i]);
-	  	returnValue = BasicFunctions.SimpleAverage(this.portfolioRatesOfReturn);
-            //BasicFunctions.StdDev(this.portfolioRatesOfReturn)  );  //);
-      return returnValue;
-    }
-    
-    public override object Decode(Genome genome)
-    {
-      string[] arrayOfTickers = new string[genome.Genes().Length];
-      int indexOfTicker;
-      for(int index = 0; index < genome.Genes().Length; index++)
-      {
-        indexOfTicker = (int)genome.Genes().GetValue(index);
-        arrayOfTickers[index] = this.decode_getTickerCodeForLongOrShortTrade(indexOfTicker);
-      }
-      GenomeMeaningPVO meaning = new GenomeMeaningPVO(arrayOfTickers,
-                                                      0.0, 0.0, 2);
-      return meaning;
-    }
+    protected override float[] getStrategyReturns()
+		{
+			EndOfDayDateTime firstEndOfDayDateTime =
+				new EndOfDayDateTime(firstQuoteDate, EndOfDaySpecificTime.MarketClose);
+			EndOfDayDateTime lastEndOfDayDateTime =
+				new EndOfDayDateTime(lastQuoteDate, EndOfDaySpecificTime.MarketClose);
+	  	float[] plainReturns = this.weightedPositionsFromGenome.GetReturns(
+               							 this.returnsManager);
+			return this.getStrategyReturns_getReturnsActually(plainReturns);
+		}
   }
 }

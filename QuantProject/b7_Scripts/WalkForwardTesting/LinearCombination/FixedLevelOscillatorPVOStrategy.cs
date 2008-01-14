@@ -51,7 +51,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.LinearCombination
                                           0,0,
                                           "^GSPC",
                                           0, 0, 0, 0, 0, 0, false, false, 0, 
-                                          PortfolioType.ShortAndLong, 0.5)
+                                          PortfolioType.ShortAndLong, 0.5, 0.5)
 		{
 			this.chosenWeightedPositions = chosenWeightedPositions;
       this.currentOversoldThreshold = oversoldThreshold;
@@ -64,30 +64,15 @@ namespace QuantProject.Scripts.WalkForwardTesting.LinearCombination
     {
     }
 
-    protected override double getCurrentChosenWeightedPositionsValue(IndexBasedEndOfDayTimer timer)
+    protected override double getCurrentChosenWeightedPositionsReturn(IndexBasedEndOfDayTimer timer)
     {
       double returnValue = 999.0;
-      if(timer.CurrentDateArrayPosition + 2 >= this.numDaysForOscillatingPeriod)
-      //if there are sufficient data for computing currentChosenTickersValue
+      if(timer.CurrentDateArrayPosition - this.numDaysForOscillatingPeriod >= 0)
+      //if there are sufficient data for computing currentChosenWeightedPositionsReturn
       //that's why the method has been overriden
-      {
-        try
-        {
-          DateTime initialDate = 
-            (DateTime)timer.IndexQuotes.Rows[timer.CurrentDateArrayPosition - this.numDaysForOscillatingPeriod + 2]["quDate"];
-          //so to replicate exactly in sample scheme, where only numOscillatingDay - 1 returns
-          //are computed
-          DateTime finalDate = 
-            (DateTime)timer.IndexQuotes.Rows[timer.CurrentDateArrayPosition]["quDate"];
-          returnValue =
-            this.chosenWeightedPositions.GetCloseToCloseReturn(initialDate,finalDate) 
-          	+ 1.0;
-        }
-        catch(Exception ex)
-        {
-          ex = ex;
-        }
-      }
+      	returnValue = 
+      		 base.getCurrentChosenWeightedPositionsReturn(timer);
+      
       return returnValue;
     }   
 

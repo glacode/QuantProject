@@ -67,7 +67,8 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOs
                                 bool symmetricalThresholds,
                                 bool overboughtMoreThanOversoldForFixedPortfolio,
                                 int numDaysBetweenEachOptimization,
-                                PortfolioType portfolioType, double maxAcceptableCloseToCloseDrawdown):
+                                PortfolioType portfolioType, double maxAcceptableCloseToCloseDrawdown,
+                                double minimumAcceptableGain):
     														base(tickerGroupID, numberOfEligibleTickers, 
                                 numberOfTickersToBeChosen, numDaysForOptimizationPeriod,
                                 account,                                
@@ -83,7 +84,8 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOs
                                 symmetricalThresholds,
                                 overboughtMoreThanOversoldForFixedPortfolio,
                                 numDaysBetweenEachOptimization,
-                                portfolioType, maxAcceptableCloseToCloseDrawdown)
+                                portfolioType, maxAcceptableCloseToCloseDrawdown,
+                                minimumAcceptableGain)
     {
       
     }
@@ -143,14 +145,14 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOs
           this.divisorForThresholdComputation,
           this.symmetricalThresholds,
           this.overboughtMoreThanOversoldForFixedPortfolio,
-          this.portfolioType);
+          this.portfolioType, this.benchmark);
         GeneticOptimizer GO = new GeneticOptimizer(this.iGenomeManager,
           this.populationSizeForGeneticOptimizer, 
           this.generationNumberForGeneticOptimizer,
           this.seedForRandomGenerator);
         if(setGenomeCounter)
           this.genomeCounter = new GenomeCounter(GO);
-        GO.MutationRate = 0.1;
+        GO.MutationRate = 0.2;
         GO.Run(false);
         
 				this.chosenWeightedPositions = new WeightedPositions( ((GenomeMeaningPVO)GO.BestGenome.Meaning).TickersPortfolioWeights,
