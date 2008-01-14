@@ -604,39 +604,38 @@ namespace QuantProject.Business.Strategies
       return openToCloseReturn;
     }
 		
-    #region getLastNightReturn
-  	private double getLastNightReturn( float[] weightedPositionsLastNightReturns )
-		{
-			double returnValue = 0.0;
-			for(int i = 0; i<weightedPositionsLastNightReturns.Length; i++)
-				returnValue += weightedPositionsLastNightReturns[i] * this[i].Weight;
-			return returnValue;
-		}
-		private float getLastNightReturn_getLastNightReturnForTicker(string ticker,
-			DateTime lastMarketDay, DateTime today)
-		{
-			Quotes tickerQuotes = new Quotes(ticker, lastMarketDay, today);
-			return 	(  ( (float)tickerQuotes.Rows[1]["quOpen"] *
-									(float)tickerQuotes.Rows[1]["quAdjustedClose"] /
-									(float)tickerQuotes.Rows[1]["quClose"]            ) /
-								(float)tickerQuotes.Rows[0]["quAdjustedClose"]  - 1     );
-		}
-		#endregion
+//    private double getLastNightReturn( float[] weightedPositionsLastNightReturns )
+//		{
+//			double returnValue = 0.0;
+//			for(int i = 0; i<weightedPositionsLastNightReturns.Length; i++)
+//				returnValue += weightedPositionsLastNightReturns[i] * this[i].Weight;
+//			return returnValue;
+//		}
+//		private float getLastNightReturn_getLastNightReturnForTicker(string ticker,
+//			DateTime lastMarketDay, DateTime today)
+//		{
+//			Quotes tickerQuotes = new Quotes(ticker, lastMarketDay, today);
+//			return 	(  ( (float)tickerQuotes.Rows[1]["quOpen"] *
+//									(float)tickerQuotes.Rows[1]["quAdjustedClose"] /
+//									(float)tickerQuotes.Rows[1]["quClose"]            ) /
+//								(float)tickerQuotes.Rows[0]["quAdjustedClose"]  - 1     );
+//		}
+		
   	
   	/// <summary>
 		/// Gets the last night return for the current instance
 		/// </summary>
 		/// <param name="lastMarketDay">The last market date before today</param>
 		/// <param name="today">today</param> 
-		public double GetLastNightReturn( DateTime lastMarketDay , DateTime today )
-		{
-			float[] weightedPositionsLastNightReturns = new float[this.Count];
-			for(int i = 0; i<this.Count; i++)
-				weightedPositionsLastNightReturns[i] = 
-					this.getLastNightReturn_getLastNightReturnForTicker(
-						this[i].Ticker, lastMarketDay, today );
-			return getLastNightReturn( weightedPositionsLastNightReturns );
-		}
+//		public double GetLastNightReturn( DateTime lastMarketDay , DateTime today )
+//		{
+//			float[] weightedPositionsLastNightReturns = new float[this.Count];
+//			for(int i = 0; i<this.Count; i++)
+//				weightedPositionsLastNightReturns[i] = 
+//					this.getLastNightReturn_getLastNightReturnForTicker(
+//						this[i].Ticker, lastMarketDay, today );
+//			return getLastNightReturn( weightedPositionsLastNightReturns );
+//		}
 				
 		private double getCloseToCloseReturn_setReturns_getReturn(
 			int returnDayIndex, Quotes[] tickersQuotes )
@@ -706,5 +705,45 @@ namespace QuantProject.Business.Strategies
 				toString += ((WeightedPosition)( this[ i ] )).ToString() + "--";
 			return toString;
 		}
+
+		public bool HasTheSameSignedTickersAs(WeightedPositions weightedPositions) 
+		{
+			//Check for null and compare run-time types and compare length of the weightedPositions
+			if (weightedPositions.Count != this.Count)
+				return false;
+			int numOfEquals = 0;
+			//WeightedPositions can't contain the same ticker twice:
+			//so, if at the end of the nested cycle
+			//numOfEquals is equal to the number of
+			//positions, the two instances represent
+			//portfolios that contain the same signed tickers
+			for (int i = 0; i<this.Count; i++)
+				for (int j = 0; j<this.Count; j++)
+				if ( this[i].HasTheSameSignedTickerAs(weightedPositions[j]) )
+						numOfEquals++;
+					
+			return numOfEquals == this.Count;
+		}
+
+		public bool HasTheOppositeSignedTickersAs(WeightedPositions weightedPositions) 
+		{
+			//Check for null and compare run-time types and compare length of the weightedPositions
+			if (weightedPositions.Count != this.Count)
+				return false;
+			int numOfEqualsWithOppositeSign = 0;
+			//WeightedPositions can't contain the same ticker twice:
+			//so, if at the end of the nested cycle
+			//numOfEqualsWithOppositeSign is equal to the number of
+			//positions, the two instances represent
+			//portfolios that contain the same signed tickers with
+			//opposite signs
+			for (int i = 0; i<this.Count; i++)
+				for (int j = 0; j<this.Count; j++)
+				if ( this[i].HasTheOppositeSignedTickerAs(weightedPositions[j]) )
+						numOfEqualsWithOppositeSign++;
+					
+			return numOfEqualsWithOppositeSign == this.Count;
+		}
+		
 	}
 }
