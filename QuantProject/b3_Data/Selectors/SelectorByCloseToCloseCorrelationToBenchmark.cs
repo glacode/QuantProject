@@ -30,10 +30,6 @@ namespace QuantProject.Data.Selectors
   /// <summary>
   /// Class for selection on tickers by close to close absolute correlation to 
   /// a given benchmark
-  /// NOTE that
-  /// close values are grouped in pairs and the first close value in each group is 
-  /// not the last close in the previous group. There is, in other words, a discontinuity
-  /// between each group, with length equal to the group's length
   /// </summary>
    public class SelectorByCloseToCloseCorrelationToBenchmark : TickerSelector, ITickerSelector
   {
@@ -130,15 +126,8 @@ namespace QuantProject.Data.Selectors
       {
         float[] tickerQuotes = QuantProject.Data.DataTables.Quotes.GetArrayOfAdjustedCloseQuotes((string)row[0], 
                                 firstQuoteDate, lastQuoteDate);
-        if(tickerQuotes.Length == benchmarkQuotes.Length)
-        {
-          if((string)row[0] == benchmark)
-            row["CloseToCloseCorrelationToBenchmark"] = 1;
-          else
-            row["CloseToCloseCorrelationToBenchmark"] =
+        row["CloseToCloseCorrelationToBenchmark"] =
               BasicFunctions.PearsonCorrelationCoefficient(benchmarkQuotes, tickerQuotes);
-        }
-          
       }
       DataTable tableToReturn = ExtendedDataTable.CopyAndSort(setOfTickers,
                                                               "CloseToCloseCorrelationToBenchmark>=0.0 OR " +
