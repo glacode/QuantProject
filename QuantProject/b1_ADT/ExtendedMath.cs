@@ -24,5 +24,28 @@ namespace QuantProject.ADT
 				factorial = n * Factorial( n - 1 );
 			return factorial;
 		}
+		#region ArrayOfAbs
+		public static double[] ArrayOfAbs( double[] sourceArray )
+		{
+			double[] arrayOfAbs = new double[sourceArray.Length];
+			for(int i = 0; i < sourceArray.Length; i++)
+				arrayOfAbs[i] = Math.Abs( sourceArray[i] );
+			return arrayOfAbs;
+		}
+		public static float[] ArrayOfAbs( float[] sourceArray )
+		{
+			float[] arrayOfAbs = new float[sourceArray.Length];
+			for(int i = 0; i < sourceArray.Length; i++)
+				arrayOfAbs[i] = Math.Abs( sourceArray[i] );
+			return arrayOfAbs;
+		}
+		public static int[] ArrayOfAbs( int[] sourceArray )
+		{
+			int[] arrayOfAbs = new int[sourceArray.Length];
+			for(int i = 0; i < sourceArray.Length; i++)
+				arrayOfAbs[i] = Math.Abs( sourceArray[i] );
+			return arrayOfAbs;
+		}
+		#endregion
 	}
 }
