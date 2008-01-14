@@ -66,6 +66,10 @@
     <Compile Include="a2_Strategies\returnsManagement\time\OpenToCloseCloseToOpenIntervals.cs" />
     <Compile Include="a2_Strategies\returnsManagement\time\ReturnInterval.cs" />
     <Compile Include="a2_Strategies\returnsManagement\time\ReturnIntervals.cs" />
+    <Compile Include="a2_Strategies\TickersRelationships\CloseToCloseCorrelationProvider.cs" />
+    <Compile Include="a2_Strategies\TickersRelationships\CorrelationProvider.cs" />
+    <Compile Include="a2_Strategies\TickersRelationships\OpenToCloseCorrelationProvider.cs" />
+    <Compile Include="a2_Strategies\TickersRelationships\TickersPearsonCorrelation.cs" />
     <Compile Include="AssemblyInfo.cs" />
     <Compile Include="a0_Validation\IValidator.cs" />
     <Compile Include="a0_Validation\SospiciousDataRowEventArgs.cs" />
@@ -195,6 +199,7 @@
     <Folder Include="a2_Strategies\EquityEvaluation" />
     <Folder Include="a2_Strategies\returnsManagement" />
     <Folder Include="a2_Strategies\returnsManagement\time" />
+    <Folder Include="a2_Strategies\TickersRelationships" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.Targets" />
 </Project>
