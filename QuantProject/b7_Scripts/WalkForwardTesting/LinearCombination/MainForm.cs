@@ -234,7 +234,8 @@ namespace QuantProject.Scripts.WalkForwardTesting.LinearCombination
 				this.lastDate,
 				this.numberOfTickersToBeChosen,
 				this.targetReturn,
-				this.portfolioType);
+				this.portfolioType,
+				this.benchmark);
         
 			this.GO = new GeneticOptimizer(genManEfficientOTCPortfolio,
 				this.populationSizeForGeneticOptimizer,

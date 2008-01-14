@@ -51,23 +51,41 @@ namespace QuantProject.Scripts.WalkForwardTesting.LinearCombination
     private int numDaysForOscillatorStrategy;
     private double stopLoss;
     private double takeProfit;
+		private double oversoldThreshold;
+		private double overboughtThreshold;
+		private bool setDirectlyThresholdLevels;
 
 		private IHistoricalQuoteProvider historicalQuoteProvider;
 		private HistoricalEndOfDayTimer historicalEndOfDayTimer;
 		private Account account;
 		private IEndOfDayStrategy endOfDayStrategy;
     private PortfolioType portfolioType;
+		
+		private void linearCombinationTest_commonInitialization(DateTime firstDate , DateTime lastDate ,
+			GenomeRepresentation[] genomeRepresentations , StrategyType strategyType,
+			PortfolioType portfolioType, int numDaysForOscillatorStrategy,
+		  double stopLoss, double takeProfit,
+      double oversoldThreshold, double overboughtThreshold, bool setDirectlyThresholdLevels)
+		{
+			this.firstDate = firstDate;
+			this.lastDate = lastDate;
+			this.genomeRepresentations = genomeRepresentations;
+			this.strategyType = strategyType;
+			this.portfolioType = portfolioType;
+			this.numDaysForOscillatorStrategy = numDaysForOscillatorStrategy;
+			this.stopLoss = stopLoss;
+			this.takeProfit = takeProfit;
+			this.oversoldThreshold = oversoldThreshold;
+			this.overboughtThreshold = overboughtThreshold;
+			this.setDirectlyThresholdLevels = setDirectlyThresholdLevels;
+		}
 
 		public LinearCombinationTest( DateTime firstDate , DateTime lastDate ,
       GenomeRepresentation[] genomeRepresentations , StrategyType strategyType,
       PortfolioType portfolioType)
 		{
-			this.firstDate = firstDate;
-			this.lastDate = lastDate;
-			this.genomeRepresentations = genomeRepresentations;
-//			this.openToCloseDaily = openToCloseDaily;
-      this.strategyType = strategyType;
-      this.portfolioType = portfolioType;
+			this.linearCombinationTest_commonInitialization( firstDate, lastDate,
+				genomeRepresentations, strategyType, portfolioType, 0,0,0,0,0,false);
     }
     
     public LinearCombinationTest( DateTime firstDate , DateTime lastDate ,
@@ -75,29 +93,31 @@ namespace QuantProject.Scripts.WalkForwardTesting.LinearCombination
       PortfolioType portfolioType,
       int numDaysForOscillatorStrategy)
     {
-      this.firstDate = firstDate;
-      this.lastDate = lastDate;
-      this.genomeRepresentations = genomeRepresentations;
-      //			this.openToCloseDaily = openToCloseDaily;
-      this.strategyType = strategyType;
-      this.portfolioType = portfolioType;
-      this.numDaysForOscillatorStrategy = numDaysForOscillatorStrategy;
+			this.linearCombinationTest_commonInitialization( firstDate, lastDate,
+				genomeRepresentations, strategyType, portfolioType, numDaysForOscillatorStrategy,
+				0,0,0,0,false);
     }
+
     public LinearCombinationTest( DateTime firstDate , DateTime lastDate ,
       GenomeRepresentation[] genomeRepresentations , StrategyType strategyType,
       PortfolioType portfolioType,
       int numDaysForOscillatorStrategy, double stopLoss, double takeProfit)
     {
-      this.firstDate = firstDate;
-      this.lastDate = lastDate;
-      this.genomeRepresentations = genomeRepresentations;
-      //			this.openToCloseDaily = openToCloseDaily;
-      this.strategyType = strategyType;
-      this.portfolioType = portfolioType;
-      this.numDaysForOscillatorStrategy = numDaysForOscillatorStrategy;
-      this.stopLoss = stopLoss;
-      this.takeProfit = takeProfit;
+			this.linearCombinationTest_commonInitialization( firstDate, lastDate,
+				genomeRepresentations, strategyType, portfolioType, numDaysForOscillatorStrategy,
+				stopLoss, takeProfit, 0,0,false);
     }
+		public LinearCombinationTest( DateTime firstDate , DateTime lastDate ,
+			GenomeRepresentation[] genomeRepresentations , StrategyType strategyType,
+			PortfolioType portfolioType,
+			int numDaysForOscillatorStrategy, double stopLoss, double takeProfit,
+			double oversoldThreshold, double overboughtThreshold, bool setDirectlyThresholdLevels)
+		{
+			this.linearCombinationTest_commonInitialization( firstDate, lastDate,
+				genomeRepresentations, strategyType, portfolioType, numDaysForOscillatorStrategy,
+				stopLoss, takeProfit, oversoldThreshold, overboughtThreshold,
+				setDirectlyThresholdLevels);
+		}
     private void oneHourAfterMarketCloseEventHandler( Object sender ,
 			EndOfDayTimingEventArgs endOfDayTimingEventArgs )
 		{
@@ -114,39 +134,60 @@ namespace QuantProject.Scripts.WalkForwardTesting.LinearCombination
 				this.historicalQuoteProvider = new HistoricalAdjustedQuoteProvider();
 		}
 		
-    private void run_setStrategy_setBiasedOTC_PVONoThresholdsStrategy()
-    {
-    	WeightedPositions[] weightedPositions = new WeightedPositions[this.genomeRepresentations.Length];
-    	for(int i = 0; i<this.genomeRepresentations.Length;i++)
-      {
-      	weightedPositions[i] = 
-      		new WeightedPositions(GenomeRepresentation.GetWeightsArray(this.genomeRepresentations[i].WeightsForSignedTickers),
-      		                      new SignedTickers(this.genomeRepresentations[i].SignedTickers));
-      		                      
-      }
-     
-      this.endOfDayStrategy = new FixedLevelOscBiasedOTC_PVONoThresholdsStrategy(
-        this.account , weightedPositions, 
-        this.genomeRepresentations.Length);
-    }
+//    private void run_setStrategy_setBiasedOTC_PVONoThresholdsStrategy()
+//    {
+//    	WeightedPositions[] weightedPositions = new WeightedPositions[this.genomeRepresentations.Length];
+//    	for(int i = 0; i<this.genomeRepresentations.Length;i++)
+//      {
+//      	weightedPositions[i] = 
+//      		new WeightedPositions(GenomeRepresentation.GetWeightsArray(this.genomeRepresentations[i].WeightsForSignedTickers),
+//      		                      new SignedTickers(this.genomeRepresentations[i].SignedTickers));
+//      		                      
+//      }
+//     
+//      this.endOfDayStrategy = new FixedLevelOscBiasedOTC_PVONoThresholdsStrategy(
+//        this.account , weightedPositions, 
+//        this.genomeRepresentations.Length);
+//    }
 
-    private void run_setStrategy_setBiasedPVONoThresholdsStrategy()
-    {
-			WeightedPositions[] weightedPositions = new WeightedPositions[this.genomeRepresentations.Length];
-			for(int i = 0; i<this.genomeRepresentations.Length;i++)
-			{
-				weightedPositions[i] = 
-					new WeightedPositions(GenomeRepresentation.GetWeightsArray(this.genomeRepresentations[i].WeightsForSignedTickers),
-					new SignedTickers(this.genomeRepresentations[i].SignedTickers));
-      		                      
-			}
-      this.endOfDayStrategy = new FixedLevelOscillatorBiasedPVONoThresholdsStrategy(
-        this.account , weightedPositions, 
-        this.genomeRepresentations.Length,
-        this.stopLoss,
-        this.takeProfit);
-    }
+//    private void run_setStrategy_setBiasedPVONoThresholdsStrategy()
+//    {
+//			WeightedPositions[] weightedPositions = new WeightedPositions[this.genomeRepresentations.Length];
+//			for(int i = 0; i<this.genomeRepresentations.Length;i++)
+//			{
+//				weightedPositions[i] = 
+//					new WeightedPositions(GenomeRepresentation.GetWeightsArray(this.genomeRepresentations[i].WeightsForSignedTickers),
+//					new SignedTickers(this.genomeRepresentations[i].SignedTickers));
+//      		                      
+//			}
+//      this.endOfDayStrategy = new FixedLevelOscillatorBiasedPVONoThresholdsStrategy(
+//        this.account , weightedPositions, 
+//        this.genomeRepresentations.Length,
+//        this.stopLoss,
+//        this.takeProfit);
+//    }
 
+		private double run_setStrategy_setBiasedPVOStrategy_getOversoldThreshold(int i)
+		{
+			double returnValue;
+			if(this.setDirectlyThresholdLevels)
+				returnValue = this.oversoldThreshold;
+			else
+				returnValue = this.genomeRepresentations[i].OversoldThreshold;
+
+			return returnValue;
+		}
+		private double run_setStrategy_setBiasedPVOStrategy_getOverboughtThreshold(int i)
+		{
+			double returnValue;
+			if(this.setDirectlyThresholdLevels)
+				returnValue = this.overboughtThreshold;
+			else
+				returnValue = this.genomeRepresentations[i].OverboughtThreshold;
+
+			return returnValue;
+		}
+		
 		private void run_setStrategy_setBiasedPVOStrategy()
 		{
 			WeightedPositions[] weightedPositions = new WeightedPositions[this.genomeRepresentations.Length];
@@ -157,8 +198,8 @@ namespace QuantProject.Scripts.WalkForwardTesting.LinearCombination
 				weightedPositions[i] = 
 					new WeightedPositions(GenomeRepresentation.GetWeightsArray(this.genomeRepresentations[i].WeightsForSignedTickers),
 					new SignedTickers(this.genomeRepresentations[i].SignedTickers));
-				oversoldThresholds[i] = this.genomeRepresentations[i].OversoldThreshold;
-				overboughtThresholds[i] = this.genomeRepresentations[i].OverboughtThreshold;
+				oversoldThresholds[i] = this.run_setStrategy_setBiasedPVOStrategy_getOversoldThreshold(i);
+				overboughtThresholds[i] = this.run_setStrategy_setBiasedPVOStrategy_getOverboughtThreshold(i);
 			}
 			
 		 	this.endOfDayStrategy = new FixedLevelOscillatorBiasedPVOStrategy(
@@ -222,13 +263,13 @@ namespace QuantProject.Scripts.WalkForwardTesting.LinearCombination
           this.run_setStrategy_setBiasedPVOStrategy();
           break;
         
-        case StrategyType.PortfolioValueOscillatorBiasedNoThresholds:
-          this.run_setStrategy_setBiasedPVONoThresholdsStrategy();
-          break;
-
-        case StrategyType.OTC_PVOBiasedNoThresholds:
-          this.run_setStrategy_setBiasedOTC_PVONoThresholdsStrategy();
-          break;
+//        case StrategyType.PortfolioValueOscillatorBiasedNoThresholds:
+//          this.run_setStrategy_setBiasedPVONoThresholdsStrategy();
+//          break;
+//
+//        case StrategyType.OTC_PVOBiasedNoThresholds:
+//          this.run_setStrategy_setBiasedOTC_PVONoThresholdsStrategy();
+//          break;
       }
 		}
 		private string getDateString( DateTime dateTime )
@@ -261,6 +302,21 @@ namespace QuantProject.Scripts.WalkForwardTesting.LinearCombination
         color );
     }
     
+		private void run_addEquityLineForEachPositionInWeightedPositions(
+      WeightedPositions weightedPositions , Color color , Report report )
+    {
+			foreach(WeightedPosition position in weightedPositions.Values)
+			{
+				WeightedPositions wp = new WeightedPositions(new SignedTickers(
+																										 position.Ticker));
+				EquityLine equityLineForWeightedPositions =
+        wp.GetVirtualEquityLine(
+        15000 , report.AccountReport.EquityLine );
+      	report.AddEquityLine( equityLineForWeightedPositions ,
+        color );
+			}
+	  }
+		
     private WeightedPositions run_getWeightedPositions(GenomeRepresentation genomeRepresentation)
       
     {
@@ -312,14 +368,20 @@ namespace QuantProject.Scripts.WalkForwardTesting.LinearCombination
       report.Create( "Linear Combination" , 1 ,
 				new EndOfDayDateTime( this.lastDate , EndOfDaySpecificTime.MarketClose ) ,
 			"^GSPC");
-      WeightedPositions weightedPositions = 
-        this.run_getWeightedPositions(this.genomeRepresentations[0]);
-      this.run_addEquityLineForWeightedPositions(weightedPositions, Color.Brown,
-                                                  report);
-
-			//			ObjectArchiver.Archive( report.AccountReport ,
-			//				@"C:\Documents and Settings\Glauco\Desktop\reports\runOneRank.qPr" );
-			report.Text = this.run_getReportTitle();
+      foreach(GenomeRepresentation genomeRepresentation in this.genomeRepresentations)
+      { 	
+      	WeightedPositions weightedPositions = this.run_getWeightedPositions( genomeRepresentation );
+      	this.run_addEquityLineForWeightedPositions(
+      		weightedPositions,
+      		Color.Brown,
+      		report);
+      	this.run_addEquityLineForEachPositionInWeightedPositions(
+      		weightedPositions,
+      		Color.DimGray,
+      		report);
+      		
+      }
+      report.Text = this.run_getReportTitle();
 			report.Show();
 		}
 	}

@@ -68,6 +68,11 @@ namespace QuantProject.Scripts.WalkForwardTesting.LinearCombination
     private System.Windows.Forms.TextBox textBoxTakeProfit;
     private System.Windows.Forms.RadioButton radioButtonPVOBiasedNoThresholds;
     private System.Windows.Forms.RadioButton radioButtonOTCPVOBiasedNoThresholds;
+		private System.Windows.Forms.TextBox textBoxOversoldThreshold;
+		private System.Windows.Forms.TextBox textBoxOverboughtThreshold;
+		private System.Windows.Forms.Label labelOversoldThreshold;
+		private System.Windows.Forms.Label labelOverboughtThreshold;
+		private System.Windows.Forms.CheckBox checkBoxSetDirectlyThresholdLevels;
     private System.Windows.Forms.ComboBox comboBoxPortfolioType;
     
 		private void testDisplayer()
@@ -219,6 +224,11 @@ namespace QuantProject.Scripts.WalkForwardTesting.LinearCombination
 			this.textBoxTakeProfit = new System.Windows.Forms.TextBox();
 			this.radioButtonPVOBiasedNoThresholds = new System.Windows.Forms.RadioButton();
 			this.radioButtonOTCPVOBiasedNoThresholds = new System.Windows.Forms.RadioButton();
+			this.textBoxOversoldThreshold = new System.Windows.Forms.TextBox();
+			this.textBoxOverboughtThreshold = new System.Windows.Forms.TextBox();
+			this.labelOversoldThreshold = new System.Windows.Forms.Label();
+			this.labelOverboughtThreshold = new System.Windows.Forms.Label();
+			this.checkBoxSetDirectlyThresholdLevels = new System.Windows.Forms.CheckBox();
 			((System.ComponentModel.ISupportInitialize)(this.dgBestGenomes)).BeginInit();
 			this.SuspendLayout();
 			// 
@@ -418,11 +428,56 @@ namespace QuantProject.Scripts.WalkForwardTesting.LinearCombination
 			this.radioButtonOTCPVOBiasedNoThresholds.Text = "OTC_PVO Biased No Thresholds";
 			this.radioButtonOTCPVOBiasedNoThresholds.CheckedChanged += new System.EventHandler(this.radioButtonOTCPVOBiasedNoThresholds_CheckedChanged);
 			// 
+			// textBoxOversoldThreshold
+			// 
+			this.textBoxOversoldThreshold.Location = new System.Drawing.Point(504, 216);
+			this.textBoxOversoldThreshold.Name = "textBoxOversoldThreshold";
+			this.textBoxOversoldThreshold.Size = new System.Drawing.Size(40, 20);
+			this.textBoxOversoldThreshold.TabIndex = 23;
+			this.textBoxOversoldThreshold.Text = "0.01";
+			// 
+			// textBoxOverboughtThreshold
+			// 
+			this.textBoxOverboughtThreshold.Location = new System.Drawing.Point(656, 216);
+			this.textBoxOverboughtThreshold.Name = "textBoxOverboughtThreshold";
+			this.textBoxOverboughtThreshold.Size = new System.Drawing.Size(40, 20);
+			this.textBoxOverboughtThreshold.TabIndex = 24;
+			this.textBoxOverboughtThreshold.Text = "0.01";
+			// 
+			// labelOversoldThreshold
+			// 
+			this.labelOversoldThreshold.Location = new System.Drawing.Point(424, 216);
+			this.labelOversoldThreshold.Name = "labelOversoldThreshold";
+			this.labelOversoldThreshold.Size = new System.Drawing.Size(80, 16);
+			this.labelOversoldThreshold.TabIndex = 25;
+			this.labelOversoldThreshold.Text = "OvSold thresh.";
+			// 
+			// labelOverboughtThreshold
+			// 
+			this.labelOverboughtThreshold.Location = new System.Drawing.Point(552, 216);
+			this.labelOverboughtThreshold.Name = "labelOverboughtThreshold";
+			this.labelOverboughtThreshold.Size = new System.Drawing.Size(96, 16);
+			this.labelOverboughtThreshold.TabIndex = 26;
+			this.labelOverboughtThreshold.Text = "OvBought thresh.";
+			// 
+			// checkBoxSetDirectlyThresholdLevels
+			// 
+			this.checkBoxSetDirectlyThresholdLevels.Location = new System.Drawing.Point(432, 184);
+			this.checkBoxSetDirectlyThresholdLevels.Name = "checkBoxSetDirectlyThresholdLevels";
+			this.checkBoxSetDirectlyThresholdLevels.Size = new System.Drawing.Size(232, 24);
+			this.checkBoxSetDirectlyThresholdLevels.TabIndex = 27;
+			this.checkBoxSetDirectlyThresholdLevels.Text = "set directly threshold-levels";
+			// 
 			// TestDisplayer
 			// 
 			this.AutoScaleBaseSize = new System.Drawing.Size(5, 13);
 			this.ClientSize = new System.Drawing.Size(704, 414);
 			this.Controls.AddRange(new System.Windows.Forms.Control[] {
+																																	this.checkBoxSetDirectlyThresholdLevels,
+																																	this.labelOverboughtThreshold,
+																																	this.labelOversoldThreshold,
+																																	this.textBoxOverboughtThreshold,
+																																	this.textBoxOversoldThreshold,
 																																	this.radioButtonOTCPVOBiasedNoThresholds,
 																																	this.radioButtonPVOBiasedNoThresholds,
 																																	this.labelTakeProfit,
@@ -514,7 +569,10 @@ namespace QuantProject.Scripts.WalkForwardTesting.LinearCombination
 				this.dtpLastDate.Value , genomeRepresentations ,
 				this.selectedStrategyType,
         (PortfolioType)this.comboBoxPortfolioType.SelectedItem, Convert.ToInt32(this.textBoxDaysFPOscillatorAndRevOneRank.Text),
-        Convert.ToDouble(this.textBoxStopLoss.Text),Convert.ToDouble(this.textBoxTakeProfit.Text) );
+        Convert.ToDouble(this.textBoxStopLoss.Text),Convert.ToDouble(this.textBoxTakeProfit.Text),
+				Convert.ToDouble(this.textBoxOversoldThreshold.Text),
+				Convert.ToDouble(this.textBoxOverboughtThreshold.Text),
+				this.checkBoxSetDirectlyThresholdLevels.Checked);
 			linearCombinationTest.Run();
 			this.lastSelectedGenomeRepresentations = genomeRepresentations;
 		}
