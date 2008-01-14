@@ -85,6 +85,11 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
       		AccountManager.ClosePositions(this.account);
     }
     
+    public override void OneHourAfterMarketCloseEventHandler(
+      Object sender , EndOfDayTimingEventArgs endOfDayTimingEventArgs )
+    {
+    	;
+    }
 		
   }
 }

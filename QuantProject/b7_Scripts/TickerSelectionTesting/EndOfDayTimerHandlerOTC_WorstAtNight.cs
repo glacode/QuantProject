@@ -27,8 +27,11 @@ using QuantProject.ADT;
 using QuantProject.Business.Financial.Accounting;
 using QuantProject.Business.Financial.Instruments;
 using QuantProject.Business.Financial.Ordering;
+using QuantProject.Business.DataProviders;
 using QuantProject.Business.Strategies;
 using QuantProject.Business.Timing;
+using QuantProject.Business.Strategies.ReturnsManagement;
+using QuantProject.Business.Strategies.ReturnsManagement.Time;
 using QuantProject.Data.DataProviders;
 using QuantProject.Data.Selectors;
 using QuantProject.ADT.Optimizing.Genetic;
@@ -47,6 +50,7 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
     protected int seedForRandomGenerator;
 		protected GeneticOptimizer currentGO;
 		protected int numOfGenomesForCTOScanning;
+		private HistoricalAdjustedQuoteProvider historicalAdjustedQuoteProvider;
     
     public EndOfDayTimerHandlerOTC_WorstAtNight(string tickerGroupID, int numberOfEligibleTickers, 
                                 int numberOfTickersToBeChosen, int numDaysForOptimizationPeriod, Account account,
@@ -66,6 +70,7 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
     	this.numDaysElapsedSinceLastOptimization = 0;
     	this.seedForRandomGenerator = ConstantsProvider.SeedForRandomGenerator;
 			this.numOfGenomesForCTOScanning = numOfGenomesForCTOScanning;
+			this.historicalAdjustedQuoteProvider = new HistoricalAdjustedQuoteProvider();
     }
   
 		private void marketOpenEventHandler_chooseTheWorstCTOGenome()
@@ -78,6 +83,11 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
 			IndexBasedEndOfDayTimer currentTimer = (IndexBasedEndOfDayTimer)this.account.EndOfDayTimer;
 		  DateTime today = currentTimer.GetCurrentTime().DateTime;
 		  DateTime lastMarketDay = currentTimer.GetPreviousDateTime();
+		  ReturnsManager returnsManager = new ReturnsManager(
+		  	new CloseToOpenIntervals(new EndOfDayDateTime(lastMarketDay, EndOfDaySpecificTime.MarketClose),
+		  	                         new EndOfDayDateTime(today, EndOfDaySpecificTime.MarketOpen),
+		  	                         this.benchmark),
+		  	this.historicalAdjustedQuoteProvider );
 		  int numOfGenomesScanned = 0; 
 		  for(int i = 0;
 					numOfGenomesScanned < this.numOfGenomesForCTOScanning &&
@@ -100,7 +110,7 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
 		  				new WeightedPositions( ((GenomeMeaning)((Genome)this.currentGO.CurrentGeneration[populationSize - i - 1]).Meaning).TickersPortfolioWeights, 
 		  				                      	signedTickers);
 		  			lossOfCurrentCombination =
-			  			weightedPositions.GetLastNightReturn(lastMarketDay,today);
+		  				weightedPositions.GetReturn( 0 , returnsManager );
 				  	numOfGenomesScanned++;
 				  	if(lossOfCurrentCombination < lossOfCurrentWorstCombination)
 				  	{
@@ -195,7 +205,7 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
                                                     currentDate,
                                                     this.numberOfTickersToBeChosen,
                                                     this.targetReturn,
-                                                    this.portfolioType);
+                                                    this.portfolioType,this.benchmark);
 
         GeneticOptimizer GO = new GeneticOptimizer(genManEfficientOTCPortfolio,
                                                     this.populationSizeForGeneticOptimizer,
@@ -204,7 +214,7 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
         if(setGenomeCounter)
         	this.genomeCounter = new GenomeCounter(GO);
 				GO.CrossoverRate = 0.0;
-				GO.MutationRate = 0.70;
+				GO.MutationRate = 0.50;
         GO.Run(false);
         this.addGenomeToBestGenomes(GO.BestGenome,currentDate.AddDays(-this.numDaysForOptimizationPeriod),
                                     currentDate, setOfTickersToBeOptimized.Rows.Count);

@@ -24,11 +24,14 @@ using System.Data;
 using System.Collections;
 
 using QuantProject.ADT;
+using QuantProject.Business.DataProviders;
 using QuantProject.Business.Financial.Accounting;
 using QuantProject.Business.Financial.Instruments;
 using QuantProject.Business.Financial.Ordering;
 using QuantProject.Business.Timing;
 using QuantProject.Business.Strategies;
+using QuantProject.Business.Strategies.ReturnsManagement;
+using QuantProject.Business.Strategies.ReturnsManagement.Time;
 using QuantProject.Data;
 using QuantProject.Data.DataProviders;
 using QuantProject.Data.Selectors;
@@ -49,10 +52,6 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.ExtremeCount
     private int numDaysForReturnCalculation;
     private double maxAcceptableCloseToCloseDrawdown;
     private int daysCounterWithPositions;
-//    private int daysCounterWithRightPositions;
-//    private int daysCounterWithReversalPositions;
-//    private bool isReversalPeriodOn = false;
-//    private bool isTheFirstClose = false;
     private DateTime lastCloseDate;
     private IGenomeManager iGenomeManager;
     private int seedForRandomGenerator;
@@ -74,14 +73,10 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.ExtremeCount
                                 portfolioType)
     {
       this.numDaysForReturnCalculation = numDaysForReturnCalculation;
-//      this.daysCounterWithRightPositions = 0;
-//      this.daysCounterWithReversalPositions = 0; 
-//      this.isReversalPeriodOn = false;
       this.maxAcceptableCloseToCloseDrawdown = maxAcceptableCloseToCloseDrawdown;
       this.stopLossConditionReached = false;
       this.currentAccountValue = 0.0;
       this.previousAccountValue = 0.0;
-//      this.numDaysBetweenEachOptimization = 2* numDaysForReturnCalculation;
       this.numDaysBetweenEachOptimization = numDaysBetweenEachOptimization;
       this.seedForRandomGenerator = ConstantsProvider.SeedForRandomGenerator;
     }
@@ -116,11 +111,17 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.ExtremeCount
       try
       {
 		    DateTime initialDateForHalfPeriod = 
-	          (DateTime)timer.IndexQuotes.Rows[timer.CurrentDateArrayPosition - this.numDaysForReturnCalculation + 1]["quDate"];
+	          (DateTime)timer.IndexQuotes.Rows[timer.CurrentDateArrayPosition - this.numDaysForReturnCalculation]["quDate"];
 	      DateTime finalDateForHalfPeriod = 
 	        (DateTime)timer.IndexQuotes.Rows[timer.CurrentDateArrayPosition]["quDate"];
-      	returnValue = this.chosenWeightedPositions.GetCloseToCloseReturn(
-	      	     initialDateForHalfPeriod,finalDateForHalfPeriod);
+      	ReturnsManager returnsManager = new ReturnsManager(new CloseToCloseIntervals(
+		   																				new EndOfDayDateTime(initialDateForHalfPeriod,
+																							EndOfDaySpecificTime.MarketClose) , 
+																							new EndOfDayDateTime(finalDateForHalfPeriod,
+																							EndOfDaySpecificTime.MarketClose) ,
+																							this.benchmark , this.numDaysForReturnCalculation ) ,
+																				new HistoricalAdjustedQuoteProvider() );
+				returnValue = this.chosenWeightedPositions.GetReturn(0,returnsManager);
       }
     	catch(MissingQuotesException ex)
     	{
@@ -262,7 +263,7 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.ExtremeCount
           currentDate.AddDays(-this.numDaysForOptimizationPeriod), 
           currentDate, this.numberOfTickersToBeChosen,
           this.numDaysForReturnCalculation,
-          this.portfolioType);
+          this.portfolioType,this.benchmark);
         GeneticOptimizer GO = new GeneticOptimizer(this.iGenomeManager,
           this.populationSizeForGeneticOptimizer, 
           this.generationNumberForGeneticOptimizer,

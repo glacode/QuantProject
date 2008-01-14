@@ -163,7 +163,7 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.TrendFollowing.OTC_CTOTr
                                                     currentDate,
                                                     this.numberOfTickersToBeChosen,
                                                     this.targetReturn,
-                                                    this.portfolioType);
+                                                    this.portfolioType, this.benchmark);
 
         GeneticOptimizer GO = new GeneticOptimizer(genManEfficientOTCPortfolio,
                                                     this.populationSizeForGeneticOptimizer,

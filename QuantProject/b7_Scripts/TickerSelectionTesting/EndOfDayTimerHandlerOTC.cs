@@ -134,13 +134,14 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
 //        	                                          currentDate,
 //        	                                          this.numberOfTickersToBeChosen,
 //        	                                          this.targetReturn,
-//        	                                         	this.portfolioType);
+//        	                                         	this.portfolioType,
+//																										this.benchmark);
           new GenomeManagerForEfficientOTCCTOPortfolio(setOfTickersToBeOptimized,
                                                     currentDate.AddDays(-this.numDaysForOptimizationPeriod),
-                                                    currentDate,
+                                                    currentDate, 
                                                     this.numberOfTickersToBeChosen,
-                                                    this.targetReturn,
-                                                    this.portfolioType);
+                                                    this.targetReturn, 
+																										this.portfolioType, this.benchmark);
 
         GeneticOptimizer GO = new GeneticOptimizer(genManEfficientOTCPortfolio,
                                                     this.populationSizeForGeneticOptimizer,
@@ -148,11 +149,17 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
                                                    this.seedForRandomGenerator);
         if(setGenomeCounter)
         	this.genomeCounter = new GenomeCounter(GO);
-        GO.CrossoverRate = 0.0;
-        GO.MutationRate = 0.70;
+        GO.CrossoverRate = 0.85;
+        GO.MutationRate = 0.10;
         GO.Run(false);
-        this.addGenomeToBestGenomes(GO.BestGenome,currentDate.AddDays(-this.numDaysForOptimizationPeriod),
-                                    currentDate, setOfTickersToBeOptimized.Rows.Count);
+        this.addGenomeToBestGenomes(
+          GO.BestGenome,
+          currentDate.AddDays(-this.numDaysForOptimizationPeriod),
+          currentDate,
+          setOfTickersToBeOptimized.Rows.Count,
+          -1,
+         	this.portfolioType,
+          GO.GenerationCounter);
         this.chosenWeightedPositions = new WeightedPositions( ((GenomeMeaning)GO.BestGenome.Meaning).TickersPortfolioWeights,
 					new SignedTickers( ((GenomeMeaning)GO.BestGenome.Meaning).Tickers) );
       }

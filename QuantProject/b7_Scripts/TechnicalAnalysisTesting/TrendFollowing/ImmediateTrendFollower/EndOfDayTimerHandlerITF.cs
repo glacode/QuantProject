@@ -251,7 +251,7 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.TrendFollowing.Immediate
           currentDate.AddDays(-this.numDaysForOptimizationPeriod), 
           currentDate, this.numberOfTickersToBeChosen,
           this.numDaysForReturnCalculation,
-          this.portfolioType);
+          this.portfolioType, this.benchmark);
         GeneticOptimizer GO = new GeneticOptimizer(this.iGenomeManager,
           this.populationSizeForGeneticOptimizer, 
           this.generationNumberForGeneticOptimizer,

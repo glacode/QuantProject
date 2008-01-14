@@ -36,7 +36,7 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
   /// Base class for EndOfDayTimerHandlers for efficient portfolios
   /// </summary>
   [Serializable]
-  public class EndOfDayTimerHandler
+  public abstract class EndOfDayTimerHandler
   {
     protected DataTable eligibleTickers;
 		protected WeightedPositions chosenWeightedPositions = null;
@@ -232,8 +232,9 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
     {
       //add cash first
     	if(this.account.Transactions.Count == 0)
-        this.account.AddCash(15000);     
-      AccountManager.OpenPositions(this.chosenWeightedPositions, this.account);
+        this.account.AddCash(15000);
+    	if(this.chosenWeightedPositions != null)
+      	AccountManager.OpenPositions(this.chosenWeightedPositions, this.account);
     }
 	
 		protected void reversePositions()
@@ -246,20 +247,14 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
 			AccountManager.ReversePositions(this.account);
 		}   
 		
-    public virtual void MarketOpenEventHandler(
+    public abstract void MarketOpenEventHandler(
       Object sender , EndOfDayTimingEventArgs endOfDayTimingEventArgs )
-    {
-      ;
-    }
-    public virtual void MarketCloseEventHandler(
+			;
+    public abstract void MarketCloseEventHandler(
       Object sender , EndOfDayTimingEventArgs endOfDayTimingEventArgs )
-    {
-      ;
-    }
-    public virtual void OneHourAfterMarketCloseEventHandler(
+    	;
+    public abstract void OneHourAfterMarketCloseEventHandler(
       Object sender , EndOfDayTimingEventArgs endOfDayTimingEventArgs )
-    {
       ;
-    }
   } 
 }

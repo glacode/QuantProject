@@ -144,7 +144,8 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
         	                                          currentDate,
         	                                          this.numberOfTickersToBeChosen,
         	                                          this.targetReturn,
-        	                                         	this.portfolioType);
+        	                                         	this.portfolioType,
+        	                                          this.benchmark);
         
         GeneticOptimizer GO = new GeneticOptimizer(genManEfficientOTCCTOPortfolio,
                                                     this.populationSizeForGeneticOptimizer,

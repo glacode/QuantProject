@@ -84,7 +84,12 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedPeriodO
       this.numDaysBetweenEachOptimization = numDaysForReturnCalculation;
       this.seedForRandomGenerator = ConstantsProvider.SeedForRandomGenerator;
     }
-	
+		
+    public override void MarketOpenEventHandler(
+      Object sender , EndOfDayTimingEventArgs endOfDayTimingEventArgs )
+    {
+    	;
+    }
 
     #region MarketCloseEventHandler
     
@@ -284,7 +289,7 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedPeriodO
           currentDate.AddDays(-this.numDaysForOptimizationPeriod), 
           currentDate, this.numberOfTickersToBeChosen,
           this.numDaysForReturnCalculation,
-          this.portfolioType);
+          this.portfolioType, this.benchmark);
         GeneticOptimizer GO = new GeneticOptimizer(this.iGenomeManager,
           this.populationSizeForGeneticOptimizer, 
           this.generationNumberForGeneticOptimizer,
