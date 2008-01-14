@@ -1,7 +1,7 @@
 <VisualStudioProject>
     <CSHARP
         ProjectType = "Local"
-        ProductVersion = "7.0.9466"
+        ProductVersion = "7.0.9955"
         SchemaVersion = "1.0"
         ProjectGuid = "{451DB77D-D4C7-44D1-8047-2920D864A4CD}"
     >
@@ -303,6 +303,11 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "TechnicalAnalysisTesting\Oscillators\FixedLevelOscillators\PortfolioValueOscillator\GenomeManagerPVO_OTC.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "TechnicalAnalysisTesting\Oscillators\FixedLevelOscillators\PortfolioValueOscillator\GenomeMeaningPVO.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
@@ -318,37 +323,17 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "TechnicalAnalysisTesting\Oscillators\FixedLevelOscillators\PortfolioValueOscillator\BiasedPVO\EndOfDayTimerHandlerBiasedPVO_OTC.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "TechnicalAnalysisTesting\Oscillators\FixedLevelOscillators\PortfolioValueOscillator\BiasedPVO\RunBiasedPVO.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
                 <File
-                    RelPath = "TechnicalAnalysisTesting\Oscillators\FixedLevelOscillators\PortfolioValueOscillator\BiasedPVO\BiasedOTC_PVONoThresholds\EndOfDayTimerHandlerBiasedOTC_PVONoThresholds.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "TechnicalAnalysisTesting\Oscillators\FixedLevelOscillators\PortfolioValueOscillator\BiasedPVO\BiasedOTC_PVONoThresholds\GenomeManagerBiasedOTC_PVONoThresholds.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "TechnicalAnalysisTesting\Oscillators\FixedLevelOscillators\PortfolioValueOscillator\BiasedPVO\BiasedOTC_PVONoThresholds\RunBiasedOTC_PVONoThresholds.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "TechnicalAnalysisTesting\Oscillators\FixedLevelOscillators\PortfolioValueOscillator\BiasedPVO\BiasedPVONoThresholds\EndOfDayTimerHandlerBiasedPVONoThresholds.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "TechnicalAnalysisTesting\Oscillators\FixedLevelOscillators\PortfolioValueOscillator\BiasedPVO\BiasedPVONoThresholds\GenomeManagerBiasedPVONoThresholds.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "TechnicalAnalysisTesting\Oscillators\FixedLevelOscillators\PortfolioValueOscillator\BiasedPVO\BiasedPVONoThresholds\RunBiasedPVONoThresholds.cs"
+                    RelPath = "TechnicalAnalysisTesting\Oscillators\FixedLevelOscillators\PortfolioValueOscillator\BiasedPVO\RunBiasedPVO_OTC.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
@@ -689,16 +674,6 @@
                 />
                 <File
                     RelPath = "WalkForwardTesting\LinearCombination\ExtremeCounterTrendStrategy.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "WalkForwardTesting\LinearCombination\FixedLevelOscBiasedOTC_PVONoThresholdsStrategy.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "WalkForwardTesting\LinearCombination\FixedLevelOscillatorBiasedPVONoThresholdsStrategy.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
