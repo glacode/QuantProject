@@ -108,6 +108,30 @@ namespace QuantProject.ADT
       
     }
     /// <summary>
+    /// Get an array of string corresponding to a column compatible with the string type in a given data table
+    /// </summary>
+    public static string[] GetArrayOfStringFromColumn(DataTable table,
+                                                      int columnIndex)
+    {
+      int numRows = table.Rows.Count;
+      string[] arrayOfString = new string[numRows];
+      int index = 0;
+      try
+      {
+        for(; index!= numRows; index++)
+        {
+          arrayOfString[index] = (string) table.Rows[index][columnIndex];
+        }
+      }
+      catch(Exception ex)
+      {
+        MessageBox.Show(ex.ToString());
+        index = numRows;
+      }
+      return arrayOfString;
+    }
+    
+    /// <summary>
     /// Get an array of float corresponding to a column compatible with the float type in a given data table,
     /// filtered by the given filterExpression
     /// </summary>
