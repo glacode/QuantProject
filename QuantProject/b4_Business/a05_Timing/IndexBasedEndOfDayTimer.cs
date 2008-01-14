@@ -119,6 +119,15 @@ namespace QuantProject.Business.Timing
     {
       return this.indexQuotes.GetPrecedingDate(this.currentTime.DateTime,1);
     }
+    /// <summary>
+    /// Gets the date time that is 'precedingDays' days before
+    /// the current date time of the current timer
+    /// </summary>
+    public DateTime GetPreviousDateTime(int precedingDays)
+    {
+      return this.indexQuotes.GetPrecedingDate(
+    		this.currentTime.DateTime,precedingDays);
+    }
 
 	}
 }
