@@ -119,8 +119,28 @@ namespace QuantProject.Business.Strategies
 		}
 		public override string ToString()
 		{
-			string toString = this.Ticker + ";" + this.Weight;
+			string toString = this.Ticker + ";" + this.Weight.ToString();
 			return toString;
+		}
+		
+		public bool HasTheSameSignedTickerAs(WeightedPosition weightedPosition)
+		{
+			if ( weightedPosition.Ticker == this.Ticker &&
+					 ( (weightedPosition.IsLong && this.IsLong) ||
+						 (weightedPosition.IsShort && this.IsShort)  )  )
+				return true;
+			else
+				return false;
+		}
+		
+		public bool HasTheOppositeSignedTickerAs(WeightedPosition weightedPosition)
+		{
+			if ( weightedPosition.Ticker == this.Ticker &&
+					 ( (weightedPosition.IsShort && this.IsLong) ||
+						 (weightedPosition.IsLong && this.IsShort)  )  )
+				return true;
+			else
+				return false;
 		}
 	}
 }
