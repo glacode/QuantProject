@@ -101,41 +101,39 @@ namespace QuantProject.Business.Strategies
     }
     #endregion
 
-    #region ReversePositions
-   
-		static private double reversePositions_getReversedWeightedPositionsFromAccount_getPositionsAbsoluteValue(Account account)
+		static private double getWeightedPositions_getPositionsAbsoluteValue(Account account)
 		{
 			double totalValue = 0;
 			foreach (Position position in account.Portfolio.Values)
 				totalValue += Math.Abs( account.DataStreamer.GetCurrentBid(
 					position.Instrument.Key ) * position.Quantity );
 			return totalValue;
-		}  
+		} 
 
-		static private WeightedPositions reversePositions_getReversedWeightedPositionsFromAccount(Account account)
+		/// <summary>
+		/// Gets the current open WeightedPositions for the given account
+		/// </summary>
+		static public WeightedPositions GetWeightedPositions(Account account)
 		{
-			double positionsAbsoluteValue = reversePositions_getReversedWeightedPositionsFromAccount_getPositionsAbsoluteValue(account); 
+			double positionsAbsoluteValue = getWeightedPositions_getPositionsAbsoluteValue(account); 
 			string[] tickers = getTickersInOpenedPositions( account );
 			double[] weights = new double[tickers.Length];
 			for(int i = 0; i < tickers.Length; i++)
 				weights[i] = 
 					( account.GetMarketValue( tickers[i] )*
-					  account.Portfolio.GetPosition( tickers[i] ).Quantity ) /
+					account.Portfolio.GetPosition( tickers[i] ).Quantity ) /
 					positionsAbsoluteValue;
-			WeightedPositions returnValue = new WeightedPositions( weights, tickers );
-			returnValue.Reverse();
-			return returnValue;
-		}  
+			
+			return new WeightedPositions( weights, tickers );
+		}
 
-    static public void ReversePositions(Account account)
+  	static public void ReversePositions(Account account)
     {
       orders.Clear();
-			WeightedPositions reversedWeightedPositions = 
-				reversePositions_getReversedWeightedPositionsFromAccount( account );
+			WeightedPositions currentWeightedPositions = GetWeightedPositions( account );
+			currentWeightedPositions.Reverse();
 			ClosePositions(account);
-      OpenPositions( reversedWeightedPositions , account );
+      OpenPositions( currentWeightedPositions, account );
     }   
-    #endregion
-
   } // end of class
 }
