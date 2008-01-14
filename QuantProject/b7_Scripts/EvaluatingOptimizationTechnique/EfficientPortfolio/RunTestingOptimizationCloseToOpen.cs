@@ -252,7 +252,8 @@ namespace QuantProject.Scripts.EvaluatingOptimizationTechnique.EfficientPortfoli
       	                                          this.marketDate,
       	                                          this.numberOfTickersToBeChosen,
       	                                          this.targetReturn,
-      	                                         	this.portfolioType);
+      	                                         	this.portfolioType,
+																									this.benchmark);
     
       this.setFitnesses_setFitnessesActually(genManEfficientCTOPortfolio);
       

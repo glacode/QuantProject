@@ -268,7 +268,8 @@ namespace QuantProject.Scripts.EvaluatingOptimizationTechnique.TechnicalAnalysis
 	                            this.marketDate,
 	                            this.numberOfTickersToBeChosen,
 	                            this.numDaysForReturnCalculation,
-	                           	this.portfolioType);
+	                           	this.portfolioType,
+	                            this.benchmark);
     
       this.setFitnesses_setFitnessesActually(genManExtremeCounterTrend);
       
