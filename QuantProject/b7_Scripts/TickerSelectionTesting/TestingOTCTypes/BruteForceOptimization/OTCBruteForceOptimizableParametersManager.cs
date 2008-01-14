@@ -60,7 +60,8 @@ namespace QuantProject.Scripts.TickerSelectionTesting.TestingOTCTypes.BruteForce
 				eligibleTickersForPortfolioPositions ,
 				firstOptimizationDate ,
 				lastOptimizationDate ,
-				numberOfPortfolioPositions , 0.0, PortfolioType.ShortAndLong);
+				numberOfPortfolioPositions , 0.0, PortfolioType.ShortAndLong,
+			  "^GSPC");
 				
 		}
 		public bool MoveNext()
@@ -101,7 +102,8 @@ namespace QuantProject.Scripts.TickerSelectionTesting.TestingOTCTypes.BruteForce
 		public double GetFitnessValue(
 			BruteForceOptimizableParameters bruteForceOptimizableItem )
 		{
-			return this.otcCtoGenomeManager.GetFitnessValue(bruteForceOptimizableItem);
+			return 0.0; //just for compiling
+			//return this.otcCtoGenomeManager.GetFitnessValue(bruteForceOptimizableItem);
 		}
 	}
 }

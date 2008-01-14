@@ -36,8 +36,8 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.TrendFollowing.BestAndWo
 	/// <summary>
 	/// Script that implements the Best and Worst Follower strategy:
 	/// every n closes, l long positions and s short positions will be open,
-	/// buying and shorting, accordingly, the l worst tickers
-	/// and the s best tickers.
+	/// buying and shorting, accordingly, the l best tickers
+	/// and the s worst tickers.
 	/// For chosing the best and worst tickers just the 
 	/// previous close to close ratio is considered.
 	/// The fundamental of the strategy should be the fact (to be verified ...) 

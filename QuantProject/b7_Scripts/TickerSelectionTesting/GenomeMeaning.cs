@@ -23,6 +23,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 using System;
 using System.Collections;
 
+using QuantProject.Business.Strategies;
+
 namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
 {
   /// <summary>
@@ -78,7 +80,10 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
     
     private void genomeMeaning_setHashCodeForTickerComposition()
     {
-      ArrayList listOfTickers = new ArrayList(this.tickers);
+    	string[] unsignedTickers = new string[this.tickers.Length];
+      for(int i = 0; i < this.tickers.Length; i++)
+      	unsignedTickers[i] = SignedTicker.GetTicker(this.tickers[i]);
+     	ArrayList listOfTickers = new ArrayList(unsignedTickers);
       listOfTickers.Sort();
       foreach(string tickerCode in listOfTickers)
         this.hashCodeForTickerComposition += tickerCode;
