@@ -131,8 +131,8 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag
 		}
 		public static void WriteToTextLog( string message )
 		{
-			Console.WriteLine( message );
-			Console.WriteLine( "" );
+//			Console.WriteLine( message );
+//			Console.WriteLine( "" );
 			System.Diagnostics.Debug.Listeners[0].WriteLine( message );
 
 //			FileStream fileStream = new FileStream( "WFLagLog.Txt" ,
