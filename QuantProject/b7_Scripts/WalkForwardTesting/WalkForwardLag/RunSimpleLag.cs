@@ -70,7 +70,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag
 		/// </summary>
 		public void Run()
 		{
-			// optimal driving positions
+			// 4 optimal driving positions
 //			double[] drivingWeights = { 0.550560760218599 , -0.172289820708961 , -0.16220520521007 , 0.11494421386237 };
 //			string[] drivingTickers = { "^OEX" , "BDH" , "HHH" , "IIH" };
 
@@ -79,22 +79,37 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag
 //			string[] drivingTickers = { "^DJT" , "^OEX" , "BDH" , "EWJ" };
 //			Description	"^DJT;-0.272826060576681--^OEX;0.304736475342285--BDH;-0.0953627582891244--EWJ;0.32707470579191--"	string
 
-			// two optimal driving positions
-			double[] drivingWeights = { 0.550560760218599 , -0.172289820708961 };
-			string[] drivingTickers = { "^OEX" , "BDH" };
+			// subset of 2 optimal driving positions
+//			double[] drivingWeights = { 0.550560760218599 , -0.172289820708961 };
+//			string[] drivingTickers = { "^OEX" , "BDH" };
 
-			// three optimal driving positions
+			// subset of three optimal driving positions
 //			double[] drivingWeights = { 0.550560760218599 , -0.172289820708961 , -0.16220520521007 };
 //			string[] drivingTickers = { "^OEX" , "BDH" , "HHH" };
 
-			// two optimal driving with similar weights
+			// subseto of two optimal driving with similar weights
 //			double[] drivingWeights = { 0.304736475342285 , -0.0953627582891244 };
 //			string[] drivingTickers = { "^OEX" , "BDH" };
 			
-			// single optimal driving
+			// subset of single optimal driving from the 4 optimal driving
 //			double[] drivingWeights = { 1 };
 //			string[] drivingTickers = { "IIH" };
-			
+
+
+
+			// 2 optimal driving positions
+//			double[] drivingWeights = { 0.74152744108066 , -0.25847255891934 };
+//			string[] drivingTickers = { "^NYA" , "^PSE" };
+
+			// subset of single driving positions out of 2 optimal driving
+						double[] drivingWeights = { 1 };
+						string[] drivingTickers = { "^NYA" };
+//						double[] drivingWeights = { -1 };
+//						string[] drivingTickers = { "^PSE" };
+
+			// 2 optimal driving positions, but with weights slightly changed
+//			double[] drivingWeights = { 0.7 , -0.3 };
+//			string[] drivingTickers = { "^NYA" , "^PSE" };
 
 
 			double[] portfolioWeights = { 0.442536856335084 , -0.557463143664916 };
