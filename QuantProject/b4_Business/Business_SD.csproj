@@ -60,12 +60,26 @@
     <Compile Include="a05_Timing\EndOfDayHistory.cs" />
     <Compile Include="a07_DataProviders\HistoricalQuoteProvider.cs" />
     <Compile Include="a1_Financial\a2_Accounting\h5_Reporting\SummaryRows\AverageNumberOfTransactionsPerDay.cs" />
+    <Compile Include="a2_Strategies\Benchmark.cs" />
+    <Compile Include="a2_Strategies\Eligibles\EligibleTickers.cs" />
+    <Compile Include="a2_Strategies\Eligibles\IEligiblesSelector.cs" />
+    <Compile Include="a2_Strategies\Eligibles\MostLiquidAndLessVolatile.cs" />
+    <Compile Include="a2_Strategies\EndOfDayStrategyBackTester.cs" />
+    <Compile Include="a2_Strategies\IEndOfDayStrategyForBacktester.cs" />
+    <Compile Include="a2_Strategies\IInSampleChooser.cs" />
+    <Compile Include="a2_Strategies\Logging\BackTestLog.cs" />
+    <Compile Include="a2_Strategies\Logging\LogItem.cs" />
+    <Compile Include="a2_Strategies\Logging\NewLogItemEventArgs.cs" />
+    <Compile Include="a2_Strategies\Optimizing\Decoding\DecoderForBalancedWeightedPositions.cs" />
+    <Compile Include="a2_Strategies\Optimizing\Decoding\IDecoderForWeightedPositions.cs" />
     <Compile Include="a2_Strategies\returnsManagement\time\CloseToCloseIntervals.cs" />
     <Compile Include="a2_Strategies\returnsManagement\time\CloseToOpenIntervals.cs" />
     <Compile Include="a2_Strategies\returnsManagement\time\DailyOpenToCloseIntervals.cs" />
     <Compile Include="a2_Strategies\returnsManagement\time\OpenToCloseCloseToOpenIntervals.cs" />
     <Compile Include="a2_Strategies\returnsManagement\time\ReturnInterval.cs" />
     <Compile Include="a2_Strategies\returnsManagement\time\ReturnIntervals.cs" />
+    <Compile Include="a2_Strategies\returnsManagement\time\selectors\IIntervalsSelector.cs" />
+    <Compile Include="a2_Strategies\returnsManagement\time\selectors\FixedLengthTwoPhasesIntervalsSelector.cs" />
     <Compile Include="a2_Strategies\TickersRelationships\CloseToCloseCorrelationProvider.cs" />
     <Compile Include="a2_Strategies\TickersRelationships\CorrelationProvider.cs" />
     <Compile Include="a2_Strategies\TickersRelationships\OpenToCloseCorrelationProvider.cs" />
@@ -196,9 +210,14 @@
       <Project>{42B091B3-3BDF-45EB-B5E6-9C3CA353117C}</Project>
       <Name>b3_Data</Name>
     </ProjectReference>
+    <Folder Include="a2_Strategies\Eligibles" />
     <Folder Include="a2_Strategies\EquityEvaluation" />
+    <Folder Include="a2_Strategies\Logging" />
+    <Folder Include="a2_Strategies\Optimizing" />
+    <Folder Include="a2_Strategies\Optimizing\Decoding" />
     <Folder Include="a2_Strategies\returnsManagement" />
     <Folder Include="a2_Strategies\returnsManagement\time" />
+    <Folder Include="a2_Strategies\returnsManagement\time\selectors" />
     <Folder Include="a2_Strategies\TickersRelationships" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.Targets" />
