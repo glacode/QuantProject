@@ -45,6 +45,16 @@ namespace QuantProject.Business.Timing
 			get { return endOfDaySpecificTime; }
 			set { endOfDaySpecificTime = value; }
 		}
+		
+		public string Description
+		{
+			get
+			{
+				string description = this.dateTime.ToString() + " - " +
+					this.endOfDaySpecificTime.ToString();
+				return description;
+			}
+		}
 
 		public EndOfDayDateTime( DateTime dateTime , EndOfDaySpecificTime endOfDaySpecificTime )
 		{
@@ -93,6 +103,39 @@ namespace QuantProject.Business.Timing
 			return returnValue;
 		}
 		/// <summary>
+		/// True iif this object does not come before dateTimeToCompareTo
+		/// </summary>
+		/// <param name="dateTimeToCompareTo"></param>
+		/// <returns></returns>
+		public bool IsLessThan( EndOfDayDateTime dateTimeToCompareTo )
+		{
+			bool isLessThan =
+				( this.CompareTo( dateTimeToCompareTo ) < 0 );
+			return isLessThan;
+		}
+		/// <summary>
+		/// True iif this object does not come after dateTimeToCompareTo
+		/// </summary>
+		/// <param name="dateTimeToCompareTo"></param>
+		/// <returns></returns>
+		public bool IsLessThanOrEqualTo( EndOfDayDateTime dateTimeToCompareTo )
+		{
+			bool isLessThanOrEqual =
+				( this.CompareTo( dateTimeToCompareTo ) <= 0 );
+			return isLessThanOrEqual;
+		}
+		/// <summary>
+		/// True iif this object is equal to dateTimeToCompareTo
+		/// </summary>
+		/// <param name="dateTimeToCompareTo"></param>
+		/// <returns></returns>
+		public bool IsEqualTo( EndOfDayDateTime dateTimeToCompareTo )
+		{
+			bool isEqualTo =
+				( this.CompareTo( dateTimeToCompareTo ) == 0 );
+			return isEqualTo;
+		}
+		/// <summary>
 		/// Returns a deep copy of the current instance
 		/// </summary>
 		/// <returns></returns>
@@ -101,6 +144,35 @@ namespace QuantProject.Business.Timing
 			return new EndOfDayDateTime(
 				new DateTime( this.dateTime.Year , this.dateTime.Month , this.dateTime.Day ) ,
 				this.endOfDaySpecificTime );
+		}
+		/// <summary>
+		/// Returns either the next market close or the next market open,
+		/// whichever is the nearest (all days are considered as market
+		/// days, week-ends included)
+		/// We have a market status switch when the market opens and when
+		/// the market closes
+		/// </summary>
+		/// <returns></returns>
+		public EndOfDayDateTime GetNextMarketStatusSwitch()
+		{
+			EndOfDayDateTime nextMarketStatusSwitch;
+			if ( this.EndOfDaySpecificTime < EndOfDaySpecificTime.MarketOpen )
+				nextMarketStatusSwitch = new EndOfDayDateTime(
+					this.DateTime , EndOfDaySpecificTime.MarketOpen );
+			else
+			{
+				// this.EndOfDaySpecificTime >= EndOfDaySpecificTime.MarketOpen
+				if ( this.EndOfDaySpecificTime < EndOfDaySpecificTime.MarketClose )
+					// ( this.EndOfDaySpecificTime >= EndOfDaySpecificTime.MarketOpen )
+					// AND ( this.EndOfDaySpecificTime < EndOfDaySpecificTime.MarketClose )
+					nextMarketStatusSwitch = new EndOfDayDateTime(
+						this.DateTime , EndOfDaySpecificTime.MarketClose );
+				else
+					// ( this.EndOfDaySpecificTime >= EndOfDaySpecificTime.MarketClose )
+					nextMarketStatusSwitch = new EndOfDayDateTime(
+						this.DateTime.AddDays( 1 ) , EndOfDaySpecificTime.MarketOpen );
+			}
+			return nextMarketStatusSwitch;
 		}
 		#region MoveNext
 		private	EndOfDaySpecificTime getNextSpecificTime( )
