@@ -102,6 +102,19 @@ namespace QuantProject.ADT
     {
       return this.DateTime.ToString() + " - " + this.BarComponent.ToString();
     }
+		/// <summary>
+		/// Returns the earliest date
+		/// </summary>
+		/// <param name="dateTime1"></param>
+		/// <param name="dateTime2"></param>
+		/// <returns></returns>
+		public static DateTime Min( DateTime dateTime1 , DateTime dateTime2 )
+		{
+			DateTime returnValue = dateTime1;
+			if ( dateTime2 < dateTime1 )
+				returnValue = dateTime2;
+			return returnValue;
+		}
 //		public static SortedList GetArray( SortedList sortedDateTimes )
 //		{
 //			SortedList dateTimes = new DateTime[ sortedDateTimes.Count ];
