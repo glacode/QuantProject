@@ -64,6 +64,7 @@
     <Compile Include="FormatProvider.cs" />
     <Compile Include="Charting\CharPlot.cs" />
     <Compile Include="Charting\Chart.cs" />
+    <Compile Include="MessageManager.cs" />
     <Compile Include="Reporting\Console\ConsoleManager.cs" />
     <Compile Include="Reporting\MicrosoftExcel\ExcelManager.cs" />
     <Compile Include="Reporting\WindowsForm\EquityChartTabPage.cs" />
