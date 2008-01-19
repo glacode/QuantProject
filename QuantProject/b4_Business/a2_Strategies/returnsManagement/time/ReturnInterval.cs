@@ -55,8 +55,8 @@ namespace QuantProject.Business.Strategies.ReturnsManagement.Time
 			EndOfDayDateTime end )
 		{
 			this.checkParameters( begin , end );
-			this.begin = begin;
-			this.end = end;
+			this.begin = begin.Copy();
+			this.end = end.Copy();
 		}
 		private void checkParameters( EndOfDayDateTime begin ,
 			EndOfDayDateTime end )
