@@ -1,7 +1,7 @@
 <VisualStudioProject>
     <CSHARP
         ProjectType = "Local"
-        ProductVersion = "7.0.9466"
+        ProductVersion = "7.0.9955"
         SchemaVersion = "1.0"
         ProjectGuid = "{B8A01161-3698-4591-B1EF-90F5FC7D8DBA}"
     >
@@ -197,6 +197,16 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "Messaging\IMessageSender.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Messaging\NewMessageEventArgs.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "Optimizing\Optimizable.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
@@ -223,6 +233,16 @@
                 />
                 <File
                     RelPath = "Optimizing\BruteForce\IBruteForceOptimizableParametersManager.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Optimizing\Decoding\IDecoder.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Optimizing\Decoding\MeaningForUndecodableEncoded.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />

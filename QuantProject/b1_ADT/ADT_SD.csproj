@@ -54,7 +54,11 @@
     <Compile Include="HashProvider.cs" />
     <Compile Include="IProgressNotifier.cs" />
     <Compile Include="Keyed.cs" />
+    <Compile Include="Messaging\IMessageSender.cs" />
+    <Compile Include="Messaging\NewMessageEventArgs.cs" />
     <Compile Include="NewProgressEventArgs.cs" />
+    <Compile Include="Optimizing\Decoding\IDecoder.cs" />
+    <Compile Include="Optimizing\Decoding\MeaningForUndecodableEncoded.cs" />
     <Compile Include="RecursiveHashTable.cs" />
     <Compile Include="FileManaging\ObjectArchiver.cs" />
     <Compile Include="Histories\History.cs" />
@@ -90,7 +94,9 @@
     <Compile Include="Collections\Set.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="Messaging" />
     <Folder Include="Optimizing\BruteForce" />
+    <Folder Include="Optimizing\Decoding" />
     <Folder Include="Statistics\Combinatorial" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.Targets" />
