@@ -211,6 +211,7 @@
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
+                <Folder RelPath = "BackTesting\" />
                 <File
                     RelPath = "CallingReportsForRunScripts\ShowReportFromFile.cs"
                     SubType = "Code"
@@ -664,6 +665,36 @@
                 />
                 <File
                     RelPath = "WalkForwardTesting\IWalkForwardProgressNotifier.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "WalkForwardTesting\FixedLengthTwoPhases\FixedLengthTwoPhasesLogItem.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "WalkForwardTesting\FixedLengthTwoPhases\FixedLengthTwoPhasesMain.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "WalkForwardTesting\FixedLengthTwoPhases\FixedLengthTwoPhasesStrategy.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "WalkForwardTesting\FixedLengthTwoPhases\InSampleChoosers\FixedLengthTwoPhasesFitnessEvaluator.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "WalkForwardTesting\FixedLengthTwoPhases\InSampleChoosers\Genetic\FixedLengthTwoPhasesGeneticChooser.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "WalkForwardTesting\FixedLengthTwoPhases\InSampleChoosers\Genetic\FixedLengthTwoPhasesGenomeManager.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
