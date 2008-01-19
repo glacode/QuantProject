@@ -23,11 +23,15 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 using System;
 
 using QuantProject.Business.Financial.Accounting.Transactions;
+using QuantProject.Business.Strategies.Logging;
 using QuantProject.Business.Timing;
 
 
 namespace QuantProject.Business.Strategies
 {
+	public delegate void NewLogItemEventHandler(
+	Object sender , NewLogItemEventArgs eventArgs );
+
 	/// <summary>
 	/// Interface to be implemented by end of day strategies
 	/// </summary>
