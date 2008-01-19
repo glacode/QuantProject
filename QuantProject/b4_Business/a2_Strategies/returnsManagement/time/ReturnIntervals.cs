@@ -24,6 +24,7 @@ using System;
 using System.Collections;
 
 using QuantProject.ADT.Histories;
+using QuantProject.Business.Strategies.ReturnsManagement.Time.IntervalsSelectors;
 using QuantProject.Business.Timing;
 
 namespace QuantProject.Business.Strategies.ReturnsManagement.Time
@@ -32,7 +33,7 @@ namespace QuantProject.Business.Strategies.ReturnsManagement.Time
 	/// End of day intervals in a timed sequence, i.e. the (n+1)th interval
 	/// never begins before the (n)th interval ends
 	/// </summary>
-	public abstract class ReturnIntervals : CollectionBase
+	public class ReturnIntervals : CollectionBase
 	{
 		protected EndOfDayDateTime firstEndOfDayDateTime;
 		protected EndOfDayDateTime lastEndOfDayDateTime;
@@ -40,8 +41,10 @@ namespace QuantProject.Business.Strategies.ReturnsManagement.Time
 		protected History marketDaysForBenchmark;
 		private EndOfDayHistory bordersHistory;
 		protected int intervalLength;
+		
+		private IIntervalsSelector intervalsSelector;
 
-		public ReturnInterval this[ int index ]  
+		public ReturnInterval this[ int index ] 
 		{
 			get  
 			{
@@ -60,6 +63,10 @@ namespace QuantProject.Business.Strategies.ReturnsManagement.Time
 		{
 			get
 			{
+				if ( this.Count == 0 )
+					throw new Exception( "LastEndOfDayDateTime " +
+						"cannot be used when ReturnIntervals has " +
+						"no ReturnInterval added yet!" );
 				return this[ this.Count - 1 ].End;
 			}
 		}
@@ -133,6 +140,18 @@ namespace QuantProject.Business.Strategies.ReturnsManagement.Time
 				lastEndOfDayDateTime, benchmark, intervalLength );
 		}
 		
+		/// <summary>
+		/// Use this constructor if you want to create an empty
+		/// collection of intervals. The object will then be populated
+		/// adding intervals by means of an IIntervalSelector
+		/// </summary>
+		/// <param name="intervalSelector">to be used for adding
+		/// intervals</param>
+		public ReturnIntervals( IIntervalsSelector intervalSelector)
+		{
+			this.intervalsSelector = intervalSelector;
+		}
+		
 		protected virtual void setMarketDaysForBenchmark()
 		{
 			this.marketDaysForBenchmark =
@@ -140,7 +159,11 @@ namespace QuantProject.Business.Strategies.ReturnsManagement.Time
 				firstEndOfDayDateTime.DateTime , lastEndOfDayDateTime.DateTime );
 		}
 		
-		protected abstract void setIntervals();
+		protected virtual void setIntervals()
+		{
+			// TO DO remove this method and change
+			// derived classes to become IIntervalSelector
+		}
 		
 		/// <summary>
 		/// True iff for each interval border, there is an EndOfDayDateTime
@@ -213,6 +236,132 @@ namespace QuantProject.Business.Strategies.ReturnsManagement.Time
 		public void Add( ReturnInterval returnInterval )
 		{
 			this.List.Add( returnInterval );
+		}
+		
+		#region appendIntervalsButDontGoBeyondLastDate
+		private void appendIntervalsButDontGoBeyondLastDate_checkParameters(
+			EndOfDayDateTime firstDate , EndOfDayDateTime lastDate )
+		{
+			if ( firstDate.CompareTo( lastDate ) >= 0 )
+				throw new Exception( "lastDate must be greater than firstDate!" );
+			if ( this.Count > 0 )
+				// some interval has already been added
+			{
+				EndOfDayDateTime currentLastEndOfDayDateTime =
+					this[ this.Count - 1 ].End;
+				if ( firstDate.CompareTo( currentLastEndOfDayDateTime ) < 0 )
+					throw new Exception( "firstDate cannot be smaller than " +
+						"the end of the last interval already in this collection!" );
+			}
+		}
+		/// <summary>
+		/// Appends a list of intervals, starting from firstDate and
+		/// until the next one would go beyond lastDate.
+		/// This method can be invoked even if the ReturnIntervals object
+		/// is empty.
+		/// The firstDate has to be earlier than lastDate
+		/// </summary>
+		/// <param name="firstDate"></param>
+		/// <param name="lastDate"></param>
+		private void appendIntervalsButDontGoBeyondLastDate( EndOfDayDateTime firstDate ,
+			EndOfDayDateTime lastDate )
+		{
+			this.appendIntervalsButDontGoBeyondLastDate_checkParameters(
+				firstDate , lastDate );
+			ReturnInterval nextInterval =
+				this.intervalsSelector.GetFirstInterval( firstDate );
+			while ( nextInterval.End.CompareTo( lastDate ) <= 0 )
+			{
+				this.Add( nextInterval );
+				nextInterval =
+					this.intervalsSelector.GetNextInterval( this );
+			}
+		}
+		#endregion appendIntervalsButDontGoBeyondLastDate
+		
+		#region AppendIntervalsButDontGoBeyondLastDate
+		private void appendIntervalsButDontGoBeyondLastDate_checkParameters(
+			EndOfDayDateTime lastDate )
+		{
+			if ( this.Count == 0 )
+				throw new Exception(
+					"ReturnIntervals.AppendIntervalsButDontGoBeyondLastDate( " +
+					"EndOfDayDateTime lastDate ) " +
+					"has been invoked but the current ReturnIntervals " +
+					"object is empty!" );
+			if ( lastDate.IsLessThanOrEqualTo( this.LastEndOfDayDateTime ) )
+				throw new Exception(
+					"ReturnIntervals.AppendIntervalsButDontGoBeyondLastDate( " +
+					"EndOfDayDateTime lastDate ) " +
+					"has been invoked but lastDate must be larger than the " +
+					"end of the last ReturnInterval already in this collection" );
+		}
+		/// <summary>
+		/// Appends a list of intervals,
+		/// until the next one would go beyond lastDate.
+		/// This method can be invoked only if the ReturnIntervals object
+		/// is not empty.
+		/// The last added interval must end before lastDate
+		/// </summary>
+		/// <param name="lastDate"></param>
+		public void AppendIntervalsButDontGoBeyondLastDate(
+			EndOfDayDateTime lastDate )
+		{
+			this.appendIntervalsButDontGoBeyondLastDate_checkParameters(
+				lastDate );
+			EndOfDayDateTime firstDate = this.LastEndOfDayDateTime;
+			this.appendIntervalsButDontGoBeyondLastDate( firstDate , lastDate );
+		}
+		#endregion AppendIntervalsButDontGoBeyondLastDate
+		
+		#region AppendIntervalsToGoJustBeyond
+		private void appendIntervalsToGoJustBeyondLastDate_checkParameters(
+			EndOfDayDateTime lastDate )
+		{
+			if ( this.Count == 0 )
+				throw new Exception(
+					"ReturnIntervals.AppendIntervalsToGoJustBeyond( EndOfDayDateTime lastDate ) " +
+					"has been invoked but the current ReturnIntervals " +
+					"object is empty!" );
+			if ( lastDate.IsLessThan( this.LastEndOfDayDateTime ) )
+				throw new Exception(
+					"ReturnIntervals.AppendIntervalsToGoJustBeyond( EndOfDayDateTime lastDate ) " +
+					"has been invoked but lastDate must be larger than or equal to " +
+					"the end of the last ReturnInterval already in the collection" );
+		}
+
+		/// <summary>
+		/// Appends a list of intervals, and stops as soon
+		/// as the last added interval exceeds lastDate.
+		/// This method can be invoked only if the ReturnIntervals object
+		/// is not empty.
+		/// The last added interval cannot end after lastDate
+		/// </summary>
+		/// <param name="lastDate"></param>
+		public void AppendIntervalsToGoJustBeyond(
+			EndOfDayDateTime lastDate )
+		{
+			this.appendIntervalsToGoJustBeyondLastDate_checkParameters(
+				lastDate );
+			if ( this.LastEndOfDayDateTime.IsLessThan( lastDate ) )
+				// lastDate comes after the last interval already added				
+				this.AppendIntervalsButDontGoBeyondLastDate( lastDate );
+			ReturnInterval lastInterval =
+				this.intervalsSelector.GetNextInterval( this );
+			this.Add( lastInterval );
+		}
+		#endregion AppendIntervalsToGoJustBeyond
+		
+		/// <summary>
+		/// Appends the first interval (starting from firstDate)
+		/// </summary>
+		/// <param name="firstDate"></param>
+		public void AppendFirstInterval(
+			EndOfDayDateTime firstDate )
+		{
+			ReturnInterval firstInterval =
+				this.intervalsSelector.GetFirstInterval( firstDate );
+			this.Add( firstInterval );
 		}
 	}
 }
