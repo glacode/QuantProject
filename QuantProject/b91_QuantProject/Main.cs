@@ -31,6 +31,8 @@ using QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios;
 using QuantProject.ADT.Optimizing.Genetic;
 
 using QuantProject.Scripts.SimpleTesting;
+using QuantProject.Scripts.WalkForwardTesting.FixedLengthTwoPhases;
+using QuantProject.Scripts.WalkForwardTesting.LinearCombination;
 using QuantProject.Scripts.WalkForwardTesting.WalkForwardOneRank;
 using QuantProject.Scripts.WalkForwardTesting.WalkForwardLag;
 using QuantProject.Scripts.CallingReportsForRunScripts;
@@ -384,6 +386,10 @@ namespace QuantProject.Principale
         //new RunEfficientCTOPorfolio().Run();
         //new RunEfficientCTCPorfolio().Run();
 				//new RunEfficientPorfolio().Run();
+
+//				QuantProject.Scripts.WalkForwardTesting.FixedLengthTwoPhases.FixedLengthTwoPhasesMain
+//					myMain =
+//				new QuantProject.Scripts.WalkForwardTesting.FixedLengthTwoPhases.FixedLengthTwoPhasesMain().Run;
         Application.Run(new Principale());
         //geneticOptimizerTest();
         //Application.Run(new OneRankForm());
@@ -457,7 +463,8 @@ namespace QuantProject.Principale
 //      try
 //      {//call here your scripts
 	//new RunWalkForwardOneRank().Run();
-			new WFLagMain().ShowDialog();
+//			new WFLagMain().ShowDialog();
+			new FixedLengthTwoPhasesMain().Run();
         
 //			new RunOneRank().Run();
         //new RunEfficientCTCPorfolio("Test",400,5,90,10,10000,
