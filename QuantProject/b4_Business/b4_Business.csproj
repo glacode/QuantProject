@@ -612,7 +612,27 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "a2_Strategies\Benchmark.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "a2_Strategies\EndOfDayStrategyBackTester.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "a2_Strategies\IEndOfDayStrategy.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "a2_Strategies\IEndOfDayStrategyForBacktester.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "a2_Strategies\IInSampleChooser.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
@@ -657,6 +677,21 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "a2_Strategies\Eligibles\EligibleTickers.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "a2_Strategies\Eligibles\IEligiblesSelector.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "a2_Strategies\Eligibles\MostLiquidAndLessVolatile.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "a2_Strategies\EquityEvaluation\ExpectancyScore.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
@@ -673,6 +708,31 @@
                 />
                 <File
                     RelPath = "a2_Strategies\EquityEvaluation\WinningPeriods.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "a2_Strategies\Logging\BackTestLog.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "a2_Strategies\Logging\LogItem.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "a2_Strategies\Logging\NewLogItemEventArgs.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "a2_Strategies\Optimizing\Decoding\DecoderForBalancedWeightedPositions.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "a2_Strategies\Optimizing\Decoding\IDecoderForWeightedPositions.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
@@ -708,6 +768,16 @@
                 />
                 <File
                     RelPath = "a2_Strategies\returnsManagement\time\ReturnIntervals.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "a2_Strategies\returnsManagement\time\selectors\FixedLengthTwoPhasesIntervalsSelector.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "a2_Strategies\returnsManagement\time\selectors\IIntervalsSelector.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
