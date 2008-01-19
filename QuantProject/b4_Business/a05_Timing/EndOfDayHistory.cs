@@ -24,6 +24,7 @@ using System;
 using System.Collections;
 using System.Data;
 using QuantProject.ADT;
+using QuantProject.ADT.Histories;
 using QuantProject.ADT.Statistics;
 
 
@@ -35,10 +36,6 @@ namespace QuantProject.Business.Timing
 	[Serializable]
 	public class EndOfDayHistory : AdvancedSortedList
 	{
-		public EndOfDayDateTime LastEndOfDayDateTime
-		{
-			get { return (EndOfDayDateTime)this.GetKey( this.Count - 1 ); }
-		}
 		/// <summary>
 		/// Returns the ICollection of EndOfDayDateTimes on which the
 		/// history is built
@@ -47,6 +44,71 @@ namespace QuantProject.Business.Timing
 		{
 			get { return this.Keys; }
 		}
+		/// <summary>
+		/// The first EndOfDayDateTime value in the collection
+		/// </summary>
+		public EndOfDayDateTime FirstEndOfDayDateTime
+		{
+			get
+			{
+				if ( this.TimeLine.Count == 0 )
+					throw new Exception( "This EndOfDayHistory collection is empty, " +
+						"thus FirstEndOfDayDateTime is meaningless!" );
+				return (EndOfDayDateTime)(this.GetKey( 0 ));
+			}
+		}
+		/// <summary>
+		/// The last EndOfDayDateTime value in the collection
+		/// </summary>
+		public EndOfDayDateTime LastEndOfDayDateTime
+		{
+			get
+			{
+				if ( this.TimeLine.Count == 0 )
+					throw new Exception( "This EndOfDayHistory collection is empty, " +
+						"thus LastEndOfDayDateTime is meaningless!" );
+				int lastIndex = this.TimeLine.Count - 1;
+				return (EndOfDayDateTime)( this.GetKey( lastIndex ) );
+			}
+		}
+		
+		#region History
+		private void addDateTimes( History history )
+		{
+			DateTime currentDateTime = this.FirstEndOfDayDateTime.DateTime;
+			history.Add( currentDateTime , currentDateTime );
+			foreach ( EndOfDayDateTime endOfDayDateTime
+			         in this.Keys )
+				if ( endOfDayDateTime.DateTime > currentDateTime )
+			{
+				history.Add( endOfDayDateTime.DateTime ,
+				            endOfDayDateTime.DateTime );
+				currentDateTime = endOfDayDateTime.DateTime;
+			}
+		}
+		private History getHistory()
+		{
+			History history = new History();
+			if ( this.Count > 0 )
+				this.addDateTimes( history );
+			return history;
+		}
+		
+
+	/// <summary>
+		/// Returns the collection of DateTime(s) for these EndOfDayDateTimes
+		/// </summary>
+		public History History
+		{
+			get
+			{
+				return this.getHistory();
+			}
+				
+			
+		}
+		#endregion History
+
 		public EndOfDayHistory() : base()
 		{
 		}
