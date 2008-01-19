@@ -43,10 +43,40 @@ namespace QuantProject.ADT.Histories
 		{
 			get { return this.Keys; }
 		}
+		
+		/// <summary>
+		/// The first DateTime value in the TimeLine
+		/// </summary>
+		public DateTime FirstDateTime
+		{
+			get
+			{
+				if ( this.TimeLine.Count == 0 )
+					throw new Exception( "This History collection is empty, " +
+					                    "thus FirstDateTime is meaningless!" );
+				return (DateTime)(this.GetKey( 0 ));
+			}
+		}
+
+		/// <summary>
+		/// The last DateTime value in the TimeLine
+		/// </summary>
+		public DateTime LastDateTime
+		{
+			get
+			{
+				if ( this.TimeLine.Count == 0 )
+					throw new Exception( "This History collection is empty, " +
+					                    "thus LastDateTime is meaningless!" );
+				int lastIndex = this.TimeLine.Count - 1;
+				return (DateTime)( this.GetKey( lastIndex ) );
+			}
+		}
+
 		public History() : base()
 		{
 		}
-    
+		
 		public Object GetValue( DateTime dateTime )
 		{
 			return this[ dateTime ];
