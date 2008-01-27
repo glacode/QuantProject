@@ -22,6 +22,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 using System;
 
+using QuantProject.ADT;
 using QuantProject.ADT.FileManaging;
 using QuantProject.ADT.Messaging;
 using QuantProject.Business.DataProviders;
@@ -88,9 +89,11 @@ namespace QuantProject.Business.Strategies
 			{
 				string description =
 					this.backTestID + "_" +
-					"from_" + this.firstDateTime.ToShortDateString() + "_" +
-					"to_" + this.lastDateTime.ToShortDateString() + "_" +
-					"strtgy_" + this.endOfDayStrategy.DescriptionForLogFileName;
+					"from_" +
+					ExtendedDateTime.GetShortDescriptionForFileName( this.firstDateTime ) +
+					"_to_" +
+					ExtendedDateTime.GetShortDescriptionForFileName( this.lastDateTime ) +
+					"_strtgy_" + this.endOfDayStrategy.DescriptionForLogFileName;
 				return description;
 			}
 		}
