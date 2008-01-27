@@ -95,7 +95,8 @@ namespace QuantProject.Scripts.WalkForwardTesting.FixedLengthTwoPhases
 			// uncomment the following three lines for faster scripts
 			int numberOfPortfolioPositions = 2;
 			int inSampleDays = 30;
-			string tickersGroupId = "millo";
+//			string tickersGroupId = "millo";
+			string tickersGroupId = "fastTest";
 
       Benchmark benchmark = new Benchmark( "MSFT" );
 			int maxNumberOfEligiblesToBeChosen = 100;
@@ -141,7 +142,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.FixedLengthTwoPhases
 					eligiblesSelector , inSampleChooser , historicalQuoteProvider );
 
 			DateTime firstDateTime = new DateTime( 2001 , 1 , 2 );
-			DateTime lastDateTime = new DateTime( 2004 , 1 , 15 );
+			DateTime lastDateTime = new DateTime( 2001 , 1 , 7 );
 			double maxRunningHours = 0.2;
 			EndOfDayStrategyBackTester endOfDayStrategyBackTester =
 				new EndOfDayStrategyBackTester(
