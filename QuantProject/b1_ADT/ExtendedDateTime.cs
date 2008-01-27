@@ -103,6 +103,19 @@ namespace QuantProject.ADT
       return this.DateTime.ToString() + " - " + this.BarComponent.ToString();
     }
 		/// <summary>
+		/// Returns a DateTime short description suitable for file names (no slashes)
+		/// </summary>
+		/// <returns></returns>
+		public static string GetShortDescriptionForFileName(
+			DateTime dateTime )
+		{
+			string stringForFileName =
+				dateTime.Year.ToString() + "_" +
+				dateTime.Month.ToString().PadLeft( 2 , '0' ) + "_" +
+				dateTime.Day.ToString().PadLeft( 2 , '0' );
+			return stringForFileName;
+		}
+		/// <summary>
 		/// Returns the earliest date
 		/// </summary>
 		/// <param name="dateTime1"></param>
