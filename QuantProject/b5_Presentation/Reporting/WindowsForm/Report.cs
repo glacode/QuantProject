@@ -131,6 +131,7 @@ namespace QuantProject.Presentation.Reporting.WindowsForm
 			this.Location = new System.Drawing.Point( 1000,500);
 			this.Width = 700;
 			this.Height = 500;
+			this.Text = this.accountReport.Description;
 			this.reportTabControl = new ReportTabControl( this.accountReport ,
 				showBenchmark );
 			this.Controls.Add( this.reportTabControl );
@@ -238,6 +239,8 @@ namespace QuantProject.Presentation.Reporting.WindowsForm
       //the saveFileDialog title is the same as the
       //menu item clicked by the user
       this.saveFileDialog.CheckPathExists = true;
+
+			this.saveFileDialog.FileName = this.Text;
    }
 
     private void saveObject(MenuItem sender)
