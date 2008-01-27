@@ -124,6 +124,13 @@ namespace QuantProject.Business.Financial.Accounting.Reporting
       }
     }
 
+		/// <summary>
+		/// A text description for the report, suitable for file names also
+		/// </summary>
+		public string Description
+		{
+			get { return this.reportName; }
+		}
     /// <summary>
     /// Add the last account record to the AccountReport
     /// </summary>
