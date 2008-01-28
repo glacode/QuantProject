@@ -63,7 +63,10 @@ namespace QuantProject.Scripts.WalkForwardTesting.FixedLengthTwoPhases
 		{
 			get
 			{
-				string description = "geneticOTCCTO";
+				string description = "genetic_" +
+					"longOnly_" +
+					"gnrtnSz_" + this.populationSizeForGeneticOptimizer +
+					"_gnrtnNmbr_" + this.generationNumberForGeneticOptimizer;
 				return description;
 			}
 		}
