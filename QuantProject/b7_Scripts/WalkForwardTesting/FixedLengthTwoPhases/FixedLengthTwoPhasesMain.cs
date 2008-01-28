@@ -70,12 +70,14 @@ namespace QuantProject.Scripts.WalkForwardTesting.FixedLengthTwoPhases
 			DateTime lastDateTimeRequestedForTheScript ,
 			EndOfDayStrategyBackTester endOfDayStrategyBackTester )
 		{			
-			DateTime lastReportDateTime = ExtendedDateTime.Min(
-				lastDateTimeRequestedForTheScript ,
-				endOfDayStrategyBackTester.EndOfDayTimer.GetCurrentTime().DateTime );
+//			DateTime lastReportDateTime = ExtendedDateTime.Min(
+//				lastDateTimeRequestedForTheScript ,
+//				endOfDayStrategyBackTester.EndOfDayTimer.GetCurrentTime().DateTime );
+			DateTime lastReportDateTime =
+				endOfDayStrategyBackTester.ActualLastDateTime;
 			Report report = new Report(
-				endOfDayStrategyBackTester.Account ,
-				endOfDayStrategyBackTester.HistoricalQuoteProvider );
+				endOfDayStrategyBackTester.AccountReport ,
+				true );
 			report.Create( endOfDayStrategyBackTester.DescriptionForLogFileName , 1 ,
 				new EndOfDayDateTime( lastReportDateTime ,
 				EndOfDaySpecificTime.OneHourAfterMarketClose ) ,
@@ -88,15 +90,15 @@ namespace QuantProject.Scripts.WalkForwardTesting.FixedLengthTwoPhases
 			string backTestId = "WFFLTP";
 			double cashToStart = 30000;
 
-//			int numberOfPortfolioPositions = 4;
-//			int inSampleDays = 90;
-//			string tickersGroupId = "SP500";
+			int numberOfPortfolioPositions = 2;
+			int inSampleDays = 90;
+			string tickersGroupId = "SP500";
 			
 			// uncomment the following three lines for faster scripts
-			int numberOfPortfolioPositions = 2;
-			int inSampleDays = 30;
-//			string tickersGroupId = "millo";
-			string tickersGroupId = "fastTest";
+//			int numberOfPortfolioPositions = 2;
+//			int inSampleDays = 30;
+////			string tickersGroupId = "millo";
+//			string tickersGroupId = "fastTest";
 
       Benchmark benchmark = new Benchmark( "MSFT" );
 			int maxNumberOfEligiblesToBeChosen = 100;
@@ -115,8 +117,8 @@ namespace QuantProject.Scripts.WalkForwardTesting.FixedLengthTwoPhases
 			double crossoverRate = 0.85;
 			double mutationRate = 0.02;
 			double elitismRate = 0.001;
-			int populationSizeForGeneticOptimizer = 3000;
-			int generationNumberForGeneticOptimizer = 5;
+			int populationSizeForGeneticOptimizer = 30000;
+			int generationNumberForGeneticOptimizer = 8;
 			int seedForRandomGenerator =
 				QuantProject.ADT.ConstantsProvider.SeedForRandomGenerator;
 			IInSampleChooser inSampleChooser =
@@ -142,8 +144,8 @@ namespace QuantProject.Scripts.WalkForwardTesting.FixedLengthTwoPhases
 					eligiblesSelector , inSampleChooser , historicalQuoteProvider );
 
 			DateTime firstDateTime = new DateTime( 2001 , 1 , 2 );
-			DateTime lastDateTime = new DateTime( 2001 , 1 , 7 );
-			double maxRunningHours = 0.2;
+			DateTime lastDateTime = new DateTime( 2004 , 12 , 31 );
+			double maxRunningHours = 7;
 			EndOfDayStrategyBackTester endOfDayStrategyBackTester =
 				new EndOfDayStrategyBackTester(
 					backTestId , fixedLengthTwoPhasesStrategy ,
