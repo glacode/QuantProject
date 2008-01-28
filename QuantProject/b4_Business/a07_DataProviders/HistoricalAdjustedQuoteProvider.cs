@@ -33,6 +33,14 @@ namespace QuantProject.Business.DataProviders
 	[Serializable]
 	public class HistoricalAdjustedQuoteProvider : HistoricalQuoteProvider
 	{
+		public override string ShortDescription
+		{
+			get
+			{
+				return "adj";
+			}
+		}
+
 		public HistoricalAdjustedQuoteProvider()
 		{
 		}

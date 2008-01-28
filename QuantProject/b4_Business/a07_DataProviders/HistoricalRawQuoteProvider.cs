@@ -33,6 +33,14 @@ namespace QuantProject.Business.DataProviders
 	[Serializable]
   public class HistoricalRawQuoteProvider : HistoricalQuoteProvider
 	{
+		public override string ShortDescription
+		{
+			get
+			{
+				return "raw";
+			}
+		}
+
 		public HistoricalRawQuoteProvider()
 		{
 		}
