@@ -59,8 +59,9 @@ namespace QuantProject.Business.Financial.Accounting.Reporting
 
     public string Name
     {
-      get { return reportName; }
-    }    
+			get { return this.reportName; }
+			set { this.reportName = value; }
+		}    
     public EndOfDayDateTime EndDateTime
     {
       get { return endDateTime; }
