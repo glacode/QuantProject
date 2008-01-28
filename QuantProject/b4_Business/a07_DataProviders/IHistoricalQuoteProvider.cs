@@ -49,5 +49,9 @@ namespace QuantProject.Business.DataProviders
 		/// </summary>
 		EndOfDayHistory GetEndOfDayQuotes( string ticker ,
 			EndOfDayHistory endOfDayHistory );
+		/// <summary>
+		/// Short description: it might be used for file names
+		/// </summary>
+		string ShortDescription { get; }
 	}
 }
