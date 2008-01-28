@@ -80,9 +80,10 @@ namespace QuantProject.Scripts.WalkForwardTesting.FixedLengthTwoPhases
 			get
 			{
 				string descriptionForLogFileName =
-					"WFOTC_" +
-					"oS_" + this.numDaysBeetweenEachOtpimization + "_" +
-					this.inSampleChooser.Description;
+					"WFFLPT_" +
+					"nmDysBtwnOptmztns_" + this.numDaysBeetweenEachOtpimization +
+					"_iS_" +	this.inSampleChooser.Description +
+					"_oS_longOnly";
 				return descriptionForLogFileName;
 			}
 		}
