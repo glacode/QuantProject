@@ -27,6 +27,7 @@ using QuantProject.ADT.FileManaging;
 using QuantProject.ADT.Messaging;
 using QuantProject.Business.DataProviders;
 using QuantProject.Business.Financial.Accounting;
+using QuantProject.Business.Financial.Accounting.Reporting;
 using QuantProject.Business.Financial.Ordering;
 using QuantProject.Business.Strategies.Logging;
 using QuantProject.Business.Timing;
@@ -51,8 +52,11 @@ namespace QuantProject.Business.Strategies
 
 		private DateTime startingTimeForScript;
 		private IEndOfDayTimer endOfDayTimer;
+		private DateTime actualLastDateTime;
 		private Account account;
+		private AccountReport accountReport;
 		private BackTestLog backTestLog;
+		private DateTime realDateTimeWhenTheBackTestIsStopped;
 
 		public IHistoricalQuoteProvider HistoricalQuoteProvider
 		{
@@ -62,9 +66,36 @@ namespace QuantProject.Business.Strategies
 		{
 			get { return this.benchmark; }
 		}
+		/// <summary>
+		/// Returns the dimulated DateTime when the backtest is stopped
+		/// (not the real time)
+		/// </summary>
+		public DateTime ActualLastDateTime
+		{
+			get
+			{
+				this.checkThisPropertyRequiresBacktestIsCompleted();
+				return this.actualLastDateTime;
+			}
+		}
 		public Account Account
 		{
-			get { return this.account; }
+			get
+			{
+				return this.account;
+			}
+		}
+		/// <summary>
+		/// Once the backtest is completed, this property returns the
+		/// AccountReport for the internal Account
+		/// </summary>
+		public AccountReport AccountReport
+		{
+			get
+			{
+				this.checkThisPropertyRequiresBacktestIsCompleted();
+				return this.accountReport;
+			}
 		}
 		public BackTestLog Log
 		{
@@ -88,14 +119,26 @@ namespace QuantProject.Business.Strategies
 			get
 			{
 				string description =
-					this.backTestID + "_" +
+					ExtendedDateTime.GetCompleteShortDescriptionForFileName(
+					this.realDateTimeWhenTheBackTestIsStopped ) + "_" +
 					"from_" +
 					ExtendedDateTime.GetShortDescriptionForFileName( this.firstDateTime ) +
 					"_to_" +
-					ExtendedDateTime.GetShortDescriptionForFileName( this.lastDateTime ) +
+					ExtendedDateTime.GetShortDescriptionForFileName( this.actualLastDateTime ) +
+					"_annlRtrn_" + this.AccountReport.Summary.AnnualSystemPercentageReturn.FormattedValue +
+					"_maxDD_" + this.AccountReport.Summary.MaxEquityDrawDown.FormattedValue +
+					"_qtPrvdr_" + this.historicalQuoteProvider.ShortDescription +
 					"_strtgy_" + this.endOfDayStrategy.DescriptionForLogFileName;
 				return description;
 			}
+		}
+
+		private void checkThisPropertyRequiresBacktestIsCompleted()
+		{
+			if ( this.actualLastDateTime == DateTime.MinValue )
+				// the timer has not been stopped yet
+				throw new Exception( "This property cannot be invoked " +
+					"while the backtest is still running!" );
 		}
 
 		public EndOfDayStrategyBackTester( string backTestID ,
@@ -119,6 +162,8 @@ namespace QuantProject.Business.Strategies
 			this.initialize_account();
 			this.backTestLog = new BackTestLog( backTestID , firstDateTime ,
 				lastDateTime , benchmark );
+			this.actualLastDateTime = DateTime.MinValue;
+			this.realDateTimeWhenTheBackTestIsStopped = DateTime.MinValue;
 		}
 
 		private void initialize_endOfDayTimer()
@@ -236,13 +281,23 @@ namespace QuantProject.Business.Strategies
 		private void marketCloseEventHandler(
 			Object sender , EndOfDayTimingEventArgs endOfDayTimingEventArgs )
 		{
-			DateTime currentTime =
-				( ( IEndOfDayTimer )sender ).GetCurrentTime().DateTime;
-			if ( this.isTimeToStop( currentTime ) )
+			EndOfDayDateTime currentEndOfDayDateTime =
+				( ( IEndOfDayTimer )sender ).GetCurrentTime();
+			DateTime currentDateTime = currentEndOfDayDateTime.DateTime;
+			if ( this.isTimeToStop( currentDateTime ) )
 			{
 				// either the simulation has reached the ending date or
 				// too much time elapsed since the simulation started
+				this.actualLastDateTime =
+					ExtendedDateTime.Min( this.lastDateTime , currentDateTime );
 				this.endOfDayTimer.Stop();
+				this.realDateTimeWhenTheBackTestIsStopped = DateTime.Now;
+				this.accountReport = this.account.CreateReport(
+					"" ,
+					1 , currentEndOfDayDateTime , this.benchmark.Ticker ,
+					this.historicalQuoteProvider );
+				this.accountReport.Name = this.DescriptionForLogFileName;
+
 				//				this.progressBarForm.Close();
 				//				ObjectArchiver.Archive( this.account ,
 				//					@"C:\Documents and Settings\Glauco\Desktop\reports\final.qP" );
