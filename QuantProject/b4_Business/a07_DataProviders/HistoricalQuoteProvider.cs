@@ -32,6 +32,8 @@ namespace QuantProject.Business.DataProviders
 	[Serializable]
 	public abstract class HistoricalQuoteProvider : IHistoricalQuoteProvider
 	{
+		public abstract string ShortDescription { get; }
+
 		public HistoricalQuoteProvider()
 		{
 		}
