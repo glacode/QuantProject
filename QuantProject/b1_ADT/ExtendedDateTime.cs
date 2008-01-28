@@ -104,6 +104,7 @@ namespace QuantProject.ADT
     }
 		/// <summary>
 		/// Returns a DateTime short description suitable for file names (no slashes)
+		/// hours, minutes and seconds are NOT displayed
 		/// </summary>
 		/// <returns></returns>
 		public static string GetShortDescriptionForFileName(
@@ -113,6 +114,21 @@ namespace QuantProject.ADT
 				dateTime.Year.ToString() + "_" +
 				dateTime.Month.ToString().PadLeft( 2 , '0' ) + "_" +
 				dateTime.Day.ToString().PadLeft( 2 , '0' );
+			return stringForFileName;
+		}
+		/// <summary>
+		/// Returns a DateTime short description suitable for file names (no slashes)
+		/// hours, minutes and seconds are displayed also
+		/// </summary>
+		/// <returns></returns>
+		public static string GetCompleteShortDescriptionForFileName(
+			DateTime dateTime )
+		{
+			string stringForFileName =
+				GetShortDescriptionForFileName( dateTime ) + "_" +
+				dateTime.Hour.ToString() + "_" +
+				dateTime.Minute.ToString().PadLeft( 2 , '0' ) + "_" +
+				dateTime.Second.ToString().PadLeft( 2 , '0' );
 			return stringForFileName;
 		}
 		/// <summary>
