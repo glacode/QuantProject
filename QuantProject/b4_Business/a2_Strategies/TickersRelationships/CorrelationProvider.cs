@@ -177,7 +177,7 @@ namespace QuantProject.Business.Strategies.TickersRelationships
 		
 		public double GetPearsonCorrelation(string firstTicker, string secondTicker)
 		{
-    	double returnValue = -2.0;
+    	double returnValue = double.NaN;
 			if( this.pearsonCorrelations == null )
 				this.getOrderedTickersPearsonCorrelations_setCorrelations();
 			
@@ -187,10 +187,15 @@ namespace QuantProject.Business.Strategies.TickersRelationships
     		     this.pearsonCorrelations[i].SecondTicker == secondTicker) ||
     		     (this.pearsonCorrelations[i].FirstTicker == secondTicker &&
     		      this.pearsonCorrelations[i].SecondTicker == firstTicker) )
-    			returnValue = this.pearsonCorrelations[i].CorrelationValue;
+    		{
+					returnValue = this.pearsonCorrelations[i].CorrelationValue;
+					i = this.pearsonCorrelations.Length;//exit from for
+				}
     	}
-    	
-    	return returnValue;
+    	if( double.IsNaN(returnValue) )
+				throw new MissingCorrelationException(firstTicker, secondTicker);
+			
+			return returnValue;
 		}
 
   } // end of class
