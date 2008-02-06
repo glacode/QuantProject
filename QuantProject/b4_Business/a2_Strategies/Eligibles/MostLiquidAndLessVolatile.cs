@@ -41,6 +41,14 @@ namespace QuantProject.Business.Strategies.Eligibles
 		private string tickersGroupID;
 		private int maxNumberOfEligibleTickersToBeChosen;
 
+		private string description;
+		public string Description
+		{
+			get{
+				return "Change me!";
+			}
+		}
+		
 		/// <summary>
 		/// Selects the most liquid and less volatile within the given
 		/// group
