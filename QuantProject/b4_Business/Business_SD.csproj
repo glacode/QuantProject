@@ -59,8 +59,11 @@
   <ItemGroup>
     <Compile Include="a05_Timing\EndOfDayHistory.cs" />
     <Compile Include="a07_DataProviders\HistoricalQuoteProvider.cs" />
+    <Compile Include="a1_Financial\a2_Accounting\h5_Reporting\StatisticsSummaryRows\AverageReturnOnMonday.cs" />
     <Compile Include="a1_Financial\a2_Accounting\h5_Reporting\SummaryRows\AverageNumberOfTransactionsPerDay.cs" />
+    <Compile Include="a1_Financial\a2_Accounting\h5_Reporting\Tables\StatisticsSummary.cs" />
     <Compile Include="a2_Strategies\Benchmark.cs" />
+    <Compile Include="a2_Strategies\Eligibles\ByPriceMostLiquidAlwaysQuoted.cs" />
     <Compile Include="a2_Strategies\Eligibles\EligibleTickers.cs" />
     <Compile Include="a2_Strategies\Eligibles\IEligiblesSelector.cs" />
     <Compile Include="a2_Strategies\Eligibles\MostLiquidAndLessVolatile.cs" />
@@ -70,8 +73,12 @@
     <Compile Include="a2_Strategies\Logging\BackTestLog.cs" />
     <Compile Include="a2_Strategies\Logging\LogItem.cs" />
     <Compile Include="a2_Strategies\Logging\NewLogItemEventArgs.cs" />
+    <Compile Include="a2_Strategies\Optimizing\Decoding\BasicDecoderForTestingPositions.cs" />
     <Compile Include="a2_Strategies\Optimizing\Decoding\DecoderForBalancedWeightedPositions.cs" />
+    <Compile Include="a2_Strategies\Optimizing\Decoding\DecoderForTestingPositionsWithBalancedWeights.cs" />
+    <Compile Include="a2_Strategies\Optimizing\Decoding\IDecoderForTestingPositions.cs" />
     <Compile Include="a2_Strategies\Optimizing\Decoding\IDecoderForWeightedPositions.cs" />
+    <Compile Include="a2_Strategies\OutOfSample\TestingPositions.cs" />
     <Compile Include="a2_Strategies\returnsManagement\time\CloseToCloseIntervals.cs" />
     <Compile Include="a2_Strategies\returnsManagement\time\CloseToOpenIntervals.cs" />
     <Compile Include="a2_Strategies\returnsManagement\time\DailyOpenToCloseIntervals.cs" />
@@ -82,6 +89,7 @@
     <Compile Include="a2_Strategies\returnsManagement\time\selectors\FixedLengthTwoPhasesIntervalsSelector.cs" />
     <Compile Include="a2_Strategies\TickersRelationships\CloseToCloseCorrelationProvider.cs" />
     <Compile Include="a2_Strategies\TickersRelationships\CorrelationProvider.cs" />
+    <Compile Include="a2_Strategies\TickersRelationships\MissingCorrelationException.cs" />
     <Compile Include="a2_Strategies\TickersRelationships\OpenToCloseCorrelationProvider.cs" />
     <Compile Include="a2_Strategies\TickersRelationships\TickersPearsonCorrelation.cs" />
     <Compile Include="AssemblyInfo.cs" />
@@ -210,6 +218,8 @@
       <Project>{42B091B3-3BDF-45EB-B5E6-9C3CA353117C}</Project>
       <Name>b3_Data</Name>
     </ProjectReference>
+    <Folder Include="a1_Financial\a2_Accounting\h5_Reporting\StatisticsSummaryRows" />
+    <Folder Include="a2_Strategies\OutOfSample" />
     <Folder Include="a2_Strategies\Eligibles" />
     <Folder Include="a2_Strategies\EquityEvaluation" />
     <Folder Include="a2_Strategies\Logging" />

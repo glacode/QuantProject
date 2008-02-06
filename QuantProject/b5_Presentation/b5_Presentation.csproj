@@ -219,6 +219,16 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "Reporting\WindowsForm\ReportTabControl.resx"
+                    DependentUpon = "ReportTabControl.cs"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "Reporting\WindowsForm\StatisticsSummaryTabPage.cs"
+                    SubType = "Component"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "Reporting\WindowsForm\SummaryItem.cs"
                     SubType = "Code"
                     BuildAction = "Compile"

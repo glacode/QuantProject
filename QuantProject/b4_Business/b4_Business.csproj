@@ -362,6 +362,11 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "a1_Financial\a2_Accounting\h5_Reporting\StatisticsSummaryRows\AverageReturnOnMonday.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "a1_Financial\a2_Accounting\h5_Reporting\SummaryRows\AnnualSystemPercentageReturn.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
@@ -523,6 +528,11 @@
                 />
                 <File
                     RelPath = "a1_Financial\a2_Accounting\h5_Reporting\Tables\RoundTrades.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "a1_Financial\a2_Accounting\h5_Reporting\Tables\StatisticsSummary.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
@@ -727,12 +737,32 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "a2_Strategies\Optimizing\Decoding\BasicDecoderForTestingPositions.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "a2_Strategies\Optimizing\Decoding\DecoderForBalancedWeightedPositions.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "a2_Strategies\Optimizing\Decoding\DecoderForTestingPositionsWithBalancedWeights.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "a2_Strategies\Optimizing\Decoding\IDecoderForTestingPositions.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "a2_Strategies\Optimizing\Decoding\IDecoderForWeightedPositions.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "a2_Strategies\OutOfSample\TestingPositions.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
@@ -788,6 +818,11 @@
                 />
                 <File
                     RelPath = "a2_Strategies\TickersRelationships\CorrelationProvider.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "a2_Strategies\TickersRelationships\MissingCorrelationException.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />

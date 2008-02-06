@@ -73,6 +73,7 @@
     <Compile Include="Reporting\WindowsForm\ReportGridTabPage.cs" />
     <Compile Include="Reporting\WindowsForm\ReportShower.cs" />
     <Compile Include="Reporting\WindowsForm\ReportTabControl.cs" />
+    <Compile Include="Reporting\WindowsForm\StatisticsSummaryTabPage.cs" />
     <Compile Include="Reporting\WindowsForm\SummaryTabPage.cs" />
     <Compile Include="Reporting\WindowsForm\AccountViewer.cs" />
     <Compile Include="Reporting\WindowsForm\SummaryItem.cs" />
