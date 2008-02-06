@@ -34,6 +34,7 @@ namespace QuantProject.Presentation.Reporting.WindowsForm
 	/// <summary>
 	/// TabPage for the equity chart for the report form
 	/// </summary>
+	[Serializable]
 	public class EquityChartTabPage : TabPage
 	{
 		private AccountReport accountReport;

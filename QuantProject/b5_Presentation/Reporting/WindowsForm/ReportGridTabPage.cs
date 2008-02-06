@@ -28,6 +28,7 @@ namespace QuantProject.Presentation.Reporting.WindowsForm
 	/// <summary>
 	/// Report TabPage, to contain a ReportGrid
 	/// </summary>
+	[Serializable]
 	public class ReportGridTabPage : TabPage
 	{
 		private ReportGrid reportGrid;
