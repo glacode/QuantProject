@@ -98,5 +98,36 @@ namespace QuantProject.Business.Strategies
 			return currentEndOfDayDateTime;
 		}
 
+		/// <summary>
+		/// Returns the EndOfDayHistory of the benchmark
+		/// between the two given EndOfDayDateTimes
+		/// </summary>
+		public EndOfDayHistory GetEndOfDayHistory(
+			EndOfDayDateTime firstEndOfDayDateTime,
+			EndOfDayDateTime lastEndOfDayDateTime )
+		{
+			if( lastEndOfDayDateTime.IsLessThanOrEqualTo(firstEndOfDayDateTime) )
+				throw new Exception("lastEndOfDayDateTime has to be greater than " +
+				                    "firstEndOfDayDateTime !!");
+			EndOfDayHistory endOfDayHistory = new EndOfDayHistory();
+			EndOfDayDateTime endOfDayDateTimeToAddToHistory =
+				firstEndOfDayDateTime.Copy();
+			while( endOfDayDateTimeToAddToHistory.IsLessThanOrEqualTo(lastEndOfDayDateTime) )
+			{
+				if( this.isExchanged( endOfDayDateTimeToAddToHistory ) )
+				{
+					endOfDayHistory.Add( endOfDayDateTimeToAddToHistory, endOfDayDateTimeToAddToHistory );
+					endOfDayDateTimeToAddToHistory = 
+						endOfDayDateTimeToAddToHistory.GetNextMarketStatusSwitch();
+				}
+				else
+				{
+					endOfDayDateTimeToAddToHistory =
+						endOfDayDateTimeToAddToHistory.GetNextMarketStatusSwitch();
+				}
+			}
+			return endOfDayHistory;
+		}
+		
 	}
 }
