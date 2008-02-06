@@ -46,5 +46,11 @@ namespace QuantProject.Business.Strategies.Eligibles
 		/// <returns></returns>
 		EligibleTickers GetEligibleTickers(
 			EndOfDayHistory endOfDayHistory );
+		
+		/// <summary>
+		/// short text description for the eligiblesSelector
+		/// (it might be used for saving logs for strategies)
+		/// </summary>
+		string Description { get; }
 	}
 }
