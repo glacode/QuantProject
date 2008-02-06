@@ -30,6 +30,21 @@ namespace QuantProject.Business.Strategies.Eligibles
 	/// </summary>
 	public class EligibleTickers : System.Collections.CollectionBase
 	{
+		private string[] tickers;
+		public string[] Tickers
+		{
+			get  
+			{
+				if(this.tickers == null)
+				{
+					this.tickers = new string[this.Count];
+					for(int i = 0;i<this.Count; i++)
+						this.tickers[i] = this[i];
+				}
+				return this.tickers;
+			}
+		}
+		
 		/// <summary>
 		/// 
 		/// </summary>
@@ -55,7 +70,8 @@ namespace QuantProject.Business.Strategies.Eligibles
 		{
 			this.checkParameter( dataRow );
 			this.addTicker_actually( (string)dataRow[ 0 ] );
-		}		private void addTickers( DataTable dtTickers )
+		}		
+		private void addTickers( DataTable dtTickers )
 		{
 			foreach ( DataRow dataRow in dtTickers.Rows )
 				this.addTicker( dataRow );
