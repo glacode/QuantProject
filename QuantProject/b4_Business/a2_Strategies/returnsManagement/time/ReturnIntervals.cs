@@ -152,6 +152,14 @@ namespace QuantProject.Business.Strategies.ReturnsManagement.Time
 			this.intervalsSelector = intervalSelector;
 		}
 		
+		/// <summary>
+		/// It creates a ReturnIntervals with just a ReturnInterval
+		/// </summary>
+		public ReturnIntervals( ReturnInterval returnInterval )
+		{
+			this.Add( returnInterval );
+		}
+
 		protected virtual void setMarketDaysForBenchmark()
 		{
 			this.marketDaysForBenchmark =
