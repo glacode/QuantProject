@@ -25,7 +25,9 @@ using System.Data;
 using System.Windows.Forms;
 using System.Collections;
 using System.Reflection;
+using System.Runtime.Serialization;
 using System.Runtime.InteropServices;
+
 using QuantProject.ADT;
 using QuantProject.ADT.Histories;
 using QuantProject.Business.DataProviders;
@@ -40,7 +42,7 @@ namespace QuantProject.Business.Financial.Accounting.Reporting
 	/// Summary description for AccountReport.
 	/// </summary>
 	[Serializable]
-	public class AccountReport
+	public class AccountReport : ISerializable
 	{
     private Account account;
 		private IHistoricalQuoteProvider historicalQuoteProvider;
@@ -56,6 +58,7 @@ namespace QuantProject.Business.Financial.Accounting.Reporting
     private ReportTable equity;
 		private EquityLine equityLine;
     private Tables.Summary summary;
+		private Tables.StatisticsSummary statisticsSummary;
 
     public string Name
     {
@@ -117,6 +120,10 @@ namespace QuantProject.Business.Financial.Accounting.Reporting
     {
       get { return summary; }
     }
+		public Tables.StatisticsSummary StatisticsSummary
+		{
+			get { return this.statisticsSummary; }
+		}
     public DateTime StartDateTime
     {
       get
@@ -299,8 +306,56 @@ namespace QuantProject.Business.Financial.Accounting.Reporting
       //this.equity = getEquity( reportName , detailedDataTable );
       //this.summary = getSummary( reportName );
       this.summary = new Tables.Summary( this , historicalQuoteProvider );
+			this.statisticsSummary = new Tables.StatisticsSummary( this, historicalQuoteProvider );
       return this;
     }
+		#endregion
+
+		#region Serialization
+
+		/// <summary>
+		/// This constructor allows custom deserialization (see the ISerializable
+		/// interface documentation)
+		/// </summary>
+		/// <param name="info"></param>
+		/// <param name="context"></param>
+		protected AccountReport( SerializationInfo info , StreamingContext context ) :
+																base( )
+		{
+			// get the set of serializable members for this class and its base classes
+			Type thisType = this.GetType();
+			MemberInfo[] mi = FormatterServices.GetSerializableMembers(
+				thisType , context);
+
+			// deserialize the fields from the info object
+			for (Int32 i = 0 ; i < mi.Length; i++) 
+			{
+				FieldInfo fieldInfo = (FieldInfo) mi[i];
+				// set the field to the deserialized value
+				try
+				{
+					fieldInfo.SetValue( this ,
+					info.GetValue( fieldInfo.Name, fieldInfo.FieldType ) );
+				}
+				catch(Exception ex)
+					{ex = ex;}
+			}
+		}
+		
+		void ISerializable.GetObjectData(
+			SerializationInfo info, StreamingContext context) 
+		{
+			// get the set of serializable members for this class and base classes
+			Type thisType = this.GetType();
+			MemberInfo[] mi = 
+				FormatterServices.GetSerializableMembers( thisType , context);
+
+			// serialize the fields to the info object
+			for (Int32 i = 0 ; i < mi.Length; i++) 
+			{
+				info.AddValue(mi[i].Name, ((FieldInfo) mi[i]).GetValue(this));
+			}
+		}
 		#endregion
 
     public AccountReport Create( string reportName , long numDaysForInterval ,
