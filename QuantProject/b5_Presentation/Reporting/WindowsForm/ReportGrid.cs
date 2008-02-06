@@ -28,6 +28,7 @@ namespace QuantProject.Presentation.Reporting.WindowsForm
 	/// <summary>
 	/// DataGrid to be displayed within a report TabPage
 	/// </summary>
+	[Serializable]
 	public class ReportGrid : DataGrid
 	{
 		public ReportGrid( ReportTable reportTable )

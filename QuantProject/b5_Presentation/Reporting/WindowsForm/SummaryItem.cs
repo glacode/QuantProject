@@ -30,6 +30,7 @@ namespace QuantProject.Presentation.Reporting.WindowsForm
 	/// <summary>
 	/// A summary item: it contains both the item label and the item value
 	/// </summary>
+	[Serializable]
 	public class SummaryItem
 	{
 		private Label description;

@@ -34,6 +34,7 @@ namespace QuantProject.Presentation.Reporting.WindowsForm
 	/// <summary>
 	/// TabPage to show the summary within the report form
 	/// </summary>
+	[Serializable]
 	public class SummaryTabPage : TabPage
 	{
 		// constant values for label's placement
