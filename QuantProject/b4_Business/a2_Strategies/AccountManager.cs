@@ -82,23 +82,33 @@ namespace QuantProject.Business.Strategies
       orders.Add(order);
     }
     /// <summary>
-  	/// Modifies the state for the given account,
-  	/// opening positions provided by the given weightedPositions
-  	/// </summary>
-    static public void OpenPositions(WeightedPositions weightedPositions,
-                                     Account account)
-    {
+		/// Modifies the state for the given account,
+		/// opening positions provided by the given weightedPositions
+		/// </summary>
+		static public void OpenPositions(WeightedPositions weightedPositions,
+																		 Account account, double cashToAdd)
+		{
 			if(account.CashAmount == 0.0 && account.Transactions.Count == 0)
-				account.AddCash(15000);
+				account.AddCash(cashToAdd);
 			if(weightedPositions == null || account == null)
 				throw new Exception("Both parameters have to be set to valid objects!");
 			orders.Clear();
 			double valueToInvestInPositions = account.CashAmount;
-    	foreach(WeightedPosition weightedPosition in weightedPositions.Values)
-      	addWeightedPositionToOrderList( weightedPosition, account, valueToInvestInPositions );
-      foreach(object item in orders)
-      	account.AddOrder( (Order)item );
-    }
+			foreach(WeightedPosition weightedPosition in weightedPositions.Values)
+				addWeightedPositionToOrderList( weightedPosition, account, valueToInvestInPositions );
+			foreach(object item in orders)
+				account.AddOrder( (Order)item );
+		}
+
+		/// <summary>
+		/// Modifies the state for the given account,
+		/// opening positions provided by the given weightedPositions
+		/// </summary>
+		static public void OpenPositions(WeightedPositions weightedPositions,
+																		 Account account)
+		{
+			OpenPositions(weightedPositions, account, 15000);
+		}
     #endregion
 
 		static private double getWeightedPositions_getPositionsAbsoluteValue(Account account)
