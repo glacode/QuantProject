@@ -85,11 +85,15 @@ namespace QuantProject.Business.Strategies
 		/// Modifies the state for the given account,
 		/// opening positions provided by the given weightedPositions
 		/// </summary>
+		/// <param name="weightedPositions"></param>
+		/// <param name="account"></param>
+		/// <param name="initialCashForTheAccount">The initial cash for the account
+		/// with no transactions at all (totally empty account)</param>
 		static public void OpenPositions(WeightedPositions weightedPositions,
-																		 Account account, double cashToAdd)
+																		 Account account, double initialCashIfTheAccountIsEmpty)
 		{
-			if(account.CashAmount == 0.0 && account.Transactions.Count == 0)
-				account.AddCash(cashToAdd);
+			if(account.Transactions.Count == 0)
+				account.AddCash(initialCashIfTheAccountIsEmpty);
 			if(weightedPositions == null || account == null)
 				throw new Exception("Both parameters have to be set to valid objects!");
 			orders.Clear();
