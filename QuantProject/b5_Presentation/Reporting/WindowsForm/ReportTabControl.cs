@@ -20,6 +20,8 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 using System;
+using System.Runtime.Serialization;
+using System.Reflection;
 using System.Windows.Forms;
 
 using QuantProject.Business.Financial.Accounting.Reporting;
@@ -30,7 +32,8 @@ namespace QuantProject.Presentation.Reporting.WindowsForm
 	/// <summary>
 	/// TabControl for the report form
 	/// </summary>
-	public class ReportTabControl : TabControl
+	[Serializable]
+	public class ReportTabControl : TabControl, ISerializable
 	{
 		private AccountReport accountReport;
 		private EquityChartTabPage equityChart;
@@ -38,6 +41,7 @@ namespace QuantProject.Presentation.Reporting.WindowsForm
 		private ReportGridTabPage roundTrades;
 		private ReportGridTabPage equity;
 		private ReportGridTabPage transactions;
+		private StatisticsSummaryTabPage statisticsSummary;
 
 		public ReportGrid TransactionGrid
 		{
@@ -46,6 +50,56 @@ namespace QuantProject.Presentation.Reporting.WindowsForm
 		public Chart EquityChart
 		{
 			get { return this.equityChart.EquityChart; }
+		}
+		
+		/// <summary>
+		/// This constructor allows custom deserialization (see the ISerializable
+		/// interface documentation)
+		/// </summary>
+		/// <param name="info"></param>
+		/// <param name="context"></param>
+		protected ReportTabControl( SerializationInfo info , StreamingContext context ) :
+							base()
+		{
+			// get the set of serializable members for this class and its base classes
+			Type thisType = this.GetType();
+			MemberInfo[] mi = FormatterServices.GetSerializableMembers(
+				thisType , context);
+
+			// deserialize the fields from the info object
+			for (Int32 i = 0 ; i < mi.Length; i++) 
+			{
+				FieldInfo fieldInfo = (FieldInfo) mi[i];
+
+				// set the field to the deserialized value
+				try
+				{
+					fieldInfo.SetValue( this ,
+						info.GetValue( fieldInfo.Name, fieldInfo.FieldType ) );
+				}
+				catch(Exception ex)
+				{ex = ex;}
+			}
+		}
+
+		/// <summary>
+		/// serialize the set of serializable members for this class and base classes
+		/// </summary>
+		/// <param name="info"></param>
+		/// <param name="context"></param>
+		void ISerializable.GetObjectData(
+			SerializationInfo info, StreamingContext context) 
+		{
+			// get the set of serializable members for this class and base classes
+			Type thisType = this.GetType();
+			MemberInfo[] mi = 
+				FormatterServices.GetSerializableMembers( thisType , context);
+
+			// serialize the fields to the info object
+			for (Int32 i = 0 ; i < mi.Length; i++) 
+			{
+				info.AddValue(mi[i].Name, ((FieldInfo) mi[i]).GetValue(this));
+			}
 		}
 
 		/// <summary>
@@ -73,6 +127,8 @@ namespace QuantProject.Presentation.Reporting.WindowsForm
 			this.transactions = new ReportGridTabPage(
 				"Transactions" , this.accountReport.TransactionTable );
 			this.Controls.Add( this.transactions );
+			this.statisticsSummary = new StatisticsSummaryTabPage( this.accountReport );
+			this.Controls.Add( this.statisticsSummary );
 		}
 	}
 }
