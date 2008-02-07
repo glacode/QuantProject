@@ -165,7 +165,7 @@
                 />
                 <File
                     RelPath = "Charting\Chart.cs"
-                    SubType = "UserControl"
+                    SubType = "Code"
                     BuildAction = "Compile"
                 />
                 <File
