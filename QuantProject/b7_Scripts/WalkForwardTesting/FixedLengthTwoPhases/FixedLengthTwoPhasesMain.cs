@@ -27,13 +27,15 @@ using QuantProject.Business.DataProviders;
 using QuantProject.Business.Strategies;
 using QuantProject.Business.Strategies.Eligibles;
 using QuantProject.Business.Strategies.EquityEvaluation;
+using QuantProject.Business.Strategies.Logging;
 using QuantProject.Business.Strategies.Optimizing.Decoding;
 using QuantProject.Business.Strategies.ReturnsManagement;
 using QuantProject.Business.Strategies.ReturnsManagement.Time;
 using QuantProject.Business.Strategies.ReturnsManagement.Time.IntervalsSelectors;
 using QuantProject.Business.Timing;
 using QuantProject.Presentation;
-using QuantProject.Presentation.Reporting.WindowsForm;
+using QuantProject.Scripts.General.Logging;
+using QuantProject.Scripts.General.Reporting;
 
 
 namespace QuantProject.Scripts.WalkForwardTesting.FixedLengthTwoPhases
@@ -66,23 +68,42 @@ namespace QuantProject.Scripts.WalkForwardTesting.FixedLengthTwoPhases
 
 		// TO DO check if you can add this to QuantProject.Presentation.Reporting.WindowsForm.Report
 		// as a public method or as a new constructor
-		private void showReport(
-			DateTime lastDateTimeRequestedForTheScript ,
-			EndOfDayStrategyBackTester endOfDayStrategyBackTester )
-		{			
-//			DateTime lastReportDateTime = ExtendedDateTime.Min(
-//				lastDateTimeRequestedForTheScript ,
-//				endOfDayStrategyBackTester.EndOfDayTimer.GetCurrentTime().DateTime );
-			DateTime lastReportDateTime =
-				endOfDayStrategyBackTester.ActualLastDateTime;
-			Report report = new Report(
-				endOfDayStrategyBackTester.AccountReport ,
-				true );
-			report.Create( endOfDayStrategyBackTester.DescriptionForLogFileName , 1 ,
-				new EndOfDayDateTime( lastReportDateTime ,
-				EndOfDaySpecificTime.OneHourAfterMarketClose ) ,
-				endOfDayStrategyBackTester.Benchmark.Ticker );
-			report.Show();
+//		private void showReport(
+//			DateTime lastDateTimeRequestedForTheScript ,
+//			EndOfDayStrategyBackTester endOfDayStrategyBackTester )
+//		{			
+////			DateTime lastReportDateTime = ExtendedDateTime.Min(
+////				lastDateTimeRequestedForTheScript ,
+////				endOfDayStrategyBackTester.EndOfDayTimer.GetCurrentTime().DateTime );
+//			DateTime lastReportDateTime =
+//				endOfDayStrategyBackTester.ActualLastDateTime;
+//			Report report = new Report(
+//				endOfDayStrategyBackTester.AccountReport ,
+//				true );
+//			report.Create( endOfDayStrategyBackTester.DescriptionForLogFileName , 1 ,
+//				new EndOfDayDateTime( lastReportDateTime ,
+//				EndOfDaySpecificTime.OneHourAfterMarketClose ) ,
+//				endOfDayStrategyBackTester.Benchmark.Ticker );
+//			report.Show();
+//		}
+		private void saveLog( BackTestLog backTestLog ,
+		                    string suggestedLogFileName )
+		{
+			string defaultFolderPath =
+				"C:\\qpReports\\";
+//			this.wFLagLog.TransactionHistory = this.account.Transactions;
+			LogArchiver.Save( backTestLog ,
+			              suggestedLogFileName , defaultFolderPath );
+		}
+
+
+
+		public void Run1()
+		{
+			BackTestLog backTestLog = LogArchiver.Load( "C:\\qpReports\\" );
+			LogViewer logViewer =
+				new LogViewer( backTestLog );
+			logViewer.Show();
 		}
 
 		public void Run()
@@ -90,15 +111,14 @@ namespace QuantProject.Scripts.WalkForwardTesting.FixedLengthTwoPhases
 			string backTestId = "WFFLTP";
 			double cashToStart = 30000;
 
-			int numberOfPortfolioPositions = 2;
-			int inSampleDays = 90;
-			string tickersGroupId = "SP500";
+//			int numberOfPortfolioPositions = 2;
+//			int inSampleDays = 90;
+//			string tickersGroupId = "SP500";
 			
 			// uncomment the following three lines for faster scripts
-//			int numberOfPortfolioPositions = 2;
-//			int inSampleDays = 30;
-////			string tickersGroupId = "millo";
-//			string tickersGroupId = "fastTest";
+			int numberOfPortfolioPositions = 2;
+			int inSampleDays = 30;
+			string tickersGroupId = "fastTest";
 
       Benchmark benchmark = new Benchmark( "MSFT" );
 			int maxNumberOfEligiblesToBeChosen = 100;
@@ -111,14 +131,14 @@ namespace QuantProject.Scripts.WalkForwardTesting.FixedLengthTwoPhases
       IEquityEvaluator equityEvaluator = new SharpeRatio();
 			FixedLengthTwoPhasesFitnessEvaluator
 				fixedLengthTwoPhasesFitnessEvaluator =
-				new FixedLengthTwoPhasesFitnessEvaluator(	equityEvaluator );
+				new FixedLengthTwoPhasesFitnessEvaluator( equityEvaluator );
 
 			// parameters for the genetic optimizer
 			double crossoverRate = 0.85;
 			double mutationRate = 0.02;
 			double elitismRate = 0.001;
-			int populationSizeForGeneticOptimizer = 30000;
-			int generationNumberForGeneticOptimizer = 8;
+			int populationSizeForGeneticOptimizer = 3000;
+			int generationNumberForGeneticOptimizer = 5;
 			int seedForRandomGenerator =
 				QuantProject.ADT.ConstantsProvider.SeedForRandomGenerator;
 			IInSampleChooser inSampleChooser =
@@ -144,7 +164,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.FixedLengthTwoPhases
 					eligiblesSelector , inSampleChooser , historicalQuoteProvider );
 
 			DateTime firstDateTime = new DateTime( 2001 , 1 , 2 );
-			DateTime lastDateTime = new DateTime( 2004 , 12 , 31 );
+			DateTime lastDateTime = new DateTime( 2001 , 1 , 6 );
 			double maxRunningHours = 7;
 			EndOfDayStrategyBackTester endOfDayStrategyBackTester =
 				new EndOfDayStrategyBackTester(
@@ -160,8 +180,11 @@ namespace QuantProject.Scripts.WalkForwardTesting.FixedLengthTwoPhases
 				eligiblesSelector , inSampleChooser ,
 				fixedLengthTwoPhasesStrategy , endOfDayStrategyBackTester );
 			endOfDayStrategyBackTester.Run();
-			this.showReport( lastDateTime ,
+			BackTesterReportViewer.ShowReport( lastDateTime ,
 				endOfDayStrategyBackTester );
+			this.saveLog(
+				endOfDayStrategyBackTester.Log ,
+				endOfDayStrategyBackTester.DescriptionForLogFileName );
 		}
 
 		#endregion Run
