@@ -687,6 +687,16 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "a2_Strategies\Eligibles\ByPriceMostLiquidAlwaysQuoted.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "a2_Strategies\Eligibles\DummyEligibleSelector.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "a2_Strategies\Eligibles\EligibleTickers.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
@@ -718,6 +728,11 @@
                 />
                 <File
                     RelPath = "a2_Strategies\EquityEvaluation\WinningPeriods.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "a2_Strategies\InSample\ConstantWeightedPositionsChooser.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
