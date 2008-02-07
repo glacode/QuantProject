@@ -56,7 +56,7 @@ namespace QuantProject.Presentation
 				this.obj , ((SaveFileDialog)this.saveFileDialog).FileName );
 		}
 		private void save( object obj , string suffix ,
-			 string title , string initialDirectory )
+			 string title , string initialFileName , string initialDirectory )
 		{
 			this.obj = obj;
 			this.saveFileDialog = new SaveFileDialog();
@@ -64,7 +64,7 @@ namespace QuantProject.Presentation
 			this.saveFileDialog.Filter = suffix + " files (*."+
 				suffix + ")|*." + suffix;
 			this.saveFileDialog.Title = title;
-			this.saveFileDialog.FileName = title;
+			this.saveFileDialog.FileName = initialFileName;
 			this.saveFileDialog.InitialDirectory = initialDirectory;
 			this.saveFileDialog.AddExtension = true;
 			this.saveFileDialog.CreatePrompt = true;
@@ -77,14 +77,19 @@ namespace QuantProject.Presentation
 			this.saveFileDialog.ShowDialog();
 		}
 		public void Save( object obj , string suffix ,
+			string title , string initialFileName , string initialDirectory )
+		{
+			this.save( obj , suffix , title , initialFileName ,initialDirectory );
+		}
+		public void Save( object obj , string suffix ,
 			string title , string initialDirectory )
 		{
-			this.save( obj , suffix , title , initialDirectory );
+			this.save( obj , suffix , title , title , initialDirectory );
 		}
 		public void Save( object obj , string suffix ,
 			string title )
 		{
-			this.Save( obj , suffix , title ,
+			this.Save( obj , suffix , title , title ,
 				System.Configuration.ConfigurationSettings.AppSettings["ReportsArchive"] );
 		}
 		private string getPath( string title , string suffix )
@@ -98,7 +103,7 @@ namespace QuantProject.Presentation
 			openFileDialog.ShowDialog();
 			return openFileDialog.FileName;
 		}
-		private object load( object obj , string suffix ,
+		private object load( string suffix ,
 			string title , string initialDirectory )
 		{
 			string chosenPath = this.getPath( title , suffix );
@@ -106,8 +111,12 @@ namespace QuantProject.Presentation
 		}
 		public object Load( object obj , string suffix , string title )
 		{
-			return this.load( obj , suffix , title ,
+			return this.load( suffix , title ,
 				System.Configuration.ConfigurationSettings.AppSettings["ReportsArchive"] );
+		}
+		public object Load( string suffix , string title , string initialDirectory )
+		{
+			return this.load( suffix , title , initialDirectory );
 		}
 	}
 }
