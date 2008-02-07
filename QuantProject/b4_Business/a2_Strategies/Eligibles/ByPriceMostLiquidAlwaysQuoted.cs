@@ -44,7 +44,7 @@ namespace QuantProject.Business.Strategies.Eligibles
 	/// </summary>
 	public class ByPriceMostLiquidAlwaysQuoted : IEligiblesSelector
 	{
-		public event NewMessageHandler NewMessage;
+		public event NewMessageEventHandler NewMessage;
 		
 		private bool temporizedGroup;
 		private string tickersGroupID;
@@ -53,11 +53,11 @@ namespace QuantProject.Business.Strategies.Eligibles
 		private double minPrice;
 		private double maxPrice;
 		
-		private string description;
 		public string Description
 		{
 			get{
-				return "Change me!";
+				return "Elgbls_prcRng" + this.minPrice + "_" + this.maxPrice +
+					"_mstLqd_alwsQtd";
 			}
 		}
 				
