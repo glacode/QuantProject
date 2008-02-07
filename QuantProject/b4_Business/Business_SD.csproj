@@ -63,6 +63,7 @@
     <Compile Include="a1_Financial\a2_Accounting\h5_Reporting\SummaryRows\AverageNumberOfTransactionsPerDay.cs" />
     <Compile Include="a1_Financial\a2_Accounting\h5_Reporting\Tables\StatisticsSummary.cs" />
     <Compile Include="a2_Strategies\Benchmark.cs" />
+    <Compile Include="a2_Strategies\Eligibles\DummyEligibleSelector.cs" />
     <Compile Include="a2_Strategies\Eligibles\ByPriceMostLiquidAlwaysQuoted.cs" />
     <Compile Include="a2_Strategies\Eligibles\EligibleTickers.cs" />
     <Compile Include="a2_Strategies\Eligibles\IEligiblesSelector.cs" />
@@ -70,6 +71,7 @@
     <Compile Include="a2_Strategies\EndOfDayStrategyBackTester.cs" />
     <Compile Include="a2_Strategies\IEndOfDayStrategyForBacktester.cs" />
     <Compile Include="a2_Strategies\IInSampleChooser.cs" />
+    <Compile Include="a2_Strategies\InSample\ConstantWeightedPositionsChooser.cs" />
     <Compile Include="a2_Strategies\Logging\BackTestLog.cs" />
     <Compile Include="a2_Strategies\Logging\LogItem.cs" />
     <Compile Include="a2_Strategies\Logging\NewLogItemEventArgs.cs" />
@@ -222,6 +224,7 @@
     <Folder Include="a2_Strategies\OutOfSample" />
     <Folder Include="a2_Strategies\Eligibles" />
     <Folder Include="a2_Strategies\EquityEvaluation" />
+    <Folder Include="a2_Strategies\InSample" />
     <Folder Include="a2_Strategies\Logging" />
     <Folder Include="a2_Strategies\Optimizing" />
     <Folder Include="a2_Strategies\Optimizing\Decoding" />
