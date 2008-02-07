@@ -4,7 +4,7 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{B5AAC5AA-DCC1-4698-A362-D399AB9A90C4}</ProjectGuid>
-    <RootNamespace>Scripts</RootNamespace>
+    <RootNamespace>QuantProject.Scripts</RootNamespace>
     <AssemblyName>QuantProject.Scripts</AssemblyName>
     <OutputType>Library</OutputType>
     <WarningLevel>4</WarningLevel>
@@ -48,6 +48,9 @@
     <Compile Include="ArbitrageTesting\OverReactionHypothesis\DoubleOverReaction_OTC\EndOfDayTimerHandlerDOR_OTC.cs" />
     <Compile Include="ArbitrageTesting\OverReactionHypothesis\DoubleOverReaction_OTC\RunDOR_OTC.cs" />
     <Compile Include="AssemblyInfo.cs" />
+    <Compile Include="General\Logging\LogArchiver.cs" />
+    <Compile Include="General\Logging\LogViewer.cs" />
+    <Compile Include="General\Reporting\BackTesterReportViewer.cs" />
     <Compile Include="MyTradingSystem.cs" />
     <Compile Include="CallingReportsForRunScripts\ShowReportFromFile.cs" />
     <Compile Include="SimpleTesting\MSFTsimpleTest\TsMSFTsimpleTest.cs" />
@@ -65,12 +68,12 @@
     <Compile Include="TickerSelectionTesting\GenomeManagerForEfficientPortfolio.cs" />
     <Compile Include="TickerSelectionTesting\RunEfficientCTCPortfolio.cs" />
     <Compile Include="TickerSelectionTesting\RunEfficientCTOPortfolio.cs" />
-    <Compile Include="WalkForwardTesting\FixedLengthTwoPhases\FixedLengthTwoPhasesLogItem.cs" />
     <Compile Include="WalkForwardTesting\FixedLengthTwoPhases\FixedLengthTwoPhasesMain.cs" />
     <Compile Include="WalkForwardTesting\FixedLengthTwoPhases\FixedLengthTwoPhasesStrategy.cs" />
     <Compile Include="WalkForwardTesting\FixedLengthTwoPhases\InSampleChoosers\FixedLengthTwoPhasesFitnessEvaluator.cs" />
     <Compile Include="WalkForwardTesting\FixedLengthTwoPhases\InSampleChoosers\Genetic\FixedLengthTwoPhasesGeneticChooser.cs" />
     <Compile Include="WalkForwardTesting\FixedLengthTwoPhases\InSampleChoosers\Genetic\FixedLengthTwoPhasesGenomeManager.cs" />
+    <Compile Include="WalkForwardTesting\FixedLengthTwoPhases\Logging\FixedLengthTwoPhasesLogItem.cs" />
     <Compile Include="WalkForwardTesting\MSFTwalkForward\TsMSFTwalkForward.cs" />
     <Compile Include="WalkForwardTesting\WalkForwardLag\RunSimpleLag.cs" />
     <Compile Include="WalkForwardTesting\WalkForwardLag\WeightedPositionsChoosers\BruteForce\WFLagBruteForceWeightedPositionsChooserForBalancedFixedPortfolioAndBalancedDriving.cs" />
@@ -237,11 +240,14 @@
     <Folder Include="ArbitrageTesting\OverReactionHypothesis\DoubleOverReaction_OTC" />
     <Folder Include="EvaluatingOptimizationTechnique\" />
     <Folder Include="EvaluatingOptimizationTechnique\EfficientPortfolio\" />
-    <Folder Include="BackTesting" />
+    <Folder Include="General" />
+    <Folder Include="General\Logging" />
+    <Folder Include="General\Reporting" />
     <Folder Include="TickerSelectionTesting\SimpleSelection\" />
     <Folder Include="WalkForwardTesting\FixedLengthTwoPhases" />
     <Folder Include="WalkForwardTesting\FixedLengthTwoPhases\InSampleChoosers" />
     <Folder Include="WalkForwardTesting\FixedLengthTwoPhases\InSampleChoosers\Genetic" />
+    <Folder Include="WalkForwardTesting\FixedLengthTwoPhases\Logging" />
     <Folder Include="WalkForwardTesting\WalkForwardLag\WeightedPositionsChoosers\BruteForce" />
     <Folder Include="WalkForwardTesting\WalkForwardLag\WeightedPositionsChoosers\Decoding" />
     <Folder Include="WalkForwardTesting\WalkForwardLag\WeightedPositionsChoosers\OptimizableParametersManagers" />
