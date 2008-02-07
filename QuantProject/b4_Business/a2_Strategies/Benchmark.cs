@@ -10,6 +10,7 @@ namespace QuantProject.Business.Strategies
 	/// Either a security or an index that is used to time a strategy and/or
 	/// to compare a strategy's results
 	/// </summary>
+	[Serializable]
 	public class Benchmark
 	{
 		private string ticker;
@@ -108,23 +109,16 @@ namespace QuantProject.Business.Strategies
 		{
 			if( lastEndOfDayDateTime.IsLessThanOrEqualTo(firstEndOfDayDateTime) )
 				throw new Exception("lastEndOfDayDateTime has to be greater than " +
-				                    "firstEndOfDayDateTime !!");
+					"firstEndOfDayDateTime !!");
 			EndOfDayHistory endOfDayHistory = new EndOfDayHistory();
 			EndOfDayDateTime endOfDayDateTimeToAddToHistory =
 				firstEndOfDayDateTime.Copy();
 			while( endOfDayDateTimeToAddToHistory.IsLessThanOrEqualTo(lastEndOfDayDateTime) )
 			{
 				if( this.isExchanged( endOfDayDateTimeToAddToHistory ) )
-				{
 					endOfDayHistory.Add( endOfDayDateTimeToAddToHistory, endOfDayDateTimeToAddToHistory );
-					endOfDayDateTimeToAddToHistory = 
-						endOfDayDateTimeToAddToHistory.GetNextMarketStatusSwitch();
-				}
-				else
-				{
-					endOfDayDateTimeToAddToHistory =
-						endOfDayDateTimeToAddToHistory.GetNextMarketStatusSwitch();
-				}
+				endOfDayDateTimeToAddToHistory =
+					endOfDayDateTimeToAddToHistory.GetNextMarketStatusSwitch();
 			}
 			return endOfDayHistory;
 		}
