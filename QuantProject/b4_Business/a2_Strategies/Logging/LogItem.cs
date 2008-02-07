@@ -29,15 +29,36 @@ namespace QuantProject.Business.Strategies.Logging
 	/// <summary>
 	/// Single information (about a backtest) to be logged
 	/// </summary>
+	[Serializable]
 	public abstract class LogItem
 	{
-		protected DateTime creationTime;
-		protected EndOfDayDateTime endOfDayDateTime;
+		protected DateTime realCreationTime;
+		protected EndOfDayDateTime simulatedCreationTime;
 
-		public LogItem( EndOfDayDateTime endOfDayDateTime )
+		/// <summary>
+		/// Real time when this log item is created
+		/// </summary>
+		public DateTime RealCreationTime
 		{
-			this.creationTime = DateTime.Now;
-			this.endOfDayDateTime = endOfDayDateTime;
+			get { return this.realCreationTime; }
+		}
+
+		/// <summary>
+		/// DateTime in the backtest, when this object is created
+		/// </summary>
+		public EndOfDayDateTime SimulatedCreationTime
+		{
+			get { return this.simulatedCreationTime; }
+		}
+		public string Simu
+		{
+			get { return this.simulatedCreationTime.Description; }
+		}
+
+		public LogItem( EndOfDayDateTime simulatedCreationTime )
+		{
+			this.realCreationTime = DateTime.Now;
+			this.simulatedCreationTime = simulatedCreationTime;
 		}
 		/// <summary>
 		/// Since LogItem(s) are usually used to store in sample
