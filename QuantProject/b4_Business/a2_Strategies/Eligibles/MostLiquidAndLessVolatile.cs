@@ -36,16 +36,15 @@ namespace QuantProject.Business.Strategies.Eligibles
 	/// </summary>
 	public class MostLiquidAndLessVolatile : IEligiblesSelector
 	{
-		public event NewMessageHandler NewMessage;
+		public event NewMessageEventHandler NewMessage;
 
 		private string tickersGroupID;
 		private int maxNumberOfEligibleTickersToBeChosen;
 
-		private string description;
 		public string Description
 		{
 			get{
-				return "Change me!";
+				return "Elgbls_mstLqd_alwsQtd_max" + this.maxNumberOfEligibleTickersToBeChosen;
 			}
 		}
 		
