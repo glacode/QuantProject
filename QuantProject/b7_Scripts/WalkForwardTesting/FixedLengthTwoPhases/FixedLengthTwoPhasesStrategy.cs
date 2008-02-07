@@ -43,7 +43,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.FixedLengthTwoPhases
 	public class FixedLengthTwoPhasesStrategy : IEndOfDayStrategyForBacktester
 	{
 		public event NewLogItemEventHandler NewLogItem;
-		public event NewMessageHandler NewMessage;
+		public event NewMessageEventHandler NewMessage;
 
 		private int numberOfPortfolioPositions;
 		private int numDaysBeetweenEachOtpimization;

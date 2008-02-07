@@ -41,7 +41,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.FixedLengthTwoPhases
 	public class FixedLengthTwoPhasesGeneticChooser : IInSampleChooser
 	{
 		public event NewProgressEventHandler NewProgress;
-		public event NewMessageHandler NewMessage;
+		public event NewMessageEventHandler NewMessage;
 
 		private int numberOfPortfolioPositions;
 		private int inSampleDays;

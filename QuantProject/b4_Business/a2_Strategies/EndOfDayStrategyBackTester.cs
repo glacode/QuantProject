@@ -39,7 +39,7 @@ namespace QuantProject.Business.Strategies
 	/// </summary>
 	public class EndOfDayStrategyBackTester : IMessageSender
 	{
-		public event NewMessageHandler NewMessage;
+		public event NewMessageEventHandler NewMessage;
 
 		private string backTestID;
 		private IEndOfDayStrategyForBacktester endOfDayStrategy;

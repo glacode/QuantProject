@@ -24,7 +24,7 @@ using System;
 
 namespace QuantProject.ADT.Messaging
 {
-	public delegate void NewMessageHandler(
+	public delegate void NewMessageEventHandler(
 	Object sender , NewMessageEventArgs eventArgs );
 
 	/// <summary>
@@ -33,6 +33,6 @@ namespace QuantProject.ADT.Messaging
 	/// </summary>
 	public interface IMessageSender
 	{
-		event NewMessageHandler NewMessage;
+		event NewMessageEventHandler NewMessage;
 	}
 }

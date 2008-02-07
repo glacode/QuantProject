@@ -82,7 +82,7 @@ namespace QuantProject.Presentation
 		public void Monitor( IMessageSender messageSender )
 		{
 			messageSender.NewMessage +=
-				new NewMessageHandler( this.newMessageHandler );
+				new NewMessageEventHandler( this.newMessageHandler );
 		}
 		#endregion Monitor
 	}
