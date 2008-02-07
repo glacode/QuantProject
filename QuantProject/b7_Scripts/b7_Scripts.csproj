@@ -242,6 +242,26 @@
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
+                <File
+                    RelPath = "General\Logging\LogArchiver.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "General\Logging\LogViewer.cs"
+                    SubType = "Form"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "General\Logging\LogViewer.resx"
+                    DependentUpon = "LogViewer.cs"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "General\Reporting\BackTesterReportViewer.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
                 <Folder RelPath = "MultiTesting\MultiTestOneRank\" />
                 <File
                     RelPath = "SimpleTesting\MSFTsimpleTest\TsMSFTsimpleTest.cs"
@@ -669,11 +689,6 @@
                     BuildAction = "Compile"
                 />
                 <File
-                    RelPath = "WalkForwardTesting\FixedLengthTwoPhases\FixedLengthTwoPhasesLogItem.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
                     RelPath = "WalkForwardTesting\FixedLengthTwoPhases\FixedLengthTwoPhasesMain.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
@@ -695,6 +710,11 @@
                 />
                 <File
                     RelPath = "WalkForwardTesting\FixedLengthTwoPhases\InSampleChoosers\Genetic\FixedLengthTwoPhasesGenomeManager.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "WalkForwardTesting\FixedLengthTwoPhases\Logging\FixedLengthTwoPhasesLogItem.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
@@ -798,6 +818,7 @@
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
+                <Folder RelPath = "WalkForwardTesting\PairsTrading\" />
                 <File
                     RelPath = "WalkForwardTesting\WalkForwardLag\RunSimpleLag.cs"
                     SubType = "Code"
@@ -930,6 +951,11 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "WalkForwardTesting\WalkForwardLag\WFLagDebugger\WFLagDebugGenome.resx"
+                    DependentUpon = "WFLagDebugGenome.cs"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
                     RelPath = "WalkForwardTesting\WalkForwardLag\WFLagDebugger\WFLagLog.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
@@ -970,6 +996,11 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "WalkForwardTesting\WalkForwardLag\WFLagGenomesDebugger\WFLagDebugChosenPositionsCollection.resx"
+                    DependentUpon = "WFLagDebugChosenPositionsCollection.cs"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
                     RelPath = "WalkForwardTesting\WalkForwardLag\WFLagGenomesDebugger\WFLagRunGenomesDebugger.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
@@ -983,6 +1014,11 @@
                     RelPath = "WalkForwardTesting\WalkForwardLag\WFLagLogDebugger\WFLagLogDebugger.cs"
                     SubType = "Form"
                     BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "WalkForwardTesting\WalkForwardLag\WFLagLogDebugger\WFLagLogDebugger.resx"
+                    DependentUpon = "WFLagLogDebugger.cs"
+                    BuildAction = "EmbeddedResource"
                 />
                 <File
                     RelPath = "WalkForwardTesting\WalkForwardMultiOneRank\RunWalkForwardMultiOneRank.cs"
