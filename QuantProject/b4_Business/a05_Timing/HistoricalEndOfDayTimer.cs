@@ -109,7 +109,7 @@ namespace QuantProject.Business.Timing
 
 		public EndOfDayDateTime GetCurrentTime()
 		{
-			if ( this.currentTime == null )
+			if ( !this.isActive )
 				throw new Exception( "Start() has not been invoked yet!" +
 					"GetCurrentTime() cannot be invoked before Start()" ); 
 			return this.currentTime;
