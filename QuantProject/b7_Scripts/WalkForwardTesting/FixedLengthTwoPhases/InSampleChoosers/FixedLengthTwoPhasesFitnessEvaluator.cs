@@ -24,6 +24,7 @@ using System;
 
 using QuantProject.Business.Strategies;
 using QuantProject.Business.Strategies.EquityEvaluation;
+using QuantProject.Business.Strategies.Optimizing.FitnessEvaluation;
 using QuantProject.Business.Strategies.ReturnsManagement;
 
 namespace QuantProject.Scripts.WalkForwardTesting.FixedLengthTwoPhases
@@ -31,9 +32,18 @@ namespace QuantProject.Scripts.WalkForwardTesting.FixedLengthTwoPhases
 	/// <summary>
 	/// Evaluates (in sample) the fitness for a given WeightedPositions
 	/// </summary>
-	public class FixedLengthTwoPhasesFitnessEvaluator
+	public class FixedLengthTwoPhasesFitnessEvaluator : IFitnessEvaluator
 	{
 		private IEquityEvaluator equityEvaluator;
+
+		public string Description
+		{
+			get
+			{
+				return "FtnssEvltr_fltp_1phLong_2phShort_" +
+					this.equityEvaluator.Description;
+			}
+		}
 
 		public FixedLengthTwoPhasesFitnessEvaluator(
 			IEquityEvaluator equityEvaluator )

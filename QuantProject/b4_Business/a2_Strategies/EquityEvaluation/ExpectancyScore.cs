@@ -33,6 +33,14 @@ namespace QuantProject.Business.Strategies.EquityEvaluation
 	/// </summary>
 	public class ExpectancyScore : IEquityEvaluator
 	{
+		public string Description
+		{
+			get
+			{
+				return "EqEvltr_expctScr";
+			}
+		}
+
 		public ExpectancyScore()
 		{
 			//

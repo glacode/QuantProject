@@ -38,6 +38,16 @@ namespace QuantProject.Business.Strategies.Optimizing.Decoding
 	{
 		private MeaningForUndecodableEncoded meaningForUndecodableEncoded;
 
+		public string Description
+		{
+			get
+			{
+				string description = "Dcdr_blncdWghtdPstns";
+				return description;
+			}
+		}
+
+
 		public DecoderForBalancedWeightedPositions()
 		{
 			this.meaningForUndecodableEncoded = new MeaningForUndecodableEncoded();
