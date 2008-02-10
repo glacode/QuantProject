@@ -22,13 +22,20 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 using System;
 
+using QuantProject.Business.Strategies.Logging;
+
 namespace QuantProject.Business.Strategies.EquityEvaluation
 {
 	/// <summary>
 	/// Interface to be implemented by equity line evaluators
 	/// </summary>
-	public interface IEquityEvaluator
+	public interface IEquityEvaluator : ILogDescriptor
 	{
+//		/// <summary>
+//		/// Short description (it might be used in file names describing the strategy)
+//		/// </summary>
+//		string Description { get; }
+
 		float GetReturnsEvaluation( float[] returns );
 	}
 }

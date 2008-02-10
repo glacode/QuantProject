@@ -23,6 +23,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 using System;
 
 using QuantProject.Business.Strategies.Eligibles;
+using QuantProject.Business.Strategies.Logging;
 using QuantProject.Business.Strategies.ReturnsManagement;
 
 namespace QuantProject.Business.Strategies.Optimizing.Decoding
@@ -31,7 +32,7 @@ namespace QuantProject.Business.Strategies.Optimizing.Decoding
 	/// Interface to be implemented by decoders for optimizers (both for
 	/// genetic and for brute force optimizers) that will return a WeightedPositions
 	/// </summary>
-	public interface IDecoderForWeightedPositions
+	public interface IDecoderForWeightedPositions : ILogDescriptor
 	{
 		/// <summary>
 		/// Decodes the given candidate for the optimization
