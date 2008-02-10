@@ -29,6 +29,7 @@ using QuantProject.Business.Strategies.Eligibles;
 using QuantProject.Business.Strategies.EquityEvaluation;
 using QuantProject.Business.Strategies.Logging;
 using QuantProject.Business.Strategies.Optimizing.Decoding;
+using QuantProject.Business.Strategies.Optimizing.FitnessEvaluation;
 using QuantProject.Business.Strategies.ReturnsManagement;
 using QuantProject.Business.Strategies.ReturnsManagement.Time;
 using QuantProject.Business.Strategies.ReturnsManagement.Time.IntervalsSelectors;
@@ -129,8 +130,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.FixedLengthTwoPhases
 
 			// definition for the Fitness Evaluator
       IEquityEvaluator equityEvaluator = new SharpeRatio();
-			FixedLengthTwoPhasesFitnessEvaluator
-				fixedLengthTwoPhasesFitnessEvaluator =
+			IFitnessEvaluator	fitnessEvaluator =
 				new FixedLengthTwoPhasesFitnessEvaluator( equityEvaluator );
 
 			// parameters for the genetic optimizer
@@ -144,7 +144,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.FixedLengthTwoPhases
 			IInSampleChooser inSampleChooser =
 				new FixedLengthTwoPhasesGeneticChooser(
 				numberOfPortfolioPositions , inSampleDays , benchmark ,
-				decoderForWeightedPositions , fixedLengthTwoPhasesFitnessEvaluator ,
+				decoderForWeightedPositions , fitnessEvaluator ,
 				historicalQuoteProvider ,
 				crossoverRate , mutationRate , elitismRate ,
 				populationSizeForGeneticOptimizer , generationNumberForGeneticOptimizer ,
@@ -184,7 +184,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.FixedLengthTwoPhases
 				endOfDayStrategyBackTester );
 			this.saveLog(
 				endOfDayStrategyBackTester.Log ,
-				endOfDayStrategyBackTester.DescriptionForLogFileName );
+				endOfDayStrategyBackTester.Description );
 		}
 
 		#endregion Run

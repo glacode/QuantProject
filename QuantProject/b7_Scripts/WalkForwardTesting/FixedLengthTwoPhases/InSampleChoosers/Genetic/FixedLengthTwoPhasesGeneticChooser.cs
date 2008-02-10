@@ -30,6 +30,7 @@ using QuantProject.Business.Strategies;
 using QuantProject.Business.Strategies.Eligibles;
 using QuantProject.Business.Strategies.EquityEvaluation;
 using QuantProject.Business.Strategies.Optimizing.Decoding;
+using QuantProject.Business.Strategies.Optimizing.FitnessEvaluation;
 using QuantProject.Business.Strategies.ReturnsManagement;
 using QuantProject.Business.Timing;
 
@@ -47,7 +48,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.FixedLengthTwoPhases
 		private int inSampleDays;
 		private Benchmark benchmark;
 		private IDecoderForWeightedPositions decoderForWeightedPositions;
-		private FixedLengthTwoPhasesFitnessEvaluator fixedLengthTwoPhasesFitnessEvaluator;
+		private IFitnessEvaluator fitnessEvaluator;
 		private IHistoricalQuoteProvider historicalQuoteProvider;
 		private double crossoverRate;
 		private double mutationRate;
@@ -63,17 +64,18 @@ namespace QuantProject.Scripts.WalkForwardTesting.FixedLengthTwoPhases
 		{
 			get
 			{
-				string description = "genetic_" +
+				string description = "IsChsr_genetic_" +
 					"longOnly_" +
 					"gnrtnSz_" + this.populationSizeForGeneticOptimizer +
-					"_gnrtnNmbr_" + this.generationNumberForGeneticOptimizer;
+					"_gnrtnNmbr_" + this.generationNumberForGeneticOptimizer +
+					this.decoderForWeightedPositions.Description;
 				return description;
 			}
 		}
 		public FixedLengthTwoPhasesGeneticChooser(
 			int numberOfPortfolioPositions , int inSampleDays , Benchmark benchmark ,
 			IDecoderForWeightedPositions decoderForWeightedPositions ,
-			FixedLengthTwoPhasesFitnessEvaluator fixedLengthTwoPhasesFitnessEvaluator ,
+			IFitnessEvaluator fitnessEvaluator ,
 			IHistoricalQuoteProvider historicalQuoteProvider ,
 			double crossoverRate , double mutationRate , double elitismRate ,
 			int populationSizeForGeneticOptimizer ,
@@ -84,8 +86,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.FixedLengthTwoPhases
 			this.inSampleDays =	inSampleDays;
 			this.benchmark = benchmark;
 			this.decoderForWeightedPositions = decoderForWeightedPositions;
-			this.fixedLengthTwoPhasesFitnessEvaluator =
-				fixedLengthTwoPhasesFitnessEvaluator;
+			this.fitnessEvaluator =	fitnessEvaluator;
 			this.historicalQuoteProvider = historicalQuoteProvider;
 			this.crossoverRate = crossoverRate;
 			this.mutationRate = mutationRate;
@@ -171,7 +172,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.FixedLengthTwoPhases
 				eligibleTickers ,
 				returnsManager ,
 				this.decoderForWeightedPositions ,
-				this.fixedLengthTwoPhasesFitnessEvaluator ,
+				this.fitnessEvaluator ,
 				QuantProject.ADT.ConstantsProvider.SeedForRandomGenerator );
 
 			this.geneticOptimizer = new GeneticOptimizer(

@@ -26,6 +26,7 @@ using QuantProject.ADT.Optimizing.Genetic;
 using QuantProject.Business.Strategies.Eligibles;
 using QuantProject.Business.Strategies.EquityEvaluation;
 using QuantProject.Business.Strategies.Optimizing.Decoding;
+using QuantProject.Business.Strategies.Optimizing.FitnessEvaluation;
 using QuantProject.Business.Strategies.ReturnsManagement;
 
 namespace QuantProject.Scripts.WalkForwardTesting.FixedLengthTwoPhases
@@ -39,7 +40,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.FixedLengthTwoPhases
 		EligibleTickers eligibleTickers;
 		ReturnsManager returnsManager;
 		IDecoderForWeightedPositions decoderForWeightedPositions;
-		FixedLengthTwoPhasesFitnessEvaluator fitnessEvaluator;
+		IFitnessEvaluator fitnessEvaluator;
 		int seedForRandomGenerator;
 
 		public FixedLengthTwoPhasesGenomeManager(
@@ -47,7 +48,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.FixedLengthTwoPhases
 			EligibleTickers eligibleTickers ,
 			ReturnsManager returnsManager ,
 			IDecoderForWeightedPositions decoderForWeightedPositions ,
-			FixedLengthTwoPhasesFitnessEvaluator fitnessEvaluator ,
+			IFitnessEvaluator fitnessEvaluator ,
 			int seedForRandomGenerator )
 		{
 			this.numberOfPortfolioPositions = numberOfPortfolioPositions;
