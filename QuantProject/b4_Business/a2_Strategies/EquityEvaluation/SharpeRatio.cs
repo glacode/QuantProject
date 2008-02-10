@@ -33,6 +33,14 @@ namespace QuantProject.Business.Strategies.EquityEvaluation
 	/// </summary>
 	public class SharpeRatio : IEquityEvaluator
 	{
+		public string Description
+		{
+			get
+			{
+				return "EqEvltr_shrpRt";
+			}
+		}
+
 		public SharpeRatio()
 		{
 			//

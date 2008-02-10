@@ -30,6 +30,14 @@ namespace QuantProject.Business.Strategies.EquityEvaluation
 	/// </summary>
 	public class WinningPeriods : IEquityEvaluator
 	{
+		public string Description
+		{
+			get
+			{
+				return "EqEvltr_wnngPrds";
+			}
+		}
+
 		public WinningPeriods()
 		{
 		}
