@@ -22,13 +22,15 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 using System;
 
+using QuantProject.Business.Strategies.Logging;
+
 namespace QuantProject.Business.Strategies
 {
 	/// <summary>
 	/// Interface to be implemented by end of day strategies that are
 	/// to be used by the EndOfDayStrategyBackTester
 	/// </summary>
-	public interface IEndOfDayStrategyForBacktester : IEndOfDayStrategy
+	public interface IEndOfDayStrategyForBacktester : IEndOfDayStrategy , ILogDescriptor
 	{
 		/// <summary>
 		/// use this property to signal to the end of day backtester that at current time
@@ -41,9 +43,5 @@ namespace QuantProject.Business.Strategies
 		/// </summary>
 		bool StopBacktestIfMaxRunningHoursHasBeenReached{ get; }
 		event NewLogItemEventHandler NewLogItem;
-		/// <summary>
-		/// short description to be used as part of the log file name
-		/// </summary>
-		string DescriptionForLogFileName{ get; }
 	}
 }
