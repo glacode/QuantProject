@@ -742,6 +742,11 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "a2_Strategies\Logging\ILogDescriptor.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "a2_Strategies\Logging\LogItem.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
@@ -773,6 +778,11 @@
                 />
                 <File
                     RelPath = "a2_Strategies\Optimizing\Decoding\IDecoderForWeightedPositions.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "a2_Strategies\Optimizing\FitnessEvaluation\IFitnessEvaluator.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
