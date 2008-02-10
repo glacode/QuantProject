@@ -33,7 +33,7 @@ namespace QuantProject.Business.Timing
 	{
 		private DateTime dateTime;
 		private EndOfDaySpecificTime endOfDaySpecificTime;
-
+		
 		public DateTime DateTime
 		{
 			get { return dateTime; }
@@ -208,5 +208,20 @@ namespace QuantProject.Business.Timing
     {
       return this.getNextSpecificTime();
     }
+    
+		#region Overload of Operators 
+    
+		public static bool operator==(EndOfDayDateTime a, EndOfDayDateTime b)
+		{
+			return a.IsEqualTo(b);
+		}
+		
+		public static bool operator!=(EndOfDayDateTime a, EndOfDayDateTime b)
+		{
+			return !a.IsEqualTo(b);
+		}
+
+		#endregion
+	 
 	}
 }
