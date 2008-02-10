@@ -73,6 +73,7 @@
     <Compile Include="a2_Strategies\IInSampleChooser.cs" />
     <Compile Include="a2_Strategies\InSample\ConstantWeightedPositionsChooser.cs" />
     <Compile Include="a2_Strategies\Logging\BackTestLog.cs" />
+    <Compile Include="a2_Strategies\Logging\ILogDescriptor.cs" />
     <Compile Include="a2_Strategies\Logging\LogItem.cs" />
     <Compile Include="a2_Strategies\Logging\NewLogItemEventArgs.cs" />
     <Compile Include="a2_Strategies\Optimizing\Decoding\BasicDecoderForTestingPositions.cs" />
