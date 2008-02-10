@@ -37,7 +37,7 @@ namespace QuantProject.Business.Strategies
 	/// <summary>
 	/// Performs a backtest for an end of day strategy
 	/// </summary>
-	public class EndOfDayStrategyBackTester : IMessageSender
+	public class EndOfDayStrategyBackTester : IMessageSender , ILogDescriptor
 	{
 		public event NewMessageEventHandler NewMessage;
 
@@ -111,10 +111,7 @@ namespace QuantProject.Business.Strategies
 				return this.endOfDayTimer;
 			}
 		}
-		/// <summary>
-		/// a short description for the performed backtest
-		/// </summary>
-		public string DescriptionForLogFileName
+		public string Description
 		{
 			get
 			{
@@ -127,8 +124,8 @@ namespace QuantProject.Business.Strategies
 					ExtendedDateTime.GetShortDescriptionForFileName( this.actualLastDateTime ) +
 					"_annlRtrn_" + this.AccountReport.Summary.AnnualSystemPercentageReturn.FormattedValue +
 					"_maxDD_" + this.AccountReport.Summary.MaxEquityDrawDown.FormattedValue +
-					"_qtPrvdr_" + this.historicalQuoteProvider.ShortDescription +
-					"_strtgy_" + this.endOfDayStrategy.DescriptionForLogFileName;
+					"_" + this.historicalQuoteProvider.Description +
+					"_" + this.endOfDayStrategy.Description;
 				return description;
 			}
 		}
@@ -296,7 +293,7 @@ namespace QuantProject.Business.Strategies
 					"" ,
 					1 , currentEndOfDayDateTime , this.benchmark.Ticker ,
 					this.historicalQuoteProvider );
-				this.accountReport.Name = this.DescriptionForLogFileName;
+				this.accountReport.Name = this.Description;
 
 				//				this.progressBarForm.Close();
 				//				ObjectArchiver.Archive( this.account ,
