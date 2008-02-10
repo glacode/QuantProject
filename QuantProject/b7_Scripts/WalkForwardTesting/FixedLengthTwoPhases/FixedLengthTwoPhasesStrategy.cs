@@ -75,14 +75,16 @@ namespace QuantProject.Scripts.WalkForwardTesting.FixedLengthTwoPhases
 				return this.isInsampleOptimizationNeeded();
 			}
 		}
-		public string DescriptionForLogFileName
+		public string Description
 		{
 			get
 			{
 				string descriptionForLogFileName =
-					"WFFLPT_" +
-					"nmDysBtwnOptmztns_" + this.numDaysBeetweenEachOtpimization +
-					"_iS_" +	this.inSampleChooser.Description +
+					"Strtgy_fltp_" +
+					"nmDysBtwnOptmztns_" +
+					this.numDaysBeetweenEachOtpimization.ToString() + "_" +
+					this.eligiblesSelector.Description + "_" +
+					this.inSampleChooser.Description +
 					"_oS_longOnly";
 				return descriptionForLogFileName;
 			}
