@@ -51,7 +51,7 @@ namespace QuantProject.Scripts.General.Reporting
 			Report report = new Report(
 				endOfDayStrategyBackTester.AccountReport ,
 				true );
-			report.Create( endOfDayStrategyBackTester.DescriptionForLogFileName , 1 ,
+			report.Create( endOfDayStrategyBackTester.Description , 1 ,
 				new EndOfDayDateTime( lastReportDateTime ,
 				EndOfDaySpecificTime.OneHourAfterMarketClose ) ,
 				endOfDayStrategyBackTester.Benchmark.Ticker );
