@@ -26,6 +26,7 @@ using System.Data;
 using QuantProject.ADT;
 using QuantProject.ADT.Messaging;
 using QuantProject.Business.Strategies.Eligibles;
+using QuantProject.Business.Strategies.Logging;
 using QuantProject.Business.Strategies.ReturnsManagement;
 
 namespace QuantProject.Business.Strategies
@@ -33,7 +34,7 @@ namespace QuantProject.Business.Strategies
 	/// <summary>
 	/// Interface for classes that perform in sample researches (usually optimization)
 	/// </summary>
-	public interface IInSampleChooser : IProgressNotifier , IMessageSender
+	public interface IInSampleChooser : IProgressNotifier , IMessageSender , ILogDescriptor
 	{
 		/// <summary>
 		/// Analizes in sample data and returns an object
@@ -44,11 +45,11 @@ namespace QuantProject.Business.Strategies
 		/// to take decisions out of sample</returns>
 		object AnalyzeInSample( EligibleTickers eligibleTickers ,
 		                      ReturnsManager returnsManager );
-//		                      EndOfDayDateTime currentOutOfSampleEndOfDayDateTime );
-		/// <summary>
-		/// short text description for the chooser (it might be used for saving
-		/// logs for strategies)
-		/// </summary>
-		string Description { get; }
+////		                      EndOfDayDateTime currentOutOfSampleEndOfDayDateTime );
+//		/// <summary>
+//		/// Short description for the chooser
+//		/// (it might be used in file names describing the strategy)
+//		/// </summary>
+//		string Description { get; }
 	}
 }
