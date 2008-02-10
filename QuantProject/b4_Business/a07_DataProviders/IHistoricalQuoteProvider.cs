@@ -25,6 +25,7 @@ using System.Data;
 using QuantProject.ADT;
 using QuantProject.ADT.Histories;
 using QuantProject.Data.DataTables;
+using QuantProject.Business.Strategies.Logging;
 using QuantProject.Business.Timing;
 
 namespace QuantProject.Business.DataProviders
@@ -32,7 +33,7 @@ namespace QuantProject.Business.DataProviders
 	/// <summary>
 	/// Interface to be implemented by historical quote providers
 	/// </summary>
-	public interface IHistoricalQuoteProvider
+	public interface IHistoricalQuoteProvider : ILogDescriptor
 	{
 		/// <summary>
 		/// Returns the historical market value for the given instrument at the given time
@@ -49,9 +50,5 @@ namespace QuantProject.Business.DataProviders
 		/// </summary>
 		EndOfDayHistory GetEndOfDayQuotes( string ticker ,
 			EndOfDayHistory endOfDayHistory );
-		/// <summary>
-		/// Short description: it might be used for file names
-		/// </summary>
-		string ShortDescription { get; }
 	}
 }

@@ -32,11 +32,20 @@ namespace QuantProject.Business.DataProviders
 	[Serializable]
 	public abstract class HistoricalQuoteProvider : IHistoricalQuoteProvider
 	{
-		public abstract string ShortDescription { get; }
+		public string Description
+		{
+			get
+			{
+				return "QtPrvdr_" + this.getDescription();
+			} 
+		}
 
 		public HistoricalQuoteProvider()
 		{
 		}
+
+		protected abstract string getDescription();
+
 		public abstract double GetMarketValue( string ticker ,
 			EndOfDayDateTime endOfDayDateTime );
 

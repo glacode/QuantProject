@@ -33,14 +33,6 @@ namespace QuantProject.Business.DataProviders
 	[Serializable]
   public class HistoricalRawQuoteProvider : HistoricalQuoteProvider
 	{
-		public override string ShortDescription
-		{
-			get
-			{
-				return "raw";
-			}
-		}
-
 		public HistoricalRawQuoteProvider()
 		{
 		}
@@ -49,6 +41,11 @@ namespace QuantProject.Business.DataProviders
 		{
 			return HistoricalDataProvider.GetRawMarketValue( instrumentKey ,
 				endOfDayDateTime.GetNearestExtendedDateTime() );
+		}
+
+		protected override string getDescription()
+		{
+			return "raw";
 		}
 	}
 }

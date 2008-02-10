@@ -33,14 +33,6 @@ namespace QuantProject.Business.DataProviders
 	[Serializable]
 	public class HistoricalAdjustedQuoteProvider : HistoricalQuoteProvider
 	{
-		public override string ShortDescription
-		{
-			get
-			{
-				return "adj";
-			}
-		}
-
 		public HistoricalAdjustedQuoteProvider()
 		{
 		}
@@ -51,6 +43,11 @@ namespace QuantProject.Business.DataProviders
 				HistoricalDataProvider.GetAdjustedMarketValue( instrumentKey ,
 				endOfDayDateTime.GetNearestExtendedDateTime() );
 			return marketValue;
+		}
+
+		protected override string getDescription()
+		{
+			return "adj";
 		}
 	}
 }
