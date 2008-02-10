@@ -109,7 +109,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.FixedLengthTwoPhases
 //				populationSizeForGeneticOptimizer , generationNumberForGeneticOptimizer ,
 //				seedForRandomGenerator );
 			IInSampleChooser inSampleChooser =
-				new ConstantWeightedPositionsChooser( this.BestWeightedPositionsInSample );
+				(IInSampleChooser)new ConstantWeightedPositionsChooser( this.BestWeightedPositionsInSample );
 
 			IIntervalsSelector intervalsSelector =
 				new FixedLengthTwoPhasesIntervalsSelector(
