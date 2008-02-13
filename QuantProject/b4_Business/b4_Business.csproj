@@ -737,6 +737,11 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "a2_Strategies\InSample\GeneticChooser.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "a2_Strategies\Logging\BackTestLog.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
@@ -783,6 +788,16 @@
                 />
                 <File
                     RelPath = "a2_Strategies\Optimizing\FitnessEvaluation\IFitnessEvaluator.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "a2_Strategies\Optimizing\GenomeManagers\BasicGenomeManager.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "a2_Strategies\Optimizing\GenomeManagers\GenomeManagerType.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />

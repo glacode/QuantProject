@@ -72,6 +72,7 @@
     <Compile Include="a2_Strategies\IEndOfDayStrategyForBacktester.cs" />
     <Compile Include="a2_Strategies\IInSampleChooser.cs" />
     <Compile Include="a2_Strategies\InSample\ConstantWeightedPositionsChooser.cs" />
+    <Compile Include="a2_Strategies\InSample\GeneticChooser.cs" />
     <Compile Include="a2_Strategies\Logging\BackTestLog.cs" />
     <Compile Include="a2_Strategies\Logging\ILogDescriptor.cs" />
     <Compile Include="a2_Strategies\Logging\LogItem.cs" />
@@ -81,6 +82,9 @@
     <Compile Include="a2_Strategies\Optimizing\Decoding\DecoderForTestingPositionsWithBalancedWeights.cs" />
     <Compile Include="a2_Strategies\Optimizing\Decoding\IDecoderForTestingPositions.cs" />
     <Compile Include="a2_Strategies\Optimizing\Decoding\IDecoderForWeightedPositions.cs" />
+    <Compile Include="a2_Strategies\Optimizing\FitnessEvaluation\IFitnessEvaluator.cs" />
+    <Compile Include="a2_Strategies\Optimizing\GenomeManagers\BasicGenomeManager.cs" />
+    <Compile Include="a2_Strategies\Optimizing\GenomeManagers\GenomeManagerType.cs" />
     <Compile Include="a2_Strategies\OutOfSample\TestingPositions.cs" />
     <Compile Include="a2_Strategies\returnsManagement\time\CloseToCloseIntervals.cs" />
     <Compile Include="a2_Strategies\returnsManagement\time\CloseToOpenIntervals.cs" />
@@ -222,6 +226,8 @@
       <Name>b3_Data</Name>
     </ProjectReference>
     <Folder Include="a1_Financial\a2_Accounting\h5_Reporting\StatisticsSummaryRows" />
+    <Folder Include="a2_Strategies\Optimizing\FitnessEvaluation" />
+    <Folder Include="a2_Strategies\Optimizing\GenomeManagers" />
     <Folder Include="a2_Strategies\OutOfSample" />
     <Folder Include="a2_Strategies\Eligibles" />
     <Folder Include="a2_Strategies\EquityEvaluation" />
