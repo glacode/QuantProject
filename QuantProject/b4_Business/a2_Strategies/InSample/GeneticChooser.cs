@@ -214,7 +214,8 @@ namespace QuantProject.Business.Strategies.InSample
       }  
 		}
 
-		protected abstract void setGenomeManager();
+		protected abstract void setGenomeManager(EligibleTickers eligibleTickers ,
+			ReturnsManager returnsManager);
 		//sets the member genomeManager in inherited classes
 		
 		private TestingPositions[] getBestTestingPositionsInSample(
@@ -222,7 +223,7 @@ namespace QuantProject.Business.Strategies.InSample
 			ReturnsManager returnsManager
 			)
 		{
-			this.setGenomeManager();
+			this.setGenomeManager(eligibleTickers, returnsManager);
 			this.geneticOptimizer = new GeneticOptimizer(
 				this.crossoverRate ,
 				this.mutationRate ,
