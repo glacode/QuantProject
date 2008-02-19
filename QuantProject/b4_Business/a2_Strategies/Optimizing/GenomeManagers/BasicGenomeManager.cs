@@ -58,14 +58,15 @@ namespace QuantProject.Business.Strategies.Optimizing.GenomeManagers
 		{
 			return this.maxValueForGenes;
 		}
-				    
+		
 		public BasicGenomeManager(EligibleTickers eligibleTickers,
-			int numberOfTickersInPortfolio,
-			IDecoderForTestingPositions decoderForTestingPositions,
-			IFitnessEvaluator fitnessEvaluator,
-			GenomeManagerType genomeManagerType,
-			ReturnsManager returnsManager)
-                          
+		                          int numberOfTickersInPortfolio,
+		                          IDecoderForTestingPositions decoderForTestingPositions,
+		                          IFitnessEvaluator fitnessEvaluator,
+		                          GenomeManagerType genomeManagerType,
+		                          ReturnsManager returnsManager ,
+		                          int seedForRandomGenerator )
+			
 		{
 			this.eligibleTickers = eligibleTickers;
 			this.genomeSize = numberOfTickersInPortfolio;
@@ -74,7 +75,7 @@ namespace QuantProject.Business.Strategies.Optimizing.GenomeManagers
 			this.genomeManagerType = genomeManagerType;
 			this.returnsManager = returnsManager;
 			this.setMinAndMaxValueForGenes();
-			GenomeManagement.SetRandomGenerator(QuantProject.ADT.ConstantsProvider.SeedForRandomGenerator);
+			GenomeManagement.SetRandomGenerator( seedForRandomGenerator );
 		}
     
 		private void setMinAndMaxValueForGenes()
@@ -102,7 +103,9 @@ namespace QuantProject.Business.Strategies.Optimizing.GenomeManagers
         
 		public virtual double GetFitnessValue(Genome genome)
 		{
-			return this.fitnessEvaluator.GetFitnessValue(genome.Meaning, this.returnsManager);
+			double fitnessValue =
+				this.fitnessEvaluator.GetFitnessValue(genome.Meaning, this.returnsManager);
+			return fitnessValue;
 		}
     
 		public abstract Genome[] GetChilds(Genome parent1, Genome parent2);
@@ -141,11 +144,13 @@ namespace QuantProject.Business.Strategies.Optimizing.GenomeManagers
 //		{
 //			//
 //		}
-    
+		
 		public virtual object Decode(Genome genome)
 		{
-			return this.decoderForTestingPositions.Decode(genome.Genes(),
-						 this.eligibleTickers,	this.returnsManager);
+			object decoded =
+				this.decoderForTestingPositions.Decode(genome.Genes(),
+				                                       this.eligibleTickers,	this.returnsManager);
+			return decoded;
 		}
 	}
 }
