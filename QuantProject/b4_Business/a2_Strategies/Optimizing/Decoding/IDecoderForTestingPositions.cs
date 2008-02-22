@@ -25,6 +25,7 @@ using System;
 using QuantProject.Business.Strategies.Eligibles;
 using QuantProject.Business.Strategies.OutOfSample;
 using QuantProject.Business.Strategies.ReturnsManagement;
+using QuantProject.Business.Strategies.Logging;
 
 namespace QuantProject.Business.Strategies.Optimizing.Decoding
 {
@@ -33,7 +34,7 @@ namespace QuantProject.Business.Strategies.Optimizing.Decoding
 	/// genetic and for brute force optimizers) that will return a
 	/// StrategyPositionsForTesting
 	/// </summary>
-	public interface IDecoderForTestingPositions
+	public interface IDecoderForTestingPositions : ILogDescriptor
 	{
 		/// <summary>
 		/// Decodes to a TestingPositions, an
