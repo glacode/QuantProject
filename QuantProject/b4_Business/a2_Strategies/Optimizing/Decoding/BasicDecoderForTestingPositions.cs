@@ -43,7 +43,17 @@ namespace QuantProject.Business.Strategies.Optimizing.Decoding
 		protected int[] encoded;
 		protected EligibleTickers eligibleTickers;
 		protected ReturnsManager returnsManager;
-				
+		
+		public virtual string Description
+		{
+			get
+			{
+				string description =
+					"BasicDecoderForTestingPositions_DecodedOnlyTickers_EqualWeights";
+				return description;
+			}
+		}
+
 		public BasicDecoderForTestingPositions()
 		{
 			
