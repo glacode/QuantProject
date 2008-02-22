@@ -51,8 +51,10 @@ namespace QuantProject.Business.Strategies.InSample
 		protected int numberOfBestTestingPositionsToBeReturned;
 		protected bool choosePositionsWithAtLeastOneDifferentTicker;
 		//the genetic chooser will return the requested number
-		//of TestingPositions that have a different tickers'composition
-		//(that is TestingPositions with a different HashCodeForTickerComposition)
+		//of genome (which meaning is a TestingPositions) that
+		//have a different hash code
+		//the method that returns the hash code for genome
+		//is virtual 
 		protected TestingPositions[] bestTestingPositions;
 		protected Benchmark benchmark;
 		protected IDecoderForTestingPositions decoderForTestingPositions;
@@ -89,17 +91,8 @@ namespace QuantProject.Business.Strategies.InSample
 		/// The number of TestingPositions that the
 		/// AnalyzeInSample method will return
 		/// </param>
-		/// <param name="choosePositionsWithAtLeastOneDifferentTicker">
-		/// If true, the returned TestingPositions 
-		/// will be different in TickerComposition
-		/// (there won't be two TestingPositions with 
-		/// exactly the same tickers).
-		/// If false, there will be returned just the best TestingPositions
-		/// ordered by fitness by the genetic optimizer
-		/// </param>
 		public GeneticChooser(
 			int numberOfPortfolioPositions , int numberOfBestTestingPositionsToBeReturned ,
-			bool choosePositionsWithAtLeastOneDifferentTicker ,
 			Benchmark benchmark ,
 			IDecoderForTestingPositions decoderForTestingPositions ,
 			IFitnessEvaluator fitnessEvaluator ,
@@ -180,14 +173,13 @@ namespace QuantProject.Business.Strategies.InSample
 		#endregion newGenerationEventHandler
 		
 		//it returns a hashCode for the given genome
+		//normally, it should be overrided in inherited classes
 		protected virtual string getHashCodeForGenome(Genome genome)
 		{
-			string returnValue;
-			if (this.choosePositionsWithAtLeastOneDifferentTicker)
-				returnValue = ((TestingPositions)genome.Meaning).HashCodeForTickerComposition;
-			else
-				returnValue = genome.Meaning.GetHashCode().ToString();
-
+			string returnValue = genome.Meaning.GetHashCode().ToString();
+//			if (this.choosePositionsWithAtLeastOneDifferentTicker)
+//				returnValue = ((TestingPositions)genome.Meaning).HashCodeForTickerComposition;
+//			else
 			return returnValue;
 		}
 		
