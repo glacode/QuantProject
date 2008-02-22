@@ -57,7 +57,7 @@ namespace QuantProject.Business.Strategies.OutOfSample
       			new ArrayList(this.weightedPositions.SignedTickers.Tickers);
 		      listOfTickers.Sort();
 		      foreach(string tickerCode in listOfTickers)
-		        this.hashCodeForTickerComposition += tickerCode;
+		        this.hashCodeForTickerComposition += tickerCode + ";";
       	}
       	return this.hashCodeForTickerComposition;
 			}
@@ -68,7 +68,7 @@ namespace QuantProject.Business.Strategies.OutOfSample
  			this.weightedPositions = weightedPositions;
 		}
 		
-		//it creates a empty TestingPositions
+		//it creates an empty TestingPositions
 		public TestingPositions()
     {
  			this.weightedPositions = null;
