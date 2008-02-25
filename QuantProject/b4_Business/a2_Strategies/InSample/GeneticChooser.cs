@@ -46,15 +46,14 @@ namespace QuantProject.Business.Strategies.InSample
 	{
 		public event NewProgressEventHandler NewProgress;
 		public event NewMessageEventHandler NewMessage;
-
+		
 		protected int numberOfPortfolioPositions;
 		protected int numberOfBestTestingPositionsToBeReturned;
-		protected bool choosePositionsWithAtLeastOneDifferentTicker;
 		//the genetic chooser will return the requested number
 		//of genome (which meaning is a TestingPositions) that
-		//have a different hash code
+		//have a different hash code (
 		//the method that returns the hash code for genome
-		//is virtual 
+		//is virtual) 
 		protected TestingPositions[] bestTestingPositions;
 		protected Benchmark benchmark;
 		protected IDecoderForTestingPositions decoderForTestingPositions;
@@ -206,16 +205,16 @@ namespace QuantProject.Business.Strategies.InSample
       }  
 		}
 
-		protected abstract void setGenomeManager(EligibleTickers eligibleTickers ,
+		protected abstract IGenomeManager getGenomeManager(EligibleTickers eligibleTickers ,
 			ReturnsManager returnsManager);
-		//sets the member genomeManager in inherited classes
+		//returns a specific IGenomeManager object in inherited classes
 		
 		private TestingPositions[] getBestTestingPositionsInSample(
 			EligibleTickers eligibleTickers ,
 			ReturnsManager returnsManager
 			)
 		{
-			this.setGenomeManager(eligibleTickers, returnsManager);
+			this.genomeManager = this.getGenomeManager(eligibleTickers, returnsManager);
 			this.geneticOptimizer = new GeneticOptimizer(
 				this.crossoverRate ,
 				this.mutationRate ,
