@@ -105,7 +105,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.FixedLengthTwoPhases
 			if ( eligibleTickers.Count <	this.numberOfPortfolioPositions )
 				throw new Exception( "Eligilbe tickers for driving positions contains " +
 					"only " + eligibleTickers.Count +
-					" elements, while NumberOfDrivingPositions is " +
+					" elements, while the number of portfolio positions is " +
 					this.numberOfPortfolioPositions );
 		}
 		#region newGenerationEventHandler
