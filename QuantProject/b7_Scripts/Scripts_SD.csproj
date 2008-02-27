@@ -75,6 +75,11 @@
     <Compile Include="WalkForwardTesting\FixedLengthTwoPhases\InSampleChoosers\Genetic\FixedLengthTwoPhasesGenomeManager.cs" />
     <Compile Include="WalkForwardTesting\FixedLengthTwoPhases\Logging\FixedLengthTwoPhasesLogItem.cs" />
     <Compile Include="WalkForwardTesting\MSFTwalkForward\TsMSFTwalkForward.cs" />
+    <Compile Include="WalkForwardTesting\PairsTrading\InSample\InSampleChoosers\Genetic\PairsTradingGeneticChooser.cs" />
+    <Compile Include="WalkForwardTesting\PairsTrading\InSample\PairsTradingFitnessEvaluator.cs" />
+    <Compile Include="WalkForwardTesting\PairsTrading\Logging\PairsTradingLogItem.cs" />
+    <Compile Include="WalkForwardTesting\PairsTrading\PairsTradingMain.cs" />
+    <Compile Include="WalkForwardTesting\PairsTrading\PairsTradingStrategy.cs" />
     <Compile Include="WalkForwardTesting\WalkForwardLag\RunSimpleLag.cs" />
     <Compile Include="WalkForwardTesting\WalkForwardLag\WeightedPositionsChoosers\BruteForce\WFLagBruteForceWeightedPositionsChooserForBalancedFixedPortfolioAndBalancedDriving.cs" />
     <Compile Include="WalkForwardTesting\WalkForwardLag\WeightedPositionsChoosers\Decoding\IWFLagDecoder.cs" />
@@ -248,6 +253,11 @@
     <Folder Include="WalkForwardTesting\FixedLengthTwoPhases\InSampleChoosers" />
     <Folder Include="WalkForwardTesting\FixedLengthTwoPhases\InSampleChoosers\Genetic" />
     <Folder Include="WalkForwardTesting\FixedLengthTwoPhases\Logging" />
+    <Folder Include="WalkForwardTesting\PairsTrading" />
+    <Folder Include="WalkForwardTesting\PairsTrading\InSample" />
+    <Folder Include="WalkForwardTesting\PairsTrading\InSample\InSampleChoosers" />
+    <Folder Include="WalkForwardTesting\PairsTrading\InSample\InSampleChoosers\Genetic" />
+    <Folder Include="WalkForwardTesting\PairsTrading\Logging" />
     <Folder Include="WalkForwardTesting\WalkForwardLag\WeightedPositionsChoosers\BruteForce" />
     <Folder Include="WalkForwardTesting\WalkForwardLag\WeightedPositionsChoosers\Decoding" />
     <Folder Include="WalkForwardTesting\WalkForwardLag\WeightedPositionsChoosers\OptimizableParametersManagers" />
