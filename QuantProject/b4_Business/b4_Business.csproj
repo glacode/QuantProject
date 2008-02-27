@@ -252,6 +252,11 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "a07_DataProviders\TickerNotExchangedException.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "a1_Financial\a1_Instruments\Instrument.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
@@ -712,6 +717,11 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "a2_Strategies\EndOfDayStrategies\BasicEndOfDayStrategyForBacktester.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "a2_Strategies\EquityEvaluation\ExpectancyScore.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
@@ -802,6 +812,11 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "a2_Strategies\Optimizing\GenomeManagers\GenomeManagerWithDuplicateGenes.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "a2_Strategies\OutOfSample\TestingPositions.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
@@ -848,6 +863,11 @@
                 />
                 <File
                     RelPath = "a2_Strategies\returnsManagement\time\selectors\IIntervalsSelector.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "a2_Strategies\returnsManagement\time\selectors\OddIntervalsSelector.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
