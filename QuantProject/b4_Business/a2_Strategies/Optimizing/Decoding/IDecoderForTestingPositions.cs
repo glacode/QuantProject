@@ -23,9 +23,9 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 using System;
 
 using QuantProject.Business.Strategies.Eligibles;
+using QuantProject.Business.Strategies.Logging;
 using QuantProject.Business.Strategies.OutOfSample;
 using QuantProject.Business.Strategies.ReturnsManagement;
-using QuantProject.Business.Strategies.Logging;
 
 namespace QuantProject.Business.Strategies.Optimizing.Decoding
 {
