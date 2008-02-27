@@ -83,9 +83,8 @@ namespace QuantProject.Business.DataProviders
 					endOfDayQuotes );
 			}
 			else
-				throw new Exception( "The ticker " + ticker + " is not " +
-					"exchanged at the following end of day date time: " +
-					currentEndOfDayDateTime.ToString() );
+				throw new TickerNotExchangedException(
+					ticker , currentEndOfDayDateTime );
 		}
 		public EndOfDayHistory GetEndOfDayQuotes( string ticker ,
 			EndOfDayHistory endOfDayHistory )
