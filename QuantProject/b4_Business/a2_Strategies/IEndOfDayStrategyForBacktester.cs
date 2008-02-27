@@ -22,6 +22,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 using System;
 
+using QuantProject.ADT.Messaging;
 using QuantProject.Business.Strategies.Logging;
 
 namespace QuantProject.Business.Strategies
@@ -30,7 +31,8 @@ namespace QuantProject.Business.Strategies
 	/// Interface to be implemented by end of day strategies that are
 	/// to be used by the EndOfDayStrategyBackTester
 	/// </summary>
-	public interface IEndOfDayStrategyForBacktester : IEndOfDayStrategy , ILogDescriptor
+	public interface IEndOfDayStrategyForBacktester : IEndOfDayStrategy , ILogDescriptor ,
+		IMessageSender
 	{
 		/// <summary>
 		/// use this property to signal to the end of day backtester that at current time
