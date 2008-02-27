@@ -273,6 +273,60 @@ namespace QuantProject.ADT.Statistics
 
     }
 
+		#region PearsonCorrelationCoefficient with multipliers
+		static private void checkMultiplierIsNonZero( double multiplier )
+		{
+			if ( multiplier == 0 )
+				throw new Exception( "A multiplier cannot be zero!" );
+		}
+		static private void pearsonCorrelationCoefficient_checkParameters(
+			double firstArrayMultiplier , float[] firstDataVariable,
+			double secondArrayMultiplier , float[] secondDataVariable )
+		{
+			BasicFunctions.checkLengthOfDataVariables(firstDataVariable, secondDataVariable);
+			checkMultiplierIsNonZero( firstArrayMultiplier );
+			checkMultiplierIsNonZero( secondArrayMultiplier );
+		}
+		/// <summary>
+		/// Computes the Pearson's Correlation Coefficient for two weighted arrays
+		/// </summary>
+		/// <param name="firstMultiplier">multiplies each value of the
+		/// first data set</param>
+		/// <param name="firstDataVariable">first data set</param>
+		/// <param name="secondMultiplier">multiplies each value of the second
+		/// data set</param>
+		/// <param name="secondDataVariable">second data set</param>
+		/// <returns></returns>
+		static public double PearsonCorrelationCoefficient(
+			double firstMultiplier , float[] firstDataVariable,
+			double secondMultiplier , float[] secondDataVariable ) 
+		{
+			pearsonCorrelationCoefficient_checkParameters(
+				firstMultiplier , firstDataVariable,
+				secondMultiplier , secondDataVariable );
+			int n = firstDataVariable.Length;
+			double sumOfProduct = 0.0, sumOfFirst = 0.0, sumOfSecond = 0.0,
+				sumOfSquaredFirst = 0.0, sumOfSquaredSecond = 0.0;
+			double currentValueFromFirstDataSet , currentValueFromSecondDataSet;
+			for(int i = 0; i < n; i++)
+			{
+				currentValueFromFirstDataSet = firstMultiplier * firstDataVariable[i];
+				currentValueFromSecondDataSet = secondMultiplier * secondDataVariable[i];
+				sumOfFirst += currentValueFromFirstDataSet;
+				sumOfSecond += currentValueFromSecondDataSet;
+				sumOfProduct += currentValueFromFirstDataSet * currentValueFromSecondDataSet;
+				sumOfSquaredFirst +=
+					currentValueFromFirstDataSet * currentValueFromFirstDataSet;
+				sumOfSquaredSecond +=
+					currentValueFromSecondDataSet * currentValueFromSecondDataSet;
+			}
+			return (n*sumOfProduct - sumOfFirst*sumOfSecond)/
+				Math.Sqrt( (n*sumOfSquaredFirst - sumOfFirst*sumOfFirst)*
+				(n*sumOfSquaredSecond - sumOfSecond*sumOfSecond) );
+		}
+		#endregion PearsonCorrelationCoefficient with multipliers
+
+
     static public double SimpleAverageOfProduct( double[] firstDataVariable,
                                                  double[] secondDataVariable ) 
     {
