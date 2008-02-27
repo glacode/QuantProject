@@ -36,23 +36,38 @@ namespace QuantProject.Business.Strategies.Optimizing.Decoding
 	/// In this implementation, with the encoded items
 	/// can be decoded only tickers
 	/// </summary>
-	public class BasicDecoderForTestingPositions :
+	public abstract class BasicDecoderForTestingPositions :
 		IDecoderForTestingPositions
 	{
 		protected int[] tickerRelatedGeneValues;
 		protected int[] encoded;
 		protected EligibleTickers eligibleTickers;
 		protected ReturnsManager returnsManager;
-		
-		public virtual string Description
+
+		/// <summary>
+		/// short description to be used for the file name
+		/// </summary>
+		/// <returns></returns>
+		protected abstract string getDescription();
+
+		public string Description
 		{
 			get
 			{
-				string description =
-					"BasicDecoderForTestingPositions_DecodedOnlyTickers_EqualWeights";
+				string description = "Dcdr_" + this.getDescription();
 				return description;
 			}
 		}
+		
+//		public virtual string Description
+//		{
+//			get
+//			{
+//				string description =
+//					"BasicDecoderForTestingPositions_DecodedOnlyTickers_EqualWeights";
+//				return description;
+//			}
+//		}
 
 		public BasicDecoderForTestingPositions()
 		{
@@ -131,8 +146,9 @@ namespace QuantProject.Business.Strategies.Optimizing.Decoding
 		protected virtual TestingPositions decodeDecodable()
 		{
 			SignedTickers signedTickers =	this.decodeSignedTickers();
+			double[] weights = this.getWeights();
 			TestingPositions testingPositions =	new TestingPositions(
-					new WeightedPositions( this.getWeights(), signedTickers) );
+					new WeightedPositions( weights , signedTickers.Tickers ) );
 	
 			return testingPositions;
 		}
@@ -166,9 +182,9 @@ namespace QuantProject.Business.Strategies.Optimizing.Decoding
 		public TestingPositions Decode(int[] encoded , EligibleTickers eligibleTickers ,
 		             ReturnsManager returnsManager)
 		{
-			this.setTickerRelatedGeneValues();
 			this.decode_updateProtectedMembers(encoded , eligibleTickers ,
 			                   								 returnsManager);
+			this.setTickerRelatedGeneValues();
 			TestingPositions meaning =	new TestingPositions();
 			if ( this.isDecodable() )
 			// encoded, normally a Genome, can be decoded to a TestingPositions
