@@ -103,6 +103,8 @@ namespace QuantProject.Business.Strategies.InSample
 		{
 			this.numberOfPortfolioPositions = numberOfPortfolioPositions;
 			this.numberOfBestTestingPositionsToBeReturned = numberOfBestTestingPositionsToBeReturned;
+//			this.choosePositionsWithAtLeastOneDifferentTicker =
+//				choosePositionsWithAtLeastOneDifferentTicker;
 			this.bestTestingPositions = new TestingPositions[numberOfBestTestingPositionsToBeReturned];
 			this.benchmark = benchmark;
 			this.decoderForTestingPositions = decoderForTestingPositions;
@@ -125,7 +127,7 @@ namespace QuantProject.Business.Strategies.InSample
 			if ( eligibleTickers.Count <	this.numberOfPortfolioPositions )
 				throw new Exception( "Eligible tickers for driving positions contains " +
 					"only " + eligibleTickers.Count +
-					" elements, while NumberOfDrivingPositions is " +
+					" elements, while number of portfolio positions is " +
 					this.numberOfPortfolioPositions );
 			if ( this.numberOfBestTestingPositionsToBeReturned > 
 			    this.populationSizeForGeneticOptimizer )
@@ -173,14 +175,14 @@ namespace QuantProject.Business.Strategies.InSample
 		
 		//it returns a hashCode for the given genome
 		//normally, it should be overrided in inherited classes
-		protected virtual string getHashCodeForGenome(Genome genome)
-		{
-			string returnValue = genome.Meaning.GetHashCode().ToString();
-//			if (this.choosePositionsWithAtLeastOneDifferentTicker)
-//				returnValue = ((TestingPositions)genome.Meaning).HashCodeForTickerComposition;
-//			else
-			return returnValue;
-		}
+		protected abstract string getHashCodeForGenome(Genome genome);
+//		{
+//			string returnValue = genome.Meaning.GetHashCode().ToString();
+////			if (this.choosePositionsWithAtLeastOneDifferentTicker)
+////				returnValue = ((TestingPositions)genome.Meaning).HashCodeForTickerComposition;
+////			else
+//			return returnValue;
+//		}
 		
 		private void setBestTestingPositions()
 		{
@@ -200,6 +202,7 @@ namespace QuantProject.Business.Strategies.InSample
 					this.bestTestingPositions[addedTestingPositions] = 
 						(TestingPositions)currentGenome.Meaning;
       		genomesCollector.Add(currentGenomeHashcode, null);
+					addedTestingPositions++;
       	}
       	counter ++ ;
       }  
