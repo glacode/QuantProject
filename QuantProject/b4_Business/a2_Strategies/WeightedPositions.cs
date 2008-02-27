@@ -117,6 +117,29 @@ namespace QuantProject.Business.Strategies
 		{
 			get { return this.ToString(); }
 		}
+
+		/// <summary>
+		/// returns a new WeightedPositions object, obtained by the current instance,
+		/// but reversing the sign of each weight for each position:
+		/// long positions become then short positions and viceversa
+		/// </summary>
+		public WeightedPositions Opposite
+		{
+			get
+			{
+				double[] oppositeWeights = new Double[ this.Count ];
+				string[] tickers = new String[ this.Count ];
+				for ( int i = 0 ; i < this.Count ; i++ )
+				{
+					tickers[ i ] = ((WeightedPosition)(this[ i ])).Ticker;
+					oppositeWeights[ i ] = -((WeightedPosition)(this[ i ])).Weight;
+				}
+				WeightedPositions opposite = new WeightedPositions(
+					oppositeWeights , tickers );
+				return opposite;
+			}
+		}
+
 		private void weightedPositions_default( double[] normalizedWeightValues ,
 			string[] tickers )
 		{
