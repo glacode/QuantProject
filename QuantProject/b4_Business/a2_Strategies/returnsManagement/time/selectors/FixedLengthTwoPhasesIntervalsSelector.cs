@@ -28,9 +28,10 @@ using QuantProject.Business.Timing;
 namespace QuantProject.Business.Strategies.ReturnsManagement.Time.IntervalsSelectors
 {
 	/// <summary>
-	/// Selects a set of intervals where there is a fixed number of time steps
-	/// for even intervals (first, third, ...) and (possilby) a different
-	/// fixed number of benchmark time steps for odd intervals (second, fourth, ...).
+	/// Selects a set of intervals where there is a fixed number of
+	/// benchmark time steps
+	/// for odd intervals (first, third, ...) and a (possibly) different
+	/// fixed number of benchmark time steps for even intervals (second, fourth, ...).
 	/// A benchmark time step is either an "open to close" interval or
 	/// a "close to open" interval (refered to dateTimes when the benchmark is
 	/// exchanged)
@@ -42,9 +43,10 @@ namespace QuantProject.Business.Strategies.ReturnsManagement.Time.IntervalsSelec
 		private Benchmark benchmark;
 		
 		/// <summary>
-		/// Selects a set of intervals where there is a fixed number of time steps
-		/// for even intervals (first, third, ...) and (possilby) a different
-		/// fixed number of benchmark time steps for odd intervals (second, fourth, ...)
+		/// Selects a set of intervals where there is a fixed number of
+		/// benchmark time steps
+		/// for odd intervals (first, third, ...) and a (possibly) different
+		/// fixed number of benchmark time steps for even intervals (second, fourth, ...).
 		/// A benchmark time step is either an "open to close" interval or
 		/// a "close to open" interval (refered to dateTimes when the benchmark is
 		/// exchanged)
