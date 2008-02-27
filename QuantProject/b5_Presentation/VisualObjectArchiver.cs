@@ -64,7 +64,7 @@ namespace QuantProject.Presentation
 			this.saveFileDialog.Filter = suffix + " files (*."+
 				suffix + ")|*." + suffix;
 			this.saveFileDialog.Title = title;
-			this.saveFileDialog.FileName = initialFileName;
+			this.saveFileDialog.FileName = initialFileName.Substring( 0 , 200);
 			this.saveFileDialog.InitialDirectory = initialDirectory;
 			this.saveFileDialog.AddExtension = true;
 			this.saveFileDialog.CreatePrompt = true;
