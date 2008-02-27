@@ -53,7 +53,7 @@ namespace QuantProject.Business.Strategies.InSample
 		//of genome (which meaning is a TestingPositions) that
 		//have a different hash code (
 		//the method that returns the hash code for genome
-		//is virtual) 
+		//is virtual)
 		protected TestingPositions[] bestTestingPositions;
 		protected Benchmark benchmark;
 		protected IDecoderForTestingPositions decoderForTestingPositions;
