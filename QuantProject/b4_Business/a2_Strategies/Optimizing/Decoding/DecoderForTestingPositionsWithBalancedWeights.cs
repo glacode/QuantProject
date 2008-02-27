@@ -40,20 +40,25 @@ namespace QuantProject.Business.Strategies.Optimizing.Decoding
 			
 		}
 		
-		public override string Description
-		{
-			get
-			{
-				string description =
-					"DecoderForTestingPositions_DecodedOnlyTickers_WeightsAreBalancedOnVolatilityBase";
-				return description;
-			}
-		}
+//		public override string Description
+//		{
+//			get
+//			{
+//				string description =
+//					"DecoderForTestingPositions_DecodedOnlyTickers_WeightsAreBalancedOnVolatilityBase";
+//				return description;
+//			}
+//		}
 
 		protected override double[] getWeights()
 		{
 			return WeightedPositions.GetBalancedWeights( 
 			        this.decodeSignedTickers(),	this.returnsManager );
+		}
+
+		protected override string getDescription()
+		{
+			return "bscBlncdTstngPstns";
 		}
 	}
 }
