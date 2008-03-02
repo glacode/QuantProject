@@ -262,6 +262,19 @@ namespace QuantProject.Business.Strategies.ReturnsManagement.Time
 						"the end of the last interval already in this collection!" );
 			}
 		}
+		private ReturnInterval getFirstIntervalToBeAdded( EndOfDayDateTime firstDate )
+		{
+			ReturnInterval firstIntervalToBeAdded;
+			if ( this.Count == 0 )
+				// this object is still empty: no interval has been added yet
+				firstIntervalToBeAdded =
+					this.intervalsSelector.GetFirstInterval( firstDate );
+			else
+				// this object already contains at least a ReturnInterval
+				firstIntervalToBeAdded =
+					this.intervalsSelector.GetNextInterval( this );
+			return firstIntervalToBeAdded;
+		}
 		/// <summary>
 		/// Appends a list of intervals, starting from firstDate and
 		/// until the next one would go beyond lastDate.
@@ -277,7 +290,7 @@ namespace QuantProject.Business.Strategies.ReturnsManagement.Time
 			this.appendIntervalsButDontGoBeyondLastDate_checkParameters(
 				firstDate , lastDate );
 			ReturnInterval nextInterval =
-				this.intervalsSelector.GetFirstInterval( firstDate );
+				this.getFirstIntervalToBeAdded( firstDate );
 			while ( nextInterval.End.CompareTo( lastDate ) <= 0 )
 			{
 				this.Add( nextInterval );
