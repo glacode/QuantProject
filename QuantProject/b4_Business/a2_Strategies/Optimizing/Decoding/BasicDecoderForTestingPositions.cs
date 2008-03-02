@@ -137,7 +137,7 @@ namespace QuantProject.Business.Strategies.Optimizing.Decoding
 		{
 			//in this implementation encoded doesn't contain
 			//information for weights: so weights are all the same
-			double[] weights = new double[this.encoded.Length];
+			double[] weights = new double[this.tickerRelatedGeneValues.Length];
 			for(int i = 0; i<weights.Length; i++)
 				weights[i] = 1.0 / weights.Length;
 			return weights;
