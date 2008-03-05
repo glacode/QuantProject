@@ -38,12 +38,20 @@ namespace QuantProject.Business.Strategies.OutOfSample
   {
   	private WeightedPositions weightedPositions;
   	private string hashCodeForTickerComposition;
+  	private double fitnessInSample;
   	  	 
 		public WeightedPositions WeightedPositions
 		{
 			get{return this.weightedPositions;}
 		}
     
+		public double FitnessInSample
+		{
+			get{return this.fitnessInSample;}
+			set{this.fitnessInSample = value;}
+		}
+		
+		
 		public string HashCodeForTickerComposition
     {
       get
@@ -66,12 +74,21 @@ namespace QuantProject.Business.Strategies.OutOfSample
 		public TestingPositions(WeightedPositions weightedPositions)
     {
  			this.weightedPositions = weightedPositions;
+ 			this.fitnessInSample = double.MinValue;
+		}
+		
+		public TestingPositions(WeightedPositions weightedPositions,
+		                        double fitnessInSample)
+    {
+ 			this.weightedPositions = weightedPositions;
+ 			this.fitnessInSample = fitnessInSample;
 		}
 		
 		//it creates an empty TestingPositions
 		public TestingPositions()
     {
  			this.weightedPositions = null;
+ 			this.fitnessInSample = double.MinValue;
 		}
   }
 }
