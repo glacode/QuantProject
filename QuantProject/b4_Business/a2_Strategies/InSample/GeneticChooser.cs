@@ -173,7 +173,7 @@ namespace QuantProject.Business.Strategies.InSample
 		}
 		#endregion newGenerationEventHandler
 		
-		//it returns a hashCode for the given genome
+		//it returns the inherited HashCode from object
 		//normally, it should be overrided in inherited classes
 		protected abstract string getHashCodeForGenome(Genome genome);
 //		{
@@ -183,6 +183,7 @@ namespace QuantProject.Business.Strategies.InSample
 ////			else
 //			return returnValue;
 //		}
+
 		
 		private void setBestTestingPositions()
 		{
@@ -201,7 +202,11 @@ namespace QuantProject.Business.Strategies.InSample
       	{
 					this.bestTestingPositions[addedTestingPositions] = 
 						(TestingPositions)currentGenome.Meaning;
-      		genomesCollector.Add(currentGenomeHashcode, null);
+					((TestingPositions)this.bestTestingPositions[addedTestingPositions]).FitnessInSample =
+						currentGenome.Fitness;
+					((IGeneticOptimized)this.bestTestingPositions[addedTestingPositions]).Generation =
+						currentGenome.Generation;
+					genomesCollector.Add(currentGenomeHashcode, null);
 					addedTestingPositions++;
       	}
       	counter ++ ;
