@@ -49,6 +49,8 @@ namespace QuantProject.Presentation.Reporting.WindowsForm
 		private System.Windows.Forms.MenuItem saveReport;
     private System.Windows.Forms.MenuItem saveTransactions;
     private SaveFileDialog saveFileDialog;
+    
+    private bool alreadyCreated = false;
 
 		public AccountReport AccountReport
 		{
@@ -135,6 +137,7 @@ namespace QuantProject.Presentation.Reporting.WindowsForm
 			this.reportTabControl = new ReportTabControl( this.accountReport ,
 				showBenchmark );
 			this.Controls.Add( this.reportTabControl );
+			this.alreadyCreated = true;
 		}
 		/// <summary>
 		/// Creates the report data, but it doesn't show the report
@@ -149,9 +152,16 @@ namespace QuantProject.Presentation.Reporting.WindowsForm
 			this.Create( reportName , numDaysForInterval , endDateTime ,
 				benchmark , true );
 		}
+		private void checkAlreadyCreated()
+		{
+			if ( this.alreadyCreated )
+				throw new Exception( "The form content has already been " +
+				                    "created! You can create it just once!" );
+		}
 		public void Create( string reportName ,	int numDaysForInterval ,
 			EndOfDayDateTime endDateTime , string benchmark , bool showBenchmark )
 		{
+			this.checkAlreadyCreated();
 			create_set_accountReport( reportName ,
 				numDaysForInterval , endDateTime , benchmark );
 			create_populateForm( showBenchmark );
