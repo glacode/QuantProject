@@ -74,7 +74,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.PairsTrading
 		                    string suggestedLogFileName )
 		{
 			string defaultFolderPath =
-				"C:\\qpReports\\";
+				"C:\\qpReports\\pairsTrading\\";
 //			this.wFLagLog.TransactionHistory = this.account.Transactions;
 			LogArchiver.Save( backTestLog ,
 			              suggestedLogFileName , defaultFolderPath );
@@ -84,7 +84,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.PairsTrading
 
 		public void Run1()
 		{
-			BackTestLog backTestLog = LogArchiver.Load( "C:\\qpReports\\" );
+			BackTestLog backTestLog = LogArchiver.Load( "C:\\qpReports\\pairsTrading\\" );
 			LogViewer logViewer =
 				new LogViewer( backTestLog );
 			logViewer.Show();
@@ -95,17 +95,17 @@ namespace QuantProject.Scripts.WalkForwardTesting.PairsTrading
 			string backTestId = "PairsTrading";
 			double cashToStart = 30000;
 
-			int inSampleDays = 90;
+			int inSampleDays = 180;
 			string tickersGroupId = "SP500";
 			
 			// uncomment the following two lines for faster scripts
-//			int inSampleDays = 30;
+//			int inSampleDays = 5;
 //			string tickersGroupId = "fastTest";
 
-      Benchmark benchmark = new Benchmark( "MSFT" );
+      Benchmark benchmark = new Benchmark( "BMC" );
 			int maxNumberOfEligiblesToBeChosen = 100;
 			IDecoderForTestingPositions decoderForWeightedPositions
-				= new DecoderForTestingPositionsWithBalancedWeights();
+				= new DecoderForPairsTradingTestingPositionsWithBalancedWeights();
 			IHistoricalQuoteProvider historicalQuoteProvider =
 				new HistoricalAdjustedQuoteProvider();
 
@@ -118,8 +118,8 @@ namespace QuantProject.Scripts.WalkForwardTesting.PairsTrading
 			double crossoverRate = 0.85;
 			double mutationRate = 0.02;
 			double elitismRate = 0.001;
-			int populationSizeForGeneticOptimizer = 20000;
-			int generationNumberForGeneticOptimizer = 8;
+			int populationSizeForGeneticOptimizer = 30000;
+			int generationNumberForGeneticOptimizer = 12;
 			int seedForRandomGenerator =
 				QuantProject.ADT.ConstantsProvider.SeedForRandomGenerator;
 			IInSampleChooser inSampleChooser =
@@ -147,9 +147,9 @@ namespace QuantProject.Scripts.WalkForwardTesting.PairsTrading
 				eligiblesSelector , inSampleChooser , historicalQuoteProvider ,
 				0.003 , 0.99 , 0.003 , 0.99 );
 
-			DateTime firstDateTime = new DateTime( 2002 , 1 , 29 );
-			DateTime lastDateTime = new DateTime( 2002 , 2 , 28 );
-			double maxRunningHours = 8;
+			DateTime firstDateTime = new DateTime( 2001 , 1 , 1 );
+			DateTime lastDateTime = new DateTime( 2001 , 1 , 6 );
+			double maxRunningHours = 0.9;
 			EndOfDayStrategyBackTester endOfDayStrategyBackTester =
 				new EndOfDayStrategyBackTester(
 					backTestId , pairsTradingStrategy ,
