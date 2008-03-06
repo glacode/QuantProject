@@ -142,13 +142,23 @@ namespace QuantProject.Business.Strategies.Optimizing.Decoding
 				weights[i] = 1.0 / weights.Length;
 			return weights;
 		}
+		
+		protected virtual TestingPositions
+			getTestingPositions( double[] weights ,
+			                    string[] tickers )
+		{
+			TestingPositions testingPositions =	new TestingPositions(
+					new WeightedPositions( weights , tickers ) );
+			return testingPositions;
+		}
 
 		protected virtual TestingPositions decodeDecodable()
 		{
 			SignedTickers signedTickers =	this.decodeSignedTickers();
 			double[] weights = this.getWeights();
-			TestingPositions testingPositions =	new TestingPositions(
-					new WeightedPositions( weights , signedTickers.Tickers ) );
+			TestingPositions testingPositions =
+				this.getTestingPositions(
+					weights , signedTickers.Tickers );
 	
 			return testingPositions;
 		}
