@@ -829,7 +829,17 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "WalkForwardTesting\PairsTrading\PairsTradingTestingPositions.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "WalkForwardTesting\PairsTrading\InSample\PairsTradingFitnessEvaluator.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "WalkForwardTesting\PairsTrading\InSample\InSampleChoosers\Genetic\DecoderForPairsTradingTestingPositionsWithBalancedWeights.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
@@ -840,6 +850,11 @@
                 />
                 <File
                     RelPath = "WalkForwardTesting\PairsTrading\Logging\PairsTradingLogItem.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "WalkForwardTesting\PairsTrading\Logging\SimpleStrategy.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
