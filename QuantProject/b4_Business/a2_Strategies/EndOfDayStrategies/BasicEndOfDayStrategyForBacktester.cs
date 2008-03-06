@@ -64,6 +64,7 @@ namespace QuantProject.Business.Strategies
 
 		public Account Account
 		{
+			get { return this.account; }
 			set { this.account = value; }
 		}
 
