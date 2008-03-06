@@ -320,6 +320,15 @@ namespace QuantProject.ADT.Statistics
 				sumOfSquaredSecond +=
 					currentValueFromSecondDataSet * currentValueFromSecondDataSet;
 			}
+			double n1 = n*sumOfProduct;
+			double n2 = sumOfFirst*sumOfSecond;
+			double numerator = n*sumOfProduct - sumOfFirst*sumOfSecond;
+			double d1 = n*sumOfSquaredFirst;
+			double d2 = sumOfFirst*sumOfFirst;
+			double d3 = n*sumOfSquaredSecond;
+			double d4 = sumOfSecond*sumOfSecond;
+			double d5 = d1 - d2;
+			double d6 = d3 - d4;
 			return (n*sumOfProduct - sumOfFirst*sumOfSecond)/
 				Math.Sqrt( (n*sumOfSquaredFirst - sumOfFirst*sumOfFirst)*
 				(n*sumOfSquaredSecond - sumOfSecond*sumOfSecond) );
