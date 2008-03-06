@@ -84,13 +84,29 @@ namespace QuantProject.Scripts.WalkForwardTesting.PairsTrading
 			return "pairsTrdng";
 		}
 		
+		#region arePositionsToBeClosed
+		private ReturnInterval getSecondLastReturnInterval()
+		{
+			int indexForTheSecondLastReturnInterval =
+				this.returnIntervals.Count - 2;
+			ReturnInterval secondLastReturnInterval =
+				this.returnIntervals[ indexForTheSecondLastReturnInterval ];
+			return secondLastReturnInterval;
+		}
 		private bool arePositionsToBeClosed()
 		{
-			bool endsTheLastInterval =
-				( this.now().IsEqualTo(
-				this.lastIntervalAppended().End ) );
-			return ( endsTheLastInterval );
+			bool areToBeClosed = false;
+			if ( this.returnIntervals.Count > 1 )
+				// at least two intervals have already been
+				// added, out of sample
+			{
+				ReturnInterval secondLastReturnInterval =
+					this.getSecondLastReturnInterval();
+				areToBeClosed = this.now().IsEqualTo( secondLastReturnInterval.End );				
+			}
+			return ( areToBeClosed );
 		}
+		#endregion arePositionsToBeClosed
 
 		protected override bool marketOpenEventHandler_arePositionsToBeOpened()
 		{
