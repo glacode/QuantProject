@@ -74,6 +74,7 @@
     <Compile Include="a2_Strategies\IEndOfDayStrategyForBacktester.cs" />
     <Compile Include="a2_Strategies\IInSampleChooser.cs" />
     <Compile Include="a2_Strategies\InSample\ConstantWeightedPositionsChooser.cs" />
+    <Compile Include="a2_Strategies\InSample\DummyInSampleChooser.cs" />
     <Compile Include="a2_Strategies\InSample\GeneticChooser.cs" />
     <Compile Include="a2_Strategies\Logging\BackTestLog.cs" />
     <Compile Include="a2_Strategies\Logging\ILogDescriptor.cs" />
