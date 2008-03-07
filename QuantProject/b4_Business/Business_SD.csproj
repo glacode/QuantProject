@@ -89,8 +89,8 @@
     <Compile Include="a2_Strategies\Optimizing\GenomeManagers\BasicGenomeManager.cs" />
     <Compile Include="a2_Strategies\Optimizing\GenomeManagers\GenomeManagerWithDuplicateGenes.cs" />
     <Compile Include="a2_Strategies\Optimizing\GenomeManagers\GenomeManagerType.cs" />
+    <Compile Include="a2_Strategies\OutOfSample\IGeneticallyOptimizable.cs" />
     <Compile Include="a2_Strategies\OutOfSample\TestingPositions.cs" />
-    <Compile Include="a2_Strategies\OutOfSample\IGeneticOptimized.cs" />
     <Compile Include="a2_Strategies\returnsManagement\time\CloseToCloseIntervals.cs" />
     <Compile Include="a2_Strategies\returnsManagement\time\CloseToOpenIntervals.cs" />
     <Compile Include="a2_Strategies\returnsManagement\time\DailyOpenToCloseIntervals.cs" />

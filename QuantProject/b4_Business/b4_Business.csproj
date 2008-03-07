@@ -822,7 +822,7 @@
                     BuildAction = "Compile"
                 />
                 <File
-                    RelPath = "a2_Strategies\OutOfSample\IGeneticOptimized.cs"
+                    RelPath = "a2_Strategies\OutOfSample\IGeneticallyOptimizable.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />

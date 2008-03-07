@@ -57,7 +57,7 @@ namespace QuantProject.Business.Strategies
 		private AccountReport accountReport;
 		private BackTestLog backTestLog;
 		private DateTime realDateTimeWhenTheBackTestIsStopped;
-
+		
 		public IHistoricalQuoteProvider HistoricalQuoteProvider
 		{
 			get { return this.historicalQuoteProvider; }

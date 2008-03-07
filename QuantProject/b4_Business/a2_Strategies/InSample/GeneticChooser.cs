@@ -204,7 +204,7 @@ namespace QuantProject.Business.Strategies.InSample
 						(TestingPositions)currentGenome.Meaning;
 					((TestingPositions)this.bestTestingPositions[addedTestingPositions]).FitnessInSample =
 						currentGenome.Fitness;
-					((IGeneticOptimized)this.bestTestingPositions[addedTestingPositions]).Generation =
+					((IGeneticallyOptimizable)this.bestTestingPositions[addedTestingPositions]).Generation =
 						currentGenome.Generation;
 					genomesCollector.Add(currentGenomeHashcode, null);
 					addedTestingPositions++;
