@@ -32,7 +32,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.PairsTrading
 	/// </summary>
 	[Serializable]
 	public class PairsTradingTestingPositions :
-		TestingPositions , IGeneticOptimized
+		TestingPositions , IGeneticallyOptimizable
 	{
 		private int generation;
 
