@@ -1,7 +1,7 @@
 /*
 QuantProject - Quantitative Finance Library
 
-IGeneticOptimized.cs
+IGeneticallyOptimizable.cs
 Copyright (C) 2008
 Marco Milletti
 
@@ -28,7 +28,7 @@ namespace QuantProject.Business.Strategies.OutOfSample
   /// <summary>
   /// Interface to be implemented by TestingPositions objects 
   /// </summary>
-  public interface IGeneticOptimized
+  public interface IGeneticallyOptimizable
   {
   	int Generation{get;set;}
   }
