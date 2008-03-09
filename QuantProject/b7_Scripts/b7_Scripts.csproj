@@ -329,11 +329,6 @@
                     BuildAction = "Compile"
                 />
                 <File
-                    RelPath = "TechnicalAnalysisTesting\Oscillators\FixedLevelOscillators\PortfolioValueOscillator\PVO_OTCStrategy.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
                     RelPath = "TechnicalAnalysisTesting\Oscillators\FixedLevelOscillators\PortfolioValueOscillator\PVOGenomeManager.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
