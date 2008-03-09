@@ -48,6 +48,7 @@
     <Compile Include="ArbitrageTesting\OverReactionHypothesis\DoubleOverReaction_OTC\EndOfDayTimerHandlerDOR_OTC.cs" />
     <Compile Include="ArbitrageTesting\OverReactionHypothesis\DoubleOverReaction_OTC\RunDOR_OTC.cs" />
     <Compile Include="AssemblyInfo.cs" />
+    <Compile Include="EvaluatingOptimizationTechnique\TechnicalAnalysis\RunTestingOptimizationExtremeCounterTrend.cs" />
     <Compile Include="General\Logging\LogArchiver.cs" />
     <Compile Include="General\Logging\LogViewer.cs" />
     <Compile Include="General\Reporting\BackTesterReportViewer.cs" />
@@ -58,9 +59,28 @@
     <Compile Include="SimpleTesting\OneRank\RunOneRank.cs" />
     <Compile Include="SimpleTesting\ShortTest\EndOfDayTimerHandler.cs" />
     <Compile Include="SimpleTesting\ShortTest\RunShortTest.cs" />
+    <Compile Include="TechnicalAnalysisTesting\Oscillators\ExtremeCounterTrend\EndOfDayTimerHandlerECT.cs" />
+    <Compile Include="TechnicalAnalysisTesting\Oscillators\ExtremeCounterTrend\GenomeManagerECT.cs" />
+    <Compile Include="TechnicalAnalysisTesting\Oscillators\ExtremeCounterTrend\RunExtremeCounterTrend.cs" />
     <Compile Include="TechnicalAnalysisTesting\Oscillators\FixedLevelOscillators\PortfolioValueOscillator\BiasedPVO\EndOfDayTimerHandlerBiasedPVO_OTC.cs" />
     <Compile Include="TechnicalAnalysisTesting\Oscillators\FixedLevelOscillators\PortfolioValueOscillator\BiasedPVO\RunBiasedPVO_OTC.cs" />
+    <Compile Include="TechnicalAnalysisTesting\Oscillators\FixedLevelOscillators\PortfolioValueOscillator\Decoding\BasicDecoderForPVOPositions.cs" />
+    <Compile Include="TechnicalAnalysisTesting\Oscillators\FixedLevelOscillators\PortfolioValueOscillator\FitnessEvaluators\PVOFitnessEvaluator.cs" />
     <Compile Include="TechnicalAnalysisTesting\Oscillators\FixedLevelOscillators\PortfolioValueOscillator\GenomeManagerPVO_OTC.cs" />
+    <Compile Include="TechnicalAnalysisTesting\Oscillators\FixedLevelOscillators\PortfolioValueOscillator\InSampleChoosers\PVOCorrelationChooser.cs" />
+    <Compile Include="TechnicalAnalysisTesting\Oscillators\FixedLevelOscillators\PortfolioValueOscillator\InSampleChoosers\PVOGeneticChooser.cs" />
+    <Compile Include="TechnicalAnalysisTesting\Oscillators\FixedLevelOscillators\PortfolioValueOscillator\PVOGenomeManager.cs" />
+    <Compile Include="TechnicalAnalysisTesting\Oscillators\FixedLevelOscillators\PortfolioValueOscillator\PVOLogItem.cs" />
+    <Compile Include="TechnicalAnalysisTesting\Oscillators\FixedLevelOscillators\PortfolioValueOscillator\PVOMain.cs" />
+    <Compile Include="TechnicalAnalysisTesting\Oscillators\FixedLevelOscillators\PortfolioValueOscillator\PVOPositions.cs" />
+    <Compile Include="TechnicalAnalysisTesting\Oscillators\FixedLevelOscillators\PortfolioValueOscillator\PVOPositionsStatus.cs" />
+    <Compile Include="TechnicalAnalysisTesting\Oscillators\FixedLevelOscillators\PortfolioValueOscillator\PVOStrategy.cs" />
+    <Compile Include="TechnicalAnalysisTesting\Oscillators\FixedLevelOscillators\PortfolioValueOscillator\WeightedPVO\EndOfDayTimerHandlerWeightedPVO.cs" />
+    <Compile Include="TechnicalAnalysisTesting\Oscillators\FixedLevelOscillators\PortfolioValueOscillator\WeightedPVO\GenomeManagerWeightedPVO.cs" />
+    <Compile Include="TechnicalAnalysisTesting\Oscillators\FixedLevelOscillators\PortfolioValueOscillator\WeightedPVO\RunWeightedPVO.cs" />
+    <Compile Include="TechnicalAnalysisTesting\Oscillators\FixedLevelOscillators\PortfolioValueOscillator\WeightedPVO\WeightedBalancedPVO\EndOfDayTimerHandlerWeightedBalancedPVO.cs" />
+    <Compile Include="TechnicalAnalysisTesting\Oscillators\FixedLevelOscillators\PortfolioValueOscillator\WeightedPVO\WeightedBalancedPVO\GenomeManagerWeightedBalancedPVO.cs" />
+    <Compile Include="TechnicalAnalysisTesting\Oscillators\FixedLevelOscillators\PortfolioValueOscillator\WeightedPVO\WeightedBalancedPVO\RunWeightedBalancedPVO.cs" />
     <Compile Include="TickerSelectionTesting\EndOfDayTimerHandlerCTC.cs" />
     <Compile Include="TickerSelectionTesting\EndOfDayTimerHandlerCTO.cs" />
     <Compile Include="TickerSelectionTesting\GenomeManagerForEfficientCTCPortfolio.cs" />
@@ -68,6 +88,7 @@
     <Compile Include="TickerSelectionTesting\GenomeManagerForEfficientPortfolio.cs" />
     <Compile Include="TickerSelectionTesting\RunEfficientCTCPortfolio.cs" />
     <Compile Include="TickerSelectionTesting\RunEfficientCTOPortfolio.cs" />
+    <Compile Include="WalkForwardTesting\FixedLengthTwoPhases\FixedLengthTwoPhasesLogItem.cs" />
     <Compile Include="WalkForwardTesting\FixedLengthTwoPhases\FixedLengthTwoPhasesMain.cs" />
     <Compile Include="WalkForwardTesting\FixedLengthTwoPhases\FixedLengthTwoPhasesStrategy.cs" />
     <Compile Include="WalkForwardTesting\FixedLengthTwoPhases\InSampleChoosers\FixedLengthTwoPhasesFitnessEvaluator.cs" />
@@ -166,7 +187,6 @@
     <Compile Include="ArbitrageTesting\PairTrading\SimplePairTrading\GenomeMeaningSimplePT.cs" />
     <Compile Include="ArbitrageTesting\PairTrading\SimplePairTrading\InSample\RunSimplePairTradingIS.cs" />
     <Compile Include="EvaluatingOptimizationTechnique\EfficientPortfolio\RunTestingOptimizationOpenToCloseFitnessCombined.cs" />
-    <Compile Include="EvaluatingOptimizationTechnique\TechnicalAnalysis\RunTestingOptimizationExtremeCounterTrend.cs" />
     <Compile Include="TechnicalAnalysisTesting\Oscillators\FixedPeriodOscillators\RunFPOscillatorCTC.cs" />
     <Compile Include="TechnicalAnalysisTesting\Oscillators\FixedPeriodOscillators\EndOfDayTimerHandlerFPOscillatorCTC.cs" />
     <Compile Include="WalkForwardTesting\WalkForwardLag\RunWalkForwardLag.cs" />
@@ -187,9 +207,6 @@
     <Compile Include="ArbitrageTesting\PairTrading\SimplePairTrading\InSample\EndOfDayTimerHandlerSimplePTIS.cs" />
     <Compile Include="ArbitrageTesting\PairTrading\SimplePairTrading\InSample\GenomeRepresentation.cs" />
     <Compile Include="ArbitrageTesting\PairTrading\SimplePairTrading\InSample\OptimizationOutput.cs" />
-    <Compile Include="TechnicalAnalysisTesting\Oscillators\ExtremeCounterTrend\RunExtremeCounterTrend.cs" />
-    <Compile Include="TechnicalAnalysisTesting\Oscillators\ExtremeCounterTrend\EndOfDayTimerHandlerECT.cs" />
-    <Compile Include="TechnicalAnalysisTesting\Oscillators\ExtremeCounterTrend\GenomeManagerECT.cs" />
     <Compile Include="WalkForwardTesting\LinearCombination\ExtremeCounterTrendStrategy.cs" />
     <Compile Include="WalkForwardTesting\LinearCombination\FixedPeriodOscillatorStrategy.cs" />
     <Compile Include="WalkForwardTesting\WalkForwardLag\WFLagDebugger\WFLagDebugGenome.cs" />
@@ -219,12 +236,6 @@
     <Compile Include="WalkForwardTesting\LinearCombination\FixedLevelOscillatorPVOStrategy.cs" />
     <Compile Include="TechnicalAnalysisTesting\Oscillators\FixedLevelOscillators\PortfolioValueOscillator\BiasedPVO\EndOfDayTimerHandlerBiasedPVO.cs" />
     <Compile Include="TechnicalAnalysisTesting\Oscillators\FixedLevelOscillators\PortfolioValueOscillator\BiasedPVO\RunBiasedPVO.cs" />
-    <Compile Include="TechnicalAnalysisTesting\Oscillators\FixedLevelOscillators\PortfolioValueOscillator\WeightedPVO\EndOfDayTimerHandlerWeightedPVO.cs" />
-    <Compile Include="TechnicalAnalysisTesting\Oscillators\FixedLevelOscillators\PortfolioValueOscillator\WeightedPVO\GenomeManagerWeightedPVO.cs" />
-    <Compile Include="TechnicalAnalysisTesting\Oscillators\FixedLevelOscillators\PortfolioValueOscillator\WeightedPVO\RunWeightedPVO.cs" />
-    <Compile Include="TechnicalAnalysisTesting\Oscillators\FixedLevelOscillators\PortfolioValueOscillator\WeightedPVO\WeightedBalancedPVO\EndOfDayTimerHandlerWeightedBalancedPVO.cs" />
-    <Compile Include="TechnicalAnalysisTesting\Oscillators\FixedLevelOscillators\PortfolioValueOscillator\WeightedPVO\WeightedBalancedPVO\GenomeManagerWeightedBalancedPVO.cs" />
-    <Compile Include="TechnicalAnalysisTesting\Oscillators\FixedLevelOscillators\PortfolioValueOscillator\WeightedPVO\WeightedBalancedPVO\RunWeightedBalancedPVO.cs" />
     <Compile Include="WalkForwardTesting\LinearCombination\FixedLevelOscillatorBiasedPVOStrategy.cs" />
     <Compile Include="WalkForwardTesting\WalkForwardLag\WFLagNewChosenPositionsEventArgs.cs" />
     <Compile Include="WalkForwardTesting\WalkForwardLag\WeightedPositionsChoosers\IWFLagWeightedPositionsChooser.cs" />
@@ -248,9 +259,16 @@
     <Folder Include="ArbitrageTesting\OverReactionHypothesis\DoubleOverReaction_OTC" />
     <Folder Include="EvaluatingOptimizationTechnique\" />
     <Folder Include="EvaluatingOptimizationTechnique\EfficientPortfolio\" />
+    <Folder Include="BackTesting" />
+    <Folder Include="TechnicalAnalysisTesting\Oscillators\ExtremeCounterTrend" />
+    <Folder Include="TechnicalAnalysisTesting\Oscillators\FixedLevelOscillators\PortfolioValueOscillator\Decoding" />
     <Folder Include="General" />
     <Folder Include="General\Logging" />
     <Folder Include="General\Reporting" />
+    <Folder Include="TechnicalAnalysisTesting\Oscillators\FixedLevelOscillators\PortfolioValueOscillator\FitnessEvaluators" />
+    <Folder Include="TechnicalAnalysisTesting\Oscillators\FixedLevelOscillators\PortfolioValueOscillator\InSampleChoosers" />
+    <Folder Include="TechnicalAnalysisTesting\Oscillators\FixedLevelOscillators\PortfolioValueOscillator\WeightedPVO" />
+    <Folder Include="TechnicalAnalysisTesting\Oscillators\FixedLevelOscillators\PortfolioValueOscillator\WeightedPVO\WeightedBalancedPVO" />
     <Folder Include="TickerSelectionTesting\SimpleSelection\" />
     <Folder Include="WalkForwardTesting\FixedLengthTwoPhases" />
     <Folder Include="WalkForwardTesting\FixedLengthTwoPhases\InSampleChoosers" />
@@ -268,7 +286,6 @@
     <Folder Include="TechnicalAnalysisTesting\" />
     <Folder Include="TechnicalAnalysisTesting\Oscillators\" />
     <Folder Include="TechnicalAnalysisTesting\Oscillators\FixedPeriodOscillators\" />
-    <Folder Include="TechnicalAnalysisTesting\Oscillators\ExtremeCounterTrend\" />
     <ProjectReference Include="..\b1_ADT\ADT_SD.csproj">
       <Project>{6A426DC3-013E-4D38-A1AE-7BE128BF2DD7}</Project>
       <Name>b1_ADT</Name>
@@ -298,8 +315,6 @@
     <Folder Include="TickerSelectionTesting\TestingOTCTypes\BruteForceOptimization" />
     <Folder Include="WalkForwardTesting\WalkForwardLag\GeneticOptimizerTesting" />
     <Folder Include="TechnicalAnalysisTesting\Oscillators\FixedLevelOscillators\PortfolioValueOscillator\BiasedPVO" />
-    <Folder Include="TechnicalAnalysisTesting\Oscillators\FixedLevelOscillators\PortfolioValueOscillator\WeightedPVO" />
-    <Folder Include="TechnicalAnalysisTesting\Oscillators\FixedLevelOscillators\PortfolioValueOscillator\WeightedPVO\WeightedBalancedPVO" />
     <Folder Include="WalkForwardTesting\WalkForwardLag\WeightedPositionsChoosers" />
     <Folder Include="ArbitrageTesting\OverReactionHypothesis" />
     <Folder Include="ArbitrageTesting\OverReactionHypothesis\SimpleOHTest" />
