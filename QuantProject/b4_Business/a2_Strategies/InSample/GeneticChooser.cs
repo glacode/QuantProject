@@ -54,7 +54,7 @@ namespace QuantProject.Business.Strategies.InSample
 		//have a different hash code (
 		//the method that returns the hash code for genome
 		//is virtual)
-		protected TestingPositions[] bestTestingPositions;
+//		protected TestingPositions[] bestTestingPositions;
 		protected Benchmark benchmark;
 		protected IDecoderForTestingPositions decoderForTestingPositions;
 		protected IFitnessEvaluator fitnessEvaluator;
@@ -103,9 +103,6 @@ namespace QuantProject.Business.Strategies.InSample
 		{
 			this.numberOfPortfolioPositions = numberOfPortfolioPositions;
 			this.numberOfBestTestingPositionsToBeReturned = numberOfBestTestingPositionsToBeReturned;
-//			this.choosePositionsWithAtLeastOneDifferentTicker =
-//				choosePositionsWithAtLeastOneDifferentTicker;
-			this.bestTestingPositions = new TestingPositions[numberOfBestTestingPositionsToBeReturned];
 			this.benchmark = benchmark;
 			this.decoderForTestingPositions = decoderForTestingPositions;
 			this.fitnessEvaluator =	fitnessEvaluator;
@@ -185,8 +182,9 @@ namespace QuantProject.Business.Strategies.InSample
 //		}
 
 		
-		private void setBestTestingPositions()
+		private TestingPositions[] getBestTestingPositionsInSample_getTestingPositionsActually()
 		{
+			TestingPositions[] bestTestingPositions = new TestingPositions[numberOfBestTestingPositionsToBeReturned];
 			GeneticOptimizer GO = this.geneticOptimizer;
 			int addedTestingPositions = 0;
       int counter = 0;
@@ -200,17 +198,18 @@ namespace QuantProject.Business.Strategies.InSample
       	currentGenomeHashcode = this.getHashCodeForGenome(currentGenome);
       	if( counter == 0 || !genomesCollector.ContainsKey(currentGenomeHashcode) )
       	{
-					this.bestTestingPositions[addedTestingPositions] = 
+					bestTestingPositions[addedTestingPositions] = 
 						(TestingPositions)currentGenome.Meaning;
-					((TestingPositions)this.bestTestingPositions[addedTestingPositions]).FitnessInSample =
+					((TestingPositions)bestTestingPositions[addedTestingPositions]).FitnessInSample =
 						currentGenome.Fitness;
-					((IGeneticallyOptimizable)this.bestTestingPositions[addedTestingPositions]).Generation =
+					((IGeneticallyOptimizable)bestTestingPositions[addedTestingPositions]).Generation =
 						currentGenome.Generation;
 					genomesCollector.Add(currentGenomeHashcode, null);
 					addedTestingPositions++;
       	}
       	counter ++ ;
-      }  
+      } 
+			return bestTestingPositions;
 		}
 
 		protected abstract IGenomeManager getGenomeManager(EligibleTickers eligibleTickers ,
@@ -234,9 +233,8 @@ namespace QuantProject.Business.Strategies.InSample
 			this.geneticOptimizer.NewGeneration +=
 				new NewGenerationEventHandler( this.newGenerationEventHandler );
 			this.geneticOptimizer.Run( false );
-			this.setBestTestingPositions();
-	
-			return this.bestTestingPositions;
+			
+			return this.getBestTestingPositionsInSample_getTestingPositionsActually();
 		}
 
 		/// <summary>
