@@ -114,10 +114,10 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOs
       this.ScriptName = "PVO_OTC_Biased_NoWeightsPriceSel";
     }
     
-//		protected override void run_initializeHistoricalQuoteProvider()
-//    {
-//    	this.historicalQuoteProvider = new HistoricalRawQuoteProvider();
-//    }
+		protected override void run_initializeHistoricalQuoteProvider()
+    {
+    	this.historicalQuoteProvider = new HistoricalRawQuoteProvider();
+    }
 		
 		protected override void run_initializeAccount()
 		{
@@ -170,5 +170,47 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOs
 			                                                              this.portfolioType, this.maxAcceptableCloseToCloseDrawdown, 
 			                                                              this.minimumAcceptableGain);
     }
+		
+		public override void SaveScriptResults()
+		{
+			string fileName = DateTime.Now.Hour.ToString().PadLeft(2,'0') + "_" + 
+				DateTime.Now.Minute.ToString().PadLeft(2,'0') + "_" +
+				DateTime.Now.Second.ToString().PadLeft(2,'0') + "_" +
+				this.scriptName +  "GenOS_" + this.numOfDifferentGenomesToEvaluateOutOfSample +
+				"_From_" + this.tickerGroupID + "_" + this.numberOfEligibleTickers +
+				"_DaysForOpt" + this.numDaysForOptimizationPeriod + "Tick" +
+				this.numberOfTickersToBeChosen + "GenN°" + 
+				this.generationNumberForGeneticOptimizer +
+				"PopSize" + this.populationSizeForGeneticOptimizer +
+				Convert.ToString(this.portfolioType);
+			string dirNameWhereToSaveReports = System.Configuration.ConfigurationSettings.AppSettings["ReportsArchive"] +
+				"\\" + this.ScriptName + "\\";
+			string dirNameWhereToSaveTransactions = System.Configuration.ConfigurationSettings.AppSettings["TransactionsArchive"] +
+				"\\" + this.ScriptName + "\\";
+			string dirNameWhereToSaveBestGenomes = System.Configuration.ConfigurationSettings.AppSettings["GenomesArchive"] +
+				"\\" + this.ScriptName + "\\";
+      
+			this.checkDateForReport_createDirIfNotPresent(dirNameWhereToSaveBestGenomes);
+			if( this.PathOfFileContainingGenomes == null )
+			{
+				OptimizationOutput optimizationOutput = new OptimizationOutput();
+				foreach(GenomeRepresentation genomeRepresentation in this.endOfDayTimerHandler.BestGenomes)
+					optimizationOutput.Add(genomeRepresentation);
+				ObjectArchiver.Archive(optimizationOutput,
+					dirNameWhereToSaveBestGenomes + 
+					fileName + ".bgn");
+			}
+			this.checkDateForReport_createDirIfNotPresent(dirNameWhereToSaveReports);
+			AccountReport accountReport = this.account.CreateReport(fileName,1,
+				this.endOfDayTimer.GetCurrentTime(),
+				this.benchmark,
+				this.historicalQuoteProvider);
+			ObjectArchiver.Archive(accountReport,
+				dirNameWhereToSaveReports + 
+				fileName + ".qPr");
+			this.saveScriptResults_saveScriptFeaturesToLogFile(fileName);      
+			this.endOfDayTimer.Stop();
+		}
+
   }
 }

@@ -176,7 +176,7 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOs
     }
     
        
-		private void saveScriptResults_saveScriptFeaturesToLogFile(string nameForScriptFiles)
+		protected void saveScriptResults_saveScriptFeaturesToLogFile(string nameForScriptFiles)
 		{
 			string pathFile = System.Configuration.ConfigurationSettings.AppSettings["ReportsArchive"] +
 												"\\" + this.ScriptName + "\\" + nameForScriptFiles + ".txt";

@@ -137,10 +137,9 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOs
      	}			
 //  UPDATE WITH DailyOpenToCloseIntervals
 //    	ReturnsManager returnsManager = new ReturnsManager(
-//    		new CloseToCloseIntervals(new EndOfDayDateTime(today.AddDays(-this.numDaysForThresholdsReComputation), EndOfDaySpecificTime.MarketClose),
-//		  	                         new EndOfDayDateTime(today, EndOfDaySpecificTime.MarketClose),
-//		  	                         this.benchmark,
-//		  	                         this.numDaysForOscillatingPeriod),
+//    		new CloseToOpenIntervals(new EndOfDayDateTime(today.AddDays(-this.numDaysForThresholdsReComputation), EndOfDaySpecificTime.MarketClose),
+//		  	                         new EndOfDayDateTime(today, EndOfDaySpecificTime.MarketOpen),
+//		  	                         this.benchmark),
 //		  	new HistoricalAdjustedQuoteProvider() );
 //    	//double returnsAverage;
 //    	double returnsStdDev;

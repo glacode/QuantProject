@@ -352,7 +352,7 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOs
 			//positions to be opened are just the reversed
 			//positions that have just been closed
 			{
-				AccountManager.OpenPositions(weightedPositions, this.account);
+				AccountManager.OpenPositions(weightedPositions, this.account, 30000);
 				this.portfolioHasBeenOverbought = overboughtPortfolio;
 				this.portfolioHasBeenOversold = !overboughtPortfolio;
 			}
