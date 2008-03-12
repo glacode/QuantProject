@@ -25,6 +25,7 @@ using System;
 using QuantProject.ADT;
 using QuantProject.Business.DataProviders;
 using QuantProject.Business.Strategies;
+using QuantProject.Business.Financial.Accounting.AccountProviding;
 using QuantProject.Business.Strategies.Eligibles;
 using QuantProject.Business.Strategies.EquityEvaluation;
 using QuantProject.Business.Strategies.Logging;
@@ -169,7 +170,8 @@ namespace QuantProject.Scripts.WalkForwardTesting.FixedLengthTwoPhases
 			EndOfDayStrategyBackTester endOfDayStrategyBackTester =
 				new EndOfDayStrategyBackTester(
 					backTestId , fixedLengthTwoPhasesStrategy ,
-					historicalQuoteProvider , firstDateTime ,
+					historicalQuoteProvider , 
+				new SimpleAccountProvider(), firstDateTime ,
 					lastDateTime , benchmark , cashToStart , maxRunningHours );
 
 			// TO DO check if you can do this assign in the EndOfDayStrategyBackTester

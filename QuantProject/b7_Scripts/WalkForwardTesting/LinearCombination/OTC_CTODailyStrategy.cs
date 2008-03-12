@@ -39,7 +39,13 @@ namespace QuantProject.Scripts.WalkForwardTesting.LinearCombination
 	{
 		private Account account;
 		WeightedPositions weightedPositions;
-
+		
+		public Account Account
+		{
+			get { return this.account; }
+			set { this.account = value; }
+		}
+		
 		public OTC_CTODailyStrategy( Account account ,
 			WeightedPositions weightedPositions)
 		{

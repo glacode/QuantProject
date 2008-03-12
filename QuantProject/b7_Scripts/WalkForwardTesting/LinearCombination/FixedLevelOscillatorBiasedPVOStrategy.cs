@@ -72,7 +72,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.LinearCombination
       this.numDaysForOscillatingPeriod = numDaysForOscillatingPeriod;
       this.numOfDifferentGenomesToEvaluateOutOfSample = numOfDifferentGenomesToEvaluateOutOfSample;
 		}
-		
+						
     public void FiveMinutesBeforeMarketCloseEventHandler( Object sender ,
       EndOfDayTimingEventArgs endOfDayTimingEventArgs)
     {

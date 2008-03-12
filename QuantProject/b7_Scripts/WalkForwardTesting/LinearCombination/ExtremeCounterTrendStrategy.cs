@@ -47,6 +47,12 @@ namespace QuantProject.Scripts.WalkForwardTesting.LinearCombination
     private int numOfDaysWithOpenPosition = 0;
     private PortfolioType portfolioType;
 
+    public Account Account
+		{
+			get { return this.account; }
+			set { this.account = value; }
+		}
+    
 		public ExtremeCounterTrendStrategy( Account account ,
 			                              WeightedPositions weightedPositions,
                                     int numDaysForReturnCalculation,

@@ -75,9 +75,10 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
     }
 		
     public Account Account
-    {
-      get { return this.account; }
-    }
+		{
+			get { return this.account; }
+			set { this.account = value; }
+		}
 		
     /// <summary>
     /// bestGenomes[ i ] contains an array list with the best genomes

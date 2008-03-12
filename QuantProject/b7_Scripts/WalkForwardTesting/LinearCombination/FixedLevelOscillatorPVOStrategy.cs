@@ -40,7 +40,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.LinearCombination
 	[Serializable]
 	public class FixedLevelOscillatorPVOStrategy : EndOfDayTimerHandlerPVO, IEndOfDayStrategy
 	{
-		   
+				
 		public FixedLevelOscillatorPVOStrategy( Account accountPVO ,
 			                                     WeightedPositions chosenWeightedPositions,
                                            double oversoldThreshold,

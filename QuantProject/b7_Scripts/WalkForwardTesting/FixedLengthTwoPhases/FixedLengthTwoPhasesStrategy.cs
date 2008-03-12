@@ -64,6 +64,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.FixedLengthTwoPhases
 
 		public Account Account
 		{
+			get { return this.account; }
 			set { this.account = value; }
 		}
 

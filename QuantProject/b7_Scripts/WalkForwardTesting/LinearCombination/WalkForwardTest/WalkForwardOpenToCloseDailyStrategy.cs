@@ -56,7 +56,13 @@ namespace QuantProject.Scripts.WalkForwardTesting.LinearCombination
 		private GeneticOptimizer geneticOptimizer;
 
 		private OptimizationOutput optimizationOutput;
-
+		
+		public Account Account
+		{
+			get { return this.account; }
+			set { this.account = value; }
+		}
+		
 		/// best genomes, one for each optimization process
 		public OptimizationOutput OptimizationOutput
 		{
