@@ -48,7 +48,20 @@ namespace QuantProject.Business.Strategies.TickersRelationships
 		protected TickersPearsonCorrelation[] pearsonCorrelations;
 		protected EndOfDayDateTime firstEndOfDayDateTime;
 		protected EndOfDayDateTime lastEndOfDayDateTime;
+		protected int returnIntervalLength;
 		protected string benchmark;
+
+
+		private void correlationProvider_commonInitialization(string[] tickersToAnalyze,
+			float minimumAbsoluteReturnValue, float maximumAbsoluteReturnValue)
+		{
+			this.tickers = tickersToAnalyze;
+			this.minimumAbsoluteReturnValue = minimumAbsoluteReturnValue;
+			this.maximumAbsoluteReturnValue = maximumAbsoluteReturnValue;
+			this.numOfCombinationTwoByTwo =
+				(int)((Math.Pow(this.tickers.Length, 2) - this.tickers.Length ) / 2);
+		}
+
 
 		/// <summary>
 		/// Creates the correlation provider
@@ -64,20 +77,28 @@ namespace QuantProject.Business.Strategies.TickersRelationships
 		/// <param name="benchmark">The benchmark used for computation
 		/// of returns</param>
     public CorrelationProvider(string[] tickersToAnalyze,
-					 DateTime startDate, DateTime endDate,
+					 DateTime startDate, DateTime endDate, int returnIntervalLength,
 					 float minimumAbsoluteReturnValue, float maximumAbsoluteReturnValue,
 					 string benchmark)
     {
-			this.tickers = tickersToAnalyze;
-			this.setEndOfDayDatesTime(startDate, endDate);
-			this.minimumAbsoluteReturnValue = minimumAbsoluteReturnValue;
-			this.maximumAbsoluteReturnValue = maximumAbsoluteReturnValue;
+			this.correlationProvider_commonInitialization(tickersToAnalyze,
+					 minimumAbsoluteReturnValue, maximumAbsoluteReturnValue);
+			this.setEndOfDayDatesTime(startDate,endDate);
+			this.returnIntervalLength = returnIntervalLength;
 			this.benchmark = benchmark;
-			
-			this.numOfCombinationTwoByTwo =
-				(int)((Math.Pow(this.tickers.Length, 2) - this.tickers.Length ) / 2);
-			this.setReturnsManager();
     }
+
+		public CorrelationProvider(string[] tickersToAnalyze,
+			DateTime startDate, DateTime endDate, 
+			float minimumAbsoluteReturnValue, float maximumAbsoluteReturnValue,
+			string benchmark)
+		{
+			this.correlationProvider_commonInitialization(tickersToAnalyze,
+				minimumAbsoluteReturnValue, maximumAbsoluteReturnValue);
+			this.setEndOfDayDatesTime(startDate,endDate);
+			this.returnIntervalLength = 1;
+			this.benchmark = benchmark;
+		}
 
 		/// <summary>
 		/// Creates the correlation provider
@@ -93,15 +114,13 @@ namespace QuantProject.Business.Strategies.TickersRelationships
 			ReturnsManager returnsManager,
 			float minimumAbsoluteReturnValue, float maximumAbsoluteReturnValue )
 		{
-			this.tickers = tickersToAnalyze;
+			this.correlationProvider_commonInitialization(tickersToAnalyze,
+				minimumAbsoluteReturnValue, maximumAbsoluteReturnValue);
 			this.returnsManager = returnsManager;
-			this.minimumAbsoluteReturnValue = minimumAbsoluteReturnValue;
-			this.maximumAbsoluteReturnValue = maximumAbsoluteReturnValue;
-						
-			this.numOfCombinationTwoByTwo = 
-				(int)((Math.Pow(this.tickers.Length, 2) - this.tickers.Length ) / 2);
 		}
-			
+		
+	
+
 		protected abstract void setEndOfDayDatesTime(DateTime startDate, DateTime endDate);
 		protected abstract void setReturnsManager();
 		
@@ -153,6 +172,8 @@ namespace QuantProject.Business.Strategies.TickersRelationships
 
 		protected void getOrderedTickersPearsonCorrelations_setCorrelations()
 		{
+			if(this.returnsManager == null)
+				this.setReturnsManager();
 			this.pearsonCorrelations = 
 				new TickersPearsonCorrelation[ this.numOfCombinationTwoByTwo ];
 			int index = 0;

@@ -61,7 +61,7 @@ namespace QuantProject.Business.Strategies.TickersRelationships
 					 float minimumAbsoluteReturnValue, float maximumAbsoluteReturnValue,
 					 string benchmark) :
 					 base(tickersToAnalyze,
-					 startDate, endDate,
+					 startDate, endDate, closeToCloseIntervalLength,
 					 minimumAbsoluteReturnValue, maximumAbsoluteReturnValue,
 					 benchmark)
     {
