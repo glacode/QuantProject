@@ -69,12 +69,17 @@
     <Compile Include="TechnicalAnalysisTesting\Oscillators\FixedLevelOscillators\PortfolioValueOscillator\GenomeManagerPVO_OTC.cs" />
     <Compile Include="TechnicalAnalysisTesting\Oscillators\FixedLevelOscillators\PortfolioValueOscillator\InSampleChoosers\PVOCorrelationChooser.cs" />
     <Compile Include="TechnicalAnalysisTesting\Oscillators\FixedLevelOscillators\PortfolioValueOscillator\InSampleChoosers\PVOGeneticChooser.cs" />
+    <Compile Include="TechnicalAnalysisTesting\Oscillators\FixedLevelOscillators\PortfolioValueOscillator\InSampleChoosers\PVO_CTCCorrelationChooser.cs" />
+    <Compile Include="TechnicalAnalysisTesting\Oscillators\FixedLevelOscillators\PortfolioValueOscillator\InSampleChoosers\PVO_OTCCorrelationChooser.cs" />
     <Compile Include="TechnicalAnalysisTesting\Oscillators\FixedLevelOscillators\PortfolioValueOscillator\PVOGenomeManager.cs" />
     <Compile Include="TechnicalAnalysisTesting\Oscillators\FixedLevelOscillators\PortfolioValueOscillator\PVOLogItem.cs" />
     <Compile Include="TechnicalAnalysisTesting\Oscillators\FixedLevelOscillators\PortfolioValueOscillator\PVOMain.cs" />
     <Compile Include="TechnicalAnalysisTesting\Oscillators\FixedLevelOscillators\PortfolioValueOscillator\PVOPositions.cs" />
     <Compile Include="TechnicalAnalysisTesting\Oscillators\FixedLevelOscillators\PortfolioValueOscillator\PVOPositionsStatus.cs" />
     <Compile Include="TechnicalAnalysisTesting\Oscillators\FixedLevelOscillators\PortfolioValueOscillator\PVOStrategy.cs" />
+    <Compile Include="TechnicalAnalysisTesting\Oscillators\FixedLevelOscillators\PortfolioValueOscillator\PVO_OTCLogItem.cs" />
+    <Compile Include="TechnicalAnalysisTesting\Oscillators\FixedLevelOscillators\PortfolioValueOscillator\PVO_OTCMain.cs" />
+    <Compile Include="TechnicalAnalysisTesting\Oscillators\FixedLevelOscillators\PortfolioValueOscillator\PVO_OTCStrategy.cs" />
     <Compile Include="TechnicalAnalysisTesting\Oscillators\FixedLevelOscillators\PortfolioValueOscillator\WeightedPVO\EndOfDayTimerHandlerWeightedPVO.cs" />
     <Compile Include="TechnicalAnalysisTesting\Oscillators\FixedLevelOscillators\PortfolioValueOscillator\WeightedPVO\GenomeManagerWeightedPVO.cs" />
     <Compile Include="TechnicalAnalysisTesting\Oscillators\FixedLevelOscillators\PortfolioValueOscillator\WeightedPVO\RunWeightedPVO.cs" />
