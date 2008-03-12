@@ -70,7 +70,7 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOs
     protected bool symmetricalThresholds;
     protected bool overboughtMoreThanOversoldForFixedPortfolio;
     protected HistoricalAdjustedQuoteProvider historicalQuoteProvider;
-        
+    
     public EndOfDayTimerHandlerPVO(string tickerGroupID, int numberOfEligibleTickers, 
                                 int numberOfTickersToBeChosen, int numDaysForOptimizationPeriod,
                                 Account account,                                
