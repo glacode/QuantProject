@@ -28,6 +28,7 @@ using QuantProject.ADT.Messaging;
 using QuantProject.Business.DataProviders;
 using QuantProject.Business.Financial.Accounting;
 using QuantProject.Business.Financial.Accounting.Reporting;
+using	QuantProject.Business.Financial.Accounting.AccountProviding;
 using QuantProject.Business.Financial.Ordering;
 using QuantProject.Business.Strategies.Logging;
 using QuantProject.Business.Timing;
@@ -49,7 +50,7 @@ namespace QuantProject.Business.Strategies
 		private Benchmark benchmark;
 		private double cashToStart;
 		private double maxRunningHours;
-
+		private IAccountProvider accountProvider;
 		private DateTime startingTimeForScript;
 		private IEndOfDayTimer endOfDayTimer;
 		private DateTime actualLastDateTime;
@@ -122,10 +123,10 @@ namespace QuantProject.Business.Strategies
 					ExtendedDateTime.GetShortDescriptionForFileName( this.firstDateTime ) +
 					"_to_" +
 					ExtendedDateTime.GetShortDescriptionForFileName( this.actualLastDateTime ) +
-					"_annlRtrn_" + this.AccountReport.Summary.AnnualSystemPercentageReturn.FormattedValue +
-					"_maxDD_" + this.AccountReport.Summary.MaxEquityDrawDown.FormattedValue +
-					"_" + this.historicalQuoteProvider.Description +
-					"_" + this.endOfDayStrategy.Description;
+					"\n_annlRtrn_" + this.AccountReport.Summary.AnnualSystemPercentageReturn.FormattedValue +
+					"\n_maxDD_" + this.AccountReport.Summary.MaxEquityDrawDown.FormattedValue +
+					"\nHistoricalQuoteProviderForBackTester_" + this.historicalQuoteProvider.Description +
+					"\n_" + this.endOfDayStrategy.Description;
 				return description;
 			}
 		}
@@ -141,6 +142,7 @@ namespace QuantProject.Business.Strategies
 		public EndOfDayStrategyBackTester( string backTestID ,
 			IEndOfDayStrategyForBacktester endOfDayStrategy ,
 			IHistoricalQuoteProvider historicalQuoteProvider ,
+			IAccountProvider accountProvider,
 			DateTime firstDateTime , DateTime lastDateTime ,
 			Benchmark benchmark ,
 			double cashToStart ,
@@ -149,6 +151,7 @@ namespace QuantProject.Business.Strategies
 			this.backTestID = backTestID;
 			this.endOfDayStrategy = endOfDayStrategy;
 			this.historicalQuoteProvider = historicalQuoteProvider;
+			this.accountProvider = accountProvider;
 			this.firstDateTime = firstDateTime;
 			this.lastDateTime = lastDateTime;
 			this.benchmark = benchmark;
@@ -156,7 +159,9 @@ namespace QuantProject.Business.Strategies
 			this.maxRunningHours = maxRunningHours;
 
       this.initialize_endOfDayTimer();
-			this.initialize_account();
+			this.account = this.accountProvider.GetAccount(this.endOfDayTimer,
+											this.historicalQuoteProvider);
+			this.endOfDayStrategy.Account = this.account;
 			this.backTestLog = new BackTestLog( backTestID , firstDateTime ,
 				lastDateTime , benchmark );
 			this.actualLastDateTime = DateTime.MinValue;
@@ -172,16 +177,7 @@ namespace QuantProject.Business.Strategies
 				new IndexBasedEndOfDayTimer( endOfDayDateTime ,
 				this.benchmark.Ticker );
 		}
-		private void initialize_account()
-		{
-			this.account = new Account( this.backTestID , this.endOfDayTimer ,
-				new HistoricalEndOfDayDataStreamer( this.endOfDayTimer ,
-				this.historicalQuoteProvider ) ,
-				new HistoricalEndOfDayOrderExecutor( this.endOfDayTimer ,
-				this.historicalQuoteProvider ) );
-		}
-
-
+		
 		#region Run
 		#region run_addEventHandlers
 		private void handlerToAddCashToStart(
