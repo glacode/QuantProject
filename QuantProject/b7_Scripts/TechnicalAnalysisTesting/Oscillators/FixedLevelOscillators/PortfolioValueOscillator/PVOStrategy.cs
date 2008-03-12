@@ -83,7 +83,8 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOs
     protected Account account;
     public Account Account
 		{
-			set { this.account = value; }
+			get { return this.account; }
+    	set { this.account = value; }
 		}
     protected bool stopLossConditionReached;
     protected bool takeProfitConditionReached;

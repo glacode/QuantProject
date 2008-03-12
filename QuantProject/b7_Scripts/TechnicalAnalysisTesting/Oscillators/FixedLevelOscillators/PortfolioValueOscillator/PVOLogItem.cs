@@ -24,6 +24,7 @@ using System;
 
 using QuantProject.Business.DataProviders;
 using QuantProject.Business.Strategies;
+using QuantProject.Business.Financial.Accounting.AccountProviding;
 using QuantProject.Business.Strategies.Eligibles;
 using QuantProject.Business.Strategies.InSample;
 using QuantProject.Business.Strategies.OutOfSample;
@@ -44,17 +45,16 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOs
   [Serializable]
   public class PVOLogItem : LogItem
   {
-//		static public Random rand = new Random(4676);
-		private TestingPositions[] bestPVOPositionsInSample;
-		private int numberOfEligibleTickers;
-		private double fitnessOfFirstPVOPositionsInSample;
-		private double fitnessOfLastPVOPositionsInSample;
-		private int generationOfFirstPVOPositionsInSample;
-		private int generationOfLastPVOPositionsInSample;
-		private string thresholdsOfFirst;
-		private string thresholdsOfLast;
-		private string tickersOfFirst;
-		private string tickersOfLast;
+		protected TestingPositions[] bestPVOPositionsInSample;
+		protected int numberOfEligibleTickers;
+		protected double fitnessOfFirstPVOPositionsInSample;
+		protected double fitnessOfLastPVOPositionsInSample;
+		protected int generationOfFirstPVOPositionsInSample;
+		protected int generationOfLastPVOPositionsInSample;
+		protected string thresholdsOfFirst;
+		protected string thresholdsOfLast;
+		protected string tickersOfFirst;
+		protected string tickersOfLast;
 		
 		public TestingPositions[] BestPVOPositionsInSample
 		{
@@ -190,7 +190,8 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOs
 			EndOfDayStrategyBackTester endOfDayStrategyBackTester =
 				new EndOfDayStrategyBackTester(
 				"PVO" , strategy ,
-				historicalQuoteProviderForBackTester , firstDateTime ,
+				historicalQuoteProviderForBackTester ,
+				new SimpleAccountProvider(), firstDateTime ,
 				lastDateTime , benchmark , cashToStart , maxRunningHours );
 
 			// TO DO check if you can do this assign in the EndOfDayStrategyBackTester

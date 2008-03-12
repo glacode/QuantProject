@@ -39,23 +39,23 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOs
 	/// By means of correlation, the AnalyzeInSample method returns the 
 	/// requested number of PVOPositions (positions for the PVO strategy)
 	/// </summary>
-	public class PVOCorrelationChooser : IInSampleChooser
+	public abstract class PVOCorrelationChooser : IInSampleChooser
 	{
 		public event NewProgressEventHandler NewProgress;
 		public event NewMessageEventHandler NewMessage;
 		
 		protected CorrelationProvider correlationProvider;
 		protected int numberOfBestTestingPositionsToBeReturned;
-		protected double oversoldThreshold;
-		protected double overboughtThreshold;
 		protected int numDaysForOscillatingPeriod;
 		
 		public virtual string Description
 		{
 			get
 			{
-				string description = "PVOCorrelationChooser_" +
-														 this.correlationProvider.GetType().ToString();
+				string description = "CorrelationChooserType:\n" +
+														 this.correlationProvider.GetType().ToString() + "\n" +
+														 "NumOfTickersReturned:\n" +
+														 this.numberOfBestTestingPositionsToBeReturned.ToString();
 				return description;
 			}
 		}
@@ -74,12 +74,9 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOs
 		/// status for the PVOPosition itself
 		/// </param>
 		public PVOCorrelationChooser(int numberOfBestTestingPositionsToBeReturned,
-			double oversoldThreshold, double overboughtThreshold,
-			int numDaysForOscillatingPeriod)
+														     int numDaysForOscillatingPeriod)
 		{
 			this.numberOfBestTestingPositionsToBeReturned = numberOfBestTestingPositionsToBeReturned;
-			this.oversoldThreshold = oversoldThreshold;
-			this.overboughtThreshold = overboughtThreshold;
 			this.numDaysForOscillatingPeriod = numDaysForOscillatingPeriod;
 		}
 
@@ -94,17 +91,13 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOs
 					" elements, while NumberOfDrivingPositions is 2");
 		}
 								
-		protected virtual void setCorrelationProvider(EligibleTickers eligibleTickers ,
-			ReturnsManager returnsManager)
-		{
-			this.correlationProvider = 
-				new OpenToCloseCorrelationProvider(eligibleTickers.Tickers, returnsManager,
-																					 0.0001f, 0.5f);
-		}
+		protected abstract void setCorrelationProvider(EligibleTickers eligibleTickers ,
+			ReturnsManager returnsManager);
 		
-		protected virtual PVOPositions getTestingPositions(WeightedPositions weightedPositions)
+		protected PVOPositions getTestingPositions(WeightedPositions weightedPositions)
 		{
-			return new PVOPositions(weightedPositions, this.oversoldThreshold, this.overboughtThreshold, this.numDaysForOscillatingPeriod );
+			return new PVOPositions(weightedPositions, 0.0, 0.0,
+			                        this.numDaysForOscillatingPeriod );
 		}
 
 		private TestingPositions[] getBestTestingPositionsInSample(
@@ -123,6 +116,8 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOs
 														correlations[correlations.Length - 1 -i].SecondTicker);
 				WeightedPositions weightedPositions = new WeightedPositions(signedTickers);
 				bestTestingPositions[i] = this.getTestingPositions(weightedPositions);
+				((PVOPositions)bestTestingPositions[i]).FitnessInSample = 
+					correlations[correlations.Length - 1 -i].CorrelationValue;
 			}	
 			return bestTestingPositions;
 		}

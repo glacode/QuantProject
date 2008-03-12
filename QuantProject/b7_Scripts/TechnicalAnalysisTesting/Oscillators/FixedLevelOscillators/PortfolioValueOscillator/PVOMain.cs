@@ -28,6 +28,7 @@ using QuantProject.ADT;
 using QuantProject.ADT.FileManaging;
 using QuantProject.Business.DataProviders;
 using QuantProject.Business.Strategies;
+using QuantProject.Business.Financial.Accounting.AccountProviding;
 using QuantProject.Business.Strategies.Eligibles;
 using QuantProject.Business.Strategies.EquityEvaluation;
 using QuantProject.Business.Strategies.Logging;
@@ -99,28 +100,7 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOs
 			messageManager.Monitor( endOfDayStrategyBackTester );
 			return messageManager;
 		}
-
-		// TO DO check if you can add this to QuantProject.Presentation.Reporting.WindowsForm.Report
-		// as a public method or as a new constructor
-//		private void showReport(
-//			DateTime lastDateTimeRequestedForTheScript ,
-//			EndOfDayStrategyBackTester endOfDayStrategyBackTester )
-//		{			
-////			DateTime lastReportDateTime = ExtendedDateTime.Min(
-////				lastDateTimeRequestedForTheScript ,
-////				endOfDayStrategyBackTester.EndOfDayTimer.GetCurrentTime().DateTime );
-//			DateTime lastReportDateTime =
-//				endOfDayStrategyBackTester.ActualLastDateTime;
-//			Report report = new Report(
-//				endOfDayStrategyBackTester.AccountReport ,
-//				true );
-//			report.Create( endOfDayStrategyBackTester.DescriptionForLogFileName , 1 ,
-//				new EndOfDayDateTime( lastReportDateTime ,
-//				EndOfDaySpecificTime.OneHourAfterMarketClose ) ,
-//				endOfDayStrategyBackTester.Benchmark.Ticker );
-//			report.Show();
-//		}
-		
+			
 		//Saves (in silent mode):
 		//- a log file where the In Sample Analysis are
 		//  stored;
@@ -152,7 +132,7 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOs
 		{
 			//general
 			DateTime firstDateTime = new DateTime( 2000 , 6 , 1 );
-			DateTime lastDateTime = new DateTime( 2000 , 7 , 31 );
+			DateTime lastDateTime = new DateTime( 2001 , 6 , 1 );
 			double maxRunningHours = 5;
 			Benchmark benchmark = new Benchmark( "^GSPC" );
 			// definition for the Fitness Evaluator (for
@@ -163,23 +143,23 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOs
 			int numberOfPortfolioPositions = 4;
 			      
 			// parameters for the in sample Chooser
-			double crossoverRate = 0.85;
-			double mutationRate = 0.02;
-			double elitismRate = 0.001;
-			int populationSizeForGeneticOptimizer = 500;
-			int generationNumberForGeneticOptimizer = 10;
+//			double crossoverRate = 0.85;
+//			double mutationRate = 0.02;
+//			double elitismRate = 0.001;
+//			int populationSizeForGeneticOptimizer = 500;
+//			int generationNumberForGeneticOptimizer = 10;
 			int numberOfBestTestingPositionsToBeReturnedInSample = 5;
 			int seedForRandomGenerator =
 				QuantProject.ADT.ConstantsProvider.SeedForRandomGenerator;
       int numDaysBetweenEachOptimization = 15;
-			int minLevelForOversoldThreshold = 50;
-      int maxLevelForOversoldThreshold = 100;
-      int minLevelForOverboughtThreshold = 50;
-      int maxLevelForOverboughtThreshold = 100;
+//			int minLevelForOversoldThreshold = 50;
+//      int maxLevelForOversoldThreshold = 100;
+//      int minLevelForOverboughtThreshold = 50;
+//      int maxLevelForOverboughtThreshold = 100;
       int divisorForThresholdComputation = 10000;
       int numDaysForOscillatingPeriodForChooser = 1; //for genetic optimization
       bool symmetricalThresholds = true;
-      bool overboughtMoreThanOversoldForFixedPortfolio = false;
+//      bool overboughtMoreThanOversoldForFixedPortfolio = false;
       double maxAcceptableCloseToCloseDrawdown = 0.03;
       double minimumAcceptableGain = 0.008;
       IDecoderForTestingPositions decoderForTestingPositions
@@ -194,18 +174,22 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOs
 				new HistoricalAdjustedQuoteProvider();
 			historicalQuoteProviderForInSampleChooser = historicalQuoteProviderForBackTester;
 			historicalQuoteProviderForStrategy = historicalQuoteProviderForInSampleChooser;
-						
+			
+//			IInSampleChooser inSampleChooser =
+//				new PVOGeneticChooser(numDaysForOscillatingPeriodForChooser ,
+//				numberOfPortfolioPositions , numberOfBestTestingPositionsToBeReturnedInSample, 
+//				benchmark, decoderForTestingPositions , fitnessEvaluator ,
+//				historicalQuoteProviderForInSampleChooser , 			 
+//				crossoverRate , mutationRate , elitismRate ,
+//				populationSizeForGeneticOptimizer , generationNumberForGeneticOptimizer ,
+//				seedForRandomGenerator , minLevelForOversoldThreshold ,
+//				maxLevelForOversoldThreshold , minLevelForOverboughtThreshold ,
+//				maxLevelForOverboughtThreshold , divisorForThresholdComputation , 
+//				symmetricalThresholds , overboughtMoreThanOversoldForFixedPortfolio );
+			
 			IInSampleChooser inSampleChooser =
-				new PVOGeneticChooser(numDaysForOscillatingPeriodForChooser ,
-				numberOfPortfolioPositions , numberOfBestTestingPositionsToBeReturnedInSample, 
-				benchmark, decoderForTestingPositions , fitnessEvaluator ,
-				historicalQuoteProviderForInSampleChooser , 			 
-				crossoverRate , mutationRate , elitismRate ,
-				populationSizeForGeneticOptimizer , generationNumberForGeneticOptimizer ,
-				seedForRandomGenerator , minLevelForOversoldThreshold ,
-				maxLevelForOversoldThreshold , minLevelForOverboughtThreshold ,
-				maxLevelForOverboughtThreshold , divisorForThresholdComputation , 
-				symmetricalThresholds , overboughtMoreThanOversoldForFixedPortfolio );
+				new PVO_CTCCorrelationChooser(numberOfBestTestingPositionsToBeReturnedInSample,
+				                              numDaysForOscillatingPeriodForChooser);
 			//parameters for eligiblesSelector
 			bool temporizedGroup = true;
 			double minRawOpenPrice = 25;
@@ -234,12 +218,9 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOs
 			EndOfDayStrategyBackTester endOfDayStrategyBackTester =
 				new EndOfDayStrategyBackTester(
 					this.strategyIdentifier , strategy ,
-					historicalQuoteProviderForBackTester , firstDateTime ,
+					historicalQuoteProviderForBackTester ,
+				  new SimpleAccountProvider(), firstDateTime ,
 					lastDateTime , benchmark , cashToStart , maxRunningHours );
-
-			// TO DO check if you can do this assign in the EndOfDayStrategyBackTester
-			// constructor
-			strategy.Account = endOfDayStrategyBackTester.Account;
 
 			MessageManager messageManager = this.setMessageManager(
 				eligiblesSelector , inSampleChooser ,
@@ -250,13 +231,5 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOs
 
 		#endregion Run
 		
-		public void Run1()
-		{
-			BackTestLog backTestLog = 
-				LogArchiver.Load( System.Configuration.ConfigurationSettings.AppSettings["LogArchive"] );
-			LogViewer logViewer =
-				new LogViewer( backTestLog );
-			logViewer.Show();
-		}
 	}
 }
