@@ -52,6 +52,7 @@
     <Compile Include="ExtendedDataTable.cs" />
     <Compile Include="ExtendedDateTime.cs" />
     <Compile Include="HashProvider.cs" />
+    <Compile Include="OutOfRangeException.cs" />
     <Compile Include="IProgressNotifier.cs" />
     <Compile Include="Keyed.cs" />
     <Compile Include="Messaging\IMessageSender.cs" />

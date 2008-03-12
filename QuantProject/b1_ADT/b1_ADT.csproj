@@ -147,6 +147,11 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "OutOfRangeException.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "RecursiveHashtable.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
