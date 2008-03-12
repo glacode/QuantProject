@@ -22,6 +22,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 using System;
 
+using QuantProject.Business.Financial.Accounting;
 using QuantProject.Business.Financial.Accounting.Transactions;
 using QuantProject.Business.Strategies.Logging;
 using QuantProject.Business.Timing;
@@ -45,5 +46,6 @@ namespace QuantProject.Business.Strategies
 			Object sender , EndOfDayTimingEventArgs endOfDayTimingEventArgs );
 		void OneHourAfterMarketCloseEventHandler(
 			Object sender , EndOfDayTimingEventArgs endOfDayTimingEventArgs );
+		Account Account{get;set;}
 	}
 }
