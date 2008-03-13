@@ -182,6 +182,25 @@ namespace QuantProject.Scripts.WalkForwardTesting.PairsTrading
 				weightedPositions.GetReturn( 0 , returnsManager );
 			return returnForTheLastSecondPhaseInterval;
 		}
+
+		/// <summary>
+		/// Inverts one of the two positions
+		/// </summary>
+		/// <param name="weightedPositions"></param>
+		/// <returns></returns>
+		private WeightedPositions getCandidateForPortfolio(
+			WeightedPositions weightedPositions )
+		{
+			double[] weights = new double[ 2 ];
+			weights[ 0 ] = ((WeightedPosition)weightedPositions[ 0 ]).Weight;
+			weights[ 1 ] = -((WeightedPosition)weightedPositions[ 1 ]).Weight;
+			string[] tickers = new String[ 2 ];
+			tickers[ 0 ] = ((WeightedPosition)weightedPositions[ 0 ]).Ticker;
+			tickers[ 1 ] = ((WeightedPosition)weightedPositions[ 1 ]).Ticker;
+			WeightedPositions candidateForPortfolio =
+				new WeightedPositions( weights , tickers );
+			return candidateForPortfolio;
+		}
 		// if the currentWeightedPositions' return satisfies the thresholds
 		// then this method returns the WeightedPositions to be opened.
 		// Otherwise (currentWeightedPositions' return does NOT
@@ -226,9 +245,11 @@ namespace QuantProject.Scripts.WalkForwardTesting.PairsTrading
 		{
 			WeightedPositions currentWeightedPositions =
 				this.bestTestingPositionsInSample[ currentTestingPositionsIndex ].WeightedPositions;
+			WeightedPositions candidateForPortfolio =
+				this.getCandidateForPortfolio( currentWeightedPositions );
 			WeightedPositions weightedPositionsToBeOpended =
 				this.getPositionsToBeOpenedWithRespectToCurrentWeightedPositions(
-				returnsManager , currentWeightedPositions );
+				returnsManager , candidateForPortfolio );
 			return weightedPositionsToBeOpended;
 		}
 		protected WeightedPositions getPositionsToBeOpened(
@@ -289,6 +310,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.PairsTrading
 			PairsTradingLogItem logItem =
 				new PairsTradingLogItem( this.now() ,
 				                        this.bestTestingPositionsInSample ,
+				                        this.numDaysForInSampleOptimization ,
 				                        eligibleTickers.Count );
 //			logItem.BestWeightedPositionsInSample =
 //				this.bestTestingPositionsInSample.WeightedPositions;
