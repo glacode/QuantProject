@@ -30,9 +30,12 @@ using QuantProject.Scripts;
 using QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios;
 using QuantProject.ADT.Optimizing.Genetic;
 
+using QuantProject.Business.Strategies.Logging;
+using QuantProject.Scripts.General.Logging;
 using QuantProject.Scripts.SimpleTesting;
 using QuantProject.Scripts.WalkForwardTesting.FixedLengthTwoPhases;
 using QuantProject.Scripts.WalkForwardTesting.LinearCombination;
+using QuantProject.Scripts.WalkForwardTesting.PairsTrading;
 using QuantProject.Scripts.WalkForwardTesting.WalkForwardOneRank;
 using QuantProject.Scripts.WalkForwardTesting.WalkForwardLag;
 using QuantProject.Scripts.CallingReportsForRunScripts;
@@ -275,11 +278,16 @@ namespace QuantProject.Principale
     }
 		#endregion
 
-    private void menuItem9_Click(object sender, System.EventArgs e)
-    {
-      TestDownloadedData testDownloadedData = new TestDownloadedData();
-      testDownloadedData.ShowDialog();
-    }
+		private void menuItem9_Click(object sender, System.EventArgs e)
+		{
+//			TestDownloadedData testDownloadedData = new TestDownloadedData();
+//			testDownloadedData.ShowDialog();
+			BackTestLog backTestLog = LogArchiver.Load( "C:\\qpReports\\pairsTrading\\" );
+			LogViewer logViewer =
+				new LogViewer( backTestLog );
+			logViewer.Show();
+			
+		}
 
     private void menuItem10_Click(object sender, System.EventArgs e)
     {
@@ -464,7 +472,9 @@ namespace QuantProject.Principale
 //      {//call here your scripts
 	//new RunWalkForwardOneRank().Run();
 //			new WFLagMain().ShowDialog();
-			new FixedLengthTwoPhasesMain().Run();
+
+//			new FixedLengthTwoPhasesMain().Run();
+			new PairsTradingMain().Run();
         
 //			new RunOneRank().Run();
         //new RunEfficientCTCPorfolio("Test",400,5,90,10,10000,
