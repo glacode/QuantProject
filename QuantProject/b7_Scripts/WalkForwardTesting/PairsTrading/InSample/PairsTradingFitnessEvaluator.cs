@@ -37,6 +37,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.PairsTrading
 	/// </summary>
 	public class PairsTradingFitnessEvaluator : IFitnessEvaluator
 	{
+		private double maxCorrelationAllowed;
 
 		public string Description
 		{
@@ -46,8 +47,10 @@ namespace QuantProject.Scripts.WalkForwardTesting.PairsTrading
 			}
 		}
 
-		public PairsTradingFitnessEvaluator()
+		public PairsTradingFitnessEvaluator(
+			double maxCorrelationAllowed )
 		{
+			this.maxCorrelationAllowed = maxCorrelationAllowed;
 		}
 		#region GetFitnessValue
 		private void getFitnessValue_checkParameters( object meaning )
@@ -99,7 +102,13 @@ namespace QuantProject.Scripts.WalkForwardTesting.PairsTrading
 			else
 				// for the current optimization's candidate,
 				// all positions's tickers are distinct
+			{
 				fitnessValue = this.getFitnessValue( weightedPositions , returnsManager );
+				if ( fitnessValue > this.maxCorrelationAllowed )
+					// the two positions are too correlated. They may represent
+					// the same instrument
+					fitnessValue = -0.4;
+			}
 			return fitnessValue;
 		}
 		public double GetFitnessValue( object meaning , ReturnsManager returnsManager )
