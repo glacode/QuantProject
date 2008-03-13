@@ -24,6 +24,7 @@ using System;
 
 using QuantProject.ADT;
 using QuantProject.Business.DataProviders;
+using QuantProject.Business.Financial.Accounting.AccountProviding;
 using QuantProject.Business.Strategies;
 using QuantProject.Business.Strategies.Eligibles;
 using QuantProject.Business.Strategies.EquityEvaluation;
@@ -112,14 +113,14 @@ namespace QuantProject.Scripts.WalkForwardTesting.PairsTrading
 			// definition for the Fitness Evaluator
 //      IEquityEvaluator equityEvaluator = new SharpeRatio();
 			IFitnessEvaluator	fitnessEvaluator =
-				new PairsTradingFitnessEvaluator();
+				new PairsTradingFitnessEvaluator( 0.96 );
 
 			// parameters for the genetic optimizer
 			double crossoverRate = 0.85;
 			double mutationRate = 0.02;
 			double elitismRate = 0.001;
-			int populationSizeForGeneticOptimizer = 30000;
-			int generationNumberForGeneticOptimizer = 12;
+			int populationSizeForGeneticOptimizer = 3000;
+			int generationNumberForGeneticOptimizer = 4;
 			int seedForRandomGenerator =
 				QuantProject.ADT.ConstantsProvider.SeedForRandomGenerator;
 			IInSampleChooser inSampleChooser =
@@ -145,16 +146,18 @@ namespace QuantProject.Scripts.WalkForwardTesting.PairsTrading
 				new PairsTradingStrategy(
 				7 , inSampleDays , intervalsSelector ,
 				eligiblesSelector , inSampleChooser , historicalQuoteProvider ,
-				0.003 , 0.99 , 0.003 , 0.99 );
+				0.007 , 0.99 , 0.007 , 0.99 );
+
+			IAccountProvider accountProvider = new SimpleAccountProvider();
 
 			DateTime firstDateTime = new DateTime( 2001 , 1 , 1 );
-			DateTime lastDateTime = new DateTime( 2001 , 1 , 6 );
-			double maxRunningHours = 0.9;
+			DateTime lastDateTime = new DateTime( 2001 , 1 , 12 );
+			double maxRunningHours = 6;
 			EndOfDayStrategyBackTester endOfDayStrategyBackTester =
 				new EndOfDayStrategyBackTester(
-					backTestId , pairsTradingStrategy ,
-					historicalQuoteProvider , firstDateTime ,
-					lastDateTime , benchmark , cashToStart , maxRunningHours );
+				backTestId , pairsTradingStrategy ,
+				historicalQuoteProvider , accountProvider ,
+				firstDateTime ,	lastDateTime , benchmark , cashToStart , maxRunningHours );
 
 			// TO DO check if you can do this assign in the EndOfDayStrategyBackTester
 			// constructor
