@@ -952,6 +952,11 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "a4_Scripting\IExecutable.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "a4_Scripting\Script.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
