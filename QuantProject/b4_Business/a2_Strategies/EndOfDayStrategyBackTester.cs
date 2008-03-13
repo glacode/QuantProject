@@ -123,11 +123,11 @@ namespace QuantProject.Business.Strategies
 					ExtendedDateTime.GetShortDescriptionForFileName( this.firstDateTime ) +
 					"_to_" +
 					ExtendedDateTime.GetShortDescriptionForFileName( this.actualLastDateTime ) +
-					"\n_annlRtrn_" + this.AccountReport.Summary.AnnualSystemPercentageReturn.FormattedValue +
-					"\n_maxDD_" + this.AccountReport.Summary.MaxEquityDrawDown.FormattedValue +
-					"\nHistoricalQuoteProviderForBackTester_" + this.historicalQuoteProvider.Description +
-					"\n_" + this.endOfDayStrategy.Description;
-				return description;
+					"_annlRtrn_" + this.AccountReport.Summary.AnnualSystemPercentageReturn.FormattedValue +
+					"_maxDD_" + this.AccountReport.Summary.MaxEquityDrawDown.FormattedValue +
+					"_" + this.historicalQuoteProvider.Description +
+					"_" + this.endOfDayStrategy.Description;
+				return description.Substring( 0 , Math.Min( description.Length , 200 ) );
 			}
 		}
 
