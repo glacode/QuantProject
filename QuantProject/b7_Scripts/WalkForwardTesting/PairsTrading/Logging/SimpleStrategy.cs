@@ -97,8 +97,9 @@ namespace QuantProject.Scripts.WalkForwardTesting.PairsTrading
 		{
 			PairsTradingLogItem logItem =
 				new PairsTradingLogItem( this.now() ,
-				new TestingPositions[ 1 ] ,
-				1 );
+				                        new TestingPositions[ 1 ] ,
+				                        0 ,
+				                        1 );
 			//			logItem.BestWeightedPositionsInSample =
 			//				this.bestTestingPositionsInSample.WeightedPositions;
 			//			logItem.NumberOfEligibleTickers =
