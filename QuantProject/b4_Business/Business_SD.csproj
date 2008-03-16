@@ -61,6 +61,8 @@
     <Compile Include="a07_DataProviders\HistoricalQuoteProvider.cs" />
     <Compile Include="a07_DataProviders\TickerNotExchangedException.cs" />
     <Compile Include="a1_Financial\a2_Accounting\AccountProviding\IAccountProvider.cs" />
+    <Compile Include="a1_Financial\a2_Accounting\AccountProviding\InteractiveBrokerAccountProvider.cs" />
+    <Compile Include="a1_Financial\a2_Accounting\AccountProviding\SimpleAccountProvider.cs" />
     <Compile Include="a1_Financial\a2_Accounting\h5_Reporting\StatisticsSummaryRows\AverageReturnOnMonday.cs" />
     <Compile Include="a1_Financial\a2_Accounting\h5_Reporting\SummaryRows\AverageNumberOfTransactionsPerDay.cs" />
     <Compile Include="a1_Financial\a2_Accounting\h5_Reporting\Tables\StatisticsSummary.cs" />
@@ -106,6 +108,7 @@
     <Compile Include="a2_Strategies\TickersRelationships\MissingCorrelationException.cs" />
     <Compile Include="a2_Strategies\TickersRelationships\OpenToCloseCorrelationProvider.cs" />
     <Compile Include="a2_Strategies\TickersRelationships\TickersPearsonCorrelation.cs" />
+    <Compile Include="a4_Scripting\IExecutable.cs" />
     <Compile Include="AssemblyInfo.cs" />
     <Compile Include="a0_Validation\IValidator.cs" />
     <Compile Include="a0_Validation\SospiciousDataRowEventArgs.cs" />
