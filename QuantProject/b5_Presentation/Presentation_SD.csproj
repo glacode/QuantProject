@@ -61,6 +61,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AssemblyInfo.cs" />
+    <Compile Include="ExecutablesListViewer.cs" />
     <Compile Include="FormatProvider.cs" />
     <Compile Include="Charting\CharPlot.cs" />
     <Compile Include="Charting\Chart.cs" />
