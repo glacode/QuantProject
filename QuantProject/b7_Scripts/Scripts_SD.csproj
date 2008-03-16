@@ -106,6 +106,7 @@
     <Compile Include="WalkForwardTesting\PairsTrading\InSample\PairsTradingFitnessEvaluator.cs" />
     <Compile Include="WalkForwardTesting\PairsTrading\Logging\PairsTradingLogItem.cs" />
     <Compile Include="WalkForwardTesting\PairsTrading\Logging\SimpleStrategy.cs" />
+    <Compile Include="WalkForwardTesting\PairsTrading\Logging\TesterForPairsTradingTestingPositions.cs" />
     <Compile Include="WalkForwardTesting\PairsTrading\PairsTradingMain.cs" />
     <Compile Include="WalkForwardTesting\PairsTrading\PairsTradingStrategy.cs" />
     <Compile Include="WalkForwardTesting\PairsTrading\PairsTradingTestingPositions.cs" />
