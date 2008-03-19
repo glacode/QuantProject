@@ -68,7 +68,18 @@ namespace QuantProject.Business.Strategies
 			get { return this.benchmark; }
 		}
 		/// <summary>
-		/// Returns the dimulated DateTime when the backtest is stopped
+		/// Returns the simulated DateTime when the backtest is started
+		/// (not the real time)
+		/// </summary>
+		public DateTime FirstDateTime
+		{
+			get
+			{
+				return this.firstDateTime;
+			}
+		}
+		/// <summary>
+		/// Returns the simulated DateTime when the backtest is stopped
 		/// (not the real time)
 		/// </summary>
 		public DateTime ActualLastDateTime
@@ -148,6 +159,14 @@ namespace QuantProject.Business.Strategies
 			double cashToStart ,
 			double maxRunningHours )
 		{
+			this.endOfDayStrategyBackTester_checkParameters( 
+				endOfDayStrategy ,
+				historicalQuoteProvider ,
+				accountProvider,
+				firstDateTime , lastDateTime ,
+				benchmark ,
+				cashToStart ,
+				maxRunningHours );
 			this.backTestID = backTestID;
 			this.endOfDayStrategy = endOfDayStrategy;
 			this.historicalQuoteProvider = historicalQuoteProvider;
@@ -166,6 +185,28 @@ namespace QuantProject.Business.Strategies
 				lastDateTime , benchmark );
 			this.actualLastDateTime = DateTime.MinValue;
 			this.realDateTimeWhenTheBackTestIsStopped = DateTime.MinValue;
+		}
+		private void endOfDayStrategyBackTester_checkParameters(
+			IEndOfDayStrategyForBacktester endOfDayStrategy ,
+			IHistoricalQuoteProvider historicalQuoteProvider ,
+			IAccountProvider accountProvider,
+			DateTime firstDateTime , DateTime lastDateTime ,
+			Benchmark benchmark ,
+			double cashToStart ,
+			double maxRunningHours )
+		{
+			if ( endOfDayStrategy == null )
+				throw new Exception( "endOfDayStrategy cannot be null!" );
+			if ( historicalQuoteProvider == null )
+				throw new Exception( "historicalQuoteProvider cannot be null!" );
+			if ( accountProvider == null )
+				throw new Exception( "accountProvider cannot be null!" );
+			if ( firstDateTime.CompareTo( lastDateTime ) > 0 )
+				throw new Exception( "firstDateTime is greater than lastDateTime!" );
+			if ( cashToStart <= 0 )
+				throw new Exception( "cashToStart must be greater than zero!" );
+			if ( maxRunningHours <= 0 )
+				throw new Exception( "maxRunningHours must be greater than zero!" );
 		}
 
 		private void initialize_endOfDayTimer()
