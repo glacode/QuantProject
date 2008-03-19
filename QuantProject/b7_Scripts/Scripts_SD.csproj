@@ -49,6 +49,7 @@
     <Compile Include="ArbitrageTesting\OverReactionHypothesis\DoubleOverReaction_OTC\RunDOR_OTC.cs" />
     <Compile Include="AssemblyInfo.cs" />
     <Compile Include="EvaluatingOptimizationTechnique\TechnicalAnalysis\RunTestingOptimizationExtremeCounterTrend.cs" />
+    <Compile Include="General\BasicScriptForBacktesting.cs" />
     <Compile Include="General\Logging\LogArchiver.cs" />
     <Compile Include="General\Logging\LogViewer.cs" />
     <Compile Include="General\Reporting\BackTesterReportViewer.cs" />
