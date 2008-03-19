@@ -243,6 +243,11 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "General\BasicScriptForBacktesting.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "General\Logging\LogArchiver.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
