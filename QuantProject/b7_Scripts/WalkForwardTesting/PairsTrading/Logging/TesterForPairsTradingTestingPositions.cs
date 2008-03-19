@@ -111,15 +111,25 @@ namespace QuantProject.Scripts.WalkForwardTesting.PairsTrading
 				firstDateTime , lastDateTime ,
 				benchmark , cashToStart , maxRunningHours );
 
-			simpleStrategy.Account = endOfDayStrategyBackTester.Account;
+//			simpleStrategy.Account = endOfDayStrategyBackTester.Account;
 
 			endOfDayStrategyBackTester.Run();
 			return endOfDayStrategyBackTester.AccountReport;
 		}
+		private double getWeightedPositions_getWeight(
+			WeightedPosition weightedPosition )
+		{
+			double weight = 1;
+			if ( weightedPosition.IsShort )
+				// the current WeightedPosition is short in the couple correlation
+				weight = -1;
+			return weight;
+		}
 		private WeightedPositions getWeightedPositions(
 			WeightedPosition weightedPosition )
 		{
-			double[] weights = { 1 };
+//			double[] weights = { 1 };
+			double[] weights = { this.getWeightedPositions_getWeight( weightedPosition ) };
 			string[] tickers = { weightedPosition.Ticker };
 			WeightedPositions weightedPositions =
 				new WeightedPositions( weights , tickers );
@@ -158,8 +168,8 @@ namespace QuantProject.Scripts.WalkForwardTesting.PairsTrading
 				this.getAccountReport( secondPosition , intervalsSelector ,
 				historicalQuoteProvider ,
 				benchmark ,
-				30000 * weightedPositions[ 1 ].Weight /
-				weightedPositions[ 0 ].Weight );
+				Math.Abs(	30000 * weightedPositions[ 1 ].Weight /
+				weightedPositions[ 0 ].Weight ) );
 			
 			Report report =
 				new Report( accountReportForFirstPosition , false );
