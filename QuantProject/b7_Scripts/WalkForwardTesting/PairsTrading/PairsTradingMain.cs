@@ -36,6 +36,7 @@ using QuantProject.Business.Strategies.ReturnsManagement.Time;
 using QuantProject.Business.Strategies.ReturnsManagement.Time.IntervalsSelectors;
 using QuantProject.Business.Timing;
 using QuantProject.Presentation;
+using QuantProject.Scripts.General;
 using QuantProject.Scripts.General.Logging;
 using QuantProject.Scripts.General.Reporting;
 
@@ -47,74 +48,38 @@ namespace QuantProject.Scripts.WalkForwardTesting.PairsTrading
 	/// parameter had to be changed, this is the place where it should
 	/// be done
 	/// </summary>
-	public class PairsTradingMain
+	public class PairsTradingMain : BasicScriptForBacktesting
 	{
+		private Benchmark benchmark;
+		private IHistoricalQuoteProvider historicalQuoteProvider;
+		
 		public PairsTradingMain()
 		{
-		}
-		#region Run
-		private MessageManager setMessageManager(
-			IEligiblesSelector eligiblesSelector ,
-			IInSampleChooser inSampleChooser ,
-			IEndOfDayStrategyForBacktester endOfDayStrategy ,
-			EndOfDayStrategyBackTester endOfDayStrategyBackTester )
-		{
-			string dateStamp =
-				ExtendedDateTime.GetCompleteShortDescriptionForFileName( DateTime.Now );
-			MessageManager messageManager =
-				new MessageManager( "NotificationMessagesForCurrentStrategy_" +
-				dateStamp + ".Txt" );
-			messageManager.Monitor( eligiblesSelector );
-			messageManager.Monitor( inSampleChooser );
-			messageManager.Monitor( endOfDayStrategy );
-			messageManager.Monitor( endOfDayStrategyBackTester );
-			return messageManager;
-		}
+			this.benchmark = new Benchmark( "BMC" );
 
-		private void saveLog( BackTestLog backTestLog ,
-		                    string suggestedLogFileName )
-		{
-			string defaultFolderPath =
-				"C:\\qpReports\\pairsTrading\\";
-//			this.wFLagLog.TransactionHistory = this.account.Transactions;
-			LogArchiver.Save( backTestLog ,
-			              suggestedLogFileName , defaultFolderPath );
-		}
-
-
-
-		public void Run1()
-		{
-			BackTestLog backTestLog = LogArchiver.Load( "C:\\qpReports\\pairsTrading\\" );
-			LogViewer logViewer =
-				new LogViewer( backTestLog );
-			logViewer.Show();
-		}
-
-		public void Run()
-		{
-			string backTestId = "PairsTrading";
-			double cashToStart = 30000;
-
-			int inSampleDays = 180;
-			string tickersGroupId = "SP500";
-			
-			// uncomment the following two lines for faster scripts
-//			int inSampleDays = 5;
-//			string tickersGroupId = "fastTest";
-
-      Benchmark benchmark = new Benchmark( "BMC" );
-			int maxNumberOfEligiblesToBeChosen = 100;
-			IDecoderForTestingPositions decoderForWeightedPositions
-				= new DecoderForPairsTradingTestingPositionsWithBalancedWeights();
-			IHistoricalQuoteProvider historicalQuoteProvider =
+			this.historicalQuoteProvider =
 				new HistoricalAdjustedQuoteProvider();
 
 			// definition for the Fitness Evaluator
-//      IEquityEvaluator equityEvaluator = new SharpeRatio();
-			IFitnessEvaluator	fitnessEvaluator =
-				new PairsTradingFitnessEvaluator( 0.96 );
+			//      IEquityEvaluator equityEvaluator = new SharpeRatio();
+		}
 
+		protected override void setEligiblesSelector()
+		{
+			int maxNumberOfEligiblesToBeChosen = 100;
+			
+			string tickersGroupId = "SP500";
+			// uncomment the following line for a faster script
+			tickersGroupId = "fastTest";
+
+			this.eligiblesSelector =
+				new MostLiquidAndLessVolatile(
+				tickersGroupId ,
+				maxNumberOfEligiblesToBeChosen );
+		}
+
+		protected override void setInSampleChooser()
+		{
 			// parameters for the genetic optimizer
 			double crossoverRate = 0.85;
 			double mutationRate = 0.02;
@@ -123,57 +88,75 @@ namespace QuantProject.Scripts.WalkForwardTesting.PairsTrading
 			int generationNumberForGeneticOptimizer = 4;
 			int seedForRandomGenerator =
 				QuantProject.ADT.ConstantsProvider.SeedForRandomGenerator;
-			IInSampleChooser inSampleChooser =
+
+			IDecoderForTestingPositions decoderForWeightedPositions =
+				new DecoderForPairsTradingTestingPositionsWithBalancedWeights();
+
+			double maxCorrelationAllowed = 0.96;
+			IFitnessEvaluator fitnessEvaluator =
+				new PairsTradingFitnessEvaluator( maxCorrelationAllowed );
+
+			this.inSampleChooser =
 				new PairsTradingGeneticChooser(
 				10 ,
-				benchmark ,
+				this.benchmark ,
 				decoderForWeightedPositions , fitnessEvaluator ,
 				historicalQuoteProvider ,
 				crossoverRate , mutationRate , elitismRate ,
 				populationSizeForGeneticOptimizer , generationNumberForGeneticOptimizer ,
 				seedForRandomGenerator );
+		}
 
-//			IIntervalsSelector intervalsSelector =
-//				new FixedLengthTwoPhasesIntervalsSelector(
-//				1 , 1 , benchmark );
+		protected override void setEndOfDayStrategy()
+		{
+			int inSampleDays = 180;
+			// uncomment the following line for a faster script
+			inSampleDays = 5;
+			
 			IIntervalsSelector intervalsSelector =
-				new OddIntervalsSelector( 1 , 1 , benchmark );
-			IEligiblesSelector eligiblesSelector =
-				new MostLiquidAndLessVolatile(
-				tickersGroupId , maxNumberOfEligiblesToBeChosen );
+				new OddIntervalsSelector( 1 , 1 , this.benchmark );
 
-			PairsTradingStrategy pairsTradingStrategy =
+			this.endOfDayStrategy =
 				new PairsTradingStrategy(
 				7 , inSampleDays , intervalsSelector ,
 				eligiblesSelector , inSampleChooser , historicalQuoteProvider ,
 				0.007 , 0.99 , 0.007 , 0.99 );
-
+		}
+		protected override void setEndOfDayStrategyBackTester()
+		{
+			string backTestId = "PairsTrading";
 			IAccountProvider accountProvider = new SimpleAccountProvider();
+			double cashToStart = 30000;
 
 			DateTime firstDateTime = new DateTime( 2001 , 1 , 1 );
-			DateTime lastDateTime = new DateTime( 2001 , 1 , 12 );
+			DateTime lastDateTime = new DateTime( 2001 , 1 , 6 );
 			double maxRunningHours = 6;
-			EndOfDayStrategyBackTester endOfDayStrategyBackTester =
+			
+			this.endOfDayStrategyBackTester =
 				new EndOfDayStrategyBackTester(
-				backTestId , pairsTradingStrategy ,
+				backTestId , this.endOfDayStrategy ,
 				historicalQuoteProvider , accountProvider ,
-				firstDateTime ,	lastDateTime , benchmark , cashToStart , maxRunningHours );
-
-			// TO DO check if you can do this assign in the EndOfDayStrategyBackTester
-			// constructor
-			pairsTradingStrategy.Account = endOfDayStrategyBackTester.Account;
-
-			MessageManager messageManager = this.setMessageManager(
-				eligiblesSelector , inSampleChooser ,
-				pairsTradingStrategy , endOfDayStrategyBackTester );
-			endOfDayStrategyBackTester.Run();
-			BackTesterReportViewer.ShowReport( lastDateTime ,
-				endOfDayStrategyBackTester );
-			this.saveLog(
-				endOfDayStrategyBackTester.Log ,
-				endOfDayStrategyBackTester.Description );
+				firstDateTime ,	lastDateTime ,
+				this.benchmark , cashToStart , maxRunningHours );
 		}
 
-		#endregion Run
+		protected override string getPathForTheMainFolderWhereScriptsResultsAreToBeSaved()
+		{
+			string pathForTheMainFolderWhereScriptsResultsAreToBeSaved =
+				"C:\\qpReports\\pairsTrading\\";
+			return pathForTheMainFolderWhereScriptsResultsAreToBeSaved;
+		}
+
+		protected override string getCustomSmallTextForFolderName()
+		{
+			return "pairsTrdng";
+		}
+
+		protected override string getFullPathFileNameForMain()
+		{
+			string fullPathFileNameForMain =
+				@"C:\QuantProject\QuantProject\b7_Scripts\WalkForwardTesting\PairsTrading\PairsTradingMain.cs";
+			return fullPathFileNameForMain;
+		}
 	}
 }
