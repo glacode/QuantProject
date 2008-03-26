@@ -190,7 +190,7 @@ namespace QuantProject.Scripts.TickerSelectionTesting.TestingOTCTypes.BruteForce
       		           currentDate.AddDays(-this.numDaysForOptimizationPeriod),
       		           currentDate,this.numberOfTickersToBeChosen);
         
-      	BruteForceOptimizer BFO = new BruteForceOptimizer(otcBruteForceParamManager);
+      	BruteForceOptimizer BFO = new BruteForceOptimizer(otcBruteForceParamManager,1);
       	BFO.Run();
         	//this.setTickers_getChosenTickers(BFO.BestParameters);
       	this.addGenomeToBestGenomes(BFO.BestParameters,this.chosenWeightedPositions.SignedTickers,
