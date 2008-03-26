@@ -129,14 +129,6 @@
                     Project = "{B8A01161-3698-4591-B1EF-90F5FC7D8DBA}"
                     Package = "{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}"
                 />
-                <Reference
-                    Name = "Microsoft.Office.Core"
-                    Guid = "{2DF8D04C-5BFA-101B-BDE5-00AA0044DE52}"
-                    VersionMajor = "2"
-                    VersionMinor = "3"
-                    Lcid = "0"
-                    WrapperTool = "primary"
-                />
             </References>
         </Build>
         <Files>
@@ -757,6 +749,11 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "a2_Strategies\InSample\BruteForceChooser.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "a2_Strategies\InSample\ConstantWeightedPositionsChooser.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
@@ -788,6 +785,11 @@
                 />
                 <File
                     RelPath = "a2_Strategies\Logging\NewLogItemEventArgs.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "a2_Strategies\Optimizing\BruteForce\BruteForceOptimizableParametersManagerForBalancedVolatility.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
