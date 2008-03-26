@@ -227,12 +227,22 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "Optimizing\BruteForce\BestParametersManager.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "Optimizing\BruteForce\BruteForceOptimizableParameters.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
                 <File
                     RelPath = "Optimizing\BruteForce\BruteForceOptimizer.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Optimizing\BruteForce\CombinationBasedBruteForceOptimizableParametersManager.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
@@ -248,6 +258,16 @@
                 />
                 <File
                     RelPath = "Optimizing\Decoding\MeaningForUndecodableEncoded.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Optimizing\Fitness\FitnessComparer.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Optimizing\Fitness\IWithFitness.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
