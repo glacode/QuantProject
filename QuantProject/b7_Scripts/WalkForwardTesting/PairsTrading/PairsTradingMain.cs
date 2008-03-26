@@ -70,7 +70,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.PairsTrading
 			
 			string tickersGroupId = "SP500";
 			// uncomment the following line for a faster script
-			tickersGroupId = "fastTest";
+//			tickersGroupId = "fastTest";
 
 			this.eligiblesSelector =
 				new MostLiquidAndLessVolatile(
@@ -80,6 +80,15 @@ namespace QuantProject.Scripts.WalkForwardTesting.PairsTrading
 
 		protected override void setInSampleChooser()
 		{
+			int numberOfBestTestingPositionsToBeReturned = 10;
+			
+			IDecoderForTestingPositions decoderForWeightedPositions =
+				new DecoderForPairsTradingTestingPositionsWithBalancedWeights();
+
+			double maxCorrelationAllowed = 0.96;
+			IFitnessEvaluator fitnessEvaluator =
+				new PairsTradingFitnessEvaluator( maxCorrelationAllowed );
+
 			// parameters for the genetic optimizer
 			double crossoverRate = 0.85;
 			double mutationRate = 0.02;
@@ -88,30 +97,30 @@ namespace QuantProject.Scripts.WalkForwardTesting.PairsTrading
 			int generationNumberForGeneticOptimizer = 4;
 			int seedForRandomGenerator =
 				QuantProject.ADT.ConstantsProvider.SeedForRandomGenerator;
-
-			IDecoderForTestingPositions decoderForWeightedPositions =
-				new DecoderForPairsTradingTestingPositionsWithBalancedWeights();
-
-			double maxCorrelationAllowed = 0.96;
-			IFitnessEvaluator fitnessEvaluator =
-				new PairsTradingFitnessEvaluator( maxCorrelationAllowed );
-
 			this.inSampleChooser =
 				new PairsTradingGeneticChooser(
-				10 ,
+				numberOfBestTestingPositionsToBeReturned ,
 				this.benchmark ,
 				decoderForWeightedPositions , fitnessEvaluator ,
 				historicalQuoteProvider ,
 				crossoverRate , mutationRate , elitismRate ,
-				populationSizeForGeneticOptimizer , generationNumberForGeneticOptimizer ,
+				populationSizeForGeneticOptimizer ,
+				generationNumberForGeneticOptimizer ,
 				seedForRandomGenerator );
+			
+			this.inSampleChooser =
+				new PairsTradingBruteForceChooser(
+					numberOfBestTestingPositionsToBeReturned ,
+					decoderForWeightedPositions ,
+					fitnessEvaluator ,
+					historicalQuoteProvider );
 		}
 
 		protected override void setEndOfDayStrategy()
 		{
 			int inSampleDays = 180;
 			// uncomment the following line for a faster script
-			inSampleDays = 5;
+//			inSampleDays = 5;
 			
 			IIntervalsSelector intervalsSelector =
 				new OddIntervalsSelector( 1 , 1 , this.benchmark );
@@ -120,7 +129,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.PairsTrading
 				new PairsTradingStrategy(
 				7 , inSampleDays , intervalsSelector ,
 				eligiblesSelector , inSampleChooser , historicalQuoteProvider ,
-				0.007 , 0.99 , 0.007 , 0.99 );
+				0.005 , 0.99 , 0.005 , 0.99 );
 		}
 		protected override void setEndOfDayStrategyBackTester()
 		{
