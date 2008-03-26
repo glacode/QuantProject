@@ -36,7 +36,7 @@ namespace QuantProject.Scripts.TickerSelectionTesting.TestingOTCTypes.BruteForce
 	/// Weights are NOT used in this implementation
 	/// </summary>
 	public class OTCBruteForceOptimizableParametersManager :
-		IBruteForceOptimizableParametersManager
+		CombinationBasedBruteForceOptimizableParametersManager
 	{
 		private Combination portfolioCombination;
 		private int numberOfPortfolioPositions;
@@ -47,7 +47,12 @@ namespace QuantProject.Scripts.TickerSelectionTesting.TestingOTCTypes.BruteForce
 			DataTable eligibleTickersForPortfolioPositions ,
 			DateTime firstOptimizationDate ,
 			DateTime lastOptimizationDate ,
-			int numberOfPortfolioPositions )
+			int numberOfPortfolioPositions ) :
+			base( new Combination(
+			eligibleTickersForPortfolioPositions.Rows.Count ,
+			eligibleTickersForPortfolioPositions.Rows.Count - 1 ,
+			numberOfPortfolioPositions ) )
+
 		{
 			this.eligibleTickersForPortfolioPositions =
 				eligibleTickersForPortfolioPositions;
@@ -64,42 +69,43 @@ namespace QuantProject.Scripts.TickerSelectionTesting.TestingOTCTypes.BruteForce
 			  "^GSPC");
 				
 		}
-		public bool MoveNext()
-		{
-			return this.portfolioCombination.MoveNext();
-		}
-		
-		public void Reset()
-		{
-			this.portfolioCombination.Reset();
-		}
-		#region Current
-		public object Current
-		{
-			get
-			{
-				return this.getCurrent();
-			}
-		}
-		private object getCurrent()
-		{
-			int[] currentValues = new int[ this.portfolioCombination.Length ];
-			for ( int i = 0 ; i < this.portfolioCombination.Length ; i ++ )
-				currentValues[ i ] = this.portfolioCombination.GetValue( i );
-			BruteForceOptimizableParameters bruteForceOptimizableParameters =
-				new BruteForceOptimizableParameters( currentValues ,
-				this );
-			return bruteForceOptimizableParameters;
-		}
-		#endregion
+
+//		public bool MoveNext()
+//		{
+//			return this.portfolioCombination.MoveNext();
+//		}
+//		
+//		public void Reset()
+//		{
+//			this.portfolioCombination.Reset();
+//		}
+//		#region Current
+//		public object Current
+//		{
+//			get
+//			{
+//				return this.getCurrent();
+//			}
+//		}
+//		private object getCurrent()
+//		{
+//			int[] currentValues = new int[ this.portfolioCombination.Length ];
+//			for ( int i = 0 ; i < this.portfolioCombination.Length ; i ++ )
+//				currentValues[ i ] = this.portfolioCombination.GetValue( i );
+//			BruteForceOptimizableParameters bruteForceOptimizableParameters =
+//				new BruteForceOptimizableParameters( currentValues ,
+//				this );
+//			return bruteForceOptimizableParameters;
+//		}
+//		#endregion
 	
-		public object Decode( BruteForceOptimizableParameters
+		public override object Decode( BruteForceOptimizableParameters
 			bruteForceOptimizableItem )
 		{
 			return this.otcCtoGenomeManager.Decode(bruteForceOptimizableItem);
 		}
 		
-		public double GetFitnessValue(
+		public override double GetFitnessValue(
 			BruteForceOptimizableParameters bruteForceOptimizableItem )
 		{
 			return 0.0; //just for compiling
