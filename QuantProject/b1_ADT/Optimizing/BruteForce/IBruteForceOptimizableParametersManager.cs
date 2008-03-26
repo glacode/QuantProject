@@ -33,6 +33,9 @@ namespace QuantProject.ADT.Optimizing.BruteForce
 	public interface IBruteForceOptimizableParametersManager :
 		IEnumerator
 	{
+		// the number of total iterations expected
+		int TotalIterations { get; }
+
 		double GetFitnessValue( BruteForceOptimizableParameters bruteForceOptimizableParameters );
     object Decode( BruteForceOptimizableParameters bruteForceOptimizableParameters );
   }
