@@ -364,7 +364,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag.WeightedPositio
 				this.returnsManager );
 
 			BruteForceOptimizer bruteForceOptimizer = new BruteForceOptimizer(
-				wFLagFixedPortfolioBruteForceOptimizableParametersManager );
+				wFLagFixedPortfolioBruteForceOptimizableParametersManager , 1 );
 
 			bruteForceOptimizer.NewProgress +=
 				new NewProgressEventHandler(
