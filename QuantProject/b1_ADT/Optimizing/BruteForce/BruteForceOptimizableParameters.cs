@@ -22,20 +22,35 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 using System;
 
+using QuantProject.ADT.Optimizing.Fitness;
+
 namespace QuantProject.ADT.Optimizing.BruteForce
 {
 	/// <summary>
 	/// Parameters to be optimized by a Brute Force optimizer
 	/// </summary>
-	public class BruteForceOptimizableParameters
+	public class BruteForceOptimizableParameters : IWithFitness
 	{
 		IBruteForceOptimizableParametersManager bruteForceOptimizableParametersManager;
 
-		private bool isFitnessSet;
 
+		private object meaning;
 		private double fitness;
 
+		private bool isFitnessSet;
+
 		private int[] parameterValues;
+
+		public object Meaning
+		{
+			get
+			{
+				if ( this.meaning == null )
+					this.meaning =
+						this.bruteForceOptimizableParametersManager.Decode( this );
+				return this.meaning;
+			}
+		}
 
 		/// <summary>
 		/// Fitness value for current parameters value
