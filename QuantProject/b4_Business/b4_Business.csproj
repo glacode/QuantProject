@@ -774,6 +774,11 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "a2_Strategies\Logging\DummyLogItem.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "a2_Strategies\Logging\ILogDescriptor.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
