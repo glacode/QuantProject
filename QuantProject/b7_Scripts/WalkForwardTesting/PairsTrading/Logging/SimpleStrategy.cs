@@ -95,15 +95,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.PairsTrading
 		}
 		protected override LogItem getLogItem( EligibleTickers eligibleTickers )
 		{
-			PairsTradingLogItem logItem =
-				new PairsTradingLogItem( this.now() ,
-				                        new TestingPositions[ 1 ] ,
-				                        0 ,
-				                        1 );
-			//			logItem.BestWeightedPositionsInSample =
-			//				this.bestTestingPositionsInSample.WeightedPositions;
-			//			logItem.NumberOfEligibleTickers =
-			//				eligibleTickers.Count;
+			DummyLogItem logItem = new DummyLogItem( this.now() );
 			return logItem;
 		}
 		protected override string getTextIdentifier()
