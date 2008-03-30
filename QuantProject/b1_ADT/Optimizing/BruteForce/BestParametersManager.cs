@@ -33,6 +33,8 @@ namespace QuantProject.ADT.Optimizing.BruteForce
 	public class BestParametersManager
 	{
 		private int numberOfTopBestParametersToBeReturned;
+		private IBruteForceOptimizableParametersManager
+			bruteForceOptimizableParametersManager;
 
 		private int numberOfNonNullItemsInTopBestParameters;
 		private int indexForTheCurrentCandidateToBeSwappedOut;
@@ -43,7 +45,6 @@ namespace QuantProject.ADT.Optimizing.BruteForce
 		{
 			get
 			{
-				this.sortTopBestParameters();
 				return this.topBestParameters;
 			}
 		}
@@ -55,30 +56,25 @@ namespace QuantProject.ADT.Optimizing.BruteForce
 		/// <param name="numberOfTopBestParametersToBeReturned">number of
 		/// BruteForceOptimizableParameters that are going to be returned, as
 		/// the ones with the highest fitness</param>
-		public BestParametersManager( int numberOfTopBestParametersToBeReturned )
+		public BestParametersManager(
+			int numberOfTopBestParametersToBeReturned ,
+			IBruteForceOptimizableParametersManager
+			bruteForceOptimizableParametersManager )
 		{
 			this.numberOfTopBestParametersToBeReturned =
 				numberOfTopBestParametersToBeReturned;
+			this.bruteForceOptimizableParametersManager =
+				bruteForceOptimizableParametersManager;
+
 			this.topBestParameters =
 				new BruteForceOptimizableParameters[ numberOfTopBestParametersToBeReturned ];
-			
 			this.numberOfNonNullItemsInTopBestParameters = 0;
 			this.indexForTheCurrentCandidateToBeSwappedOut = 0;
 		}
 
-		private void sortTopBestParameters()
-		{
-			// comment out the following three lines if you have an exception
-			// in the Sort method and you want to break to the proper line
-//				double fitness;
-//				for ( int i = 0 ; i < this.topBestParameters.Length ; i++ )
-//					fitness = ((BruteForceOptimizableParameters) this.topBestParameters[ i ]).Fitness;
-
-			FitnessComparer fitnessComparer = new	FitnessComparer();
-      Array.Sort( this.topBestParameters , fitnessComparer );
-		}
-    
 		#region Analize
+
+		#region hasToBeInsertedIntoTheTopBestParameters
 		private bool isBetterThanTheCurrentCandidateToBeSwappedOut(
 			BruteForceOptimizableParameters bruteForceOptimizableParameters )
 		{
@@ -93,6 +89,32 @@ namespace QuantProject.ADT.Optimizing.BruteForce
 					currentCandidateToBeSwappedOut.Fitness );
 			return isBetter;
 		}
+		private bool isEquivalentAlreadyInTopBestParameters(
+			BruteForceOptimizableParameters bruteForceOptimizableParameters )
+		{
+			int indexForCurrentTopBestParameters = 0;
+			while (
+				indexForCurrentTopBestParameters < this.numberOfNonNullItemsInTopBestParameters &&
+				!this.bruteForceOptimizableParametersManager.AreEquivalentAsTopBestParameters(
+				bruteForceOptimizableParameters.Meaning ,
+				this.topBestParameters[ indexForCurrentTopBestParameters ].Meaning ) )
+				indexForCurrentTopBestParameters++;
+			bool isEquivalentAlreadyPresent =
+				( indexForCurrentTopBestParameters < this.numberOfNonNullItemsInTopBestParameters );
+			return isEquivalentAlreadyPresent;
+		}
+		private bool hasToBeInsertedIntoTheTopBestParameters(
+			BruteForceOptimizableParameters bruteForceOptimizableParameters )
+		{
+			bool hasToBeInserted =
+				( this.isBetterThanTheCurrentCandidateToBeSwappedOut(
+				bruteForceOptimizableParameters ) &&
+				!this.isEquivalentAlreadyInTopBestParameters(
+				bruteForceOptimizableParameters ) );
+			return hasToBeInserted;
+		}
+		#endregion hasToBeInsertedIntoTheTopBestParameters
+
 		// true iif we are still in the initialization phase, when the
 		// first this.numberOfTopBestParametersToBeReturned items have already
 		// been added to this.topBestParameters
@@ -188,23 +210,27 @@ namespace QuantProject.ADT.Optimizing.BruteForce
 		public void Analize( BruteForceOptimizableParameters
 			bruteForceOptimizableParameters )
 		{
-			if ( this.isBetterThanTheCurrentCandidateToBeSwappedOut(
-				bruteForceOptimizableParameters ) )
+			if ( this.hasToBeInsertedIntoTheTopBestParameters( bruteForceOptimizableParameters ) )
 				this.replaceTheCurrentCandidateToBeSwappedOut(
 					bruteForceOptimizableParameters );
-//			if ( this.numberOfMeaningfulItemsInTheArray < this.numberOfTopBestParametersToBeKept )
-//				// this.topBestParameters still contains less than
-//				// this.numberOfTopBestParametersToBeReturned items. It means that we are still in
-//				// the initializing phase, when the first this.numberOfTopBestParametersToBeReturned
-//				// items are to be added to the topBestParameters
-//				this.addWithoutSwappingOut( bruteForceOptimizableParameters );
-//			else
-//				// the initializing phase is complete, that is the first
-//				// this.numberOfTopBestParametersToBeReturned has already been added to
-//				// this.topBestParameters
-//				if ( this.lowestFitness() < bruteForceOptimizableParameters.Fitness )
-//					this.addSwappingOutTheLastOne( bruteForceOptimizableParameters );
 		}
 		#endregion Handle
+		
+		/// <summary>
+		/// Sortes the top best parameters descending. To be invoked when
+		/// all BruteForceOptimizableParameters have been analyzed
+		/// </summary>
+		public void SortTopBestParametersDescending()
+		{
+			// comment out the following three lines if you have an exception
+			// in the Sort method and you want to break to the proper line
+//				double fitness;
+//				for ( int i = 0 ; i < this.topBestParameters.Length ; i++ )
+//					fitness = ((BruteForceOptimizableParameters) this.topBestParameters[ i ]).Fitness;
+
+			FitnessComparer fitnessComparer = new FitnessComparer();
+			Array.Sort( this.topBestParameters , fitnessComparer );
+			Array.Reverse( this.topBestParameters );
+		}
 	}
 }
