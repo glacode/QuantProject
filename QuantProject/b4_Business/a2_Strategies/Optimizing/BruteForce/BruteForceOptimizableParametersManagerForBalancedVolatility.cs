@@ -101,35 +101,7 @@ namespace QuantProject.Business.Strategies.Optimizing.BruteForce
 			this.decoderForTestingPositions = decoderForTestingPositions;
 			this.fitnessEvaluator = fitnessEvaluator;
 			this.returnsManager = returnsManager;
-//			this.combination = new Combination(
-//				- this.eligibleTickers.Count ,
-//				this.eligibleTickers.Count - 1 ,
-//				numberOfPositions );
 		}
-
-//		protected override Combination getCombination()
-//		{
-//			return new Combination(
-//				- this.eligibleTickers.Count ,
-//				this.eligibleTickers.Count - 1 ,
-//				this.numberOfPositions );
-//		}
-//		public bool MoveNext()
-//		{
-//			return this.combination.MoveNext();
-//		}
-//		public void Reset()
-//		{
-//			this.combination.Reset();
-//		}
-
-//		protected override getCurrent( int[] currentValues )
-//		{
-//			BruteForceOptimizableParameters bruteForceOptimizableParameters =
-//				new BruteForceOptimizableParameters( currentValues ,
-//				this );
-//			return bruteForceOptimizableParameters;
-//		}
 
 		public override object Decode( BruteForceOptimizableParameters
 			bruteForceOptimizableParameters )
