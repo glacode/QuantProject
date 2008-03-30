@@ -894,7 +894,12 @@
                     BuildAction = "Compile"
                 />
                 <File
-                    RelPath = "WalkForwardTesting\PairsTrading\InSample\InSampleChoosers\PairsTradingBruteForceChooser.cs"
+                    RelPath = "WalkForwardTesting\PairsTrading\InSample\InSampleChoosers\BruteForce\PairsTradingBruteForceChooser.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "WalkForwardTesting\PairsTrading\InSample\InSampleChoosers\BruteForce\PairsTradingBruteForceOptimizableParametersManager.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
