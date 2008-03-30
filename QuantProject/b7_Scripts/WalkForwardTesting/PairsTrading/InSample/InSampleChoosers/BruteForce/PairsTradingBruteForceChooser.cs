@@ -26,9 +26,10 @@ using QuantProject.ADT.Optimizing.BruteForce;
 using QuantProject.Business.DataProviders;
 using QuantProject.Business.Strategies.Eligibles;
 using QuantProject.Business.Strategies.InSample;
-using QuantProject.Business.Strategies.Optimizing.BruteForce;
+//using QuantProject.Business.Strategies.Optimizing.BruteForce;
 using QuantProject.Business.Strategies.Optimizing.Decoding;
 using QuantProject.Business.Strategies.Optimizing.FitnessEvaluation;
+using QuantProject.Business.Strategies.OutOfSample;
 using QuantProject.Business.Strategies.ReturnsManagement;
 
 
@@ -56,9 +57,9 @@ namespace QuantProject.Scripts.WalkForwardTesting.PairsTrading
 			EligibleTickers eligibleTickers ,
 			ReturnsManager returnsManager )
 		{
-			BruteForceOptimizableParametersManagerForBalancedVolatility
+			PairsTradingBruteForceOptimizableParametersManager
 				bruteForceOptimizableParametersManager =
-				new BruteForceOptimizableParametersManagerForBalancedVolatility(
+				new PairsTradingBruteForceOptimizableParametersManager(
 				eligibleTickers ,
 				2 ,
 				this.decoderForTestingPositions ,
@@ -66,5 +67,11 @@ namespace QuantProject.Scripts.WalkForwardTesting.PairsTrading
 				returnsManager );
 			return bruteForceOptimizableParametersManager;
 		}
+//		protected override string getHashCodeForTestingPositions(
+//			TestingPositions testingPositions)
+//		{
+//			string hashCode = testingPositions.HashCodeForTickerComposition;
+//			return hashCode;
+//		}
 	}
 }
