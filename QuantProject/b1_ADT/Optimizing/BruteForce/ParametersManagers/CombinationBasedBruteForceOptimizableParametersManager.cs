@@ -31,11 +31,11 @@ namespace QuantProject.ADT.Optimizing.BruteForce
 	/// who are based on a single Combination to be scan through
 	/// </summary>
 	public abstract class CombinationBasedBruteForceOptimizableParametersManager :
-		IBruteForceOptimizableParametersManager
+		BruteForceOptimizableParametersManagerWithoutEquivalentsAsTopBestParameters
 	{
 		protected Combination combination;
 
-		public int TotalIterations
+		public override int TotalIterations
 		{
 			get
 			{
@@ -43,7 +43,7 @@ namespace QuantProject.ADT.Optimizing.BruteForce
 			}
 		}
 
-		public object Current
+		public override object Current
 		{
 			get
 			{
@@ -63,17 +63,11 @@ namespace QuantProject.ADT.Optimizing.BruteForce
 			this.combination = combination;
 		}
 
-		public abstract object Decode( BruteForceOptimizableParameters
-			bruteForceOptimizableParameters );
-
-		public abstract double GetFitnessValue(
-			BruteForceOptimizableParameters bruteForceOptimizableParameters );
-
-		public bool MoveNext()
+		public override bool MoveNext()
 		{
 			return this.combination.MoveNext();
 		}
-		public void Reset()
+		public override void Reset()
 		{
 			this.combination.Reset();
 		}
