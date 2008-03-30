@@ -111,18 +111,24 @@ namespace QuantProject.ADT.Optimizing.BruteForce
 		public void createTopBestParameters()
 		{
 			this.bestParametersManager = new BestParametersManager(
-				this.numberOfTopBestParameters );
+				this.numberOfTopBestParameters ,
+				this.bruteForceOptimizableParametersManager );
 			this.analizedItems = 0;
 			this.bruteForceOptimizableParametersManager.Reset();
 //			this.bestParameters =
 //				(BruteForceOptimizableParameters)this.bruteForceOptimizableParametersManager.Current;
-			while( this.bruteForceOptimizableParametersManager.MoveNext() )
+			do
 			{
 				BruteForceOptimizableParameters bruteForceOptimizableParameters =
 					(BruteForceOptimizableParameters)this.bruteForceOptimizableParametersManager.Current;
 				this.bestParametersManager.Analize( bruteForceOptimizableParameters );
 				this.handleProgress();
-			}
+				
+			}while (this.bruteForceOptimizableParametersManager.MoveNext());
+		}
+		private void sortTopBestParametersDescending()
+		{
+			this.bestParametersManager.SortTopBestParametersDescending();
 		}
 		/// <summary>
 		/// executes the optimization
@@ -130,6 +136,7 @@ namespace QuantProject.ADT.Optimizing.BruteForce
 		public void Run()
 		{
 			this.createTopBestParameters();
+			this.sortTopBestParametersDescending();
 //			this.bestParametersManager.TopBestParameters.Sort();
 			this.runIsComplete = true;
 		}
