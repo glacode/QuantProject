@@ -242,12 +242,17 @@
                     BuildAction = "Compile"
                 />
                 <File
-                    RelPath = "Optimizing\BruteForce\CombinationBasedBruteForceOptimizableParametersManager.cs"
+                    RelPath = "Optimizing\BruteForce\ParametersManagers\BruteForceOptimizableParametersManagerWithoutEquivalentsAsTopBestParameters.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
                 <File
-                    RelPath = "Optimizing\BruteForce\IBruteForceOptimizableParametersManager.cs"
+                    RelPath = "Optimizing\BruteForce\ParametersManagers\CombinationBasedBruteForceOptimizableParametersManager.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Optimizing\BruteForce\ParametersManagers\IBruteForceOptimizableParametersManager.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />

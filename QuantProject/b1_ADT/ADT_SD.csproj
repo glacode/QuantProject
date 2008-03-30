@@ -52,6 +52,10 @@
     <Compile Include="ExtendedDataTable.cs" />
     <Compile Include="ExtendedDateTime.cs" />
     <Compile Include="HashProvider.cs" />
+    <Compile Include="Optimizing\BruteForce\BestParametersManager.cs" />
+    <Compile Include="Optimizing\BruteForce\CombinationBasedBruteForceOptimizableParametersManager.cs" />
+    <Compile Include="Optimizing\Fitness\FitnessComparer.cs" />
+    <Compile Include="Optimizing\Fitness\IWithFitness.cs" />
     <Compile Include="OutOfRangeException.cs" />
     <Compile Include="IProgressNotifier.cs" />
     <Compile Include="Keyed.cs" />
@@ -98,6 +102,7 @@
     <Folder Include="Messaging" />
     <Folder Include="Optimizing\BruteForce" />
     <Folder Include="Optimizing\Decoding" />
+    <Folder Include="Optimizing\Fitness" />
     <Folder Include="Statistics\Combinatorial" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.Targets" />
