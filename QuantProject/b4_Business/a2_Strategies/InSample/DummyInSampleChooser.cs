@@ -57,7 +57,12 @@ namespace QuantProject.Business.Strategies.InSample
 				this.NewMessage( this , new NewMessageEventArgs( "New" ) );
 			if ( this.NewProgress != null )
 				this.NewProgress( this , new NewProgressEventArgs( 1 , 1 ) );
-			return new TestingPositions[ 1 ];
+			TestingPositions[] dummyTestingPositionsArray =
+				new TestingPositions[ 1 ];
+			TestingPositions dummyTestingPositions =
+				new TestingPositions();
+			dummyTestingPositionsArray[ 0 ] = dummyTestingPositions;
+			return dummyTestingPositionsArray;
 		}
 	}
 }
