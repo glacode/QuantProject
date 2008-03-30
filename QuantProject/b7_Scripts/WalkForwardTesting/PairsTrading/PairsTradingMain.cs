@@ -120,7 +120,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.PairsTrading
 		{
 			int inSampleDays = 180;
 			// uncomment the following line for a faster script
-//			inSampleDays = 5;
+//			inSampleDays = 5; inSampleDays = 60;
 			
 			IIntervalsSelector intervalsSelector =
 				new OddIntervalsSelector( 1 , 1 , this.benchmark );
@@ -138,8 +138,8 @@ namespace QuantProject.Scripts.WalkForwardTesting.PairsTrading
 			double cashToStart = 30000;
 
 			DateTime firstDateTime = new DateTime( 2001 , 1 , 1 );
-			DateTime lastDateTime = new DateTime( 2001 , 1 , 6 );
-			double maxRunningHours = 6;
+			DateTime lastDateTime = new DateTime( 2004 , 12 , 31 );
+			double maxRunningHours = 7;
 			
 			this.endOfDayStrategyBackTester =
 				new EndOfDayStrategyBackTester(
