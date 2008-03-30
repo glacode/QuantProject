@@ -224,6 +224,14 @@ namespace QuantProject.Business.Strategies
 			return inSampleReturnIntervals;
 		}
 		#endregion getInSampleReturnIntervals
+		private void checkQualityFor_bestTestingPositionsInSample()
+		{
+			for( int i = 0 ; i < this.bestTestingPositionsInSample.Length ; i++ )
+				if ( this.bestTestingPositionsInSample[ i ] == null )
+					throw new Exception(
+						"The IInSampleChooser should have returned an array " +
+						"of non null bestTestingPositionsInSample!" );
+		}
 		private void notifyMessage( EligibleTickers eligibleTickers )
 		{
 			string message = "Number of Eligible tickers: " +
@@ -270,6 +278,7 @@ namespace QuantProject.Business.Strategies
 			this.bestTestingPositionsInSample =
 				(TestingPositions[])this.inSampleChooser.AnalyzeInSample(
 				eligibleTickers , returnsManager );
+			this.checkQualityFor_bestTestingPositionsInSample();
 
 			this.notifyMessage( eligibleTickers );
 			this.logOptimizationInfo( eligibleTickers );
