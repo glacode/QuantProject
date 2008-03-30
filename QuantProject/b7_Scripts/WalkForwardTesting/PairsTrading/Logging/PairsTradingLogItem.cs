@@ -120,7 +120,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.PairsTrading
 			this.testersForBestTestingPositionsInSample =
 				new TesterForPairsTradingTestingPositions[
 					bestTestingPositionsInSample.Length ];
-			for ( int i = 0 ; i < bestTestingPositionsInSample.Length - 1 ; i++ )
+			for ( int i = 0 ; i < bestTestingPositionsInSample.Length ; i++ )
 				this.setTesterForPairstTradingTestingPositions(
 					i ,
 					bestTestingPositionsInSample[ i ] ,
