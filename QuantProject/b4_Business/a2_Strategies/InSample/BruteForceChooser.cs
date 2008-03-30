@@ -135,6 +135,37 @@ namespace QuantProject.Business.Strategies.InSample
 				throw new Exception( "The brute force optimizer has not examined enough " +
 					"candidates!" );
 		}
+		
+		private TestingPositions getCurrentBestTestingPositions(
+			int i , BruteForceOptimizer bruteForceOptimizer )
+		{
+			BruteForceOptimizableParameters bruteForceOptimizableParameters =
+				bruteForceOptimizer.TopBestParameters[ i ];
+			TestingPositions currentBestTestingPositions =
+				(TestingPositions)bruteForceOptimizableParameters.Meaning;
+			currentBestTestingPositions.FitnessInSample =
+				bruteForceOptimizableParameters.Fitness;
+			
+//			bestTestingPositions[ i ] =
+//				(TestingPositions)bruteForceOptimizableParameters.Meaning;
+//			bestTestingPositions[ i ].FitnessInSample =
+//				(TestingPositions)bruteForceOptimizableParameters.Fitness;
+			return currentBestTestingPositions;
+		} 
+			
+//		private void addCurrentBestTestingPositionIfEquivalentNotAlreadyAdded(
+//			int i , BruteForceOptimizer bruteForceOptimizer ,
+//			Hashtable equivalentCollector ,
+//			TestingPositions[] bestTestingPositions )
+//		{
+//			TestingPositions currentBestTestingPositions =
+//				this.getCurrentBestTestingPositions( i , bruteForceOptimizer );
+//			this.addCurrentBestTestingPositionIfEquivalentNotAlreadyAdded(
+//				currentBestTestingPositions ,
+//				equivalentCollector ,
+//				bestTestingPositions );
+//		}
+		
 		private TestingPositions[] getBestTestingPositionsInSample_getTestingPositionsActually(
 			BruteForceOptimizer bruteForceOptimizer )
 		{
@@ -142,13 +173,10 @@ namespace QuantProject.Business.Strategies.InSample
 				bruteForceOptimizer );
 			TestingPositions[] bestTestingPositions =
 				new TestingPositions[ this.numberOfBestTestingPositionsToBeReturned ];
+////			Hashtable equivalentCollector = new Hashtable();
 			for ( int i = 0 ; i < bruteForceOptimizer.TopBestParameters.Length ; i++ )
-			{
-				BruteForceOptimizableParameters bruteForceOptimizableParameters =
-					bruteForceOptimizer.TopBestParameters[ i ];
 				bestTestingPositions[ i ] =
-					(TestingPositions)bruteForceOptimizableParameters.Meaning;
-			}
+					this.getCurrentBestTestingPositions( i , bruteForceOptimizer );
 			return bestTestingPositions;
 		}
 	
@@ -168,7 +196,7 @@ namespace QuantProject.Business.Strategies.InSample
 				this.newBruteForceOptimizerProgressEventHandler );
 			bruteForceOptimizer.Run( 10000 ,
 				bruteForceOptimizableParametersManager.TotalIterations );
-			
+	
 			return this.getBestTestingPositionsInSample_getTestingPositionsActually(
 				bruteForceOptimizer );
 		}
