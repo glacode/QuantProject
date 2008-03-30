@@ -84,6 +84,7 @@
     <Compile Include="a2_Strategies\Logging\ILogDescriptor.cs" />
     <Compile Include="a2_Strategies\Logging\LogItem.cs" />
     <Compile Include="a2_Strategies\Logging\NewLogItemEventArgs.cs" />
+    <Compile Include="a2_Strategies\Optimizing\BruteForce\BruteForceOptimizableParametersManagerForBalancedVolatility.cs" />
     <Compile Include="a2_Strategies\Optimizing\Decoding\BasicDecoderForTestingPositions.cs" />
     <Compile Include="a2_Strategies\Optimizing\Decoding\DecoderForBalancedWeightedPositions.cs" />
     <Compile Include="a2_Strategies\Optimizing\Decoding\DecoderForTestingPositionsWithBalancedWeights.cs" />
@@ -239,6 +240,7 @@
     <Folder Include="a1_Financial\a2_Accounting\AccountProviding" />
     <Folder Include="a1_Financial\a2_Accounting\h5_Reporting\StatisticsSummaryRows" />
     <Folder Include="a2_Strategies\EndOfDayStrategies" />
+    <Folder Include="a2_Strategies\Optimizing\BruteForce" />
     <Folder Include="a2_Strategies\Optimizing\FitnessEvaluation" />
     <Folder Include="a2_Strategies\Optimizing\GenomeManagers" />
     <Folder Include="a2_Strategies\OutOfSample" />
