@@ -102,9 +102,10 @@
     <Compile Include="WalkForwardTesting\FixedLengthTwoPhases\InSampleChoosers\Genetic\FixedLengthTwoPhasesGenomeManager.cs" />
     <Compile Include="WalkForwardTesting\FixedLengthTwoPhases\Logging\FixedLengthTwoPhasesLogItem.cs" />
     <Compile Include="WalkForwardTesting\MSFTwalkForward\TsMSFTwalkForward.cs" />
+    <Compile Include="WalkForwardTesting\PairsTrading\InSample\InSampleChoosers\BruteForce\PairsTradingBruteForceChooser.cs" />
+    <Compile Include="WalkForwardTesting\PairsTrading\InSample\InSampleChoosers\BruteForce\PairsTradingBruteForceOptimizableParametersManager.cs" />
     <Compile Include="WalkForwardTesting\PairsTrading\InSample\InSampleChoosers\Genetic\DecoderForPairsTradingTestingPositionsWithBalancedWeights.cs" />
     <Compile Include="WalkForwardTesting\PairsTrading\InSample\InSampleChoosers\Genetic\PairsTradingGeneticChooser.cs" />
-    <Compile Include="WalkForwardTesting\PairsTrading\InSample\InSampleChoosers\PairsTradingBruteForceChooser.cs" />
     <Compile Include="WalkForwardTesting\PairsTrading\InSample\PairsTradingFitnessEvaluator.cs" />
     <Compile Include="WalkForwardTesting\PairsTrading\Logging\PairsTradingLogItem.cs" />
     <Compile Include="WalkForwardTesting\PairsTrading\Logging\SimpleStrategy.cs" />
@@ -285,6 +286,7 @@
     <Folder Include="WalkForwardTesting\PairsTrading" />
     <Folder Include="WalkForwardTesting\PairsTrading\InSample" />
     <Folder Include="WalkForwardTesting\PairsTrading\InSample\InSampleChoosers" />
+    <Folder Include="WalkForwardTesting\PairsTrading\InSample\InSampleChoosers\BruteForce" />
     <Folder Include="WalkForwardTesting\PairsTrading\InSample\InSampleChoosers\Genetic" />
     <Folder Include="WalkForwardTesting\PairsTrading\Logging" />
     <Folder Include="WalkForwardTesting\WalkForwardLag\WeightedPositionsChoosers\BruteForce" />
