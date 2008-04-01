@@ -48,7 +48,7 @@ namespace QuantProject.Business.Strategies.InSample
 		protected int numberOfBestTestingPositionsToBeReturned;
 		protected IDecoderForTestingPositions decoderForTestingPositions;
 		protected IFitnessEvaluator fitnessEvaluator;
-		protected IHistoricalQuoteProvider historicalQuoteProvider;
+//		protected IHistoricalQuoteProvider historicalQuoteProvider;
 
 		public string Description
 		{
@@ -64,14 +64,13 @@ namespace QuantProject.Business.Strategies.InSample
 		public BruteForceChooser(
 			int numberOfBestTestingPositionsToBeReturned ,
 			IDecoderForTestingPositions decoderForTestingPositions ,
-			IFitnessEvaluator fitnessEvaluator ,
-			IHistoricalQuoteProvider historicalQuoteProvider )
+			IFitnessEvaluator fitnessEvaluator )
 		{
 			this.numberOfBestTestingPositionsToBeReturned =
 				numberOfBestTestingPositionsToBeReturned;
 			this.decoderForTestingPositions = decoderForTestingPositions;
 			this.fitnessEvaluator = fitnessEvaluator;
-			this.historicalQuoteProvider = historicalQuoteProvider;
+//			this.historicalQuoteProvider = historicalQuoteProvider;
 		}
 
 		protected abstract IBruteForceOptimizableParametersManager

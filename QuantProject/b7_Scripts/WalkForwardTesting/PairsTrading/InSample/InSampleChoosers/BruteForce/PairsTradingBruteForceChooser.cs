@@ -43,13 +43,11 @@ namespace QuantProject.Scripts.WalkForwardTesting.PairsTrading
 		public PairsTradingBruteForceChooser(
 			int numberOfBestTestingPositionsToBeReturned ,
 			IDecoderForTestingPositions decoderForTestingPositions ,
-			IFitnessEvaluator fitnessEvaluator ,
-			IHistoricalQuoteProvider historicalQuoteProvider ) :
+			IFitnessEvaluator fitnessEvaluator ) :
 			base (
 			numberOfBestTestingPositionsToBeReturned ,
 			decoderForTestingPositions ,
-			fitnessEvaluator ,
-			historicalQuoteProvider )
+			fitnessEvaluator )
 		{
 		}
 		protected override IBruteForceOptimizableParametersManager
