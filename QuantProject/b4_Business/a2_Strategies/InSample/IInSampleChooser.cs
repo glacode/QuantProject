@@ -29,7 +29,7 @@ using QuantProject.Business.Strategies.Eligibles;
 using QuantProject.Business.Strategies.Logging;
 using QuantProject.Business.Strategies.ReturnsManagement;
 
-namespace QuantProject.Business.Strategies
+namespace QuantProject.Business.Strategies.InSample
 {
 	/// <summary>
 	/// Interface for classes that perform in sample researches (usually optimization)

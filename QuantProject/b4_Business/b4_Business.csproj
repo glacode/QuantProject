@@ -654,11 +654,6 @@
                     BuildAction = "Compile"
                 />
                 <File
-                    RelPath = "a2_Strategies\IInSampleChooser.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
                     RelPath = "a2_Strategies\Signal.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
@@ -765,6 +760,11 @@
                 />
                 <File
                     RelPath = "a2_Strategies\InSample\GeneticChooser.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "a2_Strategies\InSample\IInSampleChooser.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
