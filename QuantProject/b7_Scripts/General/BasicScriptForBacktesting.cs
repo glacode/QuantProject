@@ -27,6 +27,7 @@ using QuantProject.ADT;
 using QuantProject.ADT.FileManaging;
 using QuantProject.Business.Strategies;
 using QuantProject.Business.Strategies.Eligibles;
+using QuantProject.Business.Strategies.InSample;
 using QuantProject.Presentation;
 
 namespace QuantProject.Scripts.General

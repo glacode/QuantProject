@@ -26,6 +26,7 @@ using System.Collections;
 using QuantProject.ADT;
 using QuantProject.ADT.Messaging;
 using QuantProject.Business.Strategies;
+using QuantProject.Business.Strategies.InSample;
 using QuantProject.Business.Strategies.TickersRelationships; 
 using QuantProject.Business.Strategies.Eligibles;
 using QuantProject.Business.Strategies.ReturnsManagement;

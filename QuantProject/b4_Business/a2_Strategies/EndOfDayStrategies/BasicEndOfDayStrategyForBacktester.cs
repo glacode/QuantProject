@@ -27,7 +27,7 @@ using QuantProject.ADT.Messaging;
 
 using QuantProject.Business.DataProviders;
 using QuantProject.Business.Financial.Accounting;
-using QuantProject.Business.Strategies;
+using QuantProject.Business.Strategies.InSample;
 using QuantProject.Business.Strategies.Eligibles;
 using QuantProject.Business.Strategies.Logging;
 using QuantProject.Business.Strategies.OutOfSample;
@@ -53,7 +53,7 @@ namespace QuantProject.Business.Strategies
 		protected IIntervalsSelector intervalsSelector;
 		protected IEligiblesSelector eligiblesSelector;
 		protected IInSampleChooser inSampleChooser;
-		protected IHistoricalQuoteProvider historicalQuoteProvider;
+		protected IHistoricalQuoteProvider historicalQuoteProviderForInSample;
 
 		protected DateTime lastOptimizationDateTime;
 		protected ReturnIntervals returnIntervals;
@@ -109,7 +109,7 @@ namespace QuantProject.Business.Strategies
 			IIntervalsSelector intervalsSelector ,
 			IEligiblesSelector eligiblesSelector ,
 			IInSampleChooser inSampleChooser ,
-			IHistoricalQuoteProvider historicalQuoteProvider
+			IHistoricalQuoteProvider historicalQuoteProviderForInSample
 			)
 		{
 			this.numDaysBeetweenEachOtpimization = numDaysBeetweenEachOtpimization;
@@ -117,7 +117,8 @@ namespace QuantProject.Business.Strategies
 			this.intervalsSelector = intervalsSelector;
 			this.eligiblesSelector = eligiblesSelector;
 			this.inSampleChooser = inSampleChooser;
-			this.historicalQuoteProvider = historicalQuoteProvider;
+			this.historicalQuoteProviderForInSample =
+				historicalQuoteProviderForInSample;
 			
 			this.returnIntervals =
 				new ReturnIntervals( this.intervalsSelector );
@@ -274,7 +275,8 @@ namespace QuantProject.Business.Strategies
 				this.eligiblesSelector.GetEligibleTickers(
 				inSampleReturnIntervals.BordersHistory );
 			ReturnsManager returnsManager = new ReturnsManager(
-				inSampleReturnIntervals , this.historicalQuoteProvider );
+				inSampleReturnIntervals ,
+				this.historicalQuoteProviderForInSample );
 			this.bestTestingPositionsInSample =
 				(TestingPositions[])this.inSampleChooser.AnalyzeInSample(
 				eligibleTickers , returnsManager );

@@ -30,6 +30,7 @@ using QuantProject.Business.Financial.Instruments;
 using QuantProject.Business.Financial.Ordering;
 using QuantProject.Business.Timing;
 using QuantProject.Business.Strategies;
+using QuantProject.Business.Strategies.InSample;
 using QuantProject.Business.Strategies.OutOfSample;
 using QuantProject.Business.Strategies.Logging;
 using QuantProject.Business.Strategies.ReturnsManagement;

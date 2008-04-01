@@ -31,6 +31,7 @@ using QuantProject.Business.Strategies;
 using QuantProject.Business.Financial.Accounting.AccountProviding;
 using QuantProject.Business.Strategies.Eligibles;
 using QuantProject.Business.Strategies.EquityEvaluation;
+using QuantProject.Business.Strategies.InSample;
 using QuantProject.Business.Strategies.Logging;
 using QuantProject.Business.Strategies.Optimizing.Decoding;
 using QuantProject.Business.Strategies.Optimizing.FitnessEvaluation;

@@ -28,6 +28,7 @@ using QuantProject.Business.DataProviders;
 using QuantProject.Business.Financial.Accounting;
 using QuantProject.Business.Strategies;
 using QuantProject.Business.Strategies.Eligibles;
+using QuantProject.Business.Strategies.InSample;
 using QuantProject.Business.Strategies.Logging;
 using QuantProject.Business.Strategies.ReturnsManagement;
 using QuantProject.Business.Strategies.ReturnsManagement.Time;
