@@ -75,12 +75,13 @@
     <Compile Include="a2_Strategies\EndOfDayStrategies\BasicEndOfDayStrategyForBacktester.cs" />
     <Compile Include="a2_Strategies\EndOfDayStrategyBackTester.cs" />
     <Compile Include="a2_Strategies\IEndOfDayStrategyForBacktester.cs" />
-    <Compile Include="a2_Strategies\IInSampleChooser.cs" />
     <Compile Include="a2_Strategies\InSample\BruteForceChooser.cs" />
     <Compile Include="a2_Strategies\InSample\ConstantWeightedPositionsChooser.cs" />
     <Compile Include="a2_Strategies\InSample\DummyInSampleChooser.cs" />
     <Compile Include="a2_Strategies\InSample\GeneticChooser.cs" />
+    <Compile Include="a2_Strategies\InSample\IInSampleChooser.cs" />
     <Compile Include="a2_Strategies\Logging\BackTestLog.cs" />
+    <Compile Include="a2_Strategies\Logging\DummyLogItem.cs" />
     <Compile Include="a2_Strategies\Logging\ILogDescriptor.cs" />
     <Compile Include="a2_Strategies\Logging\LogItem.cs" />
     <Compile Include="a2_Strategies\Logging\NewLogItemEventArgs.cs" />
