@@ -25,6 +25,7 @@ using System;
 using QuantProject.Business.DataProviders;
 using QuantProject.Business.Strategies;
 using QuantProject.Business.Strategies.Eligibles;
+using QuantProject.Business.Strategies.InSample;
 using QuantProject.Business.Strategies.Logging;
 using QuantProject.Business.Strategies.OutOfSample;
 using QuantProject.Business.Strategies.ReturnsManagement;
@@ -47,17 +48,19 @@ namespace QuantProject.Scripts.WalkForwardTesting.PairsTrading
 			maxThresholdForGoingLong,
 			minThresholdForGoingShort,
 			maxThresholdForGoingShort;
+			
+		private IHistoricalQuoteProvider
+			historicalQuoteProviderForChosingPositionsOutOfSample;
 
-		private HistoricalAdjustedQuoteProvider
-			historicalAdjustedQuoteProvider;
-		
 		public PairsTradingStrategy(
 			int numDaysBeetweenEachOtpimization ,
 			int numDaysForInSampleOptimization ,
 			IIntervalsSelector intervalsSelector ,
 			IEligiblesSelector eligiblesSelector ,
 			IInSampleChooser inSampleChooser ,
-			IHistoricalQuoteProvider historicalQuoteProvider ,
+			IHistoricalQuoteProvider historicalQuoteProviderForInSample ,
+			IHistoricalQuoteProvider
+			historicalQuoteProviderForChosingPositionsOutOfSample ,
 			double minThresholdForGoingLong ,
 			double maxThresholdForGoingLong ,
 			double minThresholdForGoingShort ,
@@ -68,15 +71,15 @@ namespace QuantProject.Scripts.WalkForwardTesting.PairsTrading
 			intervalsSelector ,
 			eligiblesSelector ,
 			inSampleChooser ,
-			historicalQuoteProvider )
+			historicalQuoteProviderForInSample )
 		{
 			this.minThresholdForGoingLong = minThresholdForGoingLong;
 			this.maxThresholdForGoingLong = maxThresholdForGoingLong;
 			this.minThresholdForGoingShort = minThresholdForGoingShort;
 			this.maxThresholdForGoingShort = maxThresholdForGoingShort;
 
-			this.historicalAdjustedQuoteProvider =
-				new HistoricalAdjustedQuoteProvider();
+			this.historicalQuoteProviderForChosingPositionsOutOfSample =
+				historicalQuoteProviderForChosingPositionsOutOfSample;				
 		}
 		
 		protected override string getTextIdentifier()
@@ -166,9 +169,12 @@ namespace QuantProject.Scripts.WalkForwardTesting.PairsTrading
 		{
 			ReturnIntervals returnIntervals =
 				this.getReturnIntervalsForLastSecondPhaseInterval();
+//			ReturnsManager returnsManager =
+//				new ReturnsManager( returnIntervals ,
+//				this.historicalAdjustedQuoteProvider );
 			ReturnsManager returnsManager =
 				new ReturnsManager( returnIntervals ,
-				this.historicalAdjustedQuoteProvider );
+				this.historicalQuoteProviderForChosingPositionsOutOfSample );
 			return returnsManager;
 		}
 		#endregion getReturnsManagerForLastSecondPhaseInterval
