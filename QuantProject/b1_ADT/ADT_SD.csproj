@@ -53,7 +53,9 @@
     <Compile Include="ExtendedDateTime.cs" />
     <Compile Include="HashProvider.cs" />
     <Compile Include="Optimizing\BruteForce\BestParametersManager.cs" />
-    <Compile Include="Optimizing\BruteForce\CombinationBasedBruteForceOptimizableParametersManager.cs" />
+    <Compile Include="Optimizing\BruteForce\ParametersManagers\BruteForceOptimizableParametersManagerWithoutEquivalentsAsTopBestParameters.cs" />
+    <Compile Include="Optimizing\BruteForce\ParametersManagers\CombinationBasedBruteForceOptimizableParametersManager.cs" />
+    <Compile Include="Optimizing\BruteForce\ParametersManagers\IBruteForceOptimizableParametersManager.cs" />
     <Compile Include="Optimizing\Fitness\FitnessComparer.cs" />
     <Compile Include="Optimizing\Fitness\IWithFitness.cs" />
     <Compile Include="OutOfRangeException.cs" />
@@ -91,7 +93,6 @@
     <Compile Include="Collections\QPHashtable.cs" />
     <Compile Include="Optimizing\BruteForce\BruteForceOptimizableParameters.cs" />
     <Compile Include="Optimizing\BruteForce\BruteForceOptimizer.cs" />
-    <Compile Include="Optimizing\BruteForce\IBruteForceOptimizableParametersManager.cs" />
     <Compile Include="Statistics\Combinatorial\Combination.cs" />
     <Compile Include="ExtendedMath.cs" />
     <Compile Include="Collections\CollectionManager.cs" />
@@ -101,6 +102,7 @@
   <ItemGroup>
     <Folder Include="Messaging" />
     <Folder Include="Optimizing\BruteForce" />
+    <Folder Include="Optimizing\BruteForce\ParametersManagers" />
     <Folder Include="Optimizing\Decoding" />
     <Folder Include="Optimizing\Fitness" />
     <Folder Include="Statistics\Combinatorial" />
