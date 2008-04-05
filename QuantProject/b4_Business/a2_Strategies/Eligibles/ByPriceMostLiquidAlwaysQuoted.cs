@@ -56,8 +56,13 @@ namespace QuantProject.Business.Strategies.Eligibles
 		public string Description
 		{
 			get{
-				return "Elgbls_prcRng" + this.minPrice + "_" + this.maxPrice +
-					"_mstLqd_alwsQtd";
+				return "From_" + this.tickersGroupID + " (temporized: " +
+					this.temporizedGroup.ToString() + ")\n" +
+					"MaxNumOfEligibles_" + this.maxNumberOfEligibleTickersToBeChosen.ToString() + "\n" +
+					"AverageRawOpenPriceRange(computed for the last " + 
+					this.numOfDaysForAverageOpenRawPriceComputation.ToString() + "):\n" +
+					"From_" + this.minPrice + "_to_" + this.maxPrice + "\n" +
+					"Most Liquid and Always Quoted at each market day (^GSPC) for the in sample time frame";
 			}
 		}
 				
@@ -95,7 +100,7 @@ namespace QuantProject.Business.Strategies.Eligibles
       	                                  currentDate.AddDays(-this.numOfDaysForAverageOpenRawPriceComputation),
       	                                  currentDate,
       	                                  numOfTickersInGroupAtCurrentDate,
-      	                                  this.minPrice,this.maxPrice, 0.0001,100);
+      	                                  this.minPrice,this.maxPrice, double.MinValue,double.MaxValue);
       SelectorByLiquidity mostLiquidSelector =
       	new SelectorByLiquidity(byPrice.GetTableOfSelectedTickers(),
         false, endOfDayHistory.FirstEndOfDayDateTime.DateTime, currentDate,
