@@ -85,6 +85,7 @@ namespace QuantProject.Business.Strategies.Eligibles
 			EndOfDayHistory endOfDayHistory )
 		{
 			DateTime currentDate = endOfDayHistory.LastEndOfDayDateTime.DateTime; 
+
 			SelectorByGroup group;
 			if(this.temporizedGroup)
 			//the group is "temporized": returned set of tickers
@@ -94,24 +95,37 @@ namespace QuantProject.Business.Strategies.Eligibles
       else//the group is not temporized
       	group = new SelectorByGroup(this.tickersGroupID);
       DataTable tickersFromGroup = group.GetTableOfSelectedTickers();
+
       int numOfTickersInGroupAtCurrentDate = tickersFromGroup.Rows.Count;
       SelectorByAverageRawOpenPrice byPrice =
-      		new SelectorByAverageRawOpenPrice(tickersFromGroup,false,
-      	                                  currentDate.AddDays(-this.numOfDaysForAverageOpenRawPriceComputation),
-      	                                  currentDate,
-      	                                  numOfTickersInGroupAtCurrentDate,
-      	                                  this.minPrice,this.maxPrice, double.MinValue,double.MaxValue);
-      SelectorByLiquidity mostLiquidSelector =
-      	new SelectorByLiquidity(byPrice.GetTableOfSelectedTickers(),
+				new SelectorByAverageRawOpenPrice(tickersFromGroup,false,
+				currentDate.AddDays(-this.numOfDaysForAverageOpenRawPriceComputation),
+				currentDate,
+				numOfTickersInGroupAtCurrentDate,
+				this.minPrice,this.maxPrice, double.MinValue,double.MaxValue);
+			DataTable dataTableByPrice =
+				byPrice.GetTableOfSelectedTickers();
+
+			SelectorByLiquidity mostLiquidSelector =
+				new SelectorByLiquidity( dataTableByPrice ,
         false, endOfDayHistory.FirstEndOfDayDateTime.DateTime, currentDate,
         this.maxNumberOfEligibleTickersToBeChosen);
+      DataTable dataTableMostLiquid =
+				mostLiquidSelector.GetTableOfSelectedTickers();
+
+//			DataSet dataSet = new DataSet();
+//			dataSet.Tables.Add( dataTableMostLiquid );
+//			dataSet.WriteXml( "c:\\qpReports\\pairsTrading\\eligiblesCon_ByPriceMostLiquidAlwaysQuoted.xml" );
+
       SelectorByQuotationAtEachMarketDay quotedAtEachMarketDayFromLastSelection = 
-        new SelectorByQuotationAtEachMarketDay(mostLiquidSelector.GetTableOfSelectedTickers(),
+        new SelectorByQuotationAtEachMarketDay( dataTableMostLiquid ,
         false, endOfDayHistory.History,
         this.maxNumberOfEligibleTickersToBeChosen);
+      DataTable dataTableToBeReturned =
+				quotedAtEachMarketDayFromLastSelection.GetTableOfSelectedTickers();
 			
       return
-				new EligibleTickers( quotedAtEachMarketDayFromLastSelection.GetTableOfSelectedTickers() );
+				new EligibleTickers( dataTableToBeReturned );
 		}
 		
 		private void getEligibleTickers_sendNewMessage(
