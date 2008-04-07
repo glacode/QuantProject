@@ -121,11 +121,15 @@ namespace QuantProject.Business.Strategies.Eligibles
 			//				new SelectorByGroup( this.tickerGroupID , dateTime );
 			//			DataTable groupTickers = selectorByGroup.GetTableOfSelectedTickers();
 			SelectorByLiquidity mostLiquid =
-				new SelectorByLiquidity( this.tickersGroupID , true ,
+				new SelectorByLiquidity( this.tickersGroupID , false ,
 				endOfDayHistory.FirstEndOfDayDateTime.DateTime ,
-				endOfDayHistory.LastEndOfDayDateTime.DateTime , 0 ,
+				endOfDayHistory.LastEndOfDayDateTime.DateTime ,
 				this.maxNumberOfEligibleTickersToBeChosen );
 			DataTable groupTickers = mostLiquid.GetTableOfSelectedTickers();
+
+			DataSet dataSet = new DataSet();
+			dataSet.Tables.Add( groupTickers );
+			dataSet.WriteXml( "c:\\qpReports\\pairsTrading\\eligiblesCon_MostLiquidAndLessVolatile.xml" );
 
 			
 			//			SelectorByLiquidity mostLiquid =
