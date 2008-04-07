@@ -85,6 +85,12 @@ namespace QuantProject.Scripts.WalkForwardTesting.PairsTrading
 				new MostLiquidAndLessVolatile(
 				tickersGroupId ,
 				maxNumberOfEligiblesToBeChosen );
+			this.eligiblesSelector =
+				new ByPriceMostLiquidAlwaysQuoted(
+					tickersGroupId ,
+					true ,
+					maxNumberOfEligiblesToBeChosen ,
+					10 , 0 , 99999 );					
 		}
 
 		protected override void setInSampleChooser()
@@ -128,7 +134,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.PairsTrading
 		{
 			int inSampleDays = 180;
 			// uncomment the following line for a faster script
-//			inSampleDays = 5; inSampleDays = 60;
+//			inSampleDays = 5; // inSampleDays = 60;
 			
 			IIntervalsSelector intervalsSelector =
 				new OddIntervalsSelector( 1 , 1 , this.benchmark );
@@ -149,7 +155,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.PairsTrading
 
 			DateTime firstDateTime = new DateTime( 2001 , 1 , 4 );
 			DateTime lastDateTime = new DateTime( 2004 , 12 , 31 );
-			double maxRunningHours = 9;
+			double maxRunningHours = 7.5;
 			
 			this.endOfDayStrategyBackTester =
 				new EndOfDayStrategyBackTester(
