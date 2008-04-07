@@ -129,10 +129,13 @@ namespace QuantProject.DataAccess.Tables
     /// </summary>
     public static DataTable GetTickers( string groupID)
     {
+
       /// TO DO use a join in order to return a table with tiTicker and company name  
-      return SqlExecutor.GetDataTable("SELECT DISTINCT " + Tickers_tickerGroups.Ticker + " FROM tickers_tickerGroups " +
+      string sql =
+				"SELECT DISTINCT " + Tickers_tickerGroups.Ticker + " FROM tickers_tickerGroups " +
           "WHERE " + Tickers_tickerGroups.GroupID + "='" +
-          groupID + "'");
+          groupID + "'";
+			return SqlExecutor.GetDataTable( sql );
     }
     
     /// <summary>
