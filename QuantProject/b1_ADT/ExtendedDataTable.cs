@@ -57,9 +57,9 @@ namespace QuantProject.ADT
       string sortDirection = " DESC";
       if(sortByASC)
         sortDirection = " ASC";
-      
-      DataRow[] orderedRows = tableToCopyAndSort.Select(filterExpression, sortingFieldName + sortDirection);
-      for(int i = 0;i<orderedRows.Length;i++)
+
+			DataRow[] orderedRows = tableToCopyAndSort.Select(filterExpression, sortingFieldName + sortDirection);
+			for(int i = 0;i<orderedRows.Length;i++)
       {
         copyOfTableToCopyAndSort.ImportRow(orderedRows[i]);
       }
