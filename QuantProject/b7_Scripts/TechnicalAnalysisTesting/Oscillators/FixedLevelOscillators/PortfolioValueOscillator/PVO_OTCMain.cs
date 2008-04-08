@@ -43,6 +43,7 @@ using QuantProject.Presentation;
 using QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOscillators.PortfolioValueOscillator.InSampleChoosers;
 using QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOscillators.PortfolioValueOscillator.Decoding;
 using QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOscillators.PortfolioValueOscillator.FitnessEvaluators;
+using QuantProject.Scripts.General;
 using QuantProject.Scripts.General.Logging;
 using QuantProject.Scripts.General.Reporting;
 
@@ -54,189 +55,135 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOs
 	/// parameter had to be changed, this is the place where it should
 	/// be done
 	/// </summary>
-	public class PVO_OTCMain
+	public class PVO_OTCMain : BasicScriptForBacktesting
 	{
-		private string strategyIdentifier;
-		private string fileNameWithoutExt;
-		private string dirNameWhereToSaveResults;
-				
+		private Benchmark benchmark;
+		private HistoricalQuoteProvider historicalQuoteProvider;
+		
 		public PVO_OTCMain()
 		{
-			this.strategyIdentifier = "PVO_OTC";
+			this.benchmark = new Benchmark( "BMC" );
+
+			this.historicalQuoteProvider =
+				new HistoricalAdjustedQuoteProvider();
+
+			// definition for the Fitness Evaluator
+			//      IEquityEvaluator equityEvaluator = new SharpeRatio();
 		}
-		
-		private void setFileNamesAndDirectory(EndOfDayStrategyBackTester endOfDayStrategyBackTester)
+
+		protected override void setEligiblesSelector()
 		{
-			if(this.fileNameWithoutExt == null)
-			{
-				this.fileNameWithoutExt = this.strategyIdentifier + "_" +
-																	DateTime.Now.Hour.ToString().PadLeft(2,'0') + "_" +
-    															DateTime.Now.Minute.ToString().PadLeft(2,'0') + "_" +
-																	DateTime.Now.Second.ToString().PadLeft(2,'0');
-			  this.dirNameWhereToSaveResults = System.Configuration.ConfigurationSettings.AppSettings["LogArchive"] +
-                         								 "\\" + fileNameWithoutExt + "\\";
-      
-      	if( !Directory.Exists(dirNameWhereToSaveResults) )
-    			Directory.CreateDirectory(dirNameWhereToSaveResults);
-			}
-		}
-		
-		#region Run
-		private MessageManager setMessageManager(
-			IEligiblesSelector eligiblesSelector ,
-			IInSampleChooser inSampleChooser ,
-			IEndOfDayStrategy endOfDayStrategy ,
-			EndOfDayStrategyBackTester endOfDayStrategyBackTester )
-		{
-			this.setFileNamesAndDirectory(endOfDayStrategyBackTester);
+			int maxNumberOfEligiblesToBeChosen = 100;
 			
-      string fullPathFileNameForMessagesLog = dirNameWhereToSaveResults + 
-      																				this.fileNameWithoutExt +
-      																				"LogMessages.txt";
-			MessageManager messageManager =
-				new MessageManager( fullPathFileNameForMessagesLog );
-			messageManager.Monitor( eligiblesSelector );
-			messageManager.Monitor( inSampleChooser );
-			//			messageManager.Monitor( endOfDayStrategy );
-			messageManager.Monitor( endOfDayStrategyBackTester );
-			return messageManager;
+			string tickersGroupId = "SP500";
+			// uncomment the following line for a faster script
+			//tickersGroupId = "fastTest";
+
+//			this.eligiblesSelector =
+//				new MostLiquidAndLessVolatile(
+//				tickersGroupId ,
+//				maxNumberOfEligiblesToBeChosen );
+			
+			bool temporizedGroup = true;
+			int numDaysForAverageRawOpenPriceComputation = 20;
+			double minPrice = 20;
+			double maxPrice = 7000;
+			
+			this.eligiblesSelector =
+				new ByPriceMostLiquidAlwaysQuoted(
+				tickersGroupId , temporizedGroup ,
+				maxNumberOfEligiblesToBeChosen ,
+			  numDaysForAverageRawOpenPriceComputation ,
+			 	minPrice , maxPrice );
+			this.eligiblesSelector = 
+				new DummyEligibleSelector();
 		}
 
-		// TO DO check if you can add this to QuantProject.Presentation.Reporting.WindowsForm.Report
-		// as a public method or as a new constructor
-//		private void showReport(
-//			DateTime lastDateTimeRequestedForTheScript ,
-//			EndOfDayStrategyBackTester endOfDayStrategyBackTester )
-//		{			
-////			DateTime lastReportDateTime = ExtendedDateTime.Min(
-////				lastDateTimeRequestedForTheScript ,
-////				endOfDayStrategyBackTester.EndOfDayTimer.GetCurrentTime().DateTime );
-//			DateTime lastReportDateTime =
-//				endOfDayStrategyBackTester.ActualLastDateTime;
-//			Report report = new Report(
-//				endOfDayStrategyBackTester.AccountReport ,
-//				true );
-//			report.Create( endOfDayStrategyBackTester.DescriptionForLogFileName , 1 ,
-//				new EndOfDayDateTime( lastReportDateTime ,
-//				EndOfDaySpecificTime.OneHourAfterMarketClose ) ,
-//				endOfDayStrategyBackTester.Benchmark.Ticker );
-//			report.Show();
-//		}
-		
-		//Saves (in silent mode):
-		//- a log file where the In Sample Analysis are
-		//  stored;
-		//- a report;
-		//- a txt file with a full description of the
-		//  strategy's features
-		private void saveScriptResults( EndOfDayStrategyBackTester endOfDayStrategyBackTester )
+		protected override void setInSampleChooser()
 		{
-			this.setFileNamesAndDirectory(endOfDayStrategyBackTester);
-      string fullPathFileNameForLog = dirNameWhereToSaveResults +
-      																this.fileNameWithoutExt + ".qpL";
-      string fullPathFileNameForReport = dirNameWhereToSaveResults + 
-      																	 this.fileNameWithoutExt + ".qpR";
-      string fullPathFileNameForParametersLog = dirNameWhereToSaveResults + 
-      																					this.fileNameWithoutExt + "_Parameters.txt";
-      ObjectArchiver.Archive(endOfDayStrategyBackTester.Log,
-                             fullPathFileNameForLog);
-      ObjectArchiver.Archive(endOfDayStrategyBackTester.AccountReport,
-                             fullPathFileNameForReport);
-      StreamWriter w = File.AppendText(fullPathFileNameForParametersLog);
-      w.WriteLine ("\n---\r\n");
-      w.WriteLine ( endOfDayStrategyBackTester.Description );
-      w.WriteLine ("\n---\r\n");
-			w.Flush();
-			w.Close();
- 		}
-
-		public void Run()
-		{
-			//general
-			DateTime firstDateTime = new DateTime( 2000 , 6 , 1 );
-			DateTime lastDateTime = new DateTime( 2005 , 12 , 31 );
-			double maxRunningHours = 1.5;
-			Benchmark benchmark = new Benchmark( "^GSPC" );
-			// definition for the Fitness Evaluator (for
-			// objects that use it)
-      //IEquityEvaluator equityEvaluator = new SharpeRatio();
-     	//cash and portfolio type
-			double cashToStart = 30000;
-			//int numberOfPortfolioPositions = 4;
-			      
-			// parameters for the in sample Chooser
-			//double crossoverRate = 0.85;
-			//double mutationRate = 0.02;
-			//double elitismRate = 0.001;
-			//int populationSizeForGeneticOptimizer = 500;
-//			int generationNumberForGeneticOptimizer = 10;
-			int numberOfBestTestingPositionsToBeReturnedInSample = 8;
+			// parameters for the genetic optimizer
+//			double crossoverRate = 0.85;
+//			double mutationRate = 0.02;
+//			double elitismRate = 0.001;
+//			int populationSizeForGeneticOptimizer = 3000;
+//			int generationNumberForGeneticOptimizer = 4;
 //			int seedForRandomGenerator =
 //				QuantProject.ADT.ConstantsProvider.SeedForRandomGenerator;
-      int numDaysBetweenEachOptimization = 15;
-//			int minLevelForOversoldThreshold = 50;
-//      int maxLevelForOversoldThreshold = 100;
-//      int minLevelForOverboughtThreshold = 50;
-//      int maxLevelForOverboughtThreshold = 100;
-//      int divisorForThresholdComputation = 10000;
-//      int numDaysForOscillatingPeriodForChooser = 1; //for genetic optimization
-//      bool symmetricalThresholds = true;
-//      bool overboughtMoreThanOversoldForFixedPortfolio = false;
-//      double maxAcceptableCloseToCloseDrawdown = 0.03;
-//      double minimumAcceptableGain = 0.008;
-//      IDecoderForTestingPositions decoderForTestingPositions
-//      	= new BasicDecoderForPVOPositions(symmetricalThresholds, divisorForThresholdComputation ,
-//																				  numDaysForOscillatingPeriodForChooser);
-//      IFitnessEvaluator	fitnessEvaluator =
-//				new PVOFitnessEvaluator( equityEvaluator );
-      HistoricalQuoteProvider historicalQuoteProviderForBackTester,
-															historicalQuoteProviderForInSampleChooser,
-															historicalQuoteProviderForStrategy;
-			historicalQuoteProviderForBackTester =
-				new HistoricalAdjustedQuoteProvider();
-			historicalQuoteProviderForInSampleChooser = historicalQuoteProviderForBackTester;
-			historicalQuoteProviderForStrategy = historicalQuoteProviderForInSampleChooser;
-						
-			IInSampleChooser inSampleChooser =
-				new PVO_OTCCorrelationChooser(numberOfBestTestingPositionsToBeReturnedInSample);
-			//parameters for eligiblesSelector
-			bool temporizedGroup = true;
-			double minRawOpenPrice = 25;
-			double maxRawOpenPrice = 500;
-			int numDaysForAverageOpenRawPrice = 20;
-			string tickersGroupId = "SP500";
-      int maxNumberOfEligiblesToBeChosen = 100;
-			IEligiblesSelector eligiblesSelector =
-				new ByPriceMostLiquidAlwaysQuoted(
-				tickersGroupId , temporizedGroup, maxNumberOfEligiblesToBeChosen,
-				numDaysForAverageOpenRawPrice ,
-				minRawOpenPrice , maxRawOpenPrice );
-			//strategyParameters
-			double oversoldThreshold = 0.0075;
-			double overboughtThreshold = 0.0075;
-			int inSampleDays = 120;
-			PVO_OTCStrategy strategy =
-				new PVO_OTCStrategy(eligiblesSelector,
-					inSampleChooser, inSampleDays,
-					benchmark ,
-					numDaysBetweenEachOptimization ,
-					oversoldThreshold , overboughtThreshold ,
-					historicalQuoteProviderForStrategy );
-			
-			EndOfDayStrategyBackTester endOfDayStrategyBackTester =
-				new EndOfDayStrategyBackTester(
-					this.strategyIdentifier , strategy ,
-				historicalQuoteProviderForBackTester , new SimpleAccountProvider(),firstDateTime ,
-					lastDateTime , benchmark , cashToStart , maxRunningHours );
 
-			MessageManager messageManager = this.setMessageManager(
-				eligiblesSelector , inSampleChooser ,
-				strategy , endOfDayStrategyBackTester );
-			endOfDayStrategyBackTester.Run();
-			this.saveScriptResults(endOfDayStrategyBackTester);
+//			IDecoderForTestingPositions decoderForWeightedPositions =
+//				new DecoderForPairsTradingTestingPositionsWithBalancedWeights();
+
+			double maxCorrelationAllowed = 0.96;
+			int numberOfBestTestingPositionsToBeReturned = 10;
+			bool balancedWeightsOnVolatilityBase = true;
+			float minimumAbsoluteReturnValue = 0.000001f;
+			float maximumAbsoluteReturnValue = 100000f;
+			//correlation is computed only for returns
+			//between minimum and maximum
+			this.inSampleChooser =
+				new PVO_OTCCorrelationChooser(numberOfBestTestingPositionsToBeReturned, 
+						maxCorrelationAllowed , balancedWeightsOnVolatilityBase,
+					  minimumAbsoluteReturnValue , maximumAbsoluteReturnValue);
+			this.inSampleChooser = 
+				new PVOChooserFromSavedBackTestLog(
+					@"C:\Utente\MarcoVarie\Vari\qP\LogArchive\2008_04_07_12_17_18_PVO_OTC_from_2001_01_01_to_2001_03_31_annlRtrn_232,37_maxDD_5,04\2008_04_07_12_17_18_PVO_OTC_from_2001_01_01_to_2001_03_31_annlRtrn_232,37_maxDD_5,04.qpL");
 		}
 
-		#endregion Run
-				
+		protected override void setEndOfDayStrategy()
+		{
+			int inSampleDays = 180;
+			// uncomment the following line for a faster script
+			//inSampleDays = 50;
+			int numDaysBetweenEachOptimization = 7;
+			double oversoldThreshold = 0.006;
+			double overboughtThreshold = 0.006;
+			this.endOfDayStrategy =
+				new PVO_OTCStrategy(eligiblesSelector ,inSampleChooser ,
+				inSampleDays , benchmark , numDaysBetweenEachOptimization ,
+				oversoldThreshold , overboughtThreshold , historicalQuoteProvider);
+		}
+		protected override void setEndOfDayStrategyBackTester()
+		{
+			string backTestId = "PVO_OTC";
+			IAccountProvider accountProvider = new SimpleAccountProvider();
+			double cashToStart = 30000;
+
+			DateTime firstDateTime = new DateTime( 2001 , 1 , 1 );
+			DateTime lastDateTime = new DateTime( 2001 , 3, 31 );
+			double maxRunningHours = 3;
+			
+			this.endOfDayStrategyBackTester =
+				new EndOfDayStrategyBackTester(
+				backTestId , this.endOfDayStrategy ,
+				historicalQuoteProvider , accountProvider ,
+				firstDateTime ,	lastDateTime ,
+				this.benchmark , cashToStart , maxRunningHours );
+		}
+
+		protected override string getPathForTheMainFolderWhereScriptsResultsAreToBeSaved()
+		{
+			string pathForTheMainFolderWhereScriptsResultsAreToBeSaved =
+				System.Configuration.ConfigurationSettings.AppSettings["LogArchive"];
+			return pathForTheMainFolderWhereScriptsResultsAreToBeSaved;
+		}
+
+		protected override string getCustomSmallTextForFolderName()
+		{
+			return "PVO_OTC";
+		}
+
+		protected override string getFullPathFileNameForMain()
+		{
+			string returnValue;
+			string fullPathFileNameForMainAtHome = 
+				@"C:\Quant\QuantProject\b7_Scripts\TechnicalAnalysisTesting\Oscillators\FixedLevelOscillators\PortfolioValueOscillator\PVO_OTCMain.cs";
+			if( File.Exists(fullPathFileNameForMainAtHome) )
+				returnValue = fullPathFileNameForMainAtHome;
+			else
+				returnValue = 
+					@"C:\Utente\MarcoVarie\Vari\qP\QuantProject\b7_Scripts\TechnicalAnalysisTesting\Oscillators\FixedLevelOscillators\PortfolioValueOscillator\PVO_OTCMain.cs";
+			
+			return returnValue;
+		}
 	}
 }
