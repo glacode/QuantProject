@@ -77,6 +77,7 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOs
 		//of sample testing
 		protected PVOPositions pvoPositionsForOutOfSample;
     protected DateTime lastCloseDate;
+		protected DateTime lastOptimizationDateTime;
     protected Account account;
     public Account Account
 		{
@@ -293,7 +294,7 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOs
 		private PVO_OTCLogItem getLogItem( EligibleTickers eligibleTickers )
 		{
 			PVO_OTCLogItem logItem =
-				new PVO_OTCLogItem( this.now() );
+				new PVO_OTCLogItem( this.now() , this.inSampleDays );
 			logItem.BestPVOPositionsInSample =
 				this.chosenPVOPositions;
 			logItem.NumberOfEligibleTickers =
@@ -370,6 +371,22 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOs
 			this.logOptimizationInfo(eligibles);
     }
     
+		private bool optimalTestingPositionsAreToBeUpdated()
+		{
+			bool areToBeUpdated = false;
+			if(this.inSampleChooser != null)
+			{
+				DateTime dateTimeForNextOptimization =
+					this.lastOptimizationDateTime.AddDays(
+					this.numDaysBetweenEachOptimization );
+				areToBeUpdated =
+					( ( ( this.account.Portfolio.Count == 0 )
+					&& ( ( this.lastOptimizationDateTime == DateTime.MinValue ) ) ) ||
+					( this.now().DateTime >= dateTimeForNextOptimization ) );
+			}
+			return areToBeUpdated;
+		}
+
     /// <summary>
     /// Handles a "One hour after market close" event.
     /// </summary>
@@ -380,15 +397,20 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOs
     {
       this.lastCloseDate = endOfDayTimingEventArgs.EndOfDayDateTime.DateTime;
       this.numDaysElapsedSinceLastOptimization++;
-      if((this.numDaysElapsedSinceLastOptimization == 
-            this.numDaysBetweenEachOptimization))
-      //num days without optimization has elapsed
+//OLD - numDaysBetweenEachOptimization --> market days      
+//			if( this.account.Transactions.Count <= 1 || 
+//				  (this.numDaysElapsedSinceLastOptimization == 
+//            this.numDaysBetweenEachOptimization) )
+				//num days without optimization has elapsed or
+				//no transaction, except for adding cash, has been executed	
+//NEW - numDaysBetweenEachOptimization --> calendar days 
+			if ( this.optimalTestingPositionsAreToBeUpdated() )
       {
         this.updateTestingPositions(endOfDayTimingEventArgs.EndOfDayDateTime.DateTime);
         //sets tickers to be chosen next Market Close event
         this.numDaysElapsedSinceLastOptimization = 0;
+				this.lastOptimizationDateTime = this.now().DateTime;
       }
-		      
     }
 		#endregion
   }
