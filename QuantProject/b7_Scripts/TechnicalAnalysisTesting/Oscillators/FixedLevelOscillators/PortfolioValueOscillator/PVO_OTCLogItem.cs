@@ -46,13 +46,14 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOs
   public class PVO_OTCLogItem : PVOLogItem
   {
 		
-		public PVO_OTCLogItem(EndOfDayDateTime endOfDayDateTime )
-			: base( endOfDayDateTime )
+		public PVO_OTCLogItem(EndOfDayDateTime endOfDayDateTime,
+  	                      int numberOfInSampleDays)
+			: base( endOfDayDateTime , numberOfInSampleDays )
 		{
 			
 		}
 		
-		public override void Run()
+		protected override void runStrategyClickEventHandler(object sender, System.EventArgs e)
 		{
 			//general
 			int inSampleDays = 120;
