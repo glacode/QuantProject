@@ -79,7 +79,7 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOs
 			SignedTickers signedTickers =	this.decodeSignedTickers();
 			this.decodeDecodable_setThresholds();
 			PVOPositions pvoPositions =	new PVOPositions(
-					new WeightedPositions( this.getWeights(), signedTickers),
+					new WeightedPositions( this.getWeights(signedTickers), signedTickers),
 				  this.oversoldThreshold, this.overboughtThreshold,
 				  this.numDaysForOscillatingPeriod);
 	

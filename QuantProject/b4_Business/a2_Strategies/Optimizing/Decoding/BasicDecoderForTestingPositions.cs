@@ -133,13 +133,20 @@ namespace QuantProject.Business.Strategies.Optimizing.Decoding
 
 		#region decodeDecodable
 		
-		protected virtual double[] getWeights()
+		protected virtual double[] getWeights(SignedTickers signedTickers)
 		{
 			//in this implementation encoded doesn't contain
 			//information for weights: so weights are all the same
 			double[] weights = new double[this.tickerRelatedGeneValues.Length];
+			double coefficient;
 			for(int i = 0; i<weights.Length; i++)
-				weights[i] = 1.0 / weights.Length;
+			{	
+				if(signedTickers[i].IsLong)
+					coefficient = 1.0;
+				else//is Short
+					coefficient = -1.0;
+				weights[i] = coefficient / weights.Length;
+			}
 			return weights;
 		}
 		
@@ -155,7 +162,7 @@ namespace QuantProject.Business.Strategies.Optimizing.Decoding
 		protected virtual TestingPositions decodeDecodable()
 		{
 			SignedTickers signedTickers =	this.decodeSignedTickers();
-			double[] weights = this.getWeights();
+			double[] weights = this.getWeights(signedTickers);
 			TestingPositions testingPositions =
 				this.getTestingPositions(
 					weights , signedTickers.Tickers );

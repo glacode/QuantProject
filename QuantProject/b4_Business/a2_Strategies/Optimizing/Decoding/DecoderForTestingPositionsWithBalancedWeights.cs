@@ -50,10 +50,10 @@ namespace QuantProject.Business.Strategies.Optimizing.Decoding
 //			}
 //		}
 
-		protected override double[] getWeights()
+		protected override double[] getWeights(SignedTickers signedTickers)
 		{
 			return WeightedPositions.GetBalancedWeights( 
-			        this.decodeSignedTickers(),	this.returnsManager );
+			        signedTickers,	this.returnsManager );
 		}
 
 		protected override string getDescription()
