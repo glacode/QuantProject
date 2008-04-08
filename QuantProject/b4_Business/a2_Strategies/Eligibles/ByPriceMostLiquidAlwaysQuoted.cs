@@ -98,12 +98,12 @@ namespace QuantProject.Business.Strategies.Eligibles
 
       int numOfTickersInGroupAtCurrentDate = tickersFromGroup.Rows.Count;
       SelectorByAverageRawOpenPrice byPrice =
-				new SelectorByAverageRawOpenPrice(tickersFromGroup,false,
-				currentDate.AddDays(-this.numOfDaysForAverageOpenRawPriceComputation),
-				currentDate,
-				numOfTickersInGroupAtCurrentDate,
-				this.minPrice,this.maxPrice, double.MinValue,double.MaxValue);
-			DataTable dataTableByPrice =
+      		new SelectorByAverageRawOpenPrice(tickersFromGroup,false,
+      	                                  currentDate.AddDays(-this.numOfDaysForAverageOpenRawPriceComputation),
+      	                                  currentDate,
+      	                                  numOfTickersInGroupAtCurrentDate,
+      	                                  this.minPrice,this.maxPrice, 0.00001, double.MaxValue);
+     	DataTable dataTableByPrice =
 				byPrice.GetTableOfSelectedTickers();
 
 			SelectorByLiquidity mostLiquidSelector =
