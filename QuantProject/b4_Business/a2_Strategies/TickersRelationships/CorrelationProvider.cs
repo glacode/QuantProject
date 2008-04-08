@@ -50,16 +50,18 @@ namespace QuantProject.Business.Strategies.TickersRelationships
 		protected EndOfDayDateTime lastEndOfDayDateTime;
 		protected int returnIntervalLength;
 		protected string benchmark;
-
-
+		
 		private void correlationProvider_commonInitialization(string[] tickersToAnalyze,
 			float minimumAbsoluteReturnValue, float maximumAbsoluteReturnValue)
 		{
 			this.tickers = tickersToAnalyze;
 			this.minimumAbsoluteReturnValue = minimumAbsoluteReturnValue;
 			this.maximumAbsoluteReturnValue = maximumAbsoluteReturnValue;
-			this.numOfCombinationTwoByTwo =
-				(int)((Math.Pow(this.tickers.Length, 2) - this.tickers.Length ) / 2);
+			int n = this.tickers.Length;
+			//combinations without repetitions:
+			//n_fatt /( k_fatt * (n-k)_fatt ): when k = 2,
+			// it can be reduced to this simple formula:
+			this.numOfCombinationTwoByTwo = n * (n - 1) / 2;
 		}
 
 
@@ -163,9 +165,8 @@ namespace QuantProject.Business.Strategies.TickersRelationships
 				secondTickerSignificantReturns );
 			
 			if ( Double.IsNaN(returnValue) || Double.IsInfinity(returnValue) )
-				throw new Exception( "correlation can't be computed for these two tickers: "+
-														this.tickers[indexOfFirstTicker] + " and " +
-														this.tickers[indexOfSecondTicker] + "!");
+				throw new MissingCorrelationException(this.tickers[indexOfFirstTicker],
+														this.tickers[indexOfSecondTicker]);
 
 			return returnValue;
 		}
@@ -180,19 +181,35 @@ namespace QuantProject.Business.Strategies.TickersRelationships
 			for (int i = 0; i < this.tickers.Length; i++)
 				for (int j = i + 1; j < this.tickers.Length; j++)
 				{	
-					this.pearsonCorrelations[index] = 
-						new TickersPearsonCorrelation( this.tickers[i], this.tickers[j],
-						this.getOrderedTickersPearsonCorrelations_setCorrelations_getValue( i , j) );
+					try{
+						this.pearsonCorrelations[index] = 
+							new TickersPearsonCorrelation( this.tickers[i], this.tickers[j],
+							this.getOrderedTickersPearsonCorrelations_setCorrelations_getValue( i , j) );
+					}
+					catch(MissingCorrelationException ex)
+					{ex=ex;}
 					index++;
 				} 
 			Array.Sort(this.pearsonCorrelations);
+		}
+		
+		private void showOutputToConsole()
+		{
+			System.Console.WriteLine("\n\rEligibles");
+			for(int i = 0; i < this.tickers.Length; i++)
+				System.Console.WriteLine(this.tickers[i]);
+			System.Console.WriteLine("\n\rCorrelations");
+			for(int i = 0; i < this.pearsonCorrelations.Length; i++)
+				System.Console.WriteLine(this.pearsonCorrelations[i].FirstTicker + " " +
+																 this.pearsonCorrelations[i].SecondTicker + " " +
+																 this.pearsonCorrelations[i].CorrelationValue.ToString() );
 		}
 
 		public TickersPearsonCorrelation[] GetOrderedTickersPearsonCorrelations()
 		{
     	if( this.pearsonCorrelations == null )
 				this.getOrderedTickersPearsonCorrelations_setCorrelations();
-			
+			this.showOutputToConsole();
 			return this.pearsonCorrelations;
 		}
 		
