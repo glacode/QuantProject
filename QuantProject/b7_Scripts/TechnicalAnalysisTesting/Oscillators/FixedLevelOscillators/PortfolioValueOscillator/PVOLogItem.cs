@@ -21,6 +21,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
 using System;
+using System.Windows.Forms;
 
 using QuantProject.Business.DataProviders;
 using QuantProject.Business.Strategies;
@@ -32,9 +33,9 @@ using QuantProject.Business.Strategies.Logging;
 using QuantProject.Business.Strategies.ReturnsManagement.Time;
 using QuantProject.Business.Strategies.ReturnsManagement.Time.IntervalsSelectors;
 using QuantProject.Business.Timing;
+using QuantProject.Presentation;
 using QuantProject.Scripts.General.Reporting;
-
-
+using QuantProject.Scripts.General.Logging;
 
 namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOscillators.PortfolioValueOscillator
 {
@@ -45,7 +46,9 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOs
   [Serializable]
   public class PVOLogItem : LogItem
   {
-		protected TestingPositions[] bestPVOPositionsInSample;
+		protected DummyTesterForTestingPositions[]
+			dummyTestersForBestTestingPositionsInSample;
+  	protected TestingPositions[] bestPVOPositionsInSample;
 		protected int numberOfEligibleTickers;
 		protected double fitnessOfFirstPVOPositionsInSample;
 		protected double fitnessOfLastPVOPositionsInSample;
@@ -55,6 +58,7 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOs
 		protected string thresholdsOfLast;
 		protected string tickersOfFirst;
 		protected string tickersOfLast;
+		protected int numberOfInSampleDays;
 		
 		public TestingPositions[] BestPVOPositionsInSample
 		{
@@ -135,19 +139,20 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOs
 			set{this.tickersOfLast = value;}
 		}
 
-		public PVOLogItem(EndOfDayDateTime endOfDayDateTime )
+		public PVOLogItem(EndOfDayDateTime endOfDayDateTime,
+		                  int numberOfInSampleDays)
 			: base( endOfDayDateTime )
 		{
+			this.numberOfInSampleDays = numberOfInSampleDays;
 			this.numberOfEligibleTickers = int.MinValue;
 			this.fitnessOfFirstPVOPositionsInSample = double.MinValue;
 			this.fitnessOfLastPVOPositionsInSample = double.MinValue;
 		}
 		
-		public override void Run()
+		protected virtual void runStrategyClickEventHandler(object sender, System.EventArgs e)
 		{
 			//general
-			int inSampleDays = 120;
-			DateTime firstDateTime = this.SimulatedCreationTime.DateTime.AddDays(-inSampleDays);
+			DateTime firstDateTime = this.SimulatedCreationTime.DateTime.AddDays(-this.numberOfInSampleDays);
 			DateTime lastDateTime = this.SimulatedCreationTime.DateTime;
 			double maxRunningHours = 1;
 			Benchmark benchmark = new Benchmark( "^GSPC" );
@@ -175,12 +180,13 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOs
 			int numDaysForOscillatingPeriodForOutOfSample =
 				numDaysForOscillatingPeriodForChooser;
 			TestingPositions[] positionsToTest =
-				new TestingPositions[1];
-//			int idx = PVOLogItem.rand.Next(bestPVOPositionsInSample.Length);
-			positionsToTest[0] = this.bestPVOPositionsInSample[0];
+				//new TestingPositions[1];
+			//			int idx = PVOLogItem.rand.Next(bestPVOPositionsInSample.Length);
+			//positionsToTest[0] = this.bestPVOPositionsInSample[0];
+			positionsToTest = this.BestPVOPositionsInSample;
 			PVOStrategy strategy =
 				new PVOStrategy(eligiblesSelector,
-				positionsToTest, inSampleDays,
+				positionsToTest, this.numberOfInSampleDays,
 				numDaysForOscillatingPeriodForOutOfSample,
 				numberOfPortfolioPositions , benchmark ,
 				int.MaxValue ,
@@ -193,13 +199,60 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOs
 				historicalQuoteProviderForBackTester ,
 				new SimpleAccountProvider(), firstDateTime ,
 				lastDateTime , benchmark , cashToStart , maxRunningHours );
-
-			// TO DO check if you can do this assign in the EndOfDayStrategyBackTester
-			// constructor
-			strategy.Account = endOfDayStrategyBackTester.Account;
+			
 			endOfDayStrategyBackTester.Run();
 			BackTesterReportViewer.ShowReport( lastDateTime ,
 				endOfDayStrategyBackTester );
+		}
+		
+		private void showTestingPositionsClickEventHandler_setDummyTesters_setTester(
+			int currentIndex ,
+			TestingPositions testingPositions ,
+			EndOfDayDateTime simulatedCreationTime )
+		{
+			this.dummyTestersForBestTestingPositionsInSample[ currentIndex ] =
+				new DummyTesterForTestingPositions(
+					testingPositions ,
+					this.numberOfInSampleDays ,
+					simulatedCreationTime );
+		}
+				
+		private void showTestingPositionsClickEventHandler_setDummyTesters()
+		{
+			this.dummyTestersForBestTestingPositionsInSample =
+				new DummyTesterForTestingPositions[this.BestPVOPositionsInSample.Length];
+			for ( int i = 0 ; i < BestPVOPositionsInSample.Length; i++ )
+				this.showTestingPositionsClickEventHandler_setDummyTesters_setTester(
+					i ,
+					BestPVOPositionsInSample[ i ] ,
+					this.SimulatedCreationTime );
+		}
+		
+		protected virtual void showTestingPositionsClickEventHandler(object sender, System.EventArgs e)
+		{
+			this.showTestingPositionsClickEventHandler_setDummyTesters();
+			QuantProject.Presentation.ExecutablesListViewer executablesListViewer =
+				new ExecutablesListViewer(
+					this.dummyTestersForBestTestingPositionsInSample );
+			executablesListViewer.Show();
+		}
+		
+		protected virtual void createAndShowContextMenu()
+		{
+			MenuItem[] menuItems = new MenuItem[2];
+			menuItems[0] = new MenuItem("Run Strategy");
+			menuItems[1] = new MenuItem("Show TestingPositions");
+			menuItems[0].Click += 
+				new System.EventHandler(this.runStrategyClickEventHandler);
+			menuItems[1].Click += 
+				new System.EventHandler(this.showTestingPositionsClickEventHandler);
+			ContextMenu contextMenu = new ContextMenu(menuItems);
+			contextMenu.Show(Form.ActiveForm, Form.MousePosition);
+		}
+		
+		public override void Run()
+		{
+			this.createAndShowContextMenu();
 		}
 	}
 }
