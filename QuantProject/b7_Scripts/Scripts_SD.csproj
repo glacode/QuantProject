@@ -52,6 +52,7 @@
     <Compile Include="General\BasicScriptForBacktesting.cs" />
     <Compile Include="General\Logging\LogArchiver.cs" />
     <Compile Include="General\Logging\LogViewer.cs" />
+    <Compile Include="General\Logging\DummyTesterForTestingPositions.cs" />
     <Compile Include="General\Reporting\BackTesterReportViewer.cs" />
     <Compile Include="MyTradingSystem.cs" />
     <Compile Include="CallingReportsForRunScripts\ShowReportFromFile.cs" />
@@ -68,6 +69,7 @@
     <Compile Include="TechnicalAnalysisTesting\Oscillators\FixedLevelOscillators\PortfolioValueOscillator\Decoding\BasicDecoderForPVOPositions.cs" />
     <Compile Include="TechnicalAnalysisTesting\Oscillators\FixedLevelOscillators\PortfolioValueOscillator\FitnessEvaluators\PVOFitnessEvaluator.cs" />
     <Compile Include="TechnicalAnalysisTesting\Oscillators\FixedLevelOscillators\PortfolioValueOscillator\GenomeManagerPVO_OTC.cs" />
+    <Compile Include="TechnicalAnalysisTesting\Oscillators\FixedLevelOscillators\PortfolioValueOscillator\InSampleChoosers\PVOChooserFromSavedBackTestLog.cs" />
     <Compile Include="TechnicalAnalysisTesting\Oscillators\FixedLevelOscillators\PortfolioValueOscillator\InSampleChoosers\PVOCorrelationChooser.cs" />
     <Compile Include="TechnicalAnalysisTesting\Oscillators\FixedLevelOscillators\PortfolioValueOscillator\InSampleChoosers\PVOGeneticChooser.cs" />
     <Compile Include="TechnicalAnalysisTesting\Oscillators\FixedLevelOscillators\PortfolioValueOscillator\InSampleChoosers\PVO_CTCCorrelationChooser.cs" />
@@ -111,6 +113,7 @@
     <Compile Include="WalkForwardTesting\PairsTrading\Logging\SimpleStrategy.cs" />
     <Compile Include="WalkForwardTesting\PairsTrading\Logging\TesterForPairsTradingTestingPositions.cs" />
     <Compile Include="WalkForwardTesting\PairsTrading\PairsTradingMain.cs" />
+    <Compile Include="WalkForwardTesting\PairsTrading\PairsTradingMain2.cs" />
     <Compile Include="WalkForwardTesting\PairsTrading\PairsTradingStrategy.cs" />
     <Compile Include="WalkForwardTesting\PairsTrading\PairsTradingTestingPositions.cs" />
     <Compile Include="WalkForwardTesting\WalkForwardLag\RunSimpleLag.cs" />

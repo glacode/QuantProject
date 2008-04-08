@@ -248,6 +248,11 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "General\Logging\DummyTesterForTestingPositions.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "General\Logging\LogArchiver.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
@@ -334,6 +339,21 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "TechnicalAnalysisTesting\Oscillators\FixedLevelOscillators\PortfolioValueOscillator\PVO_OTCLogItem.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "TechnicalAnalysisTesting\Oscillators\FixedLevelOscillators\PortfolioValueOscillator\PVO_OTCMain.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "TechnicalAnalysisTesting\Oscillators\FixedLevelOscillators\PortfolioValueOscillator\PVO_OTCStrategy.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "TechnicalAnalysisTesting\Oscillators\FixedLevelOscillators\PortfolioValueOscillator\PVOGenomeManager.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
@@ -400,6 +420,16 @@
                 />
                 <File
                     RelPath = "TechnicalAnalysisTesting\Oscillators\FixedLevelOscillators\PortfolioValueOscillator\InSampleChoosers\PVO_CTCCorrelationChooser.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "TechnicalAnalysisTesting\Oscillators\FixedLevelOscillators\PortfolioValueOscillator\InSampleChoosers\PVO_OTCCorrelationChooser.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "TechnicalAnalysisTesting\Oscillators\FixedLevelOscillators\PortfolioValueOscillator\InSampleChoosers\PVOChooserFromSavedBackTestLog.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
