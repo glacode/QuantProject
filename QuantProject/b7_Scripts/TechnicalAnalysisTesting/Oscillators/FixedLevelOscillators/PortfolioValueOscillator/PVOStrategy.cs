@@ -393,7 +393,7 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOs
 		private PVOLogItem getLogItem( EligibleTickers eligibleTickers )
 		{
 			PVOLogItem logItem =
-				new PVOLogItem( this.now() );
+				new PVOLogItem( this.now() , this.inSampleDays );
 			logItem.BestPVOPositionsInSample =
 				this.chosenPVOPositions;
 			logItem.NumberOfEligibleTickers =
