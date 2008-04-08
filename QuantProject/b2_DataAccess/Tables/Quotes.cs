@@ -474,7 +474,7 @@ namespace QuantProject.DataAccess.Tables
 			)
 		{
 			string sql = "SELECT TOP " + maxNumOfReturnedTickers + " tickers.tiTicker, tickers.tiCompanyName, " +
-				"Avg([quVolume]) AS AverageTradedValue " +
+				"Avg([quVolume]*[quClose]) AS AverageTradedValue " +
 				"FROM quotes INNER JOIN (tickers INNER JOIN tickers_tickerGroups " +
 				"ON tickers.tiTicker = tickers_tickerGroups.ttTiId) " +
 				"ON quotes.quTicker = tickers_tickerGroups.ttTiId " +
