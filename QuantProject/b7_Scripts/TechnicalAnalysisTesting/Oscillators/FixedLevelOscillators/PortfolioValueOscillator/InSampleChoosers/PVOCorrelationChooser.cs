@@ -48,6 +48,9 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOs
 		protected CorrelationProvider correlationProvider;
 		protected int numberOfBestTestingPositionsToBeReturned;
 		protected int numDaysForOscillatingPeriod;
+		protected double maxCorrelationValue;
+		//correlations greater than this value are discarded
+		protected bool balancedWeightsOnVolatilityBase;
 		
 		public virtual string Description
 		{
@@ -56,7 +59,10 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOs
 				string description = "CorrelationChooserType:\n" +
 														 this.correlationProvider.GetType().ToString() + "\n" +
 														 "NumOfTickersReturned:\n" +
-														 this.numberOfBestTestingPositionsToBeReturned.ToString();
+														 this.numberOfBestTestingPositionsToBeReturned.ToString() + 
+														 "MaxCorrelationValue: " +
+														 this.maxCorrelationValue.ToString();
+
 				return description;
 			}
 		}
@@ -69,16 +75,24 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOs
 		/// The number of PVOPositions that the
 		/// AnalyzeInSample method will return
 		/// </param>
-		/// /// <param name="numDaysForOscillatingPeriod">
+		/// <param name="numDaysForOscillatingPeriod">
 		/// Interval's length of the return for the PVOPosition
 		/// to be checked out of sample, in order to update the 
 		/// status for the PVOPosition itself
 		/// </param>
+		/// <param name="maxCorrelationValue">
+		/// Correlations higher than given maxCorrelationValue are discarded
+		/// (for avoiding analyzing tickers corresponding to the same stock)
+		/// </param>
 		public PVOCorrelationChooser(int numberOfBestTestingPositionsToBeReturned,
-														     int numDaysForOscillatingPeriod)
+														     int numDaysForOscillatingPeriod,
+																 double maxCorrelationValue,
+															   bool balancedWeightsOnVolatilityBase)
 		{
 			this.numberOfBestTestingPositionsToBeReturned = numberOfBestTestingPositionsToBeReturned;
 			this.numDaysForOscillatingPeriod = numDaysForOscillatingPeriod;
+			this.maxCorrelationValue = maxCorrelationValue;
+			this.balancedWeightsOnVolatilityBase = balancedWeightsOnVolatilityBase;
 		}
 
 		#region AnalyzeInSample
@@ -90,13 +104,24 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOs
 				throw new Exception( "Eligible tickers for driving positions contains " +
 					"only " + eligibleTickers.Count +
 					" elements, while NumberOfDrivingPositions is 2");
+			if (this.maxCorrelationValue < 0.50 || this.maxCorrelationValue > 1.0 )
+				throw new OutOfRangeException( "maxCorrelationValue", 0.5, 1.0);
 		}
 								
 		protected abstract void setCorrelationProvider(EligibleTickers eligibleTickers ,
 			ReturnsManager returnsManager);
 		
-		protected PVOPositions getTestingPositions(WeightedPositions weightedPositions)
+		protected PVOPositions getTestingPositions(SignedTickers signedTickers,
+																							 ReturnsManager returnsManager)
 		{
+			WeightedPositions weightedPositions;
+			if(this.balancedWeightsOnVolatilityBase == true)
+				weightedPositions = 
+					new WeightedPositions(WeightedPositions.GetBalancedWeights(signedTickers, returnsManager),
+																signedTickers.Tickers);
+			else//just equal weights
+				weightedPositions = new WeightedPositions(signedTickers);
+			
 			return new PVOPositions(weightedPositions, 0.0, 0.0,
 			                        this.numDaysForOscillatingPeriod );
 		}
@@ -110,15 +135,22 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOs
 				new TestingPositions[this.numberOfBestTestingPositionsToBeReturned]; 
 			TickersPearsonCorrelation[] correlations = 
 				this.correlationProvider.GetOrderedTickersPearsonCorrelations();
-			for(int i = 0; i<this.numberOfBestTestingPositionsToBeReturned; i++)
+			int addedTestingPositions = 0;
+			int counter = 0;
+			while(addedTestingPositions < this.numberOfBestTestingPositionsToBeReturned && 
+						counter < correlations.Length)
 			{
-				SignedTickers signedTickers = 
-					new SignedTickers("-"+correlations[correlations.Length - 1 -i].FirstTicker + ";" +
-														correlations[correlations.Length - 1 -i].SecondTicker);
-				WeightedPositions weightedPositions = new WeightedPositions(signedTickers);
-				bestTestingPositions[i] = this.getTestingPositions(weightedPositions);
-				((PVOPositions)bestTestingPositions[i]).FitnessInSample = 
-					correlations[correlations.Length - 1 -i].CorrelationValue;
+				if(correlations[correlations.Length - 1 - counter].CorrelationValue < this.maxCorrelationValue)
+				{
+					SignedTickers signedTickers = 
+					new SignedTickers("-"+correlations[correlations.Length - 1 - counter].FirstTicker + ";" +
+														correlations[correlations.Length - 1 - counter].SecondTicker);
+					bestTestingPositions[addedTestingPositions] = this.getTestingPositions(signedTickers, returnsManager);
+					((PVOPositions)bestTestingPositions[addedTestingPositions]).FitnessInSample = 
+						correlations[correlations.Length - 1 - counter].CorrelationValue;
+					addedTestingPositions++;
+				}
+				counter++;
 			}	
 			return bestTestingPositions;
 		}

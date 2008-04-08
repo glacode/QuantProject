@@ -42,6 +42,11 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOs
 	/// </summary>
 	public class PVO_OTCCorrelationChooser : PVOCorrelationChooser
 	{
+		private float minimumAbsoluteReturnValue;
+		private float maximumAbsoluteReturnValue;
+		//correlation is computed only for returns
+		//between minimum and maximum
+		
 		/// <summary>
 		/// PVO_OTCCorrelationChooser to be used for
 		/// in sample optimization
@@ -50,10 +55,18 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOs
 		/// The number of PVOPositions that the
 		/// AnalyzeInSample method will return
 		/// </param>
-		public PVO_OTCCorrelationChooser(int numberOfBestTestingPositionsToBeReturned) : 
-																		 base(numberOfBestTestingPositionsToBeReturned,1)
+		public PVO_OTCCorrelationChooser(int numberOfBestTestingPositionsToBeReturned,
+																		 double maxCorrelationValue,
+																		 bool balancedWeightsOnVolatilityBase,
+																		 float minimumAbsoluteReturnValue,
+																		 float maximumAbsoluteReturnValue) :
+																		base(numberOfBestTestingPositionsToBeReturned,
+																		1,
+																		maxCorrelationValue,
+																		balancedWeightsOnVolatilityBase)
 		{
-			
+			this.minimumAbsoluteReturnValue = minimumAbsoluteReturnValue;
+			this.maximumAbsoluteReturnValue = maximumAbsoluteReturnValue;
 		}
 
 		protected override void setCorrelationProvider(EligibleTickers eligibleTickers ,
@@ -61,7 +74,8 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOs
 		{
 			this.correlationProvider = 
 				new OpenToCloseCorrelationProvider(eligibleTickers.Tickers, returnsManager,
-																					 0.0001f, 0.5f);
+																					 this.minimumAbsoluteReturnValue ,
+																					 this.maximumAbsoluteReturnValue);
 		}
 	}
 }

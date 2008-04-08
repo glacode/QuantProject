@@ -51,9 +51,13 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOs
 		/// AnalyzeInSample method will return
 		/// </param>
 		public PVO_CTCCorrelationChooser(int numberOfBestTestingPositionsToBeReturned,
-		                                 int closeToCloseReturnIntervalLength) :
+																		 int closeToCloseReturnIntervalLength,
+																		 double maxCorrelationValue,
+																		 bool balancedWeightsOnVolatilityBase) :
 																		 base(numberOfBestTestingPositionsToBeReturned,
-			     															  closeToCloseReturnIntervalLength)
+			     															  closeToCloseReturnIntervalLength,
+																					maxCorrelationValue,
+																					balancedWeightsOnVolatilityBase)
 		{
 			
 		}
