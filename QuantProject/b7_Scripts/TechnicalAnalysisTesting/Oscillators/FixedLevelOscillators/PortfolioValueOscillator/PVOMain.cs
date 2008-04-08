@@ -187,10 +187,12 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOs
 //				maxLevelForOversoldThreshold , minLevelForOverboughtThreshold ,
 //				maxLevelForOverboughtThreshold , divisorForThresholdComputation , 
 //				symmetricalThresholds , overboughtMoreThanOversoldForFixedPortfolio );
-			
+			double maxCorrelationValue = 0.96;
+			bool balancedWeights = false;		
 			IInSampleChooser inSampleChooser =
 				new PVO_CTCCorrelationChooser(numberOfBestTestingPositionsToBeReturnedInSample,
-				                              numDaysForOscillatingPeriodForChooser);
+				                              numDaysForOscillatingPeriodForChooser,
+																			maxCorrelationValue, balancedWeights);
 			//parameters for eligiblesSelector
 			bool temporizedGroup = true;
 			double minRawOpenPrice = 25;
