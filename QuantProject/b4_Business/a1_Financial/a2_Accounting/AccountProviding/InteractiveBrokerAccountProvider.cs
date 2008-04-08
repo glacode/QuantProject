@@ -52,7 +52,7 @@ namespace QuantProject.Business.Financial.Accounting.AccountProviding
 		{
 			if( slippageFixedPercentage < 0.0 ||
 			    slippageFixedPercentage > 100.0 )
-				throw new OutOfRangeException(slippageFixedPercentage, 0.0, 100.0);
+				throw new OutOfRangeException("slippageFixedPercentage", 0.0, 100.0);
 			
 			this.slippageFixedPercentage = slippageFixedPercentage;
 		}

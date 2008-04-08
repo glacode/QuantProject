@@ -29,7 +29,7 @@ namespace QuantProject.ADT
 	/// </summary>
 	public class OutOfRangeException : Exception
 	{
-		private double outOfRangeNumber;
+		private string outOfRangeNumber;
 		private double minimumForValidRange;
 		private double maximumForValidRange;
 		
@@ -37,13 +37,13 @@ namespace QuantProject.ADT
 		{
 			get
 			{
-				return this.outOfRangeNumber.ToString() + 
-							 "is out of range! It should be between " +
+				return this.outOfRangeNumber + 
+							 " is out of range! It should be between " +
 							 this.minimumForValidRange.ToString() + " and " +
 					     this.maximumForValidRange.ToString();
 			}
 		}
-		public OutOfRangeException( double outOfRangeNumber,
+		public OutOfRangeException( string outOfRangeNumber,
 		                            double minimumForValidRange,
 		                            double maximumForValidRange)
 		{
