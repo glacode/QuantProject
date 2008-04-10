@@ -99,6 +99,10 @@ namespace QuantProject.Business.Strategies.InSample
 			TestingPositions[] bestTestingPositionsInSample =
 				this.getTestingPositionsFromBackTestLog( 
 				     returnsManager.ReturnIntervals.LastEndOfDayDateTime );
+			this.NewProgress( this ,
+				new NewProgressEventArgs( 1 , 1 ) );
+			this.NewMessage( this ,
+				new NewMessageEventArgs( "AnalyzeInSample is complete" ) );
 			return bestTestingPositionsInSample;
 		}
 	}
