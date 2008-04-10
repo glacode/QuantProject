@@ -22,6 +22,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 using System;
 
+using QuantProject.ADT.Optimizing.BruteForce;
 using QuantProject.Business.Strategies.Eligibles;
 using QuantProject.Business.Strategies.Optimizing.BruteForce;
 using QuantProject.Business.Strategies.Optimizing.Decoding;
@@ -59,30 +60,71 @@ namespace QuantProject.Scripts.WalkForwardTesting.PairsTrading
 
 		#region AreEquivalentAsTopBestParameters
 		private void areEquivalentAsTopBestParameters_checkParameters(
-			object meaning1 , object meaning2 )
+			BruteForceOptimizableParameters bruteForceOptimizableParameters1 ,
+			BruteForceOptimizableParameters bruteForceOptimizableParameters2 )
 		{
-			if ( !(meaning1 is TestingPositions) )
+			if ( !(bruteForceOptimizableParameters1.Meaning is TestingPositions) )
 				throw new Exception( "The first parameter is expected " +
-					"to be a TestingPositions!" );
-			if ( !(meaning2 is TestingPositions) )
+					"to represent a TestingPositions!" );
+			if ( !(bruteForceOptimizableParameters2.Meaning is TestingPositions) )
 				throw new Exception( "The second parameter is expected " +
-					"to be a TestingPositions!" );
+					"to represent a TestingPositions!" );
+		}
+		private bool haveTheSameTickers(
+			TestingPositions testingPositions1 ,
+			TestingPositions testingPositions2 )
+		{			
+			string hashCodeForMeaning1 =
+				testingPositions1.HashCodeForTickerComposition;
+			string hashCodeForMeaning2 =
+				testingPositions2.HashCodeForTickerComposition;
+			bool areEquivalentAsTopBestParameters =
+				( hashCodeForMeaning1 == hashCodeForMeaning2 );
+			return areEquivalentAsTopBestParameters;
+		}
+		private bool haveTheSameFitness(
+			BruteForceOptimizableParameters bruteForceOptimizableParameters1 ,
+			BruteForceOptimizableParameters bruteForceOptimizableParameters2 )
+		{			
+			double fitness1 = bruteForceOptimizableParameters1.Fitness;
+			double fitness2 = bruteForceOptimizableParameters2.Fitness;
+			double percDifference = Math.Abs(
+				fitness1 / fitness2 - 1 );
+			bool areEquivalentAsTopBestParameters =
+				( percDifference < 0.00001 );
+//			if ( areEquivalentAsTopBestParameters )
+//			{
+//				string forBreakpoint = "";
+//				forBreakpoint = forBreakpoint + "a";
+//			}
+			return areEquivalentAsTopBestParameters;
 		}
 		/// Two TestingPositions are considered equivalent as TopBestPositions
 		/// (and only one is kept among them) iif they have the same tickers
 		/// (consider that if two WeightedPosition are highly correlated, the
-		/// two opposite WeightedPosition are highly correlated too)
+		/// two opposite WeightedPosition are highly correlated too) or
+		/// if they have the same fitness (in this second case, probably
+		/// two tickers represent the same security and thus are equivalent)
 		public override bool AreEquivalentAsTopBestParameters(
-			object meaning1 , object meaning2 )
+			BruteForceOptimizableParameters bruteForceOptimizableParameters1 ,
+			BruteForceOptimizableParameters bruteForceOptimizableParameters2 )
 		{
 			this.areEquivalentAsTopBestParameters_checkParameters(
-				meaning1 , meaning2 );
-			string hashCodeForMeaning1 =
-				((TestingPositions)meaning1).HashCodeForTickerComposition;
-			string hashCodeForMeaning2 =
-				((TestingPositions)meaning2).HashCodeForTickerComposition;
+				bruteForceOptimizableParameters1 , bruteForceOptimizableParameters2 );
+
+			// if two TestingPositions (a,b) and (c,d) have the same fitness,
+			// but different tickers (a!=b), probably a and b represent
+			// the same security X (probably, X's ticker changed from a to b
+			// or viceversa and the database contains historical quotes for
+			// both a and b); in such a case (a,b) and (c,d) are equivalent
+			// and the second one is to be dropped down
 			bool areEquivalentAsTopBestParameters =
-				( hashCodeForMeaning1 == hashCodeForMeaning2 );
+				this.haveTheSameTickers(
+				((TestingPositions)bruteForceOptimizableParameters1.Meaning ) ,
+				((TestingPositions)bruteForceOptimizableParameters2.Meaning) ) ||
+				this.haveTheSameFitness(
+				bruteForceOptimizableParameters1 ,
+				bruteForceOptimizableParameters2 );
 			return areEquivalentAsTopBestParameters;
 		}
 		#endregion AreEquivalentAsTopBestParameters
