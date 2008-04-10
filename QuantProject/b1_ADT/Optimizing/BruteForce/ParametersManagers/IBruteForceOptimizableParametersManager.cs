@@ -38,6 +38,8 @@ namespace QuantProject.ADT.Optimizing.BruteForce
 
 		double GetFitnessValue( BruteForceOptimizableParameters bruteForceOptimizableParameters );
     object Decode( BruteForceOptimizableParameters bruteForceOptimizableParameters );
-		bool AreEquivalentAsTopBestParameters( object meaning1 , object meaning2 );
+		bool AreEquivalentAsTopBestParameters(
+    	BruteForceOptimizableParameters bruteForceOptimizableParameters1 ,
+    	BruteForceOptimizableParameters bruteForceOptimizableParameters2 );
   }
 }

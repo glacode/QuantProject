@@ -49,10 +49,12 @@ namespace QuantProject.ADT.Optimizing.BruteForce
 			BruteForceOptimizableParameters bruteForceOptimizableParameters );
 
 		public virtual bool AreEquivalentAsTopBestParameters(
-			object meaning1 , object meaning2 )
+			BruteForceOptimizableParameters bruteForceOptimizableParameters1 ,
+			BruteForceOptimizableParameters bruteForceOptimizableParameters2 )
 		{
 			bool areEquivalentAsTopBestParameters =
-				( meaning1 == meaning2 );
+				( bruteForceOptimizableParameters1.Meaning ==
+				bruteForceOptimizableParameters2.Meaning );
 			return areEquivalentAsTopBestParameters;
 		}
 

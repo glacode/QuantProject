@@ -96,8 +96,8 @@ namespace QuantProject.ADT.Optimizing.BruteForce
 			while (
 				indexForCurrentTopBestParameters < this.numberOfNonNullItemsInTopBestParameters &&
 				!this.bruteForceOptimizableParametersManager.AreEquivalentAsTopBestParameters(
-				bruteForceOptimizableParameters.Meaning ,
-				this.topBestParameters[ indexForCurrentTopBestParameters ].Meaning ) )
+				bruteForceOptimizableParameters ,
+				this.topBestParameters[ indexForCurrentTopBestParameters ] ) )
 				indexForCurrentTopBestParameters++;
 			bool isEquivalentAlreadyPresent =
 				( indexForCurrentTopBestParameters < this.numberOfNonNullItemsInTopBestParameters );
