@@ -90,7 +90,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.PairsTrading
 					tickersGroupId ,
 					true ,
 					maxNumberOfEligiblesToBeChosen ,
-					10 , 0 , 99999 );					
+					10 , 30 , 99999 );					
 		}
 
 		protected override void setInSampleChooser()
@@ -153,9 +153,9 @@ namespace QuantProject.Scripts.WalkForwardTesting.PairsTrading
 			IAccountProvider accountProvider = new SimpleAccountProvider();
 			double cashToStart = 30000;
 
-			DateTime firstDateTime = new DateTime( 2001 , 1 , 4 );
+			DateTime firstDateTime = new DateTime( 2001 , 1 , 1 );
 			DateTime lastDateTime = new DateTime( 2004 , 12 , 31 );
-			double maxRunningHours = 7.5;
+			double maxRunningHours = 8;
 			
 			this.endOfDayStrategyBackTester =
 				new EndOfDayStrategyBackTester(
