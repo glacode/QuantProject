@@ -28,6 +28,7 @@ using QuantProject.Business.Financial.Accounting.AccountProviding;
 using QuantProject.Business.Strategies;
 using QuantProject.Business.Strategies.Eligibles;
 using QuantProject.Business.Strategies.EquityEvaluation;
+using QuantProject.Business.Strategies.InSample;
 using QuantProject.Business.Strategies.Logging;
 using QuantProject.Business.Strategies.Optimizing.Decoding;
 using QuantProject.Business.Strategies.Optimizing.FitnessEvaluation;
@@ -73,7 +74,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.PairsTrading
 			//      IEquityEvaluator equityEvaluator = new SharpeRatio();
 		}
 
-		protected override void setEligiblesSelector()
+		protected override IEligiblesSelector getEligiblesSelector()
 		{
 			int maxNumberOfEligiblesToBeChosen = 100;
 			
@@ -81,21 +82,22 @@ namespace QuantProject.Scripts.WalkForwardTesting.PairsTrading
 			// uncomment the following line for a faster script
 //			tickersGroupId = "fastTest";
 
-			this.eligiblesSelector =
+			IEligiblesSelector eligiblesSelector =
 				new MostLiquidAndLessVolatile(
 				tickersGroupId ,
 				maxNumberOfEligiblesToBeChosen );
-			this.eligiblesSelector =
+			eligiblesSelector =
 				new ByPriceMostLiquidAlwaysQuoted(
 					tickersGroupId ,
 					true ,
 					maxNumberOfEligiblesToBeChosen ,
-					10 , 30 , 99999 );					
+					10 , 20 , 75 );
+			return eligiblesSelector;
 		}
 
-		protected override void setInSampleChooser()
+		protected override IInSampleChooser getInSampleChooser()
 		{
-			int numberOfBestTestingPositionsToBeReturned = 10;
+			int numberOfBestTestingPositionsToBeReturned = 50;
 			
 			IDecoderForTestingPositions decoderForWeightedPositions =
 				new DecoderForPairsTradingTestingPositionsWithBalancedWeights();
@@ -112,7 +114,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.PairsTrading
 			int generationNumberForGeneticOptimizer = 4;
 			int seedForRandomGenerator =
 				QuantProject.ADT.ConstantsProvider.SeedForRandomGenerator;
-			this.inSampleChooser =
+			IInSampleChooser inSampleChooser =
 				new PairsTradingGeneticChooser(
 				numberOfBestTestingPositionsToBeReturned ,
 				this.benchmark ,
@@ -123,14 +125,15 @@ namespace QuantProject.Scripts.WalkForwardTesting.PairsTrading
 				generationNumberForGeneticOptimizer ,
 				seedForRandomGenerator );
 			
-			this.inSampleChooser =
+			inSampleChooser =
 				new PairsTradingBruteForceChooser(
 					numberOfBestTestingPositionsToBeReturned ,
 					decoderForWeightedPositions ,
 					fitnessEvaluator );
+			return inSampleChooser;
 		}
 
-		protected override void setEndOfDayStrategy()
+		protected override IEndOfDayStrategyForBacktester getEndOfDayStrategy()
 		{
 			int inSampleDays = 180;
 			// uncomment the following line for a faster script
@@ -139,15 +142,17 @@ namespace QuantProject.Scripts.WalkForwardTesting.PairsTrading
 			IIntervalsSelector intervalsSelector =
 				new OddIntervalsSelector( 1 , 1 , this.benchmark );
 
-			this.endOfDayStrategy =
+			IEndOfDayStrategyForBacktester endOfDayStrategyForBacktester =
 				new PairsTradingStrategy(
 				7 , inSampleDays , intervalsSelector ,
 				eligiblesSelector , inSampleChooser ,
 				this.historicalQuoteProviderForInSample ,
 				this.historicalQuoteProviderForChosingPositionsOutOfSample ,
-				0.005 , 0.99 , 0.005 , 0.99 );
+				0.006 , 0.99 , 0.006 , 0.99 );
+			return endOfDayStrategyForBacktester;
 		}
-		protected override void setEndOfDayStrategyBackTester()
+		protected override EndOfDayStrategyBackTester
+			getEndOfDayStrategyBackTester()
 		{
 			string backTestId = "PairsTrading";
 			IAccountProvider accountProvider = new SimpleAccountProvider();
@@ -155,15 +160,16 @@ namespace QuantProject.Scripts.WalkForwardTesting.PairsTrading
 
 			DateTime firstDateTime = new DateTime( 2001 , 1 , 1 );
 			DateTime lastDateTime = new DateTime( 2004 , 12 , 31 );
-			double maxRunningHours = 8;
+			double maxRunningHours = 0.7;
 			
-			this.endOfDayStrategyBackTester =
+			EndOfDayStrategyBackTester endOfDayStrategyBackTester =
 				new EndOfDayStrategyBackTester(
 				backTestId , this.endOfDayStrategy ,
 				this.historicalQuoteProviderForTheBacktesterAccount ,
 				accountProvider ,
 				firstDateTime ,	lastDateTime ,
 				this.benchmark , cashToStart , maxRunningHours );
+			return endOfDayStrategyBackTester;
 		}
 
 		protected override string getPathForTheMainFolderWhereScriptsResultsAreToBeSaved()
