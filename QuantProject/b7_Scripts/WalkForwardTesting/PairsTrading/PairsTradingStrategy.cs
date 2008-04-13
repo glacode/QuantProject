@@ -39,7 +39,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.PairsTrading
 	/// <summary>
 	/// Pairs Trading strategy with in sample optimizations
 	/// </summary>
-	public class PairsTradingStrategy : BasicEndOfDayStrategyForBacktester
+	public class PairsTradingStrategy : SymmetricEndOfDayStrategyForBacktester
 	{
 //		private WeightedPositions positionsToBeOpened;
 
@@ -96,7 +96,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.PairsTrading
 				this.returnIntervals[ indexForTheSecondLastReturnInterval ];
 			return secondLastReturnInterval;
 		}
-		private bool arePositionsToBeClosed()
+		protected override bool arePositionsToBeClosed()
 		{
 			bool areToBeClosed = false;
 			if ( this.returnIntervals.Count > 1 )
@@ -111,16 +111,16 @@ namespace QuantProject.Scripts.WalkForwardTesting.PairsTrading
 		}
 		#endregion arePositionsToBeClosed
 
-		protected override bool marketOpenEventHandler_arePositionsToBeOpened()
-		{
-			return this.arePositionsToBeOpened();
-		}
-		protected override bool marketCloseEventHandler_arePositionsToBeOpened()
-		{
-			return this.arePositionsToBeOpened();
-		}
+//		protected override bool marketOpenEventHandler_arePositionsToBeOpened()
+//		{
+//			return this.arePositionsToBeOpened();
+//		}
+//		protected override bool marketCloseEventHandler_arePositionsToBeOpened()
+//		{
+//			return this.arePositionsToBeOpened();
+//		}
 		
-		private bool arePositionsToBeOpened()
+		protected override bool arePositionsToBeOpened()
 		{
 			bool beginsTheLastInterval =
 				( this.now().IsEqualTo(
@@ -280,7 +280,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.PairsTrading
 				this.getReturnsManagerForLastSecondPhaseInterval();
 			return this.getPositionsToBeOpened( returnsManager );
 		}
-		protected WeightedPositions getPositionsToBeOpened()
+		protected override WeightedPositions getPositionsToBeOpened()
 		{
 			WeightedPositions weightedPositions = null;
 			if ( this.returnIntervals.Count >= 2 )
@@ -291,25 +291,25 @@ namespace QuantProject.Scripts.WalkForwardTesting.PairsTrading
 		}
 		#endregion
 		
-		protected override WeightedPositions marketOpenEventHandler_getPositionsToBeOpened()
-		{
-			return this.getPositionsToBeOpened();
-		}
-
-		protected override WeightedPositions marketCloseEventHandler_getPositionsToBeOpened()
-		{
-			return this.getPositionsToBeOpened();
-		}
-
-		protected override bool marketOpenEventHandler_arePositionsToBeClosed()
-		{
-			return this.arePositionsToBeClosed();
-		}
-
-		protected override bool marketCloseEventHandler_arePositionsToBeClosed()
-		{
-			return this.arePositionsToBeClosed();
-		}
+//		protected override WeightedPositions marketOpenEventHandler_getPositionsToBeOpened()
+//		{
+//			return this.getPositionsToBeOpened();
+//		}
+//
+//		protected override WeightedPositions marketCloseEventHandler_getPositionsToBeOpened()
+//		{
+//			return this.getPositionsToBeOpened();
+//		}
+//
+//		protected override bool marketOpenEventHandler_arePositionsToBeClosed()
+//		{
+//			return this.arePositionsToBeClosed();
+//		}
+//
+//		protected override bool marketCloseEventHandler_arePositionsToBeClosed()
+//		{
+//			return this.arePositionsToBeClosed();
+//		}
 
 		protected override LogItem getLogItem( EligibleTickers eligibleTickers )
 		{
