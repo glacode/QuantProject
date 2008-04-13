@@ -97,7 +97,8 @@ namespace QuantProject.Scripts.WalkForwardTesting.PairsTrading
 //				string forBreakpoint = "";
 //				forBreakpoint = forBreakpoint + "a";
 //			}
-			return areEquivalentAsTopBestParameters;
+//			return areEquivalentAsTopBestParameters;
+			return false;
 		}
 		/// Two TestingPositions are considered equivalent as TopBestPositions
 		/// (and only one is kept among them) iif they have the same tickers
