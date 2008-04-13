@@ -71,7 +71,7 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOs
 			//      IEquityEvaluator equityEvaluator = new SharpeRatio();
 		}
 
-		protected override void setEligiblesSelector()
+		protected override IEligiblesSelector getEligiblesSelector()
 		{
 			int maxNumberOfEligiblesToBeChosen = 100;
 			
@@ -89,17 +89,18 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOs
 			double minPrice = 20;
 			double maxPrice = 7000;
 			
-			this.eligiblesSelector =
+			IEligiblesSelector eligiblesSelector =
 				new ByPriceMostLiquidAlwaysQuoted(
 				tickersGroupId , temporizedGroup ,
 				maxNumberOfEligiblesToBeChosen ,
 			  numDaysForAverageRawOpenPriceComputation ,
 			 	minPrice , maxPrice );
-			this.eligiblesSelector = 
+			eligiblesSelector = 
 				new DummyEligibleSelector();
+			return eligiblesSelector;
 		}
 
-		protected override void setInSampleChooser()
+		protected override IInSampleChooser getInSampleChooser()
 		{
 			// parameters for the genetic optimizer
 //			double crossoverRate = 0.85;
@@ -120,16 +121,17 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOs
 			float maximumAbsoluteReturnValue = 100000f;
 			//correlation is computed only for returns
 			//between minimum and maximum
-			this.inSampleChooser =
+			IInSampleChooser inSampleChooser = 
 				new PVO_OTCCorrelationChooser(numberOfBestTestingPositionsToBeReturned, 
 						maxCorrelationAllowed , balancedWeightsOnVolatilityBase,
 					  minimumAbsoluteReturnValue , maximumAbsoluteReturnValue);
-			this.inSampleChooser = 
+			inSampleChooser = 
 				new PVOChooserFromSavedBackTestLog(
 					@"C:\Utente\MarcoVarie\Vari\qP\LogArchive\2008_04_07_12_17_18_PVO_OTC_from_2001_01_01_to_2001_03_31_annlRtrn_232,37_maxDD_5,04\2008_04_07_12_17_18_PVO_OTC_from_2001_01_01_to_2001_03_31_annlRtrn_232,37_maxDD_5,04.qpL");
+			return inSampleChooser;
 		}
 
-		protected override void setEndOfDayStrategy()
+		protected override IEndOfDayStrategyForBacktester getEndOfDayStrategy()
 		{
 			int inSampleDays = 180;
 			// uncomment the following line for a faster script
@@ -137,12 +139,13 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOs
 			int numDaysBetweenEachOptimization = 7;
 			double oversoldThreshold = 0.006;
 			double overboughtThreshold = 0.006;
-			this.endOfDayStrategy =
+			IEndOfDayStrategyForBacktester endOfDayStrategy =
 				new PVO_OTCStrategy(eligiblesSelector ,inSampleChooser ,
 				inSampleDays , benchmark , numDaysBetweenEachOptimization ,
 				oversoldThreshold , overboughtThreshold , historicalQuoteProvider);
+			return endOfDayStrategy;
 		}
-		protected override void setEndOfDayStrategyBackTester()
+		protected override EndOfDayStrategyBackTester getEndOfDayStrategyBackTester()
 		{
 			string backTestId = "PVO_OTC";
 			IAccountProvider accountProvider = new SimpleAccountProvider();
@@ -152,12 +155,13 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOs
 			DateTime lastDateTime = new DateTime( 2001 , 3, 31 );
 			double maxRunningHours = 3;
 			
-			this.endOfDayStrategyBackTester =
+			EndOfDayStrategyBackTester endOfDayStrategyBackTester =
 				new EndOfDayStrategyBackTester(
 				backTestId , this.endOfDayStrategy ,
 				historicalQuoteProvider , accountProvider ,
 				firstDateTime ,	lastDateTime ,
 				this.benchmark , cashToStart , maxRunningHours );
+			return endOfDayStrategyBackTester;
 		}
 
 		protected override string getPathForTheMainFolderWhereScriptsResultsAreToBeSaved()
