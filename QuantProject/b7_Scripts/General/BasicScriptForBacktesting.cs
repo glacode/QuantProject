@@ -97,13 +97,13 @@ namespace QuantProject.Scripts.General
 		/// <returns></returns>
 		protected abstract string getFullPathFileNameForMain();
 
-		protected abstract void setEligiblesSelector();
+		protected abstract IEligiblesSelector getEligiblesSelector();
 
-		protected abstract void setInSampleChooser();
+		protected abstract IInSampleChooser getInSampleChooser();
 
-		protected abstract void setEndOfDayStrategy();
+		protected abstract IEndOfDayStrategyForBacktester getEndOfDayStrategy();
 
-		protected abstract void setEndOfDayStrategyBackTester();
+		protected abstract EndOfDayStrategyBackTester getEndOfDayStrategyBackTester();
 
 		private void checkIfPathsAreFine(
 			string pathForTheMainFolderWhereScriptsResultsAreToBeSaved ,
@@ -186,10 +186,10 @@ namespace QuantProject.Scripts.General
 
 		private void initializeObjectsForTheBacktest()
 		{
-			this.setEligiblesSelector();
-			this.setInSampleChooser();
-			this.setEndOfDayStrategy();
-			this.setEndOfDayStrategyBackTester();
+			this.eligiblesSelector = this.getEligiblesSelector();
+			this.inSampleChooser = this.getInSampleChooser();
+			this.endOfDayStrategy = this.getEndOfDayStrategy();
+			this.endOfDayStrategyBackTester =	this.getEndOfDayStrategyBackTester();
 		}
 		
 		#region initializeMessageSendersManagement
