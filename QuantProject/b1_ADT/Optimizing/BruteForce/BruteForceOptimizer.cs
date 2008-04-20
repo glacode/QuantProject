@@ -126,6 +126,15 @@ namespace QuantProject.ADT.Optimizing.BruteForce
 				
 			}while (this.bruteForceOptimizableParametersManager.MoveNext());
 		}
+		private void checkIfTopBestParametersIsFine()
+		{
+			if ( this.bestParametersManager.TopBestParameters[
+				this.bestParametersManager.TopBestParameters.Length - 1 ] == null )
+				throw new Exception(
+					"The number of analysed couples is less than numberOfTopBestParameters! " + 
+					"It means that totalNumberOfItemsToBeAnalized is lower than the requested best " +
+					"top parameters. This should never be the case!" );
+		}
 		private void sortTopBestParametersDescending()
 		{
 			this.bestParametersManager.SortTopBestParametersDescending();
@@ -136,6 +145,7 @@ namespace QuantProject.ADT.Optimizing.BruteForce
 		public void Run()
 		{
 			this.createTopBestParameters();
+			this.checkIfTopBestParametersIsFine();
 			this.sortTopBestParametersDescending();
 //			this.bestParametersManager.TopBestParameters.Sort();
 			this.runIsComplete = true;
