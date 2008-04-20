@@ -329,6 +329,9 @@ namespace QuantProject.ADT.Statistics
 			double d4 = sumOfSecond*sumOfSecond;
 			double d5 = d1 - d2;
 			double d6 = d3 - d4;
+			double a1 = (n*sumOfSquaredFirst - sumOfFirst*sumOfFirst);
+			double a2 = (n*sumOfSquaredSecond - sumOfSecond*sumOfSecond);
+
 			return (n*sumOfProduct - sumOfFirst*sumOfSecond)/
 				Math.Sqrt( (n*sumOfSquaredFirst - sumOfFirst*sumOfFirst)*
 				(n*sumOfSquaredSecond - sumOfSecond*sumOfSecond) );
