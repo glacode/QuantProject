@@ -90,7 +90,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.PairsTrading
 			double fitness2 = bruteForceOptimizableParameters2.Fitness;
 			double percDifference = Math.Abs(
 				fitness1 / fitness2 - 1 );
-			bool areEquivalentAsTopBestParameters =
+			bool haveTheSameFitness =
 				( percDifference < 0.00001 );
 //			if ( areEquivalentAsTopBestParameters )
 //			{
@@ -98,7 +98,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.PairsTrading
 //				forBreakpoint = forBreakpoint + "a";
 //			}
 //			return areEquivalentAsTopBestParameters;
-			return false;
+			return haveTheSameFitness;
 		}
 		/// Two TestingPositions are considered equivalent as TopBestPositions
 		/// (and only one is kept among them) iif they have the same tickers
@@ -113,16 +113,15 @@ namespace QuantProject.Scripts.WalkForwardTesting.PairsTrading
 			this.areEquivalentAsTopBestParameters_checkParameters(
 				bruteForceOptimizableParameters1 , bruteForceOptimizableParameters2 );
 
-			// if two TestingPositions (a,b) and (c,d) have the same fitness,
-			// but different tickers (a!=b), probably a and b represent
-			// the same security X (probably, X's ticker changed from a to b
-			// or viceversa and the database contains historical quotes for
-			// both a and b); in such a case (a,b) and (c,d) are equivalent
-			// and the second one is to be dropped down
+			// the following is a short way to say that, with respect to the
+			// pairs trading strategy, (a,b) is equivalent to
+			// (-a,-b), and that (a,-b) is equivalent to (-a,b)
+			// We use fitness similarity instead of checking for all possible long/short
+			// combinations
 			bool areEquivalentAsTopBestParameters =
 				this.haveTheSameTickers(
 				((TestingPositions)bruteForceOptimizableParameters1.Meaning ) ,
-				((TestingPositions)bruteForceOptimizableParameters2.Meaning) ) ||
+				((TestingPositions)bruteForceOptimizableParameters2.Meaning) ) &&
 				this.haveTheSameFitness(
 				bruteForceOptimizableParameters1 ,
 				bruteForceOptimizableParameters2 );
