@@ -73,6 +73,7 @@
     <Compile Include="a2_Strategies\Eligibles\IEligiblesSelector.cs" />
     <Compile Include="a2_Strategies\Eligibles\MostLiquidAndLessVolatile.cs" />
     <Compile Include="a2_Strategies\EndOfDayStrategies\BasicEndOfDayStrategyForBacktester.cs" />
+    <Compile Include="a2_Strategies\EndOfDayStrategies\SymmetricEndOfDayStrategyForBacktester.cs" />
     <Compile Include="a2_Strategies\EndOfDayStrategyBackTester.cs" />
     <Compile Include="a2_Strategies\IEndOfDayStrategyForBacktester.cs" />
     <Compile Include="a2_Strategies\InSample\BruteForceChooser.cs" />
