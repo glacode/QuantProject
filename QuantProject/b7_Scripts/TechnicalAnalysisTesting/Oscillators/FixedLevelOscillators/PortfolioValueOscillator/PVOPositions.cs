@@ -78,6 +78,12 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOs
 					this.overboughtThreshold, this.numDaysForOscillatingPeriod);
 		}
 
+		// creates an empty TestingPositions: to be used to give a meaning with
+		// PVOPositions type to undecodables
+		public PVOPositions() : base()
+		{
+		}
+
 		public PVOPositions(WeightedPositions weightedPositions,
 												double oversoldThreshold,
 												double overboughtThreshold,
