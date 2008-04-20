@@ -31,7 +31,7 @@ namespace QuantProject.Business.Strategies.Optimizing.Decoding
 	/// TestingPositions
 	/// In this implementation, weights are balanced on volatility base
 	/// </summary>
-	public class DecoderForTestingPositionsWithBalancedWeights :
+	public abstract class DecoderForTestingPositionsWithBalancedWeights :
 								BasicDecoderForTestingPositions
 	{
 		
@@ -40,15 +40,7 @@ namespace QuantProject.Business.Strategies.Optimizing.Decoding
 			
 		}
 		
-//		public override string Description
-//		{
-//			get
-//			{
-//				string description =
-//					"DecoderForTestingPositions_DecodedOnlyTickers_WeightsAreBalancedOnVolatilityBase";
-//				return description;
-//			}
-//		}
+//		protected override abstract getMeaningForUndecodable();
 
 		protected override double[] getWeights(SignedTickers signedTickers)
 		{
