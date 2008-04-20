@@ -37,6 +37,8 @@ namespace QuantProject.Scripts.WalkForwardTesting.PairsTrading
 	/// </summary>
 	public class PairsTradingFitnessEvaluator : IFitnessEvaluator
 	{
+		private const double fitnessForInvalidCandidate = -1000d;
+
 		private double maxCorrelationAllowed;
 
 		public string Description
@@ -66,6 +68,19 @@ namespace QuantProject.Scripts.WalkForwardTesting.PairsTrading
 				throw new Exception( "This fitness evaluatore requires " +
 					"two positions!" );
 		}
+		/// <summary>
+		/// returns 1 if the weightedPosition is long, -1 if it is short. This
+		/// is used to compute the PearsonCorrelationCoefficient considering the
+		/// proper sign for returns
+		/// </summary>
+		/// <param name="weightedPosition"></param>
+		private double getMultiplierForReturns( WeightedPosition weightedPosition )
+		{
+			double multiplierForReturns = 1;
+			if ( weightedPosition.IsShort )
+				multiplierForReturns = -1;
+			return multiplierForReturns;
+		}
 		private double getFitnessValue(
 			WeightedPosition firstPosition , WeightedPosition secondPosition ,
 			ReturnsManager returnsManager )
@@ -75,8 +90,10 @@ namespace QuantProject.Scripts.WalkForwardTesting.PairsTrading
 			float[] secondPositionReturns =
 				returnsManager.GetReturns( secondPosition.Ticker );
 			double fitnessValue =	BasicFunctions.PearsonCorrelationCoefficient(
-				firstPosition.Weight , firstPositionReturns ,
-				secondPosition.Weight , secondPositionReturns );
+				this.getMultiplierForReturns( firstPosition ) , firstPositionReturns ,
+				this.getMultiplierForReturns( secondPosition ) , secondPositionReturns );
+//			double fitnessValue =	BasicFunctions.PearsonCorrelationCoefficient(
+//				firstPositionReturns , secondPositionReturns );
 			return fitnessValue;
 		}
 
@@ -98,7 +115,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.PairsTrading
 			if ( weightedPositions == null )
 				// the current optimization's candidate contains
 				// two genes that decode to the same tickers
-				fitnessValue = -0.4;
+				fitnessValue = fitnessForInvalidCandidate;
 			else
 				// for the current optimization's candidate,
 				// all positions's tickers are distinct
@@ -107,7 +124,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.PairsTrading
 				if ( fitnessValue > this.maxCorrelationAllowed )
 					// the two positions are too correlated. They may represent
 					// the same instrument
-					fitnessValue = -0.4;
+					fitnessValue = fitnessForInvalidCandidate;
 			}
 			return fitnessValue;
 		}
