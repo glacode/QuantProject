@@ -41,6 +41,14 @@ namespace QuantProject.Scripts.WalkForwardTesting.PairsTrading
 			get { return this.generation; }
 			set { this.generation = value; }
 		}
+
+		// creates an empty TestingPositions: to be used to give a meaning with
+		// PairsTradingTestingPositions type to undecodables
+		public PairsTradingTestingPositions() : base()
+		{
+		}
+
+
 		public PairsTradingTestingPositions(
 			WeightedPositions weightedPositions ) :
 			base( weightedPositions )
