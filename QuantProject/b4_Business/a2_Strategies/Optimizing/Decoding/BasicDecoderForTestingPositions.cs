@@ -116,6 +116,8 @@ namespace QuantProject.Business.Strategies.Optimizing.Decoding
 		}
 		#endregion decodeSignedTickers
 
+		protected abstract TestingPositions getMeaningForUndecodable();
+
 		#region isDecodable
 		private string[] getTickersForPositions()
 		{
@@ -202,7 +204,7 @@ namespace QuantProject.Business.Strategies.Optimizing.Decoding
 			this.decode_updateProtectedMembers(encoded , eligibleTickers ,
 			                   								 returnsManager);
 			this.setTickerRelatedGeneValues();
-			TestingPositions meaning =	new TestingPositions();
+			TestingPositions meaning = this.getMeaningForUndecodable();
 			if ( this.isDecodable() )
 			// encoded, normally a Genome, can be decoded to a TestingPositions
 				meaning = this.decodeDecodable();
