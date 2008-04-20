@@ -274,11 +274,36 @@ namespace QuantProject.Scripts.WalkForwardTesting.PairsTrading
 			return weightedPositionsToBeOpended;
 		}
 		private WeightedPositions
-			getPositionsToBeOpened_withAtLeastASecondPhaseInterval()
+			getPositionsToBeOpened_withAtLeastASecondPhaseInterval_actually()
 		{
 			ReturnsManager returnsManager =
 				this.getReturnsManagerForLastSecondPhaseInterval();
-			return this.getPositionsToBeOpened( returnsManager );
+			WeightedPositions weightedPositions =
+				this.getPositionsToBeOpened( returnsManager );
+			return weightedPositions;
+		}
+		/// <summary>
+		/// To be overriden if a subset of the positions has to be returned
+		/// </summary>
+		/// <param name="weightedPositions"></param>
+		/// <returns></returns>
+		protected virtual WeightedPositions selectWeightedPositions(
+			WeightedPositions weightedPositions )
+		{
+			return weightedPositions;
+		}
+		private WeightedPositions
+			getPositionsToBeOpened_withAtLeastASecondPhaseInterval()
+		{
+			WeightedPositions weightedPositions =
+				this.getPositionsToBeOpened_withAtLeastASecondPhaseInterval_actually();
+			WeightedPositions weightedPositionsToBeReturned = null;
+			if ( weightedPositions != null )
+				// at least one of the BestTestingPositions shows an inefficiency
+				// above the threshold
+				weightedPositionsToBeReturned =
+					selectWeightedPositions( weightedPositions );
+			return weightedPositionsToBeReturned;
 		}
 		protected override WeightedPositions getPositionsToBeOpened()
 		{
