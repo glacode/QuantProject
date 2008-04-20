@@ -909,11 +909,6 @@
                     BuildAction = "Compile"
                 />
                 <File
-                    RelPath = "WalkForwardTesting\PairsTrading\PairsTradingStrategy.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
                     RelPath = "WalkForwardTesting\PairsTrading\PairsTradingTestingPositions.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
@@ -955,6 +950,16 @@
                 />
                 <File
                     RelPath = "WalkForwardTesting\PairsTrading\Logging\TesterForPairsTradingTestingPositions.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "WalkForwardTesting\PairsTrading\Strategies\LongOnlyPairsTradingStrategy.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "WalkForwardTesting\PairsTrading\Strategies\PairsTradingStrategy.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
