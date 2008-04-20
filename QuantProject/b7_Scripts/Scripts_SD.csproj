@@ -115,6 +115,8 @@
     <Compile Include="WalkForwardTesting\PairsTrading\PairsTradingMain.cs" />
     <Compile Include="WalkForwardTesting\PairsTrading\PairsTradingStrategy.cs" />
     <Compile Include="WalkForwardTesting\PairsTrading\PairsTradingTestingPositions.cs" />
+    <Compile Include="WalkForwardTesting\PairsTrading\Strategies\PairsTradingStrategy.cs" />
+    <Compile Include="WalkForwardTesting\PairsTrading\Strategies\LongOnlyPairsTradingStrategy.cs" />
     <Compile Include="WalkForwardTesting\WalkForwardLag\RunSimpleLag.cs" />
     <Compile Include="WalkForwardTesting\WalkForwardLag\WeightedPositionsChoosers\BruteForce\WFLagBruteForceWeightedPositionsChooserForBalancedFixedPortfolioAndBalancedDriving.cs" />
     <Compile Include="WalkForwardTesting\WalkForwardLag\WeightedPositionsChoosers\Decoding\IWFLagDecoder.cs" />
@@ -291,6 +293,7 @@
     <Folder Include="WalkForwardTesting\PairsTrading\InSample\InSampleChoosers\BruteForce" />
     <Folder Include="WalkForwardTesting\PairsTrading\InSample\InSampleChoosers\Genetic" />
     <Folder Include="WalkForwardTesting\PairsTrading\Logging" />
+    <Folder Include="WalkForwardTesting\PairsTrading\Strategies" />
     <Folder Include="WalkForwardTesting\WalkForwardLag\WeightedPositionsChoosers\BruteForce" />
     <Folder Include="WalkForwardTesting\WalkForwardLag\WeightedPositionsChoosers\Decoding" />
     <Folder Include="WalkForwardTesting\WalkForwardLag\WeightedPositionsChoosers\OptimizableParametersManagers" />
