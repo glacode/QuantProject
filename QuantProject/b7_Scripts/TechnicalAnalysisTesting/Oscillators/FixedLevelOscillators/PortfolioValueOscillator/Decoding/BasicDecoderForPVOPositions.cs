@@ -55,6 +55,11 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOs
 			this.divisorForThresholdComputation = divisorForThresholdComputation;
 			this.numDaysForOscillatingPeriod = numDaysForOscillatingPeriod;
 		}
+
+		protected override TestingPositions getMeaningForUndecodable()
+		{
+			return new PVOPositions();
+		}
 		
 		private void decodeDecodable_setThresholds()
 		{

@@ -37,6 +37,11 @@ namespace QuantProject.Scripts.WalkForwardTesting.PairsTrading
 		public DecoderForPairsTradingTestingPositionsWithBalancedWeights()
 		{
 		}
+
+		protected override TestingPositions getMeaningForUndecodable()
+		{
+			return new PairsTradingTestingPositions();
+		}
 		
 		protected override TestingPositions getTestingPositions(double[] weights, string[] tickers)
 		{
