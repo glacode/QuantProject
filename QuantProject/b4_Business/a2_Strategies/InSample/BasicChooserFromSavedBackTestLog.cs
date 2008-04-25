@@ -45,6 +45,8 @@ namespace QuantProject.Business.Strategies.InSample
 		public event NewProgressEventHandler NewProgress;
 		public event NewMessageEventHandler NewMessage;
 		
+		protected int numberOfBestTestingPositionsToBeReturned;
+		protected TestingPositions[] bestTestingPositionsInSample;
 		protected string backTestLogFullPath;
 		protected BackTestLog backTestLog;
 		
@@ -57,21 +59,7 @@ namespace QuantProject.Business.Strategies.InSample
 			}
 		}
 		
-		/// <summary>
-		/// Abstract BasicChooserFromSavedBackTestLog to be used for
-		/// retrieving TestingPositions from a BackTestLog
-		/// already saved to disk
-		/// </summary>
-		public BasicChooserFromSavedBackTestLog(
-			string backTestLogFullPath)
-		{
-			this.backTestLogFullPath = backTestLogFullPath;
-		}
-				
-		protected abstract TestingPositions[] getTestingPositionsFromBackTestLog(
-			EndOfDayDateTime lastInSampleDateOfOptimizedTestingPositions	);
-		
-		protected void analyzeInSample_setBackTestLog()
+		private void setBackTestLog()
 		{
 			if( this.backTestLog == null )
 			{
@@ -84,7 +72,34 @@ namespace QuantProject.Business.Strategies.InSample
 					                    " a BackTestLog!");
 			}
 		}
-
+		
+		/// <summary>
+		/// Abstract BasicChooserFromSavedBackTestLog to be used for
+		/// retrieving TestingPositions from a BackTestLog
+		/// already saved to disk
+		/// </summary>
+		public BasicChooserFromSavedBackTestLog(
+			string backTestLogFullPath, int numberOfBestTestingPositionsToBeReturned)
+		{
+			this.backTestLogFullPath = backTestLogFullPath;
+			this.numberOfBestTestingPositionsToBeReturned = 
+				numberOfBestTestingPositionsToBeReturned;
+			this.setBackTestLog();
+		}
+				
+		protected abstract TestingPositions[] getTestingPositionsFromBackTestLog(
+			EndOfDayDateTime lastInSampleDateOfOptimizedTestingPositions	);
+		
+		private void analyzeInSample_fireEvents()
+		{
+			if(this.NewProgress != null)
+				this.NewProgress( this ,
+					new NewProgressEventArgs( 1 , 1 ) );
+			if(this.NewMessage != null)
+				this.NewMessage( this ,
+					new NewMessageEventArgs( "AnalyzeInSample is complete" ) );
+		}
+		
 		/// <summary>
 		/// Returns the best TestingPositions 
 		/// stored in the BackTestLog
@@ -95,14 +110,10 @@ namespace QuantProject.Business.Strategies.InSample
 			EligibleTickers eligibleTickers ,
 			ReturnsManager returnsManager )
 		{
-			this.analyzeInSample_setBackTestLog();
-			TestingPositions[] bestTestingPositionsInSample =
+			this.bestTestingPositionsInSample =
 				this.getTestingPositionsFromBackTestLog( 
 				     returnsManager.ReturnIntervals.LastEndOfDayDateTime );
-			this.NewProgress( this ,
-				new NewProgressEventArgs( 1 , 1 ) );
-			this.NewMessage( this ,
-				new NewMessageEventArgs( "AnalyzeInSample is complete" ) );
+			this.analyzeInSample_fireEvents();
 			return bestTestingPositionsInSample;
 		}
 	}
