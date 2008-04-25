@@ -20,16 +20,46 @@ namespace QuantProject.Business.Financial.Accounting.Reporting.Tables
     private AccountReport accountReport;
 		private IHistoricalQuoteProvider historicalQuoteProvider;
     
-		private AverageReturnOnMonday averageReturnOnMonday;
-
+		private AverageReturnOnMondayWithOpenPositions averageReturnOnMondayWithOpenPositions;
+		private AverageReturnOnTuesdayWithOpenPositions averageReturnOnTuesdayWithOpenPositions;
+		private AverageReturnOnWednesdayWithOpenPositions averageReturnOnWednesdayWithOpenPositions;
+		private AverageReturnOnThursdayWithOpenPositions averageReturnOnThursdayWithOpenPositions;
+		private AverageReturnOnFridayWithOpenPositions averageReturnOnFridayWithOpenPositions;
+		private AverageReturnOnDayWithOpenPositions averageReturnOnDayWithOpenPositions;
+		
 		public AccountReport AccountReport
     {
       get { return accountReport; }
     }
     
-		public AverageReturnOnMonday AverageReturnOnMonday
+		public AverageReturnOnMondayWithOpenPositions AverageReturnOnMondayWithOpenPositions
 		{
-			get { return this.averageReturnOnMonday; }
+			get { return this.averageReturnOnMondayWithOpenPositions; }
+		}
+
+		public AverageReturnOnTuesdayWithOpenPositions AverageReturnOnTuesdayWithOpenPositions
+		{
+			get { return this.averageReturnOnTuesdayWithOpenPositions; }
+		}
+		
+		public AverageReturnOnWednesdayWithOpenPositions AverageReturnOnWednesdayWithOpenPositions
+		{
+			get { return this.averageReturnOnWednesdayWithOpenPositions; }
+		}
+		
+		public AverageReturnOnThursdayWithOpenPositions AverageReturnOnThursdayWithOpenPositions
+		{
+			get { return this.averageReturnOnThursdayWithOpenPositions; }
+		}
+		
+		public AverageReturnOnFridayWithOpenPositions AverageReturnOnFridayWithOpenPositions
+		{
+			get { return this.averageReturnOnFridayWithOpenPositions; }
+		}
+		
+		public AverageReturnOnDayWithOpenPositions AverageReturnOnDayWithOpenPositions
+		{
+			get { return this.averageReturnOnDayWithOpenPositions; }
 		}
 
 		private void statisticsSummary( AccountReport accountReport )
@@ -111,7 +141,13 @@ namespace QuantProject.Business.Financial.Accounting.Reporting.Tables
 			if ( this.accountReport.Equity.DataTable.Rows.Count == 0 )
 				throw new Exception( "A StatisticsSummary computation has been requested, but the equity line is empty" );
       
-			this.averageReturnOnMonday = new AverageReturnOnMonday(this);
+			this.averageReturnOnMondayWithOpenPositions = new AverageReturnOnMondayWithOpenPositions(this);
+			this.averageReturnOnTuesdayWithOpenPositions = new AverageReturnOnTuesdayWithOpenPositions(this);
+			this.averageReturnOnWednesdayWithOpenPositions = new AverageReturnOnWednesdayWithOpenPositions(this);
+			this.averageReturnOnThursdayWithOpenPositions = new AverageReturnOnThursdayWithOpenPositions(this);
+			this.averageReturnOnFridayWithOpenPositions = new AverageReturnOnFridayWithOpenPositions(this);
+			this.averageReturnOnDayWithOpenPositions = 
+				new AverageReturnOnDayWithOpenPositions(this);
     }
 
     #endregion
