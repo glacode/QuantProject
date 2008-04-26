@@ -30,6 +30,7 @@ using QuantProject.Business.Strategies.InSample;
 using QuantProject.Business.Strategies.TickersRelationships; 
 using QuantProject.Business.Strategies.Eligibles;
 using QuantProject.Business.Strategies.ReturnsManagement;
+using QuantProject.Business.Strategies.ReturnsManagement.Time;
 using QuantProject.Business.Strategies.OutOfSample;
 
 namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOscillators.PortfolioValueOscillator.InSampleChoosers
@@ -51,6 +52,7 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOs
 		protected double maxCorrelationValue;
 		//correlations greater than this value are discarded
 		protected bool balancedWeightsOnVolatilityBase;
+		protected IntervalsType intervalsType;
 		
 		public virtual string Description
 		{
@@ -67,6 +69,14 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOs
 			}
 		}
 		
+		public IntervalsType IntervalsType
+		{
+			get
+			{
+				return this.intervalsType;
+			}
+		}
+
 		/// <summary>
 		/// PVOCorrelationChooser to be used for
 		/// in sample optimization
@@ -87,12 +97,14 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOs
 		public PVOCorrelationChooser(int numberOfBestTestingPositionsToBeReturned,
 														     int numDaysForOscillatingPeriod,
 																 double maxCorrelationValue,
-															   bool balancedWeightsOnVolatilityBase)
+															   bool balancedWeightsOnVolatilityBase,
+																 IntervalsType intervalsType)
 		{
 			this.numberOfBestTestingPositionsToBeReturned = numberOfBestTestingPositionsToBeReturned;
 			this.numDaysForOscillatingPeriod = numDaysForOscillatingPeriod;
 			this.maxCorrelationValue = maxCorrelationValue;
 			this.balancedWeightsOnVolatilityBase = balancedWeightsOnVolatilityBase;
+			this.intervalsType = intervalsType;
 		}
 
 		#region AnalyzeInSample
@@ -104,8 +116,8 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOs
 				throw new Exception( "Eligible tickers for driving positions contains " +
 					"only " + eligibleTickers.Count +
 					" elements, while NumberOfDrivingPositions is 2");
-			if (this.maxCorrelationValue < 0.50 || this.maxCorrelationValue > 1.0 )
-				throw new OutOfRangeException( "maxCorrelationValue", 0.5, 1.0);
+			if (this.maxCorrelationValue < 0.0 || this.maxCorrelationValue > 1.0 )
+				throw new OutOfRangeException( "maxCorrelationValue", 0.0, 1.0);
 		}
 								
 		protected abstract void setCorrelationProvider(EligibleTickers eligibleTickers ,
