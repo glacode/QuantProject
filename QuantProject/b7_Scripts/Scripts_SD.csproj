@@ -74,6 +74,7 @@
     <Compile Include="TechnicalAnalysisTesting\Oscillators\FixedLevelOscillators\PortfolioValueOscillator\InSampleChoosers\PVOGeneticChooser.cs" />
     <Compile Include="TechnicalAnalysisTesting\Oscillators\FixedLevelOscillators\PortfolioValueOscillator\InSampleChoosers\PVO_CTCCorrelationChooser.cs" />
     <Compile Include="TechnicalAnalysisTesting\Oscillators\FixedLevelOscillators\PortfolioValueOscillator\InSampleChoosers\PVO_OTCCorrelationChooser.cs" />
+    <Compile Include="TechnicalAnalysisTesting\Oscillators\FixedLevelOscillators\PortfolioValueOscillator\InSampleChoosers\PVO_OTCCTOCorrelationChooser.cs" />
     <Compile Include="TechnicalAnalysisTesting\Oscillators\FixedLevelOscillators\PortfolioValueOscillator\PVOGenomeManager.cs" />
     <Compile Include="TechnicalAnalysisTesting\Oscillators\FixedLevelOscillators\PortfolioValueOscillator\PVOLogItem.cs" />
     <Compile Include="TechnicalAnalysisTesting\Oscillators\FixedLevelOscillators\PortfolioValueOscillator\PVOMain.cs" />
@@ -83,6 +84,7 @@
     <Compile Include="TechnicalAnalysisTesting\Oscillators\FixedLevelOscillators\PortfolioValueOscillator\PVO_OTCLogItem.cs" />
     <Compile Include="TechnicalAnalysisTesting\Oscillators\FixedLevelOscillators\PortfolioValueOscillator\PVO_OTCMain.cs" />
     <Compile Include="TechnicalAnalysisTesting\Oscillators\FixedLevelOscillators\PortfolioValueOscillator\PVO_OTCStrategy.cs" />
+    <Compile Include="TechnicalAnalysisTesting\Oscillators\FixedLevelOscillators\PortfolioValueOscillator\PVO_OTCStrategyLessCorrelated.cs" />
     <Compile Include="TechnicalAnalysisTesting\Oscillators\FixedLevelOscillators\PortfolioValueOscillator\WeightedPVO\EndOfDayTimerHandlerWeightedPVO.cs" />
     <Compile Include="TechnicalAnalysisTesting\Oscillators\FixedLevelOscillators\PortfolioValueOscillator\WeightedPVO\GenomeManagerWeightedPVO.cs" />
     <Compile Include="TechnicalAnalysisTesting\Oscillators\FixedLevelOscillators\PortfolioValueOscillator\WeightedPVO\RunWeightedPVO.cs" />
@@ -113,7 +115,6 @@
     <Compile Include="WalkForwardTesting\PairsTrading\Logging\SimpleStrategy.cs" />
     <Compile Include="WalkForwardTesting\PairsTrading\Logging\TesterForPairsTradingTestingPositions.cs" />
     <Compile Include="WalkForwardTesting\PairsTrading\PairsTradingMain.cs" />
-    <Compile Include="WalkForwardTesting\PairsTrading\PairsTradingStrategy.cs" />
     <Compile Include="WalkForwardTesting\PairsTrading\PairsTradingTestingPositions.cs" />
     <Compile Include="WalkForwardTesting\PairsTrading\Strategies\PairsTradingStrategy.cs" />
     <Compile Include="WalkForwardTesting\PairsTrading\Strategies\LongOnlyPairsTradingStrategy.cs" />

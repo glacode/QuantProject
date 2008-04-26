@@ -354,6 +354,11 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "TechnicalAnalysisTesting\Oscillators\FixedLevelOscillators\PortfolioValueOscillator\PVO_OTCStrategyLessCorrelated.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "TechnicalAnalysisTesting\Oscillators\FixedLevelOscillators\PortfolioValueOscillator\PVOGenomeManager.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
@@ -425,6 +430,11 @@
                 />
                 <File
                     RelPath = "TechnicalAnalysisTesting\Oscillators\FixedLevelOscillators\PortfolioValueOscillator\InSampleChoosers\PVO_OTCCorrelationChooser.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "TechnicalAnalysisTesting\Oscillators\FixedLevelOscillators\PortfolioValueOscillator\InSampleChoosers\PVO_OTCCTOCorrelationChooser.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
