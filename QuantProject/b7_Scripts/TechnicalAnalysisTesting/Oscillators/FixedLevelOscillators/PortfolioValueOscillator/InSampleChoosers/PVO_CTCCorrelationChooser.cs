@@ -29,6 +29,7 @@ using QuantProject.Business.Strategies;
 using QuantProject.Business.Strategies.TickersRelationships; 
 using QuantProject.Business.Strategies.Eligibles;
 using QuantProject.Business.Strategies.ReturnsManagement;
+using QuantProject.Business.Strategies.ReturnsManagement.Time;
 using QuantProject.Business.Strategies.OutOfSample;
 using QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOscillators.PortfolioValueOscillator.InSampleChoosers;
 
@@ -57,7 +58,8 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOs
 																		 base(numberOfBestTestingPositionsToBeReturned,
 			     															  closeToCloseReturnIntervalLength,
 																					maxCorrelationValue,
-																					balancedWeightsOnVolatilityBase)
+																					balancedWeightsOnVolatilityBase,
+																					IntervalsType.CloseToCloseIntervals_OneDay)
 		{
 			
 		}
