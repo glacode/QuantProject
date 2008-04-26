@@ -87,6 +87,7 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOs
 				positionsToTest, inSampleDays,
 				benchmark ,
 				int.MaxValue ,
+				0 ,
 				((PVOPositions)positionsToTest[0]).OversoldThreshold,
 				((PVOPositions)positionsToTest[0]).OverboughtThreshold,
 				historicalQuoteProviderForStrategy);
