@@ -44,6 +44,7 @@ using QuantProject.Data.DataProviders;
 using QuantProject.Data.Selectors;
 using QuantProject.Data.DataTables;
 using QuantProject.ADT.Optimizing.Genetic;
+using QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOscillators.PortfolioValueOscillator.InSampleChoosers;
 using QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios;
 using QuantProject.Scripts.WalkForwardTesting.LinearCombination;
 
@@ -84,7 +85,9 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOs
     	get { return this.account; }
     	set { this.account = value; }
 		}
-       
+    private int numOfClosingsToCrossBeforeExit;
+    private int numOfClosingsWithOpenPositions;
+    
     private string description_GetDescriptionForChooser()
     {
     	if(this.inSampleChooser == null)
@@ -122,14 +125,17 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOs
 			int inSampleDays,
 			Benchmark benchmark,
 			int numDaysBetweenEachOptimization,
+			int numOfClosingsToCrossBeforeExit,
 			double oversoldThreshold,
 			double overboughtThreshold,
 			HistoricalQuoteProvider historicalQuoteProvider)
 		{
+			this.numOfClosingsWithOpenPositions = 0;
 			this.eligiblesSelector = eligiblesSelector;
 			this.inSampleDays = inSampleDays;
 			this.benchmark = benchmark;
 			this.numDaysBetweenEachOptimization = numDaysBetweenEachOptimization;
+			this.numOfClosingsToCrossBeforeExit = numOfClosingsToCrossBeforeExit;
 			this.oversoldThreshold = oversoldThreshold;
 			this.overboughtThreshold = overboughtThreshold;
 			this.historicalQuoteProvider = historicalQuoteProvider;
@@ -140,13 +146,14 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOs
 																int inSampleDays,
 																Benchmark benchmark,
 																int numDaysBetweenEachOptimization,
+																int numOfClosingsToCrossBeforeExit,
 																double oversoldThreshold,
 																double overboughtThreshold,
                                 HistoricalQuoteProvider historicalQuoteProvider)
     														
     {
 			this.pvo_otcStrategy(eligiblesSelector, inSampleDays , benchmark , numDaysBetweenEachOptimization ,
-				oversoldThreshold, overboughtThreshold,
+				numOfClosingsToCrossBeforeExit, oversoldThreshold, overboughtThreshold,
 				historicalQuoteProvider);
 			this.inSampleChooser = inSampleChooser;
     }
@@ -156,13 +163,14 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOs
 			int inSampleDays,
 			Benchmark benchmark,
 			int numDaysBetweenEachOptimization,
+			int numOfClosingsToCrossBeforeExit,
 			double oversoldThreshold,
 			double overboughtThreshold,
 			HistoricalQuoteProvider historicalQuoteProvider)
     														
 		{
 			this.pvo_otcStrategy(eligiblesSelector, inSampleDays , benchmark , numDaysBetweenEachOptimization ,
-				oversoldThreshold, overboughtThreshold, historicalQuoteProvider);
+				numOfClosingsToCrossBeforeExit, oversoldThreshold, overboughtThreshold, historicalQuoteProvider);
 			this.chosenPVOPositions = chosenPVOPositions;
 		}
 		
@@ -277,7 +285,14 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOs
       Object sender , EndOfDayTimingEventArgs endOfDayTimingEventArgs )
     {
 			if(this.account.Portfolio.Count > 0)
-				AccountManager.ClosePositions(this.account);
+			{
+				this.numOfClosingsWithOpenPositions++;
+				if(this.numOfClosingsWithOpenPositions > this.numOfClosingsToCrossBeforeExit)
+				{
+					AccountManager.ClosePositions(this.account);
+					this.numOfClosingsWithOpenPositions = 0;
+				}
+			}
 		}
  
     #region OneHourAfterMarketCloseEventHandler
@@ -285,10 +300,48 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOs
 		protected virtual void updateReturnsManager(EndOfDayDateTime firstEndOfDayDateTime,
 			EndOfDayDateTime lastEndOfDayDateTime)
 		{
-			this.returnsManager = 
-				new ReturnsManager( new DailyOpenToCloseIntervals(firstEndOfDayDateTime, lastEndOfDayDateTime,
-				                                                  this.benchmark.Ticker ) ,
-				                        this.historicalQuoteProvider);
+			ReturnIntervals returnIntervals = 
+				new DailyOpenToCloseIntervals( firstEndOfDayDateTime, lastEndOfDayDateTime,
+																			 this.benchmark.Ticker );
+			if( this.inSampleChooser is PVOCorrelationChooser )
+			{
+				switch ( ((PVOCorrelationChooser)this.inSampleChooser).IntervalsType )
+				{
+					case IntervalsType.CloseToCloseIntervals_OneDay:
+						returnIntervals = new CloseToCloseIntervals(firstEndOfDayDateTime, lastEndOfDayDateTime,
+							this.benchmark.Ticker, 1);
+						break;
+					case IntervalsType.CloseToCloseIntervals_TwoDays:
+						returnIntervals = new CloseToCloseIntervals(firstEndOfDayDateTime, lastEndOfDayDateTime,
+							this.benchmark.Ticker, 2);
+						break;
+					case IntervalsType.CloseToCloseIntervals_FiveDays:
+						returnIntervals = new CloseToCloseIntervals(firstEndOfDayDateTime, lastEndOfDayDateTime,
+							this.benchmark.Ticker, 5);
+						break;
+					case IntervalsType.CloseToOpenIntervals:
+						returnIntervals = new CloseToOpenIntervals(firstEndOfDayDateTime, lastEndOfDayDateTime,
+							this.benchmark.Ticker);
+						break;
+					case IntervalsType.DailyOpenToCloseIntervals:
+						returnIntervals = new DailyOpenToCloseIntervals(firstEndOfDayDateTime, lastEndOfDayDateTime,
+							this.benchmark.Ticker );
+						break;
+					case IntervalsType.OpenToCloseCloseToOpenIntervals:
+						returnIntervals = new OpenToCloseCloseToOpenIntervals(
+							firstEndOfDayDateTime, lastEndOfDayDateTime, this.benchmark.Ticker);
+						break;
+					default:
+						// it should never be reached
+						returnIntervals = new DailyOpenToCloseIntervals(firstEndOfDayDateTime, lastEndOfDayDateTime,
+							this.benchmark.Ticker );
+						break;
+				}
+			}
+			
+			this.returnsManager =
+					new ReturnsManager( returnIntervals , this.historicalQuoteProvider);	
+			
 		}
 
 		private PVO_OTCLogItem getLogItem( EligibleTickers eligibleTickers )
