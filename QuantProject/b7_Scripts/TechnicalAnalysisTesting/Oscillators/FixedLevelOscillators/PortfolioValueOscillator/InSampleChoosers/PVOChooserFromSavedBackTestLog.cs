@@ -47,21 +47,29 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOs
 		}
 				
 		public PVOChooserFromSavedBackTestLog(
-			string backTestLogFullPath)
-			: base(backTestLogFullPath)
+			string backTestLogFullPath, int numberOfBestTestingPositionsToBeReturned)
+			: base(backTestLogFullPath , numberOfBestTestingPositionsToBeReturned)
 		{
+			int maxNumberOfTestingPositionsFromBackTestLogItems = 
+				((PVOLogItem)this.backTestLog[0]).BestPVOPositionsInSample.Length;
+		 	if(numberOfBestTestingPositionsToBeReturned > maxNumberOfTestingPositionsFromBackTestLogItems)
+				throw new Exception("Number of TestingPositions to be returned " +
+				                    "is too high for the given BackTestLog");
 		}
 		
 		protected override TestingPositions[] getTestingPositionsFromBackTestLog(EndOfDayDateTime lastInSampleDateOfOptimizedTestingPositions)
 		{
 			TestingPositions[] testingPositions = 
-				new TestingPositions[((PVOLogItem)this.backTestLog[0]).BestPVOPositionsInSample.Length];
-			for( int i = 0; i<this.backTestLog.Count ; i++ )
+				new TestingPositions[this.numberOfBestTestingPositionsToBeReturned];
+			for( int i = 0;
+			     i < this.backTestLog.Count;
+			     i++ )
 			{
 				if( this.backTestLog[i].SimulatedCreationTime.DateTime ==
 					  lastInSampleDateOfOptimizedTestingPositions.DateTime )
 				{
-						testingPositions = ((PVOLogItem)this.backTestLog[i]).BestPVOPositionsInSample;
+						Array.Copy( ((PVOLogItem)this.backTestLog[i]).BestPVOPositionsInSample ,
+												0, testingPositions, 0, numberOfBestTestingPositionsToBeReturned );
 						i = this.backTestLog.Count;
 				}
 			}
