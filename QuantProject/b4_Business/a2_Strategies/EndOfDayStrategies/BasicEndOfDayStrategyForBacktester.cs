@@ -57,8 +57,9 @@ namespace QuantProject.Business.Strategies
 
 		protected DateTime lastOptimizationDateTime;
 		protected ReturnIntervals returnIntervals;
-
 		private Account account;
+
+		protected ReturnsManager inSampleReturnsManager;
 
 		protected TestingPositions[] bestTestingPositionsInSample;
 
@@ -274,12 +275,12 @@ namespace QuantProject.Business.Strategies
 			EligibleTickers eligibleTickers =
 				this.eligiblesSelector.GetEligibleTickers(
 				inSampleReturnIntervals.BordersHistory );
-			ReturnsManager returnsManager = new ReturnsManager(
+			this.inSampleReturnsManager = new ReturnsManager(
 				inSampleReturnIntervals ,
 				this.historicalQuoteProviderForInSample );
 			this.bestTestingPositionsInSample =
 				(TestingPositions[])this.inSampleChooser.AnalyzeInSample(
-				eligibleTickers , returnsManager );
+				eligibleTickers , this.inSampleReturnsManager );
 			this.checkQualityFor_bestTestingPositionsInSample();
 
 			this.notifyMessage( eligibleTickers );
