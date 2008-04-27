@@ -98,6 +98,8 @@ namespace QuantProject.Scripts.WalkForwardTesting.PairsTrading
 		protected override IInSampleChooser getInSampleChooser()
 		{
 			int numberOfBestTestingPositionsToBeReturned = 50;
+			// uncomment the following line for a faster script
+//			 numberOfBestTestingPositionsToBeReturned = 5;
 			
 			IDecoderForTestingPositions decoderForWeightedPositions =
 				new DecoderForPairsTradingTestingPositionsWithBalancedWeights();
@@ -137,10 +139,18 @@ namespace QuantProject.Scripts.WalkForwardTesting.PairsTrading
 		{
 			int inSampleDays = 180;
 			// uncomment the following line for a faster script
-//			inSampleDays = 5; // inSampleDays = 60;
+//			inSampleDays = 5;
+//			 inSampleDays = 60;
 			
 			IIntervalsSelector intervalsSelector =
 				new OddIntervalsSelector( 1 , 1 , this.benchmark );
+
+			OutOfSampleChooser outOfSampleChooser =
+				new OutOfSampleChooserForSingleLongAndShort(
+				0.006 , 0.99 , 0.006 , 0.99 );
+			outOfSampleChooser =
+				new OutOfSampleChooserForExactNumberOfBestLongPositions(
+				2 ,	0.006 , 0.99 , 0.006 , 0.99 );
 
 			IEndOfDayStrategyForBacktester endOfDayStrategyForBacktester =
 				new PairsTradingStrategy(
@@ -148,14 +158,21 @@ namespace QuantProject.Scripts.WalkForwardTesting.PairsTrading
 				eligiblesSelector , inSampleChooser ,
 				this.historicalQuoteProviderForInSample ,
 				this.historicalQuoteProviderForChosingPositionsOutOfSample ,
-				0.006 , 0.99 , 0.006 , 0.99 );
-			endOfDayStrategyForBacktester =
-				new LongOnlyPairsTradingStrategy(
-				7 , inSampleDays , intervalsSelector ,
-				eligiblesSelector , inSampleChooser ,
-				this.historicalQuoteProviderForInSample ,
-				this.historicalQuoteProviderForChosingPositionsOutOfSample ,
-				0.006 , 0.99 , 0.006 , 0.99 );
+				outOfSampleChooser );
+//			IEndOfDayStrategyForBacktester endOfDayStrategyForBacktester =
+//				new PairsTradingStrategy(
+//				7 , inSampleDays , intervalsSelector ,
+//				eligiblesSelector , inSampleChooser ,
+//				this.historicalQuoteProviderForInSample ,
+//				this.historicalQuoteProviderForChosingPositionsOutOfSample ,
+//				0.006 , 0.99 , 0.006 , 0.99 );
+//			endOfDayStrategyForBacktester =
+//				new LongOnlyPairsTradingStrategy(
+//				7 , inSampleDays , intervalsSelector ,
+//				eligiblesSelector , inSampleChooser ,
+//				this.historicalQuoteProviderForInSample ,
+//				this.historicalQuoteProviderForChosingPositionsOutOfSample ,
+//				0.006 , 0.02 , 0.006 , 0.02 );
 			return endOfDayStrategyForBacktester;
 		}
 		protected override EndOfDayStrategyBackTester
@@ -167,7 +184,10 @@ namespace QuantProject.Scripts.WalkForwardTesting.PairsTrading
 
 			DateTime firstDateTime = new DateTime( 2001 , 1 , 1 );
 			DateTime lastDateTime = new DateTime( 2004 , 12 , 31 );
-			double maxRunningHours = 5;
+			// uncomment the following line for a faster script
+//			lastDateTime = new DateTime( 2001 , 1 , 31 );
+
+			double maxRunningHours = 7;
 			
 			EndOfDayStrategyBackTester endOfDayStrategyBackTester =
 				new EndOfDayStrategyBackTester(
