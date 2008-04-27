@@ -70,6 +70,18 @@ namespace QuantProject.Business.Strategies.ReturnsManagement.Time
 				return this[ this.Count - 1 ].End;
 			}
 		}
+		public ReturnInterval LastInterval
+		{
+			get
+			{
+				if ( this.Count == 0 )
+					throw new Exception( "LastInterval " +
+						"cannot be used when ReturnIntervals has " +
+						"no ReturnInterval added yet!" );
+				ReturnInterval lastInterval = this[ this.Count - 1 ];
+				return lastInterval;
+			}
+		}
 		/// <summary>
 		/// The EndOfDayHistory made up by queuing all
 		/// interval's borders
