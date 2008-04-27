@@ -43,14 +43,15 @@ namespace QuantProject.Scripts.WalkForwardTesting.PairsTrading
 	{
 //		private WeightedPositions positionsToBeOpened;
 
-		private double
-			minThresholdForGoingLong,
-			maxThresholdForGoingLong,
-			minThresholdForGoingShort,
-			maxThresholdForGoingShort;
+//		private double
+//			minThresholdForGoingLong,
+//			maxThresholdForGoingLong,
+//			minThresholdForGoingShort,
+//			maxThresholdForGoingShort;
 			
 		private IHistoricalQuoteProvider
 			historicalQuoteProviderForChosingPositionsOutOfSample;
+		private OutOfSampleChooser outOfSampleChooser;
 
 		public PairsTradingStrategy(
 			int numDaysBeetweenEachOtpimization ,
@@ -61,10 +62,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.PairsTrading
 			IHistoricalQuoteProvider historicalQuoteProviderForInSample ,
 			IHistoricalQuoteProvider
 			historicalQuoteProviderForChosingPositionsOutOfSample ,
-			double minThresholdForGoingLong ,
-			double maxThresholdForGoingLong ,
-			double minThresholdForGoingShort ,
-			double maxThresholdForGoingShort ) :
+			OutOfSampleChooser outOfSampleChooser ) :
 			base(
 			numDaysBeetweenEachOtpimization ,
 			numDaysForInSampleOptimization ,
@@ -73,13 +71,14 @@ namespace QuantProject.Scripts.WalkForwardTesting.PairsTrading
 			inSampleChooser ,
 			historicalQuoteProviderForInSample )
 		{
-			this.minThresholdForGoingLong = minThresholdForGoingLong;
-			this.maxThresholdForGoingLong = maxThresholdForGoingLong;
-			this.minThresholdForGoingShort = minThresholdForGoingShort;
-			this.maxThresholdForGoingShort = maxThresholdForGoingShort;
+//			this.minThresholdForGoingLong = minThresholdForGoingLong;
+//			this.maxThresholdForGoingLong = maxThresholdForGoingLong;
+//			this.minThresholdForGoingShort = minThresholdForGoingShort;
+//			this.maxThresholdForGoingShort = maxThresholdForGoingShort;
 
 			this.historicalQuoteProviderForChosingPositionsOutOfSample =
-				historicalQuoteProviderForChosingPositionsOutOfSample;				
+				historicalQuoteProviderForChosingPositionsOutOfSample;			
+			this.outOfSampleChooser = outOfSampleChooser;
 		}
 		
 		protected override string getTextIdentifier()
@@ -128,214 +127,205 @@ namespace QuantProject.Scripts.WalkForwardTesting.PairsTrading
 			return ( beginsTheLastInterval );
 		}
 
-		#region getPositionsToBeOpened
-		#region getReturnsManagerForLastSecondPhaseInterval
-		private EndOfDayDateTime
-			getIntervalBeginForLastSecondPhaseInterval()
-		{
-			// this method will be invoked only if (this.returnIntervals.Count >= 2)
-			int secondLastIntervalIndex =
-				this.returnIntervals.Count - 2;
-			ReturnInterval secondLastInterval =
-				this.returnIntervals[ secondLastIntervalIndex ];
-			return secondLastInterval.End;
-		}
-		private EndOfDayDateTime
-			getIntervalEndForLastSecondPhaseInterval()
-		{
-			return this.lastIntervalAppended().Begin;
-		}
-		private ReturnInterval
-			getReturnIntervalForLastSecondPhaseInterval()
-		{
-			EndOfDayDateTime intervalBegin =
-				this.getIntervalBeginForLastSecondPhaseInterval();
-			EndOfDayDateTime intervalEnd =
-				this.getIntervalEndForLastSecondPhaseInterval();
-			ReturnInterval returnIntervalForLastSecondPhaseInterval =
-				new ReturnInterval( intervalBegin , intervalEnd );
-			return returnIntervalForLastSecondPhaseInterval;
-		}
-		private ReturnIntervals
-			getReturnIntervalsForLastSecondPhaseInterval()
-		{
-			ReturnInterval returnIntervalForLastSecondPhaseInterval =
-				this.getReturnIntervalForLastSecondPhaseInterval();
-			ReturnIntervals returnIntervalsForLastSecondPhaseInterval =
-				new ReturnIntervals( returnIntervalForLastSecondPhaseInterval );
-			return returnIntervalsForLastSecondPhaseInterval;
-		}
-		private ReturnsManager getReturnsManagerForLastSecondPhaseInterval()
-		{
-			ReturnIntervals returnIntervals =
-				this.getReturnIntervalsForLastSecondPhaseInterval();
+//		#region getPositionsToBeOpened
+//		#region getReturnsManagerForLastSecondPhaseInterval
+//		private EndOfDayDateTime
+//			getIntervalBeginForLastSecondPhaseInterval()
+//		{
+//			// this method will be invoked only if (this.returnIntervals.Count >= 2)
+//			int secondLastIntervalIndex =
+//				this.returnIntervals.Count - 2;
+//			ReturnInterval secondLastInterval =
+//				this.returnIntervals[ secondLastIntervalIndex ];
+//			return secondLastInterval.End;
+//		}
+//		private EndOfDayDateTime
+//			getIntervalEndForLastSecondPhaseInterval()
+//		{
+//			return this.lastIntervalAppended().Begin;
+//		}
+//		private ReturnInterval
+//			getReturnIntervalForLastSecondPhaseInterval()
+//		{
+//			EndOfDayDateTime intervalBegin =
+//				this.getIntervalBeginForLastSecondPhaseInterval();
+//			EndOfDayDateTime intervalEnd =
+//				this.getIntervalEndForLastSecondPhaseInterval();
+//			ReturnInterval returnIntervalForLastSecondPhaseInterval =
+//				new ReturnInterval( intervalBegin , intervalEnd );
+//			return returnIntervalForLastSecondPhaseInterval;
+//		}
+//		private ReturnIntervals
+//			getReturnIntervalsForLastSecondPhaseInterval()
+//		{
+//			ReturnInterval returnIntervalForLastSecondPhaseInterval =
+//				this.getReturnIntervalForLastSecondPhaseInterval();
+//			ReturnIntervals returnIntervalsForLastSecondPhaseInterval =
+//				new ReturnIntervals( returnIntervalForLastSecondPhaseInterval );
+//			return returnIntervalsForLastSecondPhaseInterval;
+//		}
+//		private ReturnsManager getReturnsManagerForLastSecondPhaseInterval()
+//		{
+//			ReturnIntervals returnIntervals =
+//				this.getReturnIntervalsForLastSecondPhaseInterval();
+////			ReturnsManager returnsManager =
+////				new ReturnsManager( returnIntervals ,
+////				this.historicalAdjustedQuoteProvider );
 //			ReturnsManager returnsManager =
 //				new ReturnsManager( returnIntervals ,
-//				this.historicalAdjustedQuoteProvider );
-			ReturnsManager returnsManager =
-				new ReturnsManager( returnIntervals ,
-				this.historicalQuoteProviderForChosingPositionsOutOfSample );
-			return returnsManager;
-		}
-		#endregion getReturnsManagerForLastSecondPhaseInterval
-		private double getReturnForTheLastSecondPhaseInterval(
-			ReturnsManager returnsManager ,
-			WeightedPositions weightedPositions )
-		{
-			// returnsManager should contain a single ReturnInterval, and
-			// this ReturnInterval should be the last second phase interval
-			double returnForTheLastSecondPhaseInterval =
-				weightedPositions.GetReturn( 0 , returnsManager );
-			return returnForTheLastSecondPhaseInterval;
-		}
+//				this.historicalQuoteProviderForChosingPositionsOutOfSample );
+//			return returnsManager;
+//		}
+//		#endregion getReturnsManagerForLastSecondPhaseInterval
+//		private double getReturnForTheLastSecondPhaseInterval(
+//			ReturnsManager returnsManager ,
+//			WeightedPositions weightedPositions )
+//		{
+//			// returnsManager should contain a single ReturnInterval, and
+//			// this ReturnInterval should be the last second phase interval
+//			double returnForTheLastSecondPhaseInterval =
+//				weightedPositions.GetReturn( 0 , returnsManager );
+//			return returnForTheLastSecondPhaseInterval;
+//		}
+//
+//		/// <summary>
+//		/// Inverts one of the two positions
+//		/// </summary>
+//		/// <param name="weightedPositions"></param>
+//		/// <returns></returns>
+//		private WeightedPositions getCandidateForPortfolio(
+//			WeightedPositions weightedPositions )
+//		{
+//			double[] weights = new double[ 2 ];
+//			weights[ 0 ] = ((WeightedPosition)weightedPositions[ 0 ]).Weight;
+//			weights[ 1 ] = -((WeightedPosition)weightedPositions[ 1 ]).Weight;
+//			string[] tickers = new String[ 2 ];
+//			tickers[ 0 ] = ((WeightedPosition)weightedPositions[ 0 ]).Ticker;
+//			tickers[ 1 ] = ((WeightedPosition)weightedPositions[ 1 ]).Ticker;
+//			WeightedPositions candidateForPortfolio =
+//				new WeightedPositions( weights , tickers );
+//			return candidateForPortfolio;
+//		}
+//		// if the currentWeightedPositions' return satisfies the thresholds
+//		// then this method returns the WeightedPositions to be opened.
+//		// Otherwise (currentWeightedPositions' return does NOT
+//		// satisfy the thresholds) this method returns null
+//		private WeightedPositions
+//			getPositionsToBeOpenedWithRespectToCurrentWeightedPositions(
+//			ReturnsManager returnsManager ,
+//			WeightedPositions currentWeightedPositions )
+//		{
+//			WeightedPositions weightedPositionsToBeOpened = null;
+//			try
+//			{
+//				double returnForTheLastSecondPhaseInterval =
+//					this.getReturnForTheLastSecondPhaseInterval(
+//					returnsManager ,
+//					currentWeightedPositions );
+//				if ( ( returnForTheLastSecondPhaseInterval >=
+//					this.minThresholdForGoingLong ) &&
+//					( returnForTheLastSecondPhaseInterval <=
+//					this.maxThresholdForGoingLong ) )
+//					// it looks like there has been an inefficiency that
+//					// might be recovered, by going short
+//					weightedPositionsToBeOpened = currentWeightedPositions.Opposite;
+//				if ( ( -returnForTheLastSecondPhaseInterval >=
+//					this.minThresholdForGoingShort ) &&
+//					( -returnForTheLastSecondPhaseInterval <=
+//					this.maxThresholdForGoingShort ) )
+//					// it looks like there has been an inefficiency that
+//					// might be recovered, by going long
+//					weightedPositionsToBeOpened = currentWeightedPositions;
+//			}
+//			catch( TickerNotExchangedException ex )
+//			{
+//				string dummy = ex.Message;
+//			}
+//			return weightedPositionsToBeOpened;
+//		}
+//		private WeightedPositions
+//			getPositionsToBeOpenedWithRespectToCurrentWeightedPositions(
+//			ReturnsManager returnsManager ,
+//			int currentTestingPositionsIndex )
+//		{
+//			WeightedPositions currentWeightedPositions =
+//				this.bestTestingPositionsInSample[ currentTestingPositionsIndex ].WeightedPositions;
+//			WeightedPositions candidateForPortfolio =
+//				this.getCandidateForPortfolio( currentWeightedPositions );
+//			WeightedPositions weightedPositionsToBeOpended =
+//				this.getPositionsToBeOpenedWithRespectToCurrentWeightedPositions(
+//				returnsManager , candidateForPortfolio );
+//			return weightedPositionsToBeOpended;
+//		}
+//		protected WeightedPositions getPositionsToBeOpened(
+//			ReturnsManager returnsManager )
+//		{
+//			WeightedPositions weightedPositionsToBeOpended = null;
+//			int currentTestingPositionsIndex = 0;
+//			while ( ( weightedPositionsToBeOpended == null )
+//				&& ( currentTestingPositionsIndex < this.bestTestingPositionsInSample.Length ) )
+//			{
+//				weightedPositionsToBeOpended =
+//					this.getPositionsToBeOpenedWithRespectToCurrentWeightedPositions(
+//					returnsManager , currentTestingPositionsIndex );
+//				currentTestingPositionsIndex++;
+//			}
+//			return weightedPositionsToBeOpended;
+//		}
+//		private WeightedPositions
+//			getPositionsToBeOpened_withAtLeastASecondPhaseInterval_actually()
+//		{
+//			ReturnsManager returnsManager =
+//				this.getReturnsManagerForLastSecondPhaseInterval();
+//			WeightedPositions weightedPositions =
+//				this.getPositionsToBeOpened( returnsManager );
+//			return weightedPositions;
+//		}
+//		/// <summary>
+//		/// To be overriden if a subset of the positions has to be returned
+//		/// </summary>
+//		/// <param name="weightedPositions"></param>
+//		/// <returns></returns>
+//		protected virtual WeightedPositions selectWeightedPositions(
+//			WeightedPositions weightedPositions )
+//		{
+//			return weightedPositions;
+//		}
+//		private WeightedPositions
+//			getPositionsToBeOpened_withAtLeastASecondPhaseInterval()
+//		{
+//			WeightedPositions weightedPositions =
+//				this.getPositionsToBeOpened_withAtLeastASecondPhaseInterval_actually();
+//			WeightedPositions weightedPositionsToBeReturned = null;
+//			if ( weightedPositions != null )
+//				// at least one of the BestTestingPositions shows an inefficiency
+//				// above the threshold
+//				weightedPositionsToBeReturned =
+//					selectWeightedPositions( weightedPositions );
+//			return weightedPositionsToBeReturned;
+//		}
+//		protected override WeightedPositions getPositionsToBeOpened()
+//		{
+//			WeightedPositions weightedPositions = null;
+//			if ( this.returnIntervals.Count >= 2 )
+//				// at least a second phase interval exists
+//				weightedPositions =
+//					this.getPositionsToBeOpened_withAtLeastASecondPhaseInterval();
+//			return weightedPositions;
+//		}
+//		#endregion
 
-		/// <summary>
-		/// Inverts one of the two positions
-		/// </summary>
-		/// <param name="weightedPositions"></param>
-		/// <returns></returns>
-		private WeightedPositions getCandidateForPortfolio(
-			WeightedPositions weightedPositions )
-		{
-			double[] weights = new double[ 2 ];
-			weights[ 0 ] = ((WeightedPosition)weightedPositions[ 0 ]).Weight;
-			weights[ 1 ] = -((WeightedPosition)weightedPositions[ 1 ]).Weight;
-			string[] tickers = new String[ 2 ];
-			tickers[ 0 ] = ((WeightedPosition)weightedPositions[ 0 ]).Ticker;
-			tickers[ 1 ] = ((WeightedPosition)weightedPositions[ 1 ]).Ticker;
-			WeightedPositions candidateForPortfolio =
-				new WeightedPositions( weights , tickers );
-			return candidateForPortfolio;
-		}
-		// if the currentWeightedPositions' return satisfies the thresholds
-		// then this method returns the WeightedPositions to be opened.
-		// Otherwise (currentWeightedPositions' return does NOT
-		// satisfy the thresholds) this method returns null
-		private WeightedPositions
-			getPositionsToBeOpenedWithRespectToCurrentWeightedPositions(
-			ReturnsManager returnsManager ,
-			WeightedPositions currentWeightedPositions )
-		{
-			WeightedPositions weightedPositionsToBeOpened = null;
-			try
-			{
-				double returnForTheLastSecondPhaseInterval =
-					this.getReturnForTheLastSecondPhaseInterval(
-					returnsManager ,
-					currentWeightedPositions );
-				if ( ( returnForTheLastSecondPhaseInterval >=
-					this.minThresholdForGoingLong ) &&
-					( returnForTheLastSecondPhaseInterval <=
-					this.maxThresholdForGoingLong ) )
-					// it looks like there has been an inefficiency that
-					// might be recovered, by going short
-					weightedPositionsToBeOpened = currentWeightedPositions.Opposite;
-				if ( ( -returnForTheLastSecondPhaseInterval >=
-					this.minThresholdForGoingShort ) &&
-					( -returnForTheLastSecondPhaseInterval <=
-					this.maxThresholdForGoingShort ) )
-					// it looks like there has been an inefficiency that
-					// might be recovered, by going long
-					weightedPositionsToBeOpened = currentWeightedPositions;
-			}
-			catch( TickerNotExchangedException ex )
-			{
-				string dummy = ex.Message;
-			}
-			return weightedPositionsToBeOpened;
-		}
-		private WeightedPositions
-			getPositionsToBeOpenedWithRespectToCurrentWeightedPositions(
-			ReturnsManager returnsManager ,
-			int currentTestingPositionsIndex )
-		{
-			WeightedPositions currentWeightedPositions =
-				this.bestTestingPositionsInSample[ currentTestingPositionsIndex ].WeightedPositions;
-			WeightedPositions candidateForPortfolio =
-				this.getCandidateForPortfolio( currentWeightedPositions );
-			WeightedPositions weightedPositionsToBeOpended =
-				this.getPositionsToBeOpenedWithRespectToCurrentWeightedPositions(
-				returnsManager , candidateForPortfolio );
-			return weightedPositionsToBeOpended;
-		}
-		protected WeightedPositions getPositionsToBeOpened(
-			ReturnsManager returnsManager )
-		{
-			WeightedPositions weightedPositionsToBeOpended = null;
-			int currentTestingPositionsIndex = 0;
-			while ( ( weightedPositionsToBeOpended == null )
-				&& ( currentTestingPositionsIndex < this.bestTestingPositionsInSample.Length ) )
-			{
-				weightedPositionsToBeOpended =
-					this.getPositionsToBeOpenedWithRespectToCurrentWeightedPositions(
-					returnsManager , currentTestingPositionsIndex );
-				currentTestingPositionsIndex++;
-			}
-			return weightedPositionsToBeOpended;
-		}
-		private WeightedPositions
-			getPositionsToBeOpened_withAtLeastASecondPhaseInterval_actually()
-		{
-			ReturnsManager returnsManager =
-				this.getReturnsManagerForLastSecondPhaseInterval();
-			WeightedPositions weightedPositions =
-				this.getPositionsToBeOpened( returnsManager );
-			return weightedPositions;
-		}
-		/// <summary>
-		/// To be overriden if a subset of the positions has to be returned
-		/// </summary>
-		/// <param name="weightedPositions"></param>
-		/// <returns></returns>
-		protected virtual WeightedPositions selectWeightedPositions(
-			WeightedPositions weightedPositions )
-		{
-			return weightedPositions;
-		}
-		private WeightedPositions
-			getPositionsToBeOpened_withAtLeastASecondPhaseInterval()
-		{
-			WeightedPositions weightedPositions =
-				this.getPositionsToBeOpened_withAtLeastASecondPhaseInterval_actually();
-			WeightedPositions weightedPositionsToBeReturned = null;
-			if ( weightedPositions != null )
-				// at least one of the BestTestingPositions shows an inefficiency
-				// above the threshold
-				weightedPositionsToBeReturned =
-					selectWeightedPositions( weightedPositions );
-			return weightedPositionsToBeReturned;
-		}
 		protected override WeightedPositions getPositionsToBeOpened()
 		{
-			WeightedPositions weightedPositions = null;
-			if ( this.returnIntervals.Count >= 2 )
-				// at least a second phase interval exists
-				weightedPositions =
-					this.getPositionsToBeOpened_withAtLeastASecondPhaseInterval();
+			WeightedPositions weightedPositions =
+				this.outOfSampleChooser.GetPositionsToBeOpened(
+				this.bestTestingPositionsInSample ,
+				this.returnIntervals ,
+				this.historicalQuoteProviderForChosingPositionsOutOfSample ,
+				this.inSampleReturnsManager );
 			return weightedPositions;
 		}
-		#endregion
 		
-//		protected override WeightedPositions marketOpenEventHandler_getPositionsToBeOpened()
-//		{
-//			return this.getPositionsToBeOpened();
-//		}
-//
-//		protected override WeightedPositions marketCloseEventHandler_getPositionsToBeOpened()
-//		{
-//			return this.getPositionsToBeOpened();
-//		}
-//
-//		protected override bool marketOpenEventHandler_arePositionsToBeClosed()
-//		{
-//			return this.arePositionsToBeClosed();
-//		}
-//
-//		protected override bool marketCloseEventHandler_arePositionsToBeClosed()
-//		{
-//			return this.arePositionsToBeClosed();
-//		}
-
 		protected override LogItem getLogItem( EligibleTickers eligibleTickers )
 		{
 			PairsTradingLogItem logItem =
