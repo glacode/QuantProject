@@ -964,7 +964,17 @@
                     BuildAction = "Compile"
                 />
                 <File
-                    RelPath = "WalkForwardTesting\PairsTrading\Strategies\LongOnlyPairsTradingStrategy.cs"
+                    RelPath = "WalkForwardTesting\PairsTrading\OutOfSampleChoosers\OutOfSampleChooser.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "WalkForwardTesting\PairsTrading\OutOfSampleChoosers\OutOfSampleChooserForExactNumberOfBestLongPositions.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "WalkForwardTesting\PairsTrading\OutOfSampleChoosers\OutOfSampleChooserForSingleLongAndShort.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
