@@ -114,10 +114,13 @@
     <Compile Include="WalkForwardTesting\PairsTrading\Logging\PairsTradingLogItem.cs" />
     <Compile Include="WalkForwardTesting\PairsTrading\Logging\SimpleStrategy.cs" />
     <Compile Include="WalkForwardTesting\PairsTrading\Logging\TesterForPairsTradingTestingPositions.cs" />
+    <Compile Include="WalkForwardTesting\PairsTrading\OutOfSampleChoosers\OutOfSampleChooser.cs" />
+    <Compile Include="WalkForwardTesting\PairsTrading\OutOfSampleChoosers\OutOfSampleChooserForExactNumberOfBestLongPositions.cs" />
+    <Compile Include="WalkForwardTesting\PairsTrading\OutOfSampleChoosers\OutOfSampleChooserForSingleLongAndShort.cs" />
+    <Compile Include="WalkForwardTesting\PairsTrading\OutOfSampleChoosers\OutOfSampleChooserForSingleLongPosition.cs" />
     <Compile Include="WalkForwardTesting\PairsTrading\PairsTradingMain.cs" />
     <Compile Include="WalkForwardTesting\PairsTrading\PairsTradingTestingPositions.cs" />
     <Compile Include="WalkForwardTesting\PairsTrading\Strategies\PairsTradingStrategy.cs" />
-    <Compile Include="WalkForwardTesting\PairsTrading\Strategies\LongOnlyPairsTradingStrategy.cs" />
     <Compile Include="WalkForwardTesting\WalkForwardLag\RunSimpleLag.cs" />
     <Compile Include="WalkForwardTesting\WalkForwardLag\WeightedPositionsChoosers\BruteForce\WFLagBruteForceWeightedPositionsChooserForBalancedFixedPortfolioAndBalancedDriving.cs" />
     <Compile Include="WalkForwardTesting\WalkForwardLag\WeightedPositionsChoosers\Decoding\IWFLagDecoder.cs" />
@@ -294,6 +297,7 @@
     <Folder Include="WalkForwardTesting\PairsTrading\InSample\InSampleChoosers\BruteForce" />
     <Folder Include="WalkForwardTesting\PairsTrading\InSample\InSampleChoosers\Genetic" />
     <Folder Include="WalkForwardTesting\PairsTrading\Logging" />
+    <Folder Include="WalkForwardTesting\PairsTrading\OutOfSampleChoosers" />
     <Folder Include="WalkForwardTesting\PairsTrading\Strategies" />
     <Folder Include="WalkForwardTesting\WalkForwardLag\WeightedPositionsChoosers\BruteForce" />
     <Folder Include="WalkForwardTesting\WalkForwardLag\WeightedPositionsChoosers\Decoding" />
