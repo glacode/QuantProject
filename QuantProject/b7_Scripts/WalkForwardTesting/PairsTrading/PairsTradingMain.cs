@@ -92,6 +92,11 @@ namespace QuantProject.Scripts.WalkForwardTesting.PairsTrading
 					true ,
 					maxNumberOfEligiblesToBeChosen ,
 					10 , 20 , 75 );
+
+
+//			uncomment the following line for a (logbased) log based in sample chooser
+			eligiblesSelector = new DummyEligibleSelector();
+
 			return eligiblesSelector;
 		}
 
@@ -132,6 +137,15 @@ namespace QuantProject.Scripts.WalkForwardTesting.PairsTrading
 					numberOfBestTestingPositionsToBeReturned ,
 					decoderForWeightedPositions ,
 					fitnessEvaluator );
+
+
+//			uncomment the following line for a (logbased) log based in sample chooser
+			inSampleChooser =
+				new PairsTradingChooserFromSavedBackTestLog(
+					@"C:\qpReports\pairsTrading\longOnly\2008_04_27_4_41_53_pairsTrdng2Long_from_2001_01_01_to_2004_12_31_annlRtrn_128.52_maxDD_25.70\2008_04_27_4_41_53_pairsTrdng_from_2001_01_01_to_2004_12_31_annlRtrn_128.52_maxDD_25.70.qpL",
+				  numberOfBestTestingPositionsToBeReturned);
+
+			
 			return inSampleChooser;
 		}
 
