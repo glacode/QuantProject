@@ -127,90 +127,25 @@ namespace QuantProject.Scripts.WalkForwardTesting.PairsTrading
 					now );
 		}
 		#endregion setTestersForPairstTradingTestingPositions
-//		private AccountReport getAccountReport(
-//			WeightedPositions weightedPositions ,
-//			IIntervalsSelector intervalsSelector ,
-//			IHistoricalQuoteProvider historicalQuoteProvider ,
-//			Benchmark benchmark ,
-//			double cashToStart )
-//		{
-//			SimpleStrategy simpleStrategy =
-//				new SimpleStrategy( weightedPositions ,
-//				intervalsSelector , historicalQuoteProvider );
-//
-//			DateTime firstDateTime = this.simulatedCreationTime.DateTime.AddDays( -90 );
-//			DateTime lastDateTime = this.simulatedCreationTime.DateTime;
-//			double maxRunningHours = 0.3;
-//			EndOfDayStrategyBackTester endOfDayStrategyBackTester =
-//				new EndOfDayStrategyBackTester(
-//				"SinglePosition" , simpleStrategy ,
-//				historicalQuoteProvider , firstDateTime ,
-//				lastDateTime , benchmark , cashToStart , maxRunningHours );
-//
-//			simpleStrategy.Account = endOfDayStrategyBackTester.Account;
-//
-//			endOfDayStrategyBackTester.Run();
-//			return endOfDayStrategyBackTester.AccountReport;
-//		}
-//		private WeightedPositions getWeightedPositions(
-//			WeightedPosition weightedPosition )
-//		{
-//			double[] weights = { 1 };
-//			string[] tickers = { weightedPosition.Ticker };
-//			WeightedPositions weightedPositions =
-//				new WeightedPositions( weights , tickers );
-//			return weightedPositions;
-//		}
-//		public void Run3()
-//		{
-////			string backTestId = "SimplePairsTrading";
-////			double cashToStart = 30000;
-//
-//			Benchmark benchmark = new Benchmark( "MSFT" );
-//
-//			IHistoricalQuoteProvider historicalQuoteProvider =
-//				new HistoricalAdjustedQuoteProvider();
-//
-////			IInSampleChooser inSampleChooser =
-////				(IInSampleChooser)new ConstantWeightedPositionsChooser(
-////				this.BestWeightedPositionsInSample );
-//
-//			IIntervalsSelector intervalsSelector =
-//				new OddIntervalsSelector(	1 , 1 , benchmark );
-//			IEligiblesSelector eligiblesSelector = new DummyEligibleSelector();
-//
-//			WeightedPositions weightedPositions =
-//				this.bestTestingPositionsInSample[ 0 ].WeightedPositions;
-//				
-//			WeightedPositions firstPosition =
-//				this.getWeightedPositions( weightedPositions[ 0 ] );
-//			WeightedPositions secondPosition =
-//				this.getWeightedPositions( weightedPositions[ 1 ] );
-//			AccountReport accountReportForFirstPosition =
-//				this.getAccountReport( firstPosition , intervalsSelector ,
-//				                     historicalQuoteProvider ,
-//				                     benchmark , 30000 );
-//			AccountReport accountReportForSecondPosition =
-//				this.getAccountReport( secondPosition , intervalsSelector ,
-//				                      historicalQuoteProvider ,
-//				                      benchmark ,
-//				                      30000 * weightedPositions[ 1 ].Weight /
-//				                      weightedPositions[ 0 ].Weight );
-//			
-//			Report report =
-//				new Report( accountReportForFirstPosition , false );
-//			EndOfDayDateTime lastEndOfDayDateTimeForReport =
-//				new EndOfDayDateTime(
-//					accountReportForFirstPosition.EquityLine.LastDateTime ,
-//					EndOfDaySpecificTime.OneHourAfterMarketClose );
-//				
-////			report.Create( "PearsonDebug" , 1 ,
-////			              lastEndOfDayDateTimeForReport ,
-////			              benchmark.Ticker , false );
-//			report.AddEquityLine( accountReportForSecondPosition.EquityLine ,
-//			                     Color.Brown );
-//			report.ShowDialog();
-//		}
+
+		/// <summary>
+		/// We don't use a property instead of this method,
+		/// to avoid it being shown in the log viewer list
+		/// (it would be meaningless in the grid)
+		/// </summary>
+		public PairsTradingTestingPositions[]
+			GetTestingPositions()
+		{
+			PairsTradingTestingPositions[] testingPositions =
+				new PairsTradingTestingPositions[
+				this.testersForBestTestingPositionsInSample.Length ];
+			for ( int i = 0 ;
+				i < this.testersForBestTestingPositionsInSample.Length ; i++ )
+				testingPositions[ i ] =
+					this.testersForBestTestingPositionsInSample[ i ].TestingPositions;
+			return testingPositions;
+		}
+		
 		public override void Run()
 		{
 			QuantProject.Presentation.ExecutablesListViewer executablesListViewer =
