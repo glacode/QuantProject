@@ -110,6 +110,7 @@
     <Compile Include="WalkForwardTesting\PairsTrading\InSample\InSampleChoosers\BruteForce\PairsTradingBruteForceOptimizableParametersManager.cs" />
     <Compile Include="WalkForwardTesting\PairsTrading\InSample\InSampleChoosers\Genetic\DecoderForPairsTradingTestingPositionsWithBalancedWeights.cs" />
     <Compile Include="WalkForwardTesting\PairsTrading\InSample\InSampleChoosers\Genetic\PairsTradingGeneticChooser.cs" />
+    <Compile Include="WalkForwardTesting\PairsTrading\InSample\InSampleChoosers\PairsTradingChooserFromSavedBackTestLog.cs" />
     <Compile Include="WalkForwardTesting\PairsTrading\InSample\PairsTradingFitnessEvaluator.cs" />
     <Compile Include="WalkForwardTesting\PairsTrading\Logging\PairsTradingLogItem.cs" />
     <Compile Include="WalkForwardTesting\PairsTrading\Logging\SimpleStrategy.cs" />
