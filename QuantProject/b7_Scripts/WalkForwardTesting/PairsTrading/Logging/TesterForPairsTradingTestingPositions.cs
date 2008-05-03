@@ -65,6 +65,10 @@ namespace QuantProject.Scripts.WalkForwardTesting.PairsTrading
 		{
 			get { return this.testingPositions.WeightedPositions.Description; }
 		}
+		public PairsTradingTestingPositions TestingPositions
+		{
+			get { return this.testingPositions; }
+		}
 		public TesterForPairsTradingTestingPositions(
 			TestingPositions testingPositions ,
 			int numberOfInSampleDays ,
