@@ -74,6 +74,7 @@
     <Compile Include="a1_Financial\a2_Accounting\h5_Reporting\Tables\StatisticsSummary.cs" />
     <Compile Include="a2_Strategies\Benchmark.cs" />
     <Compile Include="a2_Strategies\Eligibles\ByPriceLessVolatileOTCAlwaysQuoted.cs" />
+    <Compile Include="a2_Strategies\Eligibles\ByPriceMostLiquidLessVolatileOTCAlwaysQuoted.cs" />
     <Compile Include="a2_Strategies\Eligibles\DummyEligibleSelector.cs" />
     <Compile Include="a2_Strategies\Eligibles\ByPriceMostLiquidAlwaysQuoted.cs" />
     <Compile Include="a2_Strategies\Eligibles\EligibleTickers.cs" />
