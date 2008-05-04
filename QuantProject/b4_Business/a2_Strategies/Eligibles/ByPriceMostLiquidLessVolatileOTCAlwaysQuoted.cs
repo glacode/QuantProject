@@ -33,10 +33,13 @@ namespace QuantProject.Business.Strategies.Eligibles
 	/// <summary>
 	/// Implements IEligiblesSelector for selecting a given max number of tickers through
 	/// the following step-by-step selecting process:
-	/// -step 1: all tickers belonging to a given group
+	/// -step 0: all tickers belonging to a given group
 	/// are selected (the group can be "temporized": that is tickers
 	/// are returned depending on the time the selection is requested:
 	/// the group SP 500 should be like that);
+	/// -step 1: from tickers selected by step 0, the ones that have
+	/// the average raw open price falling in a given range (for the last given number of days)
+	/// are selected;
 	/// -step 2: from tickers selected by step 1, the most liquid
 	///  are selected (not more than maxNumberOfMostLiquidTickersToBeChosen);
 	/// -step 3: from tickers selected by step 2, the ones that are 
