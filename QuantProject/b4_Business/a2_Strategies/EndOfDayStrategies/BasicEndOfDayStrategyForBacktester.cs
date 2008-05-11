@@ -50,7 +50,8 @@ namespace QuantProject.Business.Strategies
 
 		protected int numDaysBeetweenEachOtpimization;
 		protected int numDaysForInSampleOptimization;
-		protected IIntervalsSelector intervalsSelector;
+		protected IIntervalsSelector intervalsSelectorForInSample;
+		protected IIntervalsSelector intervalsSelectorForOutOfSample;
 		protected IEligiblesSelector eligiblesSelector;
 		protected IInSampleChooser inSampleChooser;
 		protected IHistoricalQuoteProvider historicalQuoteProviderForInSample;
@@ -107,7 +108,8 @@ namespace QuantProject.Business.Strategies
 		public BasicEndOfDayStrategyForBacktester(
 			int numDaysBeetweenEachOtpimization ,
 			int numDaysForInSampleOptimization ,
-			IIntervalsSelector intervalsSelector ,
+			IIntervalsSelector intervalsSelectorForInSample ,
+			IIntervalsSelector intervalsSelectorForOutOfSample ,
 			IEligiblesSelector eligiblesSelector ,
 			IInSampleChooser inSampleChooser ,
 			IHistoricalQuoteProvider historicalQuoteProviderForInSample
@@ -115,14 +117,15 @@ namespace QuantProject.Business.Strategies
 		{
 			this.numDaysBeetweenEachOtpimization = numDaysBeetweenEachOtpimization;
 			this.numDaysForInSampleOptimization = numDaysForInSampleOptimization;
-			this.intervalsSelector = intervalsSelector;
+			this.intervalsSelectorForInSample = intervalsSelectorForInSample;
+			this.intervalsSelectorForOutOfSample = intervalsSelectorForOutOfSample;
 			this.eligiblesSelector = eligiblesSelector;
 			this.inSampleChooser = inSampleChooser;
 			this.historicalQuoteProviderForInSample =
 				historicalQuoteProviderForInSample;
 			
 			this.returnIntervals =
-				new ReturnIntervals( this.intervalsSelector );
+				new ReturnIntervals( this.intervalsSelectorForOutOfSample );
 		}
 
 		#region MarketOpenEventHandler
@@ -217,7 +220,7 @@ namespace QuantProject.Business.Strategies
 				new EndOfDayDateTime( this.now().DateTime ,
 				EndOfDaySpecificTime.MarketClose );
 			ReturnIntervals inSampleReturnIntervals =
-				new ReturnIntervals( this.intervalsSelector );
+				new ReturnIntervals( this.intervalsSelectorForInSample );
 			inSampleReturnIntervals.AppendFirstInterval( firstDate );
 			if ( inSampleReturnIntervals.LastEndOfDayDateTime.IsLessThan(
 				lastDate ) )
