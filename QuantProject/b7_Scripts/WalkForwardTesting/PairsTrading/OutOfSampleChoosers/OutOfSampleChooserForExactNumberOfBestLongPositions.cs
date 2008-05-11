@@ -97,8 +97,10 @@ namespace QuantProject.Scripts.WalkForwardTesting.PairsTrading
 			string[] longPositionTickers )
 		{
 			double[] weights = this.getWeights();
-			string[] tickers = StringArrayManager.SubArray(
-				longPositionTickers , 0 , this.exactNumberOfBestLongPositionsToBeReturned );
+			string[] tickers =
+				new String[ this.exactNumberOfBestLongPositionsToBeReturned ];
+			Array.Copy(	longPositionTickers , tickers ,
+				this.exactNumberOfBestLongPositionsToBeReturned );
 
 			// comment out the following three lines to select only the second best long ticker
 //			weights = new double[ 1 ]; weights[ 0 ] = 1;
