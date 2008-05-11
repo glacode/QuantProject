@@ -99,6 +99,12 @@ namespace QuantProject.Scripts.WalkForwardTesting.PairsTrading
 			double[] weights = this.getWeights();
 			string[] tickers = StringArrayManager.SubArray(
 				longPositionTickers , 0 , this.exactNumberOfBestLongPositionsToBeReturned );
+
+			// comment out the following three lines to select only the second best long ticker
+//			weights = new double[ 1 ]; weights[ 0 ] = 1;
+//			tickers = new String[ 1 ];
+//			Array.Copy( longPositionTickers , 1 , tickers , 0 , 1 );
+
 			WeightedPositions weightedPositionsToOpened =
 				new WeightedPositions( weights , tickers );
 			return weightedPositionsToOpened;
