@@ -155,9 +155,18 @@ namespace QuantProject.Scripts.WalkForwardTesting.FixedLengthTwoPhases
 			IIntervalsSelector intervalsSelector =
 				new FixedLengthTwoPhasesIntervalsSelector(
 					1 , 1 , benchmark );
+
+//			IEligiblesSelector eligiblesSelector =
+//				new MostLiquidAndLessVolatile(
+//				tickersGroupId , maxNumberOfEligiblesToBeChosen );
 			IEligiblesSelector eligiblesSelector =
-				new MostLiquidAndLessVolatile(
-				tickersGroupId , maxNumberOfEligiblesToBeChosen );
+				new ByPriceMostLiquidLessVolatileOTCAlwaysQuoted(
+				tickersGroupId ,
+				true ,
+				maxNumberOfEligiblesToBeChosen ,
+				maxNumberOfEligiblesToBeChosen + 50 ,
+				10 , 10 , 20 , 75 );
+
 
 			FixedLengthTwoPhasesStrategy fixedLengthTwoPhasesStrategy =
 				new FixedLengthTwoPhasesStrategy(
