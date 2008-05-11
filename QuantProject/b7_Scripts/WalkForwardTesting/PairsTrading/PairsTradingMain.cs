@@ -82,11 +82,11 @@ namespace QuantProject.Scripts.WalkForwardTesting.PairsTrading
 			// uncomment the following line for a faster script
 //			tickersGroupId = "fastTest";
 
+//			IEligiblesSelector eligiblesSelector =
+//				new MostLiquidAndLessVolatile(
+//				tickersGroupId ,
+//				maxNumberOfEligiblesToBeChosen );
 			IEligiblesSelector eligiblesSelector =
-				new MostLiquidAndLessVolatile(
-				tickersGroupId ,
-				maxNumberOfEligiblesToBeChosen );
-			eligiblesSelector =
 				new ByPriceMostLiquidAlwaysQuoted(
 					tickersGroupId ,
 					true ,
@@ -213,7 +213,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.PairsTrading
 			IAccountProvider accountProvider = new SimpleAccountProvider();
 			double cashToStart = 30000;
 
-			DateTime firstDateTime = new DateTime( 2005 , 1 , 1 );
+			DateTime firstDateTime = new DateTime( 2001 , 1 , 1 );
 			DateTime lastDateTime = new DateTime( 2008 , 4 , 30 );
 			// uncomment the following line for a faster script
 //			lastDateTime = new DateTime( 2001 , 1 , 31 );
