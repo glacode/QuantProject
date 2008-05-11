@@ -68,7 +68,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.PairsTrading
 			this.historicalQuoteProviderForChosingPositionsOutOfSample =
 				new HistoricalAdjustedQuoteProvider();
 			this.historicalQuoteProviderForTheBacktesterAccount =
-				this.historicalQuoteProviderForInSample;
+				new HistoricalRawQuoteProvider();
 
 			// definition for the Fitness Evaluator
 			//      IEquityEvaluator equityEvaluator = new SharpeRatio();
@@ -92,10 +92,17 @@ namespace QuantProject.Scripts.WalkForwardTesting.PairsTrading
 					true ,
 					maxNumberOfEligiblesToBeChosen ,
 					10 , 20 , 75 );
+			eligiblesSelector =
+				new ByPriceMostLiquidLessVolatileOTCAlwaysQuoted(
+				tickersGroupId ,
+				true ,
+				maxNumberOfEligiblesToBeChosen ,
+				maxNumberOfEligiblesToBeChosen + 50 ,
+				10 , 10 , 20 , 75 );
 
 
 //			uncomment the following line for a (logbased) log based in sample chooser
-			eligiblesSelector = new DummyEligibleSelector();
+//			eligiblesSelector = new DummyEligibleSelector();
 
 			return eligiblesSelector;
 		}
@@ -140,10 +147,10 @@ namespace QuantProject.Scripts.WalkForwardTesting.PairsTrading
 
 
 //			uncomment the following line for a (logbased) log based in sample chooser
-			inSampleChooser =
-				new PairsTradingChooserFromSavedBackTestLog(
-					@"C:\qpReports\pairsTrading\longOnly\2008_04_27_4_41_53_pairsTrdng2Long_from_2001_01_01_to_2004_12_31_annlRtrn_128.52_maxDD_25.70\2008_04_27_4_41_53_pairsTrdng_from_2001_01_01_to_2004_12_31_annlRtrn_128.52_maxDD_25.70.qpL",
-				  numberOfBestTestingPositionsToBeReturned);
+//			inSampleChooser =
+//				new PairsTradingChooserFromSavedBackTestLog(
+//					@"C:\qpReports\pairsTrading\longOnly\2008_04_27_4_41_53_pairsTrdng2Long_from_2001_01_01_to_2004_12_31_annlRtrn_128.52_maxDD_25.70\2008_04_27_4_41_53_pairsTrdng_from_2001_01_01_to_2004_12_31_annlRtrn_128.52_maxDD_25.70.qpL",
+//				  numberOfBestTestingPositionsToBeReturned);
 
 			
 			return inSampleChooser;
@@ -156,19 +163,29 @@ namespace QuantProject.Scripts.WalkForwardTesting.PairsTrading
 //			inSampleDays = 5;
 //			 inSampleDays = 60;
 			
-			IIntervalsSelector intervalsSelector =
+			IIntervalsSelector intervalsSelectorForOutOfSample =
 				new OddIntervalsSelector( 1 , 1 , this.benchmark );
+			IIntervalsSelector intervalsSelectorForInSample =
+				intervalsSelectorForOutOfSample;
+
+			// uncomment the following two statements in order to use an
+			// OTC-CTO in sample optimization (night is considered also)
+//			intervalsSelectorForInSample =
+//				new FixedLengthTwoPhasesIntervalsSelector( 1 , 1 , this.benchmark );
+//			this.historicalQuoteProviderForInSample =
+//				new HistoricalAdjustedQuoteProvider();
 
 			OutOfSampleChooser outOfSampleChooser =
 				new OutOfSampleChooserForSingleLongAndShort(
-				0.006 , 0.99 , 0.006 , 0.99 );
-			outOfSampleChooser =
-				new OutOfSampleChooserForExactNumberOfBestLongPositions(
-				2 ,	0.006 , 0.99 , 0.006 , 0.99 );
+				0.006 , 0.02 , 0.006 , 0.02 );
+//			outOfSampleChooser =
+//				new OutOfSampleChooserForExactNumberOfBestLongPositions(
+//				2 ,	0.006 , 0.99 , 0.006 , 0.99 );
 
 			IEndOfDayStrategyForBacktester endOfDayStrategyForBacktester =
 				new PairsTradingStrategy(
-				7 , inSampleDays , intervalsSelector ,
+				7 , inSampleDays ,
+				intervalsSelectorForInSample , intervalsSelectorForOutOfSample ,
 				eligiblesSelector , inSampleChooser ,
 				this.historicalQuoteProviderForInSample ,
 				this.historicalQuoteProviderForChosingPositionsOutOfSample ,
@@ -196,12 +213,12 @@ namespace QuantProject.Scripts.WalkForwardTesting.PairsTrading
 			IAccountProvider accountProvider = new SimpleAccountProvider();
 			double cashToStart = 30000;
 
-			DateTime firstDateTime = new DateTime( 2001 , 1 , 1 );
-			DateTime lastDateTime = new DateTime( 2004 , 12 , 31 );
+			DateTime firstDateTime = new DateTime( 2005 , 1 , 1 );
+			DateTime lastDateTime = new DateTime( 2008 , 4 , 30 );
 			// uncomment the following line for a faster script
 //			lastDateTime = new DateTime( 2001 , 1 , 31 );
 
-			double maxRunningHours = 7;
+			double maxRunningHours = 8;
 			
 			EndOfDayStrategyBackTester endOfDayStrategyBackTester =
 				new EndOfDayStrategyBackTester(
