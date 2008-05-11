@@ -759,11 +759,6 @@
                     BuildAction = "Compile"
                 />
                 <File
-                    RelPath = "a2_Strategies\Eligibles\MostLiquidAndLessVolatile.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
                     RelPath = "a2_Strategies\EndOfDayStrategies\BasicEndOfDayStrategyForBacktester.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
