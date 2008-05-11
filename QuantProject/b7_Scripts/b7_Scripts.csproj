@@ -944,7 +944,7 @@
                     BuildAction = "Compile"
                 />
                 <File
-                    RelPath = "WalkForwardTesting\PairsTrading\InSample\InSampleChoosers\Genetic\DecoderForPairsTradingTestingPositionsWithBalancedWeights.cs"
+                    RelPath = "WalkForwardTesting\PairsTrading\InSample\InSampleChoosers\Decoding\DecoderForPairsTradingTestingPositionsWithBalancedWeights.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
