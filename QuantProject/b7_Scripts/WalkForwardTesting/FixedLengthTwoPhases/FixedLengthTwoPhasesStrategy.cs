@@ -39,7 +39,9 @@ using QuantProject.Presentation;
 namespace QuantProject.Scripts.WalkForwardTesting.FixedLengthTwoPhases
 {
 	/// <summary>
-	/// FixedLengthTwoPhases strategy with in sample optimizations
+	/// FixedLengthTwoPhases strategy with in sample optimizations.
+	/// The strategy goes with the best weighted positions for the
+	/// first phase, then goes with the opposite for the second phase
 	/// </summary>
 	public class FixedLengthTwoPhasesStrategy : IEndOfDayStrategyForBacktester
 	{
