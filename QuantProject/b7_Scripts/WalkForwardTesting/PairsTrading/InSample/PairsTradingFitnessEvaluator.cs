@@ -89,11 +89,16 @@ namespace QuantProject.Scripts.WalkForwardTesting.PairsTrading
 				returnsManager.GetReturns( firstPosition.Ticker );
 			float[] secondPositionReturns =
 				returnsManager.GetReturns( secondPosition.Ticker );
+//			double fitnessValueOld =	BasicFunctions.PearsonCorrelationCoefficient(
+//				this.getMultiplierForReturns( firstPosition ) , firstPositionReturns ,
+//				this.getMultiplierForReturns( secondPosition ) , secondPositionReturns );
 			double fitnessValue =	BasicFunctions.PearsonCorrelationCoefficient(
-				this.getMultiplierForReturns( firstPosition ) , firstPositionReturns ,
-				this.getMultiplierForReturns( secondPosition ) , secondPositionReturns );
-//			double fitnessValue =	BasicFunctions.PearsonCorrelationCoefficient(
-//				firstPositionReturns , secondPositionReturns );
+				firstPositionReturns , secondPositionReturns );
+			fitnessValue = fitnessValue *
+				this.getMultiplierForReturns( firstPosition ) *
+				this.getMultiplierForReturns( secondPosition );
+//			if ( fitnessValue != fitnessValueOld )
+//				fitnessValueNew +=0;
 			return fitnessValue;
 		}
 
