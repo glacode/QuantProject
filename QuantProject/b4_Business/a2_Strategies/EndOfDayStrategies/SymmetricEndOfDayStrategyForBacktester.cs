@@ -44,14 +44,16 @@ namespace QuantProject.Business.Strategies
 		public SymmetricEndOfDayStrategyForBacktester(
 			int numDaysBeetweenEachOtpimization ,
 			int numDaysForInSampleOptimization ,
-			IIntervalsSelector intervalsSelector ,
+			IIntervalsSelector intervalsSelectorForInSample ,
+			IIntervalsSelector intervalsSelectorForOutOfSample ,
 			IEligiblesSelector eligiblesSelector ,
 			IInSampleChooser inSampleChooser ,
 			IHistoricalQuoteProvider historicalQuoteProviderForInSample	) :
 			base(
 			numDaysBeetweenEachOtpimization ,
 			numDaysForInSampleOptimization ,
-			intervalsSelector ,
+			intervalsSelectorForInSample ,
+			intervalsSelectorForOutOfSample ,
 			eligiblesSelector ,
 			inSampleChooser ,
 			historicalQuoteProviderForInSample )

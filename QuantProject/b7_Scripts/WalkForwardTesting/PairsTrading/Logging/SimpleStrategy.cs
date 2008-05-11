@@ -44,7 +44,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.PairsTrading
 			WeightedPositions weightedPositions ,
 			IIntervalsSelector intervalsSelector ,
 			IHistoricalQuoteProvider historicalQuoteProvider ) :
-			base(	999 ,	1 ,	intervalsSelector ,
+			base(	999 ,	1 ,	intervalsSelector , intervalsSelector ,
 			new DummyEligibleSelector() ,
 			new DummyInSampleChooser() ,
 			historicalQuoteProvider )

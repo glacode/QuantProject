@@ -56,7 +56,8 @@ namespace QuantProject.Scripts.WalkForwardTesting.PairsTrading
 		public PairsTradingStrategy(
 			int numDaysBeetweenEachOtpimization ,
 			int numDaysForInSampleOptimization ,
-			IIntervalsSelector intervalsSelector ,
+			IIntervalsSelector intervalsSelectorForInSample ,
+			IIntervalsSelector intervalsSelectorForOutOfSample ,
 			IEligiblesSelector eligiblesSelector ,
 			IInSampleChooser inSampleChooser ,
 			IHistoricalQuoteProvider historicalQuoteProviderForInSample ,
@@ -66,7 +67,8 @@ namespace QuantProject.Scripts.WalkForwardTesting.PairsTrading
 			base(
 			numDaysBeetweenEachOtpimization ,
 			numDaysForInSampleOptimization ,
-			intervalsSelector ,
+			intervalsSelectorForInSample ,
+			intervalsSelectorForOutOfSample ,
 			eligiblesSelector ,
 			inSampleChooser ,
 			historicalQuoteProviderForInSample )
