@@ -182,11 +182,6 @@
                     BuildAction = "Compile"
                 />
                 <File
-                    RelPath = "Collections\StringArrayManager.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
                     RelPath = "FileManaging\ObjectArchiver.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
