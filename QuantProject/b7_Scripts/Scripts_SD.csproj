@@ -108,7 +108,7 @@
     <Compile Include="WalkForwardTesting\MSFTwalkForward\TsMSFTwalkForward.cs" />
     <Compile Include="WalkForwardTesting\PairsTrading\InSample\InSampleChoosers\BruteForce\PairsTradingBruteForceChooser.cs" />
     <Compile Include="WalkForwardTesting\PairsTrading\InSample\InSampleChoosers\BruteForce\PairsTradingBruteForceOptimizableParametersManager.cs" />
-    <Compile Include="WalkForwardTesting\PairsTrading\InSample\InSampleChoosers\Genetic\DecoderForPairsTradingTestingPositionsWithBalancedWeights.cs" />
+    <Compile Include="WalkForwardTesting\PairsTrading\InSample\InSampleChoosers\Decoding\DecoderForPairsTradingTestingPositionsWithBalancedWeights.cs" />
     <Compile Include="WalkForwardTesting\PairsTrading\InSample\InSampleChoosers\Genetic\PairsTradingGeneticChooser.cs" />
     <Compile Include="WalkForwardTesting\PairsTrading\InSample\InSampleChoosers\PairsTradingChooserFromSavedBackTestLog.cs" />
     <Compile Include="WalkForwardTesting\PairsTrading\InSample\PairsTradingFitnessEvaluator.cs" />
@@ -118,7 +118,6 @@
     <Compile Include="WalkForwardTesting\PairsTrading\OutOfSampleChoosers\OutOfSampleChooser.cs" />
     <Compile Include="WalkForwardTesting\PairsTrading\OutOfSampleChoosers\OutOfSampleChooserForExactNumberOfBestLongPositions.cs" />
     <Compile Include="WalkForwardTesting\PairsTrading\OutOfSampleChoosers\OutOfSampleChooserForSingleLongAndShort.cs" />
-    <Compile Include="WalkForwardTesting\PairsTrading\OutOfSampleChoosers\OutOfSampleChooserForSingleLongPosition.cs" />
     <Compile Include="WalkForwardTesting\PairsTrading\PairsTradingMain.cs" />
     <Compile Include="WalkForwardTesting\PairsTrading\PairsTradingTestingPositions.cs" />
     <Compile Include="WalkForwardTesting\PairsTrading\Strategies\PairsTradingStrategy.cs" />
@@ -296,6 +295,7 @@
     <Folder Include="WalkForwardTesting\PairsTrading\InSample" />
     <Folder Include="WalkForwardTesting\PairsTrading\InSample\InSampleChoosers" />
     <Folder Include="WalkForwardTesting\PairsTrading\InSample\InSampleChoosers\BruteForce" />
+    <Folder Include="WalkForwardTesting\PairsTrading\InSample\InSampleChoosers\Decoding" />
     <Folder Include="WalkForwardTesting\PairsTrading\InSample\InSampleChoosers\Genetic" />
     <Folder Include="WalkForwardTesting\PairsTrading\Logging" />
     <Folder Include="WalkForwardTesting\PairsTrading\OutOfSampleChoosers" />
