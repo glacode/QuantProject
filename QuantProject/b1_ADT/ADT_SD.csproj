@@ -48,7 +48,6 @@
     <Compile Include="AssemblyInfo.cs" />
     <Compile Include="BarComponent.cs" />
     <Compile Include="Collections\IntArrayManager.cs" />
-    <Compile Include="Collections\StringArrayManager.cs" />
     <Compile Include="ConstantsProvider.cs" />
     <Compile Include="ExtendedDataTable.cs" />
     <Compile Include="ExtendedDateTime.cs" />
