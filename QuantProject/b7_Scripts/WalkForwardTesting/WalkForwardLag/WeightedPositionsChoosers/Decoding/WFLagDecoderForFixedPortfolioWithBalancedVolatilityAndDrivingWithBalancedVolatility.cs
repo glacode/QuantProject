@@ -23,7 +23,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 using System;
 using System.Data;
 
-using QuantProject.ADT.Collections;
 using QuantProject.Business.Financial.Accounting;
 using QuantProject.Business.Strategies;
 using QuantProject.Business.Strategies.ReturnsManagement;
@@ -68,10 +67,15 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag.WeightedPositio
 			int[] encoded )
 		{
 			// this method is useless for a fixed portfolio decoder,
-			// but I've written as a guideline for other decoders which
+			// but I've written it as a guideline for other decoders which
 			// will use numberOfDrivingPositions instead of encoded.Length
-			return IntArrayManager.SubArray( encoded , 0 ,
-				encoded.Length );
+			int[] tickerRelatedGeneValuesForDrivingPositions =
+				new int[ encoded.Length ];
+			Array.Copy( encoded , 0 , tickerRelatedGeneValuesForDrivingPositions ,
+				0 , encoded.Length );
+//			return IntArrayManager.SubArray( encoded , 0 ,
+//				encoded.Length );
+			return tickerRelatedGeneValuesForDrivingPositions;
 		}
 		private void decodeSignedTicker_checkParameters(
 			int geneValue , WFLagEligibleTickers eligibleTickers )
