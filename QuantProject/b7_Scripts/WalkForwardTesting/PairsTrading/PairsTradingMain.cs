@@ -65,10 +65,16 @@ namespace QuantProject.Scripts.WalkForwardTesting.PairsTrading
 
 			this.historicalQuoteProviderForInSample =
 				new HistoricalRawQuoteProvider();
+
 			this.historicalQuoteProviderForChosingPositionsOutOfSample =
 				new HistoricalAdjustedQuoteProvider();
+			this.historicalQuoteProviderForChosingPositionsOutOfSample =
+				new HistoricalRawQuoteProvider();
+
 			this.historicalQuoteProviderForTheBacktesterAccount =
 				new HistoricalRawQuoteProvider();
+			this.historicalQuoteProviderForTheBacktesterAccount =
+				new HistoricalAdjustedQuoteProvider();
 
 			// definition for the Fitness Evaluator
 			//      IEquityEvaluator equityEvaluator = new SharpeRatio();
@@ -149,7 +155,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.PairsTrading
 //			uncomment the following line for a (logbased) log based in sample chooser
 //			inSampleChooser =
 //				new PairsTradingChooserFromSavedBackTestLog(
-//					@"C:\qpReports\pairsTrading\longOnly\2008_04_27_4_41_53_pairsTrdng2Long_from_2001_01_01_to_2004_12_31_annlRtrn_128.52_maxDD_25.70\2008_04_27_4_41_53_pairsTrdng_from_2001_01_01_to_2004_12_31_annlRtrn_128.52_maxDD_25.70.qpL",
+//					@"C:\qpReports\pairsTrading\2008_05_08_23_49_18_pairsTrdng_from_2005_01_01_to_2008_04_30_annlRtrn_90.70_maxDD_5.43\2008_05_08_23_49_18_pairsTrdng_from_2005_01_01_to_2008_04_30_annlRtrn_90.70_maxDD_5.43.qpL",
 //				  numberOfBestTestingPositionsToBeReturned);
 
 			
@@ -165,8 +171,11 @@ namespace QuantProject.Scripts.WalkForwardTesting.PairsTrading
 			
 			IIntervalsSelector intervalsSelectorForOutOfSample =
 				new OddIntervalsSelector( 1 , 1 , this.benchmark );
+			// uncomment the following statement in order to test a CTO strategy (out of sample)
+			intervalsSelectorForOutOfSample =
+				new EvenIntervalsSelector( 1 , 1 , this.benchmark );
 			IIntervalsSelector intervalsSelectorForInSample =
-				intervalsSelectorForOutOfSample;
+				new OddIntervalsSelector( 1 , 1 , this.benchmark );
 
 			// uncomment the following two statements in order to use an
 			// OTC-CTO in sample optimization (night is considered also)
@@ -214,8 +223,11 @@ namespace QuantProject.Scripts.WalkForwardTesting.PairsTrading
 			double cashToStart = 30000;
 
 			DateTime firstDateTime = new DateTime( 2001 , 1 , 1 );
+						firstDateTime = new DateTime( 2005 , 1 , 1 );
 			DateTime lastDateTime = new DateTime( 2008 , 4 , 30 );
-			// uncomment the following line for a faster script
+
+			// uncomment the following two lines for a faster script
+//			firstDateTime = new DateTime( 2001 , 1 , 1 );
 //			lastDateTime = new DateTime( 2001 , 1 , 31 );
 
 			double maxRunningHours = 8;
