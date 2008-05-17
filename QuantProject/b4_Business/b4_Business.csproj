@@ -944,6 +944,11 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "a2_Strategies\returnsManagement\time\selectors\EvenIntervalsSelector.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "a2_Strategies\returnsManagement\time\selectors\FixedLengthTwoPhasesIntervalsSelector.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
