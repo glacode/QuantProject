@@ -43,7 +43,7 @@ namespace QuantProject.Business.Strategies.ReturnsManagement.Time.IntervalsSelec
 //		private int benchmarkTimeStepsForOddIntervals;
 //		private int benchmarkTimeStepsForEvenIntervals;
 //		private Benchmark benchmark;
-		private FixedLengthTwoPhasesIntervalsSelector
+		protected FixedLengthTwoPhasesIntervalsSelector
 			fixedLengthTwoPhasesIntervalsSelector;
 		
 		/// <summary>
@@ -86,13 +86,13 @@ namespace QuantProject.Business.Strategies.ReturnsManagement.Time.IntervalsSelec
 					returnIntervalsWithTheNextEvenIntervalOnly );
 			return nextOddInterval;
 		}
-		public ReturnInterval GetFirstInterval(
+		public virtual ReturnInterval GetFirstInterval(
 			EndOfDayDateTime startingEndOfDayDateTime )
 		{
-			ReturnInterval nextInterval =
+			ReturnInterval firstInterval =
 				this.fixedLengthTwoPhasesIntervalsSelector.GetFirstInterval(
 					startingEndOfDayDateTime );
-			return nextInterval;
+			return firstInterval;
 		}
 	
 	}
