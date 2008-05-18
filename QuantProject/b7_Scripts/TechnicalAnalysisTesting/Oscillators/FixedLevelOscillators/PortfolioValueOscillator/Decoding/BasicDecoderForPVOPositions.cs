@@ -98,11 +98,10 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOs
 
 		protected override void setTickerRelatedGeneValues()
 		{
-			this.tickerRelatedGeneValues = 
-				IntArrayManager.SubArray(this.encoded,
-				                         this.numOfGenesDedicatedToThresholds,
-				                         this.encoded.Length - this.numOfGenesDedicatedToThresholds);
+			this.tickerRelatedGeneValues = new int[this.encoded.Length - this.numOfGenesDedicatedToThresholds];
+			Array.Copy(this.encoded , this.numOfGenesDedicatedToThresholds ,
+								 this.tickerRelatedGeneValues , 0, 
+								 this.encoded.Length - this.numOfGenesDedicatedToThresholds);
 		}
-		
 	}
 }
