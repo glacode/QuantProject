@@ -113,6 +113,7 @@
     <Compile Include="a2_Strategies\returnsManagement\time\OpenToCloseCloseToOpenIntervals.cs" />
     <Compile Include="a2_Strategies\returnsManagement\time\ReturnInterval.cs" />
     <Compile Include="a2_Strategies\returnsManagement\time\ReturnIntervals.cs" />
+    <Compile Include="a2_Strategies\returnsManagement\time\selectors\EvenIntervalsSelector.cs" />
     <Compile Include="a2_Strategies\returnsManagement\time\selectors\IIntervalsSelector.cs" />
     <Compile Include="a2_Strategies\returnsManagement\time\selectors\FixedLengthTwoPhasesIntervalsSelector.cs" />
     <Compile Include="a2_Strategies\returnsManagement\time\selectors\OddIntervalsSelector.cs" />
