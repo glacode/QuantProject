@@ -77,12 +77,6 @@
     <Compile Include="Validate\ValidateForm.cs" />
     <None Include="app.config" />
     <None Include="App.ico" />
-    <EmbeddedResource Include="TickerSelectors\TickerSelectorForm.resx">
-      <DependentUpon>TickerSelectorForm.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="WebDownloader.resx">
-      <DependentUpon>WebDownloader.cs</DependentUpon>
-    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\QuantProject\b1_ADT\ADT_SD.csproj">
