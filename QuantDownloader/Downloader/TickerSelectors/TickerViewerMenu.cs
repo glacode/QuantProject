@@ -23,9 +23,11 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 using System;
 using System.Data;
 using System.Windows.Forms;
+
 using QuantProject.DataAccess.Tables;
 using QuantProject.Data.DataTables;
 using QuantProject.Data.Selectors;
+using QuantProject.Applications.Downloader.OpenTickDownloader.UserForms;
 
 
 namespace QuantProject.Applications.Downloader.TickerSelectors
@@ -40,7 +42,8 @@ namespace QuantProject.Applications.Downloader.TickerSelectors
     // the form which contains the context Menu
     protected Form parentForm;
     private MenuItem menuItemSelectAll = new MenuItem("&Select all items");
-    private MenuItem menuItemDownload = new MenuItem("&Download selection");    
+    private MenuItem menuItemDownloadFromYahoo = new MenuItem("&Download selection - Yahoo");
+    private MenuItem menuItemDownloadFromOpenTick = new MenuItem("&Download selection - OpenTick");
     private MenuItem menuItemValidate = new MenuItem("&Validate selection");
     private MenuItem menuItemCopy = new MenuItem("&Copy selection");
     private MenuItem menuItemComputeCloseToCloseRatios = 
@@ -53,7 +56,8 @@ namespace QuantProject.Applications.Downloader.TickerSelectors
       this.parentForm = ITickerSelectorForm;
       //this.parentForm.ContextMenu = this;
       this.menuItemSelectAll.Click += new System.EventHandler(this.selectAllTickers);
-      this.menuItemDownload.Click += new System.EventHandler(this.downloadSelectedTickers);
+      this.menuItemDownloadFromYahoo.Click += new System.EventHandler(this.downloadSelectedTickersFromYahoo);
+      this.menuItemDownloadFromOpenTick.Click += new System.EventHandler(this.downloadSelectedTickersFromOpenTick);
       this.menuItemValidate.Click += new System.EventHandler(this.validateSelectedTickers);
       this.menuItemCopy.Click += new System.EventHandler(this.copySelectedTickers);
       this.menuItemQuotesEditor.Click += new System.EventHandler(this.openQuotesEditor);
@@ -61,7 +65,8 @@ namespace QuantProject.Applications.Downloader.TickerSelectors
       this.menuItemTickerSelectorForm.Click += new System.EventHandler(this.openTickerSelectorForm);
 
       this.MenuItems.Add(this.menuItemSelectAll);
-      this.MenuItems.Add(this.menuItemDownload);
+      this.MenuItems.Add(this.menuItemDownloadFromYahoo);
+      this.MenuItems.Add(this.menuItemDownloadFromOpenTick);
       this.MenuItems.Add(this.menuItemValidate);
       this.MenuItems.Add(this.menuItemCopy);
       this.MenuItems.Add(this.menuItemQuotesEditor);
@@ -81,7 +86,7 @@ namespace QuantProject.Applications.Downloader.TickerSelectors
       TickerDataTable.Clipboard = iTickerSelector.GetTableOfSelectedTickers();
     }
     
-    private void downloadSelectedTickers(object sender, System.EventArgs e)
+    private void downloadSelectedTickersFromYahoo(object sender, System.EventArgs e)
     {
       ITickerSelector iTickerSelector = (ITickerSelector)this.parentForm;
       DataTable tableOfSelectedTickers = iTickerSelector.GetTableOfSelectedTickers();
@@ -92,6 +97,19 @@ namespace QuantProject.Applications.Downloader.TickerSelectors
         return;
       }
       WebDownloader webDownloader = new WebDownloader(tableOfSelectedTickers);
+      webDownloader.Show();
+    }
+    private void downloadSelectedTickersFromOpenTick(object sender, System.EventArgs e)
+    {
+      ITickerSelector iTickerSelector = (ITickerSelector)this.parentForm;
+      DataTable tableOfSelectedTickers = iTickerSelector.GetTableOfSelectedTickers();
+      
+      if(tableOfSelectedTickers.Rows.Count == 0)
+      {
+        this.displayMessageNoTickersSelected();
+        return;
+      }
+      OTWebDownloader webDownloader = new OTWebDownloader(tableOfSelectedTickers);
       webDownloader.Show();
     }
     private void validateSelectedTickers(object sender, System.EventArgs e)
