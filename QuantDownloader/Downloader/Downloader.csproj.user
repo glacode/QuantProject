@@ -1,7 +1,7 @@
 <VisualStudioProject>
     <CSHARP>
         <Build>
-            <Settings ReferencePath = "C:\Documents and Settings\Glauco\Desktop\QuantProject\QuantDownloader\Downloader\bin\Debug\;C:\Documents and Settings\Glauco\My Documents\nostri\GLAUCO\bin\;c:\windows\assembly\gac\crystaldecisions.windows.forms\9.1.3300.0__692fbea5521e1304\;C:\Documents and Settings\Glauco\Desktop\QuantProject\lib\" >
+            <Settings ReferencePath = "C:\Documents and Settings\Glauco\Desktop\QuantProject\QuantDownloader\Downloader\bin\Debug\;C:\Documents and Settings\Glauco\My Documents\nostri\GLAUCO\bin\;c:\windows\assembly\gac\crystaldecisions.windows.forms\9.1.3300.0__692fbea5521e1304\;C:\Documents and Settings\Glauco\Desktop\QuantProject\lib\;C:\Quant\QuantDownloader\Downloader\bin\Debug\;C:\Quant\" >
                 <Config
                     Name = "Debug"
                     EnableASPDebugging = "false"

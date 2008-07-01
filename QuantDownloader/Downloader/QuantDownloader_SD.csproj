@@ -30,6 +30,10 @@
     <TreatWarningsAsErrors>False</TreatWarningsAsErrors>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="OTFeed_NET">
+      <HintPath>..\..\OTFeed_NET\OTFeed_NET.dll</HintPath>
+      <SpecificVersion>False</SpecificVersion>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
@@ -45,6 +49,11 @@
     <Compile Include="DataBaseImporter.cs" />
     <Compile Include="DataSet1.cs" />
     <Compile Include="Main.cs" />
+    <Compile Include="OpenTickDownloader\DatabaseUpdatedEventArgs.cs" />
+    <Compile Include="OpenTickDownloader\DownloadedCompletedEventArgs.cs" />
+    <Compile Include="OpenTickDownloader\DownloadingStartedEventArgs.cs" />
+    <Compile Include="OpenTickDownloader\OTTickerDownloader.cs" />
+    <Compile Include="OpenTickDownloader\UserForms\OTWebDownloader.cs" />
     <Compile Include="QuotesDataGrid.cs" />
     <Compile Include="TestDownloadedData.cs" />
     <Compile Include="TickerDownloader.cs" />
@@ -77,6 +86,15 @@
     <Compile Include="Validate\ValidateForm.cs" />
     <None Include="app.config" />
     <None Include="App.ico" />
+    <EmbeddedResource Include="OpenTickDownloader\UserForms\OTWebDownloader.resx">
+      <DependentUpon>OTWebDownloader.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="TickerSelectors\TickerSelectorForm.resx">
+      <DependentUpon>TickerSelectorForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="WebDownloader.resx">
+      <DependentUpon>WebDownloader.cs</DependentUpon>
+    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\QuantProject\b1_ADT\ADT_SD.csproj">
@@ -99,6 +117,8 @@
       <Project>{AF44E0EA-A055-4BFC-B549-5AC81C95483D}</Project>
       <Name>b5_Presentation</Name>
     </ProjectReference>
+    <Folder Include="OpenTickDownloader" />
+    <Folder Include="OpenTickDownloader\UserForms" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.Targets" />
 </Project>

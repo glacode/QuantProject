@@ -130,7 +130,7 @@
                 <Reference
                     Name = "NPlot"
                     AssemblyName = "NPlot"
-                    HintPath = "bin\Debug\NPlot.dll"
+                    HintPath = "..\..\lib\NPlot.dll"
                 />
             </References>
         </Build>
