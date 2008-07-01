@@ -5,6 +5,7 @@ using System.Collections;
 using System.ComponentModel;
 using System.Windows.Forms;
 using QuantProject.Applications.Downloader.TickerSelectors;
+using QuantProject.Applications.Downloader.OpenTickDownloader.UserForms;
 using QuantProject.Data.Selectors;
 
 namespace QuantProject.Applications.Downloader
@@ -41,7 +42,7 @@ namespace QuantProject.Applications.Downloader
 			// Required for Windows Form Designer support
 			//
 			InitializeComponent();
-
+			this.Closing += new CancelEventHandler( this.Principale_Closing );
 			//
 			// TODO: Add any constructor code after InitializeComponent call
 			//
@@ -243,6 +244,30 @@ namespace QuantProject.Applications.Downloader
       }
     }
 
+    private bool isSomeDownloadingInProgress()
+		{
+    	bool returnValue = false;
+    	foreach(Form downloader in Application.OpenForms)
+    		if(downloader is OTWebDownloader)
+    			if( ((OTWebDownloader)downloader).DownloadInProgress )
+    				returnValue = true;
+    	
+    	return returnValue;
+    }
+    
+    private void Principale_Closing(Object sender, CancelEventArgs e)
+		{
+    	if ( this.isSomeDownloadingInProgress() )
+       {
+          e.Cancel = true;
+          MessageBox.Show("You can't close the application if some downloading is still in progress!");
+       }
+       else
+       {
+          e.Cancel = false;
+       }
+    }
+    
     private void menuItem14_Click(object sender, System.EventArgs e)
     {
 //      BackTestForm form1 = new BackTestForm();
