@@ -579,26 +579,33 @@ namespace QuantProject.Applications.Downloader.OpenTickDownloader.UserForms
 		    
 	  private void buttonDownloadQuotesOfSelectedTickers_Click(object sender, System.EventArgs e)
     {
-    	try{
-	    	OTTickerDownloader tickerDownloader =
-		  		new OTTickerDownloader(this.TickersToDownload, this.StartingNewYorkDateTime,
-		  		                       this.dateTimeOverwriteQuotesBefore.Value,
-		  		                       this.checkBoxCheckingForMissingQuotes.Checked,
-		  		                       this.checkBoxOverWrite.Checked,
-		  		                       this.radioButtonDownloadOnlyAfterMax.Checked,
-		  		                       this.txtOpenTickUser.Text,
-		  		                       this.txtOpenTickPassword.Text);
-		  	tickerDownloader.DownloadingStarted +=
-		  		new DownloadingStartedEventHandler(this.refreshForm_atDownloadedStarted);
-	    	tickerDownloader.DatabaseUpdated += 
-		  		new DatabaseUpdatedEventHandler(this.refreshGrid);
-		  	tickerDownloader.DownloadingCompleted += 
-		  		new DownloadingCompletedEventHandler(this.refreshForm_atDownloadedCompleted);
-	    	this.buttonDownloadQuotesOfSelectedTickers.Enabled = false;
-		  	this.downloadThread = new Thread( tickerDownloader.DownloadTickers );
-	      this.downloadThread.Start();
-      }
-      catch(Exception ex)
+	  	try{
+	  		OTTickerDownloader tickerDownloader =
+	  			new OTTickerDownloader(
+	  				this.TickersToDownload,
+	  				this.StartingNewYorkDateTime,
+	  				Convert.ToInt32( this.fromHour.Value ) ,
+	  				Convert.ToInt32( this.fromMin.Value ) ,
+	  				Convert.ToInt32( this.fromSec.Value ) ,
+	  				Convert.ToInt32( this.timeFrameInSeconds.Value ) ,
+	  				Convert.ToInt32( this.numberOfBars.Value ) ,
+	  				this.dateTimeOverwriteQuotesBefore.Value,
+	  				this.checkBoxCheckingForMissingQuotes.Checked,
+	  				this.checkBoxOverWrite.Checked,
+	  				this.radioButtonDownloadOnlyAfterMax.Checked,
+	  				this.txtOpenTickUser.Text,
+	  				this.txtOpenTickPassword.Text);
+	  		tickerDownloader.DownloadingStarted +=
+	  			new DownloadingStartedEventHandler(this.refreshForm_atDownloadedStarted);
+	  		tickerDownloader.DatabaseUpdated +=
+	  			new DatabaseUpdatedEventHandler(this.refreshGrid);
+	  		tickerDownloader.DownloadingCompleted +=
+	  			new DownloadingCompletedEventHandler(this.refreshForm_atDownloadedCompleted);
+	  		this.buttonDownloadQuotesOfSelectedTickers.Enabled = false;
+	  		this.downloadThread = new Thread( tickerDownloader.DownloadTickers );
+	  		this.downloadThread.Start();
+	  	}
+	  	catch(Exception ex)
     	{
     		MessageBox.Show(ex.Message);
     	}
