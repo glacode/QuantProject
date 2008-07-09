@@ -35,6 +35,7 @@
       <SpecificVersion>False</SpecificVersion>
     </Reference>
     <Reference Include="System" />
+    <Reference Include="System.Configuration" />
     <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Windows.Forms" />
@@ -49,10 +50,26 @@
     <Compile Include="DataBaseImporter.cs" />
     <Compile Include="DataSet1.cs" />
     <Compile Include="Main.cs" />
-    <Compile Include="OpenTickDownloader\DatabaseUpdatedEventArgs.cs" />
+    <Compile Include="OpenTickDownloader\Bar.cs" />
+    <Compile Include="OpenTickDownloader\BarQueue.cs" />
+    <Compile Include="OpenTickDownloader\BarQueueFiller.cs" />
+    <Compile Include="OpenTickDownloader\BarsDownloader.cs" />
+    <Compile Include="OpenTickDownloader\BarsSelectors\BarIdentifier.cs" />
+    <Compile Include="OpenTickDownloader\BarsSelectors\DailyBarsSelector.cs" />
+    <Compile Include="OpenTickDownloader\BarsSelectors\IBarsSelector.cs" />
+    <Compile Include="OpenTickDownloader\DatabaseManagement\DatabaseUpdatedEventArgs.cs" />
+    <Compile Include="OpenTickDownloader\DatabaseManagement\DataBaseWriter.cs" />
     <Compile Include="OpenTickDownloader\DownloadedCompletedEventArgs.cs" />
+    <Compile Include="OpenTickDownloader\DownloaderConstants.cs" />
     <Compile Include="OpenTickDownloader\DownloadingStartedEventArgs.cs" />
+    <Compile Include="OpenTickDownloader\ExchangeSelectors\IExchangeSelector.cs" />
+    <Compile Include="OpenTickDownloader\ExchangeSelectors\MostLiquid\MostLiquidExchangeSelector.cs" />
+    <Compile Include="OpenTickDownloader\ExchangeSelectors\MostLiquid\MostLiquidExchangeSelectorForSingleTicker.cs" />
+    <Compile Include="OpenTickDownloader\OTManagement\BarRequest.cs" />
+    <Compile Include="OpenTickDownloader\OTManagement\OTManager.cs" />
     <Compile Include="OpenTickDownloader\OTTickerDownloader.cs" />
+    <Compile Include="OpenTickDownloader\TimeZoneManaging\DSTPeriod.cs" />
+    <Compile Include="OpenTickDownloader\TimeZoneManaging\TimeZoneManager.cs" />
     <Compile Include="OpenTickDownloader\UserForms\OTWebDownloader.cs" />
     <Compile Include="QuotesDataGrid.cs" />
     <Compile Include="TestDownloadedData.cs" />
@@ -89,12 +106,6 @@
     <EmbeddedResource Include="OpenTickDownloader\UserForms\OTWebDownloader.resx">
       <DependentUpon>OTWebDownloader.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="TickerSelectors\TickerSelectorForm.resx">
-      <DependentUpon>TickerSelectorForm.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="WebDownloader.resx">
-      <DependentUpon>WebDownloader.cs</DependentUpon>
-    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\QuantProject\b1_ADT\ADT_SD.csproj">
@@ -118,6 +129,12 @@
       <Name>b5_Presentation</Name>
     </ProjectReference>
     <Folder Include="OpenTickDownloader" />
+    <Folder Include="OpenTickDownloader\BarsSelectors" />
+    <Folder Include="OpenTickDownloader\DatabaseManagement" />
+    <Folder Include="OpenTickDownloader\ExchangeSelectors" />
+    <Folder Include="OpenTickDownloader\ExchangeSelectors\MostLiquid" />
+    <Folder Include="OpenTickDownloader\OTManagement" />
+    <Folder Include="OpenTickDownloader\TimeZoneManaging" />
     <Folder Include="OpenTickDownloader\UserForms" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.Targets" />
