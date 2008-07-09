@@ -1,5 +1,7 @@
-﻿Microsoft Visual Studio Solution File, Format Version 9.00
-# SharpDevelop 2.0.0.1462
+﻿
+Microsoft Visual Studio Solution File, Format Version 9.00
+# Visual Studio 2005
+# SharpDevelop 2.2.1.2648
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QuantDownloader", "Downloader\QuantDownloader_SD.csproj", "{55423900-E60B-4638-AD2A-A2A9C3F2E3B6}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "b1_ADT", "..\QuantProject\b1_ADT\ADT_SD.csproj", "{217A1E06-5FA7-49C1-A3D7-586F3690D5DE}"
