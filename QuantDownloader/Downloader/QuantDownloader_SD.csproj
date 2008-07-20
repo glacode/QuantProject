@@ -57,6 +57,7 @@
     <Compile Include="OpenTickDownloader\BarsSelectors\BarIdentifier.cs" />
     <Compile Include="OpenTickDownloader\BarsSelectors\DailyBarsSelector.cs" />
     <Compile Include="OpenTickDownloader\BarsSelectors\IBarsSelector.cs" />
+    <Compile Include="OpenTickDownloader\BarsSelectors\MissingDailyBarsSelector.cs" />
     <Compile Include="OpenTickDownloader\DatabaseManagement\DatabaseUpdatedEventArgs.cs" />
     <Compile Include="OpenTickDownloader\DatabaseManagement\DataBaseWriter.cs" />
     <Compile Include="OpenTickDownloader\DownloadedCompletedEventArgs.cs" />
