@@ -183,14 +183,31 @@ namespace QuantProject.Applications.Downloader.OpenTickDownloader
 		}
 		private void setBarsSelector()
 		{
-			this.barsSelector =
-				new DailyBarsSelector(
-					this.tickersToDownload ,
-					this.setBarsSelector_getDate( this.firstDate ) ,
-					this.setBarsSelector_getDate( DateTime.Now ) ,
-					this.barInterval ,
-					this.firstBarOpenTimeInNewYorkTimeZone ,
-					this.numberOfDailyBars );
+			DateTime firstDateForBarsSelector =
+				this.setBarsSelector_getDate( this.firstDate );
+			DateTime lastDateForBarsSelector =
+				this.setBarsSelector_getDate( DateTime.Now );
+			if ( this.checkForMissingQuotes )
+				// only missing quotes are to be downloaded
+				this.barsSelector =
+					new MissingDailyBarsSelector(
+						this.tickersToDownload ,
+						this.setBarsSelector_getDate( this.firstDate ) ,
+						this.setBarsSelector_getDate( DateTime.Now ) ,
+						this.barInterval ,
+						this.firstBarOpenTimeInNewYorkTimeZone ,
+						this.numberOfDailyBars );
+			else
+				// all quotes are to be downloaded, even if they
+				// are in the database already
+				this.barsSelector =
+					new DailyBarsSelector(
+						this.tickersToDownload ,
+						this.setBarsSelector_getDate( this.firstDate ) ,
+						this.setBarsSelector_getDate( DateTime.Now ) ,
+						this.barInterval ,
+						this.firstBarOpenTimeInNewYorkTimeZone ,
+						this.numberOfDailyBars );
 		}
 		private void setExchangeSelector()
 		{
