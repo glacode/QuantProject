@@ -152,10 +152,10 @@ namespace QuantProject.Applications.Downloader.OpenTickDownloader.UserForms
 			this.dataGrid1.DataMember = "";
 			this.dataGrid1.Dock = System.Windows.Forms.DockStyle.Right;
 			this.dataGrid1.HeaderForeColor = System.Drawing.SystemColors.ControlText;
-			this.dataGrid1.Location = new System.Drawing.Point(352, 0);
+			this.dataGrid1.Location = new System.Drawing.Point(382, 0);
 			this.dataGrid1.Name = "dataGrid1";
 			this.dataGrid1.ReadOnly = true;
-			this.dataGrid1.Size = new System.Drawing.Size(301, 459);
+			this.dataGrid1.Size = new System.Drawing.Size(352, 459);
 			this.dataGrid1.TabIndex = 1;
 			// 
 			// buttonDownloadQuotesOfSelectedTickers
@@ -171,7 +171,7 @@ namespace QuantProject.Applications.Downloader.OpenTickDownloader.UserForms
 			// 
 			this.dateTimePickerStartingDate.Location = new System.Drawing.Point(86, 49);
 			this.dateTimePickerStartingDate.Name = "dateTimePickerStartingDate";
-			this.dateTimePickerStartingDate.Size = new System.Drawing.Size(162, 20);
+			this.dateTimePickerStartingDate.Size = new System.Drawing.Size(231, 20);
 			this.dateTimePickerStartingDate.TabIndex = 6;
 			this.dateTimePickerStartingDate.Value = new System.DateTime(2001, 1, 1, 0, 0, 0, 0);
 			// 
@@ -201,7 +201,7 @@ namespace QuantProject.Applications.Downloader.OpenTickDownloader.UserForms
 			this.groupBoxWebDownloaderOptions.Controls.Add(this.labelStartingDateTime);
 			this.groupBoxWebDownloaderOptions.Location = new System.Drawing.Point(10, 97);
 			this.groupBoxWebDownloaderOptions.Name = "groupBoxWebDownloaderOptions";
-			this.groupBoxWebDownloaderOptions.Size = new System.Drawing.Size(320, 134);
+			this.groupBoxWebDownloaderOptions.Size = new System.Drawing.Size(336, 134);
 			this.groupBoxWebDownloaderOptions.TabIndex = 13;
 			this.groupBoxWebDownloaderOptions.TabStop = false;
 			this.groupBoxWebDownloaderOptions.Text = "Web Downloader options (source: OpenTick)";
@@ -227,7 +227,7 @@ namespace QuantProject.Applications.Downloader.OpenTickDownloader.UserForms
 			// 
 			this.dateTimeOverwriteQuotesBefore.Location = new System.Drawing.Point(96, 247);
 			this.dateTimeOverwriteQuotesBefore.Name = "dateTimeOverwriteQuotesBefore";
-			this.dateTimeOverwriteQuotesBefore.Size = new System.Drawing.Size(162, 20);
+			this.dateTimeOverwriteQuotesBefore.Size = new System.Drawing.Size(229, 20);
 			this.dateTimeOverwriteQuotesBefore.TabIndex = 15;
 			this.dateTimeOverwriteQuotesBefore.Value = new System.DateTime(2000, 1, 1, 0, 0, 0, 0);
 			// 
@@ -473,7 +473,7 @@ namespace QuantProject.Applications.Downloader.OpenTickDownloader.UserForms
 			// OTWebDownloader
 			// 
 			this.AutoScaleBaseSize = new System.Drawing.Size(5, 13);
-			this.ClientSize = new System.Drawing.Size(653, 459);
+			this.ClientSize = new System.Drawing.Size(734, 459);
 			this.Controls.Add(this.signallingLabel);
 			this.Controls.Add(this.startingDownloadingTimeLabel);
 			this.Controls.Add(this.endingDownloadingTimeLabel);
