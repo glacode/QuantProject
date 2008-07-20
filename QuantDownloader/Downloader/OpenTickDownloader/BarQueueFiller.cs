@@ -177,34 +177,16 @@ namespace QuantProject.Applications.Downloader.OpenTickDownloader
 //			return isAPossibleMarkDay;
 //		}
 		
-		#region fillQueue_requestBars
-		private void fillQueue_requestBar(
-			BarIdentifier barIdentifier )
+		#region fillQueue_requestBar
+		private void fillQueue_requestBar_actually(
+			BarIdentifier barIdentifier , string exchange )
 		{
-			string exchange =
-				this.exchangeSelector.SelectExchange( barIdentifier.Ticker );
-			
-			
-//			DateTime currentDate;
-//			int currentDailyBarIndex;
-//			OTDataEntity oTDataEntity =
-//				new OTDataEntity( exchange , barIdentifier.Ticker );
 			short numberOfMinutesInEachBar =
 				Convert.ToInt16( Math.Round(
 					Convert.ToDouble( barIdentifier.Interval / 60 ) ) );
-//			DateTime dateTimeForBarOpenInNewYorkTimeZone =
-//				new DateTime(
-//					currentDate.Year ,
-//					currentDate.Month ,
-//					currentDate.Day ,
-//					this.firstBarOpenTime.Hour ,
-//					this.firstBarOpenTime.Minute ,
-//					this.firstBarOpenTime.Second ).AddMinutes(
-//				currentDailyBarIndex * numberOfMinutesInEachBar );
 			DateTime dateTimeForBarOpenInUTC =
 				TimeZoneManager.ConvertToUTC(
 					barIdentifier.DateTimeForOpenInNewYorkTimeZone );
-				
 			int requestId = this.oTManager.RequestHistData(
 				exchange , barIdentifier.Ticker ,
 				dateTimeForBarOpenInUTC ,
@@ -213,7 +195,16 @@ namespace QuantProject.Applications.Downloader.OpenTickDownloader
 			if ( this.NewOHLCRequest != null )
 				this.NewOHLCRequest(
 					requestId , dateTimeForBarOpenInUTC ,
-					barIdentifier.Interval );
+					barIdentifier.Interval );			
+		}
+		private void fillQueue_requestBar(
+			BarIdentifier barIdentifier )
+		{
+			string exchange =
+				this.exchangeSelector.SelectExchange( barIdentifier.Ticker );
+			if ( exchange != "" )
+				// the exchange has been actually selected
+				this.fillQueue_requestBar_actually( barIdentifier , exchange );
 		}
 //		private void fillQueue_requestBars( DateTime currentDate )
 //		{
@@ -223,7 +214,7 @@ namespace QuantProject.Applications.Downloader.OpenTickDownloader
 //				this.fillQueue_requestBar(
 //					currentDate , currentDailyBarIndex );
 //		}
-		#endregion fillQueue_requestBars
+		#endregion fillQueue_requestBar
 		
 		private void fillQueue_requestBarsForEachMarketDay()
 		{
