@@ -33,6 +33,14 @@ namespace QuantProject.Applications.Downloader.OpenTickDownloader
 		/// with a single Sql command</summary>
 		public const
 			int MAX_NUMBER_OF_BARS_TO_BE_WRITTEN_WITH_A_SINGLE_SQL_COMMAND = 1;
+		
+		/// <summary>
+		/// Max number of bars that a single OTManager object will have
+		/// pending (if new requests arrive, they will be delayed until
+		/// the previous ones have been satisfied)
+		/// </summary>
+		public const
+			int MAX_NUMBER_OF_PENDING_REQUESTS_FOR_A_SINGLE_OTMANAGER = 100;
 
 //		public DownloaderConstants()
 //		{
