@@ -136,7 +136,8 @@ namespace QuantProject.Applications.Downloader.OpenTickDownloader
 		private void newMessageEventHandler(
 			object sender , NewMessageEventArgs eventArgs )
 		{
-			this.NewMessage( this , eventArgs );
+			if ( this.NewMessage != null )
+				this.NewMessage( this , eventArgs );
 		}
 		private void initializeBarQueueFiller()
 		{
