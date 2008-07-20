@@ -32,7 +32,9 @@ namespace QuantProject.Applications.Downloader.OpenTickDownloader
 	public interface IExchangeSelector : IMessageSender
 	{
 		/// <summary>
-		/// returns an identifier for an exchange where the ticker is traded 
+		/// returns an identifier for an exchange where the ticker is traded;
+		/// if the ticker is not found traded on any exchange, then
+		/// an empty string is returned
 		/// </summary>
 		/// <param name="ticker"></param>
 		/// <returns></returns>
