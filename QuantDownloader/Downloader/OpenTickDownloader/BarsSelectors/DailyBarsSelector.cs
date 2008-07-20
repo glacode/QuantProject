@@ -30,21 +30,21 @@ namespace QuantProject.Applications.Downloader.OpenTickDownloader
 	/// </summary>
 	public class DailyBarsSelector : IBarsSelector
 	{
-		string[] tickers;
-		DateTime firstDate;
-		DateTime lastDate;
+		private string[] tickers;
+		protected DateTime firstDate;
+		protected DateTime lastDate;
 		/// <summary>
 		/// lenght, in seconds, for a bar (60 for a one minute bar)
 		/// </summary>
-		int barInterval;
-		DateTime firstBarOpenTimeInNewYorkTimeZone;
-		int numberOfBarsToBeDownloadedForEachDay;
+		protected int barInterval;
+		protected DateTime firstBarOpenTimeInNewYorkTimeZone;
+		protected int numberOfBarsToBeDownloadedForEachDay;
 		
 		/// <summary>
 		/// points to the ticker for the current bar to be selected
 		/// </summary>
 		private int currentTickerIndex;
-		private DateTime currentDate;
+		protected DateTime currentDate;
 		/// <summary>
 		/// (0 based) current bar in the currentDate
 		/// </summary>
@@ -185,7 +185,7 @@ namespace QuantProject.Applications.Downloader.OpenTickDownloader
 		}
 		
 		#region isTheCurrentBarSelectable
-		private bool isAPossibleMarketDay( DateTime currentDate )
+		protected bool isAPossibleMarketDay( DateTime currentDate )
 		{
 			bool isAPossibleMarkDay =
 				( currentDate.DayOfWeek != DayOfWeek.Saturday ) &&
@@ -220,14 +220,16 @@ namespace QuantProject.Applications.Downloader.OpenTickDownloader
 		#endregion moveToTheNextBar
 		
 		#region GetNextBarIdentifier
-		private string getCurrentTicker()
+		protected string getCurrentTicker()
 		{
 			string currentTicker = this.tickers[ this.currentTickerIndex ];
 			return currentTicker;
 		}
-		private BarIdentifier getNextBarIdentifier_actually()
+		
+		#region getNextBarIdentifier_actually
+		protected DateTime getDateTimeForCurrentCandidateBarOpenInNewYorkTimeZone()
 		{
-			DateTime dateTimeForBarOpenInNewYorkTimeZone =
+			DateTime dateTimeForCurrentCandidateBarOpenInNewYorkTimeZone =
 				new DateTime(
 					currentDate.Year ,
 					currentDate.Month ,
@@ -236,13 +238,21 @@ namespace QuantProject.Applications.Downloader.OpenTickDownloader
 					this.firstBarOpenTimeInNewYorkTimeZone.Minute ,
 					this.firstBarOpenTimeInNewYorkTimeZone.Second ).AddSeconds(
 				this.currentDailyBar * this.barInterval );
+			return dateTimeForCurrentCandidateBarOpenInNewYorkTimeZone;
+		}
+		private BarIdentifier getNextBarIdentifier_actually()
+		{
+			DateTime dateTimeForCurrentCandidateBarOpenInNewYorkTimeZone =
+				this.getDateTimeForCurrentCandidateBarOpenInNewYorkTimeZone();
 			BarIdentifier barIdentifier =
 				new BarIdentifier(
 					this.getCurrentTicker() ,
-					dateTimeForBarOpenInNewYorkTimeZone ,
+					dateTimeForCurrentCandidateBarOpenInNewYorkTimeZone ,
 					this.barInterval );
 			return barIdentifier;
 		}
+		#endregion getNextBarIdentifier_actually
+
 		public BarIdentifier GetNextBarIdentifier()
 		{
 			if ( this.AreAllBarsAlredyGiven )
