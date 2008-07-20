@@ -83,19 +83,6 @@ namespace QuantProject.Applications.Downloader.OpenTickDownloader
 		#region getSqlCommand
 		
 		#region getSqlCommand_getValues
-		private string getDateConstant( DateTime dateTime )
-		{
-			string dateConstant =
-				"#" +
-				dateTime.Month + "/" +
-				dateTime.Day + "/" +
-				dateTime.Year + " " +
-				dateTime.Hour + ":" +
-				dateTime.Minute + ":" +
-				dateTime.Second +
-				"#";
-			return dateConstant;
-		}
 		private string formatDoubleForSql( double value )
 		{
 			string formattedValue =
@@ -109,7 +96,7 @@ namespace QuantProject.Applications.Downloader.OpenTickDownloader
 			string values =
 				"'" + bar.Ticker + "' , " +
 				"'" + bar.Exchange + "' , " +
-				this.getDateConstant( utcDateTimeForOpen ) + " , " +
+				DataBaseWriter.GetDateConstant( utcDateTimeForOpen ) + " , " +
 				bar.Interval + " , " +
 				formatDoubleForSql( bar.Open ) + " , " +
 				formatDoubleForSql( bar.High ) + " , " +
@@ -178,6 +165,25 @@ namespace QuantProject.Applications.Downloader.OpenTickDownloader
 			this.writeToDataBaseThread = new Thread(
 				new ThreadStart( this.writeToDataBase ) );
 			this.writeToDataBaseThread.Start();
+		}
+		
+		/// <summary>
+		/// Builds a date to be used in a Sql query
+		/// </summary>
+		/// <param name="dateTime"></param>
+		/// <returns></returns>
+		public static string GetDateConstant( DateTime dateTime )
+		{
+			string dateConstant =
+				"#" +
+				dateTime.Month + "/" +
+				dateTime.Day + "/" +
+				dateTime.Year + " " +
+				dateTime.Hour + ":" +
+				dateTime.Minute + ":" +
+				dateTime.Second +
+				"#";
+			return dateConstant;
 		}
 	}
 }
