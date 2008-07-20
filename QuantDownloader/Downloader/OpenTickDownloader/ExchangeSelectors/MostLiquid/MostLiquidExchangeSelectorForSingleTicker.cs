@@ -84,6 +84,11 @@ namespace QuantProject.Applications.Downloader.OpenTickDownloader
 			}
 		}
 
+		/// <summary>
+		/// Returns the identifier for the most liquid exchange, for the given
+		/// ticker. If the given ticker is not found to be traded on any of the
+		/// possible exchanges, then an empty string is returned
+		/// </summary>
 		public string MostLiquidExchange
 		{
 			get
