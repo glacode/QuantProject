@@ -55,5 +55,13 @@ namespace QuantProject.ADT.Collections
 		{
 			return this.elements.ContainsKey( element );
 		}
+		
+		/// <summary>
+		/// removes all elements in the set
+		/// </summary>
+		public void Clear()
+		{
+			this.elements.Clear();
+		}
 	}
 }
