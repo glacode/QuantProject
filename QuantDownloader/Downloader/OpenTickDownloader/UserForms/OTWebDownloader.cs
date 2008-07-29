@@ -320,11 +320,6 @@ namespace QuantProject.Applications.Downloader.OpenTickDownloader.UserForms
 									0,
 									0,
 									0});
-			this.fromMin.Minimum = new decimal(new int[] {
-									1,
-									0,
-									0,
-									0});
 			this.fromMin.Name = "fromMin";
 			this.fromMin.Size = new System.Drawing.Size(45, 20);
 			this.fromMin.TabIndex = 22;
@@ -602,6 +597,7 @@ namespace QuantProject.Applications.Downloader.OpenTickDownloader.UserForms
 	  		tickerDownloader.DownloadingCompleted +=
 	  			new DownloadingCompletedEventHandler(this.refreshForm_atDownloadedCompleted);
 	  		this.buttonDownloadQuotesOfSelectedTickers.Enabled = false;
+	  		//tickerDownloader.DownloadTickers();
 	  		this.downloadThread = new Thread( tickerDownloader.DownloadTickers );
 	  		this.downloadThread.Start();
 	  	}
@@ -629,9 +625,9 @@ namespace QuantProject.Applications.Downloader.OpenTickDownloader.UserForms
     
     private void refreshForm_atDownloadedStarted(object sender, DownloadingStartedEventArgs eventArgs)
     {
-			this.textForStartingDownloadingTimeLabel = 
-				"Downloading started at: " + eventArgs.StartingDateTime.ToString();
-    	this.downloadingInProgress = true;
+			this.textForStartingDownloadingTimeLabel =
+					"Downloading started at: " + eventArgs.StartingDateTime.ToString();
+	   	this.downloadingInProgress = true;
     }
     private void refreshForm_atDownloadedCompleted(object sender, DownloadingCompletedEventArgs eventArgs)
     {
