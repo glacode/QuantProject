@@ -99,7 +99,14 @@ namespace QuantProject.Business.Financial.Accounting.Reporting.StatisticsSummary
 						this.getReturnForDate( date, previousDate );
 				}
 			}
-			this.rowValue = this.getRowValue(totalNumberOfSpecificDayOfWeek, sumOfReturnsOnSpecificDayOfWeek);
+			try
+			{
+				this.rowValue = this.getRowValue(totalNumberOfSpecificDayOfWeek, sumOfReturnsOnSpecificDayOfWeek);
+			}
+			catch (Exception ex)
+			{
+				ex = ex; // to avoid compilation warning;
+			}
 		}
 	}
 }
