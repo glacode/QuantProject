@@ -190,6 +190,8 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOs
 				numDaysForOscillatingPeriodForOutOfSample,
 				numberOfPortfolioPositions , benchmark ,
 				int.MaxValue ,
+				((PVOPositions)positionsToTest[0]).OversoldThreshold,
+				((PVOPositions)positionsToTest[0]).OverboughtThreshold,
 				historicalQuoteProviderForStrategy ,
 				maxAcceptableCloseToCloseDrawdown , minimumAcceptableGain );
 			

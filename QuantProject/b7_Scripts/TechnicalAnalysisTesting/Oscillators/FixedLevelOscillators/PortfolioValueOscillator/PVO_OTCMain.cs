@@ -62,7 +62,7 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOs
 		
 		public PVO_OTCMain()
 		{
-			this.benchmark = new Benchmark( "BMC" );
+			this.benchmark = new Benchmark( "^GSPC" );
 
 			this.historicalQuoteProvider =
 				new HistoricalAdjustedQuoteProvider();
@@ -73,37 +73,41 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOs
 
 		protected override IEligiblesSelector getEligiblesSelector()
 		{
-			int maxNumberOfEligiblesToBeChosen = 100;
 			
+			int maxNumberOfEligiblesToBeChosen = 100;
+						
 			string tickersGroupId = "SP500";
-			// uncomment the following line for a faster script
-			//tickersGroupId = "fastTest";
-
-//			this.eligiblesSelector =
-//				new MostLiquidAndLessVolatile(
-//				tickersGroupId ,
-//				maxNumberOfEligiblesToBeChosen );
 			
 			bool temporizedGroup = true;
 			int numDaysForAverageRawOpenPriceComputation = 10;
 			double minPrice = 30;
 			double maxPrice = 75;
 			
+			int maxNumberOfMostLiquidTickersToBeChosen = 150;
+			int numDaysForVolatility = 10;
+			IEligiblesSelector eligiblesSelector =
+				new ByPriceMostLiquidLessVolatileOTCAlwaysQuoted(
+				tickersGroupId , temporizedGroup ,
+				maxNumberOfEligiblesToBeChosen ,
+				maxNumberOfMostLiquidTickersToBeChosen ,
+			  numDaysForAverageRawOpenPriceComputation ,
+				numDaysForVolatility ,
+			 	minPrice , maxPrice );
 //			IEligiblesSelector eligiblesSelector =
 //				new ByPriceMostLiquidAlwaysQuoted(
 //				tickersGroupId , temporizedGroup ,
 //				maxNumberOfEligiblesToBeChosen ,
 //			  numDaysForAverageRawOpenPriceComputation ,
 //			 	minPrice , maxPrice );
-			IEligiblesSelector eligiblesSelector =
-				new ByPriceLessVolatileOTCAlwaysQuoted(
-				tickersGroupId , temporizedGroup ,
-				maxNumberOfEligiblesToBeChosen ,
-			  numDaysForAverageRawOpenPriceComputation ,
-			 	minPrice , maxPrice );
+//			IEligiblesSelector eligiblesSelector =
+//				new ByPriceLessVolatileOTCAlwaysQuoted(
+//				tickersGroupId , temporizedGroup ,
+//				maxNumberOfEligiblesToBeChosen ,
+//			  numDaysForAverageRawOpenPriceComputation ,
+//			 	minPrice , maxPrice );
 //			eligiblesSelector = 
 //				new DummyEligibleSelector();
-			
+//			
 			return eligiblesSelector;
 		}
 
@@ -122,61 +126,70 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOs
 //				new DecoderForPairsTradingTestingPositionsWithBalancedWeights();
 
 			double maxCorrelationAllowed = 0.96;
-			int numberOfBestTestingPositionsToBeReturned = 200;
-			numberOfBestTestingPositionsToBeReturned = 200;
+			int numberOfBestTestingPositionsToBeReturned = 100;
+			numberOfBestTestingPositionsToBeReturned = 100;
 			bool balancedWeightsOnVolatilityBase = true;
 			float minimumAbsoluteReturnValue = 0.000001f;
 			float maximumAbsoluteReturnValue = 100000f;
 			//correlation is computed only for returns
 			//between minimum and maximum
-			IInSampleChooser inSampleChooser = 
-				new PVO_OTCCorrelationChooser(numberOfBestTestingPositionsToBeReturned, 
-						maxCorrelationAllowed , balancedWeightsOnVolatilityBase,
-					  minimumAbsoluteReturnValue , maximumAbsoluteReturnValue);
 //			IInSampleChooser inSampleChooser = 
-//				new PVO_OTCCTOCorrelationChooser(numberOfBestTestingPositionsToBeReturned, 
+//				new PVO_OTCCorrelationChooser(numberOfBestTestingPositionsToBeReturned, 
 //						maxCorrelationAllowed , balancedWeightsOnVolatilityBase,
-//					  minimumAbsoluteReturnValue , maximumAbsoluteReturnValue);
+//					  minimumAbsoluteReturnValue , maximumAbsoluteReturnValue, this.benchmark.Ticker);
+			IInSampleChooser inSampleChooser = 
+				new PVO_OTCCTOCorrelationChooser(numberOfBestTestingPositionsToBeReturned, 
+						maxCorrelationAllowed , balancedWeightsOnVolatilityBase,
+					  minimumAbsoluteReturnValue , maximumAbsoluteReturnValue, this.benchmark.Ticker);
 //			//office
 //			inSampleChooser =
 //				new PVOChooserFromSavedBackTestLog(
-//					@"C:\Utente\MarcoVarie\Vari\qP\LogArchive\2008_04_14_18_21_45_PVO_OTC_from_2001_01_01_to_2004_12_31_annlRtrn_182,80_maxDD_8,57\2008_04_14_18_21_45_PVO_OTC_from_2001_01_01_to_2004_12_31_annlRtrn_182,80_maxDD_8,57.qpL",
+//					@"C:\Utente\MarcoVarie\Vari\qP\LogArchive\2008_08_06_16_57_34_PVO_OTC_from_2003_06_01_to_2008_04_28_annlRtrn_3,34_maxDD_11,36\2008_08_06_16_57_34_PVO_OTC_from_2003_06_01_to_2008_04_28_annlRtrn_3,34_maxDD_11,36.qpL",
 //				  numberOfBestTestingPositionsToBeReturned);
 			//home
 //			inSampleChooser =
 //				new PVOChooserFromSavedBackTestLog(
-//				@"C:\Utente\MarcoVarie\Vari\qP\LogArchive\2008_04_13_12_03_16_PVO_OTC_from_2001_01_01_to_2004_12_31_annlRtrn_183.39_maxDD_8.71\2008_04_13_12_03_16_PVO_OTC_from_2001_01_01_to_2004_12_31_annlRtrn_183.39_maxDD_8.71.qpL",
+//				@"C:\Utente\MarcoVarie\Vari\qP\LogArchive\2008_05_04_18_54_45_PVO_OTC_from_2006_01_01_to_2008_04_28_annlRtrn_93.08_maxDD_5.18\2008_05_04_18_54_45_PVO_OTC_from_2006_01_01_to_2008_04_28_annlRtrn_93.08_maxDD_5.18.qpL",
 //				numberOfBestTestingPositionsToBeReturned);
 			return inSampleChooser;
 		}
 
 		protected override IEndOfDayStrategyForBacktester getEndOfDayStrategy()
 		{
-			int inSampleDays = 180;
+			int inSampleDays = 25;
 			// uncomment the following line for a faster script
 			//inSampleDays = 50;
-			int numDaysBetweenEachOptimization = 5;
+			int numDaysBetweenEachOptimization = 1;
 			int numOfClosingsBeforeExit = 0;
-			double oversoldThreshold = 0.01;
-			double overboughtThreshold = 0.01;
+			int minNumOfEligiblesForValidOptimization = 20;
+			double oversoldThreshold = 0.0025;
+			double overboughtThreshold = 0.0025;
+			double oversoldThresholdMAX = 0.05;
+			double overboughtThresholdMAX = 0.05;
 			IEndOfDayStrategyForBacktester endOfDayStrategy
 //				 = new PVO_OTCStrategyLessCorrelated(eligiblesSelector ,inSampleChooser ,
 //				inSampleDays , benchmark , numDaysBetweenEachOptimization ,
 //				oversoldThreshold , overboughtThreshold , historicalQuoteProvider);
 //			
-				= new PVO_OTCStrategy(eligiblesSelector ,inSampleChooser ,
+				= new PVO_OTCStrategy(eligiblesSelector ,
+				minNumOfEligiblesForValidOptimization,                      inSampleChooser ,
 				inSampleDays , benchmark , numDaysBetweenEachOptimization ,
-				numOfClosingsBeforeExit, oversoldThreshold , overboughtThreshold , historicalQuoteProvider);
+				numOfClosingsBeforeExit, oversoldThreshold , overboughtThreshold ,
+				oversoldThresholdMAX , overboughtThresholdMAX , historicalQuoteProvider);
 			return endOfDayStrategy;
 		}
 		protected override EndOfDayStrategyBackTester getEndOfDayStrategyBackTester()
 		{
 			string backTestId = "PVO_OTC";
-			IAccountProvider accountProvider = new SimpleAccountProvider();
-			double cashToStart = 30000;
+			IAccountProvider accountProvider;
+			accountProvider =	new SimpleAccountProvider();
+//			double fixedPercentageSlippage = 0.05;
+//			accountProvider =
+//				new InteractiveBrokerAccountProvider(fixedPercentageSlippage);
+			double cashToStart = 25000;
 
-			DateTime firstDateTime = new DateTime( 2001 , 1 , 1 );
-			DateTime lastDateTime = new DateTime( 2004 , 12, 31 );
+			DateTime firstDateTime = new DateTime( 2004 , 1 , 1 );
+			DateTime lastDateTime = new DateTime( 2008 , 4, 28 );
 			double maxRunningHours = 10;
 			HistoricalQuoteProvider quoteProviderForBackTester =
 				this.historicalQuoteProvider;

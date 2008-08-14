@@ -58,7 +58,7 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOs
       get{return this.overboughtThreshold;}
 			set{this.overboughtThreshold = value;}
     }
-		public int NumDaysForOscillatingPeriod
+   	public int NumDaysForOscillatingPeriod
     {
       get{return this.numDaysForOscillatingPeriod;}
     }
@@ -74,8 +74,10 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOs
 		
 		public PVOPositions Copy()
 		{
-			return new PVOPositions(this.WeightedPositions,this.OversoldThreshold,
-					this.overboughtThreshold, this.numDaysForOscillatingPeriod);
+			return new PVOPositions(this.WeightedPositions,
+			                        this.OversoldThreshold,
+															this.overboughtThreshold, 
+															this.numDaysForOscillatingPeriod);
 		}
 
 		// creates an empty TestingPositions: to be used to give a meaning with
@@ -125,7 +127,8 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOs
 																				EndOfDayDateTime endOfPeriod,
 		                                    string benchmark,
 		                                    HistoricalQuoteProvider quoteProvider,
-		                                    double maxCoefficientOfCrossingThresholds)
+		                                   	double maxOversoldThreshold,
+		                                    double maxOverboughtThreshold)
     {
       PVOPositionsStatus returnValue;
 			double oscillatingPeriodReturn = double.NaN;
@@ -133,31 +136,20 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOs
       	this.getOscillatingPeriodReturn(beginOfPeriod, endOfPeriod, benchmark,
       	                                quoteProvider);
       if(oscillatingPeriodReturn >= this.overboughtThreshold && 
-         oscillatingPeriodReturn <= maxCoefficientOfCrossingThresholds*this.overboughtThreshold)
+         oscillatingPeriodReturn <= maxOverboughtThreshold)
       		returnValue = PVOPositionsStatus.Overbought;
       else if(oscillatingPeriodReturn <= -this.oversoldThreshold &&
-              Math.Abs(oscillatingPeriodReturn)<=maxCoefficientOfCrossingThresholds*this.oversoldThreshold)
+              Math.Abs(oscillatingPeriodReturn) <= maxOversoldThreshold)
       		returnValue = PVOPositionsStatus.Oversold;
-      else if ( Math.Abs(oscillatingPeriodReturn) > maxCoefficientOfCrossingThresholds*this.oversoldThreshold ||
-                oscillatingPeriodReturn > maxCoefficientOfCrossingThresholds*this.overboughtThreshold  )
-      		returnValue = PVOPositionsStatus.TooDistantFromThresholds;
+      else if ( Math.Abs(oscillatingPeriodReturn) > maxOversoldThreshold ||
+                oscillatingPeriodReturn > maxOverboughtThreshold  )
+      		returnValue = PVOPositionsStatus.OverMaximumThresholds;
       else
       	returnValue = PVOPositionsStatus.InTheMiddle;
          	
 			return returnValue;
   	}
 		
-		public PVOPositionsStatus GetStatus(EndOfDayDateTime beginOfPeriod,
-																				EndOfDayDateTime endOfPeriod,
-		                                    string benchmark,
-		                                    HistoricalQuoteProvider quoteProvider)
-    {
-			return this.GetStatus(beginOfPeriod, endOfPeriod ,
-														benchmark, quoteProvider, 10000.0);
-			//a very high maxCoefficientOfCrossingThresholds is given:
-			//so the status TooDistantFromThresholds should never been reached
-  	}
-
 		public bool AreAllTickersMovingTogetherUpOrDown(EndOfDayDateTime beginOfPeriod,
 																										EndOfDayDateTime endOfPeriod,
 																										string benchmark,

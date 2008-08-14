@@ -70,6 +70,8 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOs
     protected HistoricalQuoteProvider historicalQuoteProvider;
     protected double oversoldThreshold;
     protected double overboughtThreshold;
+    protected double oversoldThresholdMAX;
+    protected double overboughtThresholdMAX;
     //initialized after constructor's call
     protected int numDaysElapsedSinceLastOptimization;
     protected ReturnsManager returnsManager;
@@ -87,6 +89,8 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOs
 		}
     private int numOfClosingsToCrossBeforeExit;
     private int numOfClosingsWithOpenPositions;
+    private int minimumNumberOfEligiblesForValidOptimization;
+    private bool optimalPositionsHaveBeenUpdated;
     
     private string description_GetDescriptionForChooser()
     {
@@ -122,26 +126,35 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOs
 		}
 
 		private void pvo_otcStrategy(IEligiblesSelector eligiblesSelector,
-			int inSampleDays,
+			int minimumNumberOfEligiblesForValidOptimization,
+		  int inSampleDays,
 			Benchmark benchmark,
 			int numDaysBetweenEachOptimization,
 			int numOfClosingsToCrossBeforeExit,
 			double oversoldThreshold,
 			double overboughtThreshold,
+			double oversoldThresholdMAX,
+			double overboughtThresholdMAX,
 			HistoricalQuoteProvider historicalQuoteProvider)
 		{
 			this.numOfClosingsWithOpenPositions = 0;
 			this.eligiblesSelector = eligiblesSelector;
+			this.minimumNumberOfEligiblesForValidOptimization =
+				minimumNumberOfEligiblesForValidOptimization;
 			this.inSampleDays = inSampleDays;
 			this.benchmark = benchmark;
 			this.numDaysBetweenEachOptimization = numDaysBetweenEachOptimization;
 			this.numOfClosingsToCrossBeforeExit = numOfClosingsToCrossBeforeExit;
 			this.oversoldThreshold = oversoldThreshold;
 			this.overboughtThreshold = overboughtThreshold;
+			this.oversoldThresholdMAX = oversoldThresholdMAX;
+			this.overboughtThresholdMAX = overboughtThresholdMAX;
 			this.historicalQuoteProvider = historicalQuoteProvider;
+			this.optimalPositionsHaveBeenUpdated = false;
 		}
 
     public PVO_OTCStrategy(IEligiblesSelector eligiblesSelector,
+		                       			int minimumNumberOfEligiblesForValidOptimization,
 																IInSampleChooser inSampleChooser,
 																int inSampleDays,
 																Benchmark benchmark,
@@ -149,16 +162,62 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOs
 																int numOfClosingsToCrossBeforeExit,
 																double oversoldThreshold,
 																double overboughtThreshold,
+																double oversoldThresholdMAX,
+																double overboughtThresholdMAX,
                                 HistoricalQuoteProvider historicalQuoteProvider)
     														
     {
-			this.pvo_otcStrategy(eligiblesSelector, inSampleDays , benchmark , numDaysBetweenEachOptimization ,
+			this.pvo_otcStrategy(eligiblesSelector, minimumNumberOfEligiblesForValidOptimization, 
+			  inSampleDays , benchmark , numDaysBetweenEachOptimization ,
 				numOfClosingsToCrossBeforeExit, oversoldThreshold, overboughtThreshold,
+				oversoldThresholdMAX, overboughtThresholdMAX,
 				historicalQuoteProvider);
 			this.inSampleChooser = inSampleChooser;
     }
-	
+	 	
 		public PVO_OTCStrategy(IEligiblesSelector eligiblesSelector,
+	                     			int minimumNumberOfEligiblesForValidOptimization,
+														IInSampleChooser inSampleChooser,
+														int inSampleDays,
+														Benchmark benchmark,
+														int numDaysBetweenEachOptimization,
+														int numOfClosingsToCrossBeforeExit,
+														double oversoldThreshold,
+														double overboughtThreshold,
+	                          HistoricalQuoteProvider historicalQuoteProvider)
+    														
+    {
+			this.pvo_otcStrategy(eligiblesSelector, minimumNumberOfEligiblesForValidOptimization,
+			  inSampleDays , benchmark , numDaysBetweenEachOptimization ,
+				numOfClosingsToCrossBeforeExit, oversoldThreshold, overboughtThreshold,
+				double.MaxValue, double.MaxValue,
+				historicalQuoteProvider);
+			this.inSampleChooser = inSampleChooser;
+    }
+		public PVO_OTCStrategy(IEligiblesSelector eligiblesSelector,
+			int minimumNumberOfEligiblesForValidOptimization,
+			TestingPositions[] chosenPVOPositions,
+			int inSampleDays,
+			Benchmark benchmark,
+			int numDaysBetweenEachOptimization,
+			int numOfClosingsToCrossBeforeExit,
+			double oversoldThreshold,
+			double overboughtThreshold,
+			double oversoldThresholdMAX,
+			double overboughtThresholdMAX,
+			HistoricalQuoteProvider historicalQuoteProvider)
+    														
+		{
+			this.pvo_otcStrategy(eligiblesSelector, minimumNumberOfEligiblesForValidOptimization,
+			  inSampleDays , benchmark , numDaysBetweenEachOptimization ,
+				numOfClosingsToCrossBeforeExit,
+				oversoldThreshold, overboughtThreshold,
+				oversoldThresholdMAX, overboughtThresholdMAX,
+				historicalQuoteProvider);
+			this.chosenPVOPositions = chosenPVOPositions;
+		}
+		public PVO_OTCStrategy(IEligiblesSelector eligiblesSelector,
+			int minimumNumberOfEligiblesForValidOptimization,
 			TestingPositions[] chosenPVOPositions,
 			int inSampleDays,
 			Benchmark benchmark,
@@ -169,10 +228,15 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOs
 			HistoricalQuoteProvider historicalQuoteProvider)
     														
 		{
-			this.pvo_otcStrategy(eligiblesSelector, inSampleDays , benchmark , numDaysBetweenEachOptimization ,
-				numOfClosingsToCrossBeforeExit, oversoldThreshold, overboughtThreshold, historicalQuoteProvider);
+			this.pvo_otcStrategy(eligiblesSelector, minimumNumberOfEligiblesForValidOptimization,
+			  inSampleDays , benchmark , numDaysBetweenEachOptimization ,
+				numOfClosingsToCrossBeforeExit,
+				oversoldThreshold, overboughtThreshold,
+				double.MaxValue, double.MaxValue,
+				historicalQuoteProvider);
 			this.chosenPVOPositions = chosenPVOPositions;
 		}
+		
 		
 		#region MarketOpenEventHandler
 		
@@ -194,7 +258,8 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOs
     		if(this.chosenPVOPositions[i] != null)
     			currentStatus = 
     				((PVOPositions)this.chosenPVOPositions[i]).GetStatus(beginOfOscillatingPeriod, today,
-    				                                     this.benchmark.Ticker, this.historicalQuoteProvider);
+    				                                     this.benchmark.Ticker, this.historicalQuoteProvider,
+    				                                     this.oversoldThresholdMAX, this.overboughtThresholdMAX);
     		if(currentStatus == PVOPositionsStatus.Oversold ||
     		   currentStatus == PVOPositionsStatus.Overbought )
     		{	
@@ -256,9 +321,10 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOs
       Object sender , EndOfDayTimingEventArgs endOfDayTimingEventArgs )
     {
 			if ( this.account.Portfolio.Count == 0 &&
-					 this.chosenPVOPositions != null )
+					 this.chosenPVOPositions != null && 
+					 this.optimalPositionsHaveBeenUpdated == true)
 					//portfolio is empty and optimization has
-				  //been already launched
+				  //been already successfully launched
 			{
 				try{
 					this.marketOpenEventHandler_openPositions( (IndexBasedEndOfDayTimer)sender );
@@ -307,23 +373,19 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOs
 			{
 				switch ( ((PVOCorrelationChooser)this.inSampleChooser).IntervalsType )
 				{
-					case IntervalsType.CloseToCloseIntervals_OneDay:
+					case IntervalsType.CloseToCloseIntervals:
 						returnIntervals = new CloseToCloseIntervals(firstEndOfDayDateTime, lastEndOfDayDateTime,
-							this.benchmark.Ticker, 1);
+							this.benchmark.Ticker, ((PVOCorrelationChooser)this.inSampleChooser).ReturnIntervalLength);
 						break;
-					case IntervalsType.CloseToCloseIntervals_TwoDays:
-						returnIntervals = new CloseToCloseIntervals(firstEndOfDayDateTime, lastEndOfDayDateTime,
-							this.benchmark.Ticker, 2);
-						break;
-					case IntervalsType.CloseToCloseIntervals_FiveDays:
-						returnIntervals = new CloseToCloseIntervals(firstEndOfDayDateTime, lastEndOfDayDateTime,
-							this.benchmark.Ticker, 5);
+					case IntervalsType.OpenToOpenIntervals:
+						returnIntervals = new OpenToOpenIntervals(firstEndOfDayDateTime, lastEndOfDayDateTime,
+							this.benchmark.Ticker, ((PVOCorrelationChooser)this.inSampleChooser).ReturnIntervalLength);
 						break;
 					case IntervalsType.CloseToOpenIntervals:
 						returnIntervals = new CloseToOpenIntervals(firstEndOfDayDateTime, lastEndOfDayDateTime,
 							this.benchmark.Ticker);
 						break;
-					case IntervalsType.DailyOpenToCloseIntervals:
+					case IntervalsType.OpenToCloseIntervals:
 						returnIntervals = new DailyOpenToCloseIntervals(firstEndOfDayDateTime, lastEndOfDayDateTime,
 							this.benchmark.Ticker );
 						break;
@@ -343,7 +405,34 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOs
 					new ReturnsManager( returnIntervals , this.historicalQuoteProvider);	
 			
 		}
-
+		
+    private double getLogItem_getFitnessOfLast()
+		{
+    	double returnValue = 0.0;
+    	for(int i = 1; i<=this.chosenPVOPositions.Length; i++)
+    	{
+    		if(this.chosenPVOPositions[this.chosenPVOPositions.Length - i] != null)
+    		{
+    			returnValue = this.chosenPVOPositions[this.chosenPVOPositions.Length - i].FitnessInSample;
+    			i = this.chosenPVOPositions.Length + 1; //exit from for
+    		}
+    	}
+    	return returnValue;
+    }
+    private string getLogItem_getHashCodeForTickerCompositionForLast()
+		{
+    	string returnValue = "not set";
+    	for(int i = 1; i<=this.chosenPVOPositions.Length; i++)
+    	{
+    		if(this.chosenPVOPositions[this.chosenPVOPositions.Length - i] != null)
+    		{
+    			returnValue = this.chosenPVOPositions[this.chosenPVOPositions.Length - i].HashCodeForTickerComposition;
+    			i = this.chosenPVOPositions.Length + 1; //exit from for
+    		}
+    	}
+    	return returnValue;
+    }
+    
 		private PVO_OTCLogItem getLogItem( EligibleTickers eligibleTickers )
 		{
 			PVO_OTCLogItem logItem =
@@ -354,8 +443,8 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOs
 				eligibleTickers.Count;
 			logItem.FitnessOfFirst = 
 				this.chosenPVOPositions[0].FitnessInSample;
-			logItem.FitnessOfLast = 
-				this.chosenPVOPositions[this.chosenPVOPositions.Length - 1].FitnessInSample;
+			logItem.FitnessOfLast = this.getLogItem_getFitnessOfLast();
+			
 //			logItem.GenerationOfFirst = 
 //				((IGeneticallyOptimizable)this.chosenPVOPositions[0]).Generation;
 //			logItem.GenerationOfLast = 
@@ -363,13 +452,13 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOs
 			logItem.ThresholdsOfFirst = 
 				((PVOPositions)this.chosenPVOPositions[0]).OversoldThreshold.ToString() + ";" +
 				((PVOPositions)this.chosenPVOPositions[0]).OverboughtThreshold.ToString();
-			logItem.ThresholdsOfLast = 
-				((PVOPositions)this.chosenPVOPositions[this.chosenPVOPositions.Length - 1]).OversoldThreshold.ToString() + ";" +
-				((PVOPositions)this.chosenPVOPositions[this.chosenPVOPositions.Length - 1]).OverboughtThreshold.ToString();
+			logItem.ThresholdsOfLast = logItem.ThresholdsOfFirst; 
+//				((PVOPositions)this.chosenPVOPositions[this.chosenPVOPositions.Length - 1]).OversoldThreshold.ToString() + ";" +
+//				((PVOPositions)this.chosenPVOPositions[this.chosenPVOPositions.Length - 1]).OverboughtThreshold.ToString();
 			logItem.TickersOfFirst = 
 				this.chosenPVOPositions[0].HashCodeForTickerComposition;
-			logItem.TickersOfLast = 
-				this.chosenPVOPositions[this.chosenPVOPositions.Length - 1].HashCodeForTickerComposition;
+			logItem.TickersOfLast = this.getLogItem_getHashCodeForTickerCompositionForLast();
+			
 			return logItem;
 		}
 		private void raiseNewLogItem( EligibleTickers eligibleTickers )
@@ -391,7 +480,9 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOs
 		}
 		private void logOptimizationInfo( EligibleTickers eligibleTickers )
 		{
-			this.raiseNewLogItem( eligibleTickers );
+			if(eligibleTickers.Count > 0)
+				this.raiseNewLogItem( eligibleTickers );
+			
 			this.notifyMessage( eligibleTickers );
 		}
 
@@ -399,10 +490,13 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOs
 		{
 			for(int i = 0; i<this.chosenPVOPositions.Length; i++)
 			{
-				((PVOPositions)this.chosenPVOPositions[i]).OversoldThreshold =
-					this.oversoldThreshold;
-				((PVOPositions)this.chosenPVOPositions[i]).OverboughtThreshold =
-					this.overboughtThreshold;
+				if(this.chosenPVOPositions[i] != null)
+				{
+					((PVOPositions)this.chosenPVOPositions[i]).OversoldThreshold =
+						this.oversoldThreshold;
+					((PVOPositions)this.chosenPVOPositions[i]).OverboughtThreshold =
+						this.overboughtThreshold;
+				}
 			}
 		}
 		
@@ -418,11 +512,21 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOs
 				this.eligiblesSelector.GetEligibleTickers(endOfDayHistory);
 			this.updateReturnsManager(endOfDayHistory.FirstEndOfDayDateTime,
 			                          endOfDayHistory.LastEndOfDayDateTime);
-			if(this.inSampleChooser != null)
+			if( (  this.eligiblesSelector is DummyEligibleSelector && 
+			     	 this.inSampleChooser != null )    ||
+			    (  eligibles.Count > this.minimumNumberOfEligiblesForValidOptimization &&
+			       this.inSampleChooser != null )  )
+			{
 				this.chosenPVOPositions = (TestingPositions[])inSampleChooser.AnalyzeInSample(eligibles, this.returnsManager);
-			this.updateTestingPositions_updateThresholds();
-			this.logOptimizationInfo(eligibles);
-    }
+				this.updateTestingPositions_updateThresholds();
+				this.logOptimizationInfo(eligibles);
+				this.optimalPositionsHaveBeenUpdated = true; 
+			}
+			else
+			{
+				this.optimalPositionsHaveBeenUpdated = false;
+			}
+	  }
     
 		private bool optimalTestingPositionsAreToBeUpdated()
 		{

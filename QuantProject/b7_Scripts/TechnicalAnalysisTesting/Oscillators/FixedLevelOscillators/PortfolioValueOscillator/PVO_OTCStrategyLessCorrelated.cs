@@ -186,7 +186,8 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOs
     		if(this.chosenPVOPositions[i] != null)
     			currentStatus = 
     				((PVOPositions)this.chosenPVOPositions[i]).GetStatus(beginOfOscillatingPeriod, today,
-    				                                     this.benchmark.Ticker, this.historicalQuoteProvider);
+    				                                     this.benchmark.Ticker, this.historicalQuoteProvider,
+    				                                     double.MaxValue, double.MaxValue);
     		if(currentStatus == PVOPositionsStatus.Oversold ||
     		   currentStatus == PVOPositionsStatus.Overbought )
     		{	

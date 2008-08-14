@@ -60,12 +60,14 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOs
 																		 double maxCorrelationValue,
 																		 bool balancedWeightsOnVolatilityBase,
 																		 float minimumAbsoluteReturnValue,
-																		 float maximumAbsoluteReturnValue) :
+																		 float maximumAbsoluteReturnValue,
+																		 string benchmark) :
 																		base(numberOfBestTestingPositionsToBeReturned,
 																		1,
 																		maxCorrelationValue,
 																		balancedWeightsOnVolatilityBase,
-																		IntervalsType.DailyOpenToCloseIntervals)
+																		IntervalsType.OpenToCloseIntervals,
+																	  benchmark)
 		{
 			this.minimumAbsoluteReturnValue = minimumAbsoluteReturnValue;
 			this.maximumAbsoluteReturnValue = maximumAbsoluteReturnValue;

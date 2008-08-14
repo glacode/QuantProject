@@ -83,7 +83,7 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOs
 				new TestingPositions[this.bestPVOPositionsInSample.Length];
 			positionsToTest = this.bestPVOPositionsInSample;
 			PVO_OTCStrategy strategy =
-				new PVO_OTCStrategy(eligiblesSelector,
+				new PVO_OTCStrategy(eligiblesSelector, 1,
 				positionsToTest, inSampleDays,
 				benchmark ,
 				int.MaxValue ,

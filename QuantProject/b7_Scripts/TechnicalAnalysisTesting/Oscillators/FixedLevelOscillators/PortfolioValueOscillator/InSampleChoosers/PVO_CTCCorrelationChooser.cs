@@ -43,6 +43,11 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOs
 	/// </summary>
 	public class PVO_CTCCorrelationChooser : PVOCorrelationChooser
 	{
+		private float minimumAbsoluteReturnValue;
+		private float maximumAbsoluteReturnValue;
+		//correlation is computed only for returns
+		//between minimum and maximum
+		
 		/// <summary>
 		/// PVO_CTCCorrelationChooser to be used for
 		/// in sample optimization
@@ -54,14 +59,19 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOs
 		public PVO_CTCCorrelationChooser(int numberOfBestTestingPositionsToBeReturned,
 																		 int closeToCloseReturnIntervalLength,
 																		 double maxCorrelationValue,
-																		 bool balancedWeightsOnVolatilityBase) :
+																		 bool balancedWeightsOnVolatilityBase,
+																		 float minimumAbsoluteReturnValue,
+																		 float maximumAbsoluteReturnValue,
+																		 string benchmark) :
 																		 base(numberOfBestTestingPositionsToBeReturned,
 			     															  closeToCloseReturnIntervalLength,
 																					maxCorrelationValue,
 																					balancedWeightsOnVolatilityBase,
-																					IntervalsType.CloseToCloseIntervals_OneDay)
+																					IntervalsType.CloseToCloseIntervals,
+																				  benchmark)
 		{
-			
+			this.minimumAbsoluteReturnValue = minimumAbsoluteReturnValue;
+			this.maximumAbsoluteReturnValue = maximumAbsoluteReturnValue;
 		}
 				
 		protected override void setCorrelationProvider(EligibleTickers eligibleTickers ,
@@ -72,7 +82,9 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOs
 			this.correlationProvider =
 				new CloseToCloseCorrelationProvider(eligibleTickers.Tickers, firstDate,
 				                                    lastDate, this.numDaysForOscillatingPeriod,
-				                                    0.0001f, 0.5f, "^GSPC");
+				                                    this.minimumAbsoluteReturnValue,
+				                                    this.maximumAbsoluteReturnValue,
+				                                    this.benchmark);
 		}
 	}
 }

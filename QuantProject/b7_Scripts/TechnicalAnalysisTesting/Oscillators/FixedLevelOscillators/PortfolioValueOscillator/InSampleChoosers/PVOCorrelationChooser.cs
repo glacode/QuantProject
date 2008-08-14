@@ -53,6 +53,7 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOs
 		//correlations greater than this value are discarded
 		protected bool balancedWeightsOnVolatilityBase;
 		protected IntervalsType intervalsType;
+		protected string benchmark;
 		
 		public virtual string Description
 		{
@@ -77,6 +78,14 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOs
 			}
 		}
 
+		public int ReturnIntervalLength
+		{
+			get
+			{
+				return this.numDaysForOscillatingPeriod;
+			}
+		}
+		
 		/// <summary>
 		/// PVOCorrelationChooser to be used for
 		/// in sample optimization
@@ -98,13 +107,15 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOs
 														     int numDaysForOscillatingPeriod,
 																 double maxCorrelationValue,
 															   bool balancedWeightsOnVolatilityBase,
-																 IntervalsType intervalsType)
+																 IntervalsType intervalsType,
+																 string benchmark)
 		{
 			this.numberOfBestTestingPositionsToBeReturned = numberOfBestTestingPositionsToBeReturned;
 			this.numDaysForOscillatingPeriod = numDaysForOscillatingPeriod;
 			this.maxCorrelationValue = maxCorrelationValue;
 			this.balancedWeightsOnVolatilityBase = balancedWeightsOnVolatilityBase;
 			this.intervalsType = intervalsType;
+			this.benchmark = benchmark;
 		}
 
 		#region AnalyzeInSample
