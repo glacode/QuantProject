@@ -56,6 +56,10 @@ namespace QuantProject.Business.Strategies.TickersRelationships
 			{
 				return this.correlationValue;
 			}
+			set
+			{
+				this.correlationValue = value;
+			}
 		}
     
 		public TickersPearsonCorrelation( string firstTicker,
