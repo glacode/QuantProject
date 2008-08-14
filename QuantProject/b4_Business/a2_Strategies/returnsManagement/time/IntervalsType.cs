@@ -30,11 +30,10 @@ namespace QuantProject.Business.Strategies.ReturnsManagement.Time
   /// </summary>
   public enum IntervalsType
   {
-    CloseToCloseIntervals_OneDay,
-		CloseToCloseIntervals_TwoDays,
-		CloseToCloseIntervals_FiveDays,
-    CloseToOpenIntervals,
-		DailyOpenToCloseIntervals,
+    OpenToOpenIntervals,
+  	CloseToCloseIntervals,
+		CloseToOpenIntervals,
+		OpenToCloseIntervals,
 		OpenToCloseCloseToOpenIntervals
   }
 }
