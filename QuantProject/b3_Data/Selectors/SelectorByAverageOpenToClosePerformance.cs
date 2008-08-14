@@ -34,12 +34,13 @@ namespace QuantProject.Data.Selectors
   /// </summary>
    public class SelectorByAverageOpenToClosePerformance : TickerSelector, ITickerSelector 
   {
-        
+    private double maxAbsoluteAverageOTCPerformance;    
     
     public SelectorByAverageOpenToClosePerformance(DataTable setOfTickersToBeSelected, 
                                bool orderInASCmode,
                                DateTime firstQuoteDate,
                                DateTime lastQuoteDate,
+                               double maxAbsoluteAverageOTCPerformance,
                                long maxNumOfReturnedTickers):
                                     base(setOfTickersToBeSelected, 
                                          orderInASCmode,
@@ -47,12 +48,15 @@ namespace QuantProject.Data.Selectors
                                          lastQuoteDate,
                                          maxNumOfReturnedTickers)
     {
-     
+    	if(maxAbsoluteAverageOTCPerformance < 0.0)
+    		throw new Exception("maxAbsoluteAverageOTCPerformance has to be non negative!");
+    	this.maxAbsoluteAverageOTCPerformance = maxAbsoluteAverageOTCPerformance;
     }
      public SelectorByAverageOpenToClosePerformance(string groupID, 
                                 bool orderInASCmode,
                                 DateTime firstQuoteDate,
                                 DateTime lastQuoteDate,
+                                double maxAbsoluteAverageOTCPerformance,
                                 long maxNumOfReturnedTickers):
                                   base(groupID, 
                                       orderInASCmode,
@@ -60,7 +64,9 @@ namespace QuantProject.Data.Selectors
                                       lastQuoteDate,
                                       maxNumOfReturnedTickers)
      {
-     
+     	if(maxAbsoluteAverageOTCPerformance < 0.0)
+    		throw new Exception("maxAbsoluteAverageOTCPerformance has to be non negative!");
+    	this.maxAbsoluteAverageOTCPerformance = maxAbsoluteAverageOTCPerformance;
      }
 
 
@@ -70,12 +76,14 @@ namespace QuantProject.Data.Selectors
         return QuantProject.DataAccess.Tables.Quotes.GetTickersByAverageOpenToClosePerformance(this.isOrderedInASCMode,
           this.groupID, this.firstQuoteDate,
           this.lastQuoteDate,
+          this.maxAbsoluteAverageOTCPerformance,
           this.maxNumOfReturnedTickers);
       else
         return QuantProject.Data.DataTables.Quotes.GetTickersByAverageOpenToClosePerformance(this.isOrderedInASCMode,
           this.setOfTickersToBeSelected,
           this.firstQuoteDate,
           this.lastQuoteDate,
+          this.maxAbsoluteAverageOTCPerformance,
           this.maxNumOfReturnedTickers);
     }
     public void SelectAllTickers()

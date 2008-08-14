@@ -180,14 +180,21 @@ namespace QuantProject.Data.DataTables
     {
       if(!setOfTickers.Columns.Contains("AdjCloseToCloseStandDev"))
         setOfTickers.Columns.Add("AdjCloseToCloseStandDev", System.Type.GetType("System.Double"));
-      foreach(DataRow row in setOfTickers.Rows)
+      double CTCStdDev;
+			foreach(DataRow row in setOfTickers.Rows)
       {
-        row["AdjCloseToCloseStandDev"] = 
-          QuantProject.DataAccess.Tables.Quotes.GetAdjustedCloseToCloseStandardDeviation((string)row[0],
+        row["AdjCloseToCloseStandDev"] = -1000000.0;
+        CTCStdDev = QuantProject.DataAccess.Tables.Quotes.GetAdjustedCloseToCloseStandardDeviation((string)row[0],
           firstQuoteDate,
           lastQuoteDate);
+				if( !Double.IsInfinity(CTCStdDev) && !Double.IsNaN(CTCStdDev) )
+					row["AdjCloseToCloseStandDev"] = CTCStdDev;
       }
-      DataTable getTickersByVolatility = ExtendedDataTable.CopyAndSort(setOfTickers,"AdjCloseToCloseStandDev", orderByASC);
+      DataTable getTickersByVolatility = 
+				ExtendedDataTable.CopyAndSort(setOfTickers,
+																			"AdjCloseToCloseStandDev>-1000000.0", 
+																			"AdjCloseToCloseStandDev",
+																			orderByASC);
       ExtendedDataTable.DeleteRows(getTickersByVolatility, maxNumOfReturnedTickers);
       return getTickersByVolatility;
     }
@@ -204,15 +211,17 @@ namespace QuantProject.Data.DataTables
     {
       if(!setOfTickers.Columns.Contains("OpenToCloseStandDev"))
         setOfTickers.Columns.Add("OpenToCloseStandDev", System.Type.GetType("System.Double"));
-      foreach(DataRow row in setOfTickers.Rows)
+      double OTCStdDev;
+			foreach(DataRow row in setOfTickers.Rows)
       {
         try
         {
           row["OpenToCloseStandDev"] = -1000000.0;
-          row["OpenToCloseStandDev"] = 
-            QuantProject.DataAccess.Tables.Quotes.GetOpenToCloseStandardDeviation((string)row[0],
-            firstQuoteDate,
-            lastQuoteDate);
+					OTCStdDev = QuantProject.DataAccess.Tables.Quotes.GetOpenToCloseStandardDeviation((string)row[0],
+						firstQuoteDate,
+						lastQuoteDate);
+					if( !Double.IsInfinity(OTCStdDev) && !Double.IsNaN(OTCStdDev) )
+						row["OpenToCloseStandDev"] = OTCStdDev;
         }
         catch(Exception ex)
         {ex=ex;}
@@ -282,6 +291,7 @@ namespace QuantProject.Data.DataTables
       DataTable setOfTickers,
       DateTime firstQuoteDate,
       DateTime lastQuoteDate,
+      double maxAbsoluteAverageOTCPerformance,
       long maxNumOfReturnedTickers)
     {
       if(!setOfTickers.Columns.Contains("AverageOpenToClosePerformance"))
@@ -299,8 +309,11 @@ namespace QuantProject.Data.DataTables
         catch(Exception ex)
         {ex=ex;}
       }
+      string maxAbsValue = 
+      	maxAbsoluteAverageOTCPerformance.ToString(new System.Globalization.CultureInfo("en-US"));
       DataTable tableToReturn = ExtendedDataTable.CopyAndSort(setOfTickers,
-                                                              "AverageOpenToClosePerformance>-1000000.0",
+                                                              "AverageOpenToClosePerformance<=" + maxAbsValue +                                                               
+                                                              " AND AverageOpenToClosePerformance>=-" + maxAbsValue,
                                                               "AverageOpenToClosePerformance",
                                                               orderByASC);
       ExtendedDataTable.DeleteRows(tableToReturn, maxNumOfReturnedTickers);

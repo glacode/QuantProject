@@ -578,6 +578,7 @@ namespace QuantProject.DataAccess.Tables
     public static DataTable GetTickersByAverageOpenToClosePerformance( bool orderInASCMode, string groupID,
                                                             DateTime firstQuoteDate,
                                                             DateTime lastQuoteDate,
+                                                            double maxAbsoluteAverageOTCPerformance,
                                                             long maxNumOfReturnedTickers)
     {
       string sql = "SELECT TOP " + maxNumOfReturnedTickers + " tickers.tiTicker, tickers.tiCompanyName, " +
@@ -590,6 +591,8 @@ namespace QuantProject.DataAccess.Tables
         SQLBuilder.GetDateConstant(firstQuoteDate) + " AND " +
         SQLBuilder.GetDateConstant(lastQuoteDate) + 
         "GROUP BY tickers.tiTicker, tickers.tiCompanyName " +
+      	"HAVING Avg(quotes.quClose/quotes.quOpen - 1) <= " + maxAbsoluteAverageOTCPerformance +
+      	" AND Avg(quotes.quClose/quotes.quOpen - 1) >= -" + maxAbsoluteAverageOTCPerformance + " " +
         "ORDER BY Avg(quotes.quClose/quotes.quOpen)";
       string sortDirection = " DESC";
       if(orderInASCMode)
@@ -781,7 +784,8 @@ namespace QuantProject.DataAccess.Tables
                                                                     DateTime lastQuoteDate)
                                                 
     {
-      DataTable dt;
+      double adjCloseToCloseStdDev = 0.0;
+			DataTable dt;
       string sql = "SELECT quotes.quTicker, " +
         "StDev(quotes.quAdjustedCloseToCloseRatio) AS AdjCloseToCloseStandDev " +
         "FROM quotes WHERE quTicker ='" + 
@@ -790,10 +794,12 @@ namespace QuantProject.DataAccess.Tables
         " AND " + SQLBuilder.GetDateConstant(lastQuoteDate) + 
         " GROUP BY quotes.quTicker";
       dt = SqlExecutor.GetDataTable( sql );
-      if(dt.Rows.Count==0)
-        return 0;
-      else
-        return (double)dt.Rows[0]["AdjCloseToCloseStandDev"];
+      
+			if( dt.Rows.Count > 0 &&
+				  DBNull.Value != dt.Rows[0]["AdjCloseToCloseStandDev"] )
+        adjCloseToCloseStdDev = (double)dt.Rows[0]["AdjCloseToCloseStandDev"];
+
+			return adjCloseToCloseStdDev;
     }
     
     /// <summary>
