@@ -739,6 +739,16 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "a2_Strategies\Eligibles\ByPriceMostLiquidLessVolatileCTCAlwaysQuoted.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "a2_Strategies\Eligibles\ByPriceMostLiquidLessVolatileCTOAlwaysQuoted.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "a2_Strategies\Eligibles\ByPriceMostLiquidLessVolatileOTCAlwaysQuoted.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
@@ -934,6 +944,11 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "a2_Strategies\returnsManagement\time\OpenToOpenIntervals.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "a2_Strategies\returnsManagement\time\ReturnInterval.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
@@ -969,6 +984,11 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "a2_Strategies\TickersRelationships\CloseToOpenCorrelationProvider.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "a2_Strategies\TickersRelationships\CorrelationProvider.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
@@ -985,6 +1005,11 @@
                 />
                 <File
                     RelPath = "a2_Strategies\TickersRelationships\OpenToCloseCorrelationProvider.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "a2_Strategies\TickersRelationships\OpenToOpenCorrelationProvider.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
