@@ -85,7 +85,14 @@ namespace QuantProject.Scripts.WalkForwardTesting.LinearCombination
 			this.targetReturn = targetReturn;
 			this.portfolioType = portfolioType;
 		}
-
+		public MainForm()
+		{
+			//
+			// Required for Windows Form Designer support
+			//
+			InitializeComponent();
+		}
+		
 		/// <summary>
 		/// Clean up any resources being used.
 		/// </summary>
@@ -267,7 +274,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.LinearCombination
 					new VisualObjectArchiver();
 				this.optimizationOutput =
           (OptimizationOutput)visualObjectArchiver.Load(
-					"Load best genomes" , "bgn" , "Load Genomes");
+					"bgn", "Load best genomes" , "Load Genomes");
 				if ( this.optimizationOutput.Count == 0 )
 					throw new Exception( "The loaded optimization output contains no element!" );
 				this.firstDate = ((GenomeRepresentation)(

@@ -82,13 +82,16 @@ namespace QuantProject.Data.Selectors
      {
        if(!this.setOfTickersToBeSelected.Columns.Contains("CloseToOpenStandardDeviation"))
          this.setOfTickersToBeSelected.Columns.Add("CloseToOpenStandardDeviation", System.Type.GetType("System.Double"));
-       foreach(DataRow row in this.setOfTickersToBeSelected.Rows)
+       double CTOStdDev;
+			 foreach(DataRow row in this.setOfTickersToBeSelected.Rows)
        {
          try
          {
            row["CloseToOpenStandardDeviation"] = -1000000.0;
-           row["CloseToOpenStandardDeviation"] = 
-             this.getTableOfSelectedTickers_getTickersFromTable_getCTOStdDevForTicker((string)row[0]);
+           CTOStdDev = this.getTableOfSelectedTickers_getTickersFromTable_getCTOStdDevForTicker((string)row[0]);
+					 if( !Double.IsInfinity(CTOStdDev) && !Double.IsNaN(CTOStdDev) )
+						 row["CloseToOpenStandardDeviation"] = CTOStdDev;
+             
          }
          catch(Exception ex)
          {ex=ex;}
