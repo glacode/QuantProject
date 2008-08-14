@@ -101,6 +101,7 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
       this.endOfDayTimerHandler = new EndOfDayTimerHandlerOTC(this.tickerGroupID,
         this.numberOfEligibleTickers,
         this.numberOfTickersToBeChosen,
+        10,
         this.numDaysForOptimizationPeriod,
         this.account,
         this.generationNumberForGeneticOptimizer, 

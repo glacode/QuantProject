@@ -90,7 +90,8 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
       get { return this.bestGenomes; }
     }
     private void endOfDayTimerHandler_initializeBasic(string tickerGroupID, int numberOfEligibleTickers, 
-                                int numberOfTickersToBeChosen, int numDaysForOptimizationPeriod,
+                                int numberOfTickersToBeChosen,
+                                int numDaysForOptimizationPeriod,
                                 int generationNumberForGeneticOptimizer,
                                 int populationSizeForGeneticOptimizer,
                                 string benchmark, double targetReturn,
@@ -107,14 +108,16 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
       this.portfolioType = portfolioType;
     }
     public EndOfDayTimerHandler(string tickerGroupID, int numberOfEligibleTickers,
-                                int numberOfTickersToBeChosen, int numDaysForOptimizationPeriod, Account account,
+                                int numberOfTickersToBeChosen,
+                                int numDaysForOptimizationPeriod, Account account,
                                 int generationNumberForGeneticOptimizer,
                                 int populationSizeForGeneticOptimizer,
                                 string benchmark, double targetReturn,
                                 PortfolioType portfolioType)
     {
       this.endOfDayTimerHandler_initializeBasic(tickerGroupID, numberOfEligibleTickers, 
-                                numberOfTickersToBeChosen, numDaysForOptimizationPeriod,
+                                numberOfTickersToBeChosen,
+                                numDaysForOptimizationPeriod,
                                 generationNumberForGeneticOptimizer,
                                 populationSizeForGeneticOptimizer,
                                 benchmark, targetReturn,
@@ -123,14 +126,16 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
       
     }
 		public EndOfDayTimerHandler(string tickerGroupID, int numberOfEligibleTickers,
-                                int numberOfTickersToBeChosen, int numDaysForOptimizationPeriod,
+                                int numberOfTickersToBeChosen,
+                                int numDaysForOptimizationPeriod,
                                 int generationNumberForGeneticOptimizer,
                                 int populationSizeForGeneticOptimizer,
                                 string benchmark, double targetReturn,
                                 PortfolioType portfolioType)
     {
       this.endOfDayTimerHandler_initializeBasic(tickerGroupID, numberOfEligibleTickers, 
-                                numberOfTickersToBeChosen, numDaysForOptimizationPeriod,
+                                numberOfTickersToBeChosen,
+                                numDaysForOptimizationPeriod,
                                 generationNumberForGeneticOptimizer,
                                 populationSizeForGeneticOptimizer,
                                 benchmark, targetReturn,
@@ -210,6 +215,24 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
 				eligibleTickers,
 				halfPeriodDays, portfolioType));
 		}
+				
+		protected void addGenomesToBestGenomes( Genome[] genomes,
+          DateTime firstOptimizationDate,
+					DateTime secondOptimizationDate,
+          int eligibleTickers, int halfPeriodDays,
+					PortfolioType portfolioType,
+					int createdGenerations)
+    {
+			foreach(Genome genome in genomes)
+				if(genome != null)
+					this.addGenomeToBestGenomes(genome,
+	          firstOptimizationDate,
+						secondOptimizationDate,
+	          eligibleTickers, halfPeriodDays,
+						portfolioType,
+						createdGenerations);
+    }
+		
 		protected void addGenomeToBestGenomes(Genome genome,
 			DateTime firstOptimizationDate,
 			DateTime secondOptimizationDate,

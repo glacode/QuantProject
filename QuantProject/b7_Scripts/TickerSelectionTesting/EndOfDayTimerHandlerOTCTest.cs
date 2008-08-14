@@ -52,7 +52,7 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
                                 string benchmark, double targetReturn,
                                 PortfolioType portfolioType, int numDaysBetweenEachOptimization):
   															base(tickerGroupID, numberOfEligibleTickers, 
-                                numberOfTickersToBeChosen, numDaysForLiquidity, account,
+                                numberOfTickersToBeChosen, 10, numDaysForLiquidity, account,
                                 generationNumberForGeneticOptimizer,
                                 populationSizeForGeneticOptimizer,
                                 benchmark, targetReturn,

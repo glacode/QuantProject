@@ -45,9 +45,12 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
   public class EndOfDayTimerHandlerOTC : EndOfDayTimerHandler
   {
     protected int seedForRandomGenerator;
-		    
+		private int numberOfGenomesToSaveForEachOptimization;
+    
     public EndOfDayTimerHandlerOTC(string tickerGroupID, int numberOfEligibleTickers, 
-                                int numberOfTickersToBeChosen, int numDaysForOptimizationPeriod, Account account,
+                                int numberOfTickersToBeChosen, 
+                                int numberOfGenomesToSaveForEachOptimization, 
+                                int numDaysForOptimizationPeriod, Account account,
                                 int generationNumberForGeneticOptimizer,
                                 int populationSizeForGeneticOptimizer,
                                 string benchmark, double targetReturn,
@@ -60,6 +63,7 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
                                 portfolioType)
     {
     	this.numDaysBetweenEachOptimization = numDaysBetweenEachOptimization;  
+    	this.numberOfGenomesToSaveForEachOptimization = numberOfGenomesToSaveForEachOptimization;
     	this.numDaysElapsedSinceLastOptimization = 0;
     	this.seedForRandomGenerator = ConstantsProvider.SeedForRandomGenerator;
 		}
@@ -105,19 +109,27 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
       	                                  false,currentDate.AddDays(-30),
       	                                  currentDate,
       	                                  this.numberOfEligibleTickers,
-      	                                  35);
+      	                                  25);
       DataTable tickersByPrice = byPrice.GetTableOfSelectedTickers();
       
-      SelectorByOpenCloseCorrelationToBenchmark tickersLessCorrelatedToBenchmark = 
-      	new SelectorByOpenCloseCorrelationToBenchmark(tickersByPrice,
-      	                                              "^GSPC",true,
-      	                                              currentDate.AddDays(-this.numDaysForOptimizationPeriod), currentDate,
-      	                                              tickersByPrice.Rows.Count/2);
+      SelectorByAverageOpenToClosePerformance tickersByOTCPerformance = 
+      	new SelectorByAverageOpenToClosePerformance(tickersByPrice,
+      	                                            false, currentDate.AddDays(-15),
+      	                                 						currentDate, 0.05, 
+      	                                 						this.numberOfEligibleTickers);
+     
+      return tickersByOTCPerformance.GetTableOfSelectedTickers();
       
-	    return tickersLessCorrelatedToBenchmark.GetTableOfSelectedTickers();
+//      SelectorByOpenCloseCorrelationToBenchmark tickersLessCorrelatedToBenchmark = 
+//      	new SelectorByOpenCloseCorrelationToBenchmark(tickersByOTCPerformance.GetTableOfSelectedTickers(),
+//      	                                              "^GSPC",true,
+//      	                                              currentDate.AddDays(-this.numDaysForOptimizationPeriod), currentDate,
+//      	                                              tickersByPrice.Rows.Count/2);
+//      
+//	    return tickersLessCorrelatedToBenchmark.GetTableOfSelectedTickers();
 
     }
-    
+        
     protected virtual void setTickers(DateTime currentDate,
                                      	bool setGenomeCounter)
     {
@@ -152,14 +164,37 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
         GO.CrossoverRate = 0.85;
         GO.MutationRate = 0.10;
         GO.Run(false);
-        this.addGenomeToBestGenomes(
-          GO.BestGenome,
-          currentDate.AddDays(-this.numDaysForOptimizationPeriod),
-          currentDate,
-          setOfTickersToBeOptimized.Rows.Count,
-          -1,
-         	this.portfolioType,
-          GO.GenerationCounter);
+        int populationSize = GO.PopulationSize;
+        Genome[] genomesForLog =
+        	new Genome[this.numberOfGenomesToSaveForEachOptimization];
+        int numOfGenomesAdded = 0;
+        double fitnessOfPreviousCombination = 0.0;
+		 		for(int i = 0;
+					numOfGenomesAdded < this.numberOfGenomesToSaveForEachOptimization &&
+					i < populationSize - 1;
+					i++)
+		  	{
+		  		if(  i == 0 ||
+		  	     	( ((Genome)GO.CurrentGeneration[populationSize - i - 1]).Fitness <
+		  	     	fitnessOfPreviousCombination )  )
+		  	//it is the best genome or the current genome is different from - and
+		  	//so it has to be strictly less of - the previous scanned genome
+		  		{
+			  		fitnessOfPreviousCombination =
+					  		((Genome)GO.CurrentGeneration[populationSize - i - 1]).Fitness;
+			  		genomesForLog[numOfGenomesAdded] = 
+				  		(Genome)GO.CurrentGeneration[populationSize - i - 1];
+			  		numOfGenomesAdded++;
+        	}
+        }
+        this.addGenomesToBestGenomes(
+						        genomesForLog,
+						        currentDate.AddDays(-this.numDaysForOptimizationPeriod),
+						        currentDate,
+						        setOfTickersToBeOptimized.Rows.Count,
+						        -1,
+						       	this.portfolioType,
+						        GO.GenerationCounter);
         this.chosenWeightedPositions = new WeightedPositions( ((GenomeMeaning)GO.BestGenome.Meaning).TickersPortfolioWeights,
 					new SignedTickers( ((GenomeMeaning)GO.BestGenome.Meaning).Tickers) );
       }
