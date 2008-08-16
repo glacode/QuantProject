@@ -38,7 +38,6 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardMultiOneRank
 		private string[] signedTickers;
 		private DateTime firstDateTime;
 		private DateTime lastDateTime;
-		private int numberDaysForInSampleOptimization;
 		private string benchmark;
 
 		private IHistoricalQuoteProvider historicalQuoteProvider;
@@ -54,8 +53,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardMultiOneRank
 			this.signedTickers = signedTickers;
 			this.firstDateTime = firstDateTime;
 			this.lastDateTime = lastDateTime;
-			this.numberDaysForInSampleOptimization =
-				numberDaysForInSampleOptimization;
+
 			this.benchmark = benchmark;
 
 //			this.startDateTime = this.dateTime.AddDays(
