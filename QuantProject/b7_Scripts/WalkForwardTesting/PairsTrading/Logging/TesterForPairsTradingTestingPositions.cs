@@ -33,6 +33,7 @@ using QuantProject.Business.Strategies.OutOfSample;
 using QuantProject.Business.Strategies.ReturnsManagement.Time.IntervalsSelectors;
 using QuantProject.Business.Timing;
 using QuantProject.Presentation.Reporting.WindowsForm;
+using QuantProject.Scripts.General.Strategies;
 
 namespace QuantProject.Scripts.WalkForwardTesting.PairsTrading
 {
