@@ -105,7 +105,6 @@
     <Compile Include="TickerSelectionTesting\GenomeManagerForEfficientPortfolio.cs" />
     <Compile Include="TickerSelectionTesting\RunEfficientCTCPortfolio.cs" />
     <Compile Include="TickerSelectionTesting\RunEfficientCTOPortfolio.cs" />
-    <Compile Include="WalkForwardTesting\FixedLengthTwoPhases\FixedLengthTwoPhasesLogItem.cs" />
     <Compile Include="WalkForwardTesting\FixedLengthTwoPhases\FixedLengthTwoPhasesMain.cs" />
     <Compile Include="WalkForwardTesting\FixedLengthTwoPhases\FixedLengthTwoPhasesStrategy.cs" />
     <Compile Include="WalkForwardTesting\FixedLengthTwoPhases\FLTPTestingPositions.cs" />
