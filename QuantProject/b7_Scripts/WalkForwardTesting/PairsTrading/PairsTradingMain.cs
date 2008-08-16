@@ -61,20 +61,20 @@ namespace QuantProject.Scripts.WalkForwardTesting.PairsTrading
 		
 		public PairsTradingMain()
 		{
-			this.benchmark = new Benchmark( "BMC" );
+			this.benchmark = new Benchmark( "CCE" );
 
 			this.historicalQuoteProviderForInSample =
 				new HistoricalRawQuoteProvider();
 
 			this.historicalQuoteProviderForChosingPositionsOutOfSample =
 				new HistoricalAdjustedQuoteProvider();
-			this.historicalQuoteProviderForChosingPositionsOutOfSample =
-				new HistoricalRawQuoteProvider();
+//			this.historicalQuoteProviderForChosingPositionsOutOfSample =
+//				new HistoricalRawQuoteProvider();
 
 			this.historicalQuoteProviderForTheBacktesterAccount =
 				new HistoricalRawQuoteProvider();
-			this.historicalQuoteProviderForTheBacktesterAccount =
-				new HistoricalAdjustedQuoteProvider();
+//			this.historicalQuoteProviderForTheBacktesterAccount =
+//				new HistoricalAdjustedQuoteProvider();
 
 			// definition for the Fitness Evaluator
 			//      IEquityEvaluator equityEvaluator = new SharpeRatio();
@@ -172,8 +172,8 @@ namespace QuantProject.Scripts.WalkForwardTesting.PairsTrading
 			IIntervalsSelector intervalsSelectorForOutOfSample =
 				new OddIntervalsSelector( 1 , 1 , this.benchmark );
 			// uncomment the following statement in order to test a CTO strategy (out of sample)
-			intervalsSelectorForOutOfSample =
-				new EvenIntervalsSelector( 1 , 1 , this.benchmark );
+//			intervalsSelectorForOutOfSample =
+//				new EvenIntervalsSelector( 1 , 1 , this.benchmark );
 			IIntervalsSelector intervalsSelectorForInSample =
 				new OddIntervalsSelector( 1 , 1 , this.benchmark );
 
@@ -223,14 +223,14 @@ namespace QuantProject.Scripts.WalkForwardTesting.PairsTrading
 			double cashToStart = 30000;
 
 			DateTime firstDateTime = new DateTime( 2001 , 1 , 1 );
-						firstDateTime = new DateTime( 2005 , 1 , 1 );
+						firstDateTime = new DateTime( 2006 , 8 , 1 );
 			DateTime lastDateTime = new DateTime( 2008 , 4 , 30 );
 
 			// uncomment the following two lines for a faster script
-//			firstDateTime = new DateTime( 2001 , 1 , 1 );
-//			lastDateTime = new DateTime( 2001 , 1 , 31 );
+//			firstDateTime = new DateTime( 2007 , 1 , 1 );
+//			lastDateTime = new DateTime( 2007 , 1 , 31 );
 
-			double maxRunningHours = 8;
+			double maxRunningHours = 1;
 			
 			EndOfDayStrategyBackTester endOfDayStrategyBackTester =
 				new EndOfDayStrategyBackTester(
