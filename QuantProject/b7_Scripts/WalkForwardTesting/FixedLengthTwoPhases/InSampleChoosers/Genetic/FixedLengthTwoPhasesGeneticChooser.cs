@@ -32,6 +32,7 @@ using QuantProject.Business.Strategies.EquityEvaluation;
 using QuantProject.Business.Strategies.InSample;
 using QuantProject.Business.Strategies.Optimizing.Decoding;
 using QuantProject.Business.Strategies.Optimizing.FitnessEvaluation;
+using QuantProject.Business.Strategies.Optimizing.GenomeManagers;
 using QuantProject.Business.Strategies.ReturnsManagement;
 using QuantProject.Business.Timing;
 
@@ -40,184 +41,59 @@ namespace QuantProject.Scripts.WalkForwardTesting.FixedLengthTwoPhases
 	/// <summary>
 	/// In sample analyzer for the walk forward fixed length two phases strategy
 	/// </summary>
-	public class FixedLengthTwoPhasesGeneticChooser : IInSampleChooser
+	public class FixedLengthTwoPhasesGeneticChooser : GeneticChooser
 	{
-		public event NewProgressEventHandler NewProgress;
-		public event NewMessageEventHandler NewMessage;
 
-		private int numberOfPortfolioPositions;
-		private int inSampleDays;
-		private Benchmark benchmark;
-		private IDecoderForWeightedPositions decoderForWeightedPositions;
-		private IFitnessEvaluator fitnessEvaluator;
-		private IHistoricalQuoteProvider historicalQuoteProvider;
-		private double crossoverRate;
-		private double mutationRate;
-		private double elitismRate;
-		private int populationSizeForGeneticOptimizer;
-		private int generationNumberForGeneticOptimizer;
-		private int seedForRandomGenerator;
-
-		private GeneticOptimizer geneticOptimizer;
-
-
-		public string Description
-		{
-			get
-			{
-				string description = "IsChsr_genetic_" +
-					"longOnly_" +
-					"gnrtnSz_" + this.populationSizeForGeneticOptimizer +
-					"_gnrtnNmbr_" + this.generationNumberForGeneticOptimizer +
-					this.decoderForWeightedPositions.Description;
-				return description;
-			}
-		}
 		public FixedLengthTwoPhasesGeneticChooser(
-			int numberOfPortfolioPositions , int inSampleDays , Benchmark benchmark ,
-			IDecoderForWeightedPositions decoderForWeightedPositions ,
+			int numberOfPortfolioPositions ,
+			int numberOfBestTestingPositionsToBeReturned ,
+			Benchmark benchmark ,
+			IDecoderForTestingPositions decoderForTestingPositions ,
 			IFitnessEvaluator fitnessEvaluator ,
 			IHistoricalQuoteProvider historicalQuoteProvider ,
 			double crossoverRate , double mutationRate , double elitismRate ,
 			int populationSizeForGeneticOptimizer ,
 			int generationNumberForGeneticOptimizer ,
-			int seedForRandomGenerator )
+			int seedForRandomGenerator ) :
+			base(
+				numberOfPortfolioPositions ,
+				numberOfBestTestingPositionsToBeReturned ,
+				benchmark ,
+				decoderForTestingPositions ,
+				fitnessEvaluator ,
+				historicalQuoteProvider ,
+				crossoverRate ,
+				mutationRate ,
+				elitismRate ,
+				populationSizeForGeneticOptimizer ,
+				generationNumberForGeneticOptimizer ,
+				seedForRandomGenerator )
 		{
-			this.numberOfPortfolioPositions = numberOfPortfolioPositions;
-			this.inSampleDays =	inSampleDays;
-			this.benchmark = benchmark;
-			this.decoderForWeightedPositions = decoderForWeightedPositions;
-			this.fitnessEvaluator =	fitnessEvaluator;
-			this.historicalQuoteProvider = historicalQuoteProvider;
-			this.crossoverRate = crossoverRate;
-			this.mutationRate = mutationRate;
-			this.elitismRate = elitismRate;
-			this.populationSizeForGeneticOptimizer = populationSizeForGeneticOptimizer;
-			this.generationNumberForGeneticOptimizer =
-				generationNumberForGeneticOptimizer;
-			this.seedForRandomGenerator = seedForRandomGenerator;
 		}
 
-		#region AnalyzeInSample
-		private void analyzeInSample_checkParameters(
+
+
+		
+		protected override IGenomeManager getGenomeManager(
 			EligibleTickers eligibleTickers ,
 			ReturnsManager returnsManager )
 		{
-			if ( eligibleTickers.Count <	this.numberOfPortfolioPositions )
-				throw new Exception( "Eligilbe tickers for driving positions contains " +
-					"only " + eligibleTickers.Count +
-					" elements, while the number of portfolio positions is " +
-					this.numberOfPortfolioPositions );
+			GenomeManagerWithDuplicateGenes	genomeManagerWithDuplicateGenes =
+				new GenomeManagerWithDuplicateGenes(
+					this.numberOfPortfolioPositions ,
+					eligibleTickers ,
+					returnsManager ,
+					this.decoderForTestingPositions ,
+					this.fitnessEvaluator ,
+					GenomeManagerType.ShortAndLong ,
+					this.seedForRandomGenerator );
+			return genomeManagerWithDuplicateGenes;
 		}
-		#region newGenerationEventHandler
-		private void sendNewProgress( NewGenerationEventArgs e )
+		
+		protected override string getHashCodeForGenome( Genome genome )
 		{
-			if ( this.NewProgress != null )
-				this.NewProgress( this ,
-					new NewProgressEventArgs( e.GenerationCounter , e.GenerationNumber ) );
-		}
-		#region sendNewMessage
-		private string getProgressMessage(
-			int generationCounter , int generationNumber )
-		{
-			string progressMessage =
-				generationCounter.ToString() + " / " +
-				generationNumber.ToString() +
-				" - " +
-				DateTime.Now.ToString();
-			return progressMessage;
-		}
-		private void sendNewMessage( NewGenerationEventArgs e )
-		{
-			string message = this.getProgressMessage(
-				e.GenerationCounter , e.GenerationNumber );
-			NewMessageEventArgs newMessageEventArgs =
-				new NewMessageEventArgs( message );
-			if( this.NewMessage != null )
-				this.NewMessage( this , newMessageEventArgs );
-		}
-		#endregion sendNewMessage
-		private void newGenerationEventHandler(
-			object sender , NewGenerationEventArgs e )
-		{
-//			// comment out this line if no debug is done
-//			WFLagGenerationDebugger wFLagGenerationDebugger =
-//				new WFLagGenerationDebugger(
-//				e.Generation ,
-//				this.timeWhenChosePositionsIsRequested.DateTime ,
-			//				this.NumberDaysForInSampleOptimization ,
-			//				this.benchmark );
-			//			wFLagGenerationDebugger.Debug();
-			this.sendNewProgress( e );
-			this.sendNewMessage( e );
-		}
-		#endregion newGenerationEventHandler
-		private void checkIfBestGenomeIsDecodable(
-			IGenomeManager genomeManager , Genome genome )
-		{
-			object genomeMeaning = genomeManager.Decode( genome );
-			if ( !(genomeMeaning is WeightedPositions) )
-				throw new Exception( "The genome is not a WeightedPositions. " +
-					"It should happen only if the genome is undecodable. This " +
-					"should never happen for the best genome." );
+			return ((FLTPTestingPositions)(genome.Meaning)).HashCodeForTickerComposition;
 		}
 
-		private WeightedPositions getBestWeightedPositionsInSample(
-			EligibleTickers eligibleTickers ,
-			ReturnsManager returnsManager
-			)
-		{
-			FixedLengthTwoPhasesGenomeManager	genomeManager = 
-				new FixedLengthTwoPhasesGenomeManager(
-				this.numberOfPortfolioPositions ,
-				eligibleTickers ,
-				returnsManager ,
-				this.decoderForWeightedPositions ,
-				this.fitnessEvaluator ,
-				QuantProject.ADT.ConstantsProvider.SeedForRandomGenerator );
-
-			this.geneticOptimizer = new GeneticOptimizer(
-				this.crossoverRate ,
-				this.mutationRate ,
-				this.elitismRate ,
-				this.populationSizeForGeneticOptimizer ,
-				this.generationNumberForGeneticOptimizer ,
-				genomeManager ,
-				this.seedForRandomGenerator );
-
-			this.geneticOptimizer.NewGeneration +=
-				new NewGenerationEventHandler( this.newGenerationEventHandler );
-
-			this.geneticOptimizer.Run( false );
-
-//			this.generation = geneticOptimizer.BestGenome.Generation;
-
-			this.checkIfBestGenomeIsDecodable(
-				genomeManager , this.geneticOptimizer.BestGenome );
-
-			WeightedPositions bestWeightedPositionsInSample =
-				(WeightedPositions)genomeManager.Decode( this.geneticOptimizer.BestGenome );
-			
-			return bestWeightedPositionsInSample;
-		}
-
-		/// <summary>
-		/// Returns the best WeightedPositions with respect to the in sample data
-		/// </summary>
-		/// <param name="eligibleTickers"></param>
-		/// <param name="currentOutOfSampleEndOfDayDateTime"></param>
-		/// <returns></returns>
-		public object AnalyzeInSample(
-			EligibleTickers eligibleTickers ,
-			ReturnsManager returnsManager )
-		{
-			this.analyzeInSample_checkParameters( eligibleTickers ,
-				returnsManager );
-			WeightedPositions bestWeightedPositionsInSample =
-				this.getBestWeightedPositionsInSample( eligibleTickers ,
-				returnsManager );
-			return bestWeightedPositionsInSample;
-		}
-		#endregion AnalyzeInSample
 	}
 }
