@@ -240,7 +240,9 @@ namespace QuantProject.Business.Strategies
 		private void notifyMessage( EligibleTickers eligibleTickers )
 		{
 			string message = "Number of Eligible tickers: " +
-				eligibleTickers.Count;
+				eligibleTickers.Count +
+				" - " +
+				DateTime.Now.ToString();
 			NewMessageEventArgs newMessageEventArgs =
 				new NewMessageEventArgs( message );
 			if ( this.NewMessage != null )
