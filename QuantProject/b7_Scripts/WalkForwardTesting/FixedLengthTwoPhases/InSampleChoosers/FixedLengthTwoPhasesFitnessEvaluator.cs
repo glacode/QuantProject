@@ -25,6 +25,7 @@ using System;
 using QuantProject.Business.Strategies;
 using QuantProject.Business.Strategies.EquityEvaluation;
 using QuantProject.Business.Strategies.Optimizing.FitnessEvaluation;
+using QuantProject.Business.Strategies.OutOfSample;
 using QuantProject.Business.Strategies.ReturnsManagement;
 
 namespace QuantProject.Scripts.WalkForwardTesting.FixedLengthTwoPhases
@@ -34,6 +35,8 @@ namespace QuantProject.Scripts.WalkForwardTesting.FixedLengthTwoPhases
 	/// </summary>
 	public class FixedLengthTwoPhasesFitnessEvaluator : IFitnessEvaluator
 	{
+		private const double fitnessForInvalidCandidate = -1000d;
+
 		private IEquityEvaluator equityEvaluator;
 
 		public string Description
@@ -50,7 +53,14 @@ namespace QuantProject.Scripts.WalkForwardTesting.FixedLengthTwoPhases
 		{
 			this.equityEvaluator = equityEvaluator;
 		}
+		
 		#region GetFitnessValue
+		private void getFitnessValue_checkParameters( object meaning )
+		{
+			if ( !( meaning is TestingPositions ) )
+				throw new Exception(
+					"The meaning should always be a TestingPositions!" );
+		}
 		/// <summary>
 		/// This private method is written in compact mode, in order
 		/// to gain efficiency (it would have been more readable if
@@ -89,23 +99,27 @@ namespace QuantProject.Scripts.WalkForwardTesting.FixedLengthTwoPhases
 				this.equityEvaluator.GetReturnsEvaluation( strategyReturns );
 			return fitnessValue;
 		}
-		public double GetFitnessValue( object meaning , ReturnsManager returnsManager )
+		private double getFitnessValue( TestingPositions testingPositions ,
+		                               ReturnsManager returnsManager )
 		{
 			double fitnessValue;
-			if ( meaning is WeightedPositions )
-			{
-				// for the current optimization's candidate,
-				// all positions's tickers are distinct
-				WeightedPositions weightedPositions =
-					(WeightedPositions)meaning;
-				fitnessValue = this.getFitnessValue( weightedPositions , returnsManager );
-			}
-			else
-			{
+			WeightedPositions weightedPositions = testingPositions.WeightedPositions;
+			if ( weightedPositions == null )
 				// the current optimization's candidate contains
 				// two genes that decode to the same tickers
-				fitnessValue = -0.4;
-			}
+				fitnessValue = fitnessForInvalidCandidate;
+			else
+				// for the current optimization's candidate,
+				// all positions's tickers are distinct
+				fitnessValue = this.getFitnessValue( weightedPositions , returnsManager );
+			return fitnessValue;
+		}
+
+		public double GetFitnessValue( object meaning , ReturnsManager returnsManager )
+		{
+			this.getFitnessValue_checkParameters( meaning );			
+			double fitnessValue =
+				this.getFitnessValue( (TestingPositions)meaning , returnsManager );
 			return fitnessValue;
 		}
 		#endregion
