@@ -189,7 +189,7 @@ namespace QuantProject.Scripts.ArbitrageTesting.OverReactionHypothesis.DoubleOve
 					this.setChosenTickers_addTickersForShorting();
 				}
 				catch(Exception ex)
-				{ex = ex;}
+				{int dummy = 1; dummy++;}
       }
     }
 
