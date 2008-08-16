@@ -54,6 +54,7 @@
     <Compile Include="General\Logging\LogViewer.cs" />
     <Compile Include="General\Logging\DummyTesterForTestingPositions.cs" />
     <Compile Include="General\Reporting\BackTesterReportViewer.cs" />
+    <Compile Include="General\Strategies\SimpleStrategy.cs" />
     <Compile Include="MyTradingSystem.cs" />
     <Compile Include="CallingReportsForRunScripts\ShowReportFromFile.cs" />
     <Compile Include="SimpleTesting\MSFTsimpleTest\TsMSFTsimpleTest.cs" />
@@ -107,10 +108,14 @@
     <Compile Include="WalkForwardTesting\FixedLengthTwoPhases\FixedLengthTwoPhasesLogItem.cs" />
     <Compile Include="WalkForwardTesting\FixedLengthTwoPhases\FixedLengthTwoPhasesMain.cs" />
     <Compile Include="WalkForwardTesting\FixedLengthTwoPhases\FixedLengthTwoPhasesStrategy.cs" />
+    <Compile Include="WalkForwardTesting\FixedLengthTwoPhases\FLTPTestingPositions.cs" />
+    <Compile Include="WalkForwardTesting\FixedLengthTwoPhases\InSampleChoosers\Decoding\DecoderForFLTPTestingPositionsWithBalancedWeights.cs" />
     <Compile Include="WalkForwardTesting\FixedLengthTwoPhases\InSampleChoosers\FixedLengthTwoPhasesFitnessEvaluator.cs" />
     <Compile Include="WalkForwardTesting\FixedLengthTwoPhases\InSampleChoosers\Genetic\FixedLengthTwoPhasesGeneticChooser.cs" />
-    <Compile Include="WalkForwardTesting\FixedLengthTwoPhases\InSampleChoosers\Genetic\FixedLengthTwoPhasesGenomeManager.cs" />
-    <Compile Include="WalkForwardTesting\FixedLengthTwoPhases\Logging\FixedLengthTwoPhasesLogItem.cs" />
+    <Compile Include="WalkForwardTesting\FixedLengthTwoPhases\Logging\FLTPLogItem.cs" />
+    <Compile Include="WalkForwardTesting\FixedLengthTwoPhases\Logging\FLTPSimpleStrategy.cs" />
+    <Compile Include="WalkForwardTesting\FixedLengthTwoPhases\Logging\TesterForFLTPTestingPositions.cs" />
+    <Compile Include="WalkForwardTesting\FixedLengthTwoPhases\OutOfSampleChoosers\RankBasedOutOfSampleChooser.cs" />
     <Compile Include="WalkForwardTesting\MSFTwalkForward\TsMSFTwalkForward.cs" />
     <Compile Include="WalkForwardTesting\PairsTrading\InSample\InSampleChoosers\BruteForce\PairsTradingBruteForceChooser.cs" />
     <Compile Include="WalkForwardTesting\PairsTrading\InSample\InSampleChoosers\BruteForce\PairsTradingBruteForceOptimizableParametersManager.cs" />
@@ -119,7 +124,6 @@
     <Compile Include="WalkForwardTesting\PairsTrading\InSample\InSampleChoosers\PairsTradingChooserFromSavedBackTestLog.cs" />
     <Compile Include="WalkForwardTesting\PairsTrading\InSample\PairsTradingFitnessEvaluator.cs" />
     <Compile Include="WalkForwardTesting\PairsTrading\Logging\PairsTradingLogItem.cs" />
-    <Compile Include="WalkForwardTesting\PairsTrading\Logging\SimpleStrategy.cs" />
     <Compile Include="WalkForwardTesting\PairsTrading\Logging\TesterForPairsTradingTestingPositions.cs" />
     <Compile Include="WalkForwardTesting\PairsTrading\OutOfSampleChoosers\OutOfSampleChooser.cs" />
     <Compile Include="WalkForwardTesting\PairsTrading\OutOfSampleChoosers\OutOfSampleChooserForExactNumberOfBestLongPositions.cs" />
@@ -283,6 +287,7 @@
     <Folder Include="EvaluatingOptimizationTechnique\" />
     <Folder Include="EvaluatingOptimizationTechnique\EfficientPortfolio\" />
     <Folder Include="BackTesting" />
+    <Folder Include="General\Strategies" />
     <Folder Include="TechnicalAnalysisTesting\Oscillators\ExtremeCounterTrend" />
     <Folder Include="TechnicalAnalysisTesting\Oscillators\FixedLevelOscillators\PortfolioValueOscillator\Decoding" />
     <Folder Include="General" />
@@ -295,8 +300,10 @@
     <Folder Include="TickerSelectionTesting\SimpleSelection\" />
     <Folder Include="WalkForwardTesting\FixedLengthTwoPhases" />
     <Folder Include="WalkForwardTesting\FixedLengthTwoPhases\InSampleChoosers" />
+    <Folder Include="WalkForwardTesting\FixedLengthTwoPhases\InSampleChoosers\Decoding" />
     <Folder Include="WalkForwardTesting\FixedLengthTwoPhases\InSampleChoosers\Genetic" />
     <Folder Include="WalkForwardTesting\FixedLengthTwoPhases\Logging" />
+    <Folder Include="WalkForwardTesting\FixedLengthTwoPhases\OutOfSampleChoosers" />
     <Folder Include="WalkForwardTesting\PairsTrading" />
     <Folder Include="WalkForwardTesting\PairsTrading\InSample" />
     <Folder Include="WalkForwardTesting\PairsTrading\InSample\InSampleChoosers" />
