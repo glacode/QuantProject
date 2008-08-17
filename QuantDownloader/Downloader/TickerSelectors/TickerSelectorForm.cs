@@ -666,11 +666,11 @@ namespace QuantProject.Applications.Downloader.TickerSelectors
         if(this.textBoxGroupID.Text != "")
           returnValue = new SelectorByAverageOpenToClosePerformance(this.textBoxGroupID.Text,
             this.checkBoxASCMode.Checked, this.dateTimePickerFirstDate.Value,
-            this.dateTimePickerLastDate.Value, Int32.Parse(this.textBoxMaxNumOfReturnedTickers.Text));
+            this.dateTimePickerLastDate.Value, 0.08, Int32.Parse(this.textBoxMaxNumOfReturnedTickers.Text));
         else
           returnValue = new SelectorByAverageOpenToClosePerformance(this.tableOfSelectedTickers,
             this.checkBoxASCMode.Checked, this.dateTimePickerFirstDate.Value,
-            this.dateTimePickerLastDate.Value, Int32.Parse(this.textBoxMaxNumOfReturnedTickers.Text));
+            this.dateTimePickerLastDate.Value, 0.08, Int32.Parse(this.textBoxMaxNumOfReturnedTickers.Text));
       }
       else if (this.comboBoxAvailableSelectionRules.Text == "AverageCloseToOpenPerformance")
       { 
