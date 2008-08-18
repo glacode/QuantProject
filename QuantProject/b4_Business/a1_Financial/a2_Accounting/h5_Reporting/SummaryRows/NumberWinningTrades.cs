@@ -10,11 +10,11 @@ namespace QuantProject.Business.Financial.Accounting.Reporting.SummaryRows
 	/// Summary description for TotalNumberOfTrades.
 	/// </summary>
 	[Serializable]
-  public class NumberWinningTrades : IntegerSummaryRow
+	public class NumberWinningTrades : IntegerSummaryRow
 	{
 		public NumberWinningTrades( Summary summary )
 		{
-      this.rowDescription = "Number winning trades";
+			this.rowDescription = "Number winning trades";
 			this.format = ConstantsProvider.FormatWithZeroDecimals;
 			try
 			{
@@ -23,8 +23,8 @@ namespace QuantProject.Business.Financial.Accounting.Reporting.SummaryRows
 			}
 			catch (Exception ex)
 			{
-				ex = ex; // to avoid compilation warning;
+				string forBreakpoint = ex.Message; forBreakpoint = forBreakpoint + "";
 			}
-    }
+		}
 	}
 }

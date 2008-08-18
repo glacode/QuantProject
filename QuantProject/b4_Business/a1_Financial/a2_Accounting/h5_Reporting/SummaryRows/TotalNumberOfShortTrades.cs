@@ -10,12 +10,12 @@ namespace QuantProject.Business.Financial.Accounting.Reporting.SummaryRows
 	/// Summary description for TotalNumberOfTrades.
 	/// </summary>
 	[Serializable]
-  public class TotalNumberOfShortTrades : IntegerSummaryRow
+	public class TotalNumberOfShortTrades : IntegerSummaryRow
 	{
 		public TotalNumberOfShortTrades( Summary summary )
 		{
-      double totalROA = summary.TotalPnl / ( summary.FinalAccountValue - summary.TotalPnl );
-      this.rowDescription = "Total # of short trades";
+			double totalROA = summary.TotalPnl / ( summary.FinalAccountValue - summary.TotalPnl );
+			this.rowDescription = "Total # of short trades";
 			try
 			{
 				DataRow[] DataRows =
@@ -24,8 +24,8 @@ namespace QuantProject.Business.Financial.Accounting.Reporting.SummaryRows
 			}
 			catch (Exception ex)
 			{
-				ex = ex; // to avoid compilation warning;
+				string forBreakpoint = ex.Message; forBreakpoint = forBreakpoint + "";
 			}
-    }
+		}
 	}
 }

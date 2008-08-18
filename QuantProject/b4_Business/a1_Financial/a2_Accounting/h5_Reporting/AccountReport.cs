@@ -334,11 +334,14 @@ namespace QuantProject.Business.Financial.Accounting.Reporting
 				// set the field to the deserialized value
 				try
 				{
-					fieldInfo.SetValue( this ,
-					info.GetValue( fieldInfo.Name, fieldInfo.FieldType ) );
+					fieldInfo.SetValue(
+						this ,
+						info.GetValue( fieldInfo.Name, fieldInfo.FieldType ) );
 				}
-				catch(Exception ex)
-					{ex = ex;}
+				catch (Exception ex)
+				{
+					string forBreakpoint = ex.Message; forBreakpoint = forBreakpoint + "";
+				}
 			}
 		}
 		

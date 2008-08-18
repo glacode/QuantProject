@@ -10,11 +10,11 @@ namespace QuantProject.Business.Financial.Accounting.Reporting.SummaryRows
 	/// Summary description for TotalNumberOfTrades.
 	/// </summary>
 	[Serializable]
-  public class AverageLongTradePercentageReturn : PercentageSummaryRow
+	public class AverageLongTradePercentageReturn : PercentageSummaryRow
 	{
 		public AverageLongTradePercentageReturn( Summary summary )
 		{
-      this.rowDescription = "Average long trade % Return";
+			this.rowDescription = "Average long trade % Return";
 			double avgReturn = 0.0;
 			try
 			{
@@ -23,9 +23,9 @@ namespace QuantProject.Business.Financial.Accounting.Reporting.SummaryRows
 			}
 			catch (Exception ex)
 			{
-				ex = ex; // to avoid compilation warning;
+				string forBreakpoint = ex.Message; forBreakpoint = forBreakpoint + "";
 			}
-      this.rowValue = avgReturn;
-    }
+			this.rowValue = avgReturn;
+		}
 	}
 }

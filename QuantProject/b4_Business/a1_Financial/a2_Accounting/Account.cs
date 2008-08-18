@@ -181,10 +181,9 @@ namespace QuantProject.Business.Financial.Accounting
 				//Transactions.MultiAdd( extendedDateTime.DateTime , timedTransaction );
 				//cashAmount = cashAmount + moneyAmount;
 			}
-			catch (Exception exception)
+			catch (Exception ex)
 			{
-				exception = exception;  // to avoid warning message
-				/// TO DO!!!
+				string forBreakpoint = ex.Message; forBreakpoint = forBreakpoint + "";
 			}
 		}
 

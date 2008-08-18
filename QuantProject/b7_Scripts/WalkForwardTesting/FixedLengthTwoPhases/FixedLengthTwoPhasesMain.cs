@@ -60,7 +60,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.FixedLengthTwoPhases
 		public FixedLengthTwoPhasesMain()
 		{
 			this.benchmark = new Benchmark( "CCE" );
-			this.numberOfPortfolioPositions = 1;
+			this.numberOfPortfolioPositions = 2;
 			this.historicalQuoteProviderForInSample =
 				new HistoricalRawQuoteProvider();
 			this.historicalQuoteProviderForTheBacktesterAccount =
@@ -71,7 +71,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.FixedLengthTwoPhases
 		{
 			string tickersGroupId = "SP500";
 			// uncomment the following line for a faster script
-			tickersGroupId = "fastTest";
+//			tickersGroupId = "fastTest";
 			
 			int maxNumberOfEligibleTickersToBeChosen = 100;
 			int maxNumberOfMostLiquidTickersToBeChosen =
@@ -110,7 +110,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.FixedLengthTwoPhases
 		{
 			int numberOfBestTestingPositionsToBeReturned = 20;
 			// uncomment the following line for a faster script
-			 numberOfBestTestingPositionsToBeReturned = 2;
+			 numberOfBestTestingPositionsToBeReturned = 5;
 			
 			IDecoderForTestingPositions decoderForWeightedPositions =
 				new DecoderForFLTPTestingPositionsWithBalancedWeights();
@@ -126,7 +126,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.FixedLengthTwoPhases
 			double mutationRate = 0.02;
 			double elitismRate = 0.001;
 			int populationSizeForGeneticOptimizer = 10000;
-			int generationNumberForGeneticOptimizer = 1;
+			int generationNumberForGeneticOptimizer = 5;
 			int seedForRandomGenerator =
 				QuantProject.ADT.ConstantsProvider.SeedForRandomGenerator;
 			IInSampleChooser inSampleChooser =
@@ -204,10 +204,10 @@ namespace QuantProject.Scripts.WalkForwardTesting.FixedLengthTwoPhases
 			IAccountProvider accountProvider = new SimpleAccountProvider();
 			double cashToStart = 30000;
 
-			DateTime firstDateTime = new DateTime( 2006 , 1 , 2 );
-			DateTime lastDateTime = new DateTime( 2006 , 1 , 6 );
+			DateTime firstDateTime = new DateTime( 2006 , 1 , 1 );
+			DateTime lastDateTime = new DateTime( 2008 , 4 , 1 );
 
-			double maxRunningHours = 1;
+			double maxRunningHours = 8;
 			
 			EndOfDayStrategyBackTester endOfDayStrategyBackTester =
 				new EndOfDayStrategyBackTester(

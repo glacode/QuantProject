@@ -14,16 +14,16 @@ namespace QuantProject.Business.Financial.Accounting.Reporting.Tables
 	/// <summary>
 	/// Summary description for Summary.
 	/// </summary>
-  [Serializable]
-  public class Summary : ReportTable, ISerializable
-  {
-    private AccountReport accountReport;
+	[Serializable]
+	public class Summary : ReportTable, ISerializable
+	{
+		private AccountReport accountReport;
 		private IHistoricalQuoteProvider historicalQuoteProvider;
-    private double totalPnl;
-    private BenchmarkPercentageReturn benchmarkPercentageReturn;
+		private double totalPnl;
+		private BenchmarkPercentageReturn benchmarkPercentageReturn;
 		private AnnualSystemPercentageReturn annualSystemPercentageReturn;
 		private double finalAccountValue;
-    private long intervalDays;
+		private long intervalDays;
 		private TotalNetProfit totalNetProfit;
 		private ReturnOnAccount returnOnAccount;
 		private MaxEquityDrawDown maxEquityDrawDown;
@@ -49,13 +49,13 @@ namespace QuantProject.Business.Financial.Accounting.Reporting.Tables
 		private AverageNumberOfTransactionsPerDay averageNumberOfTransactionsPerDay;
 
 		public AccountReport AccountReport
-    {
-      get { return accountReport; }
-    }
-    public double TotalPnl
-    {
-      get { return totalPnl; }
-    }
+		{
+			get { return accountReport; }
+		}
+		public double TotalPnl
+		{
+			get { return totalPnl; }
+		}
 		public TotalNetProfit TotalNetProfit
 		{
 			get { return this.totalNetProfit; }
@@ -65,17 +65,17 @@ namespace QuantProject.Business.Financial.Accounting.Reporting.Tables
 			get { return this.returnOnAccount; }
 		}
 		public BenchmarkPercentageReturn BenchmarkPercentageReturn
-    {
-      get { return this.benchmarkPercentageReturn; }
-    }
-    public double FinalAccountValue
-    {
-      get { return finalAccountValue; }
-    }
-    public double IntervalDays
-    {
-      get { return intervalDays; }
-    }
+		{
+			get { return this.benchmarkPercentageReturn; }
+		}
+		public double FinalAccountValue
+		{
+			get { return finalAccountValue; }
+		}
+		public double IntervalDays
+		{
+			get { return intervalDays; }
+		}
 		public AnnualSystemPercentageReturn AnnualSystemPercentageReturn
 		{
 			get { return this.annualSystemPercentageReturn; }
@@ -184,7 +184,7 @@ namespace QuantProject.Business.Financial.Accounting.Reporting.Tables
 			this.summary( accountReport );
 		}
 		public Summary( AccountReport accountReport ,
-			IHistoricalQuoteProvider historicalDataProvider ) :
+		               IHistoricalQuoteProvider historicalDataProvider ) :
 			base( accountReport.Name + " - Summary" )
 		{
 			this.historicalQuoteProvider = historicalDataProvider;
@@ -198,7 +198,7 @@ namespace QuantProject.Business.Financial.Accounting.Reporting.Tables
 		/// <param name="info"></param>
 		/// <param name="context"></param>
 		protected Summary( SerializationInfo info , StreamingContext context ) :
-							base( "Summary" )
+			base( "Summary" )
 		{
 			// get the set of serializable members for this class and its base classes
 			Type thisType = this.GetType();
@@ -206,7 +206,7 @@ namespace QuantProject.Business.Financial.Accounting.Reporting.Tables
 				thisType , context);
 
 			// deserialize the fields from the info object
-			for (Int32 i = 0 ; i < mi.Length; i++) 
+			for (Int32 i = 0 ; i < mi.Length; i++)
 			{
 				FieldInfo fieldInfo = (FieldInfo) mi[i];
 
@@ -214,10 +214,12 @@ namespace QuantProject.Business.Financial.Accounting.Reporting.Tables
 				try
 				{
 					fieldInfo.SetValue( this ,
-						info.GetValue( fieldInfo.Name, fieldInfo.FieldType ) );
+					                   info.GetValue( fieldInfo.Name, fieldInfo.FieldType ) );
 				}
-				catch(Exception ex)
-				{ex = ex;}
+				catch (Exception ex)
+				{
+					string forBreakpoint = ex.Message; forBreakpoint = forBreakpoint + "";
+				}
 			}
 		}
 
@@ -228,39 +230,39 @@ namespace QuantProject.Business.Financial.Accounting.Reporting.Tables
 		/// <param name="info"></param>
 		/// <param name="context"></param>
 		void ISerializable.GetObjectData(
-			SerializationInfo info, StreamingContext context) 
+			SerializationInfo info, StreamingContext context)
 		{
 			// get the set of serializable members for this class and base classes
 			Type thisType = this.GetType();
-			MemberInfo[] mi = 
+			MemberInfo[] mi =
 				FormatterServices.GetSerializableMembers( thisType , context);
 
 			// serialize the fields to the info object
-			for (Int32 i = 0 ; i < mi.Length; i++) 
+			for (Int32 i = 0 ; i < mi.Length; i++)
 			{
 				info.AddValue(mi[i].Name, ((FieldInfo) mi[i]).GetValue(this));
 			}
 		}
 		#endregion
 
-    #region "getSummary"
-    private void getSummaryTable_setColumns( DataTable equityDataTable )
-    {
-      equityDataTable.Columns.Add( "Information"  , Type.GetType( "System.String" ) );
-      equityDataTable.Columns.Add( "Value" , Type.GetType( "System.Double" ) );
-    }
-    private void getSummary()
-    {
+		#region "getSummary"
+		private void getSummaryTable_setColumns( DataTable equityDataTable )
+		{
+			equityDataTable.Columns.Add( "Information"  , Type.GetType( "System.String" ) );
+			equityDataTable.Columns.Add( "Value" , Type.GetType( "System.Double" ) );
+		}
+		private void getSummary()
+		{
 			if ( this.accountReport.Equity.DataTable.Rows.Count == 0 )
 				throw new Exception( "A Summary computation has been requested, but the equity line is empty" );
-      this.totalPnl =
-        (double)this.accountReport.Equity.DataTable.Rows[ this.accountReport.Equity.DataTable.Rows.Count - 1 ][ "PnL" ];
-      this.finalAccountValue =
-        (double)this.accountReport.Equity.DataTable.Rows[ this.accountReport.Equity.DataTable.Rows.Count - 1 ][ "AccountValue" ];
-      this.intervalDays =
-        ((TimeSpan)((DateTime)this.accountReport.Equity.DataTable.Rows[ this.accountReport.Equity.DataTable.Rows.Count - 1 ][ "Date" ] -
-        (DateTime)this.accountReport.Equity.DataTable.Rows[ 0 ][ "Date" ])).Days;
-			this.returnOnAccount = new ReturnOnAccount( this ); 
+			this.totalPnl =
+				(double)this.accountReport.Equity.DataTable.Rows[ this.accountReport.Equity.DataTable.Rows.Count - 1 ][ "PnL" ];
+			this.finalAccountValue =
+				(double)this.accountReport.Equity.DataTable.Rows[ this.accountReport.Equity.DataTable.Rows.Count - 1 ][ "AccountValue" ];
+			this.intervalDays =
+				((TimeSpan)((DateTime)this.accountReport.Equity.DataTable.Rows[ this.accountReport.Equity.DataTable.Rows.Count - 1 ][ "Date" ] -
+				            (DateTime)this.accountReport.Equity.DataTable.Rows[ 0 ][ "Date" ])).Days;
+			this.returnOnAccount = new ReturnOnAccount( this );
 			this.benchmarkPercentageReturn =
 				new BenchmarkPercentageReturn( this , this.historicalQuoteProvider );
 			this.numberWinningPeriods = new NumberWinningPeriods( this );
@@ -287,9 +289,9 @@ namespace QuantProject.Business.Financial.Accounting.Reporting.Tables
 			this.totalCommissionAmount = new TotalCommissionAmount( this );
 			this.averageNumberOfTransactionsPerDay = new AverageNumberOfTransactionsPerDay(this);
 			//this.DataTable = getSummaryDataTable();
-    }
+		}
 
-    #endregion
+		#endregion
 
 	}
 }

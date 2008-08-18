@@ -10,23 +10,23 @@ namespace QuantProject.Business.Financial.Accounting.Reporting.SummaryRows
 	/// Summary description for TotalNumberOfTrades.
 	/// </summary>
 	[Serializable]
-  public class AverageShortTradePercentageReturn : PercentageSummaryRow
+	public class AverageShortTradePercentageReturn : PercentageSummaryRow
 	{
 		public AverageShortTradePercentageReturn( Summary summary )
 		{
-      this.rowDescription = "Average short trade % Return";
+			this.rowDescription = "Average short trade % Return";
 			double avgReturn = 0.0;
 			try
 			{
 				avgReturn =
 					(double) summary.AccountReport.RoundTrades.DataTable.Compute(
-					"avg([%Profit])" , "(Trade='Short')" );
+						"avg([%Profit])" , "(Trade='Short')" );
 			}
 			catch (Exception ex)
 			{
-				ex = ex; // to avoid compilation warning;
+				string forBreakpoint = ex.Message; forBreakpoint = forBreakpoint + "";
 			}
-      this.rowValue = avgReturn;
-    }
+			this.rowValue = avgReturn;
+		}
 	}
 }

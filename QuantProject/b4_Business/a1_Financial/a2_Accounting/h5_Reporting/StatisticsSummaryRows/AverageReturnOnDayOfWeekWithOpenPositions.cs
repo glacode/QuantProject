@@ -105,7 +105,7 @@ namespace QuantProject.Business.Financial.Accounting.Reporting.StatisticsSummary
 			}
 			catch (Exception ex)
 			{
-				ex = ex; // to avoid compilation warning;
+				string forBreakpoint = ex.Message; forBreakpoint = forBreakpoint + "";
 			}
 		}
 	}

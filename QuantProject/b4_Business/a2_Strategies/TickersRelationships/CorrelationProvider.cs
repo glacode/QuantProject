@@ -2,7 +2,7 @@
 QuantProject - Quantitative Finance Library
 
 CorrelationProvider.cs
-Copyright (C) 2008 
+Copyright (C) 2008
 Marco Milletti
 
 This program is free software; you can redistribute it and/or
@@ -18,7 +18,7 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
-*/
+ */
 using System;
 using System.Data;
 using System.Collections;
@@ -33,13 +33,13 @@ using QuantProject.Business.Strategies.ReturnsManagement.Time;
 
 namespace QuantProject.Business.Strategies.TickersRelationships
 {
-  /// <summary>
-  /// Abstract class that provides correlation's indexes two by two within a 
-  /// given set of tickers
-  /// </summary>
-  [Serializable]
-  public abstract class CorrelationProvider
-  {
+	/// <summary>
+	/// Abstract class that provides correlation's indexes two by two within a
+	/// given set of tickers
+	/// </summary>
+	[Serializable]
+	public abstract class CorrelationProvider
+	{
 		protected ReturnsManager returnsManager;
 		protected string[] tickers;
 		protected float minimumAbsoluteReturnValue;
@@ -52,7 +52,7 @@ namespace QuantProject.Business.Strategies.TickersRelationships
 		protected string benchmark;
 		
 		private void correlationProvider_commonInitialization(string[] tickersToAnalyze,
-			float minimumAbsoluteReturnValue, float maximumAbsoluteReturnValue)
+		                                                      float minimumAbsoluteReturnValue, float maximumAbsoluteReturnValue)
 		{
 			this.tickers = tickersToAnalyze;
 			this.minimumAbsoluteReturnValue = minimumAbsoluteReturnValue;
@@ -78,25 +78,25 @@ namespace QuantProject.Business.Strategies.TickersRelationships
 		/// have to be less than maximumAbsoluteReturnValue</param>
 		/// <param name="benchmark">The benchmark used for computation
 		/// of returns</param>
-    public CorrelationProvider(string[] tickersToAnalyze,
-					 DateTime startDate, DateTime endDate, int returnIntervalLength,
-					 float minimumAbsoluteReturnValue, float maximumAbsoluteReturnValue,
-					 string benchmark)
-    {
+		public CorrelationProvider(string[] tickersToAnalyze,
+		                           DateTime startDate, DateTime endDate, int returnIntervalLength,
+		                           float minimumAbsoluteReturnValue, float maximumAbsoluteReturnValue,
+		                           string benchmark)
+		{
 			this.correlationProvider_commonInitialization(tickersToAnalyze,
-					 minimumAbsoluteReturnValue, maximumAbsoluteReturnValue);
+			                                              minimumAbsoluteReturnValue, maximumAbsoluteReturnValue);
 			this.setEndOfDayDatesTime(startDate,endDate);
 			this.returnIntervalLength = returnIntervalLength;
 			this.benchmark = benchmark;
-    }
+		}
 
 		public CorrelationProvider(string[] tickersToAnalyze,
-			DateTime startDate, DateTime endDate, 
-			float minimumAbsoluteReturnValue, float maximumAbsoluteReturnValue,
-			string benchmark)
+		                           DateTime startDate, DateTime endDate,
+		                           float minimumAbsoluteReturnValue, float maximumAbsoluteReturnValue,
+		                           string benchmark)
 		{
 			this.correlationProvider_commonInitialization(tickersToAnalyze,
-				minimumAbsoluteReturnValue, maximumAbsoluteReturnValue);
+			                                              minimumAbsoluteReturnValue, maximumAbsoluteReturnValue);
 			this.setEndOfDayDatesTime(startDate,endDate);
 			this.returnIntervalLength = 1;
 			this.benchmark = benchmark;
@@ -113,15 +113,15 @@ namespace QuantProject.Business.Strategies.TickersRelationships
 		/// <param name="maximumAbsoluteReturnValue">Both current tickers' returns
 		/// have to be less than maximumAbsoluteReturnValue</param>
 		public CorrelationProvider( string[] tickersToAnalyze,
-			ReturnsManager returnsManager,
-			float minimumAbsoluteReturnValue, float maximumAbsoluteReturnValue )
+		                           ReturnsManager returnsManager,
+		                           float minimumAbsoluteReturnValue, float maximumAbsoluteReturnValue )
 		{
 			this.correlationProvider_commonInitialization(tickersToAnalyze,
-				minimumAbsoluteReturnValue, maximumAbsoluteReturnValue);
+			                                              minimumAbsoluteReturnValue, maximumAbsoluteReturnValue);
 			this.returnsManager = returnsManager;
 		}
 		
-	
+		
 
 		protected abstract void setEndOfDayDatesTime(DateTime startDate, DateTime endDate);
 		protected abstract void setReturnsManager();
@@ -134,31 +134,31 @@ namespace QuantProject.Business.Strategies.TickersRelationships
 			int countSignificantReturns = 0;
 			for(int i = 0; i<firstTickerReturns.Length; i++)
 				if( Math.Abs(firstTickerReturns[i]) >= this.minimumAbsoluteReturnValue &&
-				    Math.Abs(firstTickerReturns[i]) <= this.maximumAbsoluteReturnValue &&
-						Math.Abs(secondTickerReturns[i]) >= this.minimumAbsoluteReturnValue && 
-						Math.Abs(secondTickerReturns[i]) <= this.maximumAbsoluteReturnValue )
-				{
-					countSignificantReturns++;
-					tempReturnValue[ countSignificantReturns - 1 ] = firstTickerReturns[ i ];
-				}
+				   Math.Abs(firstTickerReturns[i]) <= this.maximumAbsoluteReturnValue &&
+				   Math.Abs(secondTickerReturns[i]) >= this.minimumAbsoluteReturnValue &&
+				   Math.Abs(secondTickerReturns[i]) <= this.maximumAbsoluteReturnValue )
+			{
+				countSignificantReturns++;
+				tempReturnValue[ countSignificantReturns - 1 ] = firstTickerReturns[ i ];
+			}
 			returnValue = new float[countSignificantReturns];
-      Array.Copy(tempReturnValue, 0, returnValue, 0, countSignificantReturns);
+			Array.Copy(tempReturnValue, 0, returnValue, 0, countSignificantReturns);
 			return returnValue;
 		}
 
 		protected double getOrderedTickersPearsonCorrelations_setCorrelations_getValue(
-			             int indexOfFirstTicker, int indexOfSecondTicker)
+			int indexOfFirstTicker, int indexOfSecondTicker)
 		{
 			double returnValue;
-			float[] firstTickerSignificantReturns = 
+			float[] firstTickerSignificantReturns =
 				this.getOrderedTickersPearsonCorrelations_setCorrelations_getValue_getFilteredReturnsForFirstTicker(
-				this.returnsManager.GetReturns(this.tickers[indexOfFirstTicker]),
-				this.returnsManager.GetReturns(this.tickers[indexOfSecondTicker]) );
+					this.returnsManager.GetReturns(this.tickers[indexOfFirstTicker]),
+					this.returnsManager.GetReturns(this.tickers[indexOfSecondTicker]) );
 			
-			float[] secondTickerSignificantReturns = 
+			float[] secondTickerSignificantReturns =
 				this.getOrderedTickersPearsonCorrelations_setCorrelations_getValue_getFilteredReturnsForFirstTicker(
-				this.returnsManager.GetReturns(this.tickers[indexOfSecondTicker]),
-				this.returnsManager.GetReturns(this.tickers[indexOfFirstTicker]) );
+					this.returnsManager.GetReturns(this.tickers[indexOfSecondTicker]),
+					this.returnsManager.GetReturns(this.tickers[indexOfFirstTicker]) );
 			
 			returnValue = BasicFunctions.PearsonCorrelationCoefficient(
 				firstTickerSignificantReturns,
@@ -166,7 +166,7 @@ namespace QuantProject.Business.Strategies.TickersRelationships
 			
 			if ( Double.IsNaN(returnValue) || Double.IsInfinity(returnValue) )
 				throw new MissingCorrelationException(this.tickers[indexOfFirstTicker],
-														this.tickers[indexOfSecondTicker]);
+				                                      this.tickers[indexOfSecondTicker]);
 
 			return returnValue;
 		}
@@ -175,21 +175,23 @@ namespace QuantProject.Business.Strategies.TickersRelationships
 		{
 			if(this.returnsManager == null)
 				this.setReturnsManager();
-			this.pearsonCorrelations = 
+			this.pearsonCorrelations =
 				new TickersPearsonCorrelation[ this.numOfCombinationTwoByTwo ];
 			int index = 0;
 			for (int i = 0; i < this.tickers.Length; i++)
 				for (int j = i + 1; j < this.tickers.Length; j++)
-				{	
-					try{
-						this.pearsonCorrelations[index] = 
-							new TickersPearsonCorrelation( this.tickers[i], this.tickers[j],
-							this.getOrderedTickersPearsonCorrelations_setCorrelations_getValue( i , j) );
-					}
-					catch(MissingCorrelationException ex)
-					{ex=ex;}
-					index++;
-				} 
+			{
+				try{
+					this.pearsonCorrelations[index] =
+						new TickersPearsonCorrelation( this.tickers[i], this.tickers[j],
+						                              this.getOrderedTickersPearsonCorrelations_setCorrelations_getValue( i , j) );
+				}
+				catch(MissingCorrelationException ex)
+				{
+					string forBreakpoint = ex.Message; forBreakpoint = forBreakpoint + "";
+				}
+				index++;
+			}
 			Array.Sort(this.pearsonCorrelations);
 		}
 		
@@ -201,13 +203,13 @@ namespace QuantProject.Business.Strategies.TickersRelationships
 			System.Console.WriteLine("\n\rCorrelations");
 			for(int i = 0; i < this.pearsonCorrelations.Length; i++)
 				System.Console.WriteLine(this.pearsonCorrelations[i].FirstTicker + " " +
-																 this.pearsonCorrelations[i].SecondTicker + " " +
-																 this.pearsonCorrelations[i].CorrelationValue.ToString() );
+				                         this.pearsonCorrelations[i].SecondTicker + " " +
+				                         this.pearsonCorrelations[i].CorrelationValue.ToString() );
 		}
 
 		public TickersPearsonCorrelation[] GetOrderedTickersPearsonCorrelations()
 		{
-    	if( this.pearsonCorrelations == null )
+			if( this.pearsonCorrelations == null )
 				this.getOrderedTickersPearsonCorrelations_setCorrelations();
 			this.showOutputToConsole();
 			return this.pearsonCorrelations;
@@ -215,26 +217,26 @@ namespace QuantProject.Business.Strategies.TickersRelationships
 		
 		public double GetPearsonCorrelation(string firstTicker, string secondTicker)
 		{
-    	double returnValue = double.NaN;
+			double returnValue = double.NaN;
 			if( this.pearsonCorrelations == null )
 				this.getOrderedTickersPearsonCorrelations_setCorrelations();
 			
-    	for(int i = 0; i<this.pearsonCorrelations.Length; i++)
-    	{
-    		if( (this.pearsonCorrelations[i].FirstTicker == firstTicker &&
-    		     this.pearsonCorrelations[i].SecondTicker == secondTicker) ||
-    		     (this.pearsonCorrelations[i].FirstTicker == secondTicker &&
-    		      this.pearsonCorrelations[i].SecondTicker == firstTicker) )
-    		{
+			for(int i = 0; i<this.pearsonCorrelations.Length; i++)
+			{
+				if( (this.pearsonCorrelations[i].FirstTicker == firstTicker &&
+				     this.pearsonCorrelations[i].SecondTicker == secondTicker) ||
+				   (this.pearsonCorrelations[i].FirstTicker == secondTicker &&
+				    this.pearsonCorrelations[i].SecondTicker == firstTicker) )
+				{
 					returnValue = this.pearsonCorrelations[i].CorrelationValue;
 					i = this.pearsonCorrelations.Length;//exit from for
 				}
-    	}
-    	if( double.IsNaN(returnValue) )
+			}
+			if( double.IsNaN(returnValue) )
 				throw new MissingCorrelationException(firstTicker, secondTicker);
 			
 			return returnValue;
 		}
 
-  } // end of class
+	} // end of class
 }

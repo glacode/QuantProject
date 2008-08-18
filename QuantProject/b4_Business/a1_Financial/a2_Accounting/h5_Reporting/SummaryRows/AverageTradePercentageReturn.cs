@@ -10,19 +10,19 @@ namespace QuantProject.Business.Financial.Accounting.Reporting.SummaryRows
 	/// Summary description for TotalNumberOfTrades.
 	/// </summary>
 	[Serializable]
-  public class AverageTradePercentageReturn : PercentageSummaryRow
+	public class AverageTradePercentageReturn : PercentageSummaryRow
 	{
 		public AverageTradePercentageReturn( Summary summary )
 		{
-      this.rowDescription = "Average trade % Return";
+			this.rowDescription = "Average trade % Return";
 			try
 			{
 				this.rowValue = (double) summary.AccountReport.RoundTrades.DataTable.Compute( "avg([%Profit])" , "true" );
 			}
 			catch (Exception ex)
 			{
-				ex = ex; // to avoid compilation warning;
+				string forBreakpoint = ex.Message; forBreakpoint = forBreakpoint + "";
 			}
-    }
+		}
 	}
 }

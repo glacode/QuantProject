@@ -39,8 +39,6 @@ namespace QuantProject.Business.Strategies.InSample
 		public event NewMessageEventHandler NewMessage;
 		public event NewProgressEventHandler NewProgress;
 
-		private WeightedPositions weightedPositions;
-
 		public string Description
 		{
 			get{ return "ConstantWeightedPositions"; }
@@ -48,7 +46,6 @@ namespace QuantProject.Business.Strategies.InSample
 
 		public DummyInSampleChooser()
 		{
-			this.weightedPositions = weightedPositions;
 		}
 		public object AnalyzeInSample( EligibleTickers eligibleTickers ,
 			ReturnsManager returnsManager )

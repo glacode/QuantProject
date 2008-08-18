@@ -14,12 +14,12 @@ namespace QuantProject.Business.Financial.Accounting.Reporting.Tables
 	/// <summary>
 	/// Summary description for StatisticsSummary.
 	/// </summary>
-  [Serializable]
-  public class StatisticsSummary : ReportTable, ISerializable
-  {
-    private AccountReport accountReport;
+	[Serializable]
+	public class StatisticsSummary : ReportTable, ISerializable
+	{
+		private AccountReport accountReport;
 		private IHistoricalQuoteProvider historicalQuoteProvider;
-    
+		
 		private AverageReturnOnMondayWithOpenPositions averageReturnOnMondayWithOpenPositions;
 		private AverageReturnOnTuesdayWithOpenPositions averageReturnOnTuesdayWithOpenPositions;
 		private AverageReturnOnWednesdayWithOpenPositions averageReturnOnWednesdayWithOpenPositions;
@@ -28,10 +28,10 @@ namespace QuantProject.Business.Financial.Accounting.Reporting.Tables
 		private AverageReturnOnDayWithOpenPositions averageReturnOnDayWithOpenPositions;
 		
 		public AccountReport AccountReport
-    {
-      get { return accountReport; }
-    }
-    
+		{
+			get { return accountReport; }
+		}
+		
 		public AverageReturnOnMondayWithOpenPositions AverageReturnOnMondayWithOpenPositions
 		{
 			get { return this.averageReturnOnMondayWithOpenPositions; }
@@ -74,7 +74,7 @@ namespace QuantProject.Business.Financial.Accounting.Reporting.Tables
 			this.statisticsSummary( accountReport );
 		}
 		public StatisticsSummary( AccountReport accountReport ,
-			IHistoricalQuoteProvider historicalDataProvider ) :
+		                         IHistoricalQuoteProvider historicalDataProvider ) :
 			base( accountReport.Name + " - StatisticsSummary" )
 		{
 			this.historicalQuoteProvider = historicalDataProvider;
@@ -90,7 +90,7 @@ namespace QuantProject.Business.Financial.Accounting.Reporting.Tables
 		/// <param name="info"></param>
 		/// <param name="context"></param>
 		protected StatisticsSummary( SerializationInfo info , StreamingContext context ) :
-							base( "Summary" )
+			base( "Summary" )
 		{
 			// get the set of serializable members for this class and its base classes
 			Type thisType = this.GetType();
@@ -98,7 +98,7 @@ namespace QuantProject.Business.Financial.Accounting.Reporting.Tables
 				thisType , context);
 
 			// deserialize the fields from the info object
-			for (Int32 i = 0 ; i < mi.Length; i++) 
+			for (Int32 i = 0 ; i < mi.Length; i++)
 			{
 				FieldInfo fieldInfo = (FieldInfo) mi[i];
 
@@ -106,10 +106,12 @@ namespace QuantProject.Business.Financial.Accounting.Reporting.Tables
 				try
 				{
 					fieldInfo.SetValue( this ,
-						info.GetValue( fieldInfo.Name, fieldInfo.FieldType ) );
+					                   info.GetValue( fieldInfo.Name, fieldInfo.FieldType ) );
 				}
-				catch(Exception ex)
-				{ex = ex;}
+				catch (Exception ex)
+				{
+					string forBreakpoint = ex.Message; forBreakpoint = forBreakpoint + "";
+				}
 			}
 		}
 		
@@ -119,38 +121,38 @@ namespace QuantProject.Business.Financial.Accounting.Reporting.Tables
 		/// <param name="info"></param>
 		/// <param name="context"></param>
 		void ISerializable.GetObjectData(
-			SerializationInfo info, StreamingContext context) 
+			SerializationInfo info, StreamingContext context)
 		{
 			// get the set of serializable members for this class and base classes
 			Type thisType = this.GetType();
-			MemberInfo[] mi = 
+			MemberInfo[] mi =
 				FormatterServices.GetSerializableMembers( thisType , context);
 
 			// serialize the fields to the info object
-			for (Int32 i = 0 ; i < mi.Length; i++) 
+			for (Int32 i = 0 ; i < mi.Length; i++)
 			{
 				info.AddValue(mi[i].Name, ((FieldInfo) mi[i]).GetValue(this));
 			}
 		}
 		#endregion
 
-    #region "getStatisticsSummary"
+		#region "getStatisticsSummary"
 
-    private void getStatisticsSummary()
-    {
+		private void getStatisticsSummary()
+		{
 			if ( this.accountReport.Equity.DataTable.Rows.Count == 0 )
 				throw new Exception( "A StatisticsSummary computation has been requested, but the equity line is empty" );
-      
+			
 			this.averageReturnOnMondayWithOpenPositions = new AverageReturnOnMondayWithOpenPositions(this);
 			this.averageReturnOnTuesdayWithOpenPositions = new AverageReturnOnTuesdayWithOpenPositions(this);
 			this.averageReturnOnWednesdayWithOpenPositions = new AverageReturnOnWednesdayWithOpenPositions(this);
 			this.averageReturnOnThursdayWithOpenPositions = new AverageReturnOnThursdayWithOpenPositions(this);
 			this.averageReturnOnFridayWithOpenPositions = new AverageReturnOnFridayWithOpenPositions(this);
-			this.averageReturnOnDayWithOpenPositions = 
+			this.averageReturnOnDayWithOpenPositions =
 				new AverageReturnOnDayWithOpenPositions(this);
-    }
+		}
 
-    #endregion
+		#endregion
 
 	}
 }

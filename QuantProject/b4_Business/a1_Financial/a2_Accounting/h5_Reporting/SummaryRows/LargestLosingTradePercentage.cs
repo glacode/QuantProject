@@ -10,11 +10,11 @@ namespace QuantProject.Business.Financial.Accounting.Reporting.SummaryRows
 	/// Summary description for TotalNumberOfTrades.
 	/// </summary>
 	[Serializable]
-  public class LargestLosingTradePercentage : PercentageSummaryRow
+	public class LargestLosingTradePercentage : PercentageSummaryRow
 	{
 		public LargestLosingTradePercentage( Summary summary )
 		{
-      this.rowDescription = "Largest losing trade";
+			this.rowDescription = "Largest losing trade";
 			try
 			{
 				this.rowValue =
@@ -22,8 +22,8 @@ namespace QuantProject.Business.Financial.Accounting.Reporting.SummaryRows
 			}
 			catch (Exception ex)
 			{
-				ex = ex; // to avoid compilation warning;
+				string forBreakpoint = ex.Message; forBreakpoint = forBreakpoint + "";
 			}
-    }
+		}
 	}
 }
