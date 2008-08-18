@@ -235,7 +235,6 @@ namespace QuantProject.Applications.Downloader.OpenTickDownloader
 		{
 			this.fillQueue_setEventHandlers();
 			this.fillQueue_requestBarsForEachMarketDay();
-			string forBreakpoint = "temp";
 		}
 		#endregion fillQueue
 		
