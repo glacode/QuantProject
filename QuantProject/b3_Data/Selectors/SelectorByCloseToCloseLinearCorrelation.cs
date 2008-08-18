@@ -126,17 +126,17 @@ namespace QuantProject.Data.Selectors
 					 rowToAdd["CorrelatedTicker"] = secondTicker;
 					 try
 					 {
-						 rowToAdd["PearsonCorrelationCoefficient"] = 
-							 QuantProject.ADT.Statistics.BasicFunctions.PearsonCorrelationCoefficient(
-							 tickersAdjCloses[j],tickersAdjCloses[i]);
+					 	rowToAdd["PearsonCorrelationCoefficient"] =
+					 		QuantProject.ADT.Statistics.BasicFunctions.PearsonCorrelationCoefficient(
+					 			tickersAdjCloses[j],tickersAdjCloses[i]);
 					 }
 					 catch(Exception ex)
 					 {
-						 ex = ex;
+					 	string forBreakpoint = ex.Message; forBreakpoint = forBreakpoint + "";
 					 }
 					 finally
 					 {
-						 setOfTickers.Rows.Add(rowToAdd);
+					 	setOfTickers.Rows.Add(rowToAdd);
 					 }
 				 }
 			 }

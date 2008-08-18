@@ -86,13 +86,15 @@ namespace QuantProject.Data.Selectors
         try
         {
           row["AverageCloseToOpenPerformance"] = -1000000.0;
-          row["AverageCloseToOpenPerformance"] = 
-            this.getTableOfSelectedTickers_getTickersFromTable_getAverageCTOForTicker((string)row[0]);
+          row["AverageCloseToOpenPerformance"] =
+          	this.getTableOfSelectedTickers_getTickersFromTable_getAverageCTOForTicker((string)row[0]);
         }
         catch(Exception ex)
-        {ex=ex;}
+        {
+        	string forBreakpoint = ex.Message; forBreakpoint = forBreakpoint + "";
+        }
       }
-      DataTable tableToReturn = 
+      DataTable tableToReturn =
         ExtendedDataTable.CopyAndSort(this.setOfTickersToBeSelected,
                                       "AverageCloseToOpenPerformance>-1000000.0",
                                       "AverageCloseToOpenPerformance",

@@ -224,7 +224,7 @@ namespace QuantProject.Data.DataTables
 						row["OpenToCloseStandDev"] = OTCStdDev;
         }
         catch(Exception ex)
-        {ex=ex;}
+        { string forBreakpoint = ex.Message; forBreakpoint = forBreakpoint + ""; }
       }
       DataTable getTickersByVolatility = ExtendedDataTable.CopyAndSort(setOfTickers,
                                                     "OpenToCloseStandDev>-1000000.0",
@@ -301,15 +301,17 @@ namespace QuantProject.Data.DataTables
         try
         {
           row["AverageOpenToClosePerformance"] = -1000000.0;
-          row["AverageOpenToClosePerformance"] = 
-            QuantProject.DataAccess.Tables.Quotes.GetAverageOpenToClosePerformance((string)row[0],
-            firstQuoteDate,
-            lastQuoteDate);
+          row["AverageOpenToClosePerformance"] =
+          	QuantProject.DataAccess.Tables.Quotes.GetAverageOpenToClosePerformance((string)row[0],
+          	                                                                       firstQuoteDate,
+          	                                                                       lastQuoteDate);
         }
         catch(Exception ex)
-        {ex=ex;}
+        {
+        	string forBreakpoint = ex.Message; forBreakpoint = forBreakpoint + "";
+        }
       }
-      string maxAbsValue = 
+      string maxAbsValue =
       	maxAbsoluteAverageOTCPerformance.ToString(new System.Globalization.CultureInfo("en-US"));
       DataTable tableToReturn = ExtendedDataTable.CopyAndSort(setOfTickers,
                                                               "AverageOpenToClosePerformance<=" + maxAbsValue +                                                               
@@ -1126,14 +1128,17 @@ namespace QuantProject.Data.DataTables
           try{
             returnValue = 
               DataAccess.Tables.Quotes.GetAdjustedClose(this.Ticker,
-                                                      firstCurrentDate.AddDays(
-                                                       -daysBeforeCurrent)   );
+            	                                          firstCurrentDate.AddDays(
+            	                                          	-daysBeforeCurrent)   );
             
-          }
-          catch(Exception ex){ex = ex;}
-          finally{
-            daysBeforeCurrent++;
-          }
+        	}
+        	catch(Exception ex)
+        	{
+        		string forBreakpoint = ex.Message; forBreakpoint = forBreakpoint + "";
+        	}
+        	finally{
+        		daysBeforeCurrent++;
+        	}
         }
       }
       return returnValue;
