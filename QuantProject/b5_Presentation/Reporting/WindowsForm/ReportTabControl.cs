@@ -2,7 +2,7 @@
 QuantProject - Quantitative Finance Library
 
 ReportTabControl.cs
-Copyright (C) 2003 
+Copyright (C) 2003
 Glauco Siliprandi
 
 This program is free software; you can redistribute it and/or
@@ -18,7 +18,7 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
-*/
+ */
 using System;
 using System.Runtime.Serialization;
 using System.Reflection;
@@ -59,7 +59,7 @@ namespace QuantProject.Presentation.Reporting.WindowsForm
 		/// <param name="info"></param>
 		/// <param name="context"></param>
 		protected ReportTabControl( SerializationInfo info , StreamingContext context ) :
-							base()
+			base()
 		{
 			// get the set of serializable members for this class and its base classes
 			Type thisType = this.GetType();
@@ -67,7 +67,7 @@ namespace QuantProject.Presentation.Reporting.WindowsForm
 				thisType , context);
 
 			// deserialize the fields from the info object
-			for (Int32 i = 0 ; i < mi.Length; i++) 
+			for (Int32 i = 0 ; i < mi.Length; i++)
 			{
 				FieldInfo fieldInfo = (FieldInfo) mi[i];
 
@@ -75,10 +75,12 @@ namespace QuantProject.Presentation.Reporting.WindowsForm
 				try
 				{
 					fieldInfo.SetValue( this ,
-						info.GetValue( fieldInfo.Name, fieldInfo.FieldType ) );
+					                   info.GetValue( fieldInfo.Name, fieldInfo.FieldType ) );
 				}
 				catch(Exception ex)
-				{ex = ex;}
+				{
+					string forBreakpoint = ex.Message; forBreakpoint = forBreakpoint + "";
+				}
 			}
 		}
 
@@ -88,15 +90,15 @@ namespace QuantProject.Presentation.Reporting.WindowsForm
 		/// <param name="info"></param>
 		/// <param name="context"></param>
 		void ISerializable.GetObjectData(
-			SerializationInfo info, StreamingContext context) 
+			SerializationInfo info, StreamingContext context)
 		{
 			// get the set of serializable members for this class and base classes
 			Type thisType = this.GetType();
-			MemberInfo[] mi = 
+			MemberInfo[] mi =
 				FormatterServices.GetSerializableMembers( thisType , context);
 
 			// serialize the fields to the info object
-			for (Int32 i = 0 ; i < mi.Length; i++) 
+			for (Int32 i = 0 ; i < mi.Length; i++)
 			{
 				info.AddValue(mi[i].Name, ((FieldInfo) mi[i]).GetValue(this));
 			}
@@ -109,12 +111,12 @@ namespace QuantProject.Presentation.Reporting.WindowsForm
 		/// <param name="showBenchmark">true iif the benchmark equity line
 		/// is to be shown</param>
 		public ReportTabControl( AccountReport accountReport ,
-			bool showBenchmark )
+		                        bool showBenchmark )
 		{
 			this.accountReport = accountReport;
 			this.Dock = DockStyle.Fill;
 			this.equityChart = new EquityChartTabPage( this.accountReport ,
-				showBenchmark );
+			                                          showBenchmark );
 			this.Controls.Add( this.equityChart );
 			this.summary = new SummaryTabPage( this.accountReport );
 			this.Controls.Add( this.summary );

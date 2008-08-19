@@ -131,7 +131,7 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOs
 			bool balancedWeightsOnVolatilityBase = true;
 			float minimumAbsoluteReturnValue = 0.000001f;
 			float maximumAbsoluteReturnValue = 100000f;
-			int closeToCloseIntervalLengthForCorrelation = 2;
+//			int closeToCloseIntervalLengthForCorrelation = 2;
 			//correlation is computed only for returns
 			//between minimum and maximum
 			IInSampleChooser inSampleChooser = 
@@ -212,7 +212,7 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOs
 		protected override string getPathForTheMainFolderWhereScriptsResultsAreToBeSaved()
 		{
 			string pathForTheMainFolderWhereScriptsResultsAreToBeSaved =
-				System.Configuration.ConfigurationSettings.AppSettings["LogArchive"];
+				System.Configuration.ConfigurationManager.AppSettings["LogArchive"];
 			return pathForTheMainFolderWhereScriptsResultsAreToBeSaved;
 		}
 

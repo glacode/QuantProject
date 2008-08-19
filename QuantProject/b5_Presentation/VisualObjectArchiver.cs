@@ -90,7 +90,7 @@ namespace QuantProject.Presentation
 			string title )
 		{
 			this.Save( obj , suffix , title , title ,
-				System.Configuration.ConfigurationSettings.AppSettings["ReportsArchive"] );
+				System.Configuration.ConfigurationManager.AppSettings["ReportsArchive"] );
 		}
 		private string getPath( string title , string suffix )
 		{
@@ -112,7 +112,7 @@ namespace QuantProject.Presentation
 		public object Load( object obj , string suffix , string title )
 		{
 			return this.load( suffix , title ,
-				System.Configuration.ConfigurationSettings.AppSettings["ReportsArchive"] );
+				System.Configuration.ConfigurationManager.AppSettings["ReportsArchive"] );
 		}
 		public object Load( string suffix , string title , string initialDirectory )
 		{

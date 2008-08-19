@@ -139,11 +139,14 @@ namespace QuantProject.Scripts.TickerSelectionTesting.TestingOTCTypes.BruteForce
       string fileName = "From"+this.numberOfEligibleTickers +
         "OptDays" + this.numDaysForOptimizationPeriod + "Portfolio" +
         this.numberOfTickersToBeChosen + "BruteForce";
-      string dirNameWhereToSaveAccounts = System.Configuration.ConfigurationSettings.AppSettings["AccountsArchive"] +
+      string dirNameWhereToSaveAccounts =
+      	System.Configuration.ConfigurationManager.AppSettings["AccountsArchive"] +
         "\\" + this.ScriptName + "\\";
-      string dirNameWhereToSaveTransactions = System.Configuration.ConfigurationSettings.AppSettings["TransactionsArchive"] +
+      string dirNameWhereToSaveTransactions =
+      	System.Configuration.ConfigurationManager.AppSettings["TransactionsArchive"] +
         "\\" + this.ScriptName + "\\";
-      string dirNameWhereToSaveBestGenomes = System.Configuration.ConfigurationSettings.AppSettings["GenomesArchive"] +
+      string dirNameWhereToSaveBestGenomes =
+      	System.Configuration.ConfigurationManager.AppSettings["GenomesArchive"] +
         "\\" + this.ScriptName + "\\";
       
       this.checkDateForReport_createDirIfNotPresent(dirNameWhereToSaveAccounts);

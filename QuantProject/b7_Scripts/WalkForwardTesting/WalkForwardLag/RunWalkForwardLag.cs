@@ -51,8 +51,8 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag
 //		private int numberOfPortfolioPositions;
 		private int numberDaysForInSampleOptimization;
 		private int numDaysBetweenEachOptimization;
-		private int generationNumberForGeneticOptimizer;
-		private int populationSizeForGeneticOptimizer;
+//		private int generationNumberForGeneticOptimizer;
+//		private int populationSizeForGeneticOptimizer;
 		private string benchmark;
 		private DateTime firstDateTime;
 		private DateTime lastDateTime;
@@ -83,8 +83,8 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag
 			this.numberDaysForInSampleOptimization =
 				wFLagWeightedPositionsChooser.NumberDaysForInSampleOptimization;
 			this.numDaysBetweenEachOptimization = numDaysBetweenEachOptimization;
-			this.generationNumberForGeneticOptimizer = generationNumberForGeneticOptimizer;
-			this.populationSizeForGeneticOptimizer = populationSizeForGeneticOptimizer;
+//			this.generationNumberForGeneticOptimizer = generationNumberForGeneticOptimizer;
+//			this.populationSizeForGeneticOptimizer = populationSizeForGeneticOptimizer;
 			this.benchmark =
 				this.wFLagWeightedPositionsChooser.Benchmark;
 			this.firstDateTime = firstDateTime;
@@ -208,8 +208,6 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag
 				this.wFLagWeightedPositionsChooser.NumberOfDrivingPositions + "_" +
 				"PrtfPstns_" +
 				this.wFLagWeightedPositionsChooser.NumberOfPortfolioPositions + "_" +
-				"GenNum_" + this.generationNumberForGeneticOptimizer + "_" +
-				"PopSize_" + this.populationSizeForGeneticOptimizer + "_" +
 				"From_" + this.getShortStringForDateTime(
 				(DateTime)this.account.Transactions.GetKey( 0 ) ) + "_" +
 				"To_" + this.getShortStringForDateTime( currentTime ) + "_" +

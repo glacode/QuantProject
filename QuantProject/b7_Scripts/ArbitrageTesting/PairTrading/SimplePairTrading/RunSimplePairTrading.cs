@@ -112,9 +112,11 @@ namespace QuantProject.Scripts.ArbitrageTesting.PairTrading.SimplePairTrading
         "OptDays" + this.numDaysForOptimizationPeriod + "GenNum" + 
         this.generationNumberForGeneticOptimizer +
         "PopSize" + this.populationSizeForGeneticOptimizer;
-      string dirNameWhereToSaveAccounts = System.Configuration.ConfigurationSettings.AppSettings["AccountsArchive"] +
+      string dirNameWhereToSaveAccounts =
+      	System.Configuration.ConfigurationManager.AppSettings["AccountsArchive"] +
         "\\" + this.ScriptName + "\\";
-      string dirNameWhereToSaveTransactions = System.Configuration.ConfigurationSettings.AppSettings["TransactionsArchive"] +
+      string dirNameWhereToSaveTransactions =
+      	System.Configuration.ConfigurationManager.AppSettings["TransactionsArchive"] +
         "\\" + this.ScriptName + "\\";
 //      string dirNameWhereToSaveBestGenomes = System.Configuration.ConfigurationSettings.AppSettings["GenomesArchive"] +
 //        "\\" + this.ScriptName + "\\";

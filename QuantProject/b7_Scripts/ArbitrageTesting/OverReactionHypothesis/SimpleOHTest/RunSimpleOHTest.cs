@@ -142,7 +142,8 @@ namespace QuantProject.Scripts.ArbitrageTesting.OverReactionHypothesis.SimpleOHT
       	"_Long_" + this.numOfTickersForBuying +
       	"_Short_" + this.numOfTickersForShortSelling +
 				"_lenInDays_" + this.lengthInDaysForPerformance;
-      string dirNameWhereToSaveReports = System.Configuration.ConfigurationSettings.AppSettings["ReportsArchive"] +
+      string dirNameWhereToSaveReports =
+      	System.Configuration.ConfigurationManager.AppSettings["ReportsArchive"] +
         "\\" + this.scriptName + "\\";
           
       //default report with numIntervalDays = 1

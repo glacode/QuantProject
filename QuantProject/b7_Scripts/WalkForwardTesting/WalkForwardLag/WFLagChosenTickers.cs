@@ -43,7 +43,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag
 	{
 		public event NewProgressEventHandler NewProgress;
 
-		protected WFLagEligibleTickers eligibleTickers;
+//		protected WFLagEligibleTickers eligibleTickers;
 		protected int numberOfDrivingPositions;
 		protected int numberOfPositionsToBeChosen;
 		protected int inSampleDays;
@@ -117,7 +117,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag
 			IEquityEvaluator equityEvaluator
 			)
 		{
-			this.eligibleTickers = eligibleTickers;
+//			this.eligibleTickers = eligibleTickers;
 			this.numberOfDrivingPositions = numberOfDrivingPositions;
 			this.numberOfPositionsToBeChosen = numberOfPositionsToBeChosen;
 			this.inSampleDays = inSampleDays;

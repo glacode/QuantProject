@@ -149,11 +149,14 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
         this.generationNumberForGeneticOptimizer +
         "_PopSize" + this.populationSizeForGeneticOptimizer +
         Convert.ToString(this.portfolioType);
-      string dirNameWhereToSaveAccounts = System.Configuration.ConfigurationSettings.AppSettings["AccountsArchive"] +
+      string dirNameWhereToSaveAccounts =
+      	System.Configuration.ConfigurationManager.AppSettings["AccountsArchive"] +
         "\\" + this.ScriptName + "\\";
-      string dirNameWhereToSaveTransactions = System.Configuration.ConfigurationSettings.AppSettings["TransactionsArchive"] +
+      string dirNameWhereToSaveTransactions =
+      	System.Configuration.ConfigurationManager.AppSettings["TransactionsArchive"] +
         "\\" + this.ScriptName + "\\";
-      string dirNameWhereToSaveBestGenomes = System.Configuration.ConfigurationSettings.AppSettings["GenomesArchive"] +
+      string dirNameWhereToSaveBestGenomes =
+      	System.Configuration.ConfigurationManager.AppSettings["GenomesArchive"] +
         "\\" + this.ScriptName + "\\";
       
       this.checkDateForReport_createDirIfNotPresent(dirNameWhereToSaveAccounts);

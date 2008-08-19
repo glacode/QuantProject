@@ -18,7 +18,7 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
-*/
+ */
 
 using System;
 using System.Collections;
@@ -75,7 +75,7 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOs
 		{
 			
 			int maxNumberOfEligiblesToBeChosen = 100;
-						
+			
 			string tickersGroupId = "SP500";
 			
 			bool temporizedGroup = true;
@@ -87,12 +87,12 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOs
 			int numDaysForVolatility = 10;
 			IEligiblesSelector eligiblesSelector =
 				new ByPriceMostLiquidLessVolatileCTOAlwaysQuoted(
-				tickersGroupId , temporizedGroup ,
-				maxNumberOfEligiblesToBeChosen ,
-				maxNumberOfMostLiquidTickersToBeChosen ,
-			  numDaysForAverageRawOpenPriceComputation ,
-				numDaysForVolatility ,
-			 	minPrice , maxPrice );
+					tickersGroupId , temporizedGroup ,
+					maxNumberOfEligiblesToBeChosen ,
+					maxNumberOfMostLiquidTickersToBeChosen ,
+					numDaysForAverageRawOpenPriceComputation ,
+					numDaysForVolatility ,
+					minPrice , maxPrice );
 //			IEligiblesSelector eligiblesSelector =
 //				new ByPriceMostLiquidAlwaysQuoted(
 //				tickersGroupId , temporizedGroup ,
@@ -105,9 +105,9 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOs
 //				maxNumberOfEligiblesToBeChosen ,
 //			  numDaysForAverageRawOpenPriceComputation ,
 //			 	minPrice , maxPrice );
-			eligiblesSelector = 
+			eligiblesSelector =
 				new DummyEligibleSelector();
-//			
+//
 			return eligiblesSelector;
 		}
 
@@ -134,26 +134,26 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOs
 			float maximumAbsoluteReturnValue = 100000f;
 			//correlation is computed only for returns
 			//between minimum and maximum
-			IInSampleChooser inSampleChooser = 
-				new PVO_CTCCorrelationChooser(numberOfBestTestingPositionsToBeReturned, 
-						returnIntervalLength, maxCorrelationAllowed , balancedWeightsOnVolatilityBase,
-					  minimumAbsoluteReturnValue , maximumAbsoluteReturnValue, this.benchmark.Ticker);
-//			IInSampleChooser inSampleChooser = 
-//					new PVO_OTOCorrelationChooser(numberOfBestTestingPositionsToBeReturned, 
+			IInSampleChooser inSampleChooser =
+				new PVO_CTCCorrelationChooser(numberOfBestTestingPositionsToBeReturned,
+				                              returnIntervalLength, maxCorrelationAllowed , balancedWeightsOnVolatilityBase,
+				                              minimumAbsoluteReturnValue , maximumAbsoluteReturnValue, this.benchmark.Ticker);
+//			IInSampleChooser inSampleChooser =
+//					new PVO_OTOCorrelationChooser(numberOfBestTestingPositionsToBeReturned,
 //							returnIntervalLength, maxCorrelationAllowed , balancedWeightsOnVolatilityBase,
 //						  minimumAbsoluteReturnValue , maximumAbsoluteReturnValue);
 
 //			IInSampleChooser inSampleChooser =
-//				new PVO_OTCCorrelationChooser(numberOfBestTestingPositionsToBeReturned, 
+//				new PVO_OTCCorrelationChooser(numberOfBestTestingPositionsToBeReturned,
 //						maxCorrelationAllowed , balancedWeightsOnVolatilityBase,
 //					  minimumAbsoluteReturnValue , maximumAbsoluteReturnValue);
 //			IInSampleChooser inSampleChooser =
-//				new PVO_CTOCorrelationChooser(numberOfBestTestingPositionsToBeReturned, 
+//				new PVO_CTOCorrelationChooser(numberOfBestTestingPositionsToBeReturned,
 //						maxCorrelationAllowed , balancedWeightsOnVolatilityBase,
 //					  minimumAbsoluteReturnValue , maximumAbsoluteReturnValue);
 			
 //			IInSampleChooser inSampleChooser =
-//				new PVO_OTCCTOCorrelationChooser(numberOfBestTestingPositionsToBeReturned, 
+//				new PVO_OTCCTOCorrelationChooser(numberOfBestTestingPositionsToBeReturned,
 //						maxCorrelationAllowed , balancedWeightsOnVolatilityBase,
 //					  minimumAbsoluteReturnValue , maximumAbsoluteReturnValue);
 //			//office
@@ -171,8 +171,8 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOs
 			//home
 			inSampleChooser =
 				new PVOChooserFromSavedBackTestLog(
-				@"C:\Utente\MarcoVarie\Vari\qP\LogArchive\2008_05_18_12_13_22_PVO_CTO_from_2006_01_01_to_2008_04_28_annlRtrn_4.15_maxDD_17.07\2008_05_18_12_13_22_PVO_CTO_from_2006_01_01_to_2008_04_28_annlRtrn_4.15_maxDD_17.07.qpL",
-				numberOfBestTestingPositionsToBeReturned);
+					@"C:\Utente\MarcoVarie\Vari\qP\LogArchive\2008_05_18_12_13_22_PVO_CTO_from_2006_01_01_to_2008_04_28_annlRtrn_4.15_maxDD_17.07\2008_05_18_12_13_22_PVO_CTO_from_2006_01_01_to_2008_04_28_annlRtrn_4.15_maxDD_17.07.qpL",
+					numberOfBestTestingPositionsToBeReturned);
 			return inSampleChooser;
 		}
 
@@ -190,10 +190,10 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOs
 			double overboughtThresholdMAX = 0.02;
 			IEndOfDayStrategyForBacktester endOfDayStrategy
 				= new PVO_OTCStrategy(eligiblesSelector ,
-				minNumOfEligiblesForValidOptimization, inSampleChooser ,
-				inSampleDays , benchmark , numDaysBetweenEachOptimization ,
-				numOfClosingsBeforeExit, oversoldThreshold , overboughtThreshold ,
-				oversoldThresholdMAX , overboughtThresholdMAX , historicalQuoteProvider);
+				                      minNumOfEligiblesForValidOptimization, inSampleChooser ,
+				                      inSampleDays , benchmark , numDaysBetweenEachOptimization ,
+				                      numOfClosingsBeforeExit, oversoldThreshold , overboughtThreshold ,
+				                      oversoldThresholdMAX , overboughtThresholdMAX , historicalQuoteProvider);
 			return endOfDayStrategy;
 		}
 		protected override EndOfDayStrategyBackTester getEndOfDayStrategyBackTester()
@@ -215,17 +215,17 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOs
 				new HistoricalAdjustedQuoteProvider();
 			EndOfDayStrategyBackTester endOfDayStrategyBackTester =
 				new EndOfDayStrategyBackTester(
-				backTestId , this.endOfDayStrategy ,
-				quoteProviderForBackTester , accountProvider ,
-				firstDateTime ,	lastDateTime ,
-				this.benchmark , cashToStart , maxRunningHours );
+					backTestId , this.endOfDayStrategy ,
+					quoteProviderForBackTester , accountProvider ,
+					firstDateTime ,	lastDateTime ,
+					this.benchmark , cashToStart , maxRunningHours );
 			return endOfDayStrategyBackTester;
 		}
 
 		protected override string getPathForTheMainFolderWhereScriptsResultsAreToBeSaved()
 		{
 			string pathForTheMainFolderWhereScriptsResultsAreToBeSaved =
-				System.Configuration.ConfigurationSettings.AppSettings["LogArchive"];
+				System.Configuration.ConfigurationManager.AppSettings["LogArchive"];
 			return pathForTheMainFolderWhereScriptsResultsAreToBeSaved;
 		}
 
@@ -237,12 +237,12 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOs
 		protected override string getFullPathFileNameForMain()
 		{
 			string returnValue;
-			string fullPathFileNameForMainAtHome = 
+			string fullPathFileNameForMainAtHome =
 				@"C:\Quant\QuantProject\b7_Scripts\TechnicalAnalysisTesting\Oscillators\FixedLevelOscillators\PortfolioValueOscillator\PVO_CTOMain.cs";
 			if( File.Exists(fullPathFileNameForMainAtHome) )
 				returnValue = fullPathFileNameForMainAtHome;
 			else
-				returnValue = 
+				returnValue =
 					@"C:\Utente\MarcoVarie\Vari\qP\QuantProject\b7_Scripts\TechnicalAnalysisTesting\Oscillators\FixedLevelOscillators\PortfolioValueOscillator\PVO_CTOMain.cs";
 			
 			return returnValue;

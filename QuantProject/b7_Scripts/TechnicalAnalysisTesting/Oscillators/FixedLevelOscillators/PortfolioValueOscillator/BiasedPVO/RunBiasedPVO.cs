@@ -18,7 +18,7 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
-*/
+ */
 
 using System;
 using System.Collections;
@@ -37,7 +37,7 @@ using QuantProject.Business.Strategies;
 using QuantProject.Business.Testing;
 using QuantProject.Business.Timing;
 using QuantProject.Data.DataProviders;
-using QuantProject.Data.Selectors; 
+using QuantProject.Data.Selectors;
 using QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios;
 using QuantProject.Presentation.Reporting.WindowsForm;
 using QuantProject.ADT.FileManaging;
@@ -52,24 +52,24 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOs
 	/// with this difference:
 	/// when it is time to open new positions,
 	/// it is not simply chosen the genome with the highest fitness
-	/// (as in the PVO base), but it is chosen the genome (from a 
+	/// (as in the PVO base), but it is chosen the genome (from a
 	/// given set of genomes with a good fitness) that
 	/// has the highest degree of deviation from a threshold
 	/// </summary>
 	[Serializable]
 	public class RunBiasedPVO : RunPVO
 	{
-    protected double minPriceForTickersToBeChosen;
-    protected double maxPriceForTickersToBeChosen;
+		protected double minPriceForTickersToBeChosen;
+		protected double maxPriceForTickersToBeChosen;
 		protected int numOfDifferentGenomesToEvaluateOutOfSample;
-    protected int numDaysOfStayingOnTheMarket;
-    protected double maxCoefficientForDegreeComputationOfCrossingThreshold;
+		protected int numDaysOfStayingOnTheMarket;
+		protected double maxCoefficientForDegreeComputationOfCrossingThreshold;
 		protected double numOfStdDevForThresholdsComputation;
 		protected bool resetThresholdsBeforeCheckingOutOfSample;
 		protected bool buyOnlyPositionsThatAreMovingTogether;
 		protected bool doNotOpenReversedPositionsThatHaveJustBeenClosed;
 		protected int numDaysForThresholdsReComputation;
-   
+		
 		protected string pathOfFileContainingGenomes;
 		public string PathOfFileContainingGenomes
 		{
@@ -77,109 +77,110 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOs
 			set { pathOfFileContainingGenomes = value; }
 		}
 		
-    public RunBiasedPVO(string tickerGroupID, int maxNumOfEligibleTickersForOptimization,
-		                    						double minPriceForTickersToBeChosen,
-		                    						double maxPriceForTickersToBeChosen,
-                                    int numberOfTickersToBeChosen, int numDaysForOptimizationPeriod, 
-                                    int generationNumberForGeneticOptimizer,
-                                    int populationSizeForGeneticOptimizer, string benchmark,
-                                    DateTime startDate, DateTime endDate,
-                                    int numOfDifferentGenomesToEvaluateOutOfSample,
-                                    bool resetThresholdsBeforeCheckingOutOfSample,
-                                    int numDaysForThresholdsReComputation,
-                                    double numOfStdDevForThresholdsComputation,
-                                    double maxCoefficientForDegreeComputationOfCrossingThreshold,
-                                    bool buyOnlyPositionsThatAreMovingTogether,
-                                    bool doNotOpenReversedPositionsThatHaveJustBeenClosed,
-                                    int numDaysForOscillatingPeriod,
-                                    int numDaysOfStayingOnTheMarket,
-                                    int minLevelForOversoldThreshold,
-                                    int maxLevelForOversoldThreshold,
-                                    int minLevelForOverboughtThreshold,
-                                    int maxLevelForOverboughtThreshold,
-                                    int divisorForThresholdComputation,
-                                    bool symmetricalThresholds,
-                                    bool overboughtMoreThanOversoldForFixedPortfolio,
-                                   	int numDaysBetweenEachOptimization,
-                                    PortfolioType inSamplePortfolioType, double maxAcceptableCloseToCloseDrawdown, 
-                                    double minimumAcceptableGain, double maxRunningHours):
-                            base(tickerGroupID, maxNumOfEligibleTickersForOptimization, 
-                            numberOfTickersToBeChosen, numDaysForOptimizationPeriod, 
-                            generationNumberForGeneticOptimizer,
-                            populationSizeForGeneticOptimizer, benchmark,
-                            startDate, endDate,
-                            numDaysForOscillatingPeriod,
-                            minLevelForOversoldThreshold,
-                            maxLevelForOversoldThreshold,
-                            minLevelForOverboughtThreshold,
-                            maxLevelForOverboughtThreshold,
-                            divisorForThresholdComputation,
-                            symmetricalThresholds,
-                            overboughtMoreThanOversoldForFixedPortfolio,
-                            numDaysBetweenEachOptimization,
-                            inSamplePortfolioType, maxAcceptableCloseToCloseDrawdown, 
-                            minimumAcceptableGain,
-                            maxRunningHours)
+		public RunBiasedPVO(string tickerGroupID, int maxNumOfEligibleTickersForOptimization,
+		                    double minPriceForTickersToBeChosen,
+		                    double maxPriceForTickersToBeChosen,
+		                    int numberOfTickersToBeChosen, int numDaysForOptimizationPeriod,
+		                    int generationNumberForGeneticOptimizer,
+		                    int populationSizeForGeneticOptimizer, string benchmark,
+		                    DateTime startDate, DateTime endDate,
+		                    int numOfDifferentGenomesToEvaluateOutOfSample,
+		                    bool resetThresholdsBeforeCheckingOutOfSample,
+		                    int numDaysForThresholdsReComputation,
+		                    double numOfStdDevForThresholdsComputation,
+		                    double maxCoefficientForDegreeComputationOfCrossingThreshold,
+		                    bool buyOnlyPositionsThatAreMovingTogether,
+		                    bool doNotOpenReversedPositionsThatHaveJustBeenClosed,
+		                    int numDaysForOscillatingPeriod,
+		                    int numDaysOfStayingOnTheMarket,
+		                    int minLevelForOversoldThreshold,
+		                    int maxLevelForOversoldThreshold,
+		                    int minLevelForOverboughtThreshold,
+		                    int maxLevelForOverboughtThreshold,
+		                    int divisorForThresholdComputation,
+		                    bool symmetricalThresholds,
+		                    bool overboughtMoreThanOversoldForFixedPortfolio,
+		                    int numDaysBetweenEachOptimization,
+		                    PortfolioType inSamplePortfolioType, double maxAcceptableCloseToCloseDrawdown,
+		                    double minimumAcceptableGain, double maxRunningHours):
+			base(tickerGroupID, maxNumOfEligibleTickersForOptimization,
+			     numberOfTickersToBeChosen, numDaysForOptimizationPeriod,
+			     generationNumberForGeneticOptimizer,
+			     populationSizeForGeneticOptimizer, benchmark,
+			     startDate, endDate,
+			     numDaysForOscillatingPeriod,
+			     minLevelForOversoldThreshold,
+			     maxLevelForOversoldThreshold,
+			     minLevelForOverboughtThreshold,
+			     maxLevelForOverboughtThreshold,
+			     divisorForThresholdComputation,
+			     symmetricalThresholds,
+			     overboughtMoreThanOversoldForFixedPortfolio,
+			     numDaysBetweenEachOptimization,
+			     inSamplePortfolioType, maxAcceptableCloseToCloseDrawdown,
+			     minimumAcceptableGain,
+			     maxRunningHours)
 		{
-      this.minPriceForTickersToBeChosen = minPriceForTickersToBeChosen;
-      this.maxPriceForTickersToBeChosen = maxPriceForTickersToBeChosen;
+			this.minPriceForTickersToBeChosen = minPriceForTickersToBeChosen;
+			this.maxPriceForTickersToBeChosen = maxPriceForTickersToBeChosen;
 			this.numOfDifferentGenomesToEvaluateOutOfSample = numOfDifferentGenomesToEvaluateOutOfSample;
-      this.minimumAcceptableGain = minimumAcceptableGain;
-      //this.ScriptName = "PVO_Biased_WithWeightsPriceSel";
-      this.ScriptName = "PVO_Biased_NoWeightsPriceSel";
-      this.numDaysOfStayingOnTheMarket = numDaysOfStayingOnTheMarket;
-      this.maxCoefficientForDegreeComputationOfCrossingThreshold = maxCoefficientForDegreeComputationOfCrossingThreshold;
-      this.resetThresholdsBeforeCheckingOutOfSample = resetThresholdsBeforeCheckingOutOfSample;
-      this.numDaysForThresholdsReComputation = numDaysForThresholdsReComputation;
-      this.numOfStdDevForThresholdsComputation = numOfStdDevForThresholdsComputation;
-      this.buyOnlyPositionsThatAreMovingTogether = buyOnlyPositionsThatAreMovingTogether;
-      this.doNotOpenReversedPositionsThatHaveJustBeenClosed = doNotOpenReversedPositionsThatHaveJustBeenClosed;
-      this.pathOfFileContainingGenomes = null;
-      //if this field is set to null, selections of tickers (with
-      //optimization), takes place; otherwise, tickers for
-      //out of sample testing are chosen from a given
-      //set of genomes saved to disk (representing a set of
-      //a certain number of optimizations run over a given period)
+			this.minimumAcceptableGain = minimumAcceptableGain;
+			//this.ScriptName = "PVO_Biased_WithWeightsPriceSel";
+			this.ScriptName = "PVO_Biased_NoWeightsPriceSel";
+			this.numDaysOfStayingOnTheMarket = numDaysOfStayingOnTheMarket;
+			this.maxCoefficientForDegreeComputationOfCrossingThreshold = maxCoefficientForDegreeComputationOfCrossingThreshold;
+			this.resetThresholdsBeforeCheckingOutOfSample = resetThresholdsBeforeCheckingOutOfSample;
+			this.numDaysForThresholdsReComputation = numDaysForThresholdsReComputation;
+			this.numOfStdDevForThresholdsComputation = numOfStdDevForThresholdsComputation;
+			this.buyOnlyPositionsThatAreMovingTogether = buyOnlyPositionsThatAreMovingTogether;
+			this.doNotOpenReversedPositionsThatHaveJustBeenClosed = doNotOpenReversedPositionsThatHaveJustBeenClosed;
+			this.pathOfFileContainingGenomes = null;
+			//if this field is set to null, selections of tickers (with
+			//optimization), takes place; otherwise, tickers for
+			//out of sample testing are chosen from a given
+			//set of genomes saved to disk (representing a set of
+			//a certain number of optimizations run over a given period)
 		}
 
-    #region auxiliary overriden methods for Run
-    
-    protected override void run_initializeEndOfDayTimerHandler()
-    {
-      this.endOfDayTimerHandler = new EndOfDayTimerHandlerBiasedPVO(this.tickerGroupID, this.numberOfEligibleTickers,
-    	                                                              this.minPriceForTickersToBeChosen,
-    	                                                              this.maxPriceForTickersToBeChosen,
-			    	                                                        this.numberOfTickersToBeChosen, this.numDaysForOptimizationPeriod,
+		#region auxiliary overriden methods for Run
+		
+		protected override void run_initializeEndOfDayTimerHandler()
+		{
+			this.endOfDayTimerHandler = new EndOfDayTimerHandlerBiasedPVO(this.tickerGroupID, this.numberOfEligibleTickers,
+			                                                              this.minPriceForTickersToBeChosen,
+			                                                              this.maxPriceForTickersToBeChosen,
+			                                                              this.numberOfTickersToBeChosen, this.numDaysForOptimizationPeriod,
 			                                                              this.account,
 			                                                              this.PathOfFileContainingGenomes,
-			    	                                                        this.generationNumberForGeneticOptimizer,
-			    	                                                        this.populationSizeForGeneticOptimizer, this.benchmark,
-			    	                                                        this.numOfDifferentGenomesToEvaluateOutOfSample,
-																																		this.resetThresholdsBeforeCheckingOutOfSample,
-																																		this.numDaysForThresholdsReComputation,
-																																		this.numOfStdDevForThresholdsComputation,
-																																		this.maxCoefficientForDegreeComputationOfCrossingThreshold,
-																																		this.buyOnlyPositionsThatAreMovingTogether,
-																																		this.doNotOpenReversedPositionsThatHaveJustBeenClosed,
+			                                                              this.generationNumberForGeneticOptimizer,
+			                                                              this.populationSizeForGeneticOptimizer, this.benchmark,
+			                                                              this.numOfDifferentGenomesToEvaluateOutOfSample,
+			                                                              this.resetThresholdsBeforeCheckingOutOfSample,
+			                                                              this.numDaysForThresholdsReComputation,
+			                                                              this.numOfStdDevForThresholdsComputation,
+			                                                              this.maxCoefficientForDegreeComputationOfCrossingThreshold,
+			                                                              this.buyOnlyPositionsThatAreMovingTogether,
+			                                                              this.doNotOpenReversedPositionsThatHaveJustBeenClosed,
 			                                                              this.numDaysForOscillatingPeriod,
 			                                                              this.numDaysOfStayingOnTheMarket,
-			    	                                                        this.minLevelForOversoldThreshold,
+			                                                              this.minLevelForOversoldThreshold,
 			                                                              this.maxLevelForOversoldThreshold,
 			                                                              this.minLevelForOverboughtThreshold,
 			                                                              this.maxLevelForOverboughtThreshold,
 			                                                              this.divisorForThresholdComputation,
 			                                                              this.symmetricalThresholds,
 			                                                              this.overboughtMoreThanOversoldForFixedPortfolio,
-			    	                                                        this.numDaysBetweenEachOptimization,
-			                                                              this.portfolioType, this.maxAcceptableCloseToCloseDrawdown, 
+			                                                              this.numDaysBetweenEachOptimization,
+			                                                              this.portfolioType, this.maxAcceptableCloseToCloseDrawdown,
 			                                                              this.minimumAcceptableGain);
-    }
-    
-       
+		}
+		
+		
 		protected void saveScriptResults_saveScriptFeaturesToLogFile(string nameForScriptFiles)
 		{
-			string pathFile = System.Configuration.ConfigurationSettings.AppSettings["ReportsArchive"] +
-												"\\" + this.ScriptName + "\\" + nameForScriptFiles + ".txt";
+			string pathFile =
+				System.Configuration.ConfigurationManager.AppSettings["ReportsArchive"] +
+				"\\" + this.ScriptName + "\\" + nameForScriptFiles + ".txt";
 			StreamWriter w = File.AppendText(pathFile);
 			w.WriteLine ("\n----------------------------------------------\r\n");
 			w.Write("\r\nScript file: {0}\r", nameForScriptFiles);
@@ -222,52 +223,55 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOs
 			//w.Write("\r\nFitnesses compared (sharpe r. OTC): {0}\r", this.fitnessesInSample.Length.ToString());
 			// Update the underlying file.
 			w.Flush();
-			w.Close();	
+			w.Close();
 		}
 
-    public override void SaveScriptResults()
-    {
-    	string fileName = DateTime.Now.Hour.ToString().PadLeft(2,'0') + "_" + 
-    										DateTime.Now.Minute.ToString().PadLeft(2,'0') + "_" +
-    										DateTime.Now.Second.ToString().PadLeft(2,'0') + "_" +
-    		        				this.scriptName +  "GenOS_" + this.numOfDifferentGenomesToEvaluateOutOfSample +
-                        "_OsDays_" + numDaysForOscillatingPeriod +
-      								"_From_" + this.tickerGroupID + "_" + this.numberOfEligibleTickers +
-                      "_DaysForOpt" + this.numDaysForOptimizationPeriod + "Tick" +
-                      this.numberOfTickersToBeChosen + "GenN°" + 
-                      this.generationNumberForGeneticOptimizer +
-                      "PopSize" + this.populationSizeForGeneticOptimizer +
-        							Convert.ToString(this.portfolioType);
-      string dirNameWhereToSaveReports = System.Configuration.ConfigurationSettings.AppSettings["ReportsArchive"] +
-                         								"\\" + this.ScriptName + "\\";
-      string dirNameWhereToSaveTransactions = System.Configuration.ConfigurationSettings.AppSettings["TransactionsArchive"] +
-                       									"\\" + this.ScriptName + "\\";
-      string dirNameWhereToSaveBestGenomes = System.Configuration.ConfigurationSettings.AppSettings["GenomesArchive"] +
-                                        "\\" + this.ScriptName + "\\";
-      
-      this.checkDateForReport_createDirIfNotPresent(dirNameWhereToSaveBestGenomes);
-      if( this.PathOfFileContainingGenomes == null )
-      {
-      	OptimizationOutput optimizationOutput = new OptimizationOutput();
-        foreach(GenomeRepresentation genomeRepresentation in this.endOfDayTimerHandler.BestGenomes)
-      		optimizationOutput.Add(genomeRepresentation);
-      	ObjectArchiver.Archive(optimizationOutput,
-                              dirNameWhereToSaveBestGenomes + 
-                              fileName + ".bgn");
-      }
-      this.checkDateForReport_createDirIfNotPresent(dirNameWhereToSaveReports);
-      AccountReport accountReport = this.account.CreateReport(fileName,1,
-                                    		this.endOfDayTimer.GetCurrentTime(),
-                                    		this.benchmark,
-                                    		new HistoricalAdjustedQuoteProvider());
-      ObjectArchiver.Archive(accountReport,
-                             dirNameWhereToSaveReports + 
-                             fileName + ".qPr");
-      this.saveScriptResults_saveScriptFeaturesToLogFile(fileName);      
-      this.endOfDayTimer.Stop();
-    }
-    
-      
-    #endregion 
+		public override void SaveScriptResults()
+		{
+			string fileName = DateTime.Now.Hour.ToString().PadLeft(2,'0') + "_" +
+				DateTime.Now.Minute.ToString().PadLeft(2,'0') + "_" +
+				DateTime.Now.Second.ToString().PadLeft(2,'0') + "_" +
+				this.scriptName +  "GenOS_" + this.numOfDifferentGenomesToEvaluateOutOfSample +
+				"_OsDays_" + numDaysForOscillatingPeriod +
+				"_From_" + this.tickerGroupID + "_" + this.numberOfEligibleTickers +
+				"_DaysForOpt" + this.numDaysForOptimizationPeriod + "Tick" +
+				this.numberOfTickersToBeChosen + "GenN°" +
+				this.generationNumberForGeneticOptimizer +
+				"PopSize" + this.populationSizeForGeneticOptimizer +
+				Convert.ToString(this.portfolioType);
+			string dirNameWhereToSaveReports =
+				System.Configuration.ConfigurationManager.AppSettings["ReportsArchive"] +
+				"\\" + this.ScriptName + "\\";
+			string dirNameWhereToSaveTransactions =
+				System.Configuration.ConfigurationManager.AppSettings["TransactionsArchive"] +
+				"\\" + this.ScriptName + "\\";
+			string dirNameWhereToSaveBestGenomes =
+				System.Configuration.ConfigurationManager.AppSettings["GenomesArchive"] +
+				"\\" + this.ScriptName + "\\";
+			
+			this.checkDateForReport_createDirIfNotPresent(dirNameWhereToSaveBestGenomes);
+			if( this.PathOfFileContainingGenomes == null )
+			{
+				OptimizationOutput optimizationOutput = new OptimizationOutput();
+				foreach(GenomeRepresentation genomeRepresentation in this.endOfDayTimerHandler.BestGenomes)
+					optimizationOutput.Add(genomeRepresentation);
+				ObjectArchiver.Archive(optimizationOutput,
+				                       dirNameWhereToSaveBestGenomes +
+				                       fileName + ".bgn");
+			}
+			this.checkDateForReport_createDirIfNotPresent(dirNameWhereToSaveReports);
+			AccountReport accountReport = this.account.CreateReport(fileName,1,
+			                                                        this.endOfDayTimer.GetCurrentTime(),
+			                                                        this.benchmark,
+			                                                        new HistoricalAdjustedQuoteProvider());
+			ObjectArchiver.Archive(accountReport,
+			                       dirNameWhereToSaveReports +
+			                       fileName + ".qPr");
+			this.saveScriptResults_saveScriptFeaturesToLogFile(fileName);
+			this.endOfDayTimer.Stop();
+		}
+		
+		
+		#endregion
 	}
 }

@@ -127,9 +127,11 @@ namespace QuantProject.Scripts.TickerSelectionTesting.SimpleSelection
                       this.numberOfTickersToBeChosen + 
         							"Target" + Convert.ToString(this.targetReturn) + 
         							Convert.ToString(this.portfolioType);
-      string dirNameWhereToSaveReports = System.Configuration.ConfigurationSettings.AppSettings["ReportsArchive"] +
+      string dirNameWhereToSaveReports =
+      	System.Configuration.ConfigurationManager.AppSettings["ReportsArchive"] +
                          								"\\" + this.ScriptName + "\\";
-      string dirNameWhereToSaveTransactions = System.Configuration.ConfigurationSettings.AppSettings["TransactionsArchive"] +
+      string dirNameWhereToSaveTransactions =
+      	System.Configuration.ConfigurationManager.AppSettings["TransactionsArchive"] +
                        									"\\" + this.ScriptName + "\\";
 
       //default report with numIntervalDays = 1

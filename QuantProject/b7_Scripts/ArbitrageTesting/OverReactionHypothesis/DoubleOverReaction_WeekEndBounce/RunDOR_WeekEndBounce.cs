@@ -150,7 +150,8 @@ namespace QuantProject.Scripts.ArbitrageTesting.OverReactionHypothesis.DoubleOve
       	"_worst_" + this.numOfWorstTickers +
       	"_forLong_" + this.numOfTickersForBuying +
       	"_forShort_" + this.numOfTickersForShortSelling;
-      string dirNameWhereToSaveReports = System.Configuration.ConfigurationSettings.AppSettings["ReportsArchive"] +
+      string dirNameWhereToSaveReports =
+      	System.Configuration.ConfigurationManager.AppSettings["ReportsArchive"] +
         "\\" + this.scriptName + "\\";
           
       //default report with numIntervalDays = 1

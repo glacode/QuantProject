@@ -122,11 +122,14 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.ExtremeCount
                       "PopSize" + this.populationSizeForGeneticOptimizer +
         							"HalfPeriodDays" + Convert.ToString(this.numDaysForReturnCalculation) + 
         							Convert.ToString(this.portfolioType);
-      string dirNameWhereToSaveReports = System.Configuration.ConfigurationSettings.AppSettings["ReportsArchive"] +
+      string dirNameWhereToSaveReports =
+      	System.Configuration.ConfigurationManager.AppSettings["ReportsArchive"] +
                          								"\\" + this.ScriptName + "\\";
-      string dirNameWhereToSaveTransactions = System.Configuration.ConfigurationSettings.AppSettings["TransactionsArchive"] +
+      string dirNameWhereToSaveTransactions =
+      	System.Configuration.ConfigurationManager.AppSettings["TransactionsArchive"] +
                        									"\\" + this.ScriptName + "\\";
-      string dirNameWhereToSaveBestGenomes = System.Configuration.ConfigurationSettings.AppSettings["GenomesArchive"] +
+      string dirNameWhereToSaveBestGenomes =
+      	System.Configuration.ConfigurationManager.AppSettings["GenomesArchive"] +
                                         "\\" + this.ScriptName + "\\";
       //default report with numIntervalDays = 1
       AccountReport accountReport = this.account.CreateReport(fileName,1,

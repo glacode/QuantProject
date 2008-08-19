@@ -225,7 +225,7 @@ namespace QuantProject.Presentation.Reporting.WindowsForm
       {
         this.saveFileDialog.DefaultExt = "qPr";
         this.saveFileDialog.InitialDirectory = 
-          System.Configuration.ConfigurationSettings.AppSettings["ReportsArchive"];
+          System.Configuration.ConfigurationManager.AppSettings["ReportsArchive"];
       }
       else if(sender.Text.EndsWith("Account"))
         //else the text property of the menu item sender contains at the end
@@ -233,7 +233,7 @@ namespace QuantProject.Presentation.Reporting.WindowsForm
       { 
         this.saveFileDialog.DefaultExt = "qPa";
         this.saveFileDialog.InitialDirectory =
-           System.Configuration.ConfigurationSettings.AppSettings["AccountsArchive"];
+           System.Configuration.ConfigurationManager.AppSettings["AccountsArchive"];
       }
       else if(sender.Text.EndsWith("Transactions"))
         //else the text property of the menu item sender contains at the end

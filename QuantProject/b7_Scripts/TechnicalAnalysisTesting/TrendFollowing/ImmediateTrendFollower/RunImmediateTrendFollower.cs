@@ -2,7 +2,7 @@
 QuantProject - Quantitative Finance Library
 
 RunImmediateTrendFollower.cs
-Copyright (C) 2003 
+Copyright (C) 2003
 Marco Milletti
 
 This program is free software; you can redistribute it and/or
@@ -18,7 +18,7 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
-*/
+ */
 
 using System;
 using System.Collections;
@@ -35,7 +35,7 @@ using QuantProject.Business.Strategies;
 using QuantProject.Business.Testing;
 using QuantProject.Business.Timing;
 using QuantProject.Data.DataProviders;
-using QuantProject.Data.Selectors; 
+using QuantProject.Data.Selectors;
 using QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios;
 using QuantProject.Presentation.Reporting.WindowsForm;
 using QuantProject.ADT.FileManaging;
@@ -46,115 +46,118 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.TrendFollowing.Immediate
 {
 	/// <summary>
 	/// Script that implements the immediate trend follower strategy,
-	/// for finding tickers that tend to 
-	/// earn (lose) from previous gains (losses), using efficient portfolios  
+	/// for finding tickers that tend to
+	/// earn (lose) from previous gains (losses), using efficient portfolios
 	/// </summary>
 	[Serializable]
 	public class RunImmediateTrendFollower : RunEfficientPortfolio
 	{
-    private int numDaysForReturnCalculation;
-    private double maxAcceptableCloseToCloseDrawdown;
-    private int numDaysBetweenEachOptimization;
+		private int numDaysForReturnCalculation;
+		private double maxAcceptableCloseToCloseDrawdown;
+		private int numDaysBetweenEachOptimization;
 		
-    public RunImmediateTrendFollower(string tickerGroupID, int maxNumOfEligibleTickersForOptimization, 
-                                    int numberOfTickersToBeChosen, int numDaysForOptimizationPeriod, 
-                                    int generationNumberForGeneticOptimizer,
-                                    int populationSizeForGeneticOptimizer, string benchmark,
-                                    DateTime startDate, DateTime endDate,
-                                   	int numDaysForReturnCalculation,
-                                   	int numDaysBetweenEachOptimization,
-                                    PortfolioType portfolioType, double maxAcceptableCloseToCloseDrawdown, 
-                                    double maxRunningHours):
-																base(tickerGroupID, maxNumOfEligibleTickersForOptimization, 
-                                    numberOfTickersToBeChosen, numDaysForOptimizationPeriod, 
-                                    generationNumberForGeneticOptimizer,
-                                    populationSizeForGeneticOptimizer, benchmark,
-                                    startDate, endDate, 0.0,
-                                   	portfolioType, maxRunningHours)
+		public RunImmediateTrendFollower(string tickerGroupID, int maxNumOfEligibleTickersForOptimization,
+		                                 int numberOfTickersToBeChosen, int numDaysForOptimizationPeriod,
+		                                 int generationNumberForGeneticOptimizer,
+		                                 int populationSizeForGeneticOptimizer, string benchmark,
+		                                 DateTime startDate, DateTime endDate,
+		                                 int numDaysForReturnCalculation,
+		                                 int numDaysBetweenEachOptimization,
+		                                 PortfolioType portfolioType, double maxAcceptableCloseToCloseDrawdown,
+		                                 double maxRunningHours):
+			base(tickerGroupID, maxNumOfEligibleTickersForOptimization,
+			     numberOfTickersToBeChosen, numDaysForOptimizationPeriod,
+			     generationNumberForGeneticOptimizer,
+			     populationSizeForGeneticOptimizer, benchmark,
+			     startDate, endDate, 0.0,
+			     portfolioType, maxRunningHours)
 		{
-      this.ScriptName = "ITF_Fitness_SR_NoWeights";
-      this.numDaysForReturnCalculation = numDaysForReturnCalculation;
-      this.maxAcceptableCloseToCloseDrawdown = maxAcceptableCloseToCloseDrawdown;
-      this.numDaysBetweenEachOptimization = numDaysBetweenEachOptimization;
+			this.ScriptName = "ITF_Fitness_SR_NoWeights";
+			this.numDaysForReturnCalculation = numDaysForReturnCalculation;
+			this.maxAcceptableCloseToCloseDrawdown = maxAcceptableCloseToCloseDrawdown;
+			this.numDaysBetweenEachOptimization = numDaysBetweenEachOptimization;
 		}
 
-    #region auxiliary overriden methods for Run
-    
-    protected override void run_initializeEndOfDayTimerHandler()
-    {
-      this.endOfDayTimerHandler = new EndOfDayTimerHandlerITF(this.tickerGroupID, this.numberOfEligibleTickers,
-    	                                                        this.numberOfTickersToBeChosen, this.numDaysForOptimizationPeriod,
-                                                              this.account,
-    	                                                        this.generationNumberForGeneticOptimizer,
-    	                                                        this.populationSizeForGeneticOptimizer, this.benchmark,
-    	                                                        this.numDaysForReturnCalculation,
-    	                                                        this.numDaysBetweenEachOptimization,
-                                                              this.portfolioType, this.maxAcceptableCloseToCloseDrawdown);
-    }
-    
-    protected override void run_initializeHistoricalQuoteProvider()
-    {
-    	this.historicalQuoteProvider = new HistoricalAdjustedQuoteProvider();
-    }
-    
-    protected override void run_addEventHandlers()
-    {
-           
-      this.endOfDayTimer.MarketClose +=
-        new MarketCloseEventHandler(
-        this.endOfDayTimerHandler.MarketCloseEventHandler);
-      
-      this.endOfDayTimer.MarketClose +=
-        new MarketCloseEventHandler(
-        this.checkDateForReport);
-      
-      this.endOfDayTimer.OneHourAfterMarketClose += 
-      	new OneHourAfterMarketCloseEventHandler(
-      	   this.endOfDayTimerHandler.OneHourAfterMarketCloseEventHandler);
-    }
+		#region auxiliary overriden methods for Run
+		
+		protected override void run_initializeEndOfDayTimerHandler()
+		{
+			this.endOfDayTimerHandler = new EndOfDayTimerHandlerITF(this.tickerGroupID, this.numberOfEligibleTickers,
+			                                                        this.numberOfTickersToBeChosen, this.numDaysForOptimizationPeriod,
+			                                                        this.account,
+			                                                        this.generationNumberForGeneticOptimizer,
+			                                                        this.populationSizeForGeneticOptimizer, this.benchmark,
+			                                                        this.numDaysForReturnCalculation,
+			                                                        this.numDaysBetweenEachOptimization,
+			                                                        this.portfolioType, this.maxAcceptableCloseToCloseDrawdown);
+		}
+		
+		protected override void run_initializeHistoricalQuoteProvider()
+		{
+			this.historicalQuoteProvider = new HistoricalAdjustedQuoteProvider();
+		}
+		
+		protected override void run_addEventHandlers()
+		{
+			
+			this.endOfDayTimer.MarketClose +=
+				new MarketCloseEventHandler(
+					this.endOfDayTimerHandler.MarketCloseEventHandler);
+			
+			this.endOfDayTimer.MarketClose +=
+				new MarketCloseEventHandler(
+					this.checkDateForReport);
+			
+			this.endOfDayTimer.OneHourAfterMarketClose +=
+				new OneHourAfterMarketCloseEventHandler(
+					this.endOfDayTimerHandler.OneHourAfterMarketCloseEventHandler);
+		}
 
-    public override void SaveScriptResults()
-    {
-      string fileName = this.scriptName + "_From_"+ this.tickerGroupID + "_" + this.numberOfEligibleTickers +
-                      "_DaysForOpt" + this.numDaysForOptimizationPeriod + "Tickers" +
-                      this.numberOfTickersToBeChosen + "GenNum" + 
-                      this.generationNumberForGeneticOptimizer +
-                      "PopSize" + this.populationSizeForGeneticOptimizer +
-        							"HalfPeriodDays" + Convert.ToString(this.numDaysForReturnCalculation) + 
-        							Convert.ToString(this.portfolioType);
-      string dirNameWhereToSaveReports = System.Configuration.ConfigurationSettings.AppSettings["ReportsArchive"] +
-                         								"\\" + this.ScriptName + "\\";
-      string dirNameWhereToSaveTransactions = System.Configuration.ConfigurationSettings.AppSettings["TransactionsArchive"] +
-                       									"\\" + this.ScriptName + "\\";
-      string dirNameWhereToSaveBestGenomes = System.Configuration.ConfigurationSettings.AppSettings["GenomesArchive"] +
-                                        "\\" + this.ScriptName + "\\";
-      //default report with numIntervalDays = 1
-      AccountReport accountReport = this.account.CreateReport(fileName,1,
-                                    		this.endOfDayTimer.GetCurrentTime(),
-                                    		this.benchmark,
-                                        new HistoricalAdjustedQuoteProvider());
-      this.checkDateForReport_createDirIfNotPresent(dirNameWhereToSaveReports);
-      ObjectArchiver.Archive(accountReport,
-                             dirNameWhereToSaveReports + 
-                             fileName + ".qPr");
-      //
-//      this.checkDateForReport_createDirIfNotPresent(dirNameWhereToSaveTransactions);
-//      ObjectArchiver.Archive(this.account.Transactions,
-//                             dirNameWhereToSaveTransactions +
-//                             fileName + ".qPt");
-      //
-      this.checkDateForReport_createDirIfNotPresent(dirNameWhereToSaveBestGenomes);
-      OptimizationOutput optimizationOutput = new OptimizationOutput();
-      foreach(GenomeRepresentation genomeRepresentation in this.endOfDayTimerHandler.BestGenomes)
-      		optimizationOutput.Add(genomeRepresentation);
-      ObjectArchiver.Archive(optimizationOutput,
-                              dirNameWhereToSaveBestGenomes + 
-                              fileName + ".bgn");
-      this.endOfDayTimer.Stop();
-       
-    }
-    
-    
-    #endregion 
+		public override void SaveScriptResults()
+		{
+			string fileName = this.scriptName + "_From_"+ this.tickerGroupID + "_" + this.numberOfEligibleTickers +
+				"_DaysForOpt" + this.numDaysForOptimizationPeriod + "Tickers" +
+				this.numberOfTickersToBeChosen + "GenNum" +
+				this.generationNumberForGeneticOptimizer +
+				"PopSize" + this.populationSizeForGeneticOptimizer +
+				"HalfPeriodDays" + Convert.ToString(this.numDaysForReturnCalculation) +
+				Convert.ToString(this.portfolioType);
+			string dirNameWhereToSaveReports =
+				System.Configuration.ConfigurationManager.AppSettings["ReportsArchive"] +
+				"\\" + this.ScriptName + "\\";
+			string dirNameWhereToSaveTransactions =
+				System.Configuration.ConfigurationManager.AppSettings["TransactionsArchive"] +
+				"\\" + this.ScriptName + "\\";
+			string dirNameWhereToSaveBestGenomes =
+				System.Configuration.ConfigurationManager.AppSettings["GenomesArchive"] +
+				"\\" + this.ScriptName + "\\";
+			//default report with numIntervalDays = 1
+			AccountReport accountReport = this.account.CreateReport(fileName,1,
+			                                                        this.endOfDayTimer.GetCurrentTime(),
+			                                                        this.benchmark,
+			                                                        new HistoricalAdjustedQuoteProvider());
+			this.checkDateForReport_createDirIfNotPresent(dirNameWhereToSaveReports);
+			ObjectArchiver.Archive(accountReport,
+			                       dirNameWhereToSaveReports +
+			                       fileName + ".qPr");
+			//
+			//      this.checkDateForReport_createDirIfNotPresent(dirNameWhereToSaveTransactions);
+			//      ObjectArchiver.Archive(this.account.Transactions,
+			//                             dirNameWhereToSaveTransactions +
+			//                             fileName + ".qPt");
+			//
+			this.checkDateForReport_createDirIfNotPresent(dirNameWhereToSaveBestGenomes);
+			OptimizationOutput optimizationOutput = new OptimizationOutput();
+			foreach(GenomeRepresentation genomeRepresentation in this.endOfDayTimerHandler.BestGenomes)
+				optimizationOutput.Add(genomeRepresentation);
+			ObjectArchiver.Archive(optimizationOutput,
+			                       dirNameWhereToSaveBestGenomes +
+			                       fileName + ".bgn");
+			this.endOfDayTimer.Stop();
+			
+		}
+		
+		
+		#endregion
 	}
 }

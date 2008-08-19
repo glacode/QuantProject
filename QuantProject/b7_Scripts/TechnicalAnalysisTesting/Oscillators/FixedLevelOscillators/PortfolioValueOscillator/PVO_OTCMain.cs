@@ -207,7 +207,7 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOs
 		protected override string getPathForTheMainFolderWhereScriptsResultsAreToBeSaved()
 		{
 			string pathForTheMainFolderWhereScriptsResultsAreToBeSaved =
-				System.Configuration.ConfigurationSettings.AppSettings["LogArchive"];
+				System.Configuration.ConfigurationManager.AppSettings["LogArchive"];
 			return pathForTheMainFolderWhereScriptsResultsAreToBeSaved;
 		}
 
