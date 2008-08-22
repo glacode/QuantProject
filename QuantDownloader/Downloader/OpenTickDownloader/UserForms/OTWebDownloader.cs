@@ -57,6 +57,10 @@ namespace QuantProject.Applications.Downloader.OpenTickDownloader.UserForms
     private bool downloadingInProgress;
     private string textForStartingDownloadingTimeLabel;
     private string textForEndingDownloadingTimeLabel;
+    private string[] tickersToDownload;
+    private SortedList downloadingTickersSortedList;
+    private int indexOfCurrentUpdatingTicker;
+    private DateTime currentUpdatingTickerDateTimeOfLastBarUpdate;
     
 		public OTWebDownloader(DataTable tableOfSelectedTickers)
 		{
@@ -65,10 +69,8 @@ namespace QuantProject.Applications.Downloader.OpenTickDownloader.UserForms
 			//
 			InitializeComponent();
 			this.commonInitialization();
-			//
-			//this.Text = "Download quotes from OpenTick for the selected tickers"; 
 			this.tableOfSelectedTickers = tableOfSelectedTickers;
-      //
+			this.initializeDownloadingTickersSortedList();
 		}
 
 		/// <summary>
@@ -85,7 +87,6 @@ namespace QuantProject.Applications.Downloader.OpenTickDownloader.UserForms
 			}
 			base.Dispose( disposing );
 		}
-    
     /// <summary>
     /// common initialization of the controls of the form
     /// </summary>
@@ -96,8 +97,16 @@ namespace QuantProject.Applications.Downloader.OpenTickDownloader.UserForms
       this.radioButtonDownloadOnlyAfterMax.Checked = false;
       this.dataGrid1.ContextMenu = new TickerViewerMenu(this);
       this.Closing += new CancelEventHandler(this.OTWebDownloader_Closing);
+      this.indexOfCurrentUpdatingTicker = -1;
     }
 
+    private void initializeDownloadingTickersSortedList()
+    {
+    	this.downloadingTickersSortedList = new SortedList();
+    	for(int i = 0; i<this.tableOfSelectedTickers.Rows.Count; i++)
+    		this.downloadingTickersSortedList.Add( this.tableOfSelectedTickers.Rows[i][0], i );
+    }
+    
 		#region Windows Form Designer generated code
 		/// <summary>
 		/// Required method for Designer support - do not modify
@@ -136,7 +145,6 @@ namespace QuantProject.Applications.Downloader.OpenTickDownloader.UserForms
 			this.label10 = new System.Windows.Forms.Label();
 			this.endingDownloadingTimeLabel = new System.Windows.Forms.Label();
 			this.startingDownloadingTimeLabel = new System.Windows.Forms.Label();
-			this.timer1 = new System.Windows.Forms.Timer(this.components);
 			this.signallingLabel = new System.Windows.Forms.Label();
 			((System.ComponentModel.ISupportInitialize)(this.dataGrid1)).BeginInit();
 			this.groupBoxWebDownloaderOptions.SuspendLayout();
@@ -452,17 +460,11 @@ namespace QuantProject.Applications.Downloader.OpenTickDownloader.UserForms
 			this.startingDownloadingTimeLabel.TabIndex = 37;
 			this.startingDownloadingTimeLabel.Text = ".";
 			// 
-			// timer1
-			// 
-			this.timer1.Enabled = true;
-			this.timer1.Interval = 1000;
-			this.timer1.Tick += new System.EventHandler(this.Timer1Tick);
-			// 
 			// signallingLabel
 			// 
 			this.signallingLabel.Location = new System.Drawing.Point(84, 415);
 			this.signallingLabel.Name = "signallingLabel";
-			this.signallingLabel.Size = new System.Drawing.Size(129, 11);
+			this.signallingLabel.Size = new System.Drawing.Size(274, 12);
 			this.signallingLabel.TabIndex = 38;
 			// 
 			// OTWebDownloader
@@ -498,6 +500,7 @@ namespace QuantProject.Applications.Downloader.OpenTickDownloader.UserForms
 			this.Name = "OTWebDownloader";
 			this.Text = "OT Web downloader";
 			this.Load += new System.EventHandler(this.otWebDownloaderLoad);
+			this.Paint += new System.Windows.Forms.PaintEventHandler(this.OTWebDownloaderPaint);
 			((System.ComponentModel.ISupportInitialize)(this.dataGrid1)).EndInit();
 			this.groupBoxWebDownloaderOptions.ResumeLayout(false);
 			((System.ComponentModel.ISupportInitialize)(this.timeFrameInSeconds)).EndInit();
@@ -509,7 +512,6 @@ namespace QuantProject.Applications.Downloader.OpenTickDownloader.UserForms
 			this.PerformLayout();
     }
 		private System.Windows.Forms.Label signallingLabel;
-		private System.Windows.Forms.Timer timer1;
 		private System.Windows.Forms.Label endingDownloadingTimeLabel;
 		private System.Windows.Forms.Label startingDownloadingTimeLabel;
 		private System.Windows.Forms.Label label10;
@@ -570,8 +572,6 @@ namespace QuantProject.Applications.Downloader.OpenTickDownloader.UserForms
     }
     #endregion
     
-		#region download thread
-		    
 	  private void buttonDownloadQuotesOfSelectedTickers_Click(object sender, System.EventArgs e)
     {
 	  	try{
@@ -591,13 +591,12 @@ namespace QuantProject.Applications.Downloader.OpenTickDownloader.UserForms
 	  				this.txtOpenTickUser.Text,
 	  				this.txtOpenTickPassword.Text);
 	  		tickerDownloader.DownloadingStarted +=
-	  			new DownloadingStartedEventHandler(this.refreshForm_atDownloadedStarted);
+	  			new DownloadingStartedEventHandler(this.setStartingTime_atDownloadedStarted);
 	  		tickerDownloader.DatabaseUpdated +=
-	  			new DatabaseUpdatedEventHandler(this.refreshGrid);
+	  			new DatabaseUpdatedEventHandler(this.refreshIndexAndDateTimeForCurrentUpdatingTicker);
 	  		tickerDownloader.DownloadingCompleted +=
-	  			new DownloadingCompletedEventHandler(this.refreshForm_atDownloadedCompleted);
+	  			new DownloadingCompletedEventHandler(this.setEndingTime_atDownloadedCompleted);
 	  		this.buttonDownloadQuotesOfSelectedTickers.Enabled = false;
-	  		//tickerDownloader.DownloadTickers();
 	  		this.downloadThread = new Thread( tickerDownloader.DownloadTickers );
 	  		this.downloadThread.Start();
 	  	}
@@ -607,35 +606,47 @@ namespace QuantProject.Applications.Downloader.OpenTickDownloader.UserForms
     	}
     }
 		
-    #endregion
-    
-    private void refreshGrid(object sender, DatabaseUpdatedEventArgs eventArgs)
+	  #region Form's methods called by the thread started at OTTickerDownloader's method 
+		
+	   private void refreshIndexAndDateTimeForCurrentUpdatingTicker(object sender, DatabaseUpdatedEventArgs eventArgs)
     {
-    	DataTable tickersCurrentylDownloaded =
-    		this.DsTickerCurrentlyDownloaded.Tables["Tickers"];
-    	for(int i = 0; i < tickersCurrentylDownloaded.Rows.Count; i++)
+    	lock(this.downloadingTickersSortedList)
     	{
-    		if( (string)tickersCurrentylDownloaded.Rows[i][0] == eventArgs.Ticker )
-    		{
-    			tickersCurrentylDownloaded.Rows[i][1] = "Yes";
-    			tickersCurrentylDownloaded.Rows[i][2]	= eventArgs.DateTimeOfLastBarUpdated;
-    		}
+	    	this.currentUpdatingTickerDateTimeOfLastBarUpdate = 
+	    		eventArgs.DateTimeOfLastBarUpdated;
+	    	int sortedListIndexOfKey = 
+	    		this.downloadingTickersSortedList.IndexOfKey(eventArgs.Ticker);
+	    	this.indexOfCurrentUpdatingTicker = 
+	    		(int)this.downloadingTickersSortedList.GetByIndex(sortedListIndexOfKey);
+	     	this.downloadingInProgress = true; //if a database
+	    	//update event has been risen, downloading has to be
+	    	//in progress
+	    	this.Invalidate();//this forces the form to repaint itself
+	    	//in a thread - safe manner
+	   	}
+    }
+    
+    private void setStartingTime_atDownloadedStarted(object sender, DownloadingStartedEventArgs eventArgs)
+    {
+    	lock(this.startingDownloadingTimeLabel)
+    	{
+    	    this.textForStartingDownloadingTimeLabel =
+    	     	"Downloading started at: " + eventArgs.StartingDateTime.ToString();
+	   			this.downloadingInProgress = true;
     	}
     }
-    
-    private void refreshForm_atDownloadedStarted(object sender, DownloadingStartedEventArgs eventArgs)
+    private void setEndingTime_atDownloadedCompleted(object sender, DownloadingCompletedEventArgs eventArgs)
     {
-			this.textForStartingDownloadingTimeLabel =
-					"Downloading started at: " + eventArgs.StartingDateTime.ToString();
-	   	this.downloadingInProgress = true;
+    	lock(this.endingDownloadingTimeLabel)
+    	{
+    		this.textForEndingDownloadingTimeLabel = "Downloading completed at: " +
+	    		eventArgs.EndingDateTime.ToString();
+	    	this.downloadingInProgress = false;
+    	}
     }
-    private void refreshForm_atDownloadedCompleted(object sender, DownloadingCompletedEventArgs eventArgs)
-    {
-    	this.textForEndingDownloadingTimeLabel = "Downloading completed at: " + 
-    		eventArgs.EndingDateTime.ToString();
-    	this.downloadingInProgress = false;
-    }
-    
+	  
+    #endregion
+        
     #region properties
     
     public DateTime StartingNewYorkDateTime
@@ -668,12 +679,15 @@ namespace QuantProject.Applications.Downloader.OpenTickDownloader.UserForms
     {
     	get
       {
-      	string[] tickersToDownload = new string[this.tableOfSelectedTickers.Rows.Count];
-    		for(int i = 0; i < tickersToDownload.Length; i++)
-    			tickersToDownload[i] = 
-    				(string)this.tableOfSelectedTickers.Rows[i][0];
-    		
-    		return tickersToDownload;
+    		if(this.tickersToDownload == null)
+    		{
+    			this.tickersToDownload = 
+    				new string[this.tableOfSelectedTickers.Rows.Count];
+    			for(int i = 0; i < this.tickersToDownload.Length; i++)
+    				this.tickersToDownload[i] = 
+    					(string)this.tableOfSelectedTickers.Rows[i][0];
+    		}
+    		return this.tickersToDownload;
       }
     }
     public bool DownloadInProgress
@@ -752,29 +766,7 @@ namespace QuantProject.Applications.Downloader.OpenTickDownloader.UserForms
 		{
 			this.otWebDownloaderLoad_fillDataGridWithTickersToBeDownloaded();
 		}
-		
-		private void Timer1Tick_refreshSignallingLabel()
-		{
-			if(this.downloadingInProgress)
-			{
-				if(this.signallingLabel.Text.Length<40)
-					this.signallingLabel.Text += "--";
-				else
-					this.signallingLabel.Text = "";
-			}
-			else
-			{
-				this.signallingLabel.Text = "";
-			}
-		}
-		
-		void Timer1Tick(object sender, EventArgs e)
-		{
-			this.Timer1Tick_refreshSignallingLabel();
-			this.startingDownloadingTimeLabel.Text = textForStartingDownloadingTimeLabel;
-			this.endingDownloadingTimeLabel.Text = textForEndingDownloadingTimeLabel;
-		}
-		
+								
 		private void OTWebDownloader_Closing(Object sender, CancelEventArgs e)
 		{
        if (this.downloadingInProgress)
@@ -787,5 +779,67 @@ namespace QuantProject.Applications.Downloader.OpenTickDownloader.UserForms
           e.Cancel = false;
        }
     }
+		
+		private void OTWebDownloaderPaint_refreshSignallingLabel()
+		{
+			if(this.downloadingInProgress)
+			{
+				if(this.signallingLabel.Text.Length<60)
+					this.signallingLabel.Text += "--";
+				else
+					this.signallingLabel.Text = "";
+			}
+			else
+			{
+				this.signallingLabel.Text = "";
+			}
+		}
+		
+		private void OTWebDownloaderPaint_refreshTableOfSelectedTickers()
+		{
+      lock(this.downloadingTickersSortedList)
+			{
+				DataTable tickersCurrentylDownloaded =
+		    	this.DsTickerCurrentlyDownloaded.Tables["Tickers"];
+		    if(this.indexOfCurrentUpdatingTicker != -1)
+		    	//a databaseUpdated event has been risen
+		    {
+			   	tickersCurrentylDownloaded.Rows[this.indexOfCurrentUpdatingTicker][1] = "Yes";
+			   	tickersCurrentylDownloaded.Rows[this.indexOfCurrentUpdatingTicker][2]	= 
+			   		this.currentUpdatingTickerDateTimeOfLastBarUpdate;
+		    }
+      }
+    }
+		
+		private void OTWebDownloaderPaint_refreshEndingDownloadingTimeLabel()
+		{
+      lock(this.endingDownloadingTimeLabel)
+			{
+				this.endingDownloadingTimeLabel.Text = 
+					this.textForEndingDownloadingTimeLabel;
+			}
+	  }
+		
+		private void OTWebDownloaderPaint_refreshStartingDownloadingTimeLabel()
+		{
+      lock(this.startingDownloadingTimeLabel)
+			{
+				this.startingDownloadingTimeLabel.Text = 
+					this.textForStartingDownloadingTimeLabel;
+			}
+	  }
+		
+		//this event handler should be called only by the 
+		//thread that owns the form. With these locks,
+		//information coming from the thread that owns the
+		//OT ticker downloader should be "treated"
+		//(written and displayed by the form) in a thread-safe manner
+		void OTWebDownloaderPaint(object sender, PaintEventArgs e)
+		{
+			this.OTWebDownloaderPaint_refreshStartingDownloadingTimeLabel();
+			this.OTWebDownloaderPaint_refreshSignallingLabel();
+			this.OTWebDownloaderPaint_refreshTableOfSelectedTickers();
+			this.OTWebDownloaderPaint_refreshEndingDownloadingTimeLabel();
+		}
 	}
 }

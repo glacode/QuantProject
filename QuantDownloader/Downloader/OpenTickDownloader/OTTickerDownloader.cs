@@ -260,7 +260,7 @@ namespace QuantProject.Applications.Downloader.OpenTickDownloader
 		private string getLogFileName()
 		{
 			string logFileName =
-				@"C:\QuantProject\OpenTickDownloader\textFilesForLoggingNotification\textFileForLoggingNotification";
+				@"C:\Quant\OpenTickDownloader\textFilesForLoggingNotification\textFileForLoggingNotification";
 			logFileName = logFileName + "_" +
 				ExtendedDateTime.GetCompleteShortDescriptionForFileName(
 					DateTime.Now ) + ".txt";
