@@ -2,7 +2,7 @@
 QuantProject - Quantitative Finance Library
 
 EndOfDayTimerHandler.cs
-Copyright (C) 2003 
+Copyright (C) 2003
 Glauco Siliprandi
 
 This program is free software; you can redistribute it and/or
@@ -18,7 +18,7 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
-*/
+ */
 using System;
 using System.Collections;
 
@@ -35,7 +35,8 @@ namespace QuantProject.Scripts.SimpleTesting.ShortTest
 	/// <summary>
 	/// Short Test core strategy
 	/// </summary>
-	public class EndOfDayTimerHandler
+	public class EndOfDayTimerHandler :
+		QuantProject.Business.Strategies.EndOfDayTimerHandler
 	{
 
 		private Account account;
@@ -57,7 +58,7 @@ namespace QuantProject.Scripts.SimpleTesting.ShortTest
 		/// <param name="windowDays">number of days between two consecutive
 		/// best performing ticker calculation</param>
 		public EndOfDayTimerHandler( Account account ,
-			DateTime endDateTime )
+		                            DateTime endDateTime )
 		{
 			this.account = account;
 			this.endDateTime = endDateTime;
@@ -67,20 +68,28 @@ namespace QuantProject.Scripts.SimpleTesting.ShortTest
 		/// </summary>
 		/// <param name="sender"></param>
 		/// <param name="eventArgs"></param>
-		public void MarketOpenEventHandler(
-			Object sender , EndOfDayTimingEventArgs endOfDayTimingEventArgs )
+		protected override void marketOpenEventHandler(
+			Object sender , DateTime dateTime )
 		{
 			this.account.AddOrder( new Order( OrderType.MarketSellShort ,
-				new Instrument( "MSFT" ) , 100 ) );
+			                                 new Instrument( "MSFT" ) , 100 ) );
 		}
-		public void MarketCloseEventHandler(
-			Object sender , EndOfDayTimingEventArgs endOfDayTimingEventArgs )
+		protected override void marketCloseEventHandler(
+			Object sender , DateTime dateTime )
 		{
 			this.account.ClosePosition( "MSFT" );
-			if ( this.account.EndOfDayTimer.GetCurrentTime().DateTime >
-				this.endDateTime )
-				this.account.EndOfDayTimer.Stop();
+			if ( this.account.Timer.GetCurrentDateTime() >
+			    this.endDateTime )
+				this.account.Timer.Stop();
 
+		}
+		protected override void oneHourAfterMarketCloseEventHandler(
+			Object sender , DateTime dateTime )
+		{
+			this.account.ClosePosition( "MSFT" );
+			if ( this.account.Timer.GetCurrentDateTime() >
+			    this.endDateTime )
+				this.account.Timer.Stop();
 		}
 	}
 }

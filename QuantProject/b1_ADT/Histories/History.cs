@@ -120,7 +120,7 @@ namespace QuantProject.ADT.Histories
 		{
 			bool returnValue = true;
 			foreach ( DateTime dateTime in comparingHistory.Keys )
-				if ( ! this.ContainsKey( dateTime ) )
+				if ( ! this.ContainsKey( ExtendedDateTime.GetDate( dateTime ) ) )
 					returnValue = false;
 			return returnValue;
 		}

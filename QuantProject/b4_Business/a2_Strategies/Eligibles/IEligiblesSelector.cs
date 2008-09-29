@@ -21,10 +21,9 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
 using System;
-using System.Data;
 
+using QuantProject.ADT.Histories;
 using QuantProject.ADT.Messaging;
-using QuantProject.Business.Timing;
 
 namespace QuantProject.Business.Strategies.Eligibles
 {
@@ -45,7 +44,7 @@ namespace QuantProject.Business.Strategies.Eligibles
 		/// is given</param>
 		/// <returns></returns>
 		EligibleTickers GetEligibleTickers(
-			EndOfDayHistory endOfDayHistory );
+			History history );
 		
 		/// <summary>
 		/// short text description for the eligiblesSelector

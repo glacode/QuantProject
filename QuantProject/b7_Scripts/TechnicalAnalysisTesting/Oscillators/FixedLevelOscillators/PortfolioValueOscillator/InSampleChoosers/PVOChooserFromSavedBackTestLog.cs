@@ -57,7 +57,8 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOs
 				                    "is too high for the given BackTestLog");
 		}
 		
-		protected override TestingPositions[] getTestingPositionsFromBackTestLog(EndOfDayDateTime lastInSampleDateOfOptimizedTestingPositions)
+		protected override TestingPositions[] getTestingPositionsFromBackTestLog(
+			DateTime lastInSampleDateOfOptimizedTestingPositions)
 		{
 			TestingPositions[] testingPositions = 
 				new TestingPositions[this.numberOfBestTestingPositionsToBeReturned];
@@ -65,8 +66,8 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOs
 			     i < this.backTestLog.Count;
 			     i++ )
 			{
-				if( this.backTestLog[i].SimulatedCreationTime.DateTime ==
-					  lastInSampleDateOfOptimizedTestingPositions.DateTime )
+				if( this.backTestLog[i].SimulatedCreationDateTime ==
+					  lastInSampleDateOfOptimizedTestingPositions )
 				{
 						Array.Copy( ((PVOLogItem)this.backTestLog[i]).BestPVOPositionsInSample ,
 												0, testingPositions, 0, numberOfBestTestingPositionsToBeReturned );

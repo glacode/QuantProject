@@ -78,8 +78,8 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOs
 		protected override void setCorrelationProvider(EligibleTickers eligibleTickers ,
 			ReturnsManager returnsManager)
 		{
-			DateTime firstDate = returnsManager.ReturnIntervals[0].Begin.DateTime;
-			DateTime lastDate =  returnsManager.ReturnIntervals.LastEndOfDayDateTime.DateTime;
+			DateTime firstDate = returnsManager.ReturnIntervals[0].Begin;
+			DateTime lastDate =  returnsManager.ReturnIntervals.LastDateTime;
 			this.correlationProvider =
 				new OpenToOpenCorrelationProvider(eligibleTickers.Tickers, firstDate,
 				                                  lastDate, this.numDaysForOscillatingPeriod,

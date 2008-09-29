@@ -89,9 +89,9 @@ namespace QuantProject.Scripts.CallingReportsForRunScripts
         Account account = new Account("FromSerializedTransactions");
         foreach(Object key in transactions.Keys)
         {
-          foreach(EndOfDayTransaction transaction in (ArrayList)transactions[key])
+          foreach(TimedTransaction timedTransaction in (ArrayList)transactions[key])
           {
-            account.Add(transaction);
+            account.Add(timedTransaction);
           }
         }
         Report report = new Report(account, new HistoricalAdjustedQuoteProvider());

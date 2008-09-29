@@ -2,7 +2,7 @@
 QuantProject - Quantitative Finance Library
 
 RunWalkForwardLinearCombination.cs
-Copyright (C) 2003 
+Copyright (C) 2003
 Glauco Siliprandi
 
 This program is free software; you can redistribute it and/or
@@ -18,7 +18,7 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
-*/
+ */
 
 using System;
 using System.Collections;
@@ -57,21 +57,21 @@ namespace QuantProject.Scripts.WalkForwardTesting.LinearCombination
 		private bool openToCloseDaily;
 		private DateTime deadlineForScript;
 
-		private IHistoricalQuoteProvider historicalQuoteProvider;
+		private HistoricalMarketValueProvider historicalMarketValueProvider;
 		private HistoricalEndOfDayTimer historicalEndOfDayTimer;
 		private Account account;
 		private WalkForwardOpenToCloseDailyStrategy endOfDayStrategy;
 
 		public RunWalkForwardLinearCombination(string tickerGroupID,
-			int numDaysForInSampleOptimization ,
-			int numberOfEligibleTickers, 
-			int numberOfTickersToBeChosen, int numDaysForLiquidity, 
-			int generationNumberForGeneticOptimizer,
-			int populationSizeForGeneticOptimizer, string benchmark,
-			DateTime firstDate, DateTime lastDate, double targetReturn,
-			PortfolioType portfolioType ,
-			bool openToCloseDaily ,
-			double maxRunningHours )
+		                                       int numDaysForInSampleOptimization ,
+		                                       int numberOfEligibleTickers,
+		                                       int numberOfTickersToBeChosen, int numDaysForLiquidity,
+		                                       int generationNumberForGeneticOptimizer,
+		                                       int populationSizeForGeneticOptimizer, string benchmark,
+		                                       DateTime firstDate, DateTime lastDate, double targetReturn,
+		                                       PortfolioType portfolioType ,
+		                                       bool openToCloseDaily ,
+		                                       double maxRunningHours )
 		{
 			this.tickerGroupID = tickerGroupID;
 			this.numDaysForInSampleOptimization = numDaysForInSampleOptimization;
@@ -92,33 +92,33 @@ namespace QuantProject.Scripts.WalkForwardTesting.LinearCombination
 		}
 
 		private void oneHourAfterMarketCloseEventHandler( Object sender ,
-			EndOfDayTimingEventArgs endOfDayTimingEventArgs )
+		                                                 DateTime dateTime )
 		{
-			if ( ( this.account.EndOfDayTimer.GetCurrentTime().DateTime >=
-				this.lastDate ) ||
-				( DateTime.Now > this.deadlineForScript ) )
-				this.account.EndOfDayTimer.Stop();
+			if ( ( this.account.Timer.GetCurrentDateTime() >=
+			      this.lastDate ) ||
+			    ( DateTime.Now > this.deadlineForScript ) )
+				this.account.Timer.Stop();
 		}
 
 		private void run_setHistoricalQuoteProvider()
 		{
 			if ( this.openToCloseDaily )
-				this.historicalQuoteProvider = new HistoricalRawQuoteProvider();
+				this.historicalMarketValueProvider = new HistoricalRawQuoteProvider();
 			else
-				this.historicalQuoteProvider = new HistoricalAdjustedQuoteProvider();
+				this.historicalMarketValueProvider = new HistoricalAdjustedQuoteProvider();
 		}
 		private void run_setStrategy()
 		{
 			if ( this.openToCloseDaily )
 				this.endOfDayStrategy =
 					new WalkForwardOpenToCloseDailyStrategy(
-					this.account , this.tickerGroupID ,
-					this.numDaysForInSampleOptimization ,
-					this.numberOfEligibleTickers ,
-					this.numberOfTickersToBeChosen ,
-					this.benchmark , this.targetReturn , this.portfolioType ,
-					this.populationSizeForGeneticOptimizer ,
-					this.generationNumberForGeneticOptimizer );
+						this.account , this.tickerGroupID ,
+						this.numDaysForInSampleOptimization ,
+						this.numberOfEligibleTickers ,
+						this.numberOfTickersToBeChosen ,
+						this.benchmark , this.targetReturn , this.portfolioType ,
+						this.populationSizeForGeneticOptimizer ,
+						this.generationNumberForGeneticOptimizer );
 //			else
 //				this.endOfDayStrategy = new OpenToCloseWeeklyStrategy(
 //					this.account , this.signedTickers );
@@ -127,34 +127,40 @@ namespace QuantProject.Scripts.WalkForwardTesting.LinearCombination
 		{
 			this.historicalEndOfDayTimer =
 				new IndexBasedEndOfDayTimer(
-				new EndOfDayDateTime( this.firstDate ,
-				EndOfDaySpecificTime.MarketOpen ) , "MSFT" );
+					HistoricalEndOfDayTimer.GetMarketOpen( this.firstDate ) ,
+//				new EndOfDayDateTime( this.firstDate ,
+//				EndOfDaySpecificTime.MarketOpen ) ,
+					"MSFT" );
 			run_setHistoricalQuoteProvider();
 			this.account = new Account( "LinearCombination" , historicalEndOfDayTimer ,
-				new HistoricalEndOfDayDataStreamer( historicalEndOfDayTimer ,
-				this.historicalQuoteProvider ) ,
-				new HistoricalEndOfDayOrderExecutor( historicalEndOfDayTimer ,
-				this.historicalQuoteProvider ) );
+			                           new HistoricalEndOfDayDataStreamer( historicalEndOfDayTimer ,
+			                                                              this.historicalMarketValueProvider ) ,
+			                           new HistoricalEndOfDayOrderExecutor( historicalEndOfDayTimer ,
+			                                                               this.historicalMarketValueProvider ) );
 			run_setStrategy();
 //			OneRank oneRank = new OneRank( account ,
 //				this.endDateTime );
-			this.historicalEndOfDayTimer.MarketOpen +=
-				new MarketOpenEventHandler(
-				this.endOfDayStrategy.MarketOpenEventHandler );
-			this.historicalEndOfDayTimer.FiveMinutesBeforeMarketClose +=
-				new FiveMinutesBeforeMarketCloseEventHandler(
-				this.endOfDayStrategy.FiveMinutesBeforeMarketCloseEventHandler );
-			this.historicalEndOfDayTimer.OneHourAfterMarketClose +=
-				new OneHourAfterMarketCloseEventHandler(
-				this.endOfDayStrategy.OneHourAfterMarketCloseEventHandler );
-			this.historicalEndOfDayTimer.OneHourAfterMarketClose +=
-				new OneHourAfterMarketCloseEventHandler(
-				this.oneHourAfterMarketCloseEventHandler );
-			this.account.EndOfDayTimer.Start();
+			this.historicalEndOfDayTimer.NewDateTime +=
+				new NewDateTimeEventHandler( this.endOfDayStrategy.NewDateTimeEventHandler );
+//			this.historicalEndOfDayTimer.MarketOpen +=
+//				new MarketOpenEventHandler(
+//					this.endOfDayStrategy.MarketOpenEventHandler );
+//			this.historicalEndOfDayTimer.FiveMinutesBeforeMarketClose +=
+//				new FiveMinutesBeforeMarketCloseEventHandler(
+//					this.endOfDayStrategy.FiveMinutesBeforeMarketCloseEventHandler );
+//			this.historicalEndOfDayTimer.OneHourAfterMarketClose +=
+//				new OneHourAfterMarketCloseEventHandler(
+//					this.endOfDayStrategy.OneHourAfterMarketCloseEventHandler );
+//			this.historicalEndOfDayTimer.OneHourAfterMarketClose +=
+//				new OneHourAfterMarketCloseEventHandler(
+//					this.oneHourAfterMarketCloseEventHandler );
+			this.account.Timer.Start();
 
-			Report report = new Report( this.account , this.historicalQuoteProvider );
-			report.Create( "Linear Combination" , 1 ,
-				new EndOfDayDateTime( this.lastDate , EndOfDaySpecificTime.MarketClose ) ,
+			Report report = new Report( this.account , this.historicalMarketValueProvider );
+			report.Create(
+				"Linear Combination" , 1 ,
+				HistoricalEndOfDayTimer.GetMarketClose(	this.lastDate ) ,
+//				new EndOfDayDateTime( this.lastDate , EndOfDaySpecificTime.MarketClose ) ,
 				"^SPX" );
 			//			ObjectArchiver.Archive( report.AccountReport ,
 			//				@"C:\Documents and Settings\Glauco\Desktop\reports\runOneRank.qPr" );
@@ -172,7 +178,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.LinearCombination
 			VisualObjectArchiver visualObjectArchiver =
 				new VisualObjectArchiver();
 			visualObjectArchiver.Save( this.endOfDayStrategy.OptimizationOutput ,
-				"bgn" , title );
+			                          "bgn" , title );
 		}
 	}
 }

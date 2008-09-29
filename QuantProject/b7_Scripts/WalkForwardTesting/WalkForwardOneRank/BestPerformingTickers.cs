@@ -42,7 +42,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardOneRank
 		private int numberBestPerformingTickers;
 		private int numberDaysForPerformanceCalculation;
 
-		private IHistoricalQuoteProvider historicalQuoteProvider =
+		private HistoricalMarketValueProvider historicalMarketValueProvider =
 			new HistoricalAdjustedQuoteProvider();
 
 		private double calculatedTickers = 0;
@@ -74,13 +74,15 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardOneRank
 		{
 			HistoricalEndOfDayTimer historicalEndOfDayTimer =
 				new HistoricalEndOfDayTimer(
-				new EndOfDayDateTime( dateTime.AddDays( -this.numberDaysForPerformanceCalculation ) ,
-				EndOfDaySpecificTime.MarketOpen ) );
+					HistoricalEndOfDayTimer.GetMarketOpen(
+						dateTime.AddDays( -this.numberDaysForPerformanceCalculation ) ) );
+//				new EndOfDayDateTime( dateTime.AddDays( -this.numberDaysForPerformanceCalculation ) ,
+//				EndOfDaySpecificTime.MarketOpen ) );
 			ComparableAccount account = new ComparableAccount( ticker , historicalEndOfDayTimer ,
 				new HistoricalEndOfDayDataStreamer( historicalEndOfDayTimer ,
-				this.historicalQuoteProvider ) ,
+				this.historicalMarketValueProvider ) ,
 				new HistoricalEndOfDayOrderExecutor( historicalEndOfDayTimer ,
-				this.historicalQuoteProvider ) );
+				this.historicalMarketValueProvider ) );
 			OneRank oneRank = new OneRank( account , dateTime );
 			double goodness = account.Goodness;  // forces Goodness computation here (for a better ProgressBar effect)
 			this.eligibleAccounts.Add( account );
@@ -118,13 +120,15 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardOneRank
 		{
 			HistoricalEndOfDayTimer historicalEndOfDayTimer =
 				new HistoricalEndOfDayTimer(
-				new EndOfDayDateTime( dateTime.AddDays( -this.numberDaysForPerformanceCalculation ) ,
-				EndOfDaySpecificTime.MarketOpen ) );
+					HistoricalEndOfDayTimer.GetMarketOpen(
+						dateTime.AddDays( -this.numberDaysForPerformanceCalculation ) ) );
+//				new EndOfDayDateTime( dateTime.AddDays( -this.numberDaysForPerformanceCalculation ) ,
+//				EndOfDaySpecificTime.MarketOpen ) );
 			ComparableAccount account = new ComparableAccount( ticker , historicalEndOfDayTimer ,
 				new HistoricalEndOfDayDataStreamer( historicalEndOfDayTimer ,
-				this.historicalQuoteProvider ) ,
+				this.historicalMarketValueProvider ) ,
 				new HistoricalEndOfDayOrderExecutor( historicalEndOfDayTimer ,
-				this.historicalQuoteProvider ) );
+				this.historicalMarketValueProvider ) );
 			OneRank oneRank = new OneRank( account , dateTime );
 			this.tickersWithGoodness.Add( new EstimatedObject( account.Key , account.Goodness ) );
 		}

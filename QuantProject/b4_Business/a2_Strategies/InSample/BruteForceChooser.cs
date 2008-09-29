@@ -40,6 +40,7 @@ namespace QuantProject.Business.Strategies.InSample
 	/// Abstract brute force in sample chooser to be used for
 	/// in sample optimization
 	/// </summary>
+	[Serializable]
 	public abstract class BruteForceChooser : IInSampleChooser
 	{
 		public event NewProgressEventHandler NewProgress;

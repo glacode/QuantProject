@@ -2,7 +2,7 @@
 QuantProject - Quantitative Finance Library
 
 WFMultiOneRankDebugInSample.cs
-Copyright (C) 2003 
+Copyright (C) 2003
 Glauco Siliprandi
 
 This program is free software; you can redistribute it and/or
@@ -18,7 +18,7 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
-*/
+ */
 
 using System;
 
@@ -40,15 +40,15 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardMultiOneRank
 		private DateTime lastDateTime;
 		private string benchmark;
 
-		private IHistoricalQuoteProvider historicalQuoteProvider;
+		private HistoricalMarketValueProvider historicalMarketValueProvider;
 		private IndexBasedEndOfDayTimer endOfDayTimer;
 		private Account account;
 		private WFMultiOneRankDebugEndOfDayTimerHandler
 			endOfDayTimerHandler;
 
 		public WFMultiOneRankDebugInSample( string[] signedTickers ,
-			DateTime firstDateTime , DateTime lastDateTime ,
-			string benchmark )
+		                                   DateTime firstDateTime , DateTime lastDateTime ,
+		                                   string benchmark )
 		{
 			this.signedTickers = signedTickers;
 			this.firstDateTime = firstDateTime;
@@ -58,7 +58,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardMultiOneRank
 
 //			this.startDateTime = this.dateTime.AddDays(
 //				-this.numberDaysForInSampleOptimization - 1 );
-			this.historicalQuoteProvider =
+			this.historicalMarketValueProvider =
 				new HistoricalAdjustedQuoteProvider();
 		}
 		#region run
@@ -66,57 +66,81 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardMultiOneRank
 		{
 			this.endOfDayTimer =
 				new IndexBasedEndOfDayTimer(
-				new EndOfDayDateTime( this.firstDateTime ,
-				EndOfDaySpecificTime.MarketOpen ), this.benchmark );
+					HistoricalEndOfDayTimer.GetMarketOpen( this.firstDateTime ) ,
+//				new EndOfDayDateTime( this.firstDateTime ,
+//				EndOfDaySpecificTime.MarketOpen ),
+					this.benchmark );
 		}
 		private void run_initializeAccount()
 		{
 			this.account = new Account( "WFMultiOneRankDebugInSample" ,
-				this.endOfDayTimer ,
-				new HistoricalEndOfDayDataStreamer( this.endOfDayTimer ,
-				this.historicalQuoteProvider ) ,
-				new HistoricalEndOfDayOrderExecutor( this.endOfDayTimer ,
-				this.historicalQuoteProvider ) );
+			                           this.endOfDayTimer ,
+			                           new HistoricalEndOfDayDataStreamer( this.endOfDayTimer ,
+			                                                              this.historicalMarketValueProvider ) ,
+			                           new HistoricalEndOfDayOrderExecutor( this.endOfDayTimer ,
+			                                                               this.historicalMarketValueProvider ) );
 		}
 		private void run_initializeEndOfDayTimerHandler()
 		{
 			this.endOfDayTimerHandler =
 				new WFMultiOneRankDebugEndOfDayTimerHandler(
-				this.account , this.signedTickers );
+					this.account , this.signedTickers );
 		}
 		public void marketOpenEventHandler(	Object sender ,
-			EndOfDayTimingEventArgs endOfDayTimingEventArgs )
+		                                   DateTime dateTime )
 		{
 			if ( this.account.Transactions.Count == 0 )
 				this.account.AddCash( 30000 );
 		}
 		public void oneHourAfterMarketCloseEventHandler(
-			Object sender , EndOfDayTimingEventArgs endOfDayTimingEventArgs )
+			Object sender , DateTime dateTime )
 		{
-			if ( ( ( IEndOfDayTimer )sender ).GetCurrentTime().DateTime >
-				this.lastDateTime )
+			if ( ( ( Timer )sender ).GetCurrentDateTime() >
+			    this.lastDateTime )
 			{
 				// the simulation has reached the ending date
-				this.account.EndOfDayTimer.Stop();
-				Report report = new Report( this.account , this.historicalQuoteProvider );
-				report.Create( "WFT One Rank" , 1 ,
-					new EndOfDayDateTime( this.lastDateTime , EndOfDaySpecificTime.OneHourAfterMarketClose ) , "^SPX" );
+				this.account.Timer.Stop();
+				Report report = new Report( this.account , this.historicalMarketValueProvider );
+				report.Create(
+					"WFT One Rank" , 1 ,
+					HistoricalEndOfDayTimer.GetOneHourAfterMarketClose(
+						this.lastDateTime ) ,
+//						new EndOfDayDateTime( this.lastDateTime , EndOfDaySpecificTime.OneHourAfterMarketClose ) ,
+					"^SPX" );
 				report.Show();
 			}
 		}
+		
+		private void newDateTimeEventHandler(
+			Object sender , DateTime dateTime )
+		{
+			if ( HistoricalEndOfDayTimer.IsMarketOpen( dateTime ) )
+				this.marketOpenEventHandler( sender , dateTime );
+//			if ( HistoricalEndOfDayTimer.IsMarketClose( dateTime ) )
+//				this.marketCloseEventHandler( sender , dateTime );
+			if ( HistoricalEndOfDayTimer.IsOneHourAfterMarketClose( dateTime ) )
+				this.oneHourAfterMarketCloseEventHandler( sender , dateTime );
+		}
+
 		public void Run()
 		{
 			run_initializeEndOfDayTimer();
 			run_initializeAccount();
 			run_initializeEndOfDayTimerHandler();
-			this.endOfDayTimer.MarketOpen +=
-				new MarketOpenEventHandler( this.marketOpenEventHandler );
-			this.endOfDayTimer.FiveMinutesBeforeMarketClose +=
-				new FiveMinutesBeforeMarketCloseEventHandler(
-				this.endOfDayTimerHandler.FiveMinutesBeforeMarketCloseEventHandler );
-			this.endOfDayTimer.OneHourAfterMarketClose +=
-				new OneHourAfterMarketCloseEventHandler(
-				this.oneHourAfterMarketCloseEventHandler );
+			
+			this.endOfDayTimer.NewDateTime +=
+				new NewDateTimeEventHandler( this.endOfDayTimerHandler.NewDateTimeEventHandler );
+			this.endOfDayTimer.NewDateTime +=
+				new NewDateTimeEventHandler( this.newDateTimeEventHandler );
+			
+//			this.endOfDayTimer.MarketOpen +=
+//				new MarketOpenEventHandler( this.marketOpenEventHandler );
+//			this.endOfDayTimer.FiveMinutesBeforeMarketClose +=
+//				new FiveMinutesBeforeMarketCloseEventHandler(
+//					this.endOfDayTimerHandler.FiveMinutesBeforeMarketCloseEventHandler );
+//			this.endOfDayTimer.OneHourAfterMarketClose +=
+//				new OneHourAfterMarketCloseEventHandler(
+//					this.oneHourAfterMarketCloseEventHandler );
 			this.endOfDayTimer.Start();
 		}
 		#endregion

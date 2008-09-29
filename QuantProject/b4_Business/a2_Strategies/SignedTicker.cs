@@ -192,14 +192,14 @@ namespace QuantProject.Business.Strategies
 			HistoricalAdjustedQuoteProvider historicalAdjustedQuoteProvider =
 				new HistoricalAdjustedQuoteProvider();
 			double todayMarketValueAtClose =
-				historicalAdjustedQuoteProvider.GetMarketValue(	ticker ,
-				new EndOfDayDateTime( today , EndOfDaySpecificTime.MarketClose ) );
+				historicalAdjustedQuoteProvider.GetMarketValue(
+					ticker , HistoricalEndOfDayTimer.GetMarketClose( today ) );
 			DateTime yesterday = today.AddDays( -1 );
-			EndOfDayDateTime yesterdayAtClose = new
-				EndOfDayDateTime( yesterday ,	EndOfDaySpecificTime.MarketClose );
+			DateTime yesterdayAtClose =
+				HistoricalEndOfDayTimer.GetMarketClose( yesterday );
 			double yesterdayMarketValueAtClose =
 				historicalAdjustedQuoteProvider.GetMarketValue(
-				ticker , yesterdayAtClose );
+					ticker , yesterdayAtClose );
 			double dalyReturnForLongPosition =
 				( todayMarketValueAtClose / yesterdayMarketValueAtClose ) - 1;
 			double dailyReturn;
@@ -326,11 +326,13 @@ namespace QuantProject.Business.Strategies
 				(DateTime)datesForReturnComputation.GetByIndex( i + 1 );
 			HistoricalAdjustedQuoteProvider historicalQuoteProvider =
 				new HistoricalAdjustedQuoteProvider();
-			double previousQuote = historicalQuoteProvider.GetMarketValue( ticker ,
-				new EndOfDayDateTime( previousDate , EndOfDaySpecificTime.MarketClose ) );
-			double currentQuote = historicalQuoteProvider.GetMarketValue( ticker ,
-				new EndOfDayDateTime( currentDate , EndOfDaySpecificTime.MarketClose ) );
-			double closeToCloseReturn = currentQuote / previousQuote - 1.0;
+			double previousMarketValue = historicalQuoteProvider.GetMarketValue(
+				ticker , HistoricalEndOfDayTimer.GetMarketClose( previousDate ) );
+//				new EndOfDayDateTime( previousDate , EndOfDaySpecificTime.MarketClose ) );
+			double currentMarketValue = historicalQuoteProvider.GetMarketValue(
+				ticker , HistoricalEndOfDayTimer.GetMarketClose( currentDate ) );
+//				new EndOfDayDateTime( currentDate , EndOfDaySpecificTime.MarketClose ) );
+			double closeToCloseReturn = currentMarketValue / previousMarketValue - 1.0;
 			return closeToCloseReturn;
 		}
 //		private static double getMultiplier( string signedTicker )

@@ -39,7 +39,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag.WeightedPositio
 		void ChosePositions(
 			WFLagEligibleTickers eligibleTickersForDrivingPositions ,
 			WFLagEligibleTickers eligibleTickersForPortfolioPositions ,
-			EndOfDayDateTime now );
+			DateTime now );
 		WFLagWeightedPositions WFLagChosenPositions { get; }
 		int NumberOfDrivingPositions { get; }
 		int NumberOfPortfolioPositions { get; }

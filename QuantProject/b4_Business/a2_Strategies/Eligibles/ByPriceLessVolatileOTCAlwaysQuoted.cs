@@ -18,14 +18,13 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
-*/
+ */
 
 using System;
 using System.Data;
 
+using QuantProject.ADT.Histories;
 using QuantProject.ADT.Messaging;
-using QuantProject.Business.Strategies.ReturnsManagement.Time;
-using QuantProject.Business.Timing;
 using QuantProject.Data.Selectors;
 
 namespace QuantProject.Business.Strategies.Eligibles
@@ -42,6 +41,7 @@ namespace QuantProject.Business.Strategies.Eligibles
 	/// -step 3: from tickers selected by step 2, the ones that are
 	/// always quoted at all market days are selected (not more than a given max number);
 	/// </summary>
+	[Serializable]
 	public class ByPriceLessVolatileOTCAlwaysQuoted : IEligiblesSelector
 	{
 		public event NewMessageEventHandler NewMessage;
@@ -59,17 +59,17 @@ namespace QuantProject.Business.Strategies.Eligibles
 				return "From_" + this.tickersGroupID + " (temporized: " +
 					this.temporizedGroup.ToString() + ")\n" +
 					"MaxNumOfEligibles_" + this.maxNumberOfEligibleTickersToBeChosen.ToString() + "\n" +
-					"AverageRawOpenPriceRange(computed for the last " + 
+					"AverageRawOpenPriceRange(computed for the last " +
 					this.numOfDaysForAverageOpenRawPriceComputation.ToString() + "):\n" +
 					"From_" + this.minPrice + "_to_" + this.maxPrice + "\n" +
 					"Most Liquid and Always Quoted at each market day (^GSPC) for the in sample time frame";
 			}
 		}
-				
+		
 		public ByPriceLessVolatileOTCAlwaysQuoted(
-			string tickersGroupID , bool temporizedGroup, 
+			string tickersGroupID , bool temporizedGroup,
 			int maxNumberOfEligibleTickersToBeChosen,
-		 	int numOfDaysForAverageOpenRawPriceComputation, double minPrice, double maxPrice)
+			int numOfDaysForAverageOpenRawPriceComputation, double minPrice, double maxPrice)
 		{
 			this.temporizedGroup = temporizedGroup;
 			this.tickersGroupID = tickersGroupID;
@@ -82,49 +82,51 @@ namespace QuantProject.Business.Strategies.Eligibles
 		}
 
 		private EligibleTickers getEligibleTickers_actually(
-			EndOfDayHistory endOfDayHistory )
+			History history )
 		{
-			DateTime currentDate = endOfDayHistory.LastEndOfDayDateTime.DateTime; 
+			DateTime currentDate = history.LastDateTime;
 
 			SelectorByGroup group;
 			if(this.temporizedGroup)
-			//the group is "temporized": returned set of tickers
-			// depend on time
+				//the group is "temporized": returned set of tickers
+				// depend on time
 				group = new SelectorByGroup(this.tickersGroupID,
 				                            currentDate);
-      else//the group is not temporized
-      	group = new SelectorByGroup(this.tickersGroupID);
-      DataTable tickersFromGroup = group.GetTableOfSelectedTickers();
+			else//the group is not temporized
+				group = new SelectorByGroup(this.tickersGroupID);
+			DataTable tickersFromGroup = group.GetTableOfSelectedTickers();
 
-      int numOfTickersInGroupAtCurrentDate = tickersFromGroup.Rows.Count;
-      SelectorByAverageRawOpenPrice byPrice =
-      		new SelectorByAverageRawOpenPrice(tickersFromGroup,false,
-      	                                  currentDate.AddDays(-this.numOfDaysForAverageOpenRawPriceComputation),
-      	                                  currentDate,
-      	                                  numOfTickersInGroupAtCurrentDate,
-      	                                  this.minPrice,this.maxPrice, 0.00001, double.MaxValue);
-     	DataTable dataTableByPrice =
+			int numOfTickersInGroupAtCurrentDate = tickersFromGroup.Rows.Count;
+			SelectorByAverageRawOpenPrice byPrice =
+				new SelectorByAverageRawOpenPrice(tickersFromGroup,false,
+				                                  currentDate.AddDays(-this.numOfDaysForAverageOpenRawPriceComputation),
+				                                  currentDate,
+				                                  numOfTickersInGroupAtCurrentDate,
+				                                  this.minPrice,this.maxPrice, 0.00001, double.MaxValue);
+			DataTable dataTableByPrice =
 				byPrice.GetTableOfSelectedTickers();
 
 			SelectorByOpenToCloseVolatility lessVolatileSelector =
 				new SelectorByOpenToCloseVolatility( dataTableByPrice ,
-        true, endOfDayHistory.FirstEndOfDayDateTime.DateTime, currentDate,
-        this.maxNumberOfEligibleTickersToBeChosen);
-      DataTable dataTableLessVolatile =
+				                                    true, history.FirstDateTime, currentDate,
+				                                    this.maxNumberOfEligibleTickersToBeChosen);
+			DataTable dataTableLessVolatile =
 				lessVolatileSelector.GetTableOfSelectedTickers();
 
 //			DataSet dataSet = new DataSet();
 //			dataSet.Tables.Add( dataTableLessVolatile );
 //			dataSet.WriteXml( "c:\\qpReports\\pairsTrading\\eligiblesCon_ByPriceLessVolatileOTCAlwaysQuoted.xml" );
 
-      SelectorByQuotationAtEachMarketDay quotedAtEachMarketDayFromLastSelection = 
-        new SelectorByQuotationAtEachMarketDay( dataTableLessVolatile ,
-        false, endOfDayHistory.History,
-        this.maxNumberOfEligibleTickersToBeChosen);
-      DataTable dataTableToBeReturned =
+			SelectorByQuotationAtEachMarketDay quotedAtEachMarketDayFromLastSelection =
+				new SelectorByQuotationAtEachMarketDay(
+					dataTableLessVolatile ,
+					false ,
+					history ,
+					this.maxNumberOfEligibleTickersToBeChosen );
+			DataTable dataTableToBeReturned =
 				quotedAtEachMarketDayFromLastSelection.GetTableOfSelectedTickers();
 			
-      return
+			return
 				new EligibleTickers( dataTableToBeReturned );
 		}
 		
@@ -144,10 +146,10 @@ namespace QuantProject.Business.Strategies.Eligibles
 		/// </summary>
 		/// <returns></returns>
 		public EligibleTickers GetEligibleTickers(
-			EndOfDayHistory endOfDayHistory )
+			History history )
 		{
 			EligibleTickers eligibleTickers =
-				this.getEligibleTickers_actually( endOfDayHistory );
+				this.getEligibleTickers_actually( history );
 			this.getEligibleTickers_sendNewMessage( eligibleTickers );
 			return eligibleTickers;
 		}

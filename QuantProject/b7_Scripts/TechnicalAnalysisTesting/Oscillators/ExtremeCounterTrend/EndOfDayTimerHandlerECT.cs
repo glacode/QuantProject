@@ -47,7 +47,8 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.ExtremeCount
 	/// counter trend strategy!
 	/// </summary>
 	[Serializable]
-	public class EndOfDayTimerHandlerECT : EndOfDayTimerHandler
+	public class EndOfDayTimerHandlerECT :		
+		QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios.EndOfDayTimerHandler
 	{
 		private int numDaysForReturnCalculation;
 		private double maxAcceptableCloseToCloseDrawdown;
@@ -81,14 +82,14 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.ExtremeCount
 			this.seedForRandomGenerator = ConstantsProvider.SeedForRandomGenerator;
 		}
 		
-		public override void MarketOpenEventHandler(
-			Object sender , EndOfDayTimingEventArgs endOfDayTimingEventArgs )
+		protected override void marketOpenEventHandler(
+			Object sender , DateTime dateTime )
 		{
 			;
 		}
 		
 
-		#region MarketCloseEventHandler
+		#region marketCloseEventHandler
 		
 		protected void marketCloseEventHandler_updateStopLossCondition()
 		{
@@ -114,13 +115,17 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.ExtremeCount
 					(DateTime)timer.IndexQuotes.Rows[timer.CurrentDateArrayPosition - this.numDaysForReturnCalculation]["quDate"];
 				DateTime finalDateForHalfPeriod =
 					(DateTime)timer.IndexQuotes.Rows[timer.CurrentDateArrayPosition]["quDate"];
-				ReturnsManager returnsManager = new ReturnsManager(new CloseToCloseIntervals(
-					new EndOfDayDateTime(initialDateForHalfPeriod,
-					                     EndOfDaySpecificTime.MarketClose) ,
-					new EndOfDayDateTime(finalDateForHalfPeriod,
-					                     EndOfDaySpecificTime.MarketClose) ,
-					this.benchmark , this.numDaysForReturnCalculation ) ,
-				                                                   new HistoricalAdjustedQuoteProvider() );
+				ReturnsManager returnsManager = new ReturnsManager(
+					new CloseToCloseIntervals(
+						HistoricalEndOfDayTimer.GetMarketClose( initialDateForHalfPeriod ) ,
+						HistoricalEndOfDayTimer.GetMarketClose( finalDateForHalfPeriod ) ,
+//					new EndOfDayDateTime(initialDateForHalfPeriod,
+//					                     EndOfDaySpecificTime.MarketClose) ,
+//					new EndOfDayDateTime(finalDateForHalfPeriod,
+//					                     EndOfDaySpecificTime.MarketClose) ,
+						this.benchmark ,
+						this.numDaysForReturnCalculation ) ,
+					new HistoricalAdjustedQuoteProvider() );
 				returnValue = this.chosenWeightedPositions.GetReturn(0,returnsManager);
 			}
 			catch(MissingQuotesException ex)
@@ -171,8 +176,7 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.ExtremeCount
 			}
 		}
 		
-		public override void MarketCloseEventHandler(
-			Object sender , EndOfDayTimingEventArgs endOfDayTimingEventArgs )
+		protected override void marketCloseEventHandler( Object sender , DateTime dateTime )
 		{
 			if(this.account.Portfolio.Count > 0)
 				this.daysCounterWithPositions++;
@@ -189,7 +193,7 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.ExtremeCount
 
 		#endregion
 		
-		#region OneHourAfterMarketCloseEventHandler
+		#region oneHourAfterMarketCloseEventHandler
 		
 
 		protected DataTable getSetOfTickersToBeOptimized(DateTime currentDate)
@@ -297,10 +301,10 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.ExtremeCount
 		/// </summary>
 		/// <param name="sender"></param>
 		/// <param name="eventArgs"></param>
-		public override void OneHourAfterMarketCloseEventHandler(
-			Object sender , EndOfDayTimingEventArgs endOfDayTimingEventArgs )
+		protected override void oneHourAfterMarketCloseEventHandler(
+			Object sender , DateTime dateTime )
 		{
-			this.lastCloseDate = endOfDayTimingEventArgs.EndOfDayDateTime.DateTime;
+			this.lastCloseDate = dateTime;
 			this.seedForRandomGenerator++;
 			this.numDaysElapsedSinceLastOptimization++;
 			if((this.numDaysElapsedSinceLastOptimization - 1 ==
@@ -308,7 +312,7 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.ExtremeCount
 				//num days without optimization has elapsed or
 				//it is the first close (OLD IMPLEMENTATION)
 			{
-				this.setTickers(endOfDayTimingEventArgs.EndOfDayDateTime.DateTime, true);
+				this.setTickers(dateTime, true);
 				//sets tickers to be chosen next Market Close event
 				this.numDaysElapsedSinceLastOptimization = 0;
 			}

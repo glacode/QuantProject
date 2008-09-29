@@ -46,8 +46,8 @@ namespace QuantProject.Business.Strategies.TickersRelationships
 		protected float maximumAbsoluteReturnValue;
 		protected int numOfCombinationTwoByTwo;
 		protected TickersPearsonCorrelation[] pearsonCorrelations;
-		protected EndOfDayDateTime firstEndOfDayDateTime;
-		protected EndOfDayDateTime lastEndOfDayDateTime;
+		protected DateTime firstDateTime;
+		protected DateTime lastDateTime;
 		protected int returnIntervalLength;
 		protected string benchmark;
 		

@@ -47,7 +47,7 @@ namespace QuantProject.Scripts.General
 
 		protected IEligiblesSelector eligiblesSelector;
 		protected IInSampleChooser inSampleChooser;
-		protected IEndOfDayStrategyForBacktester endOfDayStrategy;
+		protected IStrategyForBacktester strategyForBacktester;
 		protected EndOfDayStrategyBackTester endOfDayStrategyBackTester;
 
 		/// <summary>
@@ -101,7 +101,7 @@ namespace QuantProject.Scripts.General
 
 		protected abstract IInSampleChooser getInSampleChooser();
 
-		protected abstract IEndOfDayStrategyForBacktester getEndOfDayStrategy();
+		protected abstract IStrategyForBacktester getStrategyForBacktester();
 
 		protected abstract EndOfDayStrategyBackTester getEndOfDayStrategyBackTester();
 
@@ -188,7 +188,7 @@ namespace QuantProject.Scripts.General
 		{
 			this.eligiblesSelector = this.getEligiblesSelector();
 			this.inSampleChooser = this.getInSampleChooser();
-			this.endOfDayStrategy = this.getEndOfDayStrategy();
+			this.strategyForBacktester = this.getStrategyForBacktester();
 			this.endOfDayStrategyBackTester =	this.getEndOfDayStrategyBackTester();
 		}
 		
@@ -215,7 +215,7 @@ namespace QuantProject.Scripts.General
 				this.getInitialFullPathForOutputTxtFile() );
 			this.messageManager.Monitor( this.eligiblesSelector );
 			this.messageManager.Monitor( this.inSampleChooser );
-			this.messageManager.Monitor( this.endOfDayStrategy );
+			this.messageManager.Monitor( this.strategyForBacktester );
 			this.messageManager.Monitor( this.endOfDayStrategyBackTester );
 		}
 		#endregion initializeMessageSendersManagement

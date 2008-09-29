@@ -35,9 +35,9 @@ namespace QuantProject.Business.Strategies.Logging
 		/// <summary>
 		/// To be used for testing objects using a LogItem
 		/// </summary>
-		/// <param name="simulatedCreationTime"></param>
-		public DummyLogItem( EndOfDayDateTime simulatedCreationTime ) :
-			base( simulatedCreationTime )
+		/// <param name="simulatedCreationDateTime"></param>
+		public DummyLogItem( DateTime simulatedCreationDateTime ) :
+			base( simulatedCreationDateTime )
 		{
 			//
 			// TODO: Add constructor logic here

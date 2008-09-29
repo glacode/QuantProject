@@ -18,7 +18,7 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
-*/
+ */
 
 using System;
 
@@ -42,8 +42,9 @@ namespace QuantProject.Business.Strategies
 	/// Basic abstract implementation of IEndOfDayStrategyForBacktester,
 	/// that should be inherited by specific strategies
 	/// </summary>
+	[Serializable]
 	public abstract class BasicEndOfDayStrategyForBacktester :
-		IEndOfDayStrategyForBacktester
+		IStrategyForBacktester
 	{
 		public event NewLogItemEventHandler NewLogItem;
 		public event NewMessageEventHandler NewMessage;
@@ -54,7 +55,7 @@ namespace QuantProject.Business.Strategies
 		protected IIntervalsSelector intervalsSelectorForOutOfSample;
 		protected IEligiblesSelector eligiblesSelector;
 		protected IInSampleChooser inSampleChooser;
-		protected IHistoricalQuoteProvider historicalQuoteProviderForInSample;
+		protected HistoricalMarketValueProvider historicalMarketValueProviderForInSample;
 
 		protected DateTime lastOptimizationDateTime;
 		protected ReturnIntervals returnIntervals;
@@ -70,11 +71,11 @@ namespace QuantProject.Business.Strategies
 			set { this.account = value; }
 		}
 
-		public bool StopBacktestIfMaxRunningHoursHasBeenReached
+		public virtual bool StopBacktestIfMaxRunningHoursHasBeenReached
 		{
 			get
 			{
-				return this.optimalWeightedPositionsAreToBeUpdated();
+				return this.areOptimalWeightedPositionsToBeUpdated();
 			}
 		}
 		
@@ -112,8 +113,8 @@ namespace QuantProject.Business.Strategies
 			IIntervalsSelector intervalsSelectorForOutOfSample ,
 			IEligiblesSelector eligiblesSelector ,
 			IInSampleChooser inSampleChooser ,
-			IHistoricalQuoteProvider historicalQuoteProviderForInSample
-			)
+			HistoricalMarketValueProvider historicalMarketValueProviderForInSample
+		)
 		{
 			this.numDaysBeetweenEachOtpimization = numDaysBeetweenEachOtpimization;
 			this.numDaysForInSampleOptimization = numDaysForInSampleOptimization;
@@ -121,22 +122,21 @@ namespace QuantProject.Business.Strategies
 			this.intervalsSelectorForOutOfSample = intervalsSelectorForOutOfSample;
 			this.eligiblesSelector = eligiblesSelector;
 			this.inSampleChooser = inSampleChooser;
-			this.historicalQuoteProviderForInSample =
-				historicalQuoteProviderForInSample;
+			this.historicalMarketValueProviderForInSample =
+				historicalMarketValueProviderForInSample;
 			
 			this.returnIntervals =
 				new ReturnIntervals( this.intervalsSelectorForOutOfSample );
 		}
 
-		#region MarketOpenEventHandler
+		#region marketOpenEventHandler
 
 		protected abstract bool marketOpenEventHandler_arePositionsToBeClosed();
 		protected abstract bool marketOpenEventHandler_arePositionsToBeOpened();
 		protected abstract
 			WeightedPositions marketOpenEventHandler_getPositionsToBeOpened();
 		
-		public void MarketOpenEventHandler(
-			Object sender , EndOfDayTimingEventArgs endOfDayTimingEventArgs )
+		private void marketOpenEventHandler()
 		{
 			this.updateReturnIntervals();
 			if ( this.marketOpenEventHandler_arePositionsToBeClosed() )
@@ -152,22 +152,21 @@ namespace QuantProject.Business.Strategies
 						this.account );
 			}
 		}
-		#endregion MarketOpenEventHandler
+		#endregion marketOpenEventHandler
 
-		public void FiveMinutesBeforeMarketCloseEventHandler(
-			Object sender , EndOfDayTimingEventArgs endOfDayTimingEventArgs )
-		{
-		}
+//		public void FiveMinutesBeforeMarketCloseEventHandler(
+//			Object sender , EndOfDayTimingEventArgs endOfDayTimingEventArgs )
+//		{
+//		}
 
-		#region MarketCloseEventHandler
+		#region marketCloseEventHandler
 
 		protected abstract bool marketCloseEventHandler_arePositionsToBeClosed();
 		protected abstract bool marketCloseEventHandler_arePositionsToBeOpened();
 		protected abstract
 			WeightedPositions marketCloseEventHandler_getPositionsToBeOpened();
 		
-		public void MarketCloseEventHandler(
-			Object sender , EndOfDayTimingEventArgs endOfDayTimingEventArgs )
+		private void marketCloseEventHandler()
 		{
 			this.updateReturnIntervals();
 			if ( this.marketCloseEventHandler_arePositionsToBeClosed() )
@@ -183,59 +182,74 @@ namespace QuantProject.Business.Strategies
 						this.account );
 			}
 		}
-		#endregion MarketCloseEventHandler
+		#endregion marketCloseEventHandler
 
 
-		#region OneHourAfterMarketCloseEventHandler
-		private bool optimalWeightedPositionsAreToBeUpdated()
+		#region oneHourAfterMarketCloseEventHandler
+		
+		#region areOptimalWeightedPositionsToBeUpdated
+		private bool areOptimalWeightedPositionsToBeUpdated_actually()
 		{
-//			TimeSpan timeSpanSinceLastOptimization =
-//				this.now().DateTime - this.lastOptimizationDateTime;
-//			bool areToBeUpdated =	( timeSpanSinceLastOptimization.Days >=
-//				this.numDaysBeetweenEachOtpimization );
-//			return areToBeUpdated;
 			DateTime dateTimeForNextOptimization =
 				this.lastOptimizationDateTime.AddDays(
-				this.numDaysBeetweenEachOtpimization );
+					this.numDaysBeetweenEachOtpimization );
+			DateTime currentSimulatedDateTime = this.now();
 			bool areToBeUpdated =
 				( ( ( this.account.Portfolio.Count == 0 )
-				&& ( ( this.lastOptimizationDateTime == DateTime.MinValue ) ) ) ||
-				( this.now().DateTime >= dateTimeForNextOptimization ) );
+				   && ( ( this.lastOptimizationDateTime == DateTime.MinValue ) ) ) ||
+				 ( currentSimulatedDateTime >= dateTimeForNextOptimization ) );
 			return areToBeUpdated;
 		}
-		#region getInSampleReturnIntervals
-		private EndOfDayDateTime getInSampleReturnIntervals_getFirstDate()
+		private bool areOptimalWeightedPositionsToBeUpdated()
 		{
-			DateTime firstDateTime = this.now().DateTime.AddDays(
+			bool areToBeUpdated;
+//			if ( !this.account.Timer.IsActive )
+//				// the backtester has stopped the timer because the
+//				// backtest has gone beyond max running hours
+//				areToBeUpdated = false;
+//			else
+				areToBeUpdated =
+					this.areOptimalWeightedPositionsToBeUpdated_actually();
+			return areToBeUpdated;
+		}
+		#endregion areOptimalWeightedPositionsToBeUpdated
+		
+		#region getInSampleReturnIntervals
+		private DateTime getInSampleReturnIntervals_getFirstDateTime()
+		{
+			DateTime someDaysBefore = this.now().AddDays(
 				-this.numDaysForInSampleOptimization );
-			EndOfDayDateTime firstDate = new EndOfDayDateTime(
-				firstDateTime , EndOfDaySpecificTime.MarketOpen );
-			return firstDate;
+			DateTime firstDateTime =
+				HistoricalEndOfDayTimer.GetMarketOpen( someDaysBefore );
+//			EndOfDayDateTime firstDate = new EndOfDayDateTime(
+//				someDaysBefore , EndOfDaySpecificTime.MarketOpen );
+			return firstDateTime;
 		}
 		private ReturnIntervals getInSampleReturnIntervals()
 		{
-			EndOfDayDateTime firstDate =
-				this.getInSampleReturnIntervals_getFirstDate();
-			EndOfDayDateTime lastDate =
-				new EndOfDayDateTime( this.now().DateTime ,
-				EndOfDaySpecificTime.MarketClose );
+			DateTime firstDateTime =
+				this.getInSampleReturnIntervals_getFirstDateTime();
+			DateTime lastDateTime =
+				HistoricalEndOfDayTimer.GetMarketClose( this.now() );
+//				new EndOfDayDateTime( this.now().DateTime ,
+//				                     EndOfDaySpecificTime.MarketClose );
 			ReturnIntervals inSampleReturnIntervals =
 				new ReturnIntervals( this.intervalsSelectorForInSample );
-			inSampleReturnIntervals.AppendFirstInterval( firstDate );
-			if ( inSampleReturnIntervals.LastEndOfDayDateTime.IsLessThan(
-				lastDate ) )
+			inSampleReturnIntervals.AppendFirstInterval( firstDateTime );
+			if ( inSampleReturnIntervals.LastDateTime < lastDateTime )
 				inSampleReturnIntervals.AppendIntervalsButDontGoBeyondLastDate(
-					lastDate );
+					lastDateTime );
 			return inSampleReturnIntervals;
 		}
 		#endregion getInSampleReturnIntervals
+		
 		private void checkQualityFor_bestTestingPositionsInSample()
 		{
 			for( int i = 0 ; i < this.bestTestingPositionsInSample.Length ; i++ )
 				if ( this.bestTestingPositionsInSample[ i ] == null )
-					throw new Exception(
-						"The IInSampleChooser should have returned an array " +
-						"of non null bestTestingPositionsInSample!" );
+				throw new Exception(
+					"The IInSampleChooser should have returned an array " +
+					"of non null bestTestingPositionsInSample!" );
 		}
 		private void notifyMessage( EligibleTickers eligibleTickers )
 		{
@@ -248,16 +262,8 @@ namespace QuantProject.Business.Strategies
 			if ( this.NewMessage != null )
 				this.NewMessage( this , newMessageEventArgs );
 		}
-		#region logOptimizationInfo
-//		private void outputMessage( string message )
-//		{
-//			string dateStamp =
-//				ExtendedDateTime.GetShortDescriptionForFileName( DateTime.Now );
-//			MessageManager.DisplayMessage( message ,
-//				"NotificationMessagesForCurrentStrategy_" +
-//				dateStamp + ".Txt" );
-//		}
 		
+		#region logOptimizationInfo
 		protected abstract LogItem getLogItem( EligibleTickers eligibleTickers );
 
 		private void raiseNewLogItem( EligibleTickers eligibleTickers )
@@ -273,19 +279,20 @@ namespace QuantProject.Business.Strategies
 			this.raiseNewLogItem( eligibleTickers );
 		}
 		#endregion logOptimizationInfo
+		
 		private void updateOptimalTestingPositions_actually()
 		{
 			ReturnIntervals inSampleReturnIntervals =
 				this.getInSampleReturnIntervals();
 			EligibleTickers eligibleTickers =
 				this.eligiblesSelector.GetEligibleTickers(
-				inSampleReturnIntervals.BordersHistory );
+					inSampleReturnIntervals.BordersHistory );
 			this.inSampleReturnsManager = new ReturnsManager(
 				inSampleReturnIntervals ,
-				this.historicalQuoteProviderForInSample );
+				this.historicalMarketValueProviderForInSample );
 			this.bestTestingPositionsInSample =
 				(TestingPositions[])this.inSampleChooser.AnalyzeInSample(
-				eligibleTickers , this.inSampleReturnsManager );
+					eligibleTickers , this.inSampleReturnsManager );
 			this.checkQualityFor_bestTestingPositionsInSample();
 
 			this.notifyMessage( eligibleTickers );
@@ -294,18 +301,29 @@ namespace QuantProject.Business.Strategies
 		private void updateOptimalTestingPositions()
 		{
 			this.updateOptimalTestingPositions_actually();
-			this.lastOptimizationDateTime = this.now().DateTime;
+			this.lastOptimizationDateTime = this.now();
 //			FixedLengthTwoPhasesLogItem logItem =
 //				new FixedLengthTwoPhasesLogItem( this.now() );
 //			logItem.BestWeightedPositionsInSample = this.bestWeightedPositionsInSample;
 		}
-		public void OneHourAfterMarketCloseEventHandler(
-			Object sender , EndOfDayTimingEventArgs endOfDayTimingEventArgs )
+		private void oneHourAfterMarketCloseEventHandler()
 		{
-			if ( this.optimalWeightedPositionsAreToBeUpdated() )
+			if ( this.areOptimalWeightedPositionsToBeUpdated() )
 				this.updateOptimalTestingPositions();
 		}
-		#endregion OneHourAfterMarketCloseEventHandler
+		#endregion oneHourAfterMarketCloseEventHandler
+		
+		#region NewDateTimeEventHandler
+		public void NewDateTimeEventHandler( Object sender , DateTime dateTime )
+		{
+			if ( HistoricalEndOfDayTimer.IsMarketOpen( dateTime ) )
+				this.marketOpenEventHandler();
+			if ( HistoricalEndOfDayTimer.IsMarketClose( dateTime ) )
+				this.marketCloseEventHandler();
+			if ( HistoricalEndOfDayTimer.IsOneHourAfterMarketClose( dateTime ) )
+				this.oneHourAfterMarketCloseEventHandler();
+		}
+		#endregion NewDateTimeEventHandler
 
 //		protected bool isInsampleOptimizationNeeded()
 //		{
@@ -319,23 +337,24 @@ namespace QuantProject.Business.Strategies
 //			return returnValue;
 //		}
 
-		protected EndOfDayDateTime now()
+		protected DateTime now()
 		{
-			return this.account.EndOfDayTimer.GetCurrentTime();
+			DateTime simulatedDateTime =
+				this.account.Timer.GetCurrentDateTime();
+			return simulatedDateTime;
 		}
 		private void updateReturnIntervals()
 		{
-			EndOfDayDateTime currentEndOfDayDateTime = this.now();
+			DateTime currentDateTime = this.now();
 			if ( this.returnIntervals.Count == 0 )
 				// no interval has been added yet
 				this.returnIntervals.AppendFirstInterval(
-					currentEndOfDayDateTime );
+					currentDateTime );
 			else
 				// at least one interval has already been added
-				if ( this.returnIntervals.LastEndOfDayDateTime.IsLessThanOrEqualTo(
-				currentEndOfDayDateTime ) )
+				if ( this.returnIntervals.LastDateTime <= currentDateTime )
 				this.returnIntervals.AppendIntervalsToGoJustBeyond(
-					currentEndOfDayDateTime );
+					currentDateTime );
 		}
 		protected ReturnInterval lastIntervalAppended()
 		{

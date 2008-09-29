@@ -31,6 +31,7 @@ namespace QuantProject.Business.Strategies.EquityEvaluation
 	/// Equity line evaluator, measuring the
 	/// risk to reward Expectancy Score
 	/// </summary>
+	[Serializable]
 	public class ExpectancyScore : IEquityEvaluator
 	{
 		public string Description

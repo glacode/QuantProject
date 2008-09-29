@@ -24,7 +24,9 @@ using System.Data;
 using System.Collections;
 
 using QuantProject.ADT;
+using QuantProject.ADT.Histories;
 using QuantProject.ADT.Messaging;
+using QuantProject.ADT.Optimizing.Genetic;
 using QuantProject.Business.Financial.Accounting;
 using QuantProject.Business.Financial.Instruments;
 using QuantProject.Business.Financial.Ordering;
@@ -43,7 +45,6 @@ using QuantProject.Data;
 using QuantProject.Data.DataProviders;
 using QuantProject.Data.Selectors;
 using QuantProject.Data.DataTables;
-using QuantProject.ADT.Optimizing.Genetic;
 using QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios;
 using QuantProject.Scripts.WalkForwardTesting.LinearCombination;
 
@@ -55,7 +56,7 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOs
 	/// Oscillator
 	/// </summary>
 	[Serializable]
-	public class PVO_OTCStrategyLessCorrelated : IEndOfDayStrategyForBacktester
+	public class PVO_OTCStrategyLessCorrelated : IStrategyForBacktester
 	{
 		public event NewLogItemEventHandler NewLogItem;
 		public event NewMessageEventHandler NewMessage;
@@ -66,7 +67,7 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOs
 		protected IInSampleChooser inSampleChooser;
 		protected IEligiblesSelector eligiblesSelector;
 		protected Benchmark benchmark;
-		protected HistoricalQuoteProvider historicalQuoteProvider;
+		protected HistoricalMarketValueProvider historicalQuoteProvider;
 		protected double oversoldThreshold;
 		protected double overboughtThreshold;
 		//initialized after constructor's call
@@ -124,7 +125,7 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOs
 		                             int numDaysBetweenEachOptimization,
 		                             double oversoldThreshold,
 		                             double overboughtThreshold,
-		                             HistoricalQuoteProvider historicalQuoteProvider)
+		                             HistoricalMarketValueProvider historicalQuoteProvider)
 		{
 			this.eligiblesSelector = eligiblesSelector;
 			this.inSampleDays = inSampleDays;
@@ -142,7 +143,7 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOs
 		                                     int numDaysBetweenEachOptimization,
 		                                     double oversoldThreshold,
 		                                     double overboughtThreshold,
-		                                     HistoricalQuoteProvider historicalQuoteProvider)
+		                                     HistoricalMarketValueProvider historicalQuoteProvider)
 			
 		{
 			this.pvo_otcStrategy(eligiblesSelector, inSampleDays , benchmark , numDaysBetweenEachOptimization ,
@@ -158,7 +159,7 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOs
 		                                     int numDaysBetweenEachOptimization,
 		                                     double oversoldThreshold,
 		                                     double overboughtThreshold,
-		                                     HistoricalQuoteProvider historicalQuoteProvider)
+		                                     HistoricalMarketValueProvider historicalQuoteProvider)
 			
 		{
 			this.pvo_otcStrategy(eligiblesSelector, inSampleDays , benchmark , numDaysBetweenEachOptimization ,
@@ -168,16 +169,21 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOs
 		
 		#region MarketOpenEventHandler
 		
-		protected virtual EndOfDayDateTime getBeginOfOscillatingPeriod(IndexBasedEndOfDayTimer timer)
+		protected virtual DateTime getBeginOfOscillatingPeriod(IndexBasedEndOfDayTimer timer)
 		{
-			return new EndOfDayDateTime(	(DateTime)timer.IndexQuotes.Rows[timer.CurrentDateArrayPosition-1]["quDate"],
-			                            EndOfDaySpecificTime.MarketClose );
+			DateTime beginOfOscillatingPeriod =
+				HistoricalEndOfDayTimer.GetMarketClose(
+					(DateTime)timer.IndexQuotes.Rows[timer.CurrentDateArrayPosition-1]["quDate"] );
+			return beginOfOscillatingPeriod;
+//					
+//				return new EndOfDayDateTime(	(DateTime)timer.IndexQuotes.Rows[timer.CurrentDateArrayPosition-1]["quDate"],
+//				                            EndOfDaySpecificTime.MarketClose );
 		}
 		
 		private PVOPositionsStatus marketOpenEventHandler_openPositions_getStatus(IndexBasedEndOfDayTimer timer)
 		{
-			EndOfDayDateTime today = timer.GetCurrentTime();
-			EndOfDayDateTime beginOfOscillatingPeriod =
+			DateTime today = timer.GetCurrentDateTime();
+			DateTime beginOfOscillatingPeriod =
 				this.getBeginOfOscillatingPeriod(timer);
 			PVOPositionsStatus currentStatus =
 				PVOPositionsStatus.InTheMiddle;
@@ -245,8 +251,8 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOs
 			}
 		}
 
-		public virtual void MarketOpenEventHandler(
-			Object sender , EndOfDayTimingEventArgs endOfDayTimingEventArgs )
+		private void marketOpenEventHandler(
+			Object sender , DateTime dateTime )
 		{
 			if ( this.account.Portfolio.Count == 0 &&
 			    this.chosenPVOPositions != null )
@@ -265,19 +271,19 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOs
 		
 		#endregion
 		
-		public void FiveMinutesBeforeMarketCloseEventHandler(
-			Object sender , EndOfDayTimingEventArgs endOfDayTimingEventArgs )
+		private void fiveMinutesBeforeMarketCloseEventHandler(
+			Object sender , DateTime dateTime )
 		{
 		}
 
-		private EndOfDayDateTime now()
+		private DateTime now()
 		{
-			return this.account.EndOfDayTimer.GetCurrentTime();
+			return this.account.Timer.GetCurrentDateTime();
 		}
 
 		
-		public virtual void MarketCloseEventHandler(
-			Object sender , EndOfDayTimingEventArgs endOfDayTimingEventArgs )
+		private void marketCloseEventHandler(
+			Object sender , DateTime dateTime )
 		{
 			if(this.account.Portfolio.Count > 0)
 				AccountManager.ClosePositions(this.account);
@@ -285,11 +291,11 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOs
 		
 		#region OneHourAfterMarketCloseEventHandler
 		
-		protected virtual void updateReturnsManager(EndOfDayDateTime firstEndOfDayDateTime,
-		                                            EndOfDayDateTime lastEndOfDayDateTime)
+		protected virtual void updateReturnsManager(DateTime firstDateTime,
+		                                            DateTime lastDateTime)
 		{
 			this.returnsManager =
-				new ReturnsManager( new DailyOpenToCloseIntervals(firstEndOfDayDateTime, lastEndOfDayDateTime,
+				new ReturnsManager( new DailyOpenToCloseIntervals(firstDateTime, lastDateTime,
 				                                                  this.benchmark.Ticker ) ,
 				                   this.historicalQuoteProvider);
 		}
@@ -372,16 +378,19 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOs
 
 		protected virtual void updateTestingPositions(DateTime currentDate)
 		{
-			EndOfDayHistory endOfDayHistory =
+			History history =
 				this.benchmark.GetEndOfDayHistory(
-					new EndOfDayDateTime(currentDate.AddDays(-this.inSampleDays),
-					                     EndOfDaySpecificTime.MarketOpen),
-					new EndOfDayDateTime(currentDate,
-					                     EndOfDaySpecificTime.MarketClose));
+					HistoricalEndOfDayTimer.GetMarketOpen(
+						currentDate.AddDays(-this.inSampleDays) ) ,
+					HistoricalEndOfDayTimer.GetMarketClose( currentDate ) );
+//					new EndOfDayDateTime(currentDate.AddDays(-this.inSampleDays),
+//					                     EndOfDaySpecificTime.MarketOpen),
+//					new EndOfDayDateTime(currentDate,
+//					                     EndOfDaySpecificTime.MarketClose));
 			EligibleTickers eligibles =
-				this.eligiblesSelector.GetEligibleTickers(endOfDayHistory);
-			this.updateReturnsManager(endOfDayHistory.FirstEndOfDayDateTime,
-			                          endOfDayHistory.LastEndOfDayDateTime);
+				this.eligiblesSelector.GetEligibleTickers(history);
+			this.updateReturnsManager(history.FirstDateTime,
+			                          history.LastDateTime);
 			if(this.inSampleChooser != null)
 				this.chosenPVOPositions = (TestingPositions[])inSampleChooser.AnalyzeInSample(eligibles, this.returnsManager);
 			this.updateTestingPositions_updateThresholds();
@@ -400,7 +409,7 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOs
 				areToBeUpdated =
 					( ( ( this.account.Portfolio.Count == 0 )
 					   && ( ( this.lastOptimizationDateTime == DateTime.MinValue ) ) ) ||
-					 ( this.now().DateTime >= dateTimeForNextOptimization ) );
+					 ( this.now() >= dateTimeForNextOptimization ) );
 			}
 			return areToBeUpdated;
 		}
@@ -410,10 +419,10 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOs
 		/// </summary>
 		/// <param name="sender"></param>
 		/// <param name="eventArgs"></param>
-		public virtual void OneHourAfterMarketCloseEventHandler(
-			Object sender , EndOfDayTimingEventArgs endOfDayTimingEventArgs )
+		private void oneHourAfterMarketCloseEventHandler(
+			Object sender , DateTime dateTime )
 		{
-			this.lastCloseDate = endOfDayTimingEventArgs.EndOfDayDateTime.DateTime;
+			this.lastCloseDate = dateTime;
 			this.numDaysElapsedSinceLastOptimization++;
 			//OLD - numDaysBetweenEachOptimization --> market days
 //			if( this.account.Transactions.Count <= 1 ||
@@ -424,12 +433,23 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOs
 			//NEW - numDaysBetweenEachOptimization --> calendar days
 			if ( this.optimalTestingPositionsAreToBeUpdated() )
 			{
-				this.updateTestingPositions(endOfDayTimingEventArgs.EndOfDayDateTime.DateTime);
+				this.updateTestingPositions(dateTime);
 				//sets tickers to be chosen next Market Close event
 				this.numDaysElapsedSinceLastOptimization = 0;
-				this.lastOptimizationDateTime = this.now().DateTime;
+				this.lastOptimizationDateTime = this.now();
 			}
 		}
 		#endregion
+		
+		public virtual void NewDateTimeEventHandler(
+			Object sender , DateTime dateTime )
+		{
+			if ( HistoricalEndOfDayTimer.IsMarketOpen( dateTime ) )
+				this.marketOpenEventHandler( sender , dateTime );
+			if ( HistoricalEndOfDayTimer.IsMarketClose( dateTime ) )
+				this.marketCloseEventHandler( sender , dateTime );
+			if ( HistoricalEndOfDayTimer.IsOneHourAfterMarketClose( dateTime ) )
+				this.oneHourAfterMarketCloseEventHandler( sender , dateTime );
+		}
 	}
 }

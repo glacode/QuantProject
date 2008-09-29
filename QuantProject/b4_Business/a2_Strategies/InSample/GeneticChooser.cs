@@ -42,6 +42,7 @@ namespace QuantProject.Business.Strategies.InSample
 	/// Abstract GeneticChooser to be used for
 	/// in sample optimization
 	/// </summary>
+	[Serializable]
 	public abstract class GeneticChooser : IInSampleChooser
 	{
 		public event NewProgressEventHandler NewProgress;
@@ -58,7 +59,7 @@ namespace QuantProject.Business.Strategies.InSample
 		protected Benchmark benchmark;
 		protected IDecoderForTestingPositions decoderForTestingPositions;
 		protected IFitnessEvaluator fitnessEvaluator;
-		protected IHistoricalQuoteProvider historicalQuoteProvider;
+		protected HistoricalMarketValueProvider historicalMarketValueProvider;
 		protected IGenomeManager genomeManager;
 		protected double crossoverRate;
 		protected double mutationRate;
@@ -95,7 +96,7 @@ namespace QuantProject.Business.Strategies.InSample
 			Benchmark benchmark ,
 			IDecoderForTestingPositions decoderForTestingPositions ,
 			IFitnessEvaluator fitnessEvaluator ,
-			IHistoricalQuoteProvider historicalQuoteProvider ,
+			HistoricalMarketValueProvider historicalMarketValueProvider ,
 			double crossoverRate , double mutationRate , double elitismRate ,
 			int populationSizeForGeneticOptimizer ,
 			int generationNumberForGeneticOptimizer ,
@@ -106,7 +107,7 @@ namespace QuantProject.Business.Strategies.InSample
 			this.benchmark = benchmark;
 			this.decoderForTestingPositions = decoderForTestingPositions;
 			this.fitnessEvaluator =	fitnessEvaluator;
-			this.historicalQuoteProvider = historicalQuoteProvider;
+			this.historicalMarketValueProvider = historicalMarketValueProvider;
 			this.crossoverRate = crossoverRate;
 			this.mutationRate = mutationRate;
 			this.elitismRate = elitismRate;

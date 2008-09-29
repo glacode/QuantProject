@@ -37,6 +37,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.PairsTrading
 	/// Given the in sample TestingPositions candidates,
 	/// this class selects the positions to be opened
 	/// </summary>
+	[Serializable]
 	public abstract class OutOfSampleChooser
 	{
 		private double minThresholdForGoingLong;
@@ -74,7 +75,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.PairsTrading
 		#region getInefficientCouples
 
 		#region getReturnsManagerForLastSecondPhaseInterval
-		private EndOfDayDateTime
+		private DateTime
 			getIntervalBeginForLastSecondPhaseInterval(
 			ReturnIntervals outOfSampleReturnIntervals )
 		{
@@ -85,7 +86,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.PairsTrading
 				outOfSampleReturnIntervals[ secondLastIntervalIndex ];
 			return secondLastInterval.End;
 		}
-		private EndOfDayDateTime
+		private DateTime
 			getIntervalEndForLastSecondPhaseInterval(
 			ReturnIntervals outOfSampleReturnIntervals )
 		{
@@ -95,10 +96,10 @@ namespace QuantProject.Scripts.WalkForwardTesting.PairsTrading
 			getReturnIntervalForLastSecondPhaseInterval(
 			ReturnIntervals outOfSampleReturnIntervals )
 		{
-			EndOfDayDateTime intervalBegin =
+			DateTime intervalBegin =
 				this.getIntervalBeginForLastSecondPhaseInterval(
 				outOfSampleReturnIntervals );
-			EndOfDayDateTime intervalEnd =
+			DateTime intervalEnd =
 				this.getIntervalEndForLastSecondPhaseInterval(
 				outOfSampleReturnIntervals );
 			ReturnInterval returnIntervalForLastSecondPhaseInterval =
@@ -118,7 +119,8 @@ namespace QuantProject.Scripts.WalkForwardTesting.PairsTrading
 		}
 		private ReturnsManager getReturnsManagerForLastSecondPhaseInterval(
 			ReturnIntervals outOfSampleReturnIntervals ,
-			IHistoricalQuoteProvider historicalQuoteProviderForChosingPositionsOutOfSample )
+			HistoricalMarketValueProvider
+			historicalMarketValueProviderForChosingPositionsOutOfSample )
 		{
 			ReturnIntervals returnIntervals =
 				this.getReturnIntervalsForLastSecondPhaseInterval(
@@ -128,7 +130,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.PairsTrading
 			//				this.historicalAdjustedQuoteProvider );
 			ReturnsManager returnsManager =
 				new ReturnsManager( returnIntervals ,
-				historicalQuoteProviderForChosingPositionsOutOfSample );
+				historicalMarketValueProviderForChosingPositionsOutOfSample );
 			return returnsManager;
 		}
 		#endregion getReturnsManagerForLastSecondPhaseInterval
@@ -248,13 +250,13 @@ namespace QuantProject.Scripts.WalkForwardTesting.PairsTrading
 			getArrayListOfInefficientCouples(
 			TestingPositions[] bestTestingPositionsInSample ,
 			ReturnIntervals outOfSampleReturnIntervals ,
-			IHistoricalQuoteProvider
-			historicalQuoteProviderForChosingPositionsOutOfSample )
+			HistoricalMarketValueProvider
+			historicalMarketValueProviderForChosingPositionsOutOfSample )
 		{
 			ReturnsManager returnsManagerForLastSecondPhaseInterval =
 				this.getReturnsManagerForLastSecondPhaseInterval(
 				outOfSampleReturnIntervals ,
-				historicalQuoteProviderForChosingPositionsOutOfSample );
+				historicalMarketValueProviderForChosingPositionsOutOfSample );
 			ArrayList inefficientCouples =
 				this.getInefficientCouples( bestTestingPositionsInSample ,
 				returnsManagerForLastSecondPhaseInterval );
@@ -287,14 +289,14 @@ namespace QuantProject.Scripts.WalkForwardTesting.PairsTrading
 			getInefficientCouples_withAtLeastASecondPhaseInterval(
 			TestingPositions[] bestTestingPositionsInSample ,
 			ReturnIntervals outOfSampleReturnIntervals ,
-			IHistoricalQuoteProvider
-			historicalQuoteProviderForChosingPositionsOutOfSample )
+			HistoricalMarketValueProvider
+			historicalMarketValueProviderForChosingPositionsOutOfSample )
 		{
 			ArrayList arrayListOfInefficientCouples =
 				this.getArrayListOfInefficientCouples(
 				bestTestingPositionsInSample ,
 				outOfSampleReturnIntervals ,
-				historicalQuoteProviderForChosingPositionsOutOfSample );
+				historicalMarketValueProviderForChosingPositionsOutOfSample );
 			WeightedPositions[] inefficientCouples =
 				this.getInefficientCouplesFromArrayList( arrayListOfInefficientCouples );
 			return inefficientCouples;
@@ -323,8 +325,8 @@ namespace QuantProject.Scripts.WalkForwardTesting.PairsTrading
 		private WeightedPositions[] getInefficientCouples(
 			TestingPositions[] bestTestingPositionsInSample ,
 			ReturnIntervals outOfSampleReturnIntervals ,
-			IHistoricalQuoteProvider
-			historicalQuoteProviderForChosingPositionsOutOfSample )
+			HistoricalMarketValueProvider
+			historicalMarketValueProviderForChosingPositionsOutOfSample )
 		{
 			WeightedPositions[] inefficientCouples = null;
 			if ( outOfSampleReturnIntervals.Count >= 2 )
@@ -333,7 +335,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.PairsTrading
 					this.getInefficientCouples_withAtLeastASecondPhaseInterval(
 					bestTestingPositionsInSample ,
 					outOfSampleReturnIntervals ,
-					historicalQuoteProviderForChosingPositionsOutOfSample );
+					historicalMarketValueProviderForChosingPositionsOutOfSample );
 			return inefficientCouples;
 
 		}
@@ -352,8 +354,8 @@ namespace QuantProject.Scripts.WalkForwardTesting.PairsTrading
 		public virtual WeightedPositions GetPositionsToBeOpened(
 			TestingPositions[] bestTestingPositionsInSample ,
 			ReturnIntervals outOfSampleReturnIntervals ,
-			IHistoricalQuoteProvider
-			historicalQuoteProviderForChosingPositionsOutOfSample ,
+			HistoricalMarketValueProvider
+			historicalMarketValueProviderForChosingPositionsOutOfSample ,
 			ReturnsManager inSampleReturnsManager )
 		{
 			WeightedPositions positionsToBeOpened = null;
@@ -361,7 +363,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.PairsTrading
 				this.getInefficientCouples(
 				bestTestingPositionsInSample ,
 				outOfSampleReturnIntervals ,
-				historicalQuoteProviderForChosingPositionsOutOfSample );
+				historicalMarketValueProviderForChosingPositionsOutOfSample );
 			if ( inefficientCouples != null )
 				// at least an inefficient couple has been found
 				positionsToBeOpened =

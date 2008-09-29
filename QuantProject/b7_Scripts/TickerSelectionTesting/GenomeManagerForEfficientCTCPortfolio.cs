@@ -2,7 +2,7 @@
 QuantProject - Quantitative Finance Library
 
 GenomeManagerForEfficientCTCPortfolio.cs
-Copyright (C) 2003 
+Copyright (C) 2003
 Marco Milletti
 
 This program is free software; you can redistribute it and/or
@@ -18,7 +18,7 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
-*/
+ */
 
 using System;
 using System.Data;
@@ -33,58 +33,60 @@ using QuantProject.Business.Strategies.ReturnsManagement.Time;
 namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
 {
 	/// <summary>
-	/// Class to find efficient 
+	/// Class to find efficient
 	/// portfolios based on tickers' CloseToClose rates (adjusted values),
 	/// using the GeneticOptimizer
 	/// </summary>
 	[Serializable]
-  public class GenomeManagerForEfficientCTCPortfolio : GenomeManagerForEfficientPortfolio
-  {
-    private int numDaysForReturnCalculation;
-    private ReturnsManager returnsManager;
-    
-  	public GenomeManagerForEfficientCTCPortfolio(DataTable setOfInitialTickers,
-                                                 DateTime firstQuoteDate,
-                                                 DateTime lastQuoteDate,
-                                                 int numberOfTickersInPortfolio,
-                                                 int numDaysForReturnCalculation,
-                                                 double targetPerformance,
-                                                 PortfolioType portfolioType,
-                                                 string benchmark)
-                                                 :
-                                                base(setOfInitialTickers,
-                                                firstQuoteDate,
-                                                lastQuoteDate,
-                                                numberOfTickersInPortfolio,
-                                                targetPerformance,
-                                                portfolioType,
-                                               	benchmark)
-                                
-                          
-    {
-    	this.numDaysForReturnCalculation = numDaysForReturnCalculation;
-    	this.setReturnsManager(firstQuoteDate, lastQuoteDate);
-    }
-  	
-    private void setReturnsManager(DateTime firstQuoteDate,
-                                   DateTime lastQuoteDate)
-    {
-    	EndOfDayDateTime firstEndOfDayDateTime =
-				new EndOfDayDateTime(firstQuoteDate, EndOfDaySpecificTime.MarketOpen);
-			EndOfDayDateTime lastEndOfDayDateTime =
-				new EndOfDayDateTime(lastQuoteDate, EndOfDaySpecificTime.MarketClose);
-    	this.returnsManager = 
-    		new ReturnsManager( new CloseToCloseIntervals(
-															  firstEndOfDayDateTime, 
-																lastEndOfDayDateTime, 
-																this.benchmark,
-															  this.numDaysForReturnCalculation),
-														new HistoricalAdjustedQuoteProvider() );
-    }
-    
-  	protected override float[] getStrategyReturns()
+	public class GenomeManagerForEfficientCTCPortfolio : GenomeManagerForEfficientPortfolio
+	{
+		private int numDaysForReturnCalculation;
+		private ReturnsManager returnsManager;
+		
+		public GenomeManagerForEfficientCTCPortfolio(DataTable setOfInitialTickers,
+		                                             DateTime firstQuoteDate,
+		                                             DateTime lastQuoteDate,
+		                                             int numberOfTickersInPortfolio,
+		                                             int numDaysForReturnCalculation,
+		                                             double targetPerformance,
+		                                             PortfolioType portfolioType,
+		                                             string benchmark)
+			:
+			base(setOfInitialTickers,
+			     firstQuoteDate,
+			     lastQuoteDate,
+			     numberOfTickersInPortfolio,
+			     targetPerformance,
+			     portfolioType,
+			     benchmark)
+			
+			
 		{
-  		return this.weightedPositionsFromGenome.GetReturns(this.returnsManager);
+			this.numDaysForReturnCalculation = numDaysForReturnCalculation;
+			this.setReturnsManager(firstQuoteDate, lastQuoteDate);
 		}
-  }
+		
+		private void setReturnsManager(DateTime firstQuoteDate,
+		                               DateTime lastQuoteDate)
+		{
+			DateTime firstDateTime =
+				HistoricalEndOfDayTimer.GetMarketOpen( firstQuoteDate );
+//				new EndOfDayDateTime(firstQuoteDate, EndOfDaySpecificTime.MarketOpen);
+			DateTime lastDateTime =
+				HistoricalEndOfDayTimer.GetMarketClose( lastQuoteDate );
+//				new EndOfDayDateTime(lastQuoteDate, EndOfDaySpecificTime.MarketClose);
+			this.returnsManager =
+				new ReturnsManager( new CloseToCloseIntervals(
+					firstDateTime,
+					lastDateTime,
+					this.benchmark,
+					this.numDaysForReturnCalculation),
+				                   new HistoricalAdjustedQuoteProvider() );
+		}
+		
+		protected override float[] getStrategyReturns()
+		{
+			return this.weightedPositionsFromGenome.GetReturns(this.returnsManager);
+		}
+	}
 }

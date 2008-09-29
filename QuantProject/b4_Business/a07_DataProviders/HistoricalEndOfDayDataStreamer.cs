@@ -25,6 +25,7 @@ using System.Collections;
 using QuantProject.ADT;
 using QuantProject.Business.Timing;
 using QuantProject.Data.DataProviders;
+using QuantProject.Data.DataProviders.Quotes;
 
 namespace QuantProject.Business.DataProviders
 {
@@ -36,34 +37,82 @@ namespace QuantProject.Business.DataProviders
 	{
 		private Hashtable tickers;
 
-		private IEndOfDayTimer endOfDayTimer;
-		private IHistoricalQuoteProvider historicalQuoteProvider;
+		private Timer timer;
+		private HistoricalMarketValueProvider historicalMarketValueProvider;
 
-		private EndOfDayDateTime startDateTime;
-		private EndOfDayDateTime endDateTime;
+		private DateTime startDateTime;
+		private DateTime endDateTime;
 
-		public EndOfDayDateTime StartDateTime
+		public DateTime StartDateTime
 		{
 			get	{	return this.startDateTime;	}
 			set	{	this.startDateTime = value;	}
 		}
 
-		public EndOfDayDateTime EndDateTime
+		public DateTime EndDateTime
 		{
 			get	{	return this.endDateTime;	}
 			set	{	this.endDateTime = value;	}
 		}
 
-		public HistoricalEndOfDayDataStreamer( IEndOfDayTimer endOfDayTimer ,
-			IHistoricalQuoteProvider historicalQuoteProvider )
+		public HistoricalEndOfDayDataStreamer(
+			Timer timer ,
+			HistoricalMarketValueProvider historicalMarketValueProvider )
 		{
-			this.endOfDayTimer = endOfDayTimer;
-			this.historicalQuoteProvider = historicalQuoteProvider;
-			this.endOfDayTimer.MarketOpen += new MarketOpenEventHandler(
-				this.marketOpenEventHandler );
+			this.timer = timer;
+			this.historicalMarketValueProvider = historicalMarketValueProvider;
+			this.timer.NewDateTime +=
+				new NewDateTimeEventHandler(
+				this.newTimeEventHandler );
 			this.tickers = new Hashtable();
 		}
 
+		#region newTimeEventHandler
+		private void riseNewQuotesIfTheCase(
+			DateTime dateTime , MarketStatusSwitch marketStatusSwitch )
+		{
+			if ( this.tickers.Count > 0 )
+			{
+				// the data streamer is monitoring some ticker
+				Hashtable quotes =
+					HistoricalQuotesProvider.GetAdjustedQuotes(
+						this.tickers , dateTime , marketStatusSwitch );
+				foreach ( Quote quote in quotes )
+					this.NewQuote( this , new NewQuoteEventArgs( quote ) );
+			}
+		}
+		private void newTimeEventHandler(
+			Object sender , DateTime dateTime )
+		{
+			if ( HistoricalEndOfDayTimer.IsMarketOpen( dateTime ) )
+				this.riseNewQuotesIfTheCase( dateTime , MarketStatusSwitch.Open );
+			if ( HistoricalEndOfDayTimer.IsMarketClose( dateTime ) )
+				this.riseNewQuotesIfTheCase( dateTime , MarketStatusSwitch.Close );			
+		}
+		#endregion newTimeEventHandler
+
+		#region GetCurrentBid
+		private void getCurrentBid_checkValidTime()
+		{
+			DateTime currentDateTime = this.timer.GetCurrentDateTime();
+			if ( !HistoricalEndOfDayTimer.IsMarketStatusSwitch( currentDateTime ) )
+				throw new Exception(
+					"With this data streamer, GetCurrentBid can be invoked only " +
+					"if the current time is either on market open or on market " +
+					"close." );
+		}
+		
+		#region getCurrentBid_actually
+		private double getCurrentBid_actually( string ticker )
+		{
+			double currentBid =
+				this.historicalMarketValueProvider.GetMarketValue(
+					ticker ,
+					this.timer.GetCurrentDateTime() );
+			return currentBid;
+		}
+		#endregion getCurrentBid_actually
+		
 		/// <summary>
 		/// Returns the current bid for the given ticker
 		/// </summary>
@@ -71,9 +120,12 @@ namespace QuantProject.Business.DataProviders
 		/// <returns></returns>
 		public double GetCurrentBid( string ticker )
 		{
-			return historicalQuoteProvider.GetMarketValue( ticker ,
-				this.endOfDayTimer.GetCurrentTime() );
+			this.getCurrentBid_checkValidTime();
+			double currentBid =
+				this.getCurrentBid_actually( ticker );
+			return currentBid;
 		}
+		#endregion GetCurrentBid
 
 		/// <summary>
 		/// Returns the current ask for the given ticker
@@ -82,8 +134,7 @@ namespace QuantProject.Business.DataProviders
 		/// <returns></returns>
 		public double GetCurrentAsk( string ticker )
 		{
-			return historicalQuoteProvider.GetMarketValue( ticker ,
-				this.endOfDayTimer.GetCurrentTime() );
+			return this.GetCurrentBid( ticker );
 		}
 
 		/// <summary>
@@ -93,8 +144,8 @@ namespace QuantProject.Business.DataProviders
 		/// <returns></returns>
 		public bool IsExchanged( string ticker )
 		{
-			return HistoricalDataProvider.WasExchanged( ticker ,
-				this.endOfDayTimer.GetCurrentTime().GetNearestExtendedDateTime() );
+			return HistoricalQuotesProvider.WasExchanged(
+				ticker , this.timer.GetCurrentDateTime() );
 		}
 		/// <summary>
 		/// Add a ticker whose quotes are to be monitored
@@ -118,19 +169,5 @@ namespace QuantProject.Business.DataProviders
 //				this.newExtendedDateTimeHandler );
 //			timer.Start();
 //		}
-
-		private void marketOpenEventHandler(
-			Object sender , EndOfDayTimingEventArgs eventArgs )
-		{
-			if ( this.tickers.Count > 0 )
-			{
-				// the data streamer is monitoring some ticker
-				Hashtable quotes =
-					HistoricalDataProvider.GetQuotes( this.tickers ,
-					this.endOfDayTimer.GetCurrentTime().GetNearestExtendedDateTime() );
-				foreach ( Quote quote in quotes )
-					this.NewQuote( this , new NewQuoteEventArgs( quote ) );
-			}
-		}
 	}
 }

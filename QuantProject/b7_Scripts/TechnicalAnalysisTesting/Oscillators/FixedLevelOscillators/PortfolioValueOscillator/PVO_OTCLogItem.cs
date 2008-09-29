@@ -46,9 +46,9 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOs
   public class PVO_OTCLogItem : PVOLogItem
   {
 		
-		public PVO_OTCLogItem(EndOfDayDateTime endOfDayDateTime,
+		public PVO_OTCLogItem(DateTime dateTime,
   	                      int numberOfInSampleDays)
-			: base( endOfDayDateTime , numberOfInSampleDays )
+			: base( dateTime , numberOfInSampleDays )
 		{
 			
 		}
@@ -57,8 +57,8 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOs
 		{
 			//general
 			int inSampleDays = 120;
-			DateTime firstDateTime = this.SimulatedCreationTime.DateTime.AddDays(-inSampleDays);
-			DateTime lastDateTime = this.SimulatedCreationTime.DateTime;
+			DateTime firstDateTime = this.SimulatedCreationDateTime.AddDays(-inSampleDays);
+			DateTime lastDateTime = this.SimulatedCreationDateTime;
 			double maxRunningHours = 1;
 			Benchmark benchmark = new Benchmark( "^GSPC" );
 			// definition for the Fitness Evaluator (for
@@ -68,7 +68,7 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOs
 			//cash and portfolio type
 			double cashToStart = 30000;
 			
-			HistoricalQuoteProvider historicalQuoteProviderForBackTester,
+			HistoricalMarketValueProvider historicalQuoteProviderForBackTester,
 				historicalQuoteProviderForInSampleChooser,
 				historicalQuoteProviderForStrategy;
 			historicalQuoteProviderForBackTester =

@@ -18,7 +18,7 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
-*/
+ */
 
 using System;
 
@@ -33,36 +33,36 @@ using QuantProject.Business.DataProviders;
 
 namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOscillators.PortfolioValueOscillator
 {
-  /// <summary>
-  /// This is the class representing a TestingPositions for the
-  /// portfolio value oscillator strategy
-  /// </summary>
-  [Serializable]
-  public class PVOPositions : TestingPositions, IGeneticallyOptimizable
-  {
-  	private double oversoldThreshold;
-  	private double overboughtThreshold;
-  	private int numDaysForOscillatingPeriod;
-  	private int generation;
-				
+	/// <summary>
+	/// This is the class representing a TestingPositions for the
+	/// portfolio value oscillator strategy
+	/// </summary>
+	[Serializable]
+	public class PVOPositions : TestingPositions, IGeneticallyOptimizable
+	{
+		private double oversoldThreshold;
+		private double overboughtThreshold;
+		private int numDaysForOscillatingPeriod;
+		private int generation;
+		
 		private static ReturnsManager returnsManager;
 
-  	  	  	
-  	public double OversoldThreshold
-    {
-      get{return this.oversoldThreshold;}
+		
+		public double OversoldThreshold
+		{
+			get{return this.oversoldThreshold;}
 			set{this.oversoldThreshold = value;}
-    }
-    public double OverboughtThreshold
-    {
-      get{return this.overboughtThreshold;}
+		}
+		public double OverboughtThreshold
+		{
+			get{return this.overboughtThreshold;}
 			set{this.overboughtThreshold = value;}
-    }
-   	public int NumDaysForOscillatingPeriod
-    {
-      get{return this.numDaysForOscillatingPeriod;}
-    }
-    
+		}
+		public int NumDaysForOscillatingPeriod
+		{
+			get{return this.numDaysForOscillatingPeriod;}
+		}
+		
 		//explicit interface implementation
 		//the property can be used only by a interface
 		//instance or through a cast to the interface
@@ -76,8 +76,8 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOs
 		{
 			return new PVOPositions(this.WeightedPositions,
 			                        this.OversoldThreshold,
-															this.overboughtThreshold, 
-															this.numDaysForOscillatingPeriod);
+			                        this.overboughtThreshold,
+			                        this.numDaysForOscillatingPeriod);
 		}
 
 		// creates an empty TestingPositions: to be used to give a meaning with
@@ -87,90 +87,90 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOs
 		}
 
 		public PVOPositions(WeightedPositions weightedPositions,
-												double oversoldThreshold,
-												double overboughtThreshold,
-												int numDaysForOscillatingPeriod) :
-												base(weightedPositions)
-                            
-    {
- 			this.oversoldThreshold = oversoldThreshold;
- 			this.overboughtThreshold = overboughtThreshold;
- 			this.numDaysForOscillatingPeriod = numDaysForOscillatingPeriod;
- 			this.generation = -1;
+		                    double oversoldThreshold,
+		                    double overboughtThreshold,
+		                    int numDaysForOscillatingPeriod) :
+			base(weightedPositions)
+			
+		{
+			this.oversoldThreshold = oversoldThreshold;
+			this.overboughtThreshold = overboughtThreshold;
+			this.numDaysForOscillatingPeriod = numDaysForOscillatingPeriod;
+			this.generation = -1;
 		}
 		
-		private void setReturnsManager(EndOfDayDateTime beginOfPeriod,
-																	 EndOfDayDateTime endOfPeriod,
-																	 string benchmark,
-																	 HistoricalQuoteProvider quoteProvider)
+		private void setReturnsManager(DateTime beginOfPeriod,
+		                               DateTime endOfPeriod,
+		                               string benchmark,
+		                               HistoricalMarketValueProvider quoteProvider)
 		{
 			if(PVOPositions.returnsManager == null ||
 			   PVOPositions.returnsManager.ReturnIntervals[0].Begin != beginOfPeriod ||
-				 PVOPositions.returnsManager.ReturnIntervals[0].End != endOfPeriod)
-			//if a returnsManager has not been set yet or a different one has to be set
-			//for a different returnInterval
-					PVOPositions.returnsManager = new ReturnsManager(new ReturnIntervals(
-						new ReturnInterval( beginOfPeriod, endOfPeriod ) ) ,
-						quoteProvider );
+			   PVOPositions.returnsManager.ReturnIntervals[0].End != endOfPeriod)
+				//if a returnsManager has not been set yet or a different one has to be set
+				//for a different returnInterval
+				PVOPositions.returnsManager = new ReturnsManager(new ReturnIntervals(
+					new ReturnInterval( beginOfPeriod, endOfPeriod ) ) ,
+				                                                 quoteProvider );
 		}
 
-		private double getOscillatingPeriodReturn(EndOfDayDateTime beginOfPeriod,
-																					EndOfDayDateTime endOfPeriod,
-		                                      string benchmark,
-		                                      HistoricalQuoteProvider quoteProvider)
-    {
-      this.setReturnsManager(beginOfPeriod, endOfPeriod, benchmark, quoteProvider);
+		private double getOscillatingPeriodReturn(DateTime beginOfPeriod,
+		                                          DateTime endOfPeriod,
+		                                          string benchmark,
+		                                          HistoricalMarketValueProvider quoteProvider)
+		{
+			this.setReturnsManager(beginOfPeriod, endOfPeriod, benchmark, quoteProvider);
 			return this.WeightedPositions.GetReturn(0, PVOPositions.returnsManager);
-  	}
+		}
 		
-		public PVOPositionsStatus GetStatus(EndOfDayDateTime beginOfPeriod,
-																				EndOfDayDateTime endOfPeriod,
+		public PVOPositionsStatus GetStatus(DateTime beginOfPeriod,
+		                                    DateTime endOfPeriod,
 		                                    string benchmark,
-		                                    HistoricalQuoteProvider quoteProvider,
-		                                   	double maxOversoldThreshold,
+		                                    HistoricalMarketValueProvider quoteProvider,
+		                                    double maxOversoldThreshold,
 		                                    double maxOverboughtThreshold)
-    {
-      PVOPositionsStatus returnValue;
+		{
+			PVOPositionsStatus returnValue;
 			double oscillatingPeriodReturn = double.NaN;
-      oscillatingPeriodReturn = 
-      	this.getOscillatingPeriodReturn(beginOfPeriod, endOfPeriod, benchmark,
-      	                                quoteProvider);
-      if(oscillatingPeriodReturn >= this.overboughtThreshold && 
-         oscillatingPeriodReturn <= maxOverboughtThreshold)
-      		returnValue = PVOPositionsStatus.Overbought;
-      else if(oscillatingPeriodReturn <= -this.oversoldThreshold &&
-              Math.Abs(oscillatingPeriodReturn) <= maxOversoldThreshold)
-      		returnValue = PVOPositionsStatus.Oversold;
-      else if ( Math.Abs(oscillatingPeriodReturn) > maxOversoldThreshold ||
-                oscillatingPeriodReturn > maxOverboughtThreshold  )
-      		returnValue = PVOPositionsStatus.OverMaximumThresholds;
-      else
-      	returnValue = PVOPositionsStatus.InTheMiddle;
-         	
+			oscillatingPeriodReturn =
+				this.getOscillatingPeriodReturn(beginOfPeriod, endOfPeriod, benchmark,
+				                                quoteProvider);
+			if(oscillatingPeriodReturn >= this.overboughtThreshold &&
+			   oscillatingPeriodReturn <= maxOverboughtThreshold)
+				returnValue = PVOPositionsStatus.Overbought;
+			else if(oscillatingPeriodReturn <= -this.oversoldThreshold &&
+			        Math.Abs(oscillatingPeriodReturn) <= maxOversoldThreshold)
+				returnValue = PVOPositionsStatus.Oversold;
+			else if ( Math.Abs(oscillatingPeriodReturn) > maxOversoldThreshold ||
+			         oscillatingPeriodReturn > maxOverboughtThreshold  )
+				returnValue = PVOPositionsStatus.OverMaximumThresholds;
+			else
+				returnValue = PVOPositionsStatus.InTheMiddle;
+			
 			return returnValue;
-  	}
+		}
 		
-		public bool AreAllTickersMovingTogetherUpOrDown(EndOfDayDateTime beginOfPeriod,
-																										EndOfDayDateTime endOfPeriod,
-																										string benchmark,
-																										HistoricalQuoteProvider quoteProvider)
+		public bool AreAllTickersMovingTogetherUpOrDown(DateTime beginOfPeriod,
+		                                                DateTime endOfPeriod,
+		                                                string benchmark,
+		                                                HistoricalMarketValueProvider quoteProvider)
 		{
 			bool returnValue = true;
 			SignedTickers signedTickers = this.WeightedPositions.SignedTickers;
 			float returnOfCurrentTicker, returnOfNextTicker;
 			this.setReturnsManager(beginOfPeriod, endOfPeriod, benchmark, quoteProvider);
 			for( int i = 0;
-				signedTickers.Count > 1 && i < signedTickers.Count - 1 && returnValue == true;
-				i++ )
+			    signedTickers.Count > 1 && i < signedTickers.Count - 1 && returnValue == true;
+			    i++ )
 			{
 				returnOfCurrentTicker = PVOPositions.returnsManager.GetReturn(signedTickers[ i ].Ticker, 0);
 				returnOfNextTicker = PVOPositions.returnsManager.GetReturn(signedTickers[ i+1 ].Ticker, 0);
 				if( (returnOfCurrentTicker > 0 && returnOfNextTicker < 0) ||
-					(returnOfCurrentTicker < 0 && returnOfNextTicker > 0) )
+				   (returnOfCurrentTicker < 0 && returnOfNextTicker > 0) )
 					returnValue = false;
-			}	
+			}
 			return returnValue;
 		}
 		
-  }
+	}
 }

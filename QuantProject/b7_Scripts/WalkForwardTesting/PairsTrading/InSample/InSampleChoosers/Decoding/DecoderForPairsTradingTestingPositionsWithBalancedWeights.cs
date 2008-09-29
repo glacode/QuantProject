@@ -31,6 +31,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.PairsTrading
 	/// <summary>
 	/// Decoder for the Pairs Trading strategy
 	/// </summary>
+	[Serializable]
 	public class DecoderForPairsTradingTestingPositionsWithBalancedWeights :
 		DecoderForTestingPositionsWithBalancedWeights
 	{

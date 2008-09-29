@@ -28,80 +28,8 @@ namespace QuantProject.ADT
 	/// <summary>
 	/// Summary description for DateTime.
 	/// </summary>
-  public class ExtendedDateTime : IComparable
+  public static class ExtendedDateTime
   {
-    private DateTime dateTime;
-    private BarComponent barComponent;
-    private bool isSimpleDateTime;
-
-    public DateTime DateTime
-    {
-      get { return dateTime; }
-      set { dateTime = value; }
-    }
-
-    public BarComponent BarComponent
-    {
-      get { return barComponent; }
-      set { barComponent = value; }
-    }
-
-    public bool IsSimpleDateTime
-    {
-      get { return isSimpleDateTime; }
-    }
-
-    public ExtendedDateTime( DateTime dateTime )
-    {
-      this.dateTime = dateTime;
-      this.isSimpleDateTime = true;
-    }
-
-    public ExtendedDateTime( DateTime dateTime , BarComponent barComponent )
-    {
-      this.dateTime = dateTime;
-      this.barComponent = barComponent;
-      this.isSimpleDateTime = false;
-    }
-
-    public int CompareTo( Object barDateTimeToCast )
-    {
-      ExtendedDateTime extendedDateTime = (ExtendedDateTime) barDateTimeToCast;
-      int compareTo = 0;
-      if (  ( this.DateTime < extendedDateTime.DateTime ) ||
-        ( ( this.DateTime == extendedDateTime.DateTime ) &&
-        ( this.barComponent == BarComponent.Open ) &&
-        ( extendedDateTime.barComponent == BarComponent.Close ) ) )
-        compareTo = -1;
-      else
-      {
-        if ( ( this.DateTime == extendedDateTime.DateTime ) &&
-          ( this.barComponent == extendedDateTime.barComponent ) )
-          compareTo = 0;
-        else
-          compareTo = 1;
-      }
-      return compareTo;
-    }
-
-		/// <summary>
-		/// Returns the subsequent ExtendedDateTime
-		/// </summary>
-		/// <returns></returns>
-		public ExtendedDateTime MoveNext()
-		{
-			ExtendedDateTime returnValue;
-			if ( this.barComponent == BarComponent.Open )
-				returnValue = new ExtendedDateTime( this.dateTime , BarComponent.Close );
-			else
-				// this.barComponent == BarComponent.Close
-				returnValue = new ExtendedDateTime( this.dateTime.AddDays( 1 ) , BarComponent.Open );
-			return returnValue;
-		}
-    public override string ToString()
-    {
-      return this.DateTime.ToString() + " - " + this.BarComponent.ToString();
-    }
 		/// <summary>
 		/// Returns a DateTime short description suitable for file names (no slashes)
 		/// hours, minutes and seconds are NOT displayed
@@ -144,21 +72,85 @@ namespace QuantProject.ADT
 				returnValue = dateTime2;
 			return returnValue;
 		}
-//		public static SortedList GetArray( SortedList sortedDateTimes )
-//		{
-//			SortedList dateTimes = new DateTime[ sortedDateTimes.Count ];
-//			for ( int i = 0; i<sortedDateTimes.Count ; i++ )
-//			{
-//				if ( !(sortedDateTimes.GetByIndex( i ) is DateTime ) )
-//					throw( new Exception( "sortedDateTimes is expected to contain only DateTime elements. " +
-//						"The element number " + i + " is not a DateTime, instead." ) );
-//				else
-//				{
-//					DateTime dateTime = (DateTime)sortedDateTimes.GetByIndex( i );
-//					dateTimes[ i ] = dateTime;
-//				}
-//			}
-//			return dateTimes;
-//		}
+
+		/// <summary>
+		/// Returns the date, for the given date time, i.e. hours, minutes
+		/// and seconds are set to zero
+		/// </summary>
+		/// <param name="dateTime"></param>
+		/// <returns></returns>
+		public static DateTime GetDate( DateTime dateTime )
+		{
+			DateTime date =
+				new DateTime(
+					dateTime.Year , dateTime.Month , dateTime.Day ,
+					0 , 0 , 0 );
+			return date;
+		}
+		
+		/// <summary>
+		/// returns a copy of the given DateTime
+		/// </summary>
+		/// <param name="dateTime"></param>
+		/// <returns></returns>
+		public static DateTime Copy( DateTime dateTime )
+		{
+			DateTime newDateTime =
+				new DateTime(
+					dateTime.Year , dateTime.Month , dateTime.Day ,
+					dateTime.Hour , dateTime.Minute , dateTime.Second );
+			return newDateTime;
+		}		
+		
+		public static bool IsDate( DateTime dateTime )
+		{
+			bool isDate =
+				( ( dateTime.Hour == 0 ) &&
+				 ( dateTime.Minute == 0 ) &&
+				 ( dateTime.Second == 0 ) );
+			return isDate;
+		}
+		
+		/// <summary>
+		/// True iff the time for the first argument is equal
+		/// to the time for the second argument
+		/// </summary>
+		/// <param name="dateTime1"></param>
+		/// <param name="dateTime2"></param>
+		/// <returns></returns>
+		public static bool HaveTheSameTime(
+			DateTime dateTime1 , DateTime dateTime2 )
+		{
+			bool returnValue =
+				( dateTime1.Hour == dateTime2.Hour ) &&
+				( dateTime1.Minute == dateTime2.Minute ) &&
+				( dateTime1.Second == dateTime2.Second );
+			return returnValue;
+		}
+		
+		#region IsFirstTimeLessThenSecondTime
+		private static DateTime getTime( DateTime dateTime )
+		{
+			DateTime time = new DateTime(
+				1900 , 1 , 1 ,
+				dateTime.Hour , dateTime.Minute , dateTime.Second );
+			return time;
+		}
+		/// <summary>
+		/// true iif the time for dateTime1 is less than the time
+		/// for dateTime2
+		/// </summary>
+		/// <param name="dateTime1"></param>
+		/// <param name="dateTime2"></param>
+		public static bool IsFirstTimeLessThenSecondTime(
+			DateTime dateTime1 , DateTime dateTime2 )
+		{
+			DateTime time1 = ExtendedDateTime.getTime( dateTime1 );
+			DateTime time2 = ExtendedDateTime.getTime( dateTime2 );
+			bool isFirstTimeLessThenSecondTime =
+				( time1 < time2 );
+			return isFirstTimeLessThenSecondTime;
+		}
+		#endregion IsFirstTimeLessThenSecondTime
 	}
 }

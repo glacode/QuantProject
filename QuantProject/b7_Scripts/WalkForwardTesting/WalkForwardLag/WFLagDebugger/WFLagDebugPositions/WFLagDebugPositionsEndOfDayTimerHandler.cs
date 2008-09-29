@@ -18,7 +18,7 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
-*/
+ */
 
 using System;
 using System.Collections;
@@ -34,7 +34,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag.WFLagDebugger
 	/// <summary>
 	/// Strategy to debug the log for the current positions
 	/// </summary>
-	public class WFLagDebugPositionsEndOfDayTimerHandler
+	public class WFLagDebugPositionsEndOfDayTimerHandler : EndOfDayTimerHandler
 	{
 		private Account account;
 		private WFLagWeightedPositions wFLagWeightedPositions;
@@ -46,13 +46,14 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag.WFLagDebugger
 			this.account = account;
 			this.wFLagWeightedPositions = wFLagWeightedPositions;
 		}
-		#region FiveMinutesBeforeMarketCloseEventHandler
+		
+		#region marketCloseEventHandler
 		private double todayTotalGainForLinearCombination()
 		{
 			double todayTotalGain = 0;
-			DateTime today = this.account.EndOfDayTimer.GetCurrentTime().DateTime;
+			DateTime today = this.account.Timer.GetCurrentDateTime();
 			foreach ( WeightedPosition weightedPosition in
-				this.wFLagWeightedPositions.DrivingWeightedPositions.Values )
+			         this.wFLagWeightedPositions.DrivingWeightedPositions.Values )
 				todayTotalGain +=
 					weightedPosition.GetCloseToCloseDailyReturn( today );
 //			todayTotalGain += totalGainForSignedTicker( signedTicker );
@@ -76,25 +77,25 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag.WFLagDebugger
 			Position firstAccountPosition = this.getFirstAccountPosition();
 			WeightedPosition weightedPosition =
 				this.wFLagWeightedPositions.PortfolioWeightedPositions.GetWeightedPosition(
-				firstAccountPosition.Instrument.Key );
+					firstAccountPosition.Instrument.Key );
 			bool isReversed =
 				( ( weightedPosition.IsLong && firstAccountPosition.IsShort ) ||
-				( weightedPosition.IsShort && firstAccountPosition.IsLong ) );
+				 ( weightedPosition.IsShort && firstAccountPosition.IsLong ) );
 //			bool isReversed =
 //				this.wFLagChosenPositions.PortfolioWeightedPositions.ContainsKey(
 //				SignedTicker.GetOppositeSignedTicker( firstAccountPosition ) );
 			return isReversed;
 		}
-		private bool fiveMinutesBeforeMarketCloseEventHandler_arePositionsToBeClosed()
+		private bool marketCloseEventHandler_arePositionsToBeClosed()
 		{
 			bool returnValue = ( this.account.Portfolio.Count > 0 ) &&
 				(	( this.isDrivingPositionsTodayValueHigherThanYesterday() &&
-				this.isCurrentlyReversed() ) ||
-				( !this.isDrivingPositionsTodayValueHigherThanYesterday() &&
-				!this.isCurrentlyReversed() ) );
+				   this.isCurrentlyReversed() ) ||
+				 ( !this.isDrivingPositionsTodayValueHigherThanYesterday() &&
+				  !this.isCurrentlyReversed() ) );
 			return returnValue;
 		}
-		private void fiveMinutesBeforeMarketCloseEventHandler_closePositions()
+		private void marketCloseEventHandler_closePositions()
 		{
 			ArrayList tickers = new ArrayList();
 			foreach ( string ticker in this.account.Portfolio.Keys )
@@ -102,7 +103,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag.WFLagDebugger
 			foreach ( string ticker in tickers )
 				this.account.ClosePosition( ticker );
 		}
-		private bool fiveMinutesBeforeMarketCloseEventHandler_arePositionsToBeOpened()
+		private bool marketCloseEventHandler_arePositionsToBeOpened()
 		{
 			bool returnValue = ( this.account.Portfolio.Count == 0 );
 			return returnValue;
@@ -126,43 +127,55 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag.WFLagDebugger
 				orderType , new Instrument( weightedPosition.Ticker ) ,	quantity );
 			this.account.AddOrder( order );
 		}
-		private void fiveMinutesBeforeMarketCloseEventHandler_openThisPosition(
+		private void marketCloseEventHandler_openThisPosition(
 			WeightedPosition weightedPosition )
 		{
 			this.openPosition( weightedPosition );
 		}
-		private void fiveMinutesBeforeMarketCloseEventHandler_openOppositePosition(
+		private void marketCloseEventHandler_openOppositePosition(
 			WeightedPosition weightedPosition )
 		{
-			this.fiveMinutesBeforeMarketCloseEventHandler_openThisPosition(
+			this.marketCloseEventHandler_openThisPosition(
 				weightedPosition.GetOppositeWeightedPosition() );
 		}
-		private void fiveMinutesBeforeMarketCloseEventHandler_openPosition(
+		private void marketCloseEventHandler_openPosition(
 			WeightedPosition weightedPosition )
 		{
 			if ( this.isDrivingPositionsTodayValueHigherThanYesterday() )
-				fiveMinutesBeforeMarketCloseEventHandler_openThisPosition(
+				this.marketCloseEventHandler_openThisPosition(
 					weightedPosition );
 			else
-				fiveMinutesBeforeMarketCloseEventHandler_openOppositePosition(
+				this.marketCloseEventHandler_openOppositePosition(
 					weightedPosition );
 		}
-		private void fiveMinutesBeforeMarketCloseEventHandler_openPositions()
+		private void marketCloseEventHandler_openPositions()
 		{
 			//			this.chosenTickers.SetTickers( this.bestPerformingTickers , this.account );
 			foreach ( WeightedPosition weightedPosition in
-				this.wFLagWeightedPositions.PortfolioWeightedPositions.Values )
-				this.fiveMinutesBeforeMarketCloseEventHandler_openPosition(
+			         this.wFLagWeightedPositions.PortfolioWeightedPositions.Values )
+				this.marketCloseEventHandler_openPosition(
 					weightedPosition );
 		}
-		public void FiveMinutesBeforeMarketCloseEventHandler(
-			Object sender , EndOfDayTimingEventArgs endOfDayTimingEventArgs )
+		protected override void marketCloseEventHandler(
+			Object sender , DateTime dateTime )
 		{
-			if ( this.fiveMinutesBeforeMarketCloseEventHandler_arePositionsToBeClosed() )
-				this.fiveMinutesBeforeMarketCloseEventHandler_closePositions();
-			if ( this.fiveMinutesBeforeMarketCloseEventHandler_arePositionsToBeOpened() )
-				fiveMinutesBeforeMarketCloseEventHandler_openPositions();
+			if ( this.marketCloseEventHandler_arePositionsToBeClosed() )
+				this.marketCloseEventHandler_closePositions();
+			if ( this.marketCloseEventHandler_arePositionsToBeOpened() )
+				this.marketCloseEventHandler_openPositions();
 		}
 		#endregion
+		
+		protected override void marketOpenEventHandler(
+			Object sender , DateTime dateTime )
+		{
+			;
+		}
+
+		protected override void oneHourAfterMarketCloseEventHandler(
+			Object sender , DateTime dateTime )
+		{
+			;
+		}
 	}
 }

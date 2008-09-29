@@ -2,7 +2,7 @@
 QuantProject - Quantitative Finance Library
 
 RunEfficientCTCPorfolio.cs
-Copyright (C) 2003 
+Copyright (C) 2003
 Marco Milletti
 
 This program is free software; you can redistribute it and/or
@@ -18,7 +18,7 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
-*/
+ */
 
 using System;
 using System.Collections;
@@ -35,7 +35,7 @@ using QuantProject.Business.Strategies;
 using QuantProject.Business.Testing;
 using QuantProject.Business.Timing;
 using QuantProject.Data.DataProviders;
-using QuantProject.Data.Selectors; 
+using QuantProject.Data.Selectors;
 using QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios;
 using QuantProject.Presentation.Reporting.WindowsForm;
 using QuantProject.ADT.FileManaging;
@@ -46,7 +46,7 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
 {
 	/// <summary>
 	/// Script to buy at close and sell at close
-	/// after a specified number of market days  
+	/// after a specified number of market days
 	/// the efficient portfolio
 	/// The efficient portfolio's generation rules
 	/// (contained in the EndOfDayTimerHandler) are:
@@ -58,76 +58,87 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
 	[Serializable]
 	public class RunEfficientCTCPortfolio : RunEfficientPortfolio
 	{
-    protected int numDayOfPortfolioLife;
-    protected int numDaysWithNoPositions;
-    protected int numDaysForReturnCalculation;
-    protected double maxAcceptableCloseToCloseDrawdown;
-    protected int numDaysBetweenEachOptimization;
+		protected int numDayOfPortfolioLife;
+		protected int numDaysWithNoPositions;
+		protected int numDaysForReturnCalculation;
+		protected double maxAcceptableCloseToCloseDrawdown;
+		protected int numDaysBetweenEachOptimization;
 		
-    public RunEfficientCTCPortfolio(string tickerGroupID, int numberOfEligibleTickers, 
-                                    int numberOfTickersToBeChosen, int numDaysForOptimizationPeriod, 
-                                    int generationNumberForGeneticOptimizer,
-                                    int populationSizeForGeneticOptimizer, string benchmark,
-                                    DateTime startDate, DateTime endDate,
-                                   	int numDaysOfPortfolioLife, int numDaysForReturnCalculation,
-                                    int numDaysWithNoPositions,
-                                   	double targetReturn,
-                                    PortfolioType portfolioType, double maxAcceptableCloseToCloseDrawdown, 
-                                    double maxRunningHours, int numDaysBetweenEachOptimization):
-																base(tickerGroupID, numberOfEligibleTickers, 
-                                    numberOfTickersToBeChosen, numDaysForOptimizationPeriod, 
-                                    generationNumberForGeneticOptimizer,
-                                    populationSizeForGeneticOptimizer, benchmark,
-                                    startDate, endDate, targetReturn,
-                                   	portfolioType, maxRunningHours)
+		public RunEfficientCTCPortfolio(string tickerGroupID, int numberOfEligibleTickers,
+		                                int numberOfTickersToBeChosen, int numDaysForOptimizationPeriod,
+		                                int generationNumberForGeneticOptimizer,
+		                                int populationSizeForGeneticOptimizer, string benchmark,
+		                                DateTime startDate, DateTime endDate,
+		                                int numDaysOfPortfolioLife, int numDaysForReturnCalculation,
+		                                int numDaysWithNoPositions,
+		                                double targetReturn,
+		                                PortfolioType portfolioType, double maxAcceptableCloseToCloseDrawdown,
+		                                double maxRunningHours, int numDaysBetweenEachOptimization):
+			base(tickerGroupID, numberOfEligibleTickers,
+			     numberOfTickersToBeChosen, numDaysForOptimizationPeriod,
+			     generationNumberForGeneticOptimizer,
+			     populationSizeForGeneticOptimizer, benchmark,
+			     startDate, endDate, targetReturn,
+			     portfolioType, maxRunningHours)
 		{
-      this.ScriptName = "CloseToCloseScriptsDiscontinuosWithSharpe";
-      //this.ScriptName = "CloseToCloseScriptsDiscontinuosWithCoeff";
-      this.numDayOfPortfolioLife = numDaysOfPortfolioLife;
-      this.numDaysForReturnCalculation = numDaysForReturnCalculation;
-      this.numDaysWithNoPositions = numDaysWithNoPositions;
-      this.maxAcceptableCloseToCloseDrawdown = maxAcceptableCloseToCloseDrawdown;
-      this.numDaysBetweenEachOptimization = numDaysBetweenEachOptimization;
+			this.ScriptName = "CloseToCloseScriptsDiscontinuosWithSharpe";
+			//this.ScriptName = "CloseToCloseScriptsDiscontinuosWithCoeff";
+			this.numDayOfPortfolioLife = numDaysOfPortfolioLife;
+			this.numDaysForReturnCalculation = numDaysForReturnCalculation;
+			this.numDaysWithNoPositions = numDaysWithNoPositions;
+			this.maxAcceptableCloseToCloseDrawdown = maxAcceptableCloseToCloseDrawdown;
+			this.numDaysBetweenEachOptimization = numDaysBetweenEachOptimization;
 		}
 
-    #region auxiliary overriden methods for Run
-    
-    protected override void run_initializeEndOfDayTimerHandler()
-    {
-      this.endOfDayTimerHandler = new EndOfDayTimerHandlerCTC(this.tickerGroupID, this.numberOfEligibleTickers,
-    	                                                        this.numberOfTickersToBeChosen, this.numDaysForOptimizationPeriod,
-    	                                                        this.account,
-    	                                                        this.generationNumberForGeneticOptimizer,
-    	                                                        this.populationSizeForGeneticOptimizer, this.benchmark,
-    	                                                        this.numDayOfPortfolioLife, this.numDaysForReturnCalculation,
-                                                              this.numDaysWithNoPositions,
-    	                                                        this.targetReturn,
-    	                                                       	this.portfolioType, this.maxAcceptableCloseToCloseDrawdown,
-                                                              this.numDaysBetweenEachOptimization);
-    }
-    
-    protected override void run_initializeHistoricalQuoteProvider()
-    {
-    	this.historicalQuoteProvider = new HistoricalAdjustedQuoteProvider();
-    }
-    
-    protected override void run_addEventHandlers()
-    {
-           
-      this.endOfDayTimer.MarketClose +=
-        new MarketCloseEventHandler(
-        this.endOfDayTimerHandler.MarketCloseEventHandler);
-      
-      this.endOfDayTimer.MarketClose +=
-        new MarketCloseEventHandler(
-        this.checkDateForReport);
-      
-      this.endOfDayTimer.OneHourAfterMarketClose += 
-      	new OneHourAfterMarketCloseEventHandler(
-      	   this.endOfDayTimerHandler.OneHourAfterMarketCloseEventHandler);
-    }
+		#region auxiliary overriden methods for Run
+		
+		protected override void run_initializeEndOfDayTimerHandler()
+		{
+			this.endOfDayTimerHandler = new EndOfDayTimerHandlerCTC(this.tickerGroupID, this.numberOfEligibleTickers,
+			                                                        this.numberOfTickersToBeChosen, this.numDaysForOptimizationPeriod,
+			                                                        this.account,
+			                                                        this.generationNumberForGeneticOptimizer,
+			                                                        this.populationSizeForGeneticOptimizer, this.benchmark,
+			                                                        this.numDayOfPortfolioLife, this.numDaysForReturnCalculation,
+			                                                        this.numDaysWithNoPositions,
+			                                                        this.targetReturn,
+			                                                        this.portfolioType, this.maxAcceptableCloseToCloseDrawdown,
+			                                                        this.numDaysBetweenEachOptimization);
+		}
+		
+		protected override void run_initializeHistoricalQuoteProvider()
+		{
+			this.historicalMarketValueProvider = new HistoricalAdjustedQuoteProvider();
+		}
+		
+		private void newDateTimeEventHandler( object sender , DateTime dateTime )
+		{
+			if ( HistoricalEndOfDayTimer.IsMarketClose( dateTime ) )
+				this.checkDateForReport( sender , dateTime );
+		}
+		
+		protected override void run_addEventHandlers()
+		{
+			
+			this.endOfDayTimer.NewDateTime +=
+				new NewDateTimeEventHandler( this.endOfDayTimerHandler.NewDateTimeEventHandler );
+			this.endOfDayTimer.NewDateTime +=
+				new NewDateTimeEventHandler( this.newDateTimeEventHandler );
 
-    
-    #endregion 
+//			this.endOfDayTimer.MarketClose +=
+//				new MarketCloseEventHandler(
+//					this.endOfDayTimerHandler.MarketCloseEventHandler);
+//			
+//			this.endOfDayTimer.MarketClose +=
+//				new MarketCloseEventHandler(
+//					this.checkDateForReport);
+//			
+//			this.endOfDayTimer.OneHourAfterMarketClose +=
+//				new OneHourAfterMarketCloseEventHandler(
+//					this.endOfDayTimerHandler.OneHourAfterMarketCloseEventHandler);
+		}
+
+		
+		#endregion
 	}
 }

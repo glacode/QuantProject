@@ -2,7 +2,7 @@
 QuantProject - Quantitative Finance Library
 
 Account.cs
-Copyright (C) 2003 
+Copyright (C) 2003
 Glauco Siliprandi
 
 This program is free software; you can redistribute it and/or
@@ -18,49 +18,44 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
-*/
+ */
 
 using System;
 using System.Collections;
-using System.Data;
 using System.IO;
-using System.Reflection;
-using System.Runtime.InteropServices;
 using System.Runtime.Serialization.Formatters.Soap;
-using Excel;
+
 using QuantProject.ADT;
-using QuantProject.ADT.Histories;
-using QuantProject.Data.DataProviders;
 using QuantProject.Business.DataProviders;
+using QuantProject.Business.Financial.Accounting.Commissions;
 using QuantProject.Business.Financial.Accounting.Reporting;
 using QuantProject.Business.Financial.Accounting.Transactions;
-using QuantProject.Business.Financial.Accounting.Commissions;
 using QuantProject.Business.Financial.Instruments;
 using QuantProject.Business.Financial.Ordering;
 using QuantProject.Business.Strategies;
 using QuantProject.Business.Timing;
-
+using QuantProject.Data.DataProviders;
 
 namespace QuantProject.Business.Financial.Accounting
 {
-  /// <summary>
-  /// Summary description for Account.
-  /// </summary>
-  /// 
+	/// <summary>
+	/// Summary description for Account.
+	/// </summary>
+	/// 
 
 	[Serializable]
 	public class Account : Keyed , IComparable
 	{
 		private double cashAmount;
 		private AccountStrategy accountStrategy;
-		private IEndOfDayTimer endOfDayTimer;
+		private Timer timer;
 		private IDataStreamer dataStreamer;
 		private IOrderExecutor orderExecutor;
 		private ICommissionManager commissionManager;
 		private ArrayList activeOrders;
 		private AccountReport accountReport;
 
-    
+		
 		public Portfolio Portfolio = new Portfolio();
 		//public AccountReport accountReport;
 
@@ -69,10 +64,10 @@ namespace QuantProject.Business.Financial.Accounting
 			get	{	return cashAmount; }
 		}
 
-		public IEndOfDayTimer EndOfDayTimer
+		public Timer Timer
 		{
-			get	{	return this.endOfDayTimer;	}
-			set	{	this.endOfDayTimer = value;	}
+			get	{	return this.timer;	}
+			set	{	this.timer = value;	}
 		}
 
 		public IDataStreamer DataStreamer
@@ -92,8 +87,8 @@ namespace QuantProject.Business.Financial.Accounting
 			get { return accountStrategy; }
 			set { accountStrategy = value; }
 		}
-    
-    public TransactionHistory Transactions = new TransactionHistory();
+		
+		public TransactionHistory Transactions = new TransactionHistory();
 
 		public Account( string accountName ) : base ( accountName )
 		{
@@ -111,36 +106,36 @@ namespace QuantProject.Business.Financial.Accounting
 		{
 			this.initialize();
 		}
-		private void initialize( IEndOfDayTimer endOfDayTimer ,	IDataStreamer dataStreamer ,
-			IOrderExecutor orderExecutor )
+		private void initialize( Timer timer ,	IDataStreamer dataStreamer ,
+		                        IOrderExecutor orderExecutor )
 		{
-			this.endOfDayTimer = endOfDayTimer;
+			this.timer = timer;
 			this.dataStreamer = dataStreamer;
 			this.orderExecutor = orderExecutor;
 			this.orderExecutor.OrderFilled += new OrderFilledEventHandler(
 				this.orderFilledEventHandler );
 		}
-		public Account( string accountName , IEndOfDayTimer endOfDayTimer ,
-			IDataStreamer dataStreamer , IOrderExecutor orderExecutor ) : base( accountName )
+		public Account( string accountName , Timer timer ,
+		               IDataStreamer dataStreamer , IOrderExecutor orderExecutor ) : base( accountName )
 		{
-			this.initialize( endOfDayTimer , dataStreamer , orderExecutor );
+			this.initialize( timer , dataStreamer , orderExecutor );
 			this.commissionManager = new ZeroCommissionManager();
 			this.initialize();
 		}
 
-		public Account( string accountName , IEndOfDayTimer endOfDayTimer ,
-			IDataStreamer dataStreamer , IOrderExecutor orderExecutor ,
-			ICommissionManager commissionManager ) : base( accountName )
+		public Account( string accountName , Timer timer ,
+		               IDataStreamer dataStreamer , IOrderExecutor orderExecutor ,
+		               ICommissionManager commissionManager ) : base( accountName )
 		{
-			this.initialize( endOfDayTimer , dataStreamer , orderExecutor );
+			this.initialize( timer , dataStreamer , orderExecutor );
 			this.commissionManager = commissionManager;
 			this.initialize();
 		}
 
 		private void orderFilledEventHandler( Object sender , OrderFilledEventArgs
-			eventArgs )
+		                                     eventArgs )
 		{
-			this.Add( eventArgs.EndOfDayTransaction );
+			this.Add( eventArgs.TimedTransaction );
 		}
 
 		public virtual double GetFitnessValue()
@@ -148,10 +143,13 @@ namespace QuantProject.Business.Financial.Accounting
 			if ( this.accountReport == null )
 				// the account report has not been computed yet
 			{
-				AccountReport accountReport = new AccountReport( this ,
-					new HistoricalAdjustedQuoteProvider() );
+				AccountReport accountReport = new AccountReport(
+					this ,
+					new HistoricalAdjustedQuoteProvider() ,
+					new SelectorForMaketClose(
+						this.Transactions.FirstDateTime ) );
 				this.accountReport = accountReport.Create( this.Key ,
-					1 , this.endOfDayTimer.GetCurrentTime() );
+				                                          1 , this.timer.GetCurrentDateTime() );
 			}
 			return (double)this.accountReport.Summary.ReturnOnAccount.Value;
 		}
@@ -170,13 +168,15 @@ namespace QuantProject.Business.Financial.Accounting
 			this.Transactions.Clear();
 			this.Portfolio.Clear();
 		}
-		public void AddCash( EndOfDayDateTime endOfDayDateTime , double moneyAmount )
+		public void AddCash( DateTime dateTime , double moneyAmount )
 		{
 			try
 			{
-				EndOfDayTransaction timedTransaction =
-					new EndOfDayTransaction( TransactionType.AddCash , moneyAmount ,
-					endOfDayDateTime.Copy() );
+				TimedTransaction timedTransaction =
+					new TimedTransaction(
+						TransactionType.AddCash ,
+						moneyAmount ,
+						ExtendedDateTime.Copy( dateTime ) );
 				this.Add( timedTransaction );
 				//Transactions.MultiAdd( extendedDateTime.DateTime , timedTransaction );
 				//cashAmount = cashAmount + moneyAmount;
@@ -189,22 +189,22 @@ namespace QuantProject.Business.Financial.Accounting
 
 		public void AddCash( double moneyAmount )
 		{
-			this.AddCash( this.endOfDayTimer.GetCurrentTime() ,
-				moneyAmount );
+			this.AddCash( this.timer.GetCurrentDateTime() ,
+			             moneyAmount );
 		}
 
 		private void addOrder_throwExceptions( Order order )
 		{
 			if  ( ( ( order.Type == OrderType.MarketSell ) ||
-				( order.Type == OrderType.LimitSell ) ) &&
-				( !this.Portfolio.IsLong( order.Instrument.Key ) ) )
+			       ( order.Type == OrderType.LimitSell ) ) &&
+			     ( !this.Portfolio.IsLong( order.Instrument.Key ) ) )
 				throw new Exception( "A sell order has been submitted, but this " +
-					"account doesn't contain a long position for this ticker" );
+				                    "account doesn't contain a long position for this ticker" );
 			if  ( ( ( order.Type == OrderType.MarketCover ) ||
-				( order.Type == OrderType.LimitCover ) ) &&
-				( !this.Portfolio.IsShort( order.Instrument.Key ) ) )
+			       ( order.Type == OrderType.LimitCover ) ) &&
+			     ( !this.Portfolio.IsShort( order.Instrument.Key ) ) )
 				throw new Exception( "A cover order has been submitted, but this " +
-					"account doesn't contain a short position for this ticker" );
+				                    "account doesn't contain a short position for this ticker" );
 		}
 		public void AddOrder( Order order )
 		{
@@ -232,7 +232,7 @@ namespace QuantProject.Business.Financial.Accounting
 		{
 			return new Commission( transaction );
 		}
-		public void Add( EndOfDayTransaction transaction )
+		public void Add( TimedTransaction transaction )
 		{
 			if ( this.commissionManager != null )
 				// an ICommissionManager has been passed to the constructor
@@ -296,7 +296,7 @@ namespace QuantProject.Business.Financial.Accounting
 				"\nCashAmount : " + this.CashAmount +
 				"\nPortfolioContent : " + this.Portfolio.ToString() +
 				"\nPortfolioMarketValue : " + this.Portfolio.GetMarketValue(
-				this.dataStreamer );
+					this.dataStreamer );
 		}
 
 		//		public AccountReport CreateReport( string reportName ,
@@ -306,12 +306,14 @@ namespace QuantProject.Business.Financial.Accounting
 		//			return accountReport.Create( reportName , numDaysForInterval , endDateTime );
 		//		}
 		public AccountReport CreateReport( string reportName ,
-			int numDaysForInterval , EndOfDayDateTime endDateTime , string buyAndHoldTicker ,
-			IHistoricalQuoteProvider historicalQuoteProvider)
+		                                  int numDaysForInterval , DateTime dateTime , string buyAndHoldTicker ,
+		                                  HistoricalMarketValueProvider historicalMarketValueProvider)
 		{
-			AccountReport accountReport = new AccountReport( this , historicalQuoteProvider );
+			AccountReport accountReport = new AccountReport(
+				this , historicalMarketValueProvider ,
+				new SelectorForMaketClose( this.Transactions.FirstDateTime ) );
 			return accountReport.Create( reportName , numDaysForInterval ,
-				endDateTime , buyAndHoldTicker );
+			                            dateTime , buyAndHoldTicker );
 		}
 		public void Serialize( string filePathAndName )
 		{

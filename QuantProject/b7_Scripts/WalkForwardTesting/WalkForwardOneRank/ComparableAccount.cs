@@ -2,7 +2,7 @@
 QuantProject - Quantitative Finance Library
 
 ComparableAccount.cs
-Copyright (C) 2003 
+Copyright (C) 2003
 Glauco Siliprandi
 
 This program is free software; you can redistribute it and/or
@@ -18,7 +18,7 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
-*/
+ */
 using System;
 
 using QuantProject.ADT.Statistics;
@@ -37,11 +37,11 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardOneRank
 	[Serializable]
 	public class ComparableAccount : Account
 	{
-//    private double maxAcceptableDrawDown = 30;
+		//    private double maxAcceptableDrawDown = 30;
 
 //		private double minAcceptableWinningPeriods = 52;
 
-		private IHistoricalQuoteProvider historicalQuoteProvider =
+		private HistoricalMarketValueProvider historicalMarketValueProvider =
 			new HistoricalAdjustedQuoteProvider();
 
 		private AccountReport accountReport;
@@ -56,9 +56,9 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardOneRank
 		{
 			get {	return this.goodness(); }
 		}
-		public ComparableAccount( string accountName , IEndOfDayTimer endOfDayTimer ,
-			IDataStreamer dataStreamer , IOrderExecutor orderExecutor ) : base( accountName ,
-			endOfDayTimer , dataStreamer , orderExecutor )
+		public ComparableAccount( string accountName , Timer endOfDayTimer ,
+		                         IDataStreamer dataStreamer , IOrderExecutor orderExecutor ) : base( accountName ,
+		                                                                   endOfDayTimer , dataStreamer , orderExecutor )
 		{
 		}
 		private double goodness()
@@ -67,9 +67,10 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardOneRank
 			if ( this.accountReport == null )
 			{
 				this.accountReport = new AccountReport(
-					this , this.historicalQuoteProvider );
+					this , this.historicalMarketValueProvider ,
+					new SelectorForMaketClose( this.Transactions.FirstDateTime ) );
 				this.accountReport.SetEquityLine( 1 ,
-					this.EndOfDayTimer.GetCurrentTime() );
+				                                 this.Timer.GetCurrentDateTime() );
 				returnValue = AdvancedFunctions.GetSharpeRatio(
 					this.accountReport.EquityLine.GetReturns().Values );
 			}

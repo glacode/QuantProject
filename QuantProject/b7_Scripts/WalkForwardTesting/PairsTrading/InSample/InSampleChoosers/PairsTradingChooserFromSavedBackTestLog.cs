@@ -50,21 +50,21 @@ namespace QuantProject.Scripts.WalkForwardTesting.PairsTrading
 		
 		#region getTestingPositionsFromBackTestLog
 		private void getTestingPositionsFromBackTestLog_checkParameters(
-			EndOfDayDateTime currentOutOfSampleEndOfDayDateTime )
+			DateTime currentOutOfSampleDateTime )
 		{
-			if ( currentOutOfSampleEndOfDayDateTime.IsLessThan(
-				this.backTestLog[ 0 ].SimulatedCreationTime ) )
+			if ( currentOutOfSampleDateTime <
+				this.backTestLog[ 0 ].SimulatedCreationDateTime )
 				throw new Exception(
 					"The backTestLog doesn't contain any log item produced before the " +
 					"requested DateTime!" );
 		}
 		private int getIndexForLastLogItemProducedBeforeCurrentOutOfSampleEndOfDayDateTime(
-			EndOfDayDateTime lastReturnsManagerDate )
+			DateTime lastReturnsManagerDate )
 		{
 			int currentIndexForLogItem = 1;
 			while ( ( currentIndexForLogItem < this.backTestLog.Count ) &&
-				( this.backTestLog[ currentIndexForLogItem ].SimulatedCreationTime.IsLessThanOrEqualTo(
-			       	lastReturnsManagerDate ) ) )
+				( this.backTestLog[ currentIndexForLogItem ].SimulatedCreationDateTime <=
+			       	lastReturnsManagerDate ) )
 				currentIndexForLogItem++;
 			int indexForLastLogItemProducedBeforeLastReturnsManagerDate;
 			if ( currentIndexForLogItem >= this.backTestLog.Count )
@@ -98,13 +98,13 @@ namespace QuantProject.Scripts.WalkForwardTesting.PairsTrading
 		}
 		private TestingPositions[]
 			getTestingPositionsFromBackTestLog_withCurrentOutOfSampleEODDateTime(
-			EndOfDayDateTime currentOutOfSampleEndOfDayDateTime )
+			DateTime currentOutOfSampleDateTime )
 		{
 			this.getTestingPositionsFromBackTestLog_checkParameters(
-				currentOutOfSampleEndOfDayDateTime );
+				currentOutOfSampleDateTime );
 			int indexForLastLogItemProducedBeforeCurrentOutOfSampleEndOfDayDateTime =
 				this.getIndexForLastLogItemProducedBeforeCurrentOutOfSampleEndOfDayDateTime(
-				currentOutOfSampleEndOfDayDateTime );
+				currentOutOfSampleDateTime );
 			TestingPositions[] testingPositions =
 				this.getTestingPositions(
 				indexForLastLogItemProducedBeforeCurrentOutOfSampleEndOfDayDateTime );
@@ -113,11 +113,13 @@ namespace QuantProject.Scripts.WalkForwardTesting.PairsTrading
 
 		protected override TestingPositions[]
 			getTestingPositionsFromBackTestLog(
-				EndOfDayDateTime lastReturnsManagerDate )
+				DateTime lastReturnsManagerDate )
 		{
-			EndOfDayDateTime currentOutOfSampleEndOfDayDateTime =
-				new EndOfDayDateTime( lastReturnsManagerDate.DateTime ,
-				EndOfDaySpecificTime.OneHourAfterMarketClose );
+			DateTime currentOutOfSampleEndOfDayDateTime =
+				HistoricalEndOfDayTimer.GetOneHourAfterMarketClose(
+					lastReturnsManagerDate );
+//				new EndOfDayDateTime( lastReturnsManagerDate.DateTime ,
+//				EndOfDaySpecificTime.OneHourAfterMarketClose );
 			TestingPositions[] testingPositions =
 				this.getTestingPositionsFromBackTestLog_withCurrentOutOfSampleEODDateTime(
 				currentOutOfSampleEndOfDayDateTime );

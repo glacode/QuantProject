@@ -18,7 +18,7 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
-*/
+ */
 
 using System;
 using System.Data;
@@ -43,6 +43,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.FixedLengthTwoPhases
 	/// The strategy goes with the best weighted positions for the
 	/// first phase, then goes with the opposite for the second phase
 	/// </summary>
+	[Serializable]
 	public class FixedLengthTwoPhasesStrategy :
 		SymmetricEndOfDayStrategyForBacktester
 	{
@@ -65,7 +66,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.FixedLengthTwoPhases
 			IIntervalsSelector intervalsSelector ,
 			IEligiblesSelector eligiblesSelector ,
 			IInSampleChooser inSampleChooser ,
-			IHistoricalQuoteProvider historicalQuoteProvider ,
+			HistoricalMarketValueProvider historicalMarketValueProvider ,
 			RankBasedOutOfSampleChooser outOfSampleChooser
 		) :
 			base(
@@ -75,7 +76,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.FixedLengthTwoPhases
 				intervalsSelector ,
 				eligiblesSelector ,
 				inSampleChooser ,
-				historicalQuoteProvider )
+				historicalMarketValueProvider )
 		{
 			this.outOfSampleChooser = outOfSampleChooser;
 //			this.numberOfPortfolioPositions = numberOfPortfolioPositions;
@@ -96,8 +97,8 @@ namespace QuantProject.Scripts.WalkForwardTesting.FixedLengthTwoPhases
 		{
 			bool arePositionsToBeClosed = (
 				( this.Account.Portfolio.Count > 0 ) &&
-				( this.now().IsEqualTo(
-					this.lastIntervalAppended().Begin ) ) );
+				( this.now() ==
+				 this.lastIntervalAppended().Begin ) );
 			return arePositionsToBeClosed;
 		}
 		
@@ -113,8 +114,8 @@ namespace QuantProject.Scripts.WalkForwardTesting.FixedLengthTwoPhases
 		private bool currentTimeBeginsALongPeriod()
 		{
 			bool beginsTheLastInterval =
-				( this.now().IsEqualTo(
-					this.lastIntervalAppended().Begin ) );
+				( this.now() ==
+				 this.lastIntervalAppended().Begin );
 			bool lastIntervalIsALongPeriod =
 				this.lastAppendedIntervalIsALongPeriod();
 			return ( beginsTheLastInterval && lastIntervalIsALongPeriod );
@@ -134,7 +135,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.FixedLengthTwoPhases
 		{
 			WeightedPositions weightedPositions =
 				this.outOfSampleChooser.GetPositionsToBeOpened(
-				this.bestTestingPositionsInSample );
+					this.bestTestingPositionsInSample );
 			return weightedPositions;
 		}
 		
@@ -308,12 +309,12 @@ namespace QuantProject.Scripts.WalkForwardTesting.FixedLengthTwoPhases
 //			FixedLengthTwoPhasesLogItem logItem =
 //				new FixedLengthTwoPhasesLogItem( this.now() );
 //			logItem.BestWeightedPositionsInSample = this.bestWeightedPositionsInSample;
-////				this.wFLagWeightedPositionsChooser.WFLagChosenPositions ,
-////				this.wFLagWeightedPositionsChooser.GenerationWhenChosenPositionsWereFound ,
-////				this.now().DateTime );
-////			this.NewChosenPositions(
-////				this , new WFLagNewChosenPositionsEventArgs(
-////				wFLagLogItem ) );
+		////				this.wFLagWeightedPositionsChooser.WFLagChosenPositions ,
+		////				this.wFLagWeightedPositionsChooser.GenerationWhenChosenPositionsWereFound ,
+		////				this.now().DateTime );
+		////			this.NewChosenPositions(
+		////				this , new WFLagNewChosenPositionsEventArgs(
+		////				wFLagLogItem ) );
 //		}
 //		public void OneHourAfterMarketCloseEventHandler(
 //			Object sender , EndOfDayTimingEventArgs endOfDayTimingEventArgs )

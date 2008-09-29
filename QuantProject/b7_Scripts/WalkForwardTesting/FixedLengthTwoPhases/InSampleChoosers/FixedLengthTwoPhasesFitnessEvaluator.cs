@@ -33,6 +33,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.FixedLengthTwoPhases
 	/// <summary>
 	/// Evaluates (in sample) the fitness for a given WeightedPositions
 	/// </summary>
+	[Serializable]
 	public class FixedLengthTwoPhasesFitnessEvaluator : IFitnessEvaluator
 	{
 		private const double fitnessForInvalidCandidate = -1000d;

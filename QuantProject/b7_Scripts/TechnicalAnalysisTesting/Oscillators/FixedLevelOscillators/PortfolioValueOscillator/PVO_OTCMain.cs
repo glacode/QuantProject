@@ -58,7 +58,7 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOs
 	public class PVO_OTCMain : BasicScriptForBacktesting
 	{
 		private Benchmark benchmark;
-		private HistoricalQuoteProvider historicalQuoteProvider;
+		private HistoricalMarketValueProvider historicalQuoteProvider;
 		
 		public PVO_OTCMain()
 		{
@@ -154,7 +154,7 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOs
 			return inSampleChooser;
 		}
 
-		protected override IEndOfDayStrategyForBacktester getEndOfDayStrategy()
+		protected override IStrategyForBacktester getStrategyForBacktester()
 		{
 			int inSampleDays = 25;
 			// uncomment the following line for a faster script
@@ -166,7 +166,7 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOs
 			double overboughtThreshold = 0.0025;
 			double oversoldThresholdMAX = 0.05;
 			double overboughtThresholdMAX = 0.05;
-			IEndOfDayStrategyForBacktester endOfDayStrategy
+			IStrategyForBacktester strategyForBacktester
 //				 = new PVO_OTCStrategyLessCorrelated(eligiblesSelector ,inSampleChooser ,
 //				inSampleDays , benchmark , numDaysBetweenEachOptimization ,
 //				oversoldThreshold , overboughtThreshold , historicalQuoteProvider);
@@ -176,7 +176,7 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOs
 				inSampleDays , benchmark , numDaysBetweenEachOptimization ,
 				numOfClosingsBeforeExit, oversoldThreshold , overboughtThreshold ,
 				oversoldThresholdMAX , overboughtThresholdMAX , historicalQuoteProvider);
-			return endOfDayStrategy;
+			return strategyForBacktester;
 		}
 		protected override EndOfDayStrategyBackTester getEndOfDayStrategyBackTester()
 		{
@@ -191,13 +191,13 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOs
 			DateTime firstDateTime = new DateTime( 2004 , 1 , 1 );
 			DateTime lastDateTime = new DateTime( 2008 , 4, 28 );
 			double maxRunningHours = 10;
-			HistoricalQuoteProvider quoteProviderForBackTester =
+			HistoricalMarketValueProvider quoteProviderForBackTester =
 				this.historicalQuoteProvider;
 			quoteProviderForBackTester =
 				new HistoricalRawQuoteProvider();
 			EndOfDayStrategyBackTester endOfDayStrategyBackTester =
 				new EndOfDayStrategyBackTester(
-				backTestId , this.endOfDayStrategy ,
+				backTestId , this.strategyForBacktester ,
 				quoteProviderForBackTester , accountProvider ,
 				firstDateTime ,	lastDateTime ,
 				this.benchmark , cashToStart , maxRunningHours );

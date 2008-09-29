@@ -31,6 +31,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.PairsTrading
 	/// <summary>
 	/// Selects a single couple with a long and a short position
 	/// </summary>
+	[Serializable]
 	public class OutOfSampleChooserForSingleLongAndShort :
 		OutOfSampleChooser
 	{

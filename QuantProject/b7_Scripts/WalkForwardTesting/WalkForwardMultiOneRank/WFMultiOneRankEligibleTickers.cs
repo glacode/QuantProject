@@ -37,7 +37,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardMultiOneRank
 		private string benchmark;
 		private int numberEligibleTickersToBeChosen;
 		private int numberDaysForPerformanceCalculation;
-		private IEndOfDayTimer endOfDayTimer;
+		private Timer endOfDayTimer;
 
 		private DataTable eligibleTickers;
 		//		private int numDaysToComputeLiquidity = 10;
@@ -51,7 +51,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardMultiOneRank
 			string benchmark ,
 			int numberEligibleTickersToBeChosen ,
 			int numberDaysForPerformanceCalculation ,
-			IEndOfDayTimer endOfDayTimer )
+			Timer endOfDayTimer )
 		{
 			this.tickerGroupID = tickerGroupID;
 			this.benchmark = benchmark;
@@ -64,7 +64,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardMultiOneRank
 		#region SetTickers
 		private DataTable setTickers_build_getSelectedTickers()
 		{
-			DateTime dateTime = this.endOfDayTimer.GetCurrentTime().DateTime;
+			DateTime dateTime = this.endOfDayTimer.GetCurrentDateTime();
 //			SelectorByGroup selectorByGroup =
 //				new SelectorByGroup( "SP500" , dateTime );
 			// use the following for fast test

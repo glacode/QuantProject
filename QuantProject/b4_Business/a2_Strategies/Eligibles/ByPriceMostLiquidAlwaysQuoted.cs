@@ -23,9 +23,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 using System;
 using System.Data;
 
+using QuantProject.ADT.Histories;
 using QuantProject.ADT.Messaging;
-using QuantProject.Business.Strategies.ReturnsManagement.Time;
-using QuantProject.Business.Timing;
 using QuantProject.Data.Selectors;
 
 namespace QuantProject.Business.Strategies.Eligibles
@@ -42,6 +41,7 @@ namespace QuantProject.Business.Strategies.Eligibles
 	/// -step 3: from tickers selected by step 2, the ones that are
 	/// always quoted at all market days are selected (not more than a given max number);
 	/// </summary>
+	[Serializable]
 	public class ByPriceMostLiquidAlwaysQuoted : IEligiblesSelector
 	{
 		public event NewMessageEventHandler NewMessage;
@@ -82,9 +82,9 @@ namespace QuantProject.Business.Strategies.Eligibles
 		}
 
 		private EligibleTickers getEligibleTickers_actually(
-			EndOfDayHistory endOfDayHistory )
+			History history )
 		{
-			DateTime currentDate = endOfDayHistory.LastEndOfDayDateTime.DateTime; 
+			DateTime currentDate = history.LastDateTime; 
 
 			SelectorByGroup group;
 			if(this.temporizedGroup)
@@ -108,7 +108,7 @@ namespace QuantProject.Business.Strategies.Eligibles
 
 			SelectorByLiquidity mostLiquidSelector =
 				new SelectorByLiquidity( dataTableByPrice ,
-        false, endOfDayHistory.FirstEndOfDayDateTime.DateTime, currentDate,
+        false, history.FirstDateTime, currentDate,
         this.maxNumberOfEligibleTickersToBeChosen);
       DataTable dataTableMostLiquid =
 				mostLiquidSelector.GetTableOfSelectedTickers();
@@ -119,7 +119,7 @@ namespace QuantProject.Business.Strategies.Eligibles
 
       SelectorByQuotationAtEachMarketDay quotedAtEachMarketDayFromLastSelection = 
         new SelectorByQuotationAtEachMarketDay( dataTableMostLiquid ,
-        false, endOfDayHistory.History,
+        false, history,
         this.maxNumberOfEligibleTickersToBeChosen);
       DataTable dataTableToBeReturned =
 				quotedAtEachMarketDayFromLastSelection.GetTableOfSelectedTickers();
@@ -144,10 +144,10 @@ namespace QuantProject.Business.Strategies.Eligibles
 		/// </summary>
 		/// <returns></returns>
 		public EligibleTickers GetEligibleTickers(
-			EndOfDayHistory endOfDayHistory )
+			History history )
 		{
 			EligibleTickers eligibleTickers =
-				this.getEligibleTickers_actually( endOfDayHistory );
+				this.getEligibleTickers_actually( history );
 			this.getEligibleTickers_sendNewMessage( eligibleTickers );
 			return eligibleTickers;
 		}

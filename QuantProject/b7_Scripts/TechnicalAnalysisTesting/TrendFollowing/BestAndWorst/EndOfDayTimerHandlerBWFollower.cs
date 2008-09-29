@@ -42,7 +42,7 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.TrendFollowing.BestAndWo
 	/// the next days
 	/// </summary>
 	[Serializable]
-	public class EndOfDayTimerHandlerBWFollower
+	public class EndOfDayTimerHandlerBWFollower : EndOfDayTimerHandler
 	{
 		private string tickerGroupID;
 		private int numberOfEligibleTickers;
@@ -86,7 +86,7 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.TrendFollowing.BestAndWo
 			this.orders = new ArrayList();
 		}
 		
-		#region MarketOpenEventHandler
+		#region marketOpenEventHandler
 
 		private void addOrderForTicker(string[] tickers,
 		                               int tickerPosition )
@@ -160,8 +160,8 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.TrendFollowing.BestAndWo
 		/// </summary>
 		/// <param name="sender"></param>
 		/// <param name="eventArgs"></param>
-		public void MarketOpenEventHandler(
-			Object sender , EndOfDayTimingEventArgs endOfDayTimingEventArgs )
+		protected override void marketOpenEventHandler(
+			Object sender , DateTime dateTime )
 		{
 			if(this.orders.Count == 0 && this.account.Transactions.Count == 0)
 				this.account.AddCash(30000);
@@ -178,7 +178,7 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.TrendFollowing.BestAndWo
 
 		#endregion
 
-		#region MarketCloseEventHandler
+		#region marketCloseEventHandler
 
 		private void closePosition( string ticker )
 		{
@@ -194,8 +194,8 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.TrendFollowing.BestAndWo
 				closePosition( ticker );
 		}
 		
-		public void MarketCloseEventHandler(
-			Object sender , EndOfDayTimingEventArgs endOfDayTimingEventArgs )
+		protected override void marketCloseEventHandler(
+			Object sender , DateTime dateTime )
 		{
 			if(this.account.Portfolio.Count > 0)
 			{
@@ -203,8 +203,8 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.TrendFollowing.BestAndWo
 				if(this.closesElapsedWithSomeOpenPosition == this.lengthInDaysForPerformance)
 				{
 					this.closePositions();
-					this.OneHourAfterMarketCloseEventHandler(sender,endOfDayTimingEventArgs);
-					this.MarketOpenEventHandler(sender, endOfDayTimingEventArgs);
+					this.oneHourAfterMarketCloseEventHandler(sender,dateTime);
+					this.marketOpenEventHandler(sender, dateTime);
 					this.closesElapsedWithSomeOpenPosition = 0;
 				}
 			}
@@ -212,15 +212,15 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.TrendFollowing.BestAndWo
 			{
 				if( ((IndexBasedEndOfDayTimer)sender).CurrentDateArrayPosition >= this.lengthInDaysForPerformance )
 				{
-					this.OneHourAfterMarketCloseEventHandler(sender,endOfDayTimingEventArgs);
-					this.MarketOpenEventHandler(sender, endOfDayTimingEventArgs);
+					this.oneHourAfterMarketCloseEventHandler(sender,dateTime);
+					this.marketOpenEventHandler(sender, dateTime);
 				}
 			}
 		}
 
 		#endregion
 
-		#region OneHourAfterMarketCloseEventHandler
+		#region oneHourAfterMarketCloseEventHandler
 		
 		private void oneHourAfterMarketCloseEventHandler_clear()
 		{
@@ -238,11 +238,11 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.TrendFollowing.BestAndWo
 		/// </summary>
 		/// <param name="sender"></param>
 		/// <param name="eventArgs"></param>
-		public void OneHourAfterMarketCloseEventHandler(
-			Object sender , EndOfDayTimingEventArgs endOfDayTimingEventArgs )
+		protected override void oneHourAfterMarketCloseEventHandler(
+			Object sender , DateTime dateTime )
 		{
 			this.oneHourAfterMarketCloseEventHandler_clear();
-			DateTime currentDate = endOfDayTimingEventArgs.EndOfDayDateTime.DateTime;
+			DateTime currentDate = dateTime;
 			int currentDateArrayPositionInTimer = ((IndexBasedEndOfDayTimer)sender).CurrentDateArrayPosition;
 			DateTime firstDateForPerformanceComputation =
 				(DateTime)((IndexBasedEndOfDayTimer)sender).IndexQuotes.Rows[currentDateArrayPositionInTimer - this.lengthInDaysForPerformance]["quDate"];

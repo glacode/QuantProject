@@ -38,6 +38,7 @@ namespace QuantProject.Business.Strategies.ReturnsManagement.Time.IntervalsSelec
 	/// Only odd intervals (first, third, ...) are returned, even intervals
 	/// (second, fourth, ...) are skipped instead
 	/// </summary>
+	[Serializable]
 	public class OddIntervalsSelector : IIntervalsSelector
 	{
 //		private int benchmarkTimeStepsForOddIntervals;
@@ -87,11 +88,11 @@ namespace QuantProject.Business.Strategies.ReturnsManagement.Time.IntervalsSelec
 			return nextOddInterval;
 		}
 		public virtual ReturnInterval GetFirstInterval(
-			EndOfDayDateTime startingEndOfDayDateTime )
+			DateTime startingDateTime )
 		{
 			ReturnInterval firstInterval =
 				this.fixedLengthTwoPhasesIntervalsSelector.GetFirstInterval(
-					startingEndOfDayDateTime );
+					startingDateTime );
 			return firstInterval;
 		}
 	

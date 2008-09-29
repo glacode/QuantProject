@@ -33,13 +33,14 @@ namespace QuantProject.Business.Strategies.ReturnsManagement.Time
 	/// End of day intervals in a timed sequence, i.e. the (n+1)th interval
 	/// never begins before the (n)th interval ends
 	/// </summary>
+	[Serializable]
 	public class ReturnIntervals : CollectionBase
 	{
-		protected EndOfDayDateTime firstEndOfDayDateTime;
-		protected EndOfDayDateTime lastEndOfDayDateTime;
+		protected DateTime firstDateTime;
+		protected DateTime lastDateTime;
 		protected string benchmark;
 		protected History marketDaysForBenchmark;
-		private EndOfDayHistory bordersHistory;
+		private History bordersHistory;
 		protected int intervalLength;
 		
 		private IIntervalsSelector intervalsSelector;
@@ -59,7 +60,7 @@ namespace QuantProject.Business.Strategies.ReturnsManagement.Time
 		/// <summary>
 		/// The end border for the last interval
 		/// </summary>
-		public EndOfDayDateTime LastEndOfDayDateTime
+		public DateTime LastDateTime
 		{
 			get
 			{
@@ -83,10 +84,10 @@ namespace QuantProject.Business.Strategies.ReturnsManagement.Time
 			}
 		}
 		/// <summary>
-		/// The EndOfDayHistory made up by queuing all
+		/// The History made up by queuing all
 		/// interval's borders
 		/// </summary>
-		public EndOfDayHistory BordersHistory
+		public History BordersHistory
 		{
 			get
 			{
@@ -98,25 +99,25 @@ namespace QuantProject.Business.Strategies.ReturnsManagement.Time
 		}
 		
 		private void returnIntervals_initialize_checkParameters(
-			EndOfDayDateTime firstEndOfDayDateTime ,
-			EndOfDayDateTime lastEndOfDayDateTime , string benchmark,
-			int intervalLength)
+			DateTime firstDateTime , DateTime lastDateTime ,
+			string benchmark , int intervalLength)
 		{
-			if(lastEndOfDayDateTime.CompareTo(firstEndOfDayDateTime) < 1)
-				throw new Exception("lastEndOfDayDateTime has to be greater than firstEndOfDayDateTime!");
-			if(intervalLength < 1)
-				throw new Exception("Interval length has to be greater than 0!");
+			if( lastDateTime <= firstDateTime )
+				throw new Exception(
+					"lastEndOfDayDateTime must be greater than firstEndOfDayDateTime!" );
+			if( intervalLength < 1 )
+				throw new Exception( "Interval length must greater than 0!" );
 		}
 		
-		private void returnIntervals_initialize(EndOfDayDateTime firstEndOfDayDateTime ,
-			EndOfDayDateTime lastEndOfDayDateTime , string benchmark,
-			int intervalLength)
+		private void returnIntervals_initialize(
+			DateTime firstDateTime , DateTime lastDateTime ,
+			string benchmark , int intervalLength)
 		{
 			this.returnIntervals_initialize_checkParameters(
-				firstEndOfDayDateTime, lastEndOfDayDateTime, benchmark, intervalLength);
+				firstDateTime, lastDateTime, benchmark, intervalLength);
 			this.intervalLength = intervalLength;
-			this.firstEndOfDayDateTime = firstEndOfDayDateTime;
-			this.lastEndOfDayDateTime = lastEndOfDayDateTime;
+			this.firstDateTime = firstDateTime;
+			this.lastDateTime = lastDateTime;
 			this.benchmark = benchmark;
 			this.setMarketDaysForBenchmark();
 			this.setIntervals();
@@ -124,32 +125,32 @@ namespace QuantProject.Business.Strategies.ReturnsManagement.Time
 
 		/// <summary>
 		/// Creates the proper intervals, for the given benchmark, from
-		/// the first EndOfDayDateTime to the last EndOfDayDateTime
+		/// the first DateTime to the last DateTime
 		/// </summary>
 		/// <param name="firstEndOfDayDateTime"></param>
 		/// <param name="lastEndOfDayDateTime"></param>
 		/// <param name="benchmark"></param>
-		public ReturnIntervals( EndOfDayDateTime firstEndOfDayDateTime ,
-			EndOfDayDateTime lastEndOfDayDateTime , string benchmark )
+		public ReturnIntervals(
+			DateTime firstDateTime , DateTime lastDateTime , string benchmark )
 		{
-			this.returnIntervals_initialize( firstEndOfDayDateTime,
-				lastEndOfDayDateTime, benchmark, 1 );//default intervals are daily
+			this.returnIntervals_initialize( firstDateTime,
+				lastDateTime , benchmark , 1 );//default intervals are daily
 		}
 		
 		/// <summary>
 		/// Creates the proper intervals, for the given benchmark, from
-		/// the first EndOfDayDateTime to the last EndOfDayDateTime
+		/// the first DateTime to the last DateTime
 		/// </summary>
-		/// <param name="firstEndOfDayDateTime"></param>
-		/// <param name="lastEndOfDayDateTime"></param>
+		/// <param name="firstDateTime"></param>
+		/// <param name="lastDateTime"></param>
 		/// <param name="benchmark"></param>
 		/// <param name="intervalLength"></param> 
-		public ReturnIntervals( EndOfDayDateTime firstEndOfDayDateTime ,
-			EndOfDayDateTime lastEndOfDayDateTime , string benchmark,
-		  int intervalLength)
+		public ReturnIntervals(
+			DateTime firstDateTime , DateTime lastDateTime ,
+			string benchmark, int intervalLength )
 		{
-			this.returnIntervals_initialize( firstEndOfDayDateTime,
-				lastEndOfDayDateTime, benchmark, intervalLength );
+			this.returnIntervals_initialize(
+				firstDateTime ,	lastDateTime, benchmark, intervalLength );
 		}
 		
 		/// <summary>
@@ -176,7 +177,7 @@ namespace QuantProject.Business.Strategies.ReturnsManagement.Time
 		{
 			this.marketDaysForBenchmark =
 				QuantProject.Data.DataTables.Quotes.GetMarketDays( this.benchmark ,
-				firstEndOfDayDateTime.DateTime , lastEndOfDayDateTime.DateTime );
+				this.firstDateTime , this.lastDateTime );
 		}
 		
 		protected virtual void setIntervals()
@@ -193,11 +194,11 @@ namespace QuantProject.Business.Strategies.ReturnsManagement.Time
 		/// <param name="endOfDayHistory"></param>
 		/// <returns></returns>
 		public bool AreIntervalBordersAllCoveredBy(
-			EndOfDayHistory endOfDayHistory )
+			History history )
 		{
 			bool areAllCovered = true;
 			foreach ( ReturnInterval returnInterval in this  )
-				if ( !returnInterval.AreBordersCoveredBy( endOfDayHistory ) )
+				if ( !returnInterval.AreBordersCoveredBy( history ) )
 					areAllCovered = false;
 			return areAllCovered;
 		}
@@ -209,7 +210,7 @@ namespace QuantProject.Business.Strategies.ReturnsManagement.Time
 				( ( this.bordersHistory != null ) &&
 				( this.bordersHistory.Count > 0 ) &&
 				( returnInterval.BeginsBefore(
-				this.bordersHistory.LastEndOfDayDateTime ) ) );
+				this.bordersHistory.LastDateTime ) ) );
 			return beginsBefore;
 		}
 		private void checkIfTheIntervalIsWellOrdered(
@@ -224,8 +225,7 @@ namespace QuantProject.Business.Strategies.ReturnsManagement.Time
 			bool returnValue =
         ( ( this.bordersHistory != null ) &&
 				( this.bordersHistory.Count > 0 ) &&
-				( this.bordersHistory.LastEndOfDayDateTime.CompareTo(
-				returnInterval.Begin ) == 0 ) );
+				( this.bordersHistory.LastDateTime == returnInterval.Begin ) );
 			return returnValue;
 		}
 		private void setEndOfDayHistoryForCurrentInterval(
@@ -248,7 +248,7 @@ namespace QuantProject.Business.Strategies.ReturnsManagement.Time
 		}
 		private void setBordersHistory()
 		{
-			this.bordersHistory = new EndOfDayHistory();
+			this.bordersHistory = new History();
 			for( int i = 0 ; i < this.Count ; i++ )
 				this.setEndOfDayHistoryForCurrentInterval( this[ i ] );
 		}
@@ -260,21 +260,21 @@ namespace QuantProject.Business.Strategies.ReturnsManagement.Time
 		
 		#region appendIntervalsButDontGoBeyondLastDate
 		private void appendIntervalsButDontGoBeyondLastDate_checkParameters(
-			EndOfDayDateTime firstDate , EndOfDayDateTime lastDate )
+			DateTime firstDate , DateTime lastDate )
 		{
 			if ( firstDate.CompareTo( lastDate ) >= 0 )
 				throw new Exception( "lastDate must be greater than firstDate!" );
 			if ( this.Count > 0 )
 				// some interval has already been added
 			{
-				EndOfDayDateTime currentLastEndOfDayDateTime =
+				DateTime currentLastDateTime =
 					this[ this.Count - 1 ].End;
-				if ( firstDate.CompareTo( currentLastEndOfDayDateTime ) < 0 )
+				if ( firstDate < currentLastDateTime )
 					throw new Exception( "firstDate cannot be smaller than " +
 						"the end of the last interval already in this collection!" );
 			}
 		}
-		private ReturnInterval getFirstIntervalToBeAdded( EndOfDayDateTime firstDate )
+		private ReturnInterval getFirstIntervalToBeAdded( DateTime firstDate )
 		{
 			ReturnInterval firstIntervalToBeAdded;
 			if ( this.Count == 0 )
@@ -296,8 +296,9 @@ namespace QuantProject.Business.Strategies.ReturnsManagement.Time
 		/// </summary>
 		/// <param name="firstDate"></param>
 		/// <param name="lastDate"></param>
-		private void appendIntervalsButDontGoBeyondLastDate( EndOfDayDateTime firstDate ,
-			EndOfDayDateTime lastDate )
+		private void appendIntervalsButDontGoBeyondLastDate(
+			DateTime firstDate ,
+			DateTime lastDate )
 		{
 			this.appendIntervalsButDontGoBeyondLastDate_checkParameters(
 				firstDate , lastDate );
@@ -314,7 +315,7 @@ namespace QuantProject.Business.Strategies.ReturnsManagement.Time
 		
 		#region AppendIntervalsButDontGoBeyondLastDate
 		private void appendIntervalsButDontGoBeyondLastDate_checkParameters(
-			EndOfDayDateTime lastDate )
+			DateTime lastDate )
 		{
 			if ( this.Count == 0 )
 				throw new Exception(
@@ -322,10 +323,10 @@ namespace QuantProject.Business.Strategies.ReturnsManagement.Time
 					"EndOfDayDateTime lastDate ) " +
 					"has been invoked but the current ReturnIntervals " +
 					"object is empty!" );
-			if ( lastDate.IsLessThanOrEqualTo( this.LastEndOfDayDateTime ) )
+			if ( lastDate <= this.LastDateTime )
 				throw new Exception(
 					"ReturnIntervals.AppendIntervalsButDontGoBeyondLastDate( " +
-					"EndOfDayDateTime lastDate ) " +
+					"DateTime lastDate ) " +
 					"has been invoked but lastDate must be larger than the " +
 					"end of the last ReturnInterval already in this collection" );
 		}
@@ -338,27 +339,27 @@ namespace QuantProject.Business.Strategies.ReturnsManagement.Time
 		/// </summary>
 		/// <param name="lastDate"></param>
 		public void AppendIntervalsButDontGoBeyondLastDate(
-			EndOfDayDateTime lastDate )
+			DateTime lastDate )
 		{
 			this.appendIntervalsButDontGoBeyondLastDate_checkParameters(
 				lastDate );
-			EndOfDayDateTime firstDate = this.LastEndOfDayDateTime;
+			DateTime firstDate = this.LastDateTime;
 			this.appendIntervalsButDontGoBeyondLastDate( firstDate , lastDate );
 		}
 		#endregion AppendIntervalsButDontGoBeyondLastDate
 		
 		#region AppendIntervalsToGoJustBeyond
 		private void appendIntervalsToGoJustBeyondLastDate_checkParameters(
-			EndOfDayDateTime lastDate )
+			DateTime lastDateTime )
 		{
 			if ( this.Count == 0 )
 				throw new Exception(
 					"ReturnIntervals.AppendIntervalsToGoJustBeyond( EndOfDayDateTime lastDate ) " +
 					"has been invoked but the current ReturnIntervals " +
 					"object is empty!" );
-			if ( lastDate.IsLessThan( this.LastEndOfDayDateTime ) )
+			if ( lastDateTime < this.LastDateTime )
 				throw new Exception(
-					"ReturnIntervals.AppendIntervalsToGoJustBeyond( EndOfDayDateTime lastDate ) " +
+					"ReturnIntervals.AppendIntervalsToGoJustBeyond( DateTime lastDateTime ) " +
 					"has been invoked but lastDate must be larger than or equal to " +
 					"the end of the last ReturnInterval already in the collection" );
 		}
@@ -372,11 +373,11 @@ namespace QuantProject.Business.Strategies.ReturnsManagement.Time
 		/// </summary>
 		/// <param name="lastDate"></param>
 		public void AppendIntervalsToGoJustBeyond(
-			EndOfDayDateTime lastDate )
+			DateTime lastDate )
 		{
 			this.appendIntervalsToGoJustBeyondLastDate_checkParameters(
 				lastDate );
-			if ( this.LastEndOfDayDateTime.IsLessThan( lastDate ) )
+			if ( this.LastDateTime < lastDate )
 				// lastDate comes after the last interval already added				
 				this.AppendIntervalsButDontGoBeyondLastDate( lastDate );
 			ReturnInterval lastInterval =
@@ -390,7 +391,7 @@ namespace QuantProject.Business.Strategies.ReturnsManagement.Time
 		/// </summary>
 		/// <param name="firstDate"></param>
 		public void AppendFirstInterval(
-			EndOfDayDateTime firstDate )
+			DateTime firstDate )
 		{
 			ReturnInterval firstInterval =
 				this.intervalsSelector.GetFirstInterval( firstDate );

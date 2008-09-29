@@ -53,17 +53,17 @@ namespace QuantProject.Scripts.WalkForwardTesting.FixedLengthTwoPhases
 	{
 		private Benchmark benchmark;
 		private int numberOfPortfolioPositions;
-		private IHistoricalQuoteProvider historicalQuoteProviderForInSample;
-		private IHistoricalQuoteProvider
-			historicalQuoteProviderForTheBacktesterAccount;
+		private HistoricalMarketValueProvider historicalMarketValueProviderForInSample;
+		private HistoricalMarketValueProvider
+			historicalMarketValueProviderForTheBacktesterAccount;
 
 		public FixedLengthTwoPhasesMain()
 		{
 			this.benchmark = new Benchmark( "CCE" );
 			this.numberOfPortfolioPositions = 2;
-			this.historicalQuoteProviderForInSample =
+			this.historicalMarketValueProviderForInSample =
 				new HistoricalRawQuoteProvider();
-			this.historicalQuoteProviderForTheBacktesterAccount =
+			this.historicalMarketValueProviderForTheBacktesterAccount =
 				new HistoricalRawQuoteProvider();
 		}
 		
@@ -125,8 +125,8 @@ namespace QuantProject.Scripts.WalkForwardTesting.FixedLengthTwoPhases
 			double crossoverRate = 0.85;
 			double mutationRate = 0.02;
 			double elitismRate = 0.001;
-			int populationSizeForGeneticOptimizer = 10000;
-			int generationNumberForGeneticOptimizer = 5;
+			int populationSizeForGeneticOptimizer = 2000;
+			int generationNumberForGeneticOptimizer = 3;
 			int seedForRandomGenerator =
 				QuantProject.ADT.ConstantsProvider.SeedForRandomGenerator;
 			IInSampleChooser inSampleChooser =
@@ -135,7 +135,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.FixedLengthTwoPhases
 					numberOfBestTestingPositionsToBeReturned ,
 					benchmark ,
 					decoderForWeightedPositions , fitnessEvaluator ,
-					this.historicalQuoteProviderForInSample ,
+					this.historicalMarketValueProviderForInSample ,
 					crossoverRate , mutationRate , elitismRate ,
 					populationSizeForGeneticOptimizer , generationNumberForGeneticOptimizer ,
 					seedForRandomGenerator );
@@ -154,15 +154,15 @@ namespace QuantProject.Scripts.WalkForwardTesting.FixedLengthTwoPhases
 			return inSampleChooser;
 		}
 		
-		protected override IEndOfDayStrategyForBacktester getEndOfDayStrategy()
+		protected override IStrategyForBacktester getStrategyForBacktester()
 		{
 //			int numberOfPortfolioPositions = 2;
 			int numDaysForInSampleOptimization = 180;
 			// uncomment the following line for a faster script
-			numDaysForInSampleOptimization = 5;
+//			numDaysForInSampleOptimization = 8;
 			numDaysForInSampleOptimization = 45;
 			
-			int numDaysBetweenEachOtpimization = 3;
+			int numDaysBetweenEachOtpimization = 7;
 			
 			IIntervalsSelector intervalsSelector =
 				new FixedLengthTwoPhasesIntervalsSelector(
@@ -178,7 +178,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.FixedLengthTwoPhases
 					numDaysForInSampleOptimization ,
 					benchmark , intervalsSelector ,
 					eligiblesSelector , inSampleChooser ,
-					this.historicalQuoteProviderForInSample ,
+					this.historicalMarketValueProviderForInSample ,
 					outOfSampleChooser );
 //			IEndOfDayStrategyForBacktester endOfDayStrategyForBacktester =
 //				new PairsTradingStrategy(
@@ -205,14 +205,14 @@ namespace QuantProject.Scripts.WalkForwardTesting.FixedLengthTwoPhases
 			double cashToStart = 30000;
 
 			DateTime firstDateTime = new DateTime( 2006 , 1 , 1 );
-			DateTime lastDateTime = new DateTime( 2008 , 4 , 1 );
+			DateTime lastDateTime = new DateTime( 2007 , 12 , 31 );
 
-			double maxRunningHours = 8;
+			double maxRunningHours = 0.01;
 			
 			EndOfDayStrategyBackTester endOfDayStrategyBackTester =
 				new EndOfDayStrategyBackTester(
-					backTestId , this.endOfDayStrategy ,
-					this.historicalQuoteProviderForTheBacktesterAccount ,
+					backTestId , this.strategyForBacktester ,
+					this.historicalMarketValueProviderForTheBacktesterAccount ,
 					accountProvider ,
 					firstDateTime ,	lastDateTime ,
 					this.benchmark , cashToStart , maxRunningHours );

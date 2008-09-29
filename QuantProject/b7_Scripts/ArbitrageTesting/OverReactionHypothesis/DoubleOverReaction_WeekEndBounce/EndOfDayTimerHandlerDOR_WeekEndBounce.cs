@@ -30,7 +30,7 @@ using QuantProject.Business.Financial.Ordering;
 using QuantProject.Business.Timing;
 using QuantProject.Business.Strategies;
 using QuantProject.Data;
-using QuantProject.Data.DataProviders;
+using QuantProject.Data.DataProviders.Quotes;
 using QuantProject.Data.Selectors;
 
 namespace QuantProject.Scripts.ArbitrageTesting.OverReactionHypothesis.DoubleOverReaction_WeekEndBounce
@@ -42,12 +42,12 @@ namespace QuantProject.Scripts.ArbitrageTesting.OverReactionHypothesis.DoubleOve
 	/// based on the OverReaction Hypothesis
 	/// </summary>
 	[Serializable]
-	public class EndOfDayTimerHandlerDOR_WeekEndBounce
+	public class EndOfDayTimerHandlerDOR_WeekEndBounce : EndOfDayStrategy
 	{
 		private string tickerGroupID;
 		private int numberOfEligibleTickers;
 		private string benchmark;
-		private Account account;
+//		private Account account;
 		private int numOfWorstTickers;
 		private int numOfBestTickers;
 		private int lengthInDaysForPerformance;
@@ -142,17 +142,23 @@ namespace QuantProject.Scripts.ArbitrageTesting.OverReactionHypothesis.DoubleOve
 		
 		private double setChosenTickers_getGainOrLossFromPreviousClose(string signedTicker)
 		{
-			IndexBasedEndOfDayTimer currentTimer = (IndexBasedEndOfDayTimer)this.account.EndOfDayTimer;
-			ExtendedDateTime nowAtOpen =
-				new ExtendedDateTime(currentTimer.GetCurrentTime().DateTime,
-				                     BarComponent.Open);
-			ExtendedDateTime previousClose =
-				new ExtendedDateTime(currentTimer.GetPreviousDateTime(),
-				                     BarComponent.Close);
+			IndexBasedEndOfDayTimer currentTimer = (IndexBasedEndOfDayTimer)this.account.Timer;
+			DateTime nowAtOpen =
+				HistoricalEndOfDayTimer.GetMarketOpen( currentTimer.GetCurrentDateTime() );
+//				new ExtendedDateTime(currentTimer.GetCurrentTime().DateTime,
+//				                     BarComponent.Open);
+			DateTime previousClose =
+				HistoricalEndOfDayTimer.GetMarketClose( currentTimer.GetPreviousDateTime() );
+//				new ExtendedDateTime(currentTimer.GetPreviousDateTime(),
+//				                     BarComponent.Close);
 			double currentValueAtOpen =
-				HistoricalDataProvider.GetAdjustedMarketValue(SignedTicker.GetTicker(signedTicker), nowAtOpen);
+				HistoricalQuotesProvider.GetAdjustedMarketValue(
+					SignedTicker.GetTicker(signedTicker),
+					nowAtOpen , MarketStatusSwitch.Open );
 			double previousValueAtClose =
-				HistoricalDataProvider.GetAdjustedMarketValue(SignedTicker.GetTicker(signedTicker), previousClose);
+				HistoricalQuotesProvider.GetAdjustedMarketValue(
+					SignedTicker.GetTicker(signedTicker),
+					previousClose , MarketStatusSwitch.Close );
 			
 			return (currentValueAtOpen - previousValueAtClose) / previousValueAtClose;
 		}
@@ -220,17 +226,17 @@ namespace QuantProject.Scripts.ArbitrageTesting.OverReactionHypothesis.DoubleOve
 		/// </summary>
 		/// <param name="sender"></param>
 		/// <param name="eventArgs"></param>
-		public void MarketOpenEventHandler(
-			Object sender , EndOfDayTimingEventArgs endOfDayTimingEventArgs )
+		protected override void marketOpenEventHandler(
+			Object sender , DateTime dateTime )
 		{
 			if(this.orders.Count == 0 && this.account.Transactions.Count == 0)
 				this.account.AddCash(30000);
 			
 			if (  (this.account.Portfolio.Count == 0 &&
-			       endOfDayTimingEventArgs.EndOfDayDateTime.DateTime.DayOfWeek ==
+			       dateTime.DayOfWeek ==
 			       DayOfWeek.Monday) ||
 			    (this.account.Portfolio.Count == 0 &&
-			     endOfDayTimingEventArgs.EndOfDayDateTime.DateTime.DayOfWeek ==
+			     dateTime.DayOfWeek ==
 			     DayOfWeek.Tuesday)  )
 			{
 				this.setChosenTickersBothForLongAndShort();
@@ -243,24 +249,24 @@ namespace QuantProject.Scripts.ArbitrageTesting.OverReactionHypothesis.DoubleOve
 				if(allTickersHasBeenChosenForLongAndShort)
 					this.openPositions(this.chosenTickers);
 			}
-			else if (endOfDayTimingEventArgs.EndOfDayDateTime.DateTime.DayOfWeek ==
+			else if (dateTime.DayOfWeek ==
 			         DayOfWeek.Wednesday ||
-			         endOfDayTimingEventArgs.EndOfDayDateTime.DateTime.DayOfWeek ==
+			         dateTime.DayOfWeek ==
 			         DayOfWeek.Thursday ||
-			         endOfDayTimingEventArgs.EndOfDayDateTime.DateTime.DayOfWeek ==
+			         dateTime.DayOfWeek ==
 			         DayOfWeek.Friday)
 				this.closePositions();
 			
 		}
 		#endregion
 		
-		public void MarketCloseEventHandler(
-			Object sender , EndOfDayTimingEventArgs endOfDayTimingEventArgs )
+		protected override void marketCloseEventHandler(
+			Object sender , DateTime dateTime )
 		{
 			
 		}
 
-		#region OneHourAfterMarketCloseEventHandler
+		#region oneHourAfterMarketCloseEventHandler
 		
 		private void oneHourAfterMarketCloseEventHandler_clear()
 		{
@@ -278,16 +284,16 @@ namespace QuantProject.Scripts.ArbitrageTesting.OverReactionHypothesis.DoubleOve
 		/// </summary>
 		/// <param name="sender"></param>
 		/// <param name="eventArgs"></param>
-		public void OneHourAfterMarketCloseEventHandler(
-			Object sender , EndOfDayTimingEventArgs endOfDayTimingEventArgs )
+		protected override void oneHourAfterMarketCloseEventHandler(
+			Object sender , DateTime dateTime )
 		{
 			this.oneHourAfterMarketCloseEventHandler_clear();
 			
-			if (	endOfDayTimingEventArgs.EndOfDayDateTime.DateTime.DayOfWeek ==
+			if (	dateTime.DayOfWeek ==
 			    DayOfWeek.Friday &&
 			    (	(IndexBasedEndOfDayTimer)sender ).CurrentDateArrayPosition >= this.lengthInDaysForPerformance 	 )
 			{
-				DateTime currentDate = endOfDayTimingEventArgs.EndOfDayDateTime.DateTime;
+				DateTime currentDate = dateTime;
 				int currentDateArrayPositionInTimer = ((IndexBasedEndOfDayTimer)sender).CurrentDateArrayPosition;
 				SelectorByGroup temporizedGroup = new SelectorByGroup(this.tickerGroupID,
 				                                                      currentDate);

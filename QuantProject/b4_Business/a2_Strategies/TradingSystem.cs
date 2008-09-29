@@ -63,7 +63,7 @@ namespace QuantProject.Business.Strategies
       //
     }
 
-    public abstract Signals GetSignals( ExtendedDateTime extendedDateTime );
+    public abstract Signals GetSignals( DateTime dateTime );
 
     public virtual void InitializeData()
     {

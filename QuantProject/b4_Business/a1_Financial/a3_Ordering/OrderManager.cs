@@ -74,16 +74,18 @@ namespace QuantProject.Business.Financial.Ordering
       }
     }
 
-    public EndOfDayTransaction GetTransaction( Order order ,
+    public TimedTransaction GetTimedTransaction( Order order ,
 			IDataStreamer dataStreamer )
     {
       double instrumentPrice = dataStreamer.GetCurrentBid(
 				order.Instrument.Key );
-      EndOfDayTransaction transaction = new EndOfDayTransaction(
-        getTransactionType( order ) , order.Instrument ,
-        order.Quantity , instrumentPrice ,
-        order.EndOfDayDateTime );
-      return transaction;
+      TimedTransaction timedTransaction = new TimedTransaction(
+        getTransactionType( order ) ,
+        order.Instrument ,
+        order.Quantity ,
+        instrumentPrice ,
+        order.DateTime );
+      return timedTransaction;
     }
     #endregion
 
@@ -92,7 +94,7 @@ namespace QuantProject.Business.Financial.Ordering
     {
       TransactionHistory transactionHistory = new TransactionHistory();
       foreach (Order order in orders)
-        transactionHistory.Add( this.GetTransaction( order ,
+        transactionHistory.Add( this.GetTimedTransaction( order ,
 					dataStreamer ) );
       return transactionHistory;
     }

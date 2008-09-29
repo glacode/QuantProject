@@ -2,7 +2,7 @@
 QuantProject - Quantitative Finance Library
 
 ChosenTickers.cs
-Copyright (C) 2003 
+Copyright (C) 2003
 Glauco Siliprandi
 
 This program is free software; you can redistribute it and/or
@@ -18,7 +18,7 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
-*/
+ */
 using System;
 using System.Collections;
 
@@ -37,7 +37,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardOneRank
 	{
 		private int numberTickersToBeChosen;
 
-		private IHistoricalQuoteProvider historicalQuoteProvider =
+		private HistoricalMarketValueProvider historicalMarketValueProvider =
 			new HistoricalAdjustedQuoteProvider();
 
 		public ChosenTickers( int numberTickersToBeChosen )
@@ -49,22 +49,24 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardOneRank
 		{
 			double todayMarketValueAtClose = account.DataStreamer.GetCurrentBid(
 				ticker );
-			EndOfDayDateTime yesterdayAtClose = new
-				EndOfDayDateTime( account.EndOfDayTimer.GetCurrentTime().DateTime.AddDays( - 1 ) ,
-				EndOfDaySpecificTime.MarketClose );
+			DateTime yesterdayAtClose =
+				HistoricalEndOfDayTimer.GetMarketClose(
+					account.Timer.GetCurrentDateTime().AddDays( - 1 ) );		
+//			new	EndOfDayDateTime( account.EndOfDayTimer.GetCurrentTime().DateTime.AddDays( - 1 ) ,
+//				                 EndOfDaySpecificTime.MarketClose );
 			double yesterdayMarketValueAtClose =
-					this.historicalQuoteProvider.GetMarketValue( ticker ,
-				yesterdayAtClose );
+				this.historicalMarketValueProvider.GetMarketValue( ticker ,
+				                                                  yesterdayAtClose );
 			if ( todayMarketValueAtClose > yesterdayMarketValueAtClose )
 				// today close is higher than yesterday close
 				this.Add( ticker , ticker );
 		}
 		private void setTickers_build( BestPerformingTickers bestPerformingTickers ,
-			Account account )
+		                              Account account )
 		{
 			int index = 0;
 			while ( ( this.Count < this.numberTickersToBeChosen ) &&
-				( index <= ( bestPerformingTickers.Count - 1 ) ) )
+			       ( index <= ( bestPerformingTickers.Count - 1 ) ) )
 			{
 				string ticker = (string)bestPerformingTickers[ index ];
 				if ( account.DataStreamer.IsExchanged( ticker ) )
@@ -79,7 +81,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardOneRank
 		/// </summary>
 		/// <param name="dateTime"></param>
 		public void SetTickers( BestPerformingTickers bestPerformingTickers ,
-			Account account )
+		                       Account account )
 		{
 			this.Clear();
 			this.setTickers_build( bestPerformingTickers , account );

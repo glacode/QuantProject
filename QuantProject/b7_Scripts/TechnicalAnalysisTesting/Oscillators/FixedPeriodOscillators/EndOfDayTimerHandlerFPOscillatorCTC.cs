@@ -44,7 +44,8 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedPeriodO
 	/// close to close strategy!
 	/// </summary>
 	[Serializable]
-	public class EndOfDayTimerHandlerFPOscillatorCTC : EndOfDayTimerHandler
+	public class EndOfDayTimerHandlerFPOscillatorCTC :
+		QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios.EndOfDayTimerHandler
 	{
 		private int numDaysForReturnCalculation;
 		private double maxAcceptableCloseToCloseDrawdown;
@@ -85,8 +86,8 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedPeriodO
 			this.seedForRandomGenerator = ConstantsProvider.SeedForRandomGenerator;
 		}
 		
-		public override void MarketOpenEventHandler(
-			Object sender , EndOfDayTimingEventArgs endOfDayTimingEventArgs )
+		protected override void marketOpenEventHandler(
+			Object sender , DateTime dateTime )
 		{
 			;
 		}
@@ -163,8 +164,8 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedPeriodO
 			}
 		}
 		
-		public override void MarketCloseEventHandler(
-			Object sender , EndOfDayTimingEventArgs endOfDayTimingEventArgs )
+		protected override void marketCloseEventHandler(
+			Object sender , DateTime dateTime )
 		{
 			this.marketCloseEventHandler_updateStopLossCondition();
 			
@@ -239,7 +240,7 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedPeriodO
 
 		#endregion
 		
-		#region OneHourAfterMarketCloseEventHandler
+		#region oneHourAfterMarketCloseEventHandler
 		
 		protected DataTable getSetOfTickersToBeOptimized(DateTime currentDate)
 		{
@@ -313,10 +314,10 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedPeriodO
 		/// </summary>
 		/// <param name="sender"></param>
 		/// <param name="eventArgs"></param>
-		public override void OneHourAfterMarketCloseEventHandler(
-			Object sender , EndOfDayTimingEventArgs endOfDayTimingEventArgs )
+		protected override void oneHourAfterMarketCloseEventHandler(
+			Object sender , DateTime dateTime )
 		{
-			this.lastCloseDate = endOfDayTimingEventArgs.EndOfDayDateTime.DateTime;
+			this.lastCloseDate = dateTime;
 			this.seedForRandomGenerator++;
 			this.numDaysElapsedSinceLastOptimization++;
 			if((this.numDaysElapsedSinceLastOptimization - 1 ==
@@ -324,12 +325,12 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedPeriodO
 				//num days without optimization has elapsed or
 				//it is the first close (OLD IMPLEMENTATION)
 			{
-				this.setTickers(endOfDayTimingEventArgs.EndOfDayDateTime.DateTime, false);
+				this.setTickers(dateTime, false);
 				//sets tickers to be chosen next Market Close event
 				this.numDaysElapsedSinceLastOptimization = 0;
 			}
 			
 		}
-		#endregion
+		#endregion oneHourAfterMarketCloseEventHandler
 	}
 }

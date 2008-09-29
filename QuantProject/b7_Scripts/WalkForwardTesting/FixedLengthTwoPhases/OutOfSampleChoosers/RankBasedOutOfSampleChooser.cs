@@ -39,6 +39,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.FixedLengthTwoPhases
 	/// It selects the i_th best element, where i is given
 	/// by the rank value (zero based)
 	/// </summary>
+	[Serializable]
 	public class RankBasedOutOfSampleChooser
 	{
 		private int rank;

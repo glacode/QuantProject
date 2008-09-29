@@ -2,7 +2,7 @@
 QuantProject - Quantitative Finance Library
 
 Tester.cs
-Copyright (C) 2003 
+Copyright (C) 2003
 Glauco Siliprandi
 
 This program is free software; you can redistribute it and/or
@@ -18,7 +18,7 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
-*/
+ */
 
 using System;
 using System.Diagnostics;
@@ -41,85 +41,98 @@ namespace QuantProject.Business.Testing
 	/// </summary>
 	public class Tester : BackTester
 	{
-    private TestWindow testWindow;
-    private OrderManager orderManager = new OrderManager();
-    private double initialCash = 0.0;
+		private TestWindow testWindow;
+		private OrderManager orderManager = new OrderManager();
+		private double initialCash = 0.0;
 		private IDataStreamer dataStreamer;
-    //private TestResults testResults;
+		//private TestResults testResults;
 
-    public OrderManager OrderManager
-    {
-      get { return orderManager; }
-      set { orderManager = value; }
-    }
+		public OrderManager OrderManager
+		{
+			get { return orderManager; }
+			set { orderManager = value; }
+		}
 
-    public Tester(TestWindow testWindow , TradingSystems tradingSystems , double initialCash ,
-			IDataStreamer dataStreamer )
+		public Tester(TestWindow testWindow , TradingSystems tradingSystems , double initialCash ,
+		              IDataStreamer dataStreamer )
 		{
 			this.testWindow = testWindow;
 			this.dataStreamer = dataStreamer;
 			this.TradingSystems = tradingSystems;
-      this.initialCash = initialCash;
-      this.Account.AddCash( new EndOfDayDateTime( testWindow.StartDateTime , EndOfDaySpecificTime.MarketOpen ) ,
-        initialCash );
+			this.initialCash = initialCash;
+			this.Account.AddCash(
+				HistoricalEndOfDayTimer.GetMarketOpen( this.testWindow.StartDateTime ) ,
+				this.initialCash );
+			//      this.Account.AddCash( new EndOfDayDateTime( testWindow.StartDateTime , EndOfDaySpecificTime.MarketOpen ) ,
+			//        initialCash );
 		}
 
-    public override double Objective()
-    {
-      this.Account.Clear();
-      this.Account.AddCash( new EndOfDayDateTime( testWindow.StartDateTime , EndOfDaySpecificTime.MarketOpen ) ,
-        initialCash );
-      this.Test();
-      return - this.Account.GetFitnessValue();
-    }
+		public override double Objective()
+		{
+			this.Account.Clear();
+			this.Account.AddCash(
+				HistoricalEndOfDayTimer.GetMarketOpen( this.testWindow.StartDateTime ) ,
+				this.initialCash );
+//				new EndOfDayDateTime( testWindow.StartDateTime , EndOfDaySpecificTime.MarketOpen ) ,
+//			                     initialCash );
+//			this.Account.AddCash( new EndOfDayDateTime( testWindow.StartDateTime , EndOfDaySpecificTime.MarketOpen ) ,
+//			                     initialCash );
+			this.Test();
+			return - this.Account.GetFitnessValue();
+		}
 
-    #region "Test"
-    private void initializeTradingSystems()
-    {
-      foreach (TradingSystem tradingSystem in this.TradingSystems)
-      {
-        tradingSystem.Parameters = this.Parameters;
-        tradingSystem.TestStartDateTime = this.testWindow.StartDateTime;
-        tradingSystem.InitializeData();
-      }
-    }
-    private void handleCurrentSignal( Signal signal , IDataStreamer dataStreamer )
-    {
-      Orders orders = this.Account.AccountStrategy.GetOrders( signal , dataStreamer );
-      foreach (Order order in orders )
-      {
-        EndOfDayTransaction transaction = this.OrderManager.GetTransaction( order ,
-					dataStreamer );
-        this.Account.Add( transaction );
-        //Debug.WriteLine( account.ToString( dateTime ) );
-      }
-    }
-    private void testCurrentDateForTradingSystem( TradingSystem tradingSystem ,
-      ExtendedDateTime extendedDateTime , IDataStreamer dataStreamer )
-    {
-      Signals signals = tradingSystem.GetSignals( extendedDateTime );
-      foreach (Signal signal in signals)
-        handleCurrentSignal( signal , dataStreamer );
-    }
-    private void testCurrentExtendedDateTime( ExtendedDateTime extendedDateTime ,
-			IDataStreamer dataStreamer )
-    {
-      foreach (TradingSystem tradingSystem in this.TradingSystems)
-        testCurrentDateForTradingSystem( tradingSystem , extendedDateTime ,dataStreamer );
-    }
-    public override void Test()
-    {
-      DateTime dateTime = this.testWindow.StartDateTime;
-      initializeTradingSystems();
-      while (dateTime <= this.testWindow.EndDateTime)
-      {
-        testCurrentExtendedDateTime( new ExtendedDateTime( dateTime , BarComponent.Open ) ,
-					dataStreamer );
-        testCurrentExtendedDateTime( new ExtendedDateTime( dateTime , BarComponent.Close ) ,
-					dataStreamer );
-        dateTime = dateTime.AddDays( 1 );
-      }
-    }
-    #endregion
+		#region "Test"
+		private void initializeTradingSystems()
+		{
+			foreach (TradingSystem tradingSystem in this.TradingSystems)
+			{
+				tradingSystem.Parameters = this.Parameters;
+				tradingSystem.TestStartDateTime = this.testWindow.StartDateTime;
+				tradingSystem.InitializeData();
+			}
+		}
+		private void handleCurrentSignal( Signal signal , IDataStreamer dataStreamer )
+		{
+			Orders orders = this.Account.AccountStrategy.GetOrders( signal , dataStreamer );
+			foreach (Order order in orders )
+			{
+				TimedTransaction timedTransaction =
+					this.OrderManager.GetTimedTransaction(
+						order , dataStreamer );
+				this.Account.Add( timedTransaction );
+				//Debug.WriteLine( account.ToString( dateTime ) );
+			}
+		}
+		private void testCurrentDateForTradingSystem( TradingSystem tradingSystem ,
+		                                             DateTime dateTime , IDataStreamer dataStreamer )
+		{
+			Signals signals = tradingSystem.GetSignals( dateTime );
+			foreach (Signal signal in signals)
+				handleCurrentSignal( signal , dataStreamer );
+		}
+		private void testCurrentDateTime( DateTime dateTime ,
+		                                         IDataStreamer dataStreamer )
+		{
+			foreach (TradingSystem tradingSystem in this.TradingSystems)
+				testCurrentDateForTradingSystem( tradingSystem , dateTime ,dataStreamer );
+		}
+		public override void Test()
+		{
+			DateTime dateTime = this.testWindow.StartDateTime;
+			initializeTradingSystems();
+			while ( dateTime <= this.testWindow.EndDateTime )
+			{
+				this.testCurrentDateTime(
+					HistoricalEndOfDayTimer.GetMarketOpen( dateTime ) , this.dataStreamer );
+				this.testCurrentDateTime(
+					HistoricalEndOfDayTimer.GetMarketClose( dateTime ) , this.dataStreamer );
+//				testCurrentDateTime( new ExtendedDateTime( dateTime , BarComponent.Open ) ,
+//				                            dataStreamer );
+//				testCurrentDateTime( new ExtendedDateTime( dateTime , BarComponent.Close ) ,
+//				                            dataStreamer );
+				dateTime = dateTime.AddDays( 1 );
+			}
+		}
+		#endregion
 	}
 }

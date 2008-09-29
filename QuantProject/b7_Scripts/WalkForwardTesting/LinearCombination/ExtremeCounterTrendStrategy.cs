@@ -38,7 +38,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.LinearCombination
 	/// for the next period
 	/// </summary>
 	[Serializable]
-	public class ExtremeCounterTrendStrategy : IEndOfDayStrategy
+	public class ExtremeCounterTrendStrategy : IStrategy
 	{
 		private Account account;
 		private WeightedPositions weightedPositions;
@@ -64,13 +64,13 @@ namespace QuantProject.Scripts.WalkForwardTesting.LinearCombination
 			this.portfolioType = portfolioType;
 		}
 		
-		public void MarketOpenEventHandler(
-			Object sender , EndOfDayTimingEventArgs endOfDayTimingEventArgs )
+		private void marketOpenEventHandler(
+			Object sender , DateTime dateTime )
 		{
 		}
 		
-		public void FiveMinutesBeforeMarketCloseEventHandler( Object sender ,
-		                                                     EndOfDayTimingEventArgs endOfDayTimingEventArgs)
+		private void fiveMinutesBeforeMarketCloseEventHandler(
+			Object sender , DateTime dateTime)
 		{
 		}
 
@@ -126,8 +126,8 @@ namespace QuantProject.Scripts.WalkForwardTesting.LinearCombination
 			this.numOfDaysWithOpenPosition = 0;
 		}
 		
-		public void MarketCloseEventHandler(
-			Object sender , EndOfDayTimingEventArgs endOfDayTimingEventArgs )
+		private void marketCloseEventHandler(
+			Object sender , DateTime dateTime )
 		{
 			this.numOfClosesElapsed++;
 
@@ -146,9 +146,21 @@ namespace QuantProject.Scripts.WalkForwardTesting.LinearCombination
 				this.marketCloseEventHandler_openPositions((IndexBasedEndOfDayTimer)sender);
 		}
 		
-		public void OneHourAfterMarketCloseEventHandler( Object sender ,
-		                                                EndOfDayTimingEventArgs endOfDayTimingEventArgs)
+		private void oneHourAfterMarketCloseEventHandler(
+			Object sender , DateTime dateTime)
 		{
 		}
+		
+		public virtual void NewDateTimeEventHandler(
+			Object sender , DateTime dateTime )
+		{
+			if ( HistoricalEndOfDayTimer.IsMarketOpen( dateTime ) )
+				this.marketOpenEventHandler( sender , dateTime );
+			if ( HistoricalEndOfDayTimer.IsMarketClose( dateTime ) )
+				this.marketCloseEventHandler( sender , dateTime );
+			if ( HistoricalEndOfDayTimer.IsOneHourAfterMarketClose( dateTime ) )
+				this.oneHourAfterMarketCloseEventHandler( sender , dateTime );
+		}
+
 	}
 }

@@ -58,18 +58,18 @@ namespace QuantProject.Scripts.TickerSelectionTesting.SimpleSelection
     }
 		
     
-    public override void MarketOpenEventHandler(
-      Object sender , EndOfDayTimingEventArgs endOfDayTimingEventArgs )
+    protected override void marketOpenEventHandler(
+      Object sender , DateTime dateTime )
     {
       this.openPositions();
     }
-    public override void MarketCloseEventHandler(
-      Object sender , EndOfDayTimingEventArgs endOfDayTimingEventArgs )
+    protected override void marketCloseEventHandler(
+      Object sender , DateTime dateTime )
     {
       AccountManager.ClosePositions(this.account);
     }
 
-    #region OneHourAfterMarketCloseEventHandler
+    #region oneHourAfterMarketCloseEventHandler
       
     protected DataTable getSetOfTickersToBeOptimized(DateTime currentDate)
     {
@@ -143,13 +143,13 @@ namespace QuantProject.Scripts.TickerSelectionTesting.SimpleSelection
     /// </summary>
     /// <param name="sender"></param>
     /// <param name="eventArgs"></param>
-    public override void OneHourAfterMarketCloseEventHandler(
-      Object sender , EndOfDayTimingEventArgs endOfDayTimingEventArgs )
+    protected override void oneHourAfterMarketCloseEventHandler(
+      Object sender , DateTime dateTime )
     {
       if(this.numDaysElapsedSinceLastOptimization == 
         this.numDaysBetweenEachOptimization - 1)
       {
-        this.setTickers(endOfDayTimingEventArgs.EndOfDayDateTime.DateTime);
+        this.setTickers(dateTime);
         //sets tickers to be chosen next Market Open event
         this.numDaysElapsedSinceLastOptimization = 0;
       }

@@ -18,7 +18,7 @@ namespace QuantProject.Business.Financial.Accounting.Reporting.Tables
 	public class StatisticsSummary : ReportTable, ISerializable
 	{
 		private AccountReport accountReport;
-		private IHistoricalQuoteProvider historicalQuoteProvider;
+		private HistoricalMarketValueProvider historicalMarketValueProvider;
 		
 		private AverageReturnOnMondayWithOpenPositions averageReturnOnMondayWithOpenPositions;
 		private AverageReturnOnTuesdayWithOpenPositions averageReturnOnTuesdayWithOpenPositions;
@@ -74,10 +74,10 @@ namespace QuantProject.Business.Financial.Accounting.Reporting.Tables
 			this.statisticsSummary( accountReport );
 		}
 		public StatisticsSummary( AccountReport accountReport ,
-		                         IHistoricalQuoteProvider historicalDataProvider ) :
+		                         HistoricalMarketValueProvider historicalMarketValueProvider ) :
 			base( accountReport.Name + " - StatisticsSummary" )
 		{
-			this.historicalQuoteProvider = historicalDataProvider;
+			this.historicalMarketValueProvider = historicalMarketValueProvider;
 			this.statisticsSummary( accountReport );
 		}
 

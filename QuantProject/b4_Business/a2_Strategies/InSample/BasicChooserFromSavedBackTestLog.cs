@@ -88,7 +88,7 @@ namespace QuantProject.Business.Strategies.InSample
 		}
 				
 		protected abstract TestingPositions[] getTestingPositionsFromBackTestLog(
-			EndOfDayDateTime lastInSampleDateOfOptimizedTestingPositions	);
+			DateTime lastInSampleDateTimeOfOptimizedTestingPositions	);
 		
 		private void analyzeInSample_fireEvents()
 		{
@@ -112,7 +112,7 @@ namespace QuantProject.Business.Strategies.InSample
 		{
 			this.bestTestingPositionsInSample =
 				this.getTestingPositionsFromBackTestLog( 
-				     returnsManager.ReturnIntervals.LastEndOfDayDateTime );
+				     returnsManager.ReturnIntervals.LastDateTime );
 			this.analyzeInSample_fireEvents();
 			return bestTestingPositionsInSample;
 		}

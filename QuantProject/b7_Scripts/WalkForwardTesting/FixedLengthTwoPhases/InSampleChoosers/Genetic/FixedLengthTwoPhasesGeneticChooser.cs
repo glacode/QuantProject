@@ -41,6 +41,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.FixedLengthTwoPhases
 	/// <summary>
 	/// In sample analyzer for the walk forward fixed length two phases strategy
 	/// </summary>
+	[Serializable]
 	public class FixedLengthTwoPhasesGeneticChooser : GeneticChooser
 	{
 
@@ -50,7 +51,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.FixedLengthTwoPhases
 			Benchmark benchmark ,
 			IDecoderForTestingPositions decoderForTestingPositions ,
 			IFitnessEvaluator fitnessEvaluator ,
-			IHistoricalQuoteProvider historicalQuoteProvider ,
+			HistoricalMarketValueProvider historicalMarketValueProvider ,
 			double crossoverRate , double mutationRate , double elitismRate ,
 			int populationSizeForGeneticOptimizer ,
 			int generationNumberForGeneticOptimizer ,
@@ -61,7 +62,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.FixedLengthTwoPhases
 				benchmark ,
 				decoderForTestingPositions ,
 				fitnessEvaluator ,
-				historicalQuoteProvider ,
+				historicalMarketValueProvider ,
 				crossoverRate ,
 				mutationRate ,
 				elitismRate ,

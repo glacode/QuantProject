@@ -33,28 +33,31 @@ namespace QuantProject.Business.Strategies.ReturnsManagement.Time
 	{
 		/// <summary>
 		/// Creates the close to open intervals for the given benchmark, from
-		/// the first EndOfDayDateTime to the last EndOfDayDateTime
+		/// the first DateTime to the last DateTime
 		/// </summary>
 		/// <param name="firstEndOfDayDateTime"></param>
 		/// <param name="lastEndOfDayDateTime"></param>
 		/// <param name="benchmark"></param>
-		public CloseToOpenIntervals( EndOfDayDateTime firstEndOfDayDateTime ,
-			EndOfDayDateTime lastEndOfDayDateTime , string benchmark ) :
-			base( firstEndOfDayDateTime , lastEndOfDayDateTime , benchmark )
+		public CloseToOpenIntervals( DateTime firstDateTime ,
+			DateTime lastDateTime , string benchmark ) :
+			base( firstDateTime , lastDateTime , benchmark )
 		{
 		}
 		#region setIntervals
 		private void addInterval( int i )
 		{
 			DateTime dateTimeForIntervalBegin =
-				(DateTime)this.marketDaysForBenchmark.GetKey( i );
+				HistoricalEndOfDayTimer.GetMarketOpen(
+					(DateTime)this.marketDaysForBenchmark.GetKey( i ) );
 			DateTime dateTimeForIntervalEnd = 
-				(DateTime)this.marketDaysForBenchmark.GetKey( i + 1 );
+				HistoricalEndOfDayTimer.GetMarketClose(
+					(DateTime)this.marketDaysForBenchmark.GetKey( i + 1 ) );
 			ReturnInterval returnInterval = new ReturnInterval(
-				new EndOfDayDateTime( dateTimeForIntervalBegin ,
-				EndOfDaySpecificTime.MarketClose ) ,
-				new EndOfDayDateTime( dateTimeForIntervalEnd ,
-				EndOfDaySpecificTime.MarketOpen ) );
+				dateTimeForIntervalBegin , dateTimeForIntervalEnd );
+//				new EndOfDayDateTime( dateTimeForIntervalBegin ,
+//				EndOfDaySpecificTime.MarketClose ) ,
+//				new EndOfDayDateTime( dateTimeForIntervalEnd ,
+//				EndOfDaySpecificTime.MarketOpen ) );
 			this.Add( returnInterval );
 		}
 		protected override void setIntervals()

@@ -2,7 +2,7 @@
 QuantProject - Quantitative Finance Library
 
 WFMultiOneRankDebugEndOfDayTimerHandler.cs
-Copyright (C) 2003 
+Copyright (C) 2003
 Glauco Siliprandi
 
 This program is free software; you can redistribute it and/or
@@ -18,7 +18,7 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
-*/
+ */
 
 using System;
 using System.Collections;
@@ -34,7 +34,8 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardMultiOneRank
 	/// <summary>
 	/// Strategy to debug the in sample optimization
 	/// </summary>
-	public class WFMultiOneRankDebugEndOfDayTimerHandler
+	public class WFMultiOneRankDebugEndOfDayTimerHandler :
+		QuantProject.Business.Strategies.EndOfDayTimerHandler
 	{
 		private Account account;
 		string[] signedTickers;
@@ -45,6 +46,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardMultiOneRank
 			this.account = account;
 			this.signedTickers = signedTickers;
 		}
+		
 		#region FiveMinutesBeforeMarketCloseEventHandler
 		private string getTicker( string signedTicker )
 		{
@@ -74,7 +76,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardMultiOneRank
 		{
 			this.account.ClosePosition( ticker );
 		}
-		private void fiveMinutesBeforeMarketCloseEventHandler_closePositions()
+		private void marketCloseEventHandler_closePositions()
 		{
 			ArrayList tickers = new ArrayList();
 			foreach ( string ticker in this.account.Portfolio.Keys )
@@ -89,13 +91,15 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardMultiOneRank
 				new HistoricalAdjustedQuoteProvider();
 			double todayMarketValueAtClose =
 				this.account.DataStreamer.GetCurrentBid( ticker );
-			EndOfDayDateTime yesterdayAtClose = new
-				EndOfDayDateTime(
-				this.account.EndOfDayTimer.GetCurrentTime().DateTime.AddDays( - 1 ) ,
-				EndOfDaySpecificTime.MarketClose );
+			DateTime yesterdayAtClose =
+				HistoricalEndOfDayTimer.GetMarketClose(
+					this.account.Timer.GetCurrentDateTime().AddDays( - 1 ) );
+//			new	EndOfDayDateTime(
+//				this.account.EndOfDayTimer.GetCurrentTime().DateTime.AddDays( - 1 ) ,
+//				EndOfDaySpecificTime.MarketClose );
 			double yesterdayMarketValueAtClose =
 				historicalAdjustedQuoteProvider.GetMarketValue(
-				ticker , yesterdayAtClose );
+					ticker , yesterdayAtClose );
 			double returnForLongPosition =
 				( todayMarketValueAtClose / yesterdayMarketValueAtClose ) - 1;
 			double returnValue;
@@ -125,15 +129,15 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardMultiOneRank
 				this.getTicker( signedTicker ) ).Type;
 			OrderType orderType = this.getOrderType( signedTicker );
 			bool returnValue = ( ( ( orderType ==
-				OrderType.MarketBuy ) && ( positionType == PositionType.Short ) ) ||
-				( orderType ==	OrderType.MarketSellShort ) &&
-				( positionType == PositionType.Long ) );
+			                        OrderType.MarketBuy ) && ( positionType == PositionType.Short ) ) ||
+			                    ( orderType ==	OrderType.MarketSellShort ) &&
+			                    ( positionType == PositionType.Long ) );
 			return returnValue;
 		}
 		private bool isCurrentlyReversed()
 		{
 			return this.isCurrentlyReversed( this.signedTickers[ 0 ] );
-			}
+		}
 		private long getQuantity(	string ticker )
 		{
 			double accountValue = this.account.GetMarketValue();
@@ -149,14 +153,14 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardMultiOneRank
 		{
 			long quantity = this.getQuantity( ticker );
 			Order order = new Order( orderType , new Instrument( ticker ) ,
-				quantity );
+			                        quantity );
 			this.account.AddOrder( order );
 		}
 		private void fiveMinutesBeforeMarketCloseEventHandler_openThisPosition(
 			string signedTicker )
 		{
 			this.openPosition( this.getTicker( signedTicker ) ,
-				this.getOrderType( signedTicker ) );
+			                  this.getOrderType( signedTicker ) );
 		}
 		private void fiveMinutesBeforeMarketCloseEventHandler_openReversePosition(
 			string signedTicker )
@@ -174,36 +178,48 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardMultiOneRank
 				fiveMinutesBeforeMarketCloseEventHandler_openReversePosition(
 					signedTicker );
 		}
-		private void fiveMinutesBeforeMarketCloseEventHandler_openPositions()
+		private void marketCloseEventHandler_openPositions()
 		{
 //			this.chosenTickers.SetTickers( this.bestPerformingTickers , this.account );
 			foreach ( string signedTicker in this.signedTickers )
 				this.fiveMinutesBeforeMarketCloseEventHandler_openPosition(
 					signedTicker );
 		}
-		private bool fiveMinutesBeforeMarketCloseEventHandler_arePositionsToBeClosed()
+		private bool marketCloseEventHandler_arePositionsToBeClosed()
 		{
 			bool returnValue = ( this.account.Portfolio.Count > 0 ) &&
 				(	( this.isLinearCombinationTodayValueHigherThanYesterday() &&
-				this.isCurrentlyReversed() ) ||
-				( !this.isLinearCombinationTodayValueHigherThanYesterday() &&
-				!this.isCurrentlyReversed() ) );
+				   this.isCurrentlyReversed() ) ||
+				 ( !this.isLinearCombinationTodayValueHigherThanYesterday() &&
+				  !this.isCurrentlyReversed() ) );
 			return returnValue;
 		}
-		private bool fiveMinutesBeforeMarketCloseEventHandler_arePositionsToBeOpened()
+		private bool marketCloseEventHandler_arePositionsToBeOpened()
 		{
 			bool returnValue = ( this.account.Portfolio.Count == 0 );
 			return returnValue;
 		}
-		public void FiveMinutesBeforeMarketCloseEventHandler(
-			Object sender , EndOfDayTimingEventArgs endOfDayTimingEventArgs )
+		protected override void marketCloseEventHandler(
+			Object sender , DateTime dateTime )
 		{
-			if ( this.fiveMinutesBeforeMarketCloseEventHandler_arePositionsToBeClosed() )
-				this.fiveMinutesBeforeMarketCloseEventHandler_closePositions();
-			if ( this.fiveMinutesBeforeMarketCloseEventHandler_arePositionsToBeOpened() )
-				fiveMinutesBeforeMarketCloseEventHandler_openPositions();
+			if ( this.marketCloseEventHandler_arePositionsToBeClosed() )
+				this.marketCloseEventHandler_closePositions();
+			if ( this.marketCloseEventHandler_arePositionsToBeOpened() )
+				marketCloseEventHandler_openPositions();
 		}
 		#endregion
+
+		protected override void marketOpenEventHandler(
+			Object sender , DateTime dateTime )
+		{
+			;
+		}
+
+		protected override void oneHourAfterMarketCloseEventHandler(
+			Object sender , DateTime dateTime )
+		{
+			;
+		}
 
 	}
 }

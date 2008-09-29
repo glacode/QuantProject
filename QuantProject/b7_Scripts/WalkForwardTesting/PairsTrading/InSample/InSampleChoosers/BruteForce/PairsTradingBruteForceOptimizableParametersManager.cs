@@ -40,6 +40,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.PairsTrading
 	/// (consider that if two WeightedPosition are highly correlated, the
 	/// two opposite WeightedPosition are highly correlated too)
 	/// </summary>
+	[Serializable]
 	public class PairsTradingBruteForceOptimizableParametersManager :
 		BruteForceOptimizableParametersManagerForBalancedVolatility
 	{

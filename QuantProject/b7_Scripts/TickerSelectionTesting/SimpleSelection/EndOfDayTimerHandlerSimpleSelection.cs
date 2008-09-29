@@ -55,18 +55,18 @@ namespace QuantProject.Scripts.TickerSelectionTesting.SimpleSelection
     	
     }
 
-    public override void MarketOpenEventHandler(
-      Object sender , EndOfDayTimingEventArgs endOfDayTimingEventArgs )
+    protected override void marketOpenEventHandler(
+      Object sender , DateTime dateTime )
     {
       ;
     }
-    public override void MarketCloseEventHandler(
-      Object sender , EndOfDayTimingEventArgs endOfDayTimingEventArgs )
+    protected override void marketCloseEventHandler(
+      Object sender , DateTime dateTime )
     {
       ;
     }
-    public override void OneHourAfterMarketCloseEventHandler(
-      Object sender , EndOfDayTimingEventArgs endOfDayTimingEventArgs )
+    protected override void oneHourAfterMarketCloseEventHandler(
+      Object sender , DateTime dateTime )
     {
       ;
     }

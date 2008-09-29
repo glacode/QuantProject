@@ -1,8 +1,8 @@
 /*
 QuantProject - Quantitative Finance Library
 
-HistoricalDataStreamer.cs
-Copyright (C) 2003 
+HistoricalEndOfDayTimer.cs
+Copyright (C) 2003
 Glauco Siliprandi
 
 This program is free software; you can redistribute it and/or
@@ -18,7 +18,7 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
-*/
+ */
 using System;
 using System.Collections;
 
@@ -30,18 +30,40 @@ namespace QuantProject.Business.Timing
 	/// IDataStreamer implementation using historical data
 	/// </summary>
 	[Serializable]
-	public class HistoricalEndOfDayTimer : IEndOfDayTimer
+	public class HistoricalEndOfDayTimer : Timer
 	{
-		protected bool isActive;	// true iff the timer is started and not stopped
-
 		protected Hashtable tickers;
 
-		protected EndOfDayDateTime currentTime;
-
-		protected EndOfDayDateTime startDateTime;
+		protected DateTime startDateTime;
 //		private EndOfDayDateTime endDateTime;
+		
+		private static DateTime timeForMarketOpen =
+			new DateTime( 1900 , 1 , 1 , 9 , 30 , 00 );
+		private static DateTime timeForMarketClose =
+			new DateTime( 1900 , 1 , 1 , 16 , 00 , 00 );
+		
+		/// <summary>
+		/// time when the market opens
+		/// </summary>
+		public static DateTime TimeForMarketOpen {
+			get { return HistoricalEndOfDayTimer.timeForMarketOpen; }
+		}
+		
+		/// <summary>
+		/// time when the market closes
+		/// </summary>
+		public static DateTime TimeForMarketClose {
+			get { return HistoricalEndOfDayTimer.timeForMarketClose; }
+		}
 
-		public EndOfDayDateTime StartDateTime
+		/// <summary>
+		/// time for one hour after market closes
+		/// </summary>
+		public static DateTime TimeForOneHourAfterMarketClose {
+			get { return HistoricalEndOfDayTimer.TimeForMarketClose.AddHours( 1 ); }
+		}
+
+		public DateTime StartDateTime
 		{
 			get	{	return this.startDateTime;	}
 			set	{	this.startDateTime = value;	}
@@ -52,75 +74,249 @@ namespace QuantProject.Business.Timing
 //			get	{	return this.endDateTime;	}
 //			set	{	this.endDateTime = value;	}
 //		}
-    [field:NonSerialized]
-		public event MarketOpenEventHandler MarketOpen;
-		[field:NonSerialized]
-    public event FiveMinutesBeforeMarketCloseEventHandler FiveMinutesBeforeMarketClose;
-		[field:NonSerialized]
-    public event MarketCloseEventHandler MarketClose;
-		[field:NonSerialized]
-    public event OneHourAfterMarketCloseEventHandler OneHourAfterMarketClose;
 
-		public HistoricalEndOfDayTimer( EndOfDayDateTime startDateTime )
+		public HistoricalEndOfDayTimer( DateTime startDateTime )
 		{
 			this.startDateTime = startDateTime;
 //			this.endDateTime = EndDateTime;
 			this.tickers = new Hashtable();
+			
+//			HistoricalEndOfDayTimer.timeForMarketOpen =
+//				new DateTime( 1900 , 1 , 1 , 9 , 30 , 00 );
+//			HistoricalEndOfDayTimer.timeForMarketClose =
+//				new DateTime( 1900 , 1 , 1 , 16 , 00 , 00 );
 		}
-    
-    protected void callEvents()
-    {
-      if ( ( this.MarketOpen != null ) && ( this.currentTime.EndOfDaySpecificTime ==
-        EndOfDaySpecificTime.MarketOpen ) )
-        this.MarketOpen( this , new EndOfDayTimingEventArgs( this.currentTime ) );
-      if ( ( this.FiveMinutesBeforeMarketClose != null ) && ( this.currentTime.EndOfDaySpecificTime ==
-        EndOfDaySpecificTime.FiveMinutesBeforeMarketClose ) )
-        this.FiveMinutesBeforeMarketClose( this , new EndOfDayTimingEventArgs( this.currentTime ) );
-      if ( ( this.MarketClose != null ) && ( this.currentTime.EndOfDaySpecificTime ==
-        EndOfDaySpecificTime.MarketClose ) )
-        this.MarketClose( this , new EndOfDayTimingEventArgs( this.currentTime ) );
-      if ( ( this.OneHourAfterMarketClose != null ) && ( this.currentTime.EndOfDaySpecificTime ==
-        EndOfDaySpecificTime.OneHourAfterMarketClose ) )
-        this.OneHourAfterMarketClose( this , new EndOfDayTimingEventArgs( this.currentTime ) );
-    }
-
-    protected virtual void moveNext()
-    {
-      this.currentTime.MoveNext();
-    }
-    
-    protected virtual void activeTimer()
-    {
-      this.isActive = true;
-      this.currentTime = this.startDateTime.Copy();
-    }
-		/// <summary>
-		/// Starts the time walking simulation
-		/// </summary>
-		public virtual void Start()
+		
+		protected override void initializeTimer()
 		{
-      this.activeTimer();
-			while ( this.isActive )
+			this.currentDateTime =
+				ExtendedDateTime.Copy( this.startDateTime );
+		}
+		
+		#region moveNext
+		protected bool isBetweenMarketCloseAndOneHourAfterMarketClose()
+		{
+			bool isBetween =
+				( ( this.currentDateTime >=
+				   HistoricalEndOfDayTimer.GetMarketClose( this.currentDateTime ) )
+				 &&
+				 ( this.currentDateTime <
+				  HistoricalEndOfDayTimer.GetOneHourAfterMarketClose(
+				  	this.currentDateTime ) ) );
+			return isBetween;
+		}
+		protected override void moveNext()
+		{
+			if ( this.isBetweenMarketCloseAndOneHourAfterMarketClose() )
+				this.currentDateTime =
+					HistoricalEndOfDayTimer.GetOneHourAfterMarketClose(
+						this.currentDateTime );
+			else
+				// current time is either before market close or >= one hour
+				// after market close
+				this.currentDateTime =
+					HistoricalEndOfDayTimer.GetNextMarketStatusSwitch(
+						this.currentDateTime );
+		}
+		#endregion moveNext
+
+		/// <summary>
+		/// true iif the argument is at market open
+		/// </summary>
+		/// <param name="dateTime"></param>
+		/// <returns></returns>
+		public static bool IsMarketOpen( DateTime dateTime )
+		{
+			bool returnValue =
+				ExtendedDateTime.HaveTheSameTime(
+					dateTime , HistoricalEndOfDayTimer.TimeForMarketOpen );
+			return returnValue;
+		}
+		
+		/// <summary>
+		/// true iif the argument is at market close
+		/// </summary>
+		/// <param name="dateTime"></param>
+		/// <returns></returns>
+		public static bool IsMarketClose( DateTime dateTime )
+		{
+			bool returnValue =
+				ExtendedDateTime.HaveTheSameTime(
+					dateTime , HistoricalEndOfDayTimer.TimeForMarketClose );
+			return returnValue;
+		}
+
+		/// <summary>
+		/// true iif the argument is one our after market close
+		/// </summary>
+		/// <param name="dateTime"></param>
+		/// <returns></returns>
+		public static bool IsOneHourAfterMarketClose( DateTime dateTime )
+		{
+			bool returnValue =
+				ExtendedDateTime.HaveTheSameTime(
+					dateTime ,
+					HistoricalEndOfDayTimer.TimeForOneHourAfterMarketClose );
+			return returnValue;
+		}
+		
+		/// <summary>
+		/// true iif the argument is an end of day relevant time
+		/// </summary>
+		/// <param name="dateTime"></param>
+		/// <returns></returns>
+		public static bool IsEndOfDayDateTime( DateTime dateTime )
+		{
+			bool isEndOfDayDateTime =
+				( HistoricalEndOfDayTimer.IsMarketOpen( dateTime ) ||
+				 HistoricalEndOfDayTimer.IsMarketClose( dateTime ) ||
+				 HistoricalEndOfDayTimer.IsOneHourAfterMarketClose( dateTime ) );
+			return isEndOfDayDateTime;
+		}
+		
+		/// <summary>
+		/// true iif the argument is either at market close or at market open
+		/// </summary>
+		/// <param name="dateTime"></param>
+		/// <returns></returns>
+		public static bool IsMarketStatusSwitch( DateTime dateTime )
+		{
+			bool isEndOfDayDateTime =
+				( HistoricalEndOfDayTimer.IsMarketOpen( dateTime ) ||
+				 HistoricalEndOfDayTimer.IsMarketClose( dateTime ) );
+			return isEndOfDayDateTime;
+		}
+		
+		#region GetNextMarketStatusSwitch
+//		private void getNextMarketStatusSwitch_checkParameters(
+//			DateTime dateTime)
+//		{
+//			if ( !HistoricalEndOfDayTimer.IsMarketOpen( dateTime ) &&
+//			    !HistoricalEndOfDayTimer.IsMarketClose( dateTime ) )
+//				throw new Exception( "dateTime must be a
+//		}
+		/// <summary>
+		/// Returns either the next market close or the next market open,
+		/// whichever is the nearest (all days are considered as market
+		/// days, week-ends included)
+		/// We have a market status switch when the market opens and when
+		/// the market closes
+		/// </summary>
+		/// <returns></returns>
+		public static DateTime GetNextMarketStatusSwitch(
+			DateTime dateTime)
+		{
+//			this.getNextMarketStatusSwitch_checkParameters(
+//				dateTime );
+			DateTime nextMarketStatusSwitch;
+			if ( ExtendedDateTime.IsFirstTimeLessThenSecondTime(
+				dateTime , HistoricalEndOfDayTimer.TimeForMarketOpen ) )
+				// dateTime's time is before market open
+				nextMarketStatusSwitch = new DateTime(
+					dateTime.Year , dateTime.Month , dateTime.Day ,
+					HistoricalEndOfDayTimer.TimeForMarketOpen.Hour ,
+					HistoricalEndOfDayTimer.TimeForMarketOpen.Minute ,
+					HistoricalEndOfDayTimer.TimeForMarketOpen.Second );
+			else
 			{
-        this.callEvents();
-				this.moveNext();
+				// dateTime's time is equal or after the market open
+				if ( ExtendedDateTime.IsFirstTimeLessThenSecondTime(
+					dateTime , HistoricalEndOfDayTimer.TimeForMarketClose ) )
+					// dateTime's time is equal or after the market open
+					// AND dateTime's time is before market close
+					nextMarketStatusSwitch = new DateTime(
+						dateTime.Year , dateTime.Month , dateTime.Day ,
+						HistoricalEndOfDayTimer.TimeForMarketClose.Hour ,
+						HistoricalEndOfDayTimer.TimeForMarketClose.Minute ,
+						HistoricalEndOfDayTimer.TimeForMarketClose.Second );
+				else
+					// dateTime's time is equal or after the market close
+				{
+					DateTime nextDay =
+						dateTime.AddDays( 1 );
+					nextMarketStatusSwitch = new DateTime(
+						nextDay.Year , nextDay.Month , nextDay.Day ,
+						HistoricalEndOfDayTimer.TimeForMarketOpen.Hour ,
+						HistoricalEndOfDayTimer.TimeForMarketOpen.Minute ,
+						HistoricalEndOfDayTimer.TimeForMarketOpen.Second );
+				}
 			}
+			
+//
+//				    if ( this.EndOfDaySpecificTime < EndOfDaySpecificTime.MarketOpen )
+//				    	nextMarketStatusSwitch = new EndOfDayDateTime(
+//				    		this.DateTime , EndOfDaySpecificTime.MarketOpen );
+//				    else
+//				    {
+//				    	// this.EndOfDaySpecificTime >= EndOfDaySpecificTime.MarketOpen
+//				    	if ( this.EndOfDaySpecificTime < EndOfDaySpecificTime.MarketClose )
+//				    		// ( this.EndOfDaySpecificTime >= EndOfDaySpecificTime.MarketOpen )
+//				    		// AND ( this.EndOfDaySpecificTime < EndOfDaySpecificTime.MarketClose )
+//				    		nextMarketStatusSwitch = new EndOfDayDateTime(
+//				    			this.DateTime , EndOfDaySpecificTime.MarketClose );
+//				    	else
+//				    		// ( this.EndOfDaySpecificTime >= EndOfDaySpecificTime.MarketClose )
+//				    		nextMarketStatusSwitch = new EndOfDayDateTime(
+//				    			this.DateTime.AddDays( 1 ) , EndOfDaySpecificTime.MarketOpen );
+//				    }
+			return nextMarketStatusSwitch;
+		}
+		#endregion GetNextMarketStatusSwitch
+		
+		/// <summary>
+		/// Returns the market open time, for the date of the given dateTime
+		/// </summary>
+		/// <param name="dateTime"></param>
+		/// <returns></returns>
+		public static DateTime GetMarketOpen( DateTime dateTime )
+		{
+			DateTime date = ExtendedDateTime.GetDate( dateTime );
+			DateTime marketOpen =
+				HistoricalEndOfDayTimer.GetNextMarketStatusSwitch( date );
+			return marketOpen;
+		}
+		
+		/// <summary>
+		/// Returns the market close time, for the date of the given dateTime
+		/// </summary>
+		/// <param name="dateTime"></param>
+		/// <returns></returns>
+		public static DateTime GetMarketClose( DateTime dateTime )
+		{
+			DateTime marketOpen =
+				HistoricalEndOfDayTimer.GetMarketOpen( dateTime );
+			DateTime marketClose =
+				HistoricalEndOfDayTimer.GetNextMarketStatusSwitch( marketOpen );
+			return marketClose;
 		}
 
-		public EndOfDayDateTime GetCurrentTime()
+		
+		/// <summary>
+		/// Returns the one hour after market close time, for the
+		/// date of the given dateTime
+		/// </summary>
+		/// <param name="dateTime"></param>
+		/// <returns></returns>
+		public static DateTime GetOneHourAfterMarketClose( DateTime dateTime )
 		{
-			if ( !this.isActive )
-				throw new Exception( "Start() has not been invoked yet!" +
-					"GetCurrentTime() cannot be invoked before Start()" ); 
-			return this.currentTime;
+			DateTime marketClose =
+				HistoricalEndOfDayTimer.GetMarketClose( dateTime );
+			DateTime oneHourAfterMarketClose = marketClose.AddHours( 1 );
+			return oneHourAfterMarketClose;
 		}
 
 		/// <summary>
-		/// Stops the timer
+		/// Returns returns five minutes before market close time, for the
+		/// date of the given dateTime
 		/// </summary>
-		public void Stop()
+		/// <param name="dateTime"></param>
+		/// <returns></returns>
+		public static DateTime GetFiveMinutesBeforeMarketClose( DateTime dateTime )
 		{
-			this.isActive = false;
+			DateTime marketClose =
+				HistoricalEndOfDayTimer.GetMarketClose( dateTime );
+			DateTime fiveMinutesBeforeMarketClose = marketClose.AddMinutes( -5 );
+			return fiveMinutesBeforeMarketClose;
 		}
 	}
 }

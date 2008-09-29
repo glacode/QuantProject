@@ -2,7 +2,7 @@
 QuantProject - Quantitative Finance Library
 
 TsMSFTsimpleTest.cs
-Copyright (C) 2003 
+Copyright (C) 2003
 Glauco Siliprandi
 
 This program is free software; you can redistribute it and/or
@@ -18,13 +18,14 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
-*/
+ */
 
 using System;
 using System.Collections;
 using QuantProject.ADT;
 using QuantProject.ADT.Histories;
 using QuantProject.ADT.Optimizing;
+using QuantProject.Data.DataProviders.Quotes;
 using QuantProject.Business.Financial.Instruments;
 using QuantProject.Business.Financial.Ordering;
 using QuantProject.Business.Strategies;
@@ -44,44 +45,55 @@ namespace QuantProject.Scripts
 			//
 		}
 
-    private History microsoftCloseHistory;
-    private History microsoftCloseHistorySMA;
+		private History microsoftCloseHistory;
+		private History microsoftCloseHistorySMA;
 
-    public override void InitializeData()
-    {
-      Parameter parameter = (Parameter) this.Parameters[ "SMAdays" ];
-      microsoftCloseHistory = QuoteCache.GetCloseHistory( "MSFT" );
-      microsoftCloseHistorySMA = microsoftCloseHistory.GetSimpleMovingAverage( (int) parameter.Value );
-    }
+		public override void InitializeData()
+		{
+			Parameter parameter = (Parameter) this.Parameters[ "SMAdays" ];
+			microsoftCloseHistory = HistoricalQuotesProvider.GetCloseHistory( "MSFT" );
+			microsoftCloseHistorySMA = microsoftCloseHistory.GetSimpleMovingAverage( (int) parameter.Value );
+		}
 
-    public override Signals GetSignals( ExtendedDateTime extendedDateTime )
-    {
-      Signals signals = new Signals();
-      if ( extendedDateTime.BarComponent == BarComponent.Close )
-      {
-        Signal signal = new Signal();
-        if ( microsoftCloseHistory.Cross( microsoftCloseHistorySMA ,
-          extendedDateTime.DateTime ) )
-        {
-          signal.Add( new Order( OrderType.MarketBuy , new Instrument( "MSFT" ) , 1 ,
-            new EndOfDayDateTime( new Instrument( "MSFT" ).GetNextMarketDay( extendedDateTime.DateTime ) ,
-            EndOfDaySpecificTime.MarketOpen ) ) );
-          signals.Add( signal );
-        }
-        else
-        {
-          if ( microsoftCloseHistorySMA.Cross( microsoftCloseHistory ,
-            extendedDateTime.DateTime ) )
-          {
-            signal.Add( new Order( OrderType.MarketSell , new Instrument( "MSFT" ) , 1 ,
-              new EndOfDayDateTime(
-              new Instrument( "MSFT" ).GetNextMarketDay( extendedDateTime.DateTime ) ,
-              EndOfDaySpecificTime.MarketOpen ) ) );
-            signals.Add( signal );
-          }
-        }
-      }
-      return signals;
-    }
+		public override Signals GetSignals( DateTime dateTime )
+		{
+			Signals signals = new Signals();
+			if ( HistoricalEndOfDayTimer.IsMarketClose( dateTime ) )
+//			if ( dateTime.BarComponent == BarComponent.Close )
+			{
+				Signal signal = new Signal();
+				if ( microsoftCloseHistory.Cross( microsoftCloseHistorySMA ,
+				                                 dateTime ) )
+				{
+					signal.Add(
+						new Order(
+							OrderType.MarketBuy , new Instrument( "MSFT" ) , 1 ,
+							HistoricalEndOfDayTimer.GetMarketOpen(
+								new Instrument( "MSFT" ).GetNextMarketDay(
+									dateTime ) ) ) );
+//							new EndOfDayDateTime( new Instrument( "MSFT" ).GetNextMarketDay( dateTime.DateTime ) ,
+//							                     EndOfDaySpecificTime.MarketOpen ) ) );
+					signals.Add( signal );
+				}
+				else
+				{
+					if ( microsoftCloseHistorySMA.Cross( microsoftCloseHistory ,
+					                                    dateTime ) )
+					{
+						signal.Add(
+							new Order(
+								OrderType.MarketSell , new Instrument( "MSFT" ) , 1 ,
+								HistoricalEndOfDayTimer.GetMarketOpen(
+									new Instrument( "MSFT" ).GetNextMarketDay(
+										dateTime ) ) ) );
+//								new EndOfDayDateTime(
+//									new Instrument( "MSFT" ).GetNextMarketDay( dateTime.DateTime ) ,
+//									EndOfDaySpecificTime.MarketOpen ) ) );
+						signals.Add( signal );
+					}
+				}
+			}
+			return signals;
+		}
 	}
 }

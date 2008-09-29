@@ -34,6 +34,7 @@ namespace QuantProject.Business.Strategies.Optimizing.GenomeManagers
 	/// <summary>
 	/// Genome manager with duplicate genes
 	/// </summary>
+	[Serializable]
 	public class GenomeManagerWithDuplicateGenes : BasicGenomeManager
 	{
 		public GenomeManagerWithDuplicateGenes(

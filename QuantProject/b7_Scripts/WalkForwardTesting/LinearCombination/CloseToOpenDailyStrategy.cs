@@ -2,7 +2,7 @@
 QuantProject - Quantitative Finance Library
 
 CloseToOpenDailyStrategy.cs
-Copyright (C) 2003 
+Copyright (C) 2003
 Marco Milletti
 
 This program is free software; you can redistribute it and/or
@@ -18,7 +18,7 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
-*/
+ */
 
 using System;
 using System.Collections;
@@ -35,7 +35,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.LinearCombination
 	/// Close To Open daily strategy
 	/// </summary>
 	[Serializable]
-	public class CloseToOpenDailyStrategy : IEndOfDayStrategy
+	public class CloseToOpenDailyStrategy : IStrategy
 	{
 		private Account account;
 		private WeightedPositions weightedPositions;
@@ -47,33 +47,44 @@ namespace QuantProject.Scripts.WalkForwardTesting.LinearCombination
 		}
 		
 		public CloseToOpenDailyStrategy( Account account ,
-			WeightedPositions weightedPositions)
+		                                WeightedPositions weightedPositions)
 		{
 			this.account = account;
 			this.weightedPositions = weightedPositions;
 		}
 		
-		public void MarketOpenEventHandler(
-			Object sender , EndOfDayTimingEventArgs endOfDayTimingEventArgs )
+		private void marketOpenEventHandler(
+			Object sender , DateTime dateTime )
 		{
 			AccountManager.ClosePositions(this.account);
 		}
-		public void FiveMinutesBeforeMarketCloseEventHandler( Object sender ,
-			EndOfDayTimingEventArgs endOfDayTimingEventArgs)
+		private void fiveMinutesBeforeMarketCloseEventHandler( Object sender ,
+		                                                     DateTime dateTime)
 		{
 		}
-		public void MarketCloseEventHandler( Object sender ,
-			EndOfDayTimingEventArgs endOfDayTimingEventArgs)
+		private void marketCloseEventHandler( Object sender ,
+		                                    DateTime dateTime)
 		{
-      if ( ( this.account.CashAmount == 0 ) &&
-        ( this.account.Transactions.Count == 0 ) )
-        // cash has not been added yet
-        this.account.AddCash( 15000 );
-      AccountManager.OpenPositions(this.weightedPositions, this.account);
+			if ( ( this.account.CashAmount == 0 ) &&
+			    ( this.account.Transactions.Count == 0 ) )
+				// cash has not been added yet
+				this.account.AddCash( 15000 );
+			AccountManager.OpenPositions(this.weightedPositions, this.account);
 		}
-		public void OneHourAfterMarketCloseEventHandler( Object sender ,
-			EndOfDayTimingEventArgs endOfDayTimingEventArgs)
+		private void oneHourAfterMarketCloseEventHandler( Object sender ,
+		                                                DateTime dateTime)
 		{
+		}
+		
+		public virtual void NewDateTimeEventHandler(
+			Object sender , DateTime dateTime )
+		{
+			if ( HistoricalEndOfDayTimer.IsMarketOpen( dateTime ) )
+				this.marketOpenEventHandler( sender , dateTime );
+			if ( HistoricalEndOfDayTimer.IsMarketClose( dateTime ) )
+				this.marketCloseEventHandler( sender , dateTime );
+			if ( HistoricalEndOfDayTimer.IsOneHourAfterMarketClose( dateTime ) )
+				this.oneHourAfterMarketCloseEventHandler( sender , dateTime );
 		}
 	}
 }

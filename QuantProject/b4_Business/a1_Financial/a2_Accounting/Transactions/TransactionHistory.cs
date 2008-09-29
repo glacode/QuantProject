@@ -70,9 +70,9 @@ namespace QuantProject.Business.Financial.Accounting.Transactions
 //			base.MultiAdd( transaction.ExtendedDateTime.DateTime , transaction );
 //		}
 
-		public void Add( EndOfDayTransaction transaction )
+		public void Add( TimedTransaction transaction )
 		{
-			base.MultiAdd( transaction.EndOfDayDateTime.DateTime , transaction );
+			base.MultiAdd( transaction.DateTime , transaction );
 		}
 
 		public override string ToString()

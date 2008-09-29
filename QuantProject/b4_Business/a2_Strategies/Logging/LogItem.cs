@@ -33,7 +33,7 @@ namespace QuantProject.Business.Strategies.Logging
 	public abstract class LogItem
 	{
 		protected DateTime realCreationTime;
-		protected EndOfDayDateTime simulatedCreationTime;
+		protected DateTime simulatedCreationDateTime;
 
 		/// <summary>
 		/// Real time when this log item is created
@@ -46,19 +46,19 @@ namespace QuantProject.Business.Strategies.Logging
 		/// <summary>
 		/// DateTime in the backtest, when this object is created
 		/// </summary>
-		public EndOfDayDateTime SimulatedCreationTime
+		public DateTime SimulatedCreationDateTime
 		{
-			get { return this.simulatedCreationTime; }
+			get { return this.simulatedCreationDateTime; }
 		}
 		public string Simu
 		{
-			get { return this.simulatedCreationTime.Description; }
+			get { return this.simulatedCreationDateTime.ToString(); }
 		}
 
-		public LogItem( EndOfDayDateTime simulatedCreationTime )
+		public LogItem( DateTime simulatedCreationDateTime )
 		{
 			this.realCreationTime = DateTime.Now;
-			this.simulatedCreationTime = simulatedCreationTime;
+			this.simulatedCreationDateTime = simulatedCreationDateTime;
 		}
 		/// <summary>
 		/// Since LogItem(s) are usually used to store in sample

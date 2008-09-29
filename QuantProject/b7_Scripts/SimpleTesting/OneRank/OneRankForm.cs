@@ -147,13 +147,13 @@ namespace QuantProject.Scripts.SimpleTesting
 			this.AutoScaleBaseSize = new System.Drawing.Size(5, 13);
 			this.ClientSize = new System.Drawing.Size(424, 273);
 			this.Controls.AddRange(new System.Windows.Forms.Control[] {
-																																	this.label3,
-																																	this.label2,
-																																	this.lastDateTime,
-																																	this.firstDateTime,
-																																	this.label1,
-																																	this.ticker,
-																																	this.start});
+			                       	this.label3,
+			                       	this.label2,
+			                       	this.lastDateTime,
+			                       	this.firstDateTime,
+			                       	this.label1,
+			                       	this.ticker,
+			                       	this.start});
 			this.Name = "OneRankForm";
 			this.Text = "OneRankForm";
 			this.ResumeLayout(false);
@@ -163,12 +163,12 @@ namespace QuantProject.Scripts.SimpleTesting
 
 		private void textBox1_TextChanged(object sender, System.EventArgs e)
 		{
-		
+			
 		}
 
 		private void label1_Click(object sender, System.EventArgs e)
 		{
-		
+			
 		}
 
 		#region start_Click
@@ -176,8 +176,10 @@ namespace QuantProject.Scripts.SimpleTesting
 		{
 			HistoricalEndOfDayTimer historicalEndOfDayTimer =
 				new IndexBasedEndOfDayTimer(
-				new EndOfDayDateTime( this.firstDateTime.Value ,
-				EndOfDaySpecificTime.MarketOpen ) , this.ticker.Text );
+					HistoricalEndOfDayTimer.GetMarketOpen( this.firstDateTime.Value ) ,
+//				new EndOfDayDateTime( this.firstDateTime.Value ,
+//				EndOfDaySpecificTime.MarketOpen ) ,
+					this.ticker.Text );
 
 			//			with IB commission
 			//			this.account = new Account( "MSFT" , historicalEndOfDayTimer ,
@@ -189,19 +191,21 @@ namespace QuantProject.Scripts.SimpleTesting
 
 			//			with no commission
 			this.account = new Account( this.ticker.Text , historicalEndOfDayTimer ,
-				new HistoricalEndOfDayDataStreamer( historicalEndOfDayTimer ,
-				this.historicalQuoteProvider ) ,
-				new HistoricalEndOfDayOrderExecutor( historicalEndOfDayTimer ,
-				this.historicalQuoteProvider ) );
+			                           new HistoricalEndOfDayDataStreamer( historicalEndOfDayTimer ,
+			                                                              this.historicalQuoteProvider ) ,
+			                           new HistoricalEndOfDayOrderExecutor( historicalEndOfDayTimer ,
+			                                                               this.historicalQuoteProvider ) );
 		}
 		private void start_Click(object sender, System.EventArgs e)
 		{
 			start_Click_initializeAccount();
 			OneRank oneRank = new OneRank( this.account , this.lastDateTime.Value );
 			Report report = new Report( this.account , this.historicalQuoteProvider );
-			report.Create( "WFT One Rank" , 1 ,
-				new EndOfDayDateTime( this.lastDateTime.Value ,
-				EndOfDaySpecificTime.MarketClose ) ,
+			report.Create(
+				"WFT One Rank" , 1 ,
+				HistoricalEndOfDayTimer.GetMarketClose(	this.lastDateTime.Value ) ,
+//				new EndOfDayDateTime( this.lastDateTime.Value ,
+//				                     EndOfDaySpecificTime.MarketClose ) ,
 				this.ticker.Text );
 			report.Show();
 		}

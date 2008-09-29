@@ -37,6 +37,18 @@
     <FileAlignment>4096</FileAlignment>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Interop.Excel">
+      <HintPath>..\..\Interop.Excel.dll</HintPath>
+      <SpecificVersion>False</SpecificVersion>
+    </Reference>
+    <Reference Include="Interop.Office">
+      <HintPath>..\..\Interop.Office.dll</HintPath>
+      <SpecificVersion>False</SpecificVersion>
+    </Reference>
+    <Reference Include="Interop.VBIDE">
+      <HintPath>..\..\Interop.VBIDE.dll</HintPath>
+      <SpecificVersion>False</SpecificVersion>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Configuration" />
     <Reference Include="System.Data" />
@@ -45,18 +57,6 @@
     <Reference Include="System.Xml" />
     <Reference Include="NPlot">
       <HintPath>..\..\NPlot.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="Interop.VBIDE">
-      <HintPath>..\..\Interop.VBIDE.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="Interop.Excel">
-      <HintPath>..\..\Interop.Excel.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="Interop.Office">
-      <HintPath>..\..\Interop.Office.dll</HintPath>
       <Private>True</Private>
     </Reference>
   </ItemGroup>
@@ -98,6 +98,7 @@
       <Project>{FA7D0E18-390A-4D03-A4C0-B9AEFC765A54}</Project>
       <Name>b4_Business</Name>
     </ProjectReference>
+    <Folder Include="Reporting\MicrosoftExcel" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.Targets" />
 </Project>

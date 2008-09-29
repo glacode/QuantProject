@@ -28,6 +28,7 @@ namespace QuantProject.ADT.Collections
 	/// <summary>
 	/// A mathematical set
 	/// </summary>
+	[Serializable]
 	public class Set
 	{
 		// TO DO: it should implement ICollection

@@ -38,10 +38,11 @@ namespace QuantProject.Business.Strategies.ReturnsManagement
 	/// way, array of returns on EndOfDayIntervals (to be used
 	/// by in sample optimizations)
 	/// </summary>
+	[Serializable]
 	public class ReturnsManager
 	{
 		private ReturnIntervals returnIntervals; // a return for each interval
-		private IHistoricalQuoteProvider historicalQuoteProvider; 
+		private HistoricalMarketValueProvider historicalMarketValueProvider; 
 		
 		private Set tickersMissingQuotes;
 
@@ -77,12 +78,12 @@ namespace QuantProject.Business.Strategies.ReturnsManagement
 		/// for the benchmark, each array of returns will have exactly
 		/// n-1 elements</param>
 		public ReturnsManager( ReturnIntervals returnIntervals ,
-			IHistoricalQuoteProvider historicalQuoteProvider )
+			HistoricalMarketValueProvider historicalMarketValueProvider )
 		{
 			// TO DO: let WFLagEligibleTickers use this class also!!!
 			this.returnIntervals = returnIntervals;
 			this.commonInitialization();
-			this.historicalQuoteProvider = historicalQuoteProvider;
+			this.historicalMarketValueProvider = historicalMarketValueProvider;
 		}
 		private void commonInitialization()
 		{
@@ -101,19 +102,20 @@ namespace QuantProject.Business.Strategies.ReturnsManagement
 		{
 			return this.tickersReturns.ContainsKey( ticker );
 		}
+		
 		#region setReturns
 		private float selectReturnWithRespectToTheGivenIterval(
-			EndOfDayHistory endOfDayQuotes , int i )
+			History marketValues , int i )
 		{
 			ReturnInterval returnInterval =
 				this.returnIntervals[ i ];
-			double firstQuote = (double)endOfDayQuotes[ returnInterval.Begin ];
-			double lastQuote = (double)endOfDayQuotes[ returnInterval.End ];
+			double firstQuote = (double)marketValues[ returnInterval.Begin ];
+			double lastQuote = (double)marketValues[ returnInterval.End ];
 			float intervalReturn = Convert.ToSingle( lastQuote / firstQuote - 1 );
 			return intervalReturn;
 		}
 		private float[] selectReturnsWithRespectToTheGivenIntervals(
-			EndOfDayHistory endOfDayQuotes )
+			History marketValues )
 		{
 			// TO DO: this method is n log n, it could be implemented to
 			// be have a linear complexity!!!
@@ -121,33 +123,35 @@ namespace QuantProject.Business.Strategies.ReturnsManagement
 				new float[ this.returnIntervals.Count ];
 			for ( int i = 0 ; i < this.returnIntervals.Count ; i++ )
 				returnsWithRespectToTheGivenIntervals[ i ] =
-					this.selectReturnWithRespectToTheGivenIterval( endOfDayQuotes , i );
+					this.selectReturnWithRespectToTheGivenIterval( marketValues , i );
 			return returnsWithRespectToTheGivenIntervals;
 		}
 		private void setReturnsActually( string ticker ,
-			EndOfDayHistory endOfDayQuotes )
+			History marketValues )
 		{
 			float[] arrayOfReturns =
-				this.selectReturnsWithRespectToTheGivenIntervals( endOfDayQuotes );
+				this.selectReturnsWithRespectToTheGivenIntervals( marketValues );
 			this.tickersReturns.Add( ticker , arrayOfReturns );
 		}
 		private void setReturns( string ticker ,
-			EndOfDayHistory endOfDayQuotes )
+			History marketValues )
 		{
 			if ( this.returnIntervals.AreIntervalBordersAllCoveredBy(
-				endOfDayQuotes ) )
-				this.setReturnsActually( ticker , endOfDayQuotes );
+				marketValues ) )
+				this.setReturnsActually( ticker , marketValues );
 			else
 				this.tickersMissingQuotes.Add( ticker );
 		}
 		private void setReturns( string ticker )
 		{
-			EndOfDayHistory endOfDayQuotes =
-				this.historicalQuoteProvider.GetEndOfDayQuotes( ticker ,
-				this.returnIntervals.BordersHistory );
-			this.setReturns( ticker , endOfDayQuotes );
+			History marketValues =
+				this.historicalMarketValueProvider.GetMarketValues(
+					ticker ,
+					this.returnIntervals.BordersHistory );
+			this.setReturns( ticker , marketValues );
 		}
 		#endregion setReturns
+		
 		private float[] getAlreadySetReturns( string ticker )
 		{
 			return (float[])this.tickersReturns[ ticker ];
@@ -163,6 +167,7 @@ namespace QuantProject.Business.Strategies.ReturnsManagement
 			return setReturns;
 		}
 		#endregion GetReturns
+		
 		#region GetReturn
 		/// <summary>
 		/// Gives out the returnIndex_th return for the given ticker

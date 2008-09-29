@@ -139,9 +139,9 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOs
 			set{this.tickersOfLast = value;}
 		}
 
-		public PVOLogItem(EndOfDayDateTime endOfDayDateTime,
+		public PVOLogItem(DateTime dateTime,
 		                  int numberOfInSampleDays)
-			: base( endOfDayDateTime )
+			: base( dateTime )
 		{
 			this.numberOfInSampleDays = numberOfInSampleDays;
 			this.numberOfEligibleTickers = int.MinValue;
@@ -152,8 +152,8 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOs
 		protected virtual void runStrategyClickEventHandler(object sender, System.EventArgs e)
 		{
 			//general
-			DateTime firstDateTime = this.SimulatedCreationTime.DateTime.AddDays(-this.numberOfInSampleDays);
-			DateTime lastDateTime = this.SimulatedCreationTime.DateTime;
+			DateTime firstDateTime = this.SimulatedCreationDateTime.AddDays(-this.numberOfInSampleDays);
+			DateTime lastDateTime = this.SimulatedCreationDateTime;
 			double maxRunningHours = 1;
 			Benchmark benchmark = new Benchmark( "^GSPC" );
 			// definition for the Fitness Evaluator (for
@@ -166,7 +166,7 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOs
 			double cashToStart = 30000;
 			double maxAcceptableCloseToCloseDrawdown = 0.02;
 			double minimumAcceptableGain = 0.007;
-			HistoricalQuoteProvider historicalQuoteProviderForBackTester,
+			HistoricalMarketValueProvider historicalQuoteProviderForBackTester,
 				historicalQuoteProviderForInSampleChooser,
 				historicalQuoteProviderForStrategy;
 			historicalQuoteProviderForBackTester =
@@ -210,13 +210,13 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOs
 		private void showTestingPositionsClickEventHandler_setDummyTesters_setTester(
 			int currentIndex ,
 			TestingPositions testingPositions ,
-			EndOfDayDateTime simulatedCreationTime )
+			DateTime simulatedCreationDateTime )
 		{
 			this.dummyTestersForBestTestingPositionsInSample[ currentIndex ] =
 				new DummyTesterForTestingPositions(
 					testingPositions ,
 					this.numberOfInSampleDays ,
-					simulatedCreationTime );
+					simulatedCreationDateTime );
 		}
 				
 		private void showTestingPositionsClickEventHandler_setDummyTesters()
@@ -227,7 +227,7 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOs
 				this.showTestingPositionsClickEventHandler_setDummyTesters_setTester(
 					i ,
 					BestPVOPositionsInSample[ i ] ,
-					this.SimulatedCreationTime );
+					this.SimulatedCreationDateTime );
 		}
 		
 		protected virtual void showTestingPositionsClickEventHandler(object sender, System.EventArgs e)

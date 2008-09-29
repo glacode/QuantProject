@@ -36,7 +36,7 @@ namespace QuantProject.Business.Strategies.ReturnsManagement.Time.IntervalsSelec
 		/// <summary>
 		/// returns the first interval of a series (starting from dateTime)
 		/// </summary>
-		ReturnInterval GetFirstInterval( EndOfDayDateTime dateTime );
+		ReturnInterval GetFirstInterval( DateTime dateTime );
 
 		/// <summary>
 		/// returns the next interval for the given returnIntervals

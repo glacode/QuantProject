@@ -473,8 +473,8 @@ namespace QuantProject.Principale
 			//new RunWalkForwardOneRank().Run();
 //			new WFLagMain().ShowDialog();
 
-			new FixedLengthTwoPhasesMain().Run();
-//			new PairsTradingMain().Run();
+//			new FixedLengthTwoPhasesMain().Run();
+			new PairsTradingMain().Run();
 			
 //			new RunOneRank().Run();
 			//new RunEfficientCTCPorfolio("Test",400,5,90,10,10000,

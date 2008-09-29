@@ -60,21 +60,21 @@ namespace QuantProject.Business.Strategies
             orders.Add( new Order( OrderType.MarketCover ,
               virtualOrder.Instrument ,
               (long) - ((Position)this.account.Portfolio[ virtualOrder.Instrument.Key ]).Quantity ,
-              virtualOrder.EndOfDayDateTime ) );
+              virtualOrder.DateTime ) );
           if ( !this.account.Portfolio.IsLong( virtualOrder.Instrument ) )
             orders.Add( new Order( OrderType.MarketBuy ,
               virtualOrder.Instrument ,
               virtualOrder.Instrument.GetMaxBuyableQuantity(
                 this.account.CashAmount +
                 this.account.Portfolio.GetMarketValue( this.account.DataStreamer ) ,
-                this.account.DataStreamer ) , virtualOrder.EndOfDayDateTime ) );
+                this.account.DataStreamer ) , virtualOrder.DateTime ) );
           break;
         case OrderType.MarketSell:
           if ( this.account.Portfolio.IsLong( virtualOrder.Instrument ) )
             orders.Add( new Order( OrderType.MarketSell ,
               virtualOrder.Instrument ,
               (long) this.account.Portfolio.GetPosition( virtualOrder.Instrument ).Quantity ,
-              virtualOrder.EndOfDayDateTime ) );
+              virtualOrder.DateTime ) );
           if ( !this.account.Portfolio.IsShort( virtualOrder.Instrument ) )
             orders.Add( new Order( OrderType.MarketSellShort ,
             virtualOrder.Instrument ,
@@ -82,7 +82,7 @@ namespace QuantProject.Business.Strategies
               this.account.CashAmount +
               this.account.Portfolio.GetMarketValue( dataStreamer ) ,
               dataStreamer ) ,
-              virtualOrder.EndOfDayDateTime ) );
+              virtualOrder.DateTime ) );
           break;
         default:            
           break;      

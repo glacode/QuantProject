@@ -42,7 +42,8 @@ namespace QuantProject.Scripts.WalkForwardTesting.LinearCombination
 	/// of moving from a threshold
 	/// </summary>
 	[Serializable]
-	public class FixedLevelOscillatorBiasedPVOStrategy : EndOfDayTimerHandlerBiasedPVO, IEndOfDayStrategy
+	public class FixedLevelOscillatorBiasedPVOStrategy :
+		EndOfDayTimerHandlerBiasedPVO, IStrategy
 	{
 		
 		public FixedLevelOscillatorBiasedPVOStrategy( Account accountPVO ,
@@ -73,8 +74,8 @@ namespace QuantProject.Scripts.WalkForwardTesting.LinearCombination
 			this.numOfDifferentGenomesToEvaluateOutOfSample = numOfDifferentGenomesToEvaluateOutOfSample;
 		}
 		
-		public void FiveMinutesBeforeMarketCloseEventHandler( Object sender ,
-		                                                     EndOfDayTimingEventArgs endOfDayTimingEventArgs)
+		protected void fiveMinutesBeforeMarketCloseEventHandler(
+			Object sender , DateTime dateTime)
 		{
 		}
 		
@@ -106,8 +107,8 @@ namespace QuantProject.Scripts.WalkForwardTesting.LinearCombination
 			return returnValue;
 		}
 
-		public override void OneHourAfterMarketCloseEventHandler( Object sender ,
-		                                                         EndOfDayTimingEventArgs endOfDayTimingEventArgs)
+		protected override void oneHourAfterMarketCloseEventHandler(
+			Object sender , DateTime dateTime)
 		{
 			
 		}

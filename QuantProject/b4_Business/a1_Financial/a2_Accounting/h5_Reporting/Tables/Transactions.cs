@@ -19,7 +19,7 @@ namespace QuantProject.Business.Financial.Accounting.Reporting.Tables
       DataTable transactionsDataTable )
     {
       transactionsDataTable.Columns.Add( "DateTime" , Type.GetType( "System.DateTime" ) );
-      transactionsDataTable.Columns.Add( "BarComponent" , Type.GetType( "System.String" ) );
+//      transactionsDataTable.Columns.Add( "BarComponent" , Type.GetType( "System.String" ) );
       transactionsDataTable.Columns.Add( "TransactionType"  , Type.GetType( "System.String" ) );
       transactionsDataTable.Columns.Add( "InstrumentKey"  , Type.GetType( "System.String" ) );
       transactionsDataTable.Columns.Add( "Quantity"  , Type.GetType( "System.Int32" ) );
@@ -40,7 +40,7 @@ namespace QuantProject.Business.Financial.Accounting.Reporting.Tables
         {
           DataRow dataRow = transactionsDataTable.NewRow();
           dataRow[ "DateTime" ] = detailedRow[ "DateTime" ];
-          dataRow[ "BarComponent" ] = detailedRow[ "BarComponent" ];
+//          dataRow[ "BarComponent" ] = detailedRow[ "BarComponent" ];
           dataRow[ "TransactionType" ] = detailedRow[ "TransactionType" ];
           dataRow[ "InstrumentKey" ] = detailedRow[ "InstrumentKey" ];
           dataRow[ "Quantity" ] = detailedRow[ "Quantity" ];

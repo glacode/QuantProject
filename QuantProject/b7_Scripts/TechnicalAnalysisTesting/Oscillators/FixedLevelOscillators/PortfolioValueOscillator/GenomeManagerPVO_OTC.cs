@@ -2,7 +2,7 @@
 QuantProject - Quantitative Finance Library
 
 GenomeManagerPVO_OTC.cs
-Copyright (C) 2008 
+Copyright (C) 2008
 Marco Milletti
 
 This program is free software; you can redistribute it and/or
@@ -18,7 +18,7 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
-*/
+ */
 
 using System;
 using System.Data;
@@ -46,65 +46,67 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOs
 	/// open to close returns
 	/// </summary>
 	[Serializable]
-  public class GenomeManagerPVO_OTC : GenomeManagerPVO
-  {
-       
-    public GenomeManagerPVO_OTC(DataTable setOfInitialTickers,
-                           DateTime firstQuoteDate,
-                           DateTime lastQuoteDate,
-                           int numberOfTickersInPortfolio,
-                           int minLevelForOversoldThreshold,
-	                         int maxLevelForOversoldThreshold,
-	                         int minLevelForOverboughtThreshold,
-	                         int maxLevelForOverboughtThreshold,
-                           int divisorForThresholdComputation,
-                           bool symmetricalThresholds,
-                           bool overboughtMoreThanOversoldForFixedPortfolio,
-                           PortfolioType inSamplePortfolioType,
-                           string benchmark)
-                           :
-														base(setOfInitialTickers,
-														firstQuoteDate,
-														lastQuoteDate,
-														numberOfTickersInPortfolio,
-														1,
-														minLevelForOversoldThreshold,
-														maxLevelForOversoldThreshold,
-														minLevelForOverboughtThreshold,
-														maxLevelForOverboughtThreshold,
-														divisorForThresholdComputation,
-														symmetricalThresholds,
-														overboughtMoreThanOversoldForFixedPortfolio,
-														inSamplePortfolioType,
-														benchmark)
-                                
-                          
-    {
-    	
-    }
-    
-    protected override void setReturnsManager(DateTime firstQuoteDate,
-                                   DateTime lastQuoteDate)
-    {
-    	EndOfDayDateTime firstEndOfDayDateTime =
-				new EndOfDayDateTime(firstQuoteDate,
-    		EndOfDaySpecificTime.MarketOpen);
-			EndOfDayDateTime lastEndOfDayDateTime =
-				new EndOfDayDateTime(lastQuoteDate,
-				EndOfDaySpecificTime.MarketClose);
-    	this.returnsManager = 
-    		new ReturnsManager( new DailyOpenToCloseIntervals(
-															  firstEndOfDayDateTime, 
-																lastEndOfDayDateTime, 
-																this.benchmark),
-														new HistoricalRawQuoteProvider() );
-    }
-       
-    
+	public class GenomeManagerPVO_OTC : GenomeManagerPVO
+	{
+		
+		public GenomeManagerPVO_OTC(DataTable setOfInitialTickers,
+		                            DateTime firstQuoteDate,
+		                            DateTime lastQuoteDate,
+		                            int numberOfTickersInPortfolio,
+		                            int minLevelForOversoldThreshold,
+		                            int maxLevelForOversoldThreshold,
+		                            int minLevelForOverboughtThreshold,
+		                            int maxLevelForOverboughtThreshold,
+		                            int divisorForThresholdComputation,
+		                            bool symmetricalThresholds,
+		                            bool overboughtMoreThanOversoldForFixedPortfolio,
+		                            PortfolioType inSamplePortfolioType,
+		                            string benchmark)
+			:
+			base(setOfInitialTickers,
+			     firstQuoteDate,
+			     lastQuoteDate,
+			     numberOfTickersInPortfolio,
+			     1,
+			     minLevelForOversoldThreshold,
+			     maxLevelForOversoldThreshold,
+			     minLevelForOverboughtThreshold,
+			     maxLevelForOverboughtThreshold,
+			     divisorForThresholdComputation,
+			     symmetricalThresholds,
+			     overboughtMoreThanOversoldForFixedPortfolio,
+			     inSamplePortfolioType,
+			     benchmark)
+			
+			
+		{
+			
+		}
+		
+		protected override void setReturnsManager(DateTime firstQuoteDate,
+		                                          DateTime lastQuoteDate)
+		{
+			DateTime firstDateTime =
+				HistoricalEndOfDayTimer.GetMarketOpen( firstQuoteDate );
+//				new EndOfDayDateTime(firstQuoteDate,
+			//    		EndOfDaySpecificTime.MarketOpen);
+			DateTime lastDateTime =
+				HistoricalEndOfDayTimer.GetMarketClose( lastQuoteDate );
+//				new EndOfDayDateTime(lastQuoteDate,
+//				EndOfDaySpecificTime.MarketClose);
+			this.returnsManager =
+				new ReturnsManager( new DailyOpenToCloseIntervals(
+					firstDateTime,
+					lastDateTime,
+					this.benchmark),
+				                   new HistoricalRawQuoteProvider() );
+		}
+		
+		
 		//fitness is a sharpe-ratio based indicator for the equity line resulting
 		//from applying the strategy
-	  public override double GetFitnessValue(Genome genome)
-    {
+		public override double GetFitnessValue(Genome genome)
+		{
 			//NEW implementation: fitness is just the pearson correlation
 			//applied to two tickers. This kind of fitness is only valid
 			//for tests with 2-tickers portfolios
@@ -116,18 +118,18 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOs
 			string firstTicker = this.getFitnessValue_getFirstTickerFromGenome(genome);
 			string secondTicker = this.getFitnessValue_getSecondTickerFromGenome(genome);
 			if(  ( firstTicker.StartsWith("-") && !secondTicker.StartsWith("-") ) ||
-			   	 ( secondTicker.StartsWith("-") && !firstTicker.StartsWith("-") )     )
-			//tickers have to be opposite in sign	
+			   ( secondTicker.StartsWith("-") && !firstTicker.StartsWith("-") )     )
+				//tickers have to be opposite in sign
 			{
 				double correlationIndex = correlationProvider.GetPearsonCorrelation(
 					SignedTicker.GetTicker(firstTicker),
 					SignedTicker.GetTicker(secondTicker) );
 				if(correlationIndex < 0.96)
-				//	if correlation index is not too high to be 
-				//  probably originated by the same instrument
+					//	if correlation index is not too high to be
+					//  probably originated by the same instrument
 					returnValue = correlationIndex;
 			}
 			return returnValue;
-    }
-  }
+		}
+	}
 }

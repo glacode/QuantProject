@@ -2,7 +2,7 @@
 QuantProject - Quantitative Finance Library
 
 OpenToCloseWeeklyStrategy.cs
-Copyright (C) 2003 
+Copyright (C) 2003
 Glauco Siliprandi
 
 This program is free software; you can redistribute it and/or
@@ -18,7 +18,7 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
-*/
+ */
 
 using System;
 using System.Collections;
@@ -35,51 +35,66 @@ namespace QuantProject.Scripts.WalkForwardTesting.LinearCombination
 	/// Open to close weekly strategy
 	/// </summary>
 	[Serializable]
-	public class OpenToCloseWeeklyStrategy : IEndOfDayStrategy
+	public class OpenToCloseWeeklyStrategy : EndOfDayStrategy
 	{
-		private Account account;
+//		private Account account;
 		private WeightedPositions weightedPositions;
 		
-		public Account Account
-		{
-			get { return this.account; }
-			set { this.account = value; }
-		}
+//		public Account Account
+//		{
+//			get { return this.account; }
+//			set { this.account = value; }
+//		}
 		
 		public OpenToCloseWeeklyStrategy( Account account ,
-			WeightedPositions weightedPositions)
+		                                 WeightedPositions weightedPositions)
 		{
 			this.account = account;
 			this.weightedPositions = weightedPositions;
 		}
 		
-		public void MarketOpenEventHandler(
-			Object sender , EndOfDayTimingEventArgs endOfDayTimingEventArgs )
+		protected override void marketOpenEventHandler(
+			Object sender , DateTime dateTime )
 		{
 			if ( ( this.account.CashAmount == 0 ) &&
-				( this.account.Transactions.Count == 0 ) )
+			    ( this.account.Transactions.Count == 0 ) )
 				// cash has not been added yet
 				this.account.AddCash( 15000 );
-			if ( endOfDayTimingEventArgs.EndOfDayDateTime.DateTime.DayOfWeek ==
-				DayOfWeek.Monday )
+			if ( dateTime.DayOfWeek ==
+			    DayOfWeek.Monday )
 				AccountManager.OpenPositions(this.weightedPositions, this.account);
 		}
 		
-		public void FiveMinutesBeforeMarketCloseEventHandler( Object sender ,
-			EndOfDayTimingEventArgs endOfDayTimingEventArgs)
+//		public void FiveMinutesBeforeMarketCloseEventHandler( Object sender ,
+//		                                                     DateTime dateTime)
+//		{
+//			if ( dateTime.DayOfWeek ==
+//			    DayOfWeek.Friday )
+//				AccountManager.ClosePositions(this.account);
+//		}
+
+		protected override void marketCloseEventHandler( Object sender ,
+		                                    DateTime dateTime)
 		{
-			if ( endOfDayTimingEventArgs.EndOfDayDateTime.DateTime.DayOfWeek ==
-				DayOfWeek.Friday )
+			if ( dateTime.DayOfWeek ==
+			    DayOfWeek.Friday )
 				AccountManager.ClosePositions(this.account);
 		}
+		protected override void oneHourAfterMarketCloseEventHandler( Object sender ,
+		                                                DateTime dateTime)
+		{
+		}
+		
+//		public virtual void NewDateTimeEventHandler(
+//			Object sender , DateTime dateTime )
+//		{
+//			if ( HistoricalEndOfDayTimer.IsMarketOpen( dateTime ) )
+//				this.marketOpenEventHandler( sender , dateTime );
+//			if ( HistoricalEndOfDayTimer.IsMarketClose( dateTime ) )
+//				this.marketCloseEventHandler( sender , dateTime );
+//			if ( HistoricalEndOfDayTimer.IsOneHourAfterMarketClose( dateTime ) )
+//				this.oneHourAfterMarketCloseEventHandler( sender , dateTime );
+//		}
 
-		public void MarketCloseEventHandler( Object sender ,
-			EndOfDayTimingEventArgs endOfDayTimingEventArgs)
-		{
-		}
-		public void OneHourAfterMarketCloseEventHandler( Object sender ,
-			EndOfDayTimingEventArgs endOfDayTimingEventArgs)
-		{
-		}
 	}
 }

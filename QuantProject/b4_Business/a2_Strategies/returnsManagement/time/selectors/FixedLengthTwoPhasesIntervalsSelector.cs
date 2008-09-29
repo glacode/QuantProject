@@ -36,6 +36,7 @@ namespace QuantProject.Business.Strategies.ReturnsManagement.Time.IntervalsSelec
 	/// a "close to open" interval (refered to dateTimes when the benchmark is
 	/// exchanged)
 	/// </summary>
+	[Serializable]
 	public class FixedLengthTwoPhasesIntervalsSelector : IIntervalsSelector
 	{
 		private int firstPhaseBenchmarkTimeSteps;
@@ -77,26 +78,26 @@ namespace QuantProject.Business.Strategies.ReturnsManagement.Time.IntervalsSelec
 				benchmarkTimeStepsForCurrentPhase = this.secondPhaseBenchmarkTimeSteps;
 			return benchmarkTimeStepsForCurrentPhase;
 		}
-		private EndOfDayDateTime getNextReturnIntervalEnd(
-			EndOfDayDateTime returnIntervalBegin ,
+		private DateTime getNextReturnIntervalEnd(
+			DateTime returnIntervalBegin ,
 			int benchmarkTimeStepsForCurrentPhase )
 		{
-			EndOfDayDateTime currentEndOfDayDateTime =
+			DateTime currentDateTime =
 				returnIntervalBegin;
 			for ( int i = 0 ; i < benchmarkTimeStepsForCurrentPhase ; i++ )
 			{
-				currentEndOfDayDateTime =
-					this.benchmark.GetTimeStep( currentEndOfDayDateTime ).End;
+				currentDateTime =
+					this.benchmark.GetTimeStep( currentDateTime ).End;
 			}
-			return currentEndOfDayDateTime;
+			return currentDateTime;
 		}
-		private EndOfDayDateTime getIntervalEnd(
-			EndOfDayDateTime nextReturnIntervalBegin ,
+		private DateTime getIntervalEnd(
+			DateTime nextReturnIntervalBegin ,
 			int numIntervalsAlreadyDone )
 		{
 			int benchmarkTimeStepsForCurrentPhase =
 				this.getBenchmarkTimeStepsForCurrentPhase( numIntervalsAlreadyDone );
-			EndOfDayDateTime nextReturnIntervalEnd =
+			DateTime nextReturnIntervalEnd =
 				this.getNextReturnIntervalEnd( nextReturnIntervalBegin ,
 				benchmarkTimeStepsForCurrentPhase );
 			return nextReturnIntervalEnd;
@@ -105,9 +106,9 @@ namespace QuantProject.Business.Strategies.ReturnsManagement.Time.IntervalsSelec
 		
 		public ReturnInterval GetNextInterval( ReturnIntervals returnIntervals )
 		{
-			EndOfDayDateTime nextReturnIntervalBegin =
+			DateTime nextReturnIntervalBegin =
 				returnIntervals[ returnIntervals.Count - 1 ].End;
-			EndOfDayDateTime nextReturnIntervalEnd =
+			DateTime nextReturnIntervalEnd =
 				this.getIntervalEnd( nextReturnIntervalBegin ,
 				                                        returnIntervals.Count );
 			ReturnInterval nextInterval = new ReturnInterval(
@@ -115,8 +116,8 @@ namespace QuantProject.Business.Strategies.ReturnsManagement.Time.IntervalsSelec
 			return nextInterval;
 		}
 		#region GetFirstInterval
-		private EndOfDayDateTime getFirstIntervalBegin(
-			EndOfDayDateTime startingEndOfDayDateTime )
+		private DateTime getFirstIntervalBegin(
+			DateTime startingDateTime )
 		{
 //			qui!!!! fai un ciclo while non exchanged (trova
 //			                                          il primo
@@ -124,9 +125,9 @@ namespace QuantProject.Business.Strategies.ReturnsManagement.Time.IntervalsSelec
 //			                                          in cui il
 //			                                          benchmark e'
 //			                                          scambiato)
-			EndOfDayDateTime firstIntervalBegin =
+			DateTime firstIntervalBegin =
 				this.benchmark.GetThisOrNextMarketStatusSwitch(
-				startingEndOfDayDateTime );
+				startingDateTime );
 //			EndOfDayDateTime firstIntervalBegin =
 //				startingEndOfDayDateTime;
 //			if ( ( startingEndOfDayDateTime.EndOfDaySpecificTime !=
@@ -140,11 +141,11 @@ namespace QuantProject.Business.Strategies.ReturnsManagement.Time.IntervalsSelec
 			return firstIntervalBegin;
 		}
 		public ReturnInterval GetFirstInterval(
-				EndOfDayDateTime startingEndOfDayDateTime )
+				DateTime startingDateTime )
 		{
-			EndOfDayDateTime firstIntervalBegin =
-				this.getFirstIntervalBegin( startingEndOfDayDateTime );
-			EndOfDayDateTime firstIntervalEnd =
+			DateTime firstIntervalBegin =
+				this.getFirstIntervalBegin( startingDateTime );
+			DateTime firstIntervalEnd =
 				this.getIntervalEnd( firstIntervalBegin , 0 );
 			ReturnInterval nextInterval = new ReturnInterval(
 				firstIntervalBegin , firstIntervalEnd );

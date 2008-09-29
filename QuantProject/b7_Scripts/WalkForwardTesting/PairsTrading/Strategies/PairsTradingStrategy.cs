@@ -39,10 +39,11 @@ namespace QuantProject.Scripts.WalkForwardTesting.PairsTrading
 	/// <summary>
 	/// Pairs Trading strategy with in sample optimizations
 	/// </summary>
+	[Serializable]
 	public class PairsTradingStrategy : SymmetricEndOfDayStrategyForBacktester
 	{
-		private IHistoricalQuoteProvider
-			historicalQuoteProviderForChosingPositionsOutOfSample;
+		private HistoricalMarketValueProvider
+			historicalMarketValueProviderForChosingPositionsOutOfSample;
 		private OutOfSampleChooser outOfSampleChooser;
 
 		public PairsTradingStrategy(
@@ -52,9 +53,9 @@ namespace QuantProject.Scripts.WalkForwardTesting.PairsTrading
 			IIntervalsSelector intervalsSelectorForOutOfSample ,
 			IEligiblesSelector eligiblesSelector ,
 			IInSampleChooser inSampleChooser ,
-			IHistoricalQuoteProvider historicalQuoteProviderForInSample ,
-			IHistoricalQuoteProvider
-			historicalQuoteProviderForChosingPositionsOutOfSample ,
+			HistoricalMarketValueProvider historicalMarketValueProviderForInSample ,
+			HistoricalMarketValueProvider
+			historicalMarketValueProviderForChosingPositionsOutOfSample ,
 			OutOfSampleChooser outOfSampleChooser ) :
 			base(
 			numDaysBeetweenEachOtpimization ,
@@ -63,10 +64,10 @@ namespace QuantProject.Scripts.WalkForwardTesting.PairsTrading
 			intervalsSelectorForOutOfSample ,
 			eligiblesSelector ,
 			inSampleChooser ,
-			historicalQuoteProviderForInSample )
+			historicalMarketValueProviderForInSample )
 		{
-			this.historicalQuoteProviderForChosingPositionsOutOfSample =
-				historicalQuoteProviderForChosingPositionsOutOfSample;			
+			this.historicalMarketValueProviderForChosingPositionsOutOfSample =
+				historicalMarketValueProviderForChosingPositionsOutOfSample;			
 			this.outOfSampleChooser = outOfSampleChooser;
 		}
 		
@@ -93,7 +94,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.PairsTrading
 			{
 				ReturnInterval secondLastReturnInterval =
 					this.getSecondLastReturnInterval();
-				areToBeClosed = this.now().IsEqualTo( secondLastReturnInterval.End );				
+				areToBeClosed = ( this.now() == secondLastReturnInterval.End );				
 			}
 			return ( areToBeClosed );
 		}
@@ -102,8 +103,8 @@ namespace QuantProject.Scripts.WalkForwardTesting.PairsTrading
 		protected override bool arePositionsToBeOpened()
 		{
 			bool beginsTheLastInterval =
-				( this.now().IsEqualTo(
-				this.lastIntervalAppended().Begin ) );
+				( this.now() ==
+				this.lastIntervalAppended().Begin );
 			return ( beginsTheLastInterval );
 		}
 
@@ -113,7 +114,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.PairsTrading
 				this.outOfSampleChooser.GetPositionsToBeOpened(
 				this.bestTestingPositionsInSample ,
 				this.returnIntervals ,
-				this.historicalQuoteProviderForChosingPositionsOutOfSample ,
+				this.historicalMarketValueProviderForChosingPositionsOutOfSample ,
 				this.inSampleReturnsManager );
 			return weightedPositions;
 		}

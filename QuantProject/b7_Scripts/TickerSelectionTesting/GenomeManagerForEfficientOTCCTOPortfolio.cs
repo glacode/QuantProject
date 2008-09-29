@@ -2,7 +2,7 @@
 QuantProject - Quantitative Finance Library
 
 GenomeManagerForEfficientOTCCTOPortfolio.cs
-Copyright (C) 2003 
+Copyright (C) 2003
 Marco Milletti
 
 This program is free software; you can redistribute it and/or
@@ -18,7 +18,7 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
-*/
+ */
 
 using System;
 using System.Data;
@@ -33,70 +33,73 @@ using QuantProject.Business.Strategies.ReturnsManagement.Time;
 namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
 {
 	/// <summary>
-	/// This class implements IGenomeManager, in order to find efficient 
+	/// This class implements IGenomeManager, in order to find efficient
 	/// portfolios based on the OTC and CTO strategy, using the
 	/// GeneticOptimizer
 	/// </summary>
 	[Serializable]
-  public class GenomeManagerForEfficientOTCCTOPortfolio : GenomeManagerForEfficientPortfolio
-  {
-    private ReturnsManager returnsManager;
-  	
-    public GenomeManagerForEfficientOTCCTOPortfolio(DataTable setOfInitialTickers,
-                                                 DateTime firstQuoteDate,
-                                                 DateTime lastQuoteDate,
-                                                 int numberOfTickersInPortfolio,
-                                                 double targetPerformance,
-                                                 PortfolioType portfolioType,
-                                                 string benchmark)
-                                :base(setOfInitialTickers,
-                                     firstQuoteDate,
-                                     lastQuoteDate,
-                                     numberOfTickersInPortfolio,
-                                     targetPerformance,
-                                     portfolioType,
-                                     benchmark)
-                          
-    {
-      this.setReturnsManager(firstQuoteDate, lastQuoteDate);
-    }
-    //if the genome manager derives from genome manager without weights,
-		//delete override key word
-		protected ReturnIntervals getReturnIntervals(EndOfDayDateTime firstEndOfDayDateTime,
-																													EndOfDayDateTime lastEndOfDayDateTime)
+	public class GenomeManagerForEfficientOTCCTOPortfolio : GenomeManagerForEfficientPortfolio
+	{
+		private ReturnsManager returnsManager;
+		
+		public GenomeManagerForEfficientOTCCTOPortfolio(DataTable setOfInitialTickers,
+		                                                DateTime firstQuoteDate,
+		                                                DateTime lastQuoteDate,
+		                                                int numberOfTickersInPortfolio,
+		                                                double targetPerformance,
+		                                                PortfolioType portfolioType,
+		                                                string benchmark)
+			:base(setOfInitialTickers,
+			      firstQuoteDate,
+			      lastQuoteDate,
+			      numberOfTickersInPortfolio,
+			      targetPerformance,
+			      portfolioType,
+			      benchmark)
+			
 		{
-			return 
+			this.setReturnsManager(firstQuoteDate, lastQuoteDate);
+		}
+		//if the genome manager derives from genome manager without weights,
+		//delete override key word
+		protected ReturnIntervals getReturnIntervals(
+			DateTime firstDateTime,
+			DateTime lastDateTime)
+		{
+			return
 				new OpenToCloseCloseToOpenIntervals(
-				firstEndOfDayDateTime, 
-				lastEndOfDayDateTime, 
-				this.benchmark);
+					firstDateTime,
+					lastDateTime,
+					this.benchmark);
 		}
 
-  	private void setReturnsManager(DateTime firstQuoteDate,
-                                   DateTime lastQuoteDate)
-    {
-    	EndOfDayDateTime firstEndOfDayDateTime =
-				new EndOfDayDateTime(firstQuoteDate, EndOfDaySpecificTime.MarketOpen);
-			EndOfDayDateTime lastEndOfDayDateTime =
-				new EndOfDayDateTime(lastQuoteDate, EndOfDaySpecificTime.MarketClose);
-    	this.returnsManager = 
-    		new ReturnsManager( this.getReturnIntervals(firstEndOfDayDateTime,
-																 lastEndOfDayDateTime),
-														new HistoricalAdjustedQuoteProvider() );
-    }
-  	
-  	protected override float[] getStrategyReturns()
+		private void setReturnsManager(DateTime firstQuoteDate,
+		                               DateTime lastQuoteDate)
 		{
-  		float[] returnValue;
-  		returnValue = this.weightedPositionsFromGenome.GetReturns(
-              this.returnsManager ) ;
-	   	for(int i = 0; i<returnValue.Length; i++)
-	  		if(i%2 != 0)
-	  		//returnValue[i] is a CloseToOpen return:
-	  		//the strategy implies to reverse positions at night
-	  			returnValue[i] = - returnValue[i];
-	  	
-	  	return returnValue;
+			DateTime firstDateTime =
+				HistoricalEndOfDayTimer.GetMarketOpen( firstQuoteDate );
+//				new EndOfDayDateTime(firstQuoteDate, EndOfDaySpecificTime.MarketOpen);
+			DateTime lastDateTime =
+				HistoricalEndOfDayTimer.GetMarketClose( lastQuoteDate );
+//				new EndOfDayDateTime(lastQuoteDate, EndOfDaySpecificTime.MarketClose);
+			this.returnsManager =
+				new ReturnsManager( this.getReturnIntervals(firstDateTime,
+				                                            lastDateTime),
+				                   new HistoricalAdjustedQuoteProvider() );
 		}
-  }
+		
+		protected override float[] getStrategyReturns()
+		{
+			float[] returnValue;
+			returnValue = this.weightedPositionsFromGenome.GetReturns(
+				this.returnsManager ) ;
+			for(int i = 0; i<returnValue.Length; i++)
+				if(i%2 != 0)
+				//returnValue[i] is a CloseToOpen return:
+				//the strategy implies to reverse positions at night
+				returnValue[i] = - returnValue[i];
+			
+			return returnValue;
+		}
+	}
 }

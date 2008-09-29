@@ -255,8 +255,8 @@ namespace QuantProject.Business.Strategies
 			Hashtable virtualQuantities = new Hashtable();
 			HistoricalAdjustedQuoteProvider historicalAdjustedQuoteProvider =
 				new HistoricalAdjustedQuoteProvider();
-			EndOfDayDateTime endOfDayDateTime =
-				new EndOfDayDateTime( dateTime , EndOfDaySpecificTime.MarketClose );
+//			EndOfDayDateTime endOfDayDateTime =
+//				new EndOfDayDateTime( dateTime , EndOfDaySpecificTime.MarketClose );
 			foreach( WeightedPosition weightedPosition in	this.Values )
 			{
 				string ticker = weightedPosition.Ticker;
@@ -264,7 +264,7 @@ namespace QuantProject.Business.Strategies
 					beginningCash * Math.Abs( weightedPosition.Weight );
 				double tickerQuote =
 					historicalAdjustedQuoteProvider.GetMarketValue(
-					ticker , endOfDayDateTime );
+						ticker , dateTime );
 				double virtualQuantityForThisPosition = valueForThisPosition / tickerQuote;
 				if ( weightedPosition.IsShort )
 					virtualQuantityForThisPosition = -virtualQuantityForThisPosition;
@@ -298,10 +298,10 @@ namespace QuantProject.Business.Strategies
 			double virtualPortfolioValue = 0;
 			foreach( string ticker in tickerVirtualQuantities.Keys )
 			{
-				EndOfDayDateTime endOfDayDateTime =	new EndOfDayDateTime(
-					dateTime , EndOfDaySpecificTime.MarketClose );
+//				EndOfDayDateTime endOfDayDateTime =	new EndOfDayDateTime(
+//					dateTime , EndOfDaySpecificTime.MarketClose );
 				double tickerQuote = historicalAdjustedQuoteProvider.GetMarketValue(
-					ticker , endOfDayDateTime );
+					ticker , dateTime );
 				double virtualQuantity = (double)tickerVirtualQuantities[ ticker ];
 				virtualPortfolioValue +=	virtualQuantity * tickerQuote;
 			}

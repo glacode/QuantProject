@@ -18,7 +18,7 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
-*/
+ */
 
 using System;
 using System.Collections;
@@ -90,30 +90,33 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag.WFLagDebugger
 		{
 			this.endOfDayTimer =
 				new IndexBasedEndOfDayTimer(
-				new EndOfDayDateTime( this.preSampleFirstDateTime ,
-				EndOfDaySpecificTime.MarketOpen ), this.benchmark );
+					HistoricalEndOfDayTimer.GetMarketOpen( this.preSampleFirstDateTime ) ,
+//				new EndOfDayDateTime( this.preSampleFirstDateTime ,
+//				EndOfDaySpecificTime.MarketOpen ),
+					this.benchmark );
 		}
 		private void run_initializeAccount()
 		{
 			this.account = new Account( "WFLagDebugPositions" ,
-				this.endOfDayTimer ,
-				new HistoricalEndOfDayDataStreamer( this.endOfDayTimer ,
-				this.historicalQuoteProvider ) ,
-				new HistoricalEndOfDayOrderExecutor( this.endOfDayTimer ,
-				this.historicalQuoteProvider ) );
+			                           this.endOfDayTimer ,
+			                           new HistoricalEndOfDayDataStreamer( this.endOfDayTimer ,
+			                                                              this.historicalQuoteProvider ) ,
+			                           new HistoricalEndOfDayOrderExecutor( this.endOfDayTimer ,
+			                                                               this.historicalQuoteProvider ) );
 		}
 		private void run_initializeEndOfDayTimerHandler()
 		{
 			this.endOfDayTimerHandler =
 				new WFLagDebugPositionsEndOfDayTimerHandler(
-				this.account , this.wFLagWeightedPositions );
+					this.account , this.wFLagWeightedPositions );
 		}
-		public void marketOpenEventHandler(	Object sender ,
-			EndOfDayTimingEventArgs endOfDayTimingEventArgs )
+		public void marketOpenEventHandler(
+			Object sender ,	DateTime dateTime )
 		{
 			if ( this.account.Transactions.Count == 0 )
 				this.account.AddCash( 30000 );
 		}
+		
 		#region oneHourAfterMarketCloseEventHandler
 		#region getEquityLineForSignedTickers
 		/// <summary>
@@ -123,7 +126,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag.WFLagDebugger
 		/// </summary>
 		/// <returns></returns>
 		private Hashtable getVirtualQuantities( ICollection positions ,
-			DateTime dateTime )
+		                                       DateTime dateTime )
 		{
 			Hashtable virtualQuantities = new Hashtable();
 			double valueForEachPosition = 30000 /
@@ -132,11 +135,12 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag.WFLagDebugger
 			{
 				SignedTicker signedTicker = new SignedTicker( stringForSignedTicker );
 				string ticker = signedTicker.Ticker;
-				EndOfDayDateTime endOfDayDateTime =
-					new EndOfDayDateTime( dateTime , EndOfDaySpecificTime.MarketClose );
+				DateTime dateTimeOnClose =
+					HistoricalEndOfDayTimer.GetMarketClose(	dateTime );
+//						new EndOfDayDateTime( dateTime , EndOfDaySpecificTime.MarketClose );
 				double tickerQuote =
 					this.historicalQuoteProvider.GetMarketValue(
-					ticker , endOfDayDateTime );
+						ticker , dateTimeOnClose );
 				double virtualQuantity = valueForEachPosition / tickerQuote;
 				if ( signedTicker.IsShort )
 					virtualQuantity = -virtualQuantity;
@@ -150,7 +154,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag.WFLagDebugger
 			double valueForEachPosition =
 				cash / drivingTickerVirtualQuantities.Count;
 			foreach ( double virtualQuantity in
-				drivingTickerVirtualQuantities.Values )
+			         drivingTickerVirtualQuantities.Values )
 			{
 				if ( virtualQuantity > 0 )
 					// long position
@@ -162,15 +166,18 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag.WFLagDebugger
 			return cash;
 		}
 		private double getPortfolioValueForSignedTickers( DateTime dateTime ,
-			Hashtable tickerVirtualQuantities )
+		                                                 Hashtable tickerVirtualQuantities )
 		{
 			double portfolioValueForDrivingPositions = 0;
 			foreach( string ticker in tickerVirtualQuantities.Keys )
 			{
-				EndOfDayDateTime endOfDayDateTime =	new EndOfDayDateTime(
-					dateTime , EndOfDaySpecificTime.MarketClose );
+				DateTime dateTimeOnClose =
+					HistoricalEndOfDayTimer.GetMarketClose(
+						dateTime );
+//					new EndOfDayDateTime(
+//					dateTime , EndOfDaySpecificTime.MarketClose );
 				double tickerQuote = this.historicalQuoteProvider.GetMarketValue(
-					ticker , endOfDayDateTime );
+					ticker , dateTimeOnClose );
 				double virtualQuantity = (double)tickerVirtualQuantities[ ticker ];
 				portfolioValueForDrivingPositions +=	virtualQuantity * tickerQuote;
 			}
@@ -185,13 +192,13 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag.WFLagDebugger
 				new EquityLine();
 			Hashtable virtualQuantities =
 				this.getVirtualQuantities( signedTickers ,
-				(DateTime)equityLineForPortfolioPositions.GetKey( 0 ) );
-			double cash = this.getCash( virtualQuantities ); 
+				                          (DateTime)equityLineForPortfolioPositions.GetKey( 0 ) );
+			double cash = this.getCash( virtualQuantities );
 			foreach( DateTime dateTime in
-				equityLineForPortfolioPositions.Keys )
+			        equityLineForPortfolioPositions.Keys )
 				equityLineForSignedTickers.Add( dateTime ,
-					cash + this.getPortfolioValueForSignedTickers( dateTime ,
-					virtualQuantities ) );
+				                               cash + this.getPortfolioValueForSignedTickers( dateTime ,
+				                                                                             virtualQuantities ) );
 			return equityLineForSignedTickers;
 		}
 		#endregion
@@ -209,23 +216,26 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag.WFLagDebugger
 		{
 			EquityLine equityLineForWeightedPositions =
 				weightedPositions.GetVirtualEquityLine(
-				30000 , report.AccountReport.EquityLine );
+					30000 , report.AccountReport.EquityLine );
 			report.AddEquityLine( equityLineForWeightedPositions ,
-				color );
+			                     color );
 		}
 		
 		public void oneHourAfterMarketCloseEventHandler(
-			Object sender , EndOfDayTimingEventArgs endOfDayTimingEventArgs )
+			Object sender , DateTime dateTime )
 		{
-			if ( ( ( IEndOfDayTimer )sender ).GetCurrentTime().DateTime >
-				this.postSampleLastDateTime )
+			if ( ( ( Timer )sender ).GetCurrentDateTime() >
+			    this.postSampleLastDateTime )
 			{
 				// the simulation has reached the ending date
-				this.account.EndOfDayTimer.Stop();
+				this.account.Timer.Stop();
 				Report report = new Report( this.account , this.historicalQuoteProvider );
-				report.Create( "WFLag debug positions" , 1 ,
-					new EndOfDayDateTime( this.postSampleLastDateTime ,
-					EndOfDaySpecificTime.OneHourAfterMarketClose ) ,
+				report.Create(
+					"WFLag debug positions" , 1 ,
+					HistoricalEndOfDayTimer.GetOneHourAfterMarketClose(
+						this.postSampleLastDateTime ) ,
+//				              new EndOfDayDateTime( this.postSampleLastDateTime ,
+//				                                   EndOfDaySpecificTime.OneHourAfterMarketClose ) ,
 					this.benchmark , false );
 //				EquityLine equityLineForDrivingPositions =
 //					this.getEquityLineForPositions( report );
@@ -245,20 +255,36 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag.WFLagDebugger
 			}
 		}
 		#endregion
+		
+		private void newDateTimeEventHandler(
+			Object sender , DateTime dateTime )
+		{
+			if ( HistoricalEndOfDayTimer.IsMarketOpen( dateTime ) )
+				this.marketOpenEventHandler( sender , dateTime );
+//			if ( HistoricalEndOfDayTimer.IsMarketClose( dateTime ) )
+//				this.marketCloseEventHandler( sender , dateTime );
+			if ( HistoricalEndOfDayTimer.IsOneHourAfterMarketClose( dateTime ) )
+				this.oneHourAfterMarketCloseEventHandler( sender , dateTime );
+		}
+		
 		public void Run()
 		{
 			run_initializeHistoricalQuoteProvider();
 			run_initializeEndOfDayTimer();
 			run_initializeAccount();
 			run_initializeEndOfDayTimerHandler();
-			this.endOfDayTimer.MarketOpen +=
-				new MarketOpenEventHandler( this.marketOpenEventHandler );
-			this.endOfDayTimer.FiveMinutesBeforeMarketClose +=
-				new FiveMinutesBeforeMarketCloseEventHandler(
-				this.endOfDayTimerHandler.FiveMinutesBeforeMarketCloseEventHandler );
-			this.endOfDayTimer.OneHourAfterMarketClose +=
-				new OneHourAfterMarketCloseEventHandler(
-				this.oneHourAfterMarketCloseEventHandler );
+			this.endOfDayTimer.NewDateTime +=
+				new NewDateTimeEventHandler( this.endOfDayTimerHandler.NewDateTimeEventHandler );
+			this.endOfDayTimer.NewDateTime +=
+				new NewDateTimeEventHandler( this.newDateTimeEventHandler );
+//			this.endOfDayTimer.MarketOpen +=
+//				new MarketOpenEventHandler( this.marketOpenEventHandler );
+//			this.endOfDayTimer.FiveMinutesBeforeMarketClose +=
+//				new FiveMinutesBeforeMarketCloseEventHandler(
+//					this.endOfDayTimerHandler.FiveMinutesBeforeMarketCloseEventHandler );
+//			this.endOfDayTimer.OneHourAfterMarketClose +=
+//				new OneHourAfterMarketCloseEventHandler(
+//					this.oneHourAfterMarketCloseEventHandler );
 			this.endOfDayTimer.Start();
 		}
 		#endregion

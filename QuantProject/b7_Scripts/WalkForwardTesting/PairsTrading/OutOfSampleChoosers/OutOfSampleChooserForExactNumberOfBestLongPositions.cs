@@ -34,6 +34,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.PairsTrading
 	/// Given the inefficient couples, the long positons
 	/// returned are those belonging to the highest correlated couples
 	/// </summary>
+	[Serializable]
 	public class OutOfSampleChooserForExactNumberOfBestLongPositions :
 		OutOfSampleChooser
 	{

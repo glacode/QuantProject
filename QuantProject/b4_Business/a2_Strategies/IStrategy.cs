@@ -1,7 +1,7 @@
 /*
 QuantProject - Quantitative Finance Library
 
-NewExtendedDateTimeEventArgs.cs
+IStrategy.cs
 Copyright (C) 2003 
 Glauco Siliprandi
 
@@ -19,31 +19,23 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
+
 using System;
 
-using QuantProject.ADT;
+using QuantProject.Business.Financial.Accounting;
+using QuantProject.Business.Financial.Accounting.Transactions;
+using QuantProject.Business.Strategies.Logging;
+using QuantProject.Business.Timing;
 
-namespace QuantProject.Data.DataProviders
+
+namespace QuantProject.Business.Strategies
 {
 	/// <summary>
-	/// EventArgs for the NewExtendedDateTime event
+	/// Interface to be implemented by end of day strategies
 	/// </summary>
-	public class NewExtendedDateTimeEventArgs : EventArgs
+	public interface IStrategy
 	{
-    private ExtendedDateTime extendedDateTime;
-
-    /// <summary>
-    /// The new extended date time
-    /// </summary>
-    public ExtendedDateTime ExtendedDateTime
-    {
-      get { return this.extendedDateTime; }
-      set { this.extendedDateTime = value; }
-    }
-
-    public NewExtendedDateTimeEventArgs( ExtendedDateTime extendedDateTime )
-    {
-      this.extendedDateTime = extendedDateTime;
-    }
-  }
+		void NewDateTimeEventHandler( Object sender , DateTime dateTime );
+		Account Account{get;set;}
+	}
 }

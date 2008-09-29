@@ -93,14 +93,14 @@ namespace QuantProject.Scripts.ArbitrageTesting.PairTrading.SimplePairTrading
     /// </summary>
     /// <param name="sender"></param>
     /// <param name="eventArgs"></param>
-    public override void MarketCloseEventHandler(
-      Object sender , EndOfDayTimingEventArgs endOfDayTimingEventArgs )
+    protected override void marketCloseEventHandler(
+      Object sender , DateTime dateTime )
     {
     	if(((IndexBasedEndOfDayTimer)sender).GetPreviousDateTime() !=
-          endOfDayTimingEventArgs.EndOfDayDateTime.DateTime)
+          dateTime)
       //it is not the first date fired by the timer, so the
       // gap can be computed
-          base.MarketCloseEventHandler(sender, endOfDayTimingEventArgs);
+          base.marketCloseEventHandler(sender, dateTime);
     }
 
     /// <summary>
@@ -108,8 +108,8 @@ namespace QuantProject.Scripts.ArbitrageTesting.PairTrading.SimplePairTrading
     /// </summary>
     /// <param name="sender"></param>
     /// <param name="eventArgs"></param>
-    public override void OneHourAfterMarketCloseEventHandler(
-      Object sender , EndOfDayTimingEventArgs endOfDayTimingEventArgs )
+    protected override void oneHourAfterMarketCloseEventHandler(
+      Object sender , DateTime dateTime )
     {
     	
     }

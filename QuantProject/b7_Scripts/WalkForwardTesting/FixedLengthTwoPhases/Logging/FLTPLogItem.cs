@@ -62,7 +62,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.FixedLengthTwoPhases
 		/// in sample optimization</param>
 		/// <param name="numberOfEligibleTickers"></param>
 		public FLTPLogItem(
-			EndOfDayDateTime now ,
+			DateTime now ,
 			TestingPositions[] bestTestingPositionsInSample ,
 			int numberOfInSampleDays ,
 			int numberOfEligibleTickers )
@@ -89,7 +89,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.FixedLengthTwoPhases
 		private void setTestersForFLTPTestingPositions(
 			int currentIndex ,
 			TestingPositions testingPositions ,
-			EndOfDayDateTime now )
+			DateTime now )
 		{
 			this.setTestersForFLTPTestingPositions_checkParameters(
 				testingPositions );
@@ -101,7 +101,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.FixedLengthTwoPhases
 		}
 		private void setTestersForFLTPTestingPositions(
 			TestingPositions[] bestTestingPositionsInSample ,
-			EndOfDayDateTime now )
+			DateTime now )
 		{
 			this.testersForBestTestingPositionsInSample =
 				new TesterForFLTPTestingPositions[

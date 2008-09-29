@@ -52,26 +52,26 @@ namespace QuantProject.Scripts.WalkForwardTesting.PairsTrading
 	public class PairsTradingMain : BasicScriptForBacktesting
 	{
 		private Benchmark benchmark;
-		private IHistoricalQuoteProvider historicalQuoteProviderForInSample;
-		private IHistoricalQuoteProvider
-			historicalQuoteProviderForChosingPositionsOutOfSample;
-		private IHistoricalQuoteProvider
-			historicalQuoteProviderForTheBacktesterAccount;
+		private HistoricalMarketValueProvider historicalMarketValueProviderForInSample;
+		private HistoricalMarketValueProvider
+			historicalMarketValueProviderForChosingPositionsOutOfSample;
+		private HistoricalMarketValueProvider
+			historicalMarketValueProviderForTheBacktesterAccount;
 
 		
 		public PairsTradingMain()
 		{
 			this.benchmark = new Benchmark( "CCE" );
 
-			this.historicalQuoteProviderForInSample =
+			this.historicalMarketValueProviderForInSample =
 				new HistoricalRawQuoteProvider();
 
-			this.historicalQuoteProviderForChosingPositionsOutOfSample =
+			this.historicalMarketValueProviderForChosingPositionsOutOfSample =
 				new HistoricalAdjustedQuoteProvider();
 //			this.historicalQuoteProviderForChosingPositionsOutOfSample =
 //				new HistoricalRawQuoteProvider();
 
-			this.historicalQuoteProviderForTheBacktesterAccount =
+			this.historicalMarketValueProviderForTheBacktesterAccount =
 				new HistoricalRawQuoteProvider();
 //			this.historicalQuoteProviderForTheBacktesterAccount =
 //				new HistoricalAdjustedQuoteProvider();
@@ -139,7 +139,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.PairsTrading
 				numberOfBestTestingPositionsToBeReturned ,
 				this.benchmark ,
 				decoderForWeightedPositions , fitnessEvaluator ,
-				this.historicalQuoteProviderForInSample ,
+				this.historicalMarketValueProviderForInSample ,
 				crossoverRate , mutationRate , elitismRate ,
 				populationSizeForGeneticOptimizer ,
 				generationNumberForGeneticOptimizer ,
@@ -162,7 +162,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.PairsTrading
 			return inSampleChooser;
 		}
 
-		protected override IEndOfDayStrategyForBacktester getEndOfDayStrategy()
+		protected override IStrategyForBacktester getStrategyForBacktester()
 		{
 			int inSampleDays = 180;
 			// uncomment the following line for a faster script
@@ -191,13 +191,13 @@ namespace QuantProject.Scripts.WalkForwardTesting.PairsTrading
 //				new OutOfSampleChooserForExactNumberOfBestLongPositions(
 //				2 ,	0.006 , 0.99 , 0.006 , 0.99 );
 
-			IEndOfDayStrategyForBacktester endOfDayStrategyForBacktester =
+			IStrategyForBacktester strategyForBacktester =
 				new PairsTradingStrategy(
 				7 , inSampleDays ,
 				intervalsSelectorForInSample , intervalsSelectorForOutOfSample ,
 				eligiblesSelector , inSampleChooser ,
-				this.historicalQuoteProviderForInSample ,
-				this.historicalQuoteProviderForChosingPositionsOutOfSample ,
+				this.historicalMarketValueProviderForInSample ,
+				this.historicalMarketValueProviderForChosingPositionsOutOfSample ,
 				outOfSampleChooser );
 //			IEndOfDayStrategyForBacktester endOfDayStrategyForBacktester =
 //				new PairsTradingStrategy(
@@ -213,7 +213,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.PairsTrading
 //				this.historicalQuoteProviderForInSample ,
 //				this.historicalQuoteProviderForChosingPositionsOutOfSample ,
 //				0.006 , 0.02 , 0.006 , 0.02 );
-			return endOfDayStrategyForBacktester;
+			return strategyForBacktester;
 		}
 		protected override EndOfDayStrategyBackTester
 			getEndOfDayStrategyBackTester()
@@ -227,15 +227,15 @@ namespace QuantProject.Scripts.WalkForwardTesting.PairsTrading
 			DateTime lastDateTime = new DateTime( 2008 , 4 , 30 );
 
 			// uncomment the following two lines for a faster script
-//			firstDateTime = new DateTime( 2007 , 1 , 1 );
-//			lastDateTime = new DateTime( 2007 , 1 , 31 );
+			firstDateTime = new DateTime( 2002 , 1 , 1 );
+			lastDateTime = new DateTime( 2007 , 6 , 30 );
 
-			double maxRunningHours = 1;
+			double maxRunningHours = 0.05;
 			
 			EndOfDayStrategyBackTester endOfDayStrategyBackTester =
 				new EndOfDayStrategyBackTester(
-				backTestId , this.endOfDayStrategy ,
-				this.historicalQuoteProviderForTheBacktesterAccount ,
+				backTestId , this.strategyForBacktester ,
+				this.historicalMarketValueProviderForTheBacktesterAccount ,
 				accountProvider ,
 				firstDateTime ,	lastDateTime ,
 				this.benchmark , cashToStart , maxRunningHours );

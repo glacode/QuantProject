@@ -45,7 +45,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.PairsTrading
 	{
 		private PairsTradingTestingPositions testingPositions;
 		private int numberOfInSampleDays;
-		private EndOfDayDateTime endOfDayDateTimeWhenThisObjectWasLogged;
+		private DateTime dateTimeWhenThisObjectWasLogged;
 		
 		/// <summary>
 		/// Generation when the TestingPositions object has been created
@@ -73,13 +73,13 @@ namespace QuantProject.Scripts.WalkForwardTesting.PairsTrading
 		public TesterForPairsTradingTestingPositions(
 			TestingPositions testingPositions ,
 			int numberOfInSampleDays ,
-			EndOfDayDateTime endOfDayDateTimeWhenThisObjectWasLogged )
+			DateTime dateTimeWhenThisObjectWasLogged )
 		{
 			this.checkParameters( testingPositions );
 			this.testingPositions = (PairsTradingTestingPositions)testingPositions;
 			this.numberOfInSampleDays = numberOfInSampleDays;
-			this.endOfDayDateTimeWhenThisObjectWasLogged =
-				endOfDayDateTimeWhenThisObjectWasLogged;
+			this.dateTimeWhenThisObjectWasLogged =
+				dateTimeWhenThisObjectWasLogged;
 		}
 		private void checkParameters( TestingPositions testingPositions )
 		{
@@ -93,26 +93,26 @@ namespace QuantProject.Scripts.WalkForwardTesting.PairsTrading
 		private AccountReport getAccountReport(
 			WeightedPositions weightedPositions ,
 			IIntervalsSelector intervalsSelector ,
-			IHistoricalQuoteProvider historicalQuoteProvider ,
+			HistoricalMarketValueProvider historicalMarketValueProvider ,
 			Benchmark benchmark ,
 			double cashToStart )
 		{
 			SimpleStrategy simpleStrategy =
 				new SimpleStrategy( weightedPositions ,
-				intervalsSelector , historicalQuoteProvider );
+				intervalsSelector , historicalMarketValueProvider );
 			IAccountProvider accountProvider =
 				new SimpleAccountProvider();
 
 			DateTime firstDateTime =
-				this.endOfDayDateTimeWhenThisObjectWasLogged.DateTime.AddDays(
+				this.dateTimeWhenThisObjectWasLogged.AddDays(
 				- this.numberOfInSampleDays );
 			DateTime lastDateTime =
-				this.endOfDayDateTimeWhenThisObjectWasLogged.DateTime;
+				this.dateTimeWhenThisObjectWasLogged;
 			double maxRunningHours = 0.3;
 			EndOfDayStrategyBackTester endOfDayStrategyBackTester =
 				new EndOfDayStrategyBackTester(
 				"SinglePosition" , simpleStrategy ,
-				historicalQuoteProvider , accountProvider ,
+				historicalMarketValueProvider , accountProvider ,
 				firstDateTime , lastDateTime ,
 				benchmark , cashToStart , maxRunningHours );
 
@@ -147,7 +147,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.PairsTrading
 
 			Benchmark benchmark = new Benchmark( "MSFT" );
 
-			IHistoricalQuoteProvider historicalQuoteProvider =
+			HistoricalMarketValueProvider historicalMarketValueProvider =
 				new HistoricalAdjustedQuoteProvider();
 
 			//			IInSampleChooser inSampleChooser =
@@ -167,21 +167,23 @@ namespace QuantProject.Scripts.WalkForwardTesting.PairsTrading
 				this.getWeightedPositions( weightedPositions[ 1 ] );
 			AccountReport accountReportForFirstPosition =
 				this.getAccountReport( firstPosition , intervalsSelector ,
-				historicalQuoteProvider ,
+				historicalMarketValueProvider ,
 				benchmark , 30000 );
 			AccountReport accountReportForSecondPosition =
 				this.getAccountReport( secondPosition , intervalsSelector ,
-				historicalQuoteProvider ,
+				historicalMarketValueProvider ,
 				benchmark ,
 				Math.Abs(	30000 * weightedPositions[ 1 ].Weight /
 				weightedPositions[ 0 ].Weight ) );
 			
 			Report report =
 				new Report( accountReportForFirstPosition , false );
-			EndOfDayDateTime lastEndOfDayDateTimeForReport =
-				new EndOfDayDateTime(
-				accountReportForFirstPosition.EquityLine.LastDateTime ,
-				EndOfDaySpecificTime.OneHourAfterMarketClose );
+			DateTime lastDateTimeForReport =
+				HistoricalEndOfDayTimer.GetOneHourAfterMarketClose(
+					accountReportForFirstPosition.EquityLine.LastDateTime );
+//				new EndOfDayDateTime(
+//				accountReportForFirstPosition.EquityLine.LastDateTime ,
+//				EndOfDaySpecificTime.OneHourAfterMarketClose );
 				
 			//			report.Create( "PearsonDebug" , 1 ,
 			//			              lastEndOfDayDateTimeForReport ,

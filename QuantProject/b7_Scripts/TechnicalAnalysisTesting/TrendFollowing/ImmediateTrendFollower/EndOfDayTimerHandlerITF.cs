@@ -44,7 +44,8 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.TrendFollowing.Immediate
 	/// counter trend strategy!
 	/// </summary>
 	[Serializable]
-	public class EndOfDayTimerHandlerITF : EndOfDayTimerHandler
+	public class EndOfDayTimerHandlerITF :
+		QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios.EndOfDayTimerHandler
 	{
 		private int numDaysForReturnCalculation;
 		private double maxAcceptableCloseToCloseDrawdown;
@@ -79,14 +80,13 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.TrendFollowing.Immediate
 			this.seedForRandomGenerator = ConstantsProvider.SeedForRandomGenerator;
 		}
 		
-		public override void MarketOpenEventHandler(
-			Object sender , EndOfDayTimingEventArgs endOfDayTimingEventArgs )
+		protected override void marketOpenEventHandler(
+			Object sender , DateTime dateTime )
 		{
 			;
 		}
 
-		#region MarketCloseEventHandler
-		
+		#region marketCloseEventHandler
 		protected void marketCloseEventHandler_updateStopLossCondition()
 		{
 			this.previousAccountValue = this.currentAccountValue;
@@ -159,8 +159,8 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.TrendFollowing.Immediate
 			}
 		}
 		
-		public override void MarketCloseEventHandler(
-			Object sender , EndOfDayTimingEventArgs endOfDayTimingEventArgs )
+		protected override void marketCloseEventHandler(
+			Object sender , DateTime dateTime )
 		{
 			//this.marketCloseEventHandler_updateStopLossCondition();
 			if(this.account.Portfolio.Count > 0)
@@ -175,11 +175,9 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.TrendFollowing.Immediate
 			
 		}
 
-		#endregion
+		#endregion marketCloseEventHandler
 		
-		#region OneHourAfterMarketCloseEventHandler
-		
-
+		#region oneHourAfterMarketCloseEventHandler
 		protected DataTable getSetOfTickersToBeOptimized(DateTime currentDate)
 		{
 			SelectorByGroup temporizedGroup = new SelectorByGroup(this.tickerGroupID, currentDate);
@@ -275,10 +273,10 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.TrendFollowing.Immediate
 		/// </summary>
 		/// <param name="sender"></param>
 		/// <param name="eventArgs"></param>
-		public override void OneHourAfterMarketCloseEventHandler(
-			Object sender , EndOfDayTimingEventArgs endOfDayTimingEventArgs )
+		protected override void oneHourAfterMarketCloseEventHandler(
+			Object sender , DateTime dateTime )
 		{
-			this.lastCloseDate = endOfDayTimingEventArgs.EndOfDayDateTime.DateTime;
+			this.lastCloseDate = dateTime;
 			this.seedForRandomGenerator++;
 			this.numDaysElapsedSinceLastOptimization++;
 			if((this.numDaysElapsedSinceLastOptimization - 1 ==
@@ -286,12 +284,12 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.TrendFollowing.Immediate
 				//num days without optimization has elapsed or
 				//it is the first close (OLD IMPLEMENTATION)
 			{
-				this.setTickers(endOfDayTimingEventArgs.EndOfDayDateTime.DateTime, false);
+				this.setTickers(dateTime, false);
 				//sets tickers to be chosen next Market Close event
 				this.numDaysElapsedSinceLastOptimization = 0;
 			}
 			
 		}
-		#endregion
+		#endregion oneHourAfterMarketCloseEventHandler
 	}
 }

@@ -46,7 +46,7 @@ namespace QuantProject.Business.Financial.Accounting.Reporting.SummaryRows
 			History marketDays = Quotes.GetMarketDays(
 				summary.AccountReport.Benchmark,
 				summary.AccountReport.StartDateTime,
-				summary.AccountReport.EndDateTime.DateTime);
+				summary.AccountReport.EndDateTime);
 			this.rowValue = (double)totalNumberOfTransactions / (double)marketDays.Count;
 		}
 	}

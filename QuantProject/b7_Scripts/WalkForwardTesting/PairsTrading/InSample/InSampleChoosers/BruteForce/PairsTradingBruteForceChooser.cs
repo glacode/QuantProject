@@ -38,6 +38,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.PairsTrading
 	/// <summary>
 	/// brute force IInSampleChooser for the pairs trading strategy
 	/// </summary>
+	[Serializable]
 	public class PairsTradingBruteForceChooser : BruteForceChooser
 	{
 		public PairsTradingBruteForceChooser(

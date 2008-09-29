@@ -2,7 +2,7 @@
 QuantProject - Quantitative Finance Library
 
 RunWalkForwardOneRank.cs
-Copyright (C) 2003 
+Copyright (C) 2003
 Glauco Siliprandi
 
 This program is free software; you can redistribute it and/or
@@ -18,7 +18,7 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
-*/
+ */
 
 using System;
 using System.Collections;
@@ -50,31 +50,37 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardOneRank
 	/// </summary>
 	public class RunWalkForwardOneRank : Script , IWalkForwardProgressNotifier
 	{
-		private IHistoricalQuoteProvider historicalQuoteProvider =
+		private HistoricalMarketValueProvider historicalMarketValueProvider =
 			new HistoricalAdjustedQuoteProvider();
-    private ReportTable reportTable;
+		private ReportTable reportTable;
 
-    private EndOfDayDateTime startDateTime;
-    private EndOfDayDateTime endDateTime;
+		private DateTime startDateTime;
+		private DateTime endDateTime;
 		int numberDaysForPerformanceCalculation;
 
-    private int numIntervalDays;
+		private int numIntervalDays;
 
-    private ProgressBarForm progressBarForm;
+		private ProgressBarForm progressBarForm;
 
 		private EndOfDayTimerHandler endOfDayTimerHandler;
 
 		private Account account;
 		
-		private IEndOfDayTimer endOfDayTimer;
+		private QuantProject.Business.Timing.Timer endOfDayTimer;
 
 		public RunWalkForwardOneRank()
 		{
 			this.reportTable = new ReportTable( "Summary_Reports" );
-			this.startDateTime = new EndOfDayDateTime(
-				new DateTime( 2002 , 1 , 1 ) , EndOfDaySpecificTime.MarketOpen );
-			this.endDateTime = new EndOfDayDateTime(
-				new DateTime( 2002 , 12 , 31 ) , EndOfDaySpecificTime.OneHourAfterMarketClose );
+			this.startDateTime =
+				HistoricalEndOfDayTimer.GetMarketClose(
+					new DateTime( 2002 , 1 , 1 ) );
+//			new EndOfDayDateTime(
+//				new DateTime( 2002 , 1 , 1 ) , EndOfDaySpecificTime.MarketOpen );
+			this.endDateTime =
+				HistoricalEndOfDayTimer.GetOneHourAfterMarketClose(
+					new DateTime( 2002 , 12 , 31 ) );
+//				new EndOfDayDateTime(
+//				new DateTime( 2002 , 12 , 31 ) , EndOfDaySpecificTime.OneHourAfterMarketClose );
 			this.numberDaysForPerformanceCalculation = 120;
 			this.numIntervalDays = 1;
 		}
@@ -82,7 +88,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardOneRank
 		public event NewProgressEventHandler InSampleNewProgress;
 		public event NewProgressEventHandler OutOfSampleNewProgress;
 
-    #region Run
+		#region Run
 		private void run_initializeEndOfDayTimer()
 		{
 			this.endOfDayTimer =
@@ -91,16 +97,16 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardOneRank
 		private void run_initializeAccount()
 		{
 			this.account = new Account( "WalkForwardOneRank" , this.endOfDayTimer ,
-				new HistoricalEndOfDayDataStreamer( this.endOfDayTimer ,
-					this.historicalQuoteProvider ) ,
-				new HistoricalEndOfDayOrderExecutor( this.endOfDayTimer ,
-					this.historicalQuoteProvider ) );
+			                           new HistoricalEndOfDayDataStreamer( this.endOfDayTimer ,
+			                                                              this.historicalMarketValueProvider ) ,
+			                           new HistoricalEndOfDayOrderExecutor( this.endOfDayTimer ,
+			                                                               this.historicalMarketValueProvider ) );
 		}
 		private void run_initializeEndOfDayTimerHandler()
 		{
 			this.endOfDayTimerHandler = new EndOfDayTimerHandler( 400 , 20 , 5 ,
-				this.numberDaysForPerformanceCalculation , 30 ,
-				this.account );
+			                                                     this.numberDaysForPerformanceCalculation , 30 ,
+			                                                     this.account );
 //			this.endOfDayTimerHandler = new EndOfDayTimerHandler( 4 , 3 , 2 , 100 , 30 ,
 //				this.account );
 		}
@@ -127,16 +133,24 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardOneRank
 			this.endOfDayTimerHandler.InSampleNewProgress +=
 				new InSampleNewProgressEventHandler( this.inSampleNewProgressEventHandler );
 		}
+		
+		public void marketOpenEventHandler(
+			Object sender , DateTime dateTime )
+		{
+			if ( this.account.Transactions.Count == 0 )
+				this.account.AddCash( 30000 );
+		}
+		
 		#region oneHourAfterMarketCloseEventHandler
 		private void oneHourAfterMarketCloseEventHandler_handleProgessBarForm(
-			IEndOfDayTimer endOfDayTimer )
+			QuantProject.Business.Timing.Timer endOfDayTimer )
 		{
-			long elapsedDays = Convert.ToInt64( ((TimeSpan)( endOfDayTimer.GetCurrentTime().DateTime - 
-				this.startDateTime.DateTime )).TotalDays );
-			double totalDays = Convert.ToDouble( ((TimeSpan)( this.endDateTime.DateTime - 
-				this.startDateTime.DateTime )).TotalDays + 1);
+			long elapsedDays = Convert.ToInt64( ((TimeSpan)( endOfDayTimer.GetCurrentDateTime() -
+			                                                this.startDateTime )).TotalDays );
+			double totalDays = Convert.ToDouble( ((TimeSpan)( this.endDateTime -
+			                                                 this.startDateTime )).TotalDays + 1);
 			if ( Math.Floor( elapsedDays / totalDays * 100 ) >
-				Math.Floor( ( elapsedDays - 1 ) / totalDays * 100 ) )
+			    Math.Floor( ( elapsedDays - 1 ) / totalDays * 100 ) )
 			{
 				// a new out of sample time percentage point has been elapsed
 				int currentProgress = Convert.ToInt16( Math.Floor( elapsedDays / totalDays * 100 ) );
@@ -145,15 +159,10 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardOneRank
 				this.OutOfSampleNewProgress( this , newProgressEventArgs );
 			}
 		}
-		public void marketOpenEventHandler(
-			Object sender , EndOfDayTimingEventArgs endOfDayTimingEventArgs )
-		{
-			if ( this.account.Transactions.Count == 0 )
-				this.account.AddCash( 30000 );
-		}
-		#region oneHourAfterMarketCloseEventHandler
+		
+		#region mouseEventHandler
 		private void showOneRankForm( object sender ,
-			MouseEventArgs eventArgs )
+		                             MouseEventArgs eventArgs )
 		{
 			DataGrid dataGrid = (DataGrid)sender;
 			Point point = new Point( eventArgs.X , eventArgs.Y );
@@ -176,18 +185,19 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardOneRank
 				this.showOneRankForm( sender , eventArgs );
 		}
 		#endregion
-		public void oneHourAfterMarketCloseEventHandler(
-			Object sender , EndOfDayTimingEventArgs endOfDayTimingEventArgs )
+		
+		private void oneHourAfterMarketCloseEventHandler(
+			Object sender , DateTime dateTime )
 		{
-			if ( ( ( IEndOfDayTimer )sender ).GetCurrentTime().DateTime >
-				this.endDateTime.DateTime )
+			if ( ( ( QuantProject.Business.Timing.Timer )sender ).GetCurrentDateTime() >
+			    this.endDateTime )
 			{
 				// the simulation has reached the ending date
-				this.account.EndOfDayTimer.Stop();
+				this.account.Timer.Stop();
 //				this.progressBarForm.Close();
 //				ObjectArchiver.Archive( this.account ,
 //					@"C:\Documents and Settings\Glauco\Desktop\reports\final.qP" );
-				Report report = new Report( this.account , this.historicalQuoteProvider );
+				Report report = new Report( this.account , this.historicalMarketValueProvider );
 				report.Create( "WFT One Rank" , this.numIntervalDays , this.endDateTime , "MSFT" );
 				report.TransactionGrid.MouseUp +=
 					new MouseEventHandler( this.mouseEventHandler );
@@ -196,9 +206,22 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardOneRank
 			else
 				// the simulation has not reached the ending date, yet
 				this.oneHourAfterMarketCloseEventHandler_handleProgessBarForm(
-					( IEndOfDayTimer )sender );
+					( QuantProject.Business.Timing.Timer )sender );
 		}
 		#endregion
+		
+		private void newDateTimeEventHandler(
+			Object sender , DateTime dateTime )
+		{
+			if ( HistoricalEndOfDayTimer.IsMarketOpen( dateTime ) )
+				this.marketOpenEventHandler( sender , dateTime );
+//			if ( HistoricalEndOfDayTimer.IsMarketClose( dateTime ) )
+//				this.marketCloseEventHandler( sender , dateTime );
+			if ( HistoricalEndOfDayTimer.IsOneHourAfterMarketClose( dateTime ) )
+				this.oneHourAfterMarketCloseEventHandler( sender , dateTime );
+		}
+
+		
 		public override void Run()
 		{
 			run_initializeEndOfDayTimer();
@@ -206,20 +229,26 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardOneRank
 			run_initializeEndOfDayTimerHandler();
 			run_initializeProgressBar();
 			run_initializeProgressHandlers();
-			this.endOfDayTimer.MarketOpen +=
-				new MarketOpenEventHandler( this.marketOpenEventHandler );
-			this.endOfDayTimer.OneHourAfterMarketClose +=
-				new OneHourAfterMarketCloseEventHandler(
-				this.endOfDayTimerHandler.OneHourAfterMarketCloseEventHandler );
-			this.endOfDayTimer.OneHourAfterMarketClose +=
-				new OneHourAfterMarketCloseEventHandler(
-				this.oneHourAfterMarketCloseEventHandler );
-			this.endOfDayTimer.FiveMinutesBeforeMarketClose +=
-				new FiveMinutesBeforeMarketCloseEventHandler(
-				this.endOfDayTimerHandler.FiveMinutesBeforeMarketCloseEventHandler );
+			this.endOfDayTimer.NewDateTime +=
+				new NewDateTimeEventHandler( this.newDateTimeEventHandler );
+			this.endOfDayTimer.NewDateTime +=
+				new NewDateTimeEventHandler( this.endOfDayTimerHandler.NewDateTimeEventHandler );
+
+//			this.endOfDayTimer.MarketOpen +=
+//				new MarketOpenEventHandler( this.marketOpenEventHandler );
+//			this.endOfDayTimer.OneHourAfterMarketClose +=
+//				new OneHourAfterMarketCloseEventHandler(
+//				this.endOfDayTimerHandler.OneHourAfterMarketCloseEventHandler );
+//			this.endOfDayTimer.OneHourAfterMarketClose +=
+//				new OneHourAfterMarketCloseEventHandler(
+//				this.oneHourAfterMarketCloseEventHandler );
+//			this.endOfDayTimer.FiveMinutesBeforeMarketClose +=
+//				new FiveMinutesBeforeMarketCloseEventHandler(
+//				this.endOfDayTimerHandler.FiveMinutesBeforeMarketCloseEventHandler );
+			
 //			this.progressBarForm.Show();
 			this.endOfDayTimer.Start();
 		}
-    #endregion
+		#endregion
 	}
 }

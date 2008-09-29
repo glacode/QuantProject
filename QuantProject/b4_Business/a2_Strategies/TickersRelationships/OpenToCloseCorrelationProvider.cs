@@ -85,18 +85,21 @@ namespace QuantProject.Business.Strategies.TickersRelationships
 			
 		}
 
-		protected override void setEndOfDayDatesTime(DateTime startDate, DateTime endDate)
+		protected override void setEndOfDayDatesTime(
+			DateTime firstDate , DateTime lastDate )
 		{
-			this.firstEndOfDayDateTime =
-				new EndOfDayDateTime(startDate, EndOfDaySpecificTime.MarketOpen);
-			this.lastEndOfDayDateTime = 
-				new EndOfDayDateTime(endDate, EndOfDaySpecificTime.MarketClose);
+			this.firstDateTime =
+				HistoricalEndOfDayTimer.GetMarketOpen( firstDate );
+//				new EndOfDayDateTime(firstDate, EndOfDaySpecificTime.MarketOpen);
+			this.lastDateTime =
+				HistoricalEndOfDayTimer.GetMarketClose( lastDate );
+//				new EndOfDayDateTime(lastDate, EndOfDaySpecificTime.MarketClose);
 		}
 		
 		protected override void setReturnsManager()
 		{
 			DailyOpenToCloseIntervals dailyOpenToCloseIntervals = 
-				new DailyOpenToCloseIntervals(this.firstEndOfDayDateTime, this.lastEndOfDayDateTime,
+				new DailyOpenToCloseIntervals(this.firstDateTime, this.lastDateTime,
 				                          		this.benchmark);
 			this.returnsManager = 
 				new ReturnsManager(dailyOpenToCloseIntervals, 

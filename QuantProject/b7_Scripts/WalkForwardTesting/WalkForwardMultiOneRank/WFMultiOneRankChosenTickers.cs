@@ -39,7 +39,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardMultiOneRank
 		private WFMultiOneRankEligibleTickers eligibleTickers;
 		private int numberOfTickersInPortfolio;
 		private int inSampleDays;
-		private IEndOfDayTimer endOfDayTimer;
+		private Timer endOfDayTimer;
 		private int generationNumberForGeneticOptimizer;
 		private int populationSizeForGeneticOptimizer;
 
@@ -49,7 +49,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardMultiOneRank
 			WFMultiOneRankEligibleTickers eligibleTickers ,
 			int numberOfTickersInPortfolio ,
 			int inSampleDays ,
-			IEndOfDayTimer endOfDayTimer ,
+			Timer endOfDayTimer ,
 			int generationNumberForGeneticOptimizer ,
 			int populationSizeForGeneticOptimizer
 			)
@@ -86,14 +86,14 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardMultiOneRank
 			this.Clear();
 
 			DateTime firstDate =
-				this.endOfDayTimer.GetCurrentTime().DateTime.AddDays(
+				this.endOfDayTimer.GetCurrentDateTime().AddDays(
 				-( this.inSampleDays - 1 ) );
 
 			WFMultiOneRankGenomeManager genomeManager = 
 				new WFMultiOneRankGenomeManager(
 				eligibleTickers.EligibleTickers ,
 				firstDate ,
-				this.endOfDayTimer.GetCurrentTime().DateTime ,
+				this.endOfDayTimer.GetCurrentDateTime() ,
 				this.numberOfTickersInPortfolio ,
 				0.0 );
         

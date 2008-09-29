@@ -18,7 +18,7 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
-*/
+ */
 using System;
 using System.Data;
 using System.Collections;
@@ -48,202 +48,205 @@ using QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOscill
 namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOscillators.PortfolioValueOscillator.BiasedPVO
 {
 	/// <summary>
-  /// Implements MarketOpenEventHandler and MarketCloseEventHandler
-  /// These handlers contain the core strategy for the Biased Portfolio Value
-  /// Oscillator, using Open To Close returns
-  /// </summary>
-  [Serializable]
-  public class EndOfDayTimerHandlerBiasedPVO_OTC : EndOfDayTimerHandlerBiasedPVO
-  {
-    
-    public EndOfDayTimerHandlerBiasedPVO_OTC(string tickerGroupID, int numberOfEligibleTickers,
-                                         double minPriceForTickersToBeChosen,
-                                         double maxPriceForTickersToBeChosen,
-                                int numberOfTickersToBeChosen, int numDaysForOptimizationPeriod,
-                                Account account,
-                                string pathOfFileContainingGenomes,
-                                int generationNumberForGeneticOptimizer,
-                                int populationSizeForGeneticOptimizer,
-                                string benchmark,
-                                int numOfDifferentGenomesToEvaluateOutOfSample,
-                               	bool resetThresholdsBeforeCheckingOutOfSample,
-                               	int numDaysForThresholdsReComputation,
-                                double numOfStdDevForThresholdsComputation,
-                                double maxCoefficientForDegreeComputationOfCrossingThreshold,
-                                bool buyOnlyPositionsThatAreMovingTogether,
-                                bool doNotOpenReversedPositionsThatHaveJustBeenClosed,
-                                int numDaysOfStayingOnTheMarket,
-                                int minLevelForOversoldThreshold,
-                                int maxLevelForOversoldThreshold,
-                                int minLevelForOverboughtThreshold,
-                                int maxLevelForOverboughtThreshold,
-                                int divisorForThresholdComputation,
-                                bool symmetricalThresholds,
-                                bool overboughtMoreThanOversoldForFixedPortfolio,
-                                int numDaysBetweenEachOptimization,
-                                PortfolioType portfolioType, double maxAcceptableCloseToCloseDrawdown,
-                                double minimumAcceptableGain):
-																base(tickerGroupID, numberOfEligibleTickers,
-                                minPriceForTickersToBeChosen,
-                                maxPriceForTickersToBeChosen,
-                                numberOfTickersToBeChosen, numDaysForOptimizationPeriod,
-                                account,
-                                pathOfFileContainingGenomes,
-                                generationNumberForGeneticOptimizer,
-                                populationSizeForGeneticOptimizer,
-                                benchmark,
-                                numOfDifferentGenomesToEvaluateOutOfSample,
-                               	resetThresholdsBeforeCheckingOutOfSample,
-                               	numDaysForThresholdsReComputation,
-                                numOfStdDevForThresholdsComputation,
-                                maxCoefficientForDegreeComputationOfCrossingThreshold,
-                                buyOnlyPositionsThatAreMovingTogether,
-                                doNotOpenReversedPositionsThatHaveJustBeenClosed,
-                                1, numDaysOfStayingOnTheMarket,
-                                minLevelForOversoldThreshold,
-                                maxLevelForOversoldThreshold,
-                                minLevelForOverboughtThreshold,
-                                maxLevelForOverboughtThreshold,
-                                divisorForThresholdComputation,
-                                symmetricalThresholds,
-                                overboughtMoreThanOversoldForFixedPortfolio,
-                                numDaysBetweenEachOptimization,
-                                portfolioType, maxAcceptableCloseToCloseDrawdown,
-                                minimumAcceptableGain)
-      
-    {
-			
-    }
+	/// Implements MarketOpenEventHandler and MarketCloseEventHandler
+	/// These handlers contain the core strategy for the Biased Portfolio Value
+	/// Oscillator, using Open To Close returns
+	/// </summary>
+	[Serializable]
+	public class EndOfDayTimerHandlerBiasedPVO_OTC : EndOfDayTimerHandlerBiasedPVO
+	{
 		
-  	#region MarketOpen
-  			
-		public override void MarketOpenEventHandler(
-      Object sender , EndOfDayTimingEventArgs endOfDayTimingEventArgs )
-    {
-      if ( this.account.Portfolio.Count == 0 &&
-           this.weightedPositionsToEvaluateOutOfSample[0] != null )
-			//portfolio is empty and optimization has been already launched
-     	   		this.openPositions( (IndexBasedEndOfDayTimer)sender );
-    }
-    
-    protected override void openPositions_chooseGenome_resetThresholds(DateTime today)
-    {
+		public EndOfDayTimerHandlerBiasedPVO_OTC(string tickerGroupID, int numberOfEligibleTickers,
+		                                         double minPriceForTickersToBeChosen,
+		                                         double maxPriceForTickersToBeChosen,
+		                                         int numberOfTickersToBeChosen, int numDaysForOptimizationPeriod,
+		                                         Account account,
+		                                         string pathOfFileContainingGenomes,
+		                                         int generationNumberForGeneticOptimizer,
+		                                         int populationSizeForGeneticOptimizer,
+		                                         string benchmark,
+		                                         int numOfDifferentGenomesToEvaluateOutOfSample,
+		                                         bool resetThresholdsBeforeCheckingOutOfSample,
+		                                         int numDaysForThresholdsReComputation,
+		                                         double numOfStdDevForThresholdsComputation,
+		                                         double maxCoefficientForDegreeComputationOfCrossingThreshold,
+		                                         bool buyOnlyPositionsThatAreMovingTogether,
+		                                         bool doNotOpenReversedPositionsThatHaveJustBeenClosed,
+		                                         int numDaysOfStayingOnTheMarket,
+		                                         int minLevelForOversoldThreshold,
+		                                         int maxLevelForOversoldThreshold,
+		                                         int minLevelForOverboughtThreshold,
+		                                         int maxLevelForOverboughtThreshold,
+		                                         int divisorForThresholdComputation,
+		                                         bool symmetricalThresholds,
+		                                         bool overboughtMoreThanOversoldForFixedPortfolio,
+		                                         int numDaysBetweenEachOptimization,
+		                                         PortfolioType portfolioType, double maxAcceptableCloseToCloseDrawdown,
+		                                         double minimumAcceptableGain):
+			base(tickerGroupID, numberOfEligibleTickers,
+			     minPriceForTickersToBeChosen,
+			     maxPriceForTickersToBeChosen,
+			     numberOfTickersToBeChosen, numDaysForOptimizationPeriod,
+			     account,
+			     pathOfFileContainingGenomes,
+			     generationNumberForGeneticOptimizer,
+			     populationSizeForGeneticOptimizer,
+			     benchmark,
+			     numOfDifferentGenomesToEvaluateOutOfSample,
+			     resetThresholdsBeforeCheckingOutOfSample,
+			     numDaysForThresholdsReComputation,
+			     numOfStdDevForThresholdsComputation,
+			     maxCoefficientForDegreeComputationOfCrossingThreshold,
+			     buyOnlyPositionsThatAreMovingTogether,
+			     doNotOpenReversedPositionsThatHaveJustBeenClosed,
+			     1, numDaysOfStayingOnTheMarket,
+			     minLevelForOversoldThreshold,
+			     maxLevelForOversoldThreshold,
+			     minLevelForOverboughtThreshold,
+			     maxLevelForOverboughtThreshold,
+			     divisorForThresholdComputation,
+			     symmetricalThresholds,
+			     overboughtMoreThanOversoldForFixedPortfolio,
+			     numDaysBetweenEachOptimization,
+			     portfolioType, maxAcceptableCloseToCloseDrawdown,
+			     minimumAcceptableGain)
+			
+		{
+			
+		}
+		
+		#region MarketOpen
+		
+		protected override void marketOpenEventHandler(
+			Object sender , DateTime dateTime )
+		{
+			if ( this.account.Portfolio.Count == 0 &&
+			    this.weightedPositionsToEvaluateOutOfSample[0] != null )
+				//portfolio is empty and optimization has been already launched
+				this.openPositions( (IndexBasedEndOfDayTimer)sender );
+		}
+		
+		protected override void openPositions_chooseGenome_resetThresholds(DateTime today)
+		{
 			for(int i = 0; i < this.weightedPositionsToEvaluateOutOfSample.Length; i++)
-    	{
+			{
 				this.currentOversoldThreshold[i] = (double)this.maxLevelForOversoldThreshold/
 					(double)this.divisorForThresholdComputation;
-    		this.currentOverboughtThreshold[i] = (double)this.maxLevelForOverboughtThreshold/
+				this.currentOverboughtThreshold[i] = (double)this.maxLevelForOverboughtThreshold/
 					(double)this.divisorForThresholdComputation;
-     	}			
-//  UPDATE WITH DailyOpenToCloseIntervals
-//    	ReturnsManager returnsManager = new ReturnsManager(
-//    		new CloseToOpenIntervals(new EndOfDayDateTime(today.AddDays(-this.numDaysForThresholdsReComputation), EndOfDaySpecificTime.MarketClose),
+			}
+			//  UPDATE WITH DailyOpenToCloseIntervals
+			//    	ReturnsManager returnsManager = new ReturnsManager(
+			//    		new CloseToOpenIntervals(new EndOfDayDateTime(today.AddDays(-this.numDaysForThresholdsReComputation), EndOfDaySpecificTime.MarketClose),
 //		  	                         new EndOfDayDateTime(today, EndOfDaySpecificTime.MarketOpen),
 //		  	                         this.benchmark),
 //		  	new HistoricalAdjustedQuoteProvider() );
-//    	//double returnsAverage;
-//    	double returnsStdDev;
-//    	for(int i = 0; i < this.weightedPositionsToEvaluateOutOfSample.Length; i++)
-//    	{
-////				returnsAverage = BasicFunctions.GetSimpleAverage(
-////					this.weightedPositionsToEvaluateOutOfSample[i].GetReturns(returnsManager) );
+			//    	//double returnsAverage;
+			//    	double returnsStdDev;
+			//    	for(int i = 0; i < this.weightedPositionsToEvaluateOutOfSample.Length; i++)
+			//    	{
+			////				returnsAverage = BasicFunctions.GetSimpleAverage(
+			////					this.weightedPositionsToEvaluateOutOfSample[i].GetReturns(returnsManager) );
 //				returnsStdDev = BasicFunctions.GetStdDev(
-//    			this.weightedPositionsToEvaluateOutOfSample[i].GetReturns(returnsManager) );
-//     		this.currentOversoldThreshold[i] = -this.numOfStdDevForThresholdsComputation * returnsStdDev;
-//    		this.currentOverboughtThreshold[i] = this.numOfStdDevForThresholdsComputation * returnsStdDev;
-//     	}
-    }
-    //NEW IMPLEMENTATION of chooseBestGenome, now named chooseGenome
-    //sets currentGenomeIndex with the first genome's index that crosses an overbought/oversold threshold with the
-    //"acceptable" degree and sets currentWeightedPositionsGainOrLoss accordingly
-    protected override void openPositions_chooseGenome(IndexBasedEndOfDayTimer timer)
-    {
-      DateTime today = timer.GetCurrentTime().DateTime;
-		  DateTime previousTradingDay = 
-		  	timer.GetPreviousDateTime(1);
-		  ReturnsManager returnsManager = new ReturnsManager(
-		  	new CloseToOpenIntervals(new EndOfDayDateTime(previousTradingDay, EndOfDaySpecificTime.MarketClose),
-		  	                         new EndOfDayDateTime(today, EndOfDaySpecificTime.MarketOpen),
-		  	                         this.benchmark),
-		  	new HistoricalAdjustedQuoteProvider() );
-		  if(this.resetThresholdsBeforeCheckingOutOfSample)
-		  	this.openPositions_chooseGenome_resetThresholds(today);
-		  this.currentWeightedPositionsGainOrLoss = double.MinValue;
-		  double currentWeightedPositionsGainOrLoss_temp = double.MinValue;
-      for(int i = 0; i < this.numOfDifferentGenomesToEvaluateOutOfSample; i++)
-      {
-        currentWeightedPositionsGainOrLoss_temp = 
-                 this.getCurrentWeightedPositionsGainOrLoss(
-        				 timer, returnsManager, i);
+			//    			this.weightedPositionsToEvaluateOutOfSample[i].GetReturns(returnsManager) );
+			//     		this.currentOversoldThreshold[i] = -this.numOfStdDevForThresholdsComputation * returnsStdDev;
+			//    		this.currentOverboughtThreshold[i] = this.numOfStdDevForThresholdsComputation * returnsStdDev;
+			//     	}
+		}
+		//NEW IMPLEMENTATION of chooseBestGenome, now named chooseGenome
+		//sets currentGenomeIndex with the first genome's index that crosses an overbought/oversold threshold with the
+		//"acceptable" degree and sets currentWeightedPositionsGainOrLoss accordingly
+		protected override void openPositions_chooseGenome(IndexBasedEndOfDayTimer timer)
+		{
+			DateTime today = timer.GetCurrentDateTime();
+			DateTime previousTradingDay =
+				timer.GetPreviousDateTime(1);
+			ReturnsManager returnsManager = new ReturnsManager(
+				new CloseToOpenIntervals(
+					HistoricalEndOfDayTimer.GetMarketClose( previousTradingDay ) ,
+					HistoricalEndOfDayTimer.GetMarketOpen( today ) ,
+//		  		new EndOfDayDateTime(previousTradingDay, EndOfDaySpecificTime.MarketClose),
+//		  	                         new EndOfDayDateTime(today, EndOfDaySpecificTime.MarketOpen),
+					this.benchmark),
+				new HistoricalAdjustedQuoteProvider() );
+			if(this.resetThresholdsBeforeCheckingOutOfSample)
+				this.openPositions_chooseGenome_resetThresholds(today);
+			this.currentWeightedPositionsGainOrLoss = double.MinValue;
+			double currentWeightedPositionsGainOrLoss_temp = double.MinValue;
+			for(int i = 0; i < this.numOfDifferentGenomesToEvaluateOutOfSample; i++)
+			{
+				currentWeightedPositionsGainOrLoss_temp =
+					this.getCurrentWeightedPositionsGainOrLoss(
+						timer, returnsManager, i);
 				if( currentWeightedPositionsGainOrLoss_temp != double.MinValue &&
-					  ( this.buyOnlyPositionsThatAreMovingTogether == false ||
-        	      ( this.buyOnlyPositionsThatAreMovingTogether == true && 
-									this.areAllTickersMovingTogetherUpOrDown(timer, returnsManager, i) == true	 ) )		)
-        //currentWeightedPositionsGainOrLoss_temp has been properly computed and
-				//only positions that are moving together can be bought
-        {
-          if( (currentWeightedPositionsGainOrLoss_temp >= this.currentOverboughtThreshold[i] &&
-               currentWeightedPositionsGainOrLoss_temp <= this.maxCoefficientForDegreeComputationOfCrossingThreshold *
-            																						 this.currentOverboughtThreshold[i] ) ||
-						  (currentWeightedPositionsGainOrLoss_temp <= - this.currentOversoldThreshold[i] && 
-        	          Math.Abs(currentWeightedPositionsGainOrLoss_temp) <= this.maxCoefficientForDegreeComputationOfCrossingThreshold *
-            																						 								 this.currentOversoldThreshold[i] ) )
-          // if the current genome matches the requested criteria
-          {
+				   ( this.buyOnlyPositionsThatAreMovingTogether == false ||
+				    ( this.buyOnlyPositionsThatAreMovingTogether == true &&
+				     this.areAllTickersMovingTogetherUpOrDown(timer, returnsManager, i) == true	 ) )		)
+					//currentWeightedPositionsGainOrLoss_temp has been properly computed and
+					//only positions that are moving together can be bought
+				{
+					if( (currentWeightedPositionsGainOrLoss_temp >= this.currentOverboughtThreshold[i] &&
+					     currentWeightedPositionsGainOrLoss_temp <= this.maxCoefficientForDegreeComputationOfCrossingThreshold *
+					     this.currentOverboughtThreshold[i] ) ||
+					   (currentWeightedPositionsGainOrLoss_temp <= - this.currentOversoldThreshold[i] &&
+					    Math.Abs(currentWeightedPositionsGainOrLoss_temp) <= this.maxCoefficientForDegreeComputationOfCrossingThreshold *
+					    this.currentOversoldThreshold[i] ) )
+						// if the current genome matches the requested criteria
+					{
 						this.currentGenomeIndex = i;
 						this.currentWeightedPositionsGainOrLoss = currentWeightedPositionsGainOrLoss_temp;
 						i = this.numOfDifferentGenomesToEvaluateOutOfSample; //exit from for
-          }
-        }
-      }
-    }
-        
+					}
+				}
+			}
+		}
+		
 		#endregion
 		
-    public override void MarketCloseEventHandler(
-      Object sender , EndOfDayTimingEventArgs endOfDayTimingEventArgs )
-    {
-     	if(this.account.Portfolio.Count > 0)
-     	{
-     		this.lastWeightedPositionsClosed = AccountManager.GetWeightedPositions(this.account);
+		protected override void marketCloseEventHandler(
+			Object sender , DateTime dateTime )
+		{
+			if(this.account.Portfolio.Count > 0)
+			{
+				this.lastWeightedPositionsClosed = AccountManager.GetWeightedPositions(this.account);
 				AccountManager.ClosePositions(this.account);
-     	}
-    }
-   
-    #region OneHourAfterMarketCloseEventHandler
-        
-    protected override void setTickers(DateTime currentDate,
-      bool setGenomeCounter)
-    {
-      DataTable setOfTickersToBeOptimized = this.getSetOfTickersToBeOptimized(currentDate);
-      this.iGenomeManager =
-          new GenomeManagerPVO_OTC(setOfTickersToBeOptimized,
-          currentDate.AddDays(-this.numDaysForOptimizationPeriod), 
-          currentDate, this.numberOfTickersToBeChosen,
-          this.minLevelForOversoldThreshold,
-          this.maxLevelForOversoldThreshold,
-          this.minLevelForOverboughtThreshold,
-          this.maxLevelForOverboughtThreshold,
-          this.divisorForThresholdComputation,
-          this.symmetricalThresholds,
-          this.overboughtMoreThanOversoldForFixedPortfolio,
-          this.portfolioType, this.benchmark);
-      GeneticOptimizer GO = new GeneticOptimizer(this.iGenomeManager,
-          this.populationSizeForGeneticOptimizer, 
-          this.generationNumberForGeneticOptimizer,
-          this.seedForRandomGenerator);
-//      if(setGenomeCounter)
-//        this.genomeCounter = new GenomeCounter(GO);
-      GO.MutationRate = 0.1;
-      GO.CrossoverRate = 0.85;
-      GO.Run(false);
-       
-      this.setTickers_updateTickersWeightsAndThresholdsAndAddGenomesForLog(GO, setOfTickersToBeOptimized.Rows.Count);
-           	
-    }
-    
-             
-    #endregion
+			}
+		}
+		
+		#region OneHourAfterMarketCloseEventHandler
+		
+		protected override void setTickers(DateTime currentDate,
+		                                   bool setGenomeCounter)
+		{
+			DataTable setOfTickersToBeOptimized = this.getSetOfTickersToBeOptimized(currentDate);
+			this.iGenomeManager =
+				new GenomeManagerPVO_OTC(setOfTickersToBeOptimized,
+				                         currentDate.AddDays(-this.numDaysForOptimizationPeriod),
+				                         currentDate, this.numberOfTickersToBeChosen,
+				                         this.minLevelForOversoldThreshold,
+				                         this.maxLevelForOversoldThreshold,
+				                         this.minLevelForOverboughtThreshold,
+				                         this.maxLevelForOverboughtThreshold,
+				                         this.divisorForThresholdComputation,
+				                         this.symmetricalThresholds,
+				                         this.overboughtMoreThanOversoldForFixedPortfolio,
+				                         this.portfolioType, this.benchmark);
+			GeneticOptimizer GO = new GeneticOptimizer(this.iGenomeManager,
+			                                           this.populationSizeForGeneticOptimizer,
+			                                           this.generationNumberForGeneticOptimizer,
+			                                           this.seedForRandomGenerator);
+			//      if(setGenomeCounter)
+			//        this.genomeCounter = new GenomeCounter(GO);
+			GO.MutationRate = 0.1;
+			GO.CrossoverRate = 0.85;
+			GO.Run(false);
+			
+			this.setTickers_updateTickersWeightsAndThresholdsAndAddGenomesForLog(GO, setOfTickersToBeOptimized.Rows.Count);
+			
+		}
+		
+		
+		#endregion
 
-  }
+	}
 }

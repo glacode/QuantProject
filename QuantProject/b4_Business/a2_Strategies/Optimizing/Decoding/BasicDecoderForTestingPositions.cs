@@ -36,6 +36,7 @@ namespace QuantProject.Business.Strategies.Optimizing.Decoding
 	/// In this implementation, with the encoded items
 	/// can be decoded only tickers
 	/// </summary>
+	[Serializable]
 	public abstract class BasicDecoderForTestingPositions :
 		IDecoderForTestingPositions
 	{

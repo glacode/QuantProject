@@ -2,7 +2,7 @@
 QuantProject - Quantitative Finance Library
 
 WFLagBruteForceWeightedPositionsChooserForBalancedFixedPortfolioAndBalancedDriving.cs
-Copyright (C) 2003 
+Copyright (C) 2003
 Glauco Siliprandi
 
 This program is free software; you can redistribute it and/or
@@ -18,7 +18,7 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
-*/
+ */
 
 using System;
 using System.Collections;
@@ -92,9 +92,9 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag.WeightedPositio
 			{
 				// this chooser doesn't use a genetic optimizer
 				// thus this property is meaningless for this chooser
-				return -999;	
+				return -999;
 			}
-		}		
+		}
 		public string Benchmark
 		{
 			get
@@ -143,7 +143,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag.WeightedPositio
 			int inSampleDays ,
 			string benchmark ,
 			IEquityEvaluator equityEvaluator
-			)
+		)
 		{
 			this.numberOfDrivingPositions = numberOfDrivingPositions;
 			this.portfolioSignedTickers = portfolioSignedTickers;
@@ -180,10 +180,10 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag.WeightedPositio
 //			WFLagWeightedPositions wFLagWeightedPositions =
 //				( WFLagWeightedPositions )genomeManager.Decode( genome );
 //			this.setWeightedPositions( wFLagWeightedPositions );
-////			this.drivingWeightedPositions =
-////				wFLagWeightedPositions.DrivingWeightedPositions;
-////			this.portfolioWeightedPositions =
-////				wFLagWeightedPositions.PortfolioWeightedPositions;
+		////			this.drivingWeightedPositions =
+		////				wFLagWeightedPositions.DrivingWeightedPositions;
+		////			this.portfolioWeightedPositions =
+		////				wFLagWeightedPositions.PortfolioWeightedPositions;
 //		}
 //		public virtual void setWeightedPositions_usingTheGeneticOptimizer(
 //			WFLagEligibleTickers eligibleTickers )
@@ -194,7 +194,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag.WeightedPositio
 //			this.lastOptimizationDate =
 //				this.endOfDayTimer.GetCurrentTime().DateTime;
 //
-//			WFLagGenomeManager genomeManager = 
+//			WFLagGenomeManager genomeManager =
 //				new WFLagGenomeManager(
 //				eligibleTickers.EligibleTickers ,
 //				eligibleTickers.EligibleTickers ,
@@ -242,7 +242,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag.WeightedPositio
 //				this.endOfDayTimer.GetCurrentTime().DateTime;
 //
 //			WFLagBruteForceOptimizableParametersManager
-//				wFLagBruteForceOptimizableItemManager= 
+//				wFLagBruteForceOptimizableItemManager=
 //				new WFLagBruteForceOptimizableParametersManager(
 //				eligibleTickers.EligibleTickers ,
 //				eligibleTickers.EligibleTickers ,
@@ -274,41 +274,45 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag.WeightedPositio
 		#region setDecoder
 		#region setReturnsManager
 		protected virtual ReturnIntervals getReturnIntervals(
-			EndOfDayDateTime now )
+			DateTime now )
 		{
 			DateTime firstInSampleDateForDrivingPositions =
-				now.DateTime.AddDays(
-				-( this.NumberDaysForInSampleOptimization - 1 ) );
+				now.AddDays(
+					-( this.NumberDaysForInSampleOptimization - 1 ) );
 			DateTime lastInSampleOptimizationDate =
-				now.DateTime;
+				now;
 			ReturnIntervals returnIntervals =
 				new CloseToCloseIntervals(
-				new EndOfDayDateTime( firstInSampleDateForDrivingPositions ,
-				EndOfDaySpecificTime.MarketClose ) ,
-				new EndOfDayDateTime( lastInSampleOptimizationDate ,
-				EndOfDaySpecificTime.MarketClose ) ,
-				this.benchmark );
-			return returnIntervals;
-		}
-		private void setReturnsManager( EndOfDayDateTime now )
+					HistoricalEndOfDayTimer.GetMarketClose(
+						firstInSampleDateForDrivingPositions ) ,
+					HistoricalEndOfDayTimer.GetMarketClose(
+						lastInSampleOptimizationDate ) ,
+//						new EndOfDayDateTime( firstInSampleDateForDrivingPositions ,
+//						                     EndOfDaySpecificTime.MarketClose ) ,
+//						new EndOfDayDateTime( lastInSampleOptimizationDate ,
+//						                     EndOfDaySpecificTime.MarketClose ) ,
+						this.benchmark );
+					return returnIntervals;
+			}
+		private void setReturnsManager( DateTime now )
 		{
 			ReturnIntervals returnIntervals =
 				this.getReturnIntervals( now );
-			IHistoricalQuoteProvider historicalQuoteProvider =
+			HistoricalMarketValueProvider historicalMarketValueProvider =
 				new HistoricalAdjustedQuoteProvider();
 			this.returnsManager =
 				new ReturnsManager( returnIntervals ,
-				historicalQuoteProvider );
+				                   historicalMarketValueProvider );
 		}
 		#endregion setReturnsManager
 		protected virtual void setDecoder(
-			WFLagEligibleTickers eligibleTickersForDrivingPositions ,	EndOfDayDateTime now )
+			WFLagEligibleTickers eligibleTickersForDrivingPositions ,	DateTime now )
 		{
 			this.setReturnsManager( now );
 			this.wFLagDecoder = new
 				WFLagDecoderForFixedPortfolioWithBalancedVolatilityAndDrivingWithBalancedVolatility(
-				eligibleTickersForDrivingPositions , this.numberOfDrivingPositions ,
-				this.portfolioSignedTickers , returnsManager );
+					eligibleTickersForDrivingPositions , this.numberOfDrivingPositions ,
+					this.portfolioSignedTickers , returnsManager );
 		}
 		#endregion setDecoder
 		#region setWeightedPositions_withFixedPortfolio
@@ -325,14 +329,14 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag.WeightedPositio
 		public virtual void setWeightedPositions_withFixedPortfolio(
 			WFLagEligibleTickers eligibleTickers ,
 			string longPortfolioTicker , string shortPortfolioTicker ,
-			EndOfDayDateTime now )
+			DateTime now )
 		{
-			this.firstOptimizationDate = now.DateTime.AddDays(
+			this.firstOptimizationDate = now.AddDays(
 				-( this.inSampleDays - 1 ) );
-			this.lastOptimizationDate =	now.DateTime;
+			this.lastOptimizationDate =	now;
 
 //			WFLagFixedPortfolioBruteForceOptimizableParametersManager
-//				wFLagFixedPortfolioBruteForceOptimizableParametersManager= 
+//				wFLagFixedPortfolioBruteForceOptimizableParametersManager=
 //				new WFLagFixedPortfolioBruteForceOptimizableParametersManager(
 //				eligibleTickers.EligibleTickers ,
 //				longPortfolioTicker ,
@@ -342,7 +346,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag.WeightedPositio
 //				this.numberOfDrivingPositions );
 //
 //			WFLagFixedPortfolioBruteForceOptParamManagerWithPortfolioNormalizedVolatility
-//				wFLagFixedPortfolioBruteForceOptimizableParametersManager= 
+//				wFLagFixedPortfolioBruteForceOptimizableParametersManager=
 //				new WFLagFixedPortfolioBruteForceOptParamManagerWithNormalizedVolatility(
 //				eligibleTickers.EligibleTickers ,
 //				longPortfolioTicker ,
@@ -351,34 +355,34 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag.WeightedPositio
 //				this.lastOptimizationDate ,
 //				this.numberOfDrivingPositions );
 			WFLagBruteForceOptimizableParametersManagerForBalancedFixedPortfolioAndBalancedDriving
-				wFLagFixedPortfolioBruteForceOptimizableParametersManager= 
+				wFLagFixedPortfolioBruteForceOptimizableParametersManager=
 				new WFLagBruteForceOptimizableParametersManagerForBalancedFixedPortfolioAndBalancedDriving(
-				eligibleTickers.EligibleTickers ,
-				longPortfolioTicker ,
-				shortPortfolioTicker ,
-				this.firstOptimizationDate ,
-				this.lastOptimizationDate ,
-				this.numberOfDrivingPositions ,
-				this.wFLagDecoder ,
-				this.equityEvaluator ,
-				this.returnsManager );
+					eligibleTickers.EligibleTickers ,
+					longPortfolioTicker ,
+					shortPortfolioTicker ,
+					this.firstOptimizationDate ,
+					this.lastOptimizationDate ,
+					this.numberOfDrivingPositions ,
+					this.wFLagDecoder ,
+					this.equityEvaluator ,
+					this.returnsManager );
 
 			BruteForceOptimizer bruteForceOptimizer = new BruteForceOptimizer(
 				wFLagFixedPortfolioBruteForceOptimizableParametersManager , 1 );
 
 			bruteForceOptimizer.NewProgress +=
 				new NewProgressEventHandler(
-				this.newBruteForceOptimizerProgressEventHandler );
+					this.newBruteForceOptimizerProgressEventHandler );
 
 			bruteForceOptimizer.Run( 10000 ,
-				wFLagFixedPortfolioBruteForceOptimizableParametersManager.TotalIterations );
+			                        wFLagFixedPortfolioBruteForceOptimizableParametersManager.TotalIterations );
 
 			BruteForceOptimizableParameters bestParameters =
 				bruteForceOptimizer.BestParameters;
 
 			this.wFLagChosenPositions =
 				( WFLagWeightedPositions )wFLagFixedPortfolioBruteForceOptimizableParametersManager.Decode(
-				bestParameters );
+					bestParameters );
 
 //			this.setWeightedPositions( wFLagWeightedPositions );
 		}
@@ -386,7 +390,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag.WeightedPositio
 		public virtual void ChosePositions(
 			WFLagEligibleTickers eligibleTickersForDrivingPositions ,
 			WFLagEligibleTickers eligibleTickersForPortfolioPositions ,
-			EndOfDayDateTime now )
+			DateTime now )
 		{
 			this.setDecoder( eligibleTickersForDrivingPositions , now );
 			this.setWeightedPositions_withFixedPortfolio(

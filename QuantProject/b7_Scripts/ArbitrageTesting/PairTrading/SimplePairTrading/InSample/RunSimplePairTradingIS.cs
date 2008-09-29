@@ -2,7 +2,7 @@
 QuantProject - Quantitative Finance Library
 
 RunSimplePairTradingIS.cs
-Copyright (C) 2003 
+Copyright (C) 2003
 Marco Milletti
 
 This program is free software; you can redistribute it and/or
@@ -18,7 +18,7 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
-*/
+ */
 
 using System;
 
@@ -38,143 +38,150 @@ using QuantProject.Scripts.ArbitrageTesting.PairTrading.SimplePairTrading;
 namespace QuantProject.Scripts.ArbitrageTesting.PairTrading.SimplePairTrading.InSample
 {
 	
-  /// <summary>
+	/// <summary>
 	/// Script to test the pair trading strategy for
 	/// two tickers for a given time period
 	/// </summary>
-  [Serializable]
-  public class RunSimplePairTradingIS
-  {
-    private double maxNumOfStdDevForNormalGap;
-    private int numDaysForGap;
-    private double averageGap;
-    private double stdDevGap;
-    private EndOfDayTimerHandlerSimplePT endOfDayTimerHandler;
-    private string firstTicker;
-    private string secondTicker;
-    private DateTime startDateTime;
-    private DateTime endDateTime;
-    private IHistoricalQuoteProvider historicalQuoteProvider;
-    private Account account;
-    private IEndOfDayTimer endOfDayTimer;
-    private string benchmark;
-    private string scriptName;
+	[Serializable]
+	public class RunSimplePairTradingIS
+	{
+		private double maxNumOfStdDevForNormalGap;
+		private int numDaysForGap;
+		private double averageGap;
+		private double stdDevGap;
+		private EndOfDayTimerHandlerSimplePT endOfDayTimerHandler;
+		private string firstTicker;
+		private string secondTicker;
+		private DateTime startDateTime;
+		private DateTime endDateTime;
+		private HistoricalMarketValueProvider historicalMarketValueProvider;
+		private Account account;
+		private Timer timer;
+		private string benchmark;
+		private string scriptName;
 
-    public RunSimplePairTradingIS(double maxNumOfStdDevForNormalGap,
-                                  int numDaysForGap,
-                                  double averageGap,
-                                  double stdDevGap,
-                                  string firstTicker, string secondTicker,
-                                  DateTime startDate, DateTime endDate)
-                                  
-    {
-      this.maxNumOfStdDevForNormalGap = maxNumOfStdDevForNormalGap;
-      this.numDaysForGap = numDaysForGap;
-      this.averageGap = averageGap;
-      this.stdDevGap = stdDevGap;
-      this.firstTicker = firstTicker;
-      this.secondTicker = secondTicker;
-      this.startDateTime = startDate;
-      this.endDateTime = endDate;
-      this.benchmark = "^GSPC";
-      this.scriptName = "SimplePairTradingForGivenTickers";
-    }
-    
-    #region Run
-        
-    private void run_initializeEndOfDayTimer()
-    {
-      //default endOfDayTimer
-      this.endOfDayTimer =
-        new IndexBasedEndOfDayTimer( new EndOfDayDateTime(this.startDateTime,
-                                                          EndOfDaySpecificTime.MarketOpen),
-                                     this.benchmark );
-    	
-    }
-    
-    protected void run_initializeAccount()
-    {
-      //default account with no commissions and no slippage calculation
-      this.account = new Account( this.scriptName , this.endOfDayTimer ,
-        new HistoricalEndOfDayDataStreamer( this.endOfDayTimer ,
-        this.historicalQuoteProvider ) ,
-        new HistoricalEndOfDayOrderExecutor( this.endOfDayTimer ,
-        this.historicalQuoteProvider ));
-     
-    }
-        
-    private void run_initializeHistoricalQuoteProvider()
-    {
-      this.historicalQuoteProvider = new HistoricalAdjustedQuoteProvider();
-    }
-    
-        
-    private void checkDateForReport(Object sender , EndOfDayTimingEventArgs endOfDayTimingEventArgs)
-    {
-      if(endOfDayTimingEventArgs.EndOfDayDateTime.DateTime>=this.endDateTime)
-        //last date is reached by the timer
-        this.showReport();
-    }
-    
-    private void showReport()
-    {
-      AccountReport accountReport = this.account.CreateReport(this.scriptName, 1,
-                                        this.endOfDayTimer.GetCurrentTime(),
-                                        this.benchmark,
-                                        new HistoricalAdjustedQuoteProvider());
-      Report report = new Report(accountReport);
-      report.Show();
-      this.endOfDayTimer.Stop();
-       
-    }
-    
-    private void run_initialize()
-    {
-      run_initializeHistoricalQuoteProvider();
-      run_initializeEndOfDayTimer();
-      run_initializeAccount();
-      run_initializeEndOfDayTimerHandler();
-    }
-    
-    
-    public void Run()
-    {
-      this.run_initialize();
-      this.run_addEventHandlers();
-      this.endOfDayTimer.Start();
-    }
-    
-    private void run_initializeEndOfDayTimerHandler()
-    {
-      this.endOfDayTimerHandler = new EndOfDayTimerHandlerSimplePTIS(this.maxNumOfStdDevForNormalGap,
-                                                                     this.numDaysForGap,
-                                                                     this.averageGap,
-                                                                     this.stdDevGap,
-                                                                     this.firstTicker, this.secondTicker,
-                                                                     this.startDateTime, this.endDateTime,
-                                                                     this.account);
-    }
-    
-    
-    private void run_addEventHandlers()
-    {
-      this.endOfDayTimer.MarketOpen +=
-        new MarketOpenEventHandler(
-        this.endOfDayTimerHandler.MarketOpenEventHandler);  
-      
-      this.endOfDayTimer.MarketClose +=
-        new MarketCloseEventHandler(
-        this.endOfDayTimerHandler.MarketCloseEventHandler);
-      
-      this.endOfDayTimer.MarketClose +=
-        new MarketCloseEventHandler(
-        this.checkDateForReport);
-      
-      this.endOfDayTimer.OneHourAfterMarketClose +=
-        new OneHourAfterMarketCloseEventHandler(
-        this.endOfDayTimerHandler.OneHourAfterMarketCloseEventHandler );
-    }
-    #endregion 
-    
+		public RunSimplePairTradingIS(double maxNumOfStdDevForNormalGap,
+		                              int numDaysForGap,
+		                              double averageGap,
+		                              double stdDevGap,
+		                              string firstTicker, string secondTicker,
+		                              DateTime startDate, DateTime endDate)
+			
+		{
+			this.maxNumOfStdDevForNormalGap = maxNumOfStdDevForNormalGap;
+			this.numDaysForGap = numDaysForGap;
+			this.averageGap = averageGap;
+			this.stdDevGap = stdDevGap;
+			this.firstTicker = firstTicker;
+			this.secondTicker = secondTicker;
+			this.startDateTime = startDate;
+			this.endDateTime = endDate;
+			this.benchmark = "^GSPC";
+			this.scriptName = "SimplePairTradingForGivenTickers";
+		}
+		
+		#region Run
+		
+		private void run_initializeEndOfDayTimer()
+		{
+			//default endOfDayTimer
+			this.timer =
+				new IndexBasedEndOfDayTimer(
+					HistoricalEndOfDayTimer.GetMarketOpen( this.startDateTime ) ,
+					//      		new EndOfDayDateTime(this.startDateTime,
+					//                                                          EndOfDaySpecificTime.MarketOpen),
+					this.benchmark );
+			
+		}
+		
+		protected void run_initializeAccount()
+		{
+			//default account with no commissions and no slippage calculation
+			this.account = new Account( this.scriptName , this.timer ,
+			                           new HistoricalEndOfDayDataStreamer( this.timer ,
+			                                                              this.historicalMarketValueProvider ) ,
+			                           new HistoricalEndOfDayOrderExecutor( this.timer ,
+			                                                               this.historicalMarketValueProvider ));
+			
+		}
+		
+		private void run_initializeHistoricalQuoteProvider()
+		{
+			this.historicalMarketValueProvider = new HistoricalAdjustedQuoteProvider();
+		}
+		
+		
+		private void checkDateForReport( Object sender , DateTime dateTime )
+		{
+			if(dateTime>=this.endDateTime)
+				//last date is reached by the timer
+				this.showReport();
+		}
+		
+		private void showReport()
+		{
+			AccountReport accountReport = this.account.CreateReport(this.scriptName, 1,
+			                                                        this.timer.GetCurrentDateTime(),
+			                                                        this.benchmark,
+			                                                        new HistoricalAdjustedQuoteProvider());
+			Report report = new Report(accountReport);
+			report.Show();
+			this.timer.Stop();
+			
+		}
+		
+		private void run_initialize()
+		{
+			run_initializeHistoricalQuoteProvider();
+			run_initializeEndOfDayTimer();
+			run_initializeAccount();
+			run_initializeEndOfDayTimerHandler();
+		}
+		
+		
+		public void Run()
+		{
+			this.run_initialize();
+			this.run_addEventHandlers();
+			this.timer.Start();
+		}
+		
+		private void run_initializeEndOfDayTimerHandler()
+		{
+			this.endOfDayTimerHandler = new EndOfDayTimerHandlerSimplePTIS(this.maxNumOfStdDevForNormalGap,
+			                                                               this.numDaysForGap,
+			                                                               this.averageGap,
+			                                                               this.stdDevGap,
+			                                                               this.firstTicker, this.secondTicker,
+			                                                               this.startDateTime, this.endDateTime,
+			                                                               this.account);
+		}
+		
+		
+		private void run_addEventHandlers()
+		{
+			this.timer.NewDateTime +=
+				new NewDateTimeEventHandler( this.endOfDayTimerHandler.NewDateTimeEventHandler );
+			this.timer.NewDateTime +=
+				new NewDateTimeEventHandler( this.checkDateForReport );
+
+//			this.timer.MarketOpen +=
+//				new MarketOpenEventHandler(
+//					this.endOfDayTimerHandler.MarketOpenEventHandler);
+//			
+//			this.timer.MarketClose +=
+//				new MarketCloseEventHandler(
+//					this.endOfDayTimerHandler.MarketCloseEventHandler);
+//			
+//			this.timer.MarketClose +=
+//				new MarketCloseEventHandler(
+//					this.checkDateForReport);
+//			
+//			this.timer.OneHourAfterMarketClose +=
+//				new OneHourAfterMarketCloseEventHandler(
+//					this.endOfDayTimerHandler.OneHourAfterMarketCloseEventHandler );
+		}
+		#endregion
+		
 	}
 }

@@ -2,7 +2,7 @@
 QuantProject - Quantitative Finance Library
 
 GenomeManagerForFPOscillatorCTC.cs
-Copyright (C) 2003 
+Copyright (C) 2003
 Marco Milletti
 
 This program is free software; you can redistribute it and/or
@@ -18,7 +18,7 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
-*/
+ */
 
 using System;
 using System.Data;
@@ -43,70 +43,72 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedPeriodO
 	/// the fixed period Oscillator strategy
 	/// </summary>
 	[Serializable]
-  public class GenomeManagerForFPOscillatorCTC : GenomeManagerForEfficientPortfolio
-  {
-    private int numDaysForReturnCalculation;
-    private ReturnsManager returnsManager;
-    
-    public GenomeManagerForFPOscillatorCTC(DataTable setOfInitialTickers,
-                                                 DateTime firstQuoteDate,
-                                                 DateTime lastQuoteDate,
-                                                 int numberOfTickersInPortfolio,
-                                                 int numDaysForReturnCalculation,
-                                                 PortfolioType portfolioType,
-                                                 string benchmark)
-                                                 :
-                                                base(setOfInitialTickers,
-                                                firstQuoteDate,
-                                                lastQuoteDate,
-                                                numberOfTickersInPortfolio,
-                                                0.0,
-                                                portfolioType,
-                                               	benchmark)
-                                
-                          
-    {
-      this.numDaysForReturnCalculation = numDaysForReturnCalculation;
-      this.setReturnsManager(firstQuoteDate , lastQuoteDate);
-    }
-    
-    private void setReturnsManager(DateTime firstQuoteDate,
-                                   DateTime lastQuoteDate)
-    {
-    	EndOfDayDateTime firstEndOfDayDateTime =
-				new EndOfDayDateTime(firstQuoteDate, EndOfDaySpecificTime.MarketOpen);
-			EndOfDayDateTime lastEndOfDayDateTime =
-				new EndOfDayDateTime(lastQuoteDate, EndOfDaySpecificTime.MarketClose);
-    	this.returnsManager = 
-    		new ReturnsManager( new CloseToCloseIntervals(
-															  firstEndOfDayDateTime, 
-																lastEndOfDayDateTime, 
-																this.benchmark,
-															  this.numDaysForReturnCalculation),
-														new HistoricalAdjustedQuoteProvider() );
-    }
-    
-    private float[] getStrategyReturns_getReturnsActually(
-    									float[] plainReturns)
+	public class GenomeManagerForFPOscillatorCTC : GenomeManagerForEfficientPortfolio
+	{
+		private int numDaysForReturnCalculation;
+		private ReturnsManager returnsManager;
+		
+		public GenomeManagerForFPOscillatorCTC(DataTable setOfInitialTickers,
+		                                       DateTime firstQuoteDate,
+		                                       DateTime lastQuoteDate,
+		                                       int numberOfTickersInPortfolio,
+		                                       int numDaysForReturnCalculation,
+		                                       PortfolioType portfolioType,
+		                                       string benchmark)
+			:
+			base(setOfInitialTickers,
+			     firstQuoteDate,
+			     lastQuoteDate,
+			     numberOfTickersInPortfolio,
+			     0.0,
+			     portfolioType,
+			     benchmark)
+			
+			
+		{
+			this.numDaysForReturnCalculation = numDaysForReturnCalculation;
+			this.setReturnsManager(firstQuoteDate , lastQuoteDate);
+		}
+		
+		private void setReturnsManager(DateTime firstQuoteDate,
+		                               DateTime lastQuoteDate)
+		{
+			DateTime firstDateTime =
+				HistoricalEndOfDayTimer.GetMarketOpen( firstQuoteDate );
+//				new EndOfDayDateTime(firstQuoteDate, EndOfDaySpecificTime.MarketOpen);
+			DateTime lastDateTime =
+				HistoricalEndOfDayTimer.GetMarketClose( lastQuoteDate );
+//				new EndOfDayDateTime(lastQuoteDate, EndOfDaySpecificTime.MarketClose);
+			this.returnsManager =
+				new ReturnsManager( new CloseToCloseIntervals(
+					firstDateTime,
+					lastDateTime,
+					this.benchmark,
+					this.numDaysForReturnCalculation),
+				                   new HistoricalAdjustedQuoteProvider() );
+		}
+		
+		private float[] getStrategyReturns_getReturnsActually(
+			float[] plainReturns)
 		{
 			float[] returnValue = new float[plainReturns.Length];
-    	for(int i = 0; i < returnValue.Length; i++)
-      {
-    		if( i%2 == 0 )
-    		//even periods are expected to have the same sign as plain ctc returns
-    			returnValue[i] = plainReturns[i];
-    		else//odd periods are reversed
-    			returnValue[i] = - plainReturns[i];
-      }
-      return returnValue;
+			for(int i = 0; i < returnValue.Length; i++)
+			{
+				if( i%2 == 0 )
+					//even periods are expected to have the same sign as plain ctc returns
+					returnValue[i] = plainReturns[i];
+				else//odd periods are reversed
+					returnValue[i] = - plainReturns[i];
+			}
+			return returnValue;
 		}
-    
-    protected override float[] getStrategyReturns()
+		
+		protected override float[] getStrategyReturns()
 		{
-			float[] plainReturns = 
+			float[] plainReturns =
 				this.weightedPositionsFromGenome.GetReturns(
-        this.returnsManager);
+					this.returnsManager);
 			return this.getStrategyReturns_getReturnsActually(plainReturns);
 		}
-  }  
+	}
 }

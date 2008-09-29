@@ -94,23 +94,28 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.ExtremeCount
     
     protected override void run_initializeHistoricalQuoteProvider()
     {
-    	this.historicalQuoteProvider = new HistoricalAdjustedQuoteProvider();
+    	this.historicalMarketValueProvider = new HistoricalAdjustedQuoteProvider();
     }
     
     protected override void run_addEventHandlers()
     {
            
-      this.endOfDayTimer.MarketClose +=
-        new MarketCloseEventHandler(
-        this.endOfDayTimerHandler.MarketCloseEventHandler);
-      
-      this.endOfDayTimer.MarketClose +=
-        new MarketCloseEventHandler(
-        this.checkDateForReport);
-      
-      this.endOfDayTimer.OneHourAfterMarketClose += 
-      	new OneHourAfterMarketCloseEventHandler(
-      	   this.endOfDayTimerHandler.OneHourAfterMarketCloseEventHandler);
+			this.endOfDayTimer.NewDateTime +=
+				new NewDateTimeEventHandler( this.endOfDayTimerHandler.NewDateTimeEventHandler );
+			this.endOfDayTimer.NewDateTime +=
+				new NewDateTimeEventHandler( this.checkDateForReport );
+
+//			this.endOfDayTimer.MarketClose +=
+//        new MarketCloseEventHandler(
+//        this.endOfDayTimerHandler.MarketCloseEventHandler);
+//      
+//      this.endOfDayTimer.MarketClose +=
+//        new MarketCloseEventHandler(
+//        this.checkDateForReport);
+//      
+//      this.endOfDayTimer.OneHourAfterMarketClose += 
+//      	new OneHourAfterMarketCloseEventHandler(
+//      	   this.endOfDayTimerHandler.OneHourAfterMarketCloseEventHandler);
     }
 
     public override void SaveScriptResults()
@@ -133,7 +138,7 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.ExtremeCount
                                         "\\" + this.ScriptName + "\\";
       //default report with numIntervalDays = 1
       AccountReport accountReport = this.account.CreateReport(fileName,1,
-                                    		this.endOfDayTimer.GetCurrentTime(),
+                                    		this.endOfDayTimer.GetCurrentDateTime(),
                                     		this.benchmark,
                                         new HistoricalAdjustedQuoteProvider());
       this.checkDateForReport_createDirIfNotPresent(dirNameWhereToSaveReports);

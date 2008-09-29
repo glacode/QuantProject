@@ -152,13 +152,13 @@ namespace QuantProject.Business.Financial.Accounting
 
     #endregion
 
-		public double GetMarketValue( EndOfDayDateTime endOfDayDateTime ,
-			IHistoricalQuoteProvider historicalQuoteProvider )
+		public double GetMarketValue( DateTime dateTime ,
+			HistoricalMarketValueProvider historicalMarketValueProvider )
 		{
 			double totalValue = 0;
 			foreach (Position position in this.Values)
-				totalValue += historicalQuoteProvider.GetMarketValue(
-					position.Instrument.Key , endOfDayDateTime ) * position.Quantity;
+				totalValue += historicalMarketValueProvider.GetMarketValue(
+					position.Instrument.Key , dateTime ) * position.Quantity;
 			return totalValue;
 		}
 		public double GetMarketValue( IDataStreamer dataStreamer )

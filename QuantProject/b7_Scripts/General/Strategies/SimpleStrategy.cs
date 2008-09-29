@@ -18,7 +18,7 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
-*/
+ */
 
 using System;
 
@@ -43,11 +43,11 @@ namespace QuantProject.Scripts.General.Strategies
 		public SimpleStrategy(
 			WeightedPositions weightedPositions ,
 			IIntervalsSelector intervalsSelector ,
-			IHistoricalQuoteProvider historicalQuoteProvider ) :
+			HistoricalMarketValueProvider historicalMarketValueProvider ) :
 			base(	999 ,	1 ,	intervalsSelector , intervalsSelector ,
-			new DummyEligibleSelector() ,
-			new DummyInSampleChooser() ,
-			historicalQuoteProvider )
+			     new DummyEligibleSelector() ,
+			     new DummyInSampleChooser() ,
+			     historicalMarketValueProvider )
 		{
 			this.weightedPositions = weightedPositions;
 		}
@@ -56,13 +56,14 @@ namespace QuantProject.Scripts.General.Strategies
 		{
 			// true iif the current EndOfDayDateTime falls on the end of either the last
 			// interval or the second last interval
-			bool arePositionsToBeClosed = ( ( this.Account.Portfolio.Count > 0 ) &&
-				( this.returnIntervals[ this.returnIntervals.Count - 1 ].End.IsEqualTo(
-				this.now() )
-				||
-				( ( this.returnIntervals.Count > 1 ) &&
-				( this.returnIntervals[ this.returnIntervals.Count - 2 ].End.IsEqualTo(
-				this.now() ) ) ) ) );
+			bool arePositionsToBeClosed =
+				( ( this.Account.Portfolio.Count > 0 ) &&
+				 ( ( this.returnIntervals[ this.returnIntervals.Count - 1 ].End ==
+				    this.now() )
+				  ||
+				  ( ( this.returnIntervals.Count > 1 ) &&
+				   ( this.returnIntervals[ this.returnIntervals.Count - 2 ].End ==
+				   	this.now() ) ) ) );
 			return arePositionsToBeClosed;
 		}
 //		protected override bool marketCloseEventHandler_arePositionsToBeClosed()
@@ -75,8 +76,8 @@ namespace QuantProject.Scripts.General.Strategies
 			// interval
 			bool arePositionsToBeOpened =
 				( ( this.Account.Portfolio.Count == 0 ) &&
-				this.returnIntervals[ this.returnIntervals.Count - 1 ].Begin.IsEqualTo(
-				this.now() ) );
+				 this.returnIntervals[ this.returnIntervals.Count - 1 ].Begin ==
+				 this.now() );
 			return arePositionsToBeOpened;
 		}
 //		protected override bool marketCloseEventHandler_arePositionsToBeOpened()

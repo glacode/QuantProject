@@ -77,8 +77,8 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
 		/// </summary>
 		/// <param name="sender"></param>
 		/// <param name="eventArgs"></param>
-		public override void MarketOpenEventHandler(
-			Object sender , EndOfDayTimingEventArgs endOfDayTimingEventArgs )
+		protected override void marketOpenEventHandler(
+			Object sender , DateTime dateTime )
 		{
 			AccountManager.ClosePositions(this.account);
 		}
@@ -90,8 +90,9 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
 			double lossOfCurrentCombination;
 			double lossOfCurrentWorstCombination = 0.0;
 			double fitnessOfPreviousCombination = 0.0;
-			IndexBasedEndOfDayTimer currentTimer = (IndexBasedEndOfDayTimer)this.account.EndOfDayTimer;
-			DateTime today = currentTimer.GetCurrentTime().DateTime;
+			IndexBasedEndOfDayTimer currentTimer =
+				(IndexBasedEndOfDayTimer)this.account.Timer;
+			DateTime today = currentTimer.GetCurrentDateTime();
 			int numOfGenomesScanned = 0;
 			for(int i = 0; numOfGenomesScanned < this.numOfGenomesForOTCScanning; i++)
 			{
@@ -133,8 +134,8 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
 		}
 		
 		
-		public override void MarketCloseEventHandler(
-			Object sender , EndOfDayTimingEventArgs endOfDayTimingEventArgs )
+		protected override void marketCloseEventHandler(
+			Object sender , DateTime dateTime )
 		{
 			if(this.currentGO != null)
 				//so a list of genomes is available
@@ -143,7 +144,7 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
 			this.openPositions();
 		}
 
-		#region OneHourAfterMarketCloseEventHandler
+		#region oneHourAfterMarketCloseEventHandler
 		
 		protected DataTable getSetOfTickersToBeOptimized(DateTime currentDate)
 		{
@@ -221,15 +222,15 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
 		/// </summary>
 		/// <param name="sender"></param>
 		/// <param name="eventArgs"></param>
-		public override void OneHourAfterMarketCloseEventHandler(
-			Object sender , EndOfDayTimingEventArgs endOfDayTimingEventArgs )
+		protected override void oneHourAfterMarketCloseEventHandler(
+			Object sender , DateTime dateTime )
 		{
 			this.seedForRandomGenerator++;
 			//this.oneHourAfterMarketCloseEventHandler_updatePrices();
 			if(this.numDaysElapsedSinceLastOptimization ==
 			   this.numDaysBetweenEachOptimization - 1)
 			{
-				this.setTickers(endOfDayTimingEventArgs.EndOfDayDateTime.DateTime, false);
+				this.setTickers( dateTime , false);
 				//sets tickers to be chosen next Market Close event
 				this.numDaysElapsedSinceLastOptimization = 0;
 			}

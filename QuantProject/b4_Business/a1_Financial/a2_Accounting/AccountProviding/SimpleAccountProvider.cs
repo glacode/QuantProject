@@ -2,7 +2,7 @@
 QuantProject - Quantitative Finance Library
 
 SimpleAccountProvider.cs
-Copyright (C) 2008 
+Copyright (C) 2008
 Marco Milletti
 
 This program is free software; you can redistribute it and/or
@@ -18,7 +18,7 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
-*/
+ */
 
 using System;
 
@@ -34,21 +34,23 @@ namespace QuantProject.Business.Financial.Accounting.AccountProviding
 	/// with no commissions and slippage
 	/// on orders
 	/// </summary>
+	[Serializable]
 	public class SimpleAccountProvider : IAccountProvider
 	{
 		public SimpleAccountProvider()
 		{
 		}
 		
-		public Account GetAccount( IEndOfDayTimer timer ,
-							IHistoricalQuoteProvider historicalQuoteProvider )
+		public Account GetAccount(
+			Timer timer , HistoricalMarketValueProvider historicalMarketValueProvider )
 		{
-			Account account = 
-				new Account( "SimpleAccount" , timer ,
-										new HistoricalEndOfDayDataStreamer( timer ,
-												historicalQuoteProvider ) ,
-										new HistoricalEndOfDayOrderExecutor( timer ,
-												historicalQuoteProvider ) );
+			Account account =
+				new Account(
+					"SimpleAccount" , timer ,
+					new HistoricalEndOfDayDataStreamer(
+						timer , historicalMarketValueProvider ) ,
+					new HistoricalEndOfDayOrderExecutor(
+						timer , historicalMarketValueProvider ) );
 			return account;
 		}
 		

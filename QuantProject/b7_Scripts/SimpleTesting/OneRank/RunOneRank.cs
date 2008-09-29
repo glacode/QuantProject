@@ -46,7 +46,7 @@ namespace QuantProject.Scripts.SimpleTesting
 		private DateTime startDateTime = new DateTime( 2003 , 1 , 1 );
 		private DateTime endDateTime = new DateTime( 2003 , 12 , 31 );
 		private Account account;
-		private IHistoricalQuoteProvider historicalQuoteProvider =
+		private HistoricalMarketValueProvider historicalMarketValueProvider =
 			new HistoricalAdjustedQuoteProvider();
 		/// <summary>
 		/// Script to test the One Rank strategy on a single ticker
@@ -82,8 +82,10 @@ namespace QuantProject.Scripts.SimpleTesting
 //			HistoricalDataProvider.MaxDate = this.endDateTime.AddDays( 10 );
 			HistoricalEndOfDayTimer historicalEndOfDayTimer =
 				new IndexBasedEndOfDayTimer(
-				new EndOfDayDateTime( this.startDateTime ,
-				EndOfDaySpecificTime.MarketOpen ) , "^GSPC" );
+					HistoricalEndOfDayTimer.GetMarketOpen( this.startDateTime ) ,
+//				new EndOfDayDateTime( this.startDateTime ,
+//				EndOfDaySpecificTime.MarketOpen ) ,
+					"^GSPC" );
 
 //			with IB commission
 //			this.account = new Account( "MSFT" , historicalEndOfDayTimer ,
@@ -96,14 +98,16 @@ namespace QuantProject.Scripts.SimpleTesting
 //			with no commission
 			this.account = new Account( "MSFT" , historicalEndOfDayTimer ,
 				new HistoricalEndOfDayDataStreamer( historicalEndOfDayTimer ,
-				this.historicalQuoteProvider ) ,
+				this.historicalMarketValueProvider ) ,
 				new HistoricalEndOfDayOrderExecutor( historicalEndOfDayTimer ,
-				this.historicalQuoteProvider ) );
+				this.historicalMarketValueProvider ) );
 			OneRank oneRank = new OneRank( account ,
 				this.endDateTime );
-			Report report = new Report( this.account , this.historicalQuoteProvider );
-			report.Create( "WFT One Rank" , 1 ,
-				new EndOfDayDateTime( this.endDateTime , EndOfDaySpecificTime.MarketClose ) ,
+			Report report = new Report( this.account , this.historicalMarketValueProvider );
+			report.Create(
+				"WFT One Rank" , 1 ,
+				HistoricalEndOfDayTimer.GetMarketClose( this.endDateTime ) ,
+//				new EndOfDayDateTime( this.endDateTime , EndOfDaySpecificTime.MarketClose ) ,
 				"MSFT" );
 			report.TransactionGrid.MouseUp +=
 				new MouseEventHandler( this.mouseEventHandler );

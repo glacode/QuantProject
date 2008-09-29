@@ -72,14 +72,16 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.ExtremeCount
     
     private void setReturnsManager()
     {
-			EndOfDayDateTime firstEndOfDayDateTime =
-				new EndOfDayDateTime(firstQuoteDate, EndOfDaySpecificTime.MarketClose);
-			EndOfDayDateTime lastEndOfDayDateTime =
-				new EndOfDayDateTime(lastQuoteDate, EndOfDaySpecificTime.MarketClose);
+			DateTime firstDateTime =
+				HistoricalEndOfDayTimer.GetMarketClose( firstQuoteDate );
+//				new EndOfDayDateTime(firstQuoteDate, EndOfDaySpecificTime.MarketClose);
+			DateTime lastDateTime =
+				HistoricalEndOfDayTimer.GetMarketClose( lastQuoteDate );
+//				new EndOfDayDateTime(lastQuoteDate, EndOfDaySpecificTime.MarketClose);
 			this.returnsManager =
 				 new ReturnsManager( new CloseToCloseIntervals(
-																 firstEndOfDayDateTime, 
-																 lastEndOfDayDateTime, 
+																 firstDateTime, 
+																 lastDateTime, 
 																 this.benchmark,
 																 this.numDaysForReturnCalculation) ,
 														 new HistoricalAdjustedQuoteProvider() );
@@ -109,10 +111,12 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.ExtremeCount
     
     protected override float[] getStrategyReturns()
 		{
-			EndOfDayDateTime firstEndOfDayDateTime =
-				new EndOfDayDateTime(firstQuoteDate, EndOfDaySpecificTime.MarketClose);
-			EndOfDayDateTime lastEndOfDayDateTime =
-				new EndOfDayDateTime(lastQuoteDate, EndOfDaySpecificTime.MarketClose);
+			DateTime firstDateTime =
+				HistoricalEndOfDayTimer.GetMarketClose( firstQuoteDate );
+//				new EndOfDayDateTime(firstQuoteDate, EndOfDaySpecificTime.MarketClose);
+			DateTime lastDateTime =
+				HistoricalEndOfDayTimer.GetMarketClose( lastQuoteDate );
+//				new EndOfDayDateTime(lastQuoteDate, EndOfDaySpecificTime.MarketClose);
 	  	float[] plainReturns = this.weightedPositionsFromGenome.GetReturns(
               							 this.returnsManager);
 			return this.getStrategyReturns_getReturnsActually(plainReturns);

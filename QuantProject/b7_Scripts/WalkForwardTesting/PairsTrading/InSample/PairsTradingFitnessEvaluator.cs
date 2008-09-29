@@ -35,6 +35,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.PairsTrading
 	/// Evaluates (in sample) the Pearson Correlation
 	/// between two weighted positions
 	/// </summary>
+	[Serializable]
 	public class PairsTradingFitnessEvaluator : IFitnessEvaluator
 	{
 		private const double fitnessForInvalidCandidate = -1000d;

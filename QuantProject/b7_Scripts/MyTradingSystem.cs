@@ -2,7 +2,7 @@
 QuantProject - Quantitative Finance Library
 
 MyTradingSystem.cs
-Copyright (C) 2003 
+Copyright (C) 2003
 Glauco Siliprandi
 
 This program is free software; you can redistribute it and/or
@@ -18,10 +18,11 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
-*/
+ */
 
 using System;
 using System.Collections;
+
 using QuantProject.ADT;
 using QuantProject.ADT.Histories;
 using QuantProject.ADT.Optimizing;
@@ -29,6 +30,7 @@ using QuantProject.Business.Financial.Instruments;
 using QuantProject.Business.Financial.Ordering;
 using QuantProject.Business.Strategies;
 using QuantProject.Business.Timing;
+using QuantProject.Data.DataProviders.Quotes;
 
 namespace QuantProject.Scripts
 {
@@ -37,51 +39,61 @@ namespace QuantProject.Scripts
 	/// </summary>
 	public class MyTradingSystem : TradingSystem
 	{
-    private History microsoftOpenHistory;
-    private History microsoftOpenHistorySMA;
+		private History microsoftOpenHistory;
+		private History microsoftOpenHistorySMA;
 
-    public MyTradingSystem()
-    {
-    }
+		public MyTradingSystem()
+		{
+		}
 
-    public override void InitializeData()
-    {
-      Parameter parameter = (Parameter) this.Parameters[ "SMAdays" ];
-      microsoftOpenHistory = QuoteCache.GetOpenHistory( "MSFT" );
-      microsoftOpenHistorySMA = microsoftOpenHistory.GetSimpleMovingAverage( (int) parameter.Value );
-    }
+		public override void InitializeData()
+		{
+			Parameter parameter = (Parameter) this.Parameters[ "SMAdays" ];
+			microsoftOpenHistory = HistoricalQuotesProvider.GetOpenHistory( "MSFT" );
+			microsoftOpenHistorySMA = microsoftOpenHistory.GetSimpleMovingAverage( (int) parameter.Value );
+		}
 
-    public override Signals GetSignals( ExtendedDateTime extendedDateTime )
-    {
-      Signals signals = new Signals();
-      Signal signal = new Signal();
-      if ( microsoftOpenHistory.Cross( microsoftOpenHistorySMA ,
-        extendedDateTime.DateTime ) && 
-          ( Convert.ToDouble(microsoftOpenHistorySMA.GetValue( extendedDateTime.DateTime )) >
-          ( Convert.ToDouble(microsoftOpenHistory.GetValue( extendedDateTime.DateTime )) *
-          ( 100 + Convert.ToInt32(
-          ((Parameter)this.Parameters[ "CrossPercentage" ]).Value ) ) / 100 ) ) )
-      {
-        signal.Add( new Order( OrderType.MarketBuy , new Instrument( "MSFT" ) , 1 ,
-          new EndOfDayDateTime( new Instrument( "MSFT" ).GetNextMarketDay( extendedDateTime.DateTime ) ,
-          EndOfDaySpecificTime.MarketOpen ) ) );
-        signals.Add( signal );
-      }
-      else
-      {
-        if ( microsoftOpenHistorySMA.Cross( microsoftOpenHistory ,
-          extendedDateTime.DateTime ) && 
-          ( Convert.ToDouble(microsoftOpenHistorySMA.GetValue( extendedDateTime.DateTime )) >
-          ( Convert.ToDouble(microsoftOpenHistory.GetValue( extendedDateTime.DateTime )) *
-          ( 100 + Convert.ToInt32( ((Parameter)this.Parameters[ "CrossPercentage" ]).Value ) ) / 100 ) ) ) 
-        {
-          signal.Add( new Order( OrderType.MarketSell , new Instrument( "MSFT" ) , 1 ,
-            new EndOfDayDateTime( new Instrument( "MSFT" ).GetNextMarketDay( extendedDateTime.DateTime ) ,
-            EndOfDaySpecificTime.MarketOpen ) ) );
-          signals.Add( signal );
-        }
-      }
-      return signals;
-    }
-  }
+		public override Signals GetSignals( DateTime dateTime )
+		{
+			Signals signals = new Signals();
+			Signal signal = new Signal();
+			if ( microsoftOpenHistory.Cross( microsoftOpenHistorySMA ,
+			                                dateTime ) &&
+			    ( Convert.ToDouble(microsoftOpenHistorySMA.GetValue( dateTime )) >
+			     ( Convert.ToDouble(microsoftOpenHistory.GetValue( dateTime )) *
+			      ( 100 + Convert.ToInt32(
+			      	((Parameter)this.Parameters[ "CrossPercentage" ]).Value ) ) / 100 ) ) )
+			{
+				signal.Add( new Order(
+					OrderType.MarketBuy ,
+					new Instrument( "MSFT" ) ,
+					1 ,
+					HistoricalEndOfDayTimer.GetMarketOpen(
+						new Instrument( "MSFT" ).GetNextMarketDay( dateTime ) ) ) );
+				//          new EndOfDayDateTime( new Instrument( "MSFT" ).GetNextMarketDay( dateTime.DateTime ) ,
+				//          EndOfDaySpecificTime.MarketOpen ) ) );
+				signals.Add( signal );
+			}
+			else
+			{
+				if ( microsoftOpenHistorySMA.Cross( microsoftOpenHistory ,
+				                                   dateTime ) &&
+				    ( Convert.ToDouble(microsoftOpenHistorySMA.GetValue( dateTime )) >
+				     ( Convert.ToDouble(microsoftOpenHistory.GetValue( dateTime )) *
+				      ( 100 + Convert.ToInt32( ((Parameter)this.Parameters[ "CrossPercentage" ]).Value ) ) / 100 ) ) )
+				{
+					signal.Add( new Order(
+						OrderType.MarketSell ,
+						new Instrument( "MSFT" ) ,
+						1 ,
+						HistoricalEndOfDayTimer.GetMarketOpen(
+							new Instrument( "MSFT" ).GetNextMarketDay( dateTime ) ) ) );
+//					                      new EndOfDayDateTime( new Instrument( "MSFT" ).GetNextMarketDay( dateTime.DateTime ) ,
+//					                                           EndOfDaySpecificTime.MarketOpen ) ) );
+					signals.Add( signal );
+				}
+			}
+			return signals;
+		}
+	}
 }

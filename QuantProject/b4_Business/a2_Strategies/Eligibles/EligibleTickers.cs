@@ -28,6 +28,7 @@ namespace QuantProject.Business.Strategies.Eligibles
 	/// <summary>
 	/// Strongly typed collection of tickers
 	/// </summary>
+	[Serializable]
 	public class EligibleTickers : System.Collections.CollectionBase
 	{
 		private string[] tickers;

@@ -18,7 +18,7 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
-*/
+ */
 
 using System;
 
@@ -27,15 +27,16 @@ using QuantProject.Business.Strategies;
 namespace QuantProject.Business.Strategies.Optimizing.Decoding
 {
 	/// <summary>
-	/// Decodes optimization candidates to a 
+	/// Decodes optimization candidates to a
 	/// TestingPositions
 	/// In this implementation, weights are balanced on volatility base
 	/// </summary>
+	[Serializable]
 	public abstract class DecoderForTestingPositionsWithBalancedWeights :
-								BasicDecoderForTestingPositions
+		BasicDecoderForTestingPositions
 	{
 		
-		public DecoderForTestingPositionsWithBalancedWeights() 
+		public DecoderForTestingPositionsWithBalancedWeights()
 		{
 			
 		}
@@ -44,8 +45,8 @@ namespace QuantProject.Business.Strategies.Optimizing.Decoding
 
 		protected override double[] getWeights(SignedTickers signedTickers)
 		{
-			return WeightedPositions.GetBalancedWeights( 
-			        signedTickers,	this.returnsManager );
+			return WeightedPositions.GetBalancedWeights(
+				signedTickers,	this.returnsManager );
 		}
 
 		protected override string getDescription()

@@ -56,7 +56,7 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOs
 			Benchmark benchmark ,
 			IDecoderForTestingPositions decoderForTestingPositions ,
 			IFitnessEvaluator fitnessEvaluator ,
-			IHistoricalQuoteProvider historicalQuoteProvider ,
+			HistoricalMarketValueProvider historicalMarketValueProvider ,
 			double crossoverRate , double mutationRate , double elitismRate ,
 			int populationSizeForGeneticOptimizer ,
 			int generationNumberForGeneticOptimizer ,
@@ -68,7 +68,7 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOs
 	    :
 			base(numberOfPortfolioPositions, numberOfBestTestingPositionsToBeReturned,
 			benchmark ,	decoderForTestingPositions ,
-			fitnessEvaluator , historicalQuoteProvider ,
+			fitnessEvaluator , historicalMarketValueProvider ,
 			crossoverRate , mutationRate , elitismRate ,
 			populationSizeForGeneticOptimizer ,
 			generationNumberForGeneticOptimizer ,

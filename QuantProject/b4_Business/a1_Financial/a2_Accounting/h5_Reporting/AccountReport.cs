@@ -2,7 +2,7 @@
 QuantProject - Quantitative Finance Library
 
 AccountReport.cs
-Copyright (C) 2003 
+Copyright (C) 2003
 Glauco Siliprandi
 
 This program is free software; you can redistribute it and/or
@@ -18,7 +18,7 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
-*/
+ */
 
 using System;
 using System.Data;
@@ -35,6 +35,7 @@ using QuantProject.Business.Financial.Accounting.Transactions;
 using QuantProject.Business.Financial.Instruments;
 using QuantProject.Business.Timing;
 using QuantProject.Data.DataProviders;
+using QuantProject.Data.DataProviders.Quotes;
 
 namespace QuantProject.Business.Financial.Accounting.Reporting
 {
@@ -44,31 +45,33 @@ namespace QuantProject.Business.Financial.Accounting.Reporting
 	[Serializable]
 	public class AccountReport : ISerializable
 	{
-    private Account account;
-		private IHistoricalQuoteProvider historicalQuoteProvider;
-    private Account accountCopy = new Account( "AccountCopy" );
-    private string reportName;
-    private EndOfDayDateTime endDateTime;
-    private string benchmark;
+		private Account account;
+		private HistoricalMarketValueProvider historicalMarketValueProvider;
+		private IDateTimeSelectorForEquityLine dateTimeSelectorForEquityLine;
+		
+		private Account accountCopy = new Account( "AccountCopy" );
+		private string reportName;
+		private DateTime endDateTime;
+		private string benchmark;
 		private History benchmarkEquityLine;
-    //private long numDaysForInterval;
-    private DataTable detailedDataTable;
-    private Tables.Transactions transactionTable;
-    private ReportTable roundTrades;
-    private ReportTable equity;
+		//private long numDaysForInterval;
+		private DataTable detailedDataTable;
+		private Tables.Transactions transactionTable;
+		private ReportTable roundTrades;
+		private ReportTable equity;
 		private EquityLine equityLine;
-    private Tables.Summary summary;
+		private Tables.Summary summary;
 		private Tables.StatisticsSummary statisticsSummary;
 
-    public string Name
-    {
+		public string Name
+		{
 			get { return this.reportName; }
 			set { this.reportName = value; }
-		}    
-    public EndOfDayDateTime EndDateTime
-    {
-      get { return endDateTime; }
-    }    
+		}
+		public DateTime EndDateTime
+		{
+			get { return this.endDateTime; }
+		}
 		public string Benchmark
 		{
 			get { return this.benchmark; }
@@ -82,21 +85,21 @@ namespace QuantProject.Business.Financial.Accounting.Reporting
 			get { return this.account; }
 		}
 		//    public long NumDaysForInterval
-//    {
-//      get { return numDaysForInterval; }
-//    }
-    public DataTable DetailedDataTable
-    {
-      get { return detailedDataTable; }
-    }
-    public ReportTable TransactionTable
-    {
-      get { return transactionTable; }
-    }
-    public ReportTable RoundTrades
-    {
-      get { return roundTrades; }
-    }
+		//    {
+		//      get { return numDaysForInterval; }
+		//    }
+		public DataTable DetailedDataTable
+		{
+			get { return detailedDataTable; }
+		}
+		public ReportTable TransactionTable
+		{
+			get { return transactionTable; }
+		}
+		public ReportTable RoundTrades
+		{
+			get { return roundTrades; }
+		}
 		public ReportTable Equity
 		{
 			get { return equity; }
@@ -110,27 +113,27 @@ namespace QuantProject.Business.Financial.Accounting.Reporting
 				{
 					this.equityLine = new EquityLine();
 					this.equityLine.Import( this.Equity.DataTable ,
-						QuantProject.Business.Financial.Accounting.Reporting.Tables.Equity.Date ,
-						QuantProject.Business.Financial.Accounting.Reporting.Tables.Equity.AccountValue );
+					                       QuantProject.Business.Financial.Accounting.Reporting.Tables.Equity.Date ,
+					                       QuantProject.Business.Financial.Accounting.Reporting.Tables.Equity.AccountValue );
 				}
 				return this.equityLine;
 			}
 		}
 		public Tables.Summary Summary
-    {
-      get { return summary; }
-    }
+		{
+			get { return summary; }
+		}
 		public Tables.StatisticsSummary StatisticsSummary
 		{
 			get { return this.statisticsSummary; }
 		}
-    public DateTime StartDateTime
-    {
-      get
-      {
-        return (DateTime) account.Transactions.GetKey( 0 );
-      }
-    }
+		public DateTime StartDateTime
+		{
+			get
+			{
+				return (DateTime) account.Transactions.GetKey( 0 );
+			}
+		}
 
 		/// <summary>
 		/// A text description for the report, suitable for file names also
@@ -139,42 +142,54 @@ namespace QuantProject.Business.Financial.Accounting.Reporting
 		{
 			get { return this.reportName; }
 		}
-    /// <summary>
-    /// Add the last account record to the AccountReport
-    /// </summary>
-    /// <param name="account"></param>
-    public AccountReport( Account account ,
-			IHistoricalQuoteProvider historicalQuoteProvider )
-    {
-      this.account = account;
-			this.historicalQuoteProvider = historicalQuoteProvider;
-    }
 
-    #region "Create"
+		/// <summary>
+		/// Creates report data for the given account
+		/// </summary>
+		/// <param name="account"></param>
+		/// <param name="historicalMarketValueProvider">used to evaluate
+		/// the market value for the given instruments at the given
+		/// time</param>
+		/// <param name="timerForEquityLine">used to decide the points
+		/// in time when the equity line will be computed</param>
+		public AccountReport(
+			Account account ,
+			HistoricalMarketValueProvider historicalMarketValueProvider ,
+			IDateTimeSelectorForEquityLine dateTimeSelectorForEquityLine )
+		{
+			this.account = account;
+			this.historicalMarketValueProvider = historicalMarketValueProvider;
+			this.dateTimeSelectorForEquityLine = dateTimeSelectorForEquityLine;
+		}
 
-    #region "getDetailedDataTable"
-    private void setColumns( System.Data.DataTable transactions )
-    {
-      transactions.Columns.Add( "DateTime" , Type.GetType( "System.DateTime" ) );
-      transactions.Columns.Add( "BarComponent" , Type.GetType( "System.String" ) );
-      transactions.Columns.Add( "TransactionType"  , Type.GetType( "System.String" ) );
-      transactions.Columns.Add( "InstrumentKey"  , Type.GetType( "System.String" ) );
-      transactions.Columns.Add( "Quantity"  , Type.GetType( "System.Int32" ) );
-      transactions.Columns.Add( "Price"  , Type.GetType( "System.Double" ) );
-			transactions.Columns.Add( "TransactionAmount"  , Type.GetType( "System.Double" ) );
-			transactions.Columns.Add( "Commission"  , Type.GetType( "System.Double" ) );
-			transactions.Columns.Add( "AccountCash"  , Type.GetType( "System.Double" ) );
-      transactions.Columns.Add( "PortfolioValue"  , Type.GetType( "System.Double" ) );
-      transactions.Columns.Add( "AccountValue"  , Type.GetType( "System.Double" ) );
-      transactions.Columns.Add( "PnL"  , Type.GetType( "System.Double" ) );
-    }
-    #region "setRows"
-    private void addBalanceItems ( EndOfDayDateTime endOfDayDateTime ,  DataRow dataRow )
-    {
+		#region Create
+		
+		#region setDetailedDataTable
+		
+		#region getDetailedDataTable
+		private void setColumns()
+		{
+			this.detailedDataTable.Columns.Add( "DateTime" , Type.GetType( "System.DateTime" ) );
+//			transactions.Columns.Add( "BarComponent" , Type.GetType( "System.String" ) );
+			this.detailedDataTable.Columns.Add( "TransactionType"  , Type.GetType( "System.String" ) );
+			this.detailedDataTable.Columns.Add( "InstrumentKey"  , Type.GetType( "System.String" ) );
+			this.detailedDataTable.Columns.Add( "Quantity"  , Type.GetType( "System.Int32" ) );
+			this.detailedDataTable.Columns.Add( "Price"  , Type.GetType( "System.Double" ) );
+			this.detailedDataTable.Columns.Add( "TransactionAmount"  , Type.GetType( "System.Double" ) );
+			this.detailedDataTable.Columns.Add( "Commission"  , Type.GetType( "System.Double" ) );
+			this.detailedDataTable.Columns.Add( "AccountCash"  , Type.GetType( "System.Double" ) );
+			this.detailedDataTable.Columns.Add( "PortfolioValue"  , Type.GetType( "System.Double" ) );
+			this.detailedDataTable.Columns.Add( "AccountValue"  , Type.GetType( "System.Double" ) );
+			this.detailedDataTable.Columns.Add( "PnL"  , Type.GetType( "System.Double" ) );
+		}
+		
+		#region setRows
+		private void addBalanceItems ( DateTime dateTime ,  DataRow dataRow )
+		{
 			dataRow[ "AccountCash" ] = this.accountCopy.CashAmount;
 
 			dataRow[ "PortfolioValue" ] = this.accountCopy.Portfolio.GetMarketValue(
-				endOfDayDateTime , this.historicalQuoteProvider );
+				dateTime , this.historicalMarketValueProvider );
 
 			dataRow[ "AccountValue" ] = (double)dataRow[ "AccountCash" ] +
 				(double)dataRow[ "PortfolioValue" ];
@@ -182,100 +197,179 @@ namespace QuantProject.Business.Financial.Accounting.Reporting
 				this.accountCopy.Transactions.TotalWithdrawn -
 				this.accountCopy.Transactions.TotalAddedCash;
 		}
-    private void addTransactionRow( EndOfDayTransaction transaction ,
-      System.Data.DataTable detailedDataTable )
-    {
-      DataRow dataRow = detailedDataTable.NewRow();
-      dataRow[ "DateTime" ] = transaction.EndOfDayDateTime.DateTime;
-      dataRow[ "BarComponent" ] = transaction.EndOfDayDateTime.EndOfDaySpecificTime.ToString();
-      dataRow[ "TransactionType" ] = transaction.Type.ToString();
-      if ( transaction.Instrument != null )
-        dataRow[ "InstrumentKey" ] = transaction.Instrument.Key;
-      else
-        dataRow[ "InstrumentKey" ] = "";
-      dataRow[ "Quantity" ] = transaction.Quantity;
-      dataRow[ "Price" ] = transaction.InstrumentPrice;
+		
+		#region setRows_addRowsForTransactionsBefore_nextDateTimeForEquityLine
+		private bool isNextTransactionToBeAdded(
+			int indexForTheNextTransactionToBeAdded ,
+			DateTime nextDateTimeForEquityLine )
+		{
+			bool isToBeAdded = false;
+			if ( indexForTheNextTransactionToBeAdded <
+				 this.account.Transactions.Count )
+				// not all transactions have been added, yet
+			{
+				DateTime dateTimeForTheNextTransactionToBeAdded =
+				(DateTime)this.account.Transactions.GetKey(
+					indexForTheNextTransactionToBeAdded );
+				isToBeAdded = ( dateTimeForTheNextTransactionToBeAdded <=
+				               nextDateTimeForEquityLine );
+			}
+			return isToBeAdded;
+		}			
+		
+		#region addRowsForTransactionsAtTheGivenDateTime
+		private void addTransactionRow( TimedTransaction transaction )
+		{
+			DataRow dataRow = detailedDataTable.NewRow();
+			dataRow[ "DateTime" ] = transaction.DateTime;
+//			dataRow[ "BarComponent" ] = transaction.EndOfDayDateTime.EndOfDaySpecificTime.ToString();
+			dataRow[ "TransactionType" ] = transaction.Type.ToString();
+			if ( transaction.Instrument != null )
+				dataRow[ "InstrumentKey" ] = transaction.Instrument.Key;
+			else
+				dataRow[ "InstrumentKey" ] = "";
+			dataRow[ "Quantity" ] = transaction.Quantity;
+			dataRow[ "Price" ] = transaction.InstrumentPrice;
 			dataRow[ "TransactionAmount" ] = transaction.InstrumentPrice * transaction.Quantity;
 			if ( transaction.Commission != null )
 				dataRow[ "Commission" ] = transaction.Commission.Value;
-			addBalanceItems( transaction.EndOfDayDateTime , dataRow );
-			detailedDataTable.Rows.Add( dataRow );
-    }
-    private void addRowsForTransactions( DateTime currentDateTime ,
-      System.Data.DataTable detailedDataTable )
-    {
-      if ( this.account.Transactions.ContainsKey( currentDateTime ) )
-        foreach ( EndOfDayTransaction transaction in
-          (ArrayList)this.account.Transactions[ currentDateTime ] )
-        {
-					this.accountCopy.Add( transaction );
-          addTransactionRow( transaction , detailedDataTable );
-				}
-    }
-    private void addRowForPnl_actually( DateTime currentDate ,
-      System.Data.DataTable detailedDataTable )
-    {
-      DataRow dataRow = detailedDataTable.NewRow();
-      dataRow[ "DateTime" ] = currentDate;
-      addBalanceItems( new EndOfDayDateTime( currentDate , EndOfDaySpecificTime.MarketClose ) , dataRow );
-      detailedDataTable.Rows.Add( dataRow );
-    }
-    private void addRowForPnl( long numDaysForInterval , DateTime currentDate ,
-      System.Data.DataTable detailedDataTable )
-    {
-      if ( ( Convert.ToInt32(((TimeSpan)(currentDate.Date -
-        (DateTime) account.Transactions.GetKey( 0 ))).TotalDays )
-        % numDaysForInterval ) == 0 )
-        addRowForPnl_actually( currentDate , detailedDataTable );
-    }
-    private void setRows(  long numDaysForInterval , System.Data.DataTable detailedDataTable )
-    {
-      DateTime currentDate = (DateTime) account.Transactions.GetKey( 0 );
-      try
-      {
-        while ( currentDate < this.endDateTime.DateTime )
-        {
-          //addTransactionsToAccountCopy( currentDate );
-          addRowsForTransactions( currentDate , detailedDataTable );
-          addRowForPnl( numDaysForInterval , currentDate , detailedDataTable );
-					currentDate = currentDate.AddDays( 1 );
-        }
-//        foreach ( ArrayList transactionList in account.Transactions.Values )
-//          foreach ( TimedTransaction transaction in transactionList )
-//            addRow( transaction , transactions );
-      }
-      catch (Exception ex)
-      {
-        MessageBox.Show( ex.ToString() );
-      }
-    }
-    #endregion
-    private System.Data.DataTable getDetailedDataTable( long numDaysForInterval )
-    {
-      System.Data.DataTable detailedDataTable = new System.Data.DataTable();
-      setColumns( detailedDataTable );
-      setRows( numDaysForInterval , detailedDataTable );
-      return detailedDataTable;
-    }
-    #endregion
-    #endregion
+			addBalanceItems( transaction.DateTime , dataRow );
+			this.detailedDataTable.Rows.Add( dataRow );
+		}
+		private void addRowsForTransactionsAtTheGivenDateTime(
+			DateTime dateTimeForTheNextTransactionToBeAdded )
+		{
+			foreach ( TimedTransaction timedTransaction in
+			         (ArrayList)this.account.Transactions[
+			         	dateTimeForTheNextTransactionToBeAdded ] )
+			{
+				this.accountCopy.Add( timedTransaction );
+				addTransactionRow( timedTransaction );
+			}
+		}
+		#endregion addRowsForTransactionsAtTheGivenDateTime
+		
+		private int setRows_addRowsForTransactionsTill_nextDateTimeForEquityLine(
+			int indexForTheNextTransactionToBeAdded ,
+			DateTime nextDateTimeForEquityLine )
+		{
+//			DateTime dateTimeForTheNextTransactionToBeAdded =
+//				(DateTime)this.account.Transactions.GetKey(
+//					indexForTheNextTransactionToBeAdded );
+			while ( this.isNextTransactionToBeAdded(
+				indexForTheNextTransactionToBeAdded , nextDateTimeForEquityLine ) )
+			{
+				DateTime dateTimeForTheNextTransactionToBeAdded =
+					(DateTime)this.account.Transactions.GetKey(
+						indexForTheNextTransactionToBeAdded );
+				this.addRowsForTransactionsAtTheGivenDateTime(
+					dateTimeForTheNextTransactionToBeAdded );
+				indexForTheNextTransactionToBeAdded++;
+			}
+			return indexForTheNextTransactionToBeAdded;
+		}
+		#endregion setRows_addRowsForTransactionsBefore_nextDateTimeForEquityLine
+		
+		private void addRowForPnl_actually( DateTime nextDateTimeForEquityLine )
+		{
+			DataRow dataRow = detailedDataTable.NewRow();
+			dataRow[ "DateTime" ] = nextDateTimeForEquityLine;
+			this.addBalanceItems( nextDateTimeForEquityLine , dataRow );
+//			addBalanceItems( new EndOfDayDateTime( currentDate , EndOfDaySpecificTime.MarketClose ) , dataRow );
+			this.detailedDataTable.Rows.Add( dataRow );
+		}
+		private void addRowForPnl( DateTime nextDateTimeForEquityLine )
+		{
+//			if ( ( Convert.ToInt32(((TimeSpan)(currentDate.Date -
+//			                                   (DateTime) account.Transactions.GetKey( 0 ))).TotalDays )
+//			      % numDaysForInterval ) == 0 )
+			addRowForPnl_actually( nextDateTimeForEquityLine );
+		}
+		private void setRows()
+		{
+			int indexForTheNextTransactionToBeAdded = 0;
+			DateTime nextDateTimeForEquityLine =
+				this.dateTimeSelectorForEquityLine.GetNextDateTime();
+			while ( nextDateTimeForEquityLine <= this.endDateTime )
+			{
+				indexForTheNextTransactionToBeAdded =
+					this.setRows_addRowsForTransactionsTill_nextDateTimeForEquityLine(
+						indexForTheNextTransactionToBeAdded ,
+						nextDateTimeForEquityLine );
+				this.addRowForPnl( nextDateTimeForEquityLine );
+				nextDateTimeForEquityLine =
+					this.dateTimeSelectorForEquityLine.GetNextDateTime();
+			}
+			
+//			DateTime currentDateTime = (DateTime) account.Transactions.GetKey( 0 );
+//			try
+//			{
+//				while ( currentDateTime < this.endDateTime )
+//				{
+//					//addTransactionsToAccountCopy( currentDate );
+//					addRowsForTransactions( currentDateTime , detailedDataTable );
+//					addRowForPnl( numDaysForInterval , currentDateTime , detailedDataTable );
+//					currentDateTime = this.getNextDateTimeForDetailedDataTable(
+//						currentDateTime );
+			////					currentDateTime = currentDate.AddDays( 1 );
+//				}
+//			}
+//			catch (Exception ex)
+//			{
+//				MessageBox.Show( ex.ToString() );
+//			}
+		}
+		#endregion setRows
+		
+		private void setDetailedDataTable_actually()
+		{
+			this.detailedDataTable = new System.Data.DataTable();
+			this.setColumns();
+			this.setRows();
+//			return detailedDataTable;
+		}
+		#endregion getDetailedDataTable
 
-		#region Create
+		private void setDetailedDataTable( long numDaysForInterval )
+		{
+			if ( this.detailedDataTable == null )
+				// the detailedDataTable has not been computed yet
+				this.setDetailedDataTable_actually();
+		}
+		#endregion setDetailedDataTable
+		
+		
 		private void setBenchmarkEquityLine()
 		{
-			History benchmarkQuotes = HistoricalDataProvider.GetAdjustedCloseHistory(
+			History benchmarkQuotes = HistoricalQuotesProvider.GetAdjustedCloseHistory(
 				this.benchmark , (DateTime)this.EquityLine.GetKey( 0 ) ,
 				(DateTime)this.EquityLine.GetKey( this.EquityLine.Count - 1 ) );
 			this.benchmarkEquityLine = benchmarkQuotes.Select( this.EquityLine );
 			this.benchmarkEquityLine.Interpolate( this.EquityLine.Keys , new PreviousInterpolator() );
 		}
-		private void setDetailedDataTable( long numDaysForInterval )
+		
+		public AccountReport Create(
+			string reportName , long numDaysForInterval ,
+			DateTime endDateTime , string benchmark )
 		{
-			if ( this.detailedDataTable == null )
-				// the detailedDataTable has not been computed yet
-				this.detailedDataTable =
-					this.getDetailedDataTable( numDaysForInterval );
+			this.reportName = reportName;
+			this.endDateTime = endDateTime;
+			this.benchmark = benchmark;
+			this.setDetailedDataTable( numDaysForInterval );
+			this.transactionTable = new Tables.Transactions( reportName , detailedDataTable );
+			//      this.transactionTable = getTransactionTable( reportName , detailedDataTable );
+			this.roundTrades = new Tables.RoundTrades( reportName , this.transactionTable );
+			this.equity = new Tables.Equity( reportName , detailedDataTable );
+			if ( benchmark != "" )
+				this.setBenchmarkEquityLine();
+			//this.equity = getEquity( reportName , detailedDataTable );
+			//this.summary = getSummary( reportName );
+			this.summary = new Tables.Summary( this , historicalMarketValueProvider );
+			this.statisticsSummary = new Tables.StatisticsSummary( this, historicalMarketValueProvider );
+			return this;
 		}
+		#endregion Create
+
 		/// <summary>
 		/// Creates the equity line in a faster way than if it is created
 		/// by the Create method
@@ -283,34 +377,14 @@ namespace QuantProject.Business.Financial.Accounting.Reporting
 		/// <param name="numDaysForInterval"></param>
 		/// <param name="endDateTime"></param>
 		/// <returns></returns>
-		public void SetEquityLine( long numDaysForInterval ,
-			EndOfDayDateTime endDateTime )
+		public void SetEquityLine(
+			long numDaysForInterval , DateTime endDateTime )
 		{
 			this.endDateTime = endDateTime;
 			this.setDetailedDataTable( numDaysForInterval );
 			this.equity = new Tables.Equity( reportName , detailedDataTable );
 		}
-		public AccountReport Create( string reportName , long numDaysForInterval ,
-			EndOfDayDateTime endDateTime , string benchmark )
-		{
-			this.reportName = reportName;
-			this.endDateTime = endDateTime;
-      this.benchmark = benchmark;
-			this.setDetailedDataTable( numDaysForInterval );
-      this.transactionTable = new Tables.Transactions( reportName , detailedDataTable );
-//      this.transactionTable = getTransactionTable( reportName , detailedDataTable );
-      this.roundTrades = new Tables.RoundTrades( reportName , this.transactionTable );
-      this.equity = new Tables.Equity( reportName , detailedDataTable );
-			if ( benchmark != "" )
-				this.setBenchmarkEquityLine();
-      //this.equity = getEquity( reportName , detailedDataTable );
-      //this.summary = getSummary( reportName );
-      this.summary = new Tables.Summary( this , historicalQuoteProvider );
-			this.statisticsSummary = new Tables.StatisticsSummary( this, historicalQuoteProvider );
-      return this;
-    }
-		#endregion
-
+		
 		#region Serialization
 
 		/// <summary>
@@ -320,7 +394,7 @@ namespace QuantProject.Business.Financial.Accounting.Reporting
 		/// <param name="info"></param>
 		/// <param name="context"></param>
 		protected AccountReport( SerializationInfo info , StreamingContext context ) :
-																base( )
+			base( )
 		{
 			// get the set of serializable members for this class and its base classes
 			Type thisType = this.GetType();
@@ -328,7 +402,7 @@ namespace QuantProject.Business.Financial.Accounting.Reporting
 				thisType , context);
 
 			// deserialize the fields from the info object
-			for (Int32 i = 0 ; i < mi.Length; i++) 
+			for (Int32 i = 0 ; i < mi.Length; i++)
 			{
 				FieldInfo fieldInfo = (FieldInfo) mi[i];
 				// set the field to the deserialized value
@@ -346,25 +420,25 @@ namespace QuantProject.Business.Financial.Accounting.Reporting
 		}
 		
 		void ISerializable.GetObjectData(
-			SerializationInfo info, StreamingContext context) 
+			SerializationInfo info, StreamingContext context)
 		{
 			// get the set of serializable members for this class and base classes
 			Type thisType = this.GetType();
-			MemberInfo[] mi = 
+			MemberInfo[] mi =
 				FormatterServices.GetSerializableMembers( thisType , context);
 
 			// serialize the fields to the info object
-			for (Int32 i = 0 ; i < mi.Length; i++) 
+			for (Int32 i = 0 ; i < mi.Length; i++)
 			{
 				info.AddValue(mi[i].Name, ((FieldInfo) mi[i]).GetValue(this));
 			}
 		}
 		#endregion
 
-    public AccountReport Create( string reportName , long numDaysForInterval ,
-      EndOfDayDateTime endDateTime )
-    {
-      return Create( reportName , numDaysForInterval , endDateTime , "" );
-    }
+		public AccountReport Create(
+			string reportName , long numDaysForInterval , DateTime endDateTime )
+		{
+			return this.Create( reportName , numDaysForInterval , endDateTime , "" );
+		}
 	}
 }

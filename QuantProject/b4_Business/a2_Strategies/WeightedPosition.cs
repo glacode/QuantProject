@@ -98,14 +98,16 @@ namespace QuantProject.Business.Strategies
 			HistoricalAdjustedQuoteProvider historicalAdjustedQuoteProvider =
 				new HistoricalAdjustedQuoteProvider();
 			double todayMarketValueAtClose =
-				historicalAdjustedQuoteProvider.GetMarketValue(	ticker ,
-				new EndOfDayDateTime( dateTime , EndOfDaySpecificTime.MarketClose ) );
+				historicalAdjustedQuoteProvider.GetMarketValue(
+					ticker , HistoricalEndOfDayTimer.GetMarketClose( dateTime ) );
+//				new EndOfDayDateTime( dateTime , EndOfDaySpecificTime.MarketClose ) );
 			DateTime yesterday = dateTime.AddDays( -1 );
-			EndOfDayDateTime yesterdayAtClose = new
-				EndOfDayDateTime( yesterday ,	EndOfDaySpecificTime.MarketClose );
+			DateTime yesterdayAtClose =
+				HistoricalEndOfDayTimer.GetMarketClose( yesterday );
+//				new	EndOfDayDateTime( yesterday ,	EndOfDaySpecificTime.MarketClose );
 			double yesterdayMarketValueAtClose =
 				historicalAdjustedQuoteProvider.GetMarketValue(
-				ticker , yesterdayAtClose );
+					ticker , yesterdayAtClose );
 			double dailyReturnForLongPosition =
 				( todayMarketValueAtClose / yesterdayMarketValueAtClose ) - 1;
 			double dailyReturn = dailyReturnForLongPosition * this.Weight;

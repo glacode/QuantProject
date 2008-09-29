@@ -36,14 +36,14 @@ namespace QuantProject.Business.Strategies.ReturnsManagement.Time
 	{
 		/// <summary>
 		/// Creates the OTC-CTO intervals for the given benchmark, from
-		/// the first EndOfDayDateTime to the last EndOfDayDateTime
+		/// the first DateTime to the last DateTime
 		/// </summary>
 		/// <param name="firstEndOfDayDateTime"></param>
 		/// <param name="lastEndOfDayDateTime"></param>
 		/// <param name="benchmark"></param>
-		public OpenToCloseCloseToOpenIntervals( EndOfDayDateTime firstEndOfDayDateTime ,
-			EndOfDayDateTime lastEndOfDayDateTime , string benchmark ) :
-			base( firstEndOfDayDateTime , lastEndOfDayDateTime , benchmark )
+		public OpenToCloseCloseToOpenIntervals( DateTime firstDateTime ,
+			DateTime lastDateTime , string benchmark ) :
+			base( firstDateTime , lastDateTime , benchmark )
 		{
 		}
 		#region setIntervals
@@ -53,19 +53,23 @@ namespace QuantProject.Business.Strategies.ReturnsManagement.Time
 			DateTime dateTimeForOTC =
 				(DateTime)this.marketDaysForBenchmark.GetKey( i );
 			ReturnInterval returnOTCInterval = new ReturnInterval(
-				new EndOfDayDateTime( dateTimeForOTC ,
-				EndOfDaySpecificTime.MarketOpen ) ,
-				new EndOfDayDateTime( dateTimeForOTC ,
-				EndOfDaySpecificTime.MarketClose ) );
+				HistoricalEndOfDayTimer.GetMarketOpen( dateTimeForOTC ) ,
+				HistoricalEndOfDayTimer.GetMarketClose( dateTimeForOTC ) );
+//				new EndOfDayDateTime( dateTimeForOTC ,
+//				EndOfDaySpecificTime.MarketOpen ) ,
+//				new EndOfDayDateTime( dateTimeForOTC ,
+//				EndOfDaySpecificTime.MarketClose ) );
 			this.Add( returnOTCInterval );
 			//adds the following close to open interval
 			DateTime dateTimeForCTOEnd = 
 				(DateTime)this.marketDaysForBenchmark.GetKey( i + 1 );
 			ReturnInterval returnCTOInterval = new ReturnInterval(
-				new EndOfDayDateTime( dateTimeForOTC ,
-				EndOfDaySpecificTime.MarketClose ) ,
-				new EndOfDayDateTime( dateTimeForCTOEnd ,
-				EndOfDaySpecificTime.MarketOpen ) );
+				HistoricalEndOfDayTimer.GetMarketClose( dateTimeForCTOEnd ) ,
+				HistoricalEndOfDayTimer.GetMarketOpen( dateTimeForCTOEnd ) );
+//				new EndOfDayDateTime( dateTimeForOTC ,
+//				EndOfDaySpecificTime.MarketClose ) ,
+//				new EndOfDayDateTime( dateTimeForCTOEnd ,
+//				EndOfDaySpecificTime.MarketOpen ) );
 			this.Add( returnCTOInterval );
 		}
 		protected override void setIntervals()

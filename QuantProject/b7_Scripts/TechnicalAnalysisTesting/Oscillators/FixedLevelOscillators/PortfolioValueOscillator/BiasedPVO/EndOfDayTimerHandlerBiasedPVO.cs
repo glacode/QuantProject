@@ -141,8 +141,8 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOs
 		}
 		
 		//to avoid handlers in inherited classes
-		public override void MarketOpenEventHandler(
-			Object sender , EndOfDayTimingEventArgs endOfDayTimingEventArgs )
+		protected override void marketOpenEventHandler(
+			Object sender , DateTime dateTime )
 		{
 			;
 		}
@@ -223,14 +223,18 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOs
 		//"acceptable" degree and sets currentWeightedPositionsGainOrLoss accordingly
 		protected virtual void openPositions_chooseGenome(IndexBasedEndOfDayTimer timer)
 		{
-			DateTime today = timer.GetCurrentTime().DateTime;
+			DateTime today = timer.GetCurrentDateTime();
 			DateTime firstMarketDayForOscillatingPeriod =
 				timer.GetPreviousDateTime(this.numDaysForOscillatingPeriod);
 			ReturnsManager returnsManager = new ReturnsManager(
-				new CloseToCloseIntervals(new EndOfDayDateTime(firstMarketDayForOscillatingPeriod, EndOfDaySpecificTime.MarketClose),
-				                          new EndOfDayDateTime(today, EndOfDaySpecificTime.MarketClose),
-				                          this.benchmark,
-				                          this.numDaysForOscillatingPeriod),
+				new CloseToCloseIntervals(
+					HistoricalEndOfDayTimer.GetMarketClose(
+						firstMarketDayForOscillatingPeriod ) ,
+					HistoricalEndOfDayTimer.GetMarketClose( today ) ,
+//					new EndOfDayDateTime(firstMarketDayForOscillatingPeriod, EndOfDaySpecificTime.MarketClose),
+//				                          new EndOfDayDateTime(today, EndOfDaySpecificTime.MarketClose),
+					this.benchmark,
+					this.numDaysForOscillatingPeriod),
 				new HistoricalAdjustedQuoteProvider() );
 			if(this.resetThresholdsBeforeCheckingOutOfSample)
 				this.openPositions_chooseGenome_resetThresholds(today);
@@ -400,7 +404,7 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOs
 		private bool marketCloseEventHandler_isTimerStateValidForStrategy(IndexBasedEndOfDayTimer timer)
 		{
 			bool returnValue;
-			DateTime currentTime =  timer.GetCurrentTime().DateTime;
+			DateTime currentTime =  timer.GetCurrentDateTime();
 			DateTime firstDateOfOscillatingPeriod =
 				timer.GetPreviousDateTime(this.numDaysForOscillatingPeriod);
 			returnValue = currentTime.CompareTo(firstDateOfOscillatingPeriod) > 0;
@@ -423,8 +427,8 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOs
 			}
 		}
 
-		public override void MarketCloseEventHandler(
-			Object sender , EndOfDayTimingEventArgs endOfDayTimingEventArgs )
+		protected override void marketCloseEventHandler(
+			Object sender , DateTime dateTime )
 		{
 			if(this.account.Portfolio.Count > 0)
 			{
@@ -602,10 +606,10 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOs
 		/// </summary>
 		/// <param name="sender"></param>
 		/// <param name="eventArgs"></param>
-		public override void OneHourAfterMarketCloseEventHandler(
-			Object sender , EndOfDayTimingEventArgs endOfDayTimingEventArgs )
+		protected override void oneHourAfterMarketCloseEventHandler(
+			Object sender , DateTime dateTime )
 		{
-			this.lastCloseDate = endOfDayTimingEventArgs.EndOfDayDateTime.DateTime;
+			this.lastCloseDate = dateTime;
 			this.seedForRandomGenerator++;
 			this.numDaysElapsedSinceLastOptimization++;
 			if((this.numDaysElapsedSinceLastOptimization ==
@@ -614,16 +618,15 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOs
 			{
 				if(this.pathOfFileContainingGenomes == null)
 					//tickers have to be set by a new optimization process (in sample)
-					this.setTickers(endOfDayTimingEventArgs.EndOfDayDateTime.DateTime, false);
+					this.setTickers(dateTime, false);
 				//sets tickers to be chosen next Market Close event
 				else//this.pathOfFileContainingGenomes != null
-					this.setTickersFromFile(endOfDayTimingEventArgs.EndOfDayDateTime.DateTime);
+					this.setTickersFromFile(dateTime);
 				//set tickers from file
 				this.numDaysElapsedSinceLastOptimization = 0;
 			}
 		}
 		
 		#endregion
-
 	}
 }

@@ -38,6 +38,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.PairsTrading
 	/// <summary>
 	/// genetic IInSampleChooser for the pairs trading strategy
 	/// </summary>
+	[Serializable]
 	public class PairsTradingGeneticChooser : GeneticChooser
 	{
 		public PairsTradingGeneticChooser(
@@ -45,7 +46,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.PairsTrading
 			Benchmark benchmark ,
 			IDecoderForTestingPositions decoderForTestingPositions ,
 			IFitnessEvaluator fitnessEvaluator ,
-			IHistoricalQuoteProvider historicalQuoteProvider ,
+			HistoricalMarketValueProvider historicalMarketValueProvider ,
 			double crossoverRate , double mutationRate , double elitismRate ,
 			int populationSizeForGeneticOptimizer ,
 			int generationNumberForGeneticOptimizer ,
@@ -56,7 +57,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.PairsTrading
 				benchmark ,
 				decoderForTestingPositions ,
 				fitnessEvaluator ,
-				historicalQuoteProvider ,
+				historicalMarketValueProvider ,
 				crossoverRate ,
 				mutationRate ,
 				elitismRate ,

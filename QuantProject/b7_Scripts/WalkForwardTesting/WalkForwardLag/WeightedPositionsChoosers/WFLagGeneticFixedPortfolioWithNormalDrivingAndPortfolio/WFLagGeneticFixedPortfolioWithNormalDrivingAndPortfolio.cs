@@ -54,7 +54,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag.WeightedPositio
 
 		protected GeneticOptimizer geneticOptimizer;
 		protected WFLagWeightedPositions wFLagChosenPositions;
-		private EndOfDayDateTime timeWhenChosePositionsIsRequested;
+		private DateTime timeWhenChosePositionsIsRequested;
 
 //		// first in sample quote date for driving positions
 //		protected DateTime firstInSampleDateForDrivingPositions;
@@ -137,19 +137,21 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag.WeightedPositio
 				generationNumberForGeneticOptimizer;
 		}
 		#region setChosenPositions_usingTheGeneticOptimizer
-		private ReturnIntervals getReturnIntervals( EndOfDayDateTime now )
+		private ReturnIntervals getReturnIntervals( DateTime now )
 		{
 			DateTime firstInSampleDateForDrivingPositions =
-				now.DateTime.AddDays(
+				now.AddDays(
 				-( this.NumberDaysForInSampleOptimization - 1 ) );
 			DateTime lastInSampleOptimizationDate =
-				now.DateTime;
+				now;
 			ReturnIntervals returnIntervals =
 				new CloseToCloseIntervals(
-				new EndOfDayDateTime( firstInSampleDateForDrivingPositions ,
-				EndOfDaySpecificTime.MarketClose ) ,
-				new EndOfDayDateTime( lastInSampleOptimizationDate ,
-				EndOfDaySpecificTime.MarketClose ) ,
+				HistoricalEndOfDayTimer.GetMarketClose( firstInSampleDateForDrivingPositions ) ,
+				HistoricalEndOfDayTimer.GetMarketClose( lastInSampleOptimizationDate ) ,
+//				new EndOfDayDateTime( firstInSampleDateForDrivingPositions ,
+//				EndOfDaySpecificTime.MarketClose ) ,
+//				new EndOfDayDateTime( lastInSampleOptimizationDate ,
+//				EndOfDaySpecificTime.MarketClose ) ,
 				this.benchmark );
 			return returnIntervals;
 		}
@@ -161,7 +163,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag.WeightedPositio
 			WFLagGenerationDebugger wFLagGenerationDebugger =
 				new WFLagGenerationDebugger(
 				e.Generation ,
-				this.timeWhenChosePositionsIsRequested.DateTime ,
+				this.timeWhenChosePositionsIsRequested ,
 				this.NumberDaysForInSampleOptimization ,
 				this.benchmark );
 			wFLagGenerationDebugger.Debug();
@@ -189,7 +191,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag.WeightedPositio
 		}
 		private void setChosenPositions_FromDecodableGenome(
 			IGenomeManager genomeManager , Genome genome ,
-			EndOfDayDateTime now )
+			DateTime now )
 		{
 			this.wFLagChosenPositions =
 				this.getWFLagWeightedPositions_FromDecodableGenome(
@@ -208,7 +210,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag.WeightedPositio
 		}
 		public virtual void setChosenPositions_usingTheGeneticOptimizer(
 			WFLagEligibleTickers eligibleTickersForDrivingPositions ,
-			EndOfDayDateTime now )
+			DateTime now )
 		{
 			ReturnIntervals returnIntervals =
 				this.getReturnIntervals( now );
@@ -246,9 +248,10 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag.WeightedPositio
 		#endregion //setChosenPositions_usingTheGeneticOptimizer
 		private void chosePositions_checkParameters(
 			WFLagEligibleTickers eligibleTickersForDrivingPositions ,
-			EndOfDayDateTime now )
+			DateTime now )
 		{
-			if ( now.EndOfDaySpecificTime != EndOfDaySpecificTime.OneHourAfterMarketClose )
+			if ( HistoricalEndOfDayTimer.IsOneHourAfterMarketClose( now ) )
+//			if ( now.EndOfDaySpecificTime != EndOfDaySpecificTime.OneHourAfterMarketClose )
 				throw new Exception( "The 'now' parameter must be one hour after market " +
 					"close. It is not." );
 			if ( eligibleTickersForDrivingPositions.EligibleTickers.Rows.Count <
@@ -268,7 +271,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag.WeightedPositio
 		public void ChosePositions(
 			WFLagEligibleTickers eligibleTickersForDrivingPositions ,
 			WFLagEligibleTickers eligibleTickersForPortfolioPositions ,
-			EndOfDayDateTime now )
+			DateTime now )
 		{
 			this.timeWhenChosePositionsIsRequested = now;
 			this.chosePositions_checkParameters( eligibleTickersForDrivingPositions ,

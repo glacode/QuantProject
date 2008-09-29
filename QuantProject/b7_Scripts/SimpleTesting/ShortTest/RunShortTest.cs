@@ -2,7 +2,7 @@
 QuantProject - Quantitative Finance Library
 
 RunShortTest.cs
-Copyright (C) 2003 
+Copyright (C) 2003
 Glauco Siliprandi
 
 This program is free software; you can redistribute it and/or
@@ -18,7 +18,7 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
-*/
+ */
 
 using System;
 
@@ -41,7 +41,7 @@ namespace QuantProject.Scripts.SimpleTesting.ShortTest
 		private DateTime startDateTime = new DateTime( 2000 , 1 , 1 );
 		private DateTime endDateTime = new DateTime( 2000 , 12 , 31 );
 		private Account account;
-		private IHistoricalQuoteProvider historicalQuoteProvider =
+		private HistoricalMarketValueProvider historicalMarketValueProvider =
 			new HistoricalAdjustedQuoteProvider();
 		/// <summary>
 		/// Script to test the One Rank strategy on a single ticker
@@ -53,8 +53,10 @@ namespace QuantProject.Scripts.SimpleTesting.ShortTest
 		{
 			HistoricalEndOfDayTimer historicalEndOfDayTimer =
 				new IndexBasedEndOfDayTimer(
-				new EndOfDayDateTime( this.startDateTime ,
-				EndOfDaySpecificTime.MarketOpen ) , "MSFT" );
+					HistoricalEndOfDayTimer.GetMarketOpen( this.startDateTime ) ,
+//				new EndOfDayDateTime( this.startDateTime ,
+//				EndOfDaySpecificTime.MarketOpen ) ,
+					"MSFT" );
 			//			this.account = new Account( "MSFT" , historicalEndOfDayTimer ,
 			//				new HistoricalEndOfDayDataStreamer( historicalEndOfDayTimer ,
 			//				this.historicalQuoteProvider ) ,
@@ -62,20 +64,25 @@ namespace QuantProject.Scripts.SimpleTesting.ShortTest
 			//				this.historicalQuoteProvider ) ,
 			//				new IBCommissionManager() );
 			this.account = new Account( "MSFT" , historicalEndOfDayTimer ,
-				new HistoricalEndOfDayDataStreamer( historicalEndOfDayTimer ,
-				this.historicalQuoteProvider ) ,
-				new HistoricalEndOfDayOrderExecutor( historicalEndOfDayTimer ,
-				this.historicalQuoteProvider ) );
-			EndOfDayTimerHandler EndOfDayTimerHandler =
+			                           new HistoricalEndOfDayDataStreamer( historicalEndOfDayTimer ,
+			                                                              this.historicalMarketValueProvider ) ,
+			                           new HistoricalEndOfDayOrderExecutor( historicalEndOfDayTimer ,
+			                                                               this.historicalMarketValueProvider ) );
+			EndOfDayTimerHandler endOfDayTimerHandler =
 				new EndOfDayTimerHandler( this.account , endDateTime );
-			historicalEndOfDayTimer.MarketOpen += new MarketOpenEventHandler(
-				EndOfDayTimerHandler.MarketOpenEventHandler );
-			historicalEndOfDayTimer.MarketClose += new MarketCloseEventHandler(
-				EndOfDayTimerHandler.MarketCloseEventHandler );
-			this.account.EndOfDayTimer.Start();
-			Report report = new Report( this.account , this.historicalQuoteProvider );
-			report.Show( "WFT One Rank" , 1 ,
-				new EndOfDayDateTime( this.endDateTime , EndOfDaySpecificTime.MarketClose ) ,
+			historicalEndOfDayTimer.NewDateTime +=
+				new NewDateTimeEventHandler( endOfDayTimerHandler.NewDateTimeEventHandler );
+
+//			historicalEndOfDayTimer.MarketOpen += new MarketOpenEventHandler(
+//				endOfDayTimerHandler.MarketOpenEventHandler );
+//			historicalEndOfDayTimer.MarketClose += new MarketCloseEventHandler(
+//				endOfDayTimerHandler.MarketCloseEventHandler );
+			this.account.Timer.Start();
+			Report report = new Report( this.account , this.historicalMarketValueProvider );
+			report.Show(
+				"WFT One Rank" , 1 ,
+				HistoricalEndOfDayTimer.GetMarketClose(	this.endDateTime ) ,
+//					new EndOfDayDateTime( this.endDateTime , EndOfDaySpecificTime.MarketClose ) ,
 				"MSFT" );
 		}
 	}

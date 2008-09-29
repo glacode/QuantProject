@@ -24,6 +24,7 @@ using System;
 using QuantProject.ADT;
 using QuantProject.ADT.Histories;
 using QuantProject.Data.DataProviders;
+using QuantProject.Data.DataProviders.Quotes;
 using QuantProject.Business.Timing;
 
 namespace QuantProject.Business.Financial.Instruments
@@ -56,13 +57,13 @@ namespace QuantProject.Business.Financial.Instruments
 
     public DateTime GetNextMarketDay( DateTime dateTime )
     {
-      History history = HistoricalDataProvider.GetOpenHistory( this.Key );
+      History history = HistoricalQuotesProvider.GetOpenHistory( this.Key );
       return history.GetNextDay( dateTime );
     }
 //millo
 	public DateTime GetMarketDay( DateTime initialDateTime, int numberOfDaysAhead )
 	{
-		History history = HistoricalDataProvider.GetOpenHistory( this.Key );
+		History history = HistoricalQuotesProvider.GetOpenHistory( this.Key );
 		return history.GetDay(initialDateTime, numberOfDaysAhead );
 	}
 //millo

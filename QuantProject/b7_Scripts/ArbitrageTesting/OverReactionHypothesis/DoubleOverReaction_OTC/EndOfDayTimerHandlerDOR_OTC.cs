@@ -30,7 +30,7 @@ using QuantProject.Business.Financial.Ordering;
 using QuantProject.Business.Timing;
 using QuantProject.Business.Strategies;
 using QuantProject.Data;
-using QuantProject.Data.DataProviders;
+using QuantProject.Data.DataProviders.Quotes;
 using QuantProject.Data.Selectors;
 
 namespace QuantProject.Scripts.ArbitrageTesting.OverReactionHypothesis.DoubleOverReaction_OTC
@@ -81,7 +81,7 @@ namespace QuantProject.Scripts.ArbitrageTesting.OverReactionHypothesis.DoubleOve
 			this.orders = new ArrayList();
 		}
 		
-		#region MarketOpenEventHandler
+		#region marketOpenEventHandler
 
 		private void addOrderForTicker(string[] tickers,
 		                               int tickerPosition )
@@ -122,17 +122,23 @@ namespace QuantProject.Scripts.ArbitrageTesting.OverReactionHypothesis.DoubleOve
 		
 		private double setChosenTickers_getGainOrLossFromPreviousClose(string signedTicker)
 		{
-			IndexBasedEndOfDayTimer currentTimer = (IndexBasedEndOfDayTimer)this.account.EndOfDayTimer;
-			ExtendedDateTime nowAtOpen =
-				new ExtendedDateTime(currentTimer.GetCurrentTime().DateTime,
-				                     BarComponent.Open);
-			ExtendedDateTime previousClose =
-				new ExtendedDateTime(currentTimer.GetPreviousDateTime(),
-				                     BarComponent.Close);
+			IndexBasedEndOfDayTimer currentTimer = (IndexBasedEndOfDayTimer)this.account.Timer;
+			DateTime nowAtOpen =
+				HistoricalEndOfDayTimer.GetMarketOpen( currentTimer.GetCurrentDateTime() );
+//				new ExtendedDateTime(currentTimer.GetCurrentTime().DateTime,
+//				                     BarComponent.Open);
+			DateTime previousClose =
+				HistoricalEndOfDayTimer.GetMarketClose( currentTimer.GetPreviousDateTime() );
+//				new ExtendedDateTime(currentTimer.GetPreviousDateTime(),
+//				                     BarComponent.Close);
 			double currentValueAtOpen =
-				HistoricalDataProvider.GetAdjustedMarketValue(SignedTicker.GetTicker(signedTicker), nowAtOpen);
+				HistoricalQuotesProvider.GetAdjustedMarketValue(
+					SignedTicker.GetTicker(signedTicker),
+					nowAtOpen , MarketStatusSwitch.Open );
 			double previousValueAtClose =
-				HistoricalDataProvider.GetAdjustedMarketValue(SignedTicker.GetTicker(signedTicker), previousClose);
+				HistoricalQuotesProvider.GetAdjustedMarketValue(
+					SignedTicker.GetTicker(signedTicker),
+					previousClose , MarketStatusSwitch.Close );
 			
 			return (currentValueAtOpen - previousValueAtClose) / previousValueAtClose;
 		}
@@ -200,8 +206,8 @@ namespace QuantProject.Scripts.ArbitrageTesting.OverReactionHypothesis.DoubleOve
 		/// </summary>
 		/// <param name="sender"></param>
 		/// <param name="eventArgs"></param>
-		public void MarketOpenEventHandler(
-			Object sender , EndOfDayTimingEventArgs endOfDayTimingEventArgs )
+		private void marketOpenEventHandler(
+			Object sender , DateTime dateTime )
 		{
 			if(this.orders.Count == 0 && this.account.Transactions.Count == 0)
 				this.account.AddCash(30000);
@@ -218,7 +224,7 @@ namespace QuantProject.Scripts.ArbitrageTesting.OverReactionHypothesis.DoubleOve
 
 		#endregion
 
-		#region MarketCloseEventHandler
+		#region marketCloseEventHandler
 
 		private void closePosition( string ticker )
 		{
@@ -234,15 +240,15 @@ namespace QuantProject.Scripts.ArbitrageTesting.OverReactionHypothesis.DoubleOve
 				closePosition( ticker );
 		}
 		
-		public void MarketCloseEventHandler(
-			Object sender , EndOfDayTimingEventArgs endOfDayTimingEventArgs )
+		public void marketCloseEventHandler(
+			Object sender , DateTime dateTime )
 		{
 			this.closePositions();
 		}
 
 		#endregion
 
-		#region OneHourAfterMarketCloseEventHandler
+		#region oneHourAfterMarketCloseEventHandler
 		
 		private void oneHourAfterMarketCloseEventHandler_clear()
 		{
@@ -260,11 +266,11 @@ namespace QuantProject.Scripts.ArbitrageTesting.OverReactionHypothesis.DoubleOve
 		/// </summary>
 		/// <param name="sender"></param>
 		/// <param name="eventArgs"></param>
-		public void OneHourAfterMarketCloseEventHandler(
-			Object sender , EndOfDayTimingEventArgs endOfDayTimingEventArgs )
+		public void oneHourAfterMarketCloseEventHandler(
+			Object sender , DateTime dateTime )
 		{
 			this.oneHourAfterMarketCloseEventHandler_clear();
-			DateTime currentDate = endOfDayTimingEventArgs.EndOfDayDateTime.DateTime;
+			DateTime currentDate = dateTime;
 			SelectorByGroup temporizedGroup = new SelectorByGroup(this.tickerGroupID,
 			                                                      currentDate);
 			DataTable tickersFromGroup = temporizedGroup.GetTableOfSelectedTickers();
@@ -349,5 +355,17 @@ namespace QuantProject.Scripts.ArbitrageTesting.OverReactionHypothesis.DoubleOve
 			//          this.worstTickers[i] = (string)tableOfWorstTickers.Rows[i][0];
 		}
 		#endregion
+		
+		public virtual void NewDateTimeEventHandler(
+			Object sender , DateTime dateTime )
+		{
+			if ( HistoricalEndOfDayTimer.IsMarketOpen( dateTime ) )
+				this.marketOpenEventHandler( sender , dateTime );
+			if ( HistoricalEndOfDayTimer.IsMarketClose( dateTime ) )
+				this.marketCloseEventHandler( sender , dateTime );
+			if ( HistoricalEndOfDayTimer.IsOneHourAfterMarketClose( dateTime ) )
+				this.oneHourAfterMarketCloseEventHandler( sender , dateTime );
+		}
+
 	}
 }

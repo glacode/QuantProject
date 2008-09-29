@@ -32,21 +32,21 @@ namespace QuantProject.Business.DataProviders
 	public class TickerNotExchangedException : Exception
 	{
 		private string ticker;
-		private EndOfDayDateTime endOfDayDateTime;
+		private DateTime dateTime;
 		public override string Message
 		{
 			get
 			{
 				return "Missing quote for ticker " +
 					this.ticker + " for end of day date time " +
-					this.endOfDayDateTime.Description;
+					this.dateTime.ToString();
 			}
 		}
 		public TickerNotExchangedException( string ticker ,
-			EndOfDayDateTime endOfDayDateTime )
+			DateTime dateTime )
 		{
 			this.ticker = ticker;
-			this.endOfDayDateTime = endOfDayDateTime;
+			this.dateTime = dateTime;
 		}
 	}
 }

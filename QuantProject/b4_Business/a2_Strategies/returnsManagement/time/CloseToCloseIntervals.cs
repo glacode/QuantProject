@@ -33,20 +33,20 @@ namespace QuantProject.Business.Strategies.ReturnsManagement.Time
 	{
 		/// <summary>
 		/// Creates the close to close intervals for the given benchmark, from
-		/// the first EndOfDayDateTime to the last EndOfDayDateTime
+		/// the first DateTime to the last DateTime
 		/// </summary>
-		/// <param name="firstEndOfDayDateTime"></param>
-		/// <param name="lastEndOfDayDateTime"></param>
+		/// <param name="firstDateTime"></param>
+		/// <param name="lastDateTime"></param>
 		/// <param name="benchmark"></param>
-		public CloseToCloseIntervals( EndOfDayDateTime firstEndOfDayDateTime ,
-			EndOfDayDateTime lastEndOfDayDateTime , string benchmark ) :
-			base( firstEndOfDayDateTime , lastEndOfDayDateTime , benchmark )
+		public CloseToCloseIntervals( DateTime firstDateTime ,
+			DateTime lastDateTime , string benchmark ) :
+			base( firstDateTime , lastDateTime , benchmark )
 		{
 			
 		}
 		/// <summary>
 		/// Creates the close to close intervals for the given benchmark, from
-		/// the first EndOfDayDateTime to the last EndOfDayDateTime:
+		/// the first DateTime to the last DateTime:
 		/// each interval begins at a given market day "i" and ends at
 		/// market day "i + intervalLength"
 		/// </summary>
@@ -54,10 +54,10 @@ namespace QuantProject.Business.Strategies.ReturnsManagement.Time
 		/// <param name="lastEndOfDayDateTime"></param>
 		/// <param name="benchmark"></param>
 		/// <param name="intervalLength"></param> 
-		public CloseToCloseIntervals( EndOfDayDateTime firstEndOfDayDateTime ,
-			EndOfDayDateTime lastEndOfDayDateTime , 
+		public CloseToCloseIntervals( DateTime firstDateTime ,
+			DateTime lastDateTime , 
 			string benchmark , int intervalLength ) :
-			base( firstEndOfDayDateTime , lastEndOfDayDateTime , benchmark ,
+			base( firstDateTime , lastDateTime , benchmark ,
 			      intervalLength)
 		{
 			
@@ -67,14 +67,17 @@ namespace QuantProject.Business.Strategies.ReturnsManagement.Time
 		private void addInterval( int i )
 		{
 			DateTime dateTimeForIntervalBegin =
-				(DateTime)this.marketDaysForBenchmark.GetKey( i );
+				HistoricalEndOfDayTimer.GetMarketClose(
+					(DateTime)this.marketDaysForBenchmark.GetKey( i ) );
 			DateTime dateTimeForIntervalEnd =
-				(DateTime)this.marketDaysForBenchmark.GetKey( i + this.intervalLength );
+				HistoricalEndOfDayTimer.GetMarketClose(
+					(DateTime)this.marketDaysForBenchmark.GetKey( i + this.intervalLength ) );
 			ReturnInterval returnInterval = new ReturnInterval(
-				new EndOfDayDateTime( dateTimeForIntervalBegin ,
-				EndOfDaySpecificTime.MarketClose ) ,
-				new EndOfDayDateTime( dateTimeForIntervalEnd ,
-				EndOfDaySpecificTime.MarketClose ) );
+				dateTimeForIntervalBegin , dateTimeForIntervalEnd );
+//				new EndOfDayDateTime( dateTimeForIntervalBegin ,
+//				EndOfDaySpecificTime.MarketClose ) ,
+//				new EndOfDayDateTime( dateTimeForIntervalEnd ,
+//				EndOfDaySpecificTime.MarketClose ) );
 			this.Add( returnInterval );
 		}
 		protected override void setIntervals()

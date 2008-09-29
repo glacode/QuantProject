@@ -31,6 +31,7 @@ namespace QuantProject.Business.Strategies.EquityEvaluation
 	/// Equity line evaluator, measuring the well known
 	/// risk to reward Sharpe Ratio
 	/// </summary>
+	[Serializable]
 	public class SharpeRatio : IEquityEvaluator
 	{
 		public string Description

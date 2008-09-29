@@ -45,7 +45,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.FixedLengthTwoPhases
 	{
 		private FLTPTestingPositions testingPositions;
 		private int numberOfInSampleDays;
-		private EndOfDayDateTime endOfDayDateTimeWhenThisObjectWasLogged;
+		private DateTime dateTimeWhenThisObjectWasLogged;
 		
 		/// <summary>
 		/// Generation when the TestingPositions object has been created
@@ -74,14 +74,14 @@ namespace QuantProject.Scripts.WalkForwardTesting.FixedLengthTwoPhases
 		public TesterForFLTPTestingPositions(
 			TestingPositions testingPositions ,
 			int numberOfInSampleDays ,
-			EndOfDayDateTime endOfDayDateTimeWhenThisObjectWasLogged )
+			DateTime dateTimeWhenThisObjectWasLogged )
 		{
 			this.checkParameters( testingPositions );
 			this.testingPositions =
 				(FLTPTestingPositions)testingPositions;
 			this.numberOfInSampleDays = numberOfInSampleDays;
-			this.endOfDayDateTimeWhenThisObjectWasLogged =
-				endOfDayDateTimeWhenThisObjectWasLogged;
+			this.dateTimeWhenThisObjectWasLogged =
+				dateTimeWhenThisObjectWasLogged;
 		}
 		private void checkParameters( TestingPositions testingPositions )
 		{
@@ -95,26 +95,26 @@ namespace QuantProject.Scripts.WalkForwardTesting.FixedLengthTwoPhases
 		private AccountReport getAccountReport(
 			WeightedPositions weightedPositions ,
 			IIntervalsSelector intervalsSelector ,
-			IHistoricalQuoteProvider historicalQuoteProvider ,
+			HistoricalMarketValueProvider HistoricalMarketValueProvider ,
 			Benchmark benchmark ,
 			double cashToStart )
 		{
 			FLTPSimpleStrategy fLTPSimpleStrategy =
 				new FLTPSimpleStrategy( weightedPositions ,
-				intervalsSelector , historicalQuoteProvider );
+				intervalsSelector , HistoricalMarketValueProvider );
 			IAccountProvider accountProvider =
 				new SimpleAccountProvider();
 
 			DateTime firstDateTime =
-				this.endOfDayDateTimeWhenThisObjectWasLogged.DateTime.AddDays(
+				this.dateTimeWhenThisObjectWasLogged.AddDays(
 				- this.numberOfInSampleDays );
 			DateTime lastDateTime =
-				this.endOfDayDateTimeWhenThisObjectWasLogged.DateTime;
+				this.dateTimeWhenThisObjectWasLogged;
 			double maxRunningHours = 0.3;
 			EndOfDayStrategyBackTester endOfDayStrategyBackTester =
 				new EndOfDayStrategyBackTester(
 				"SimpleFLTP" , fLTPSimpleStrategy ,
-				historicalQuoteProvider , accountProvider ,
+				HistoricalMarketValueProvider , accountProvider ,
 				firstDateTime , lastDateTime ,
 				benchmark , cashToStart , maxRunningHours );
 
@@ -149,7 +149,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.FixedLengthTwoPhases
 
 			Benchmark benchmark = new Benchmark( "MSFT" );
 
-			IHistoricalQuoteProvider historicalQuoteProvider =
+			HistoricalMarketValueProvider historicalMarketValueProvider =
 				new HistoricalAdjustedQuoteProvider();
 
 			//			IInSampleChooser inSampleChooser =
@@ -170,7 +170,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.FixedLengthTwoPhases
 				
 			AccountReport accountReport =
 				this.getAccountReport( weightedPositions , intervalsSelector ,
-				historicalQuoteProvider ,
+				historicalMarketValueProvider ,
 				benchmark , 30000 );
 			
 			Report report =

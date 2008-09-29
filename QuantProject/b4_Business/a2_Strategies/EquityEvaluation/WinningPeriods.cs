@@ -28,6 +28,7 @@ namespace QuantProject.Business.Strategies.EquityEvaluation
 	/// Equity line evaluator, measuring the percentage of winning
 	/// periods on the total number of non flat periods
 	/// </summary>
+	[Serializable]
 	public class WinningPeriods : IEquityEvaluator
 	{
 		public string Description

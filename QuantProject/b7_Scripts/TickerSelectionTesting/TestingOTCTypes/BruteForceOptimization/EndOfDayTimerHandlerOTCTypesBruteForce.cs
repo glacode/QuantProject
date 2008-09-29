@@ -45,7 +45,8 @@ namespace QuantProject.Scripts.TickerSelectionTesting.TestingOTCTypes.BruteForce
   /// OTC strategy types after a common optimization, for testing purposes
   /// </summary>
   [Serializable]
-  public class EndOfDayTimerHandlerOTCTypesBruteForce : EndOfDayTimerHandler
+  public class EndOfDayTimerHandlerOTCTypesBruteForce :
+  	QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios.EndOfDayTimerHandler
   {
     private int seedForRandomGenerator;
     private Account[] accounts;
@@ -90,8 +91,8 @@ namespace QuantProject.Scripts.TickerSelectionTesting.TestingOTCTypes.BruteForce
     /// </summary>
     /// <param name="sender"></param>
     /// <param name="eventArgs"></param>
-    public override void MarketOpenEventHandler(
-      Object sender , EndOfDayTimingEventArgs endOfDayTimingEventArgs )
+    protected override void marketOpenEventHandler(
+      Object sender , DateTime dateTime )
     {
       for(int i = 0; i<this.accounts.Length; i++)
       {
@@ -113,8 +114,8 @@ namespace QuantProject.Scripts.TickerSelectionTesting.TestingOTCTypes.BruteForce
       }
     }
 	          
-    public override void MarketCloseEventHandler(
-      Object sender , EndOfDayTimingEventArgs endOfDayTimingEventArgs )
+    protected override void marketCloseEventHandler(
+      Object sender , DateTime dateTime )
     {
      	if(this.accounts[1].Portfolio.Count > 0)
  		    numOfClosesWithOpenPositionsFor2DaysStrategy++;
@@ -138,7 +139,7 @@ namespace QuantProject.Scripts.TickerSelectionTesting.TestingOTCTypes.BruteForce
       }
     }
    
-		#region OneHourAfterMarketCloseEventHandler
+		#region oneHourAfterMarketCloseEventHandler
       
     protected DataTable getSetOfTickersToBeOptimized(DateTime currentDate)
     {
@@ -209,14 +210,14 @@ namespace QuantProject.Scripts.TickerSelectionTesting.TestingOTCTypes.BruteForce
     /// </summary>
     /// <param name="sender"></param>
     /// <param name="eventArgs"></param>
-    public override void OneHourAfterMarketCloseEventHandler(
-      Object sender , EndOfDayTimingEventArgs endOfDayTimingEventArgs )
+    protected override void oneHourAfterMarketCloseEventHandler(
+      Object sender , DateTime dateTime )
     {
     	this.seedForRandomGenerator++;
       if(this.numDaysElapsedSinceLastOptimization == 
     	   this.numDaysBetweenEachOptimization - 1)
     	{
-    		this.setTickers(endOfDayTimingEventArgs.EndOfDayDateTime.DateTime, false);
+    		this.setTickers(dateTime, false);
       	//sets tickers to be chosen at next Market Open event
       	this.numDaysElapsedSinceLastOptimization = 0;
     	}

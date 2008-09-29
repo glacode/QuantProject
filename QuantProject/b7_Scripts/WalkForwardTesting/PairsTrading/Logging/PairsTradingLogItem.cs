@@ -75,7 +75,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.PairsTrading
 		/// in sample optimization</param>
 		/// <param name="numberOfEligibleTickers"></param>
 		public PairsTradingLogItem(
-			EndOfDayDateTime now ,
+			DateTime now ,
 			TestingPositions[] bestTestingPositionsInSample ,
 			int numberOfInSampleDays ,
 			int numberOfEligibleTickers )
@@ -103,7 +103,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.PairsTrading
 		private void setTesterForPairstTradingTestingPositions(
 			int currentIndex ,
 			TestingPositions testingPositions ,
-			EndOfDayDateTime now )
+			DateTime now )
 		{
 			this.setTestersForPairstTradingTestingPositions_checkParameters(
 				testingPositions );
@@ -115,7 +115,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.PairsTrading
 		}
 		private void setTestersForPairstTradingTestingPositions(
 			TestingPositions[] bestTestingPositionsInSample ,
-			EndOfDayDateTime now )
+			DateTime now )
 		{
 			this.testersForBestTestingPositionsInSample =
 				new TesterForPairsTradingTestingPositions[

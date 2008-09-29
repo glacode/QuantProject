@@ -30,6 +30,7 @@ namespace QuantProject.Presentation
 	/// <summary>
 	/// Manages text messages
 	/// </summary>
+	[Serializable]
 	public class MessageManager
 	{
 		private string textFileName;

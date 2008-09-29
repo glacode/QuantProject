@@ -126,11 +126,11 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag
 //			GenomeManagement.SetRandomGenerator(
 //				11 );
 			GenomeManagement.SetRandomGenerator( seedForRandomGenerator );
-			IHistoricalQuoteProvider historicalQuoteProvider =
+			HistoricalMarketValueProvider historicalMarketValueProvider =
 				new HistoricalAdjustedQuoteProvider();
 			this.closeToCloseReturnsManager =
 				new ReturnsManager( this.returnIntervalsForOptimization ,
-				historicalQuoteProvider );
+				historicalMarketValueProvider );
 
 			this.wFLagMeaningForUndecodableGenomes =
 				new WFLagMeaningForUndecodableGenomes();

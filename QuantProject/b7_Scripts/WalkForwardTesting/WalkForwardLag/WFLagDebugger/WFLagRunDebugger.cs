@@ -2,7 +2,7 @@
 QuantProject - Quantitative Finance Library
 
 WFLagRunDebugger.cs
-Copyright (C) 2003 
+Copyright (C) 2003
 Glauco Siliprandi
 
 This program is free software; you can redistribute it and/or
@@ -18,7 +18,7 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
-*/
+ */
 
 using System;
 using System.Windows.Forms;
@@ -48,22 +48,25 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag.WFLagDebugger
 				wFLagLog.TransactionHistory;
 			DateTime lastDateTime =
 				((DateTime)transactionHistory.GetKey(
-				transactionHistory.Count - 1 ) ).AddDays( 1 );
+					transactionHistory.Count - 1 ) ).AddDays( 1 );
 			RebuildableAccount account =
 				new RebuildableAccount( "FromSerializedTransactions" );
 			account.Add( transactionHistory );
 			Report report = new Report( account ,
-				new HistoricalAdjustedQuoteProvider() );
-			report.Create( "WFT One Rank" , 1 ,
-				new EndOfDayDateTime(
-				lastDateTime ,
-				EndOfDaySpecificTime.OneHourAfterMarketClose ) ,
+			                           new HistoricalAdjustedQuoteProvider() );
+			report.Create(
+				"WFT One Rank" , 1 ,
+				HistoricalEndOfDayTimer.GetOneHourAfterMarketClose(
+					lastDateTime ) ,
+//				new EndOfDayDateTime(
+//				lastDateTime ,
+//				EndOfDaySpecificTime.OneHourAfterMarketClose ) ,
 				"^SPX" );
 			WFLagReportDebugger wFLagReportDebugger =
 				new WFLagReportDebugger( wFLagLog , "^SPX" );
 			report.TransactionGrid.MouseUp +=
 				new MouseEventHandler(
-				wFLagReportDebugger.MouseClickEventHandler );
+					wFLagReportDebugger.MouseClickEventHandler );
 			report.Show();
 		}
 	}

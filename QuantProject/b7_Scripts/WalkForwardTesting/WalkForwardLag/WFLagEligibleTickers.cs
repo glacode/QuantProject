@@ -37,7 +37,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag
 		private string benchmark;
 		private int numberEligibleTickersToBeChosen;
 		private int numberDaysForPerformanceCalculation;
-		private IEndOfDayTimer endOfDayTimer;
+		private Timer endOfDayTimer;
 
 		private DataTable eligibleTickers;
 
@@ -55,7 +55,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag
 			string benchmark ,
 			int numberEligibleTickersToBeChosen ,
 			int numberDaysForPerformanceCalculation ,
-			IEndOfDayTimer endOfDayTimer )
+			Timer endOfDayTimer )
 		{
 			this.checkParametersForWFLagEligibleTickers( tickerGroupID ,	benchmark ,
 				numberEligibleTickersToBeChosen , numberDaysForPerformanceCalculation ,
@@ -72,7 +72,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag
 			string benchmark ,
 			int numberEligibleTickersToBeChosen ,
 			int numberDaysForPerformanceCalculation ,
-			IEndOfDayTimer endOfDayTimer )
+			Timer endOfDayTimer )
 		{
 			if ( numberDaysForPerformanceCalculation <= 0 )
 				throw new Exception( "numberDaysForPerformanceCalculation value is " +
@@ -81,7 +81,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag
 		#region setTickers
 		private DataTable setTickers_build_getSelectedTickers()
 		{
-			DateTime dateTime = this.endOfDayTimer.GetCurrentTime().DateTime;
+			DateTime dateTime = this.endOfDayTimer.GetCurrentDateTime();
 //			SelectorByGroup selectorByGroup =
 //				new SelectorByGroup( this.tickerGroupID , dateTime );
 //			DataTable groupTickers = selectorByGroup.GetTableOfSelectedTickers();

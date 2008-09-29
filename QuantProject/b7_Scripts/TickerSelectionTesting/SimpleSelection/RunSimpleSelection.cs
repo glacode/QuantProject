@@ -59,15 +59,15 @@ namespace QuantProject.Scripts.TickerSelectionTesting.SimpleSelection
 		protected int numDaysForOptimizationPeriod;
 
 		protected ReportTable reportTable;
-		protected EndOfDayDateTime startDateTime;
-		protected EndOfDayDateTime endDateTime;
-		protected IHistoricalQuoteProvider historicalQuoteProvider;
+		protected DateTime startDateTime;
+		protected DateTime endDateTime;
+		protected HistoricalMarketValueProvider historicalMarketValueProvider;
 
 		protected EndOfDayTimerHandlerSimpleSelection endOfDayTimerHandler;
 
 		protected Account account;
 		
-		protected IEndOfDayTimer endOfDayTimer;
+		protected QuantProject.Business.Timing.Timer endOfDayTimer;
 
 		protected string benchmark;
 		
@@ -95,7 +95,7 @@ namespace QuantProject.Scripts.TickerSelectionTesting.SimpleSelection
 		
 		public DateTime TimerLastDate
 		{
-			get{return this.endOfDayTimer.GetCurrentTime().DateTime ;}
+			get{return this.endOfDayTimer.GetCurrentDateTime();}
 		}
 		
 		public RunSimpleSelection(string benchmark,
@@ -104,10 +104,14 @@ namespace QuantProject.Scripts.TickerSelectionTesting.SimpleSelection
 		                          double maxRunningHours)
 		{
 			
-			this.startDateTime = new EndOfDayDateTime(
-				startDate, EndOfDaySpecificTime.FiveMinutesBeforeMarketClose );
-			this.endDateTime = new EndOfDayDateTime(
-				endDate, EndOfDaySpecificTime.OneHourAfterMarketClose );
+			this.startDateTime =
+				HistoricalEndOfDayTimer.GetFiveMinutesBeforeMarketClose( startDate );
+//			new EndOfDayDateTime(
+//				startDate, EndOfDaySpecificTime.FiveMinutesBeforeMarketClose );
+			this.endDateTime =
+				HistoricalEndOfDayTimer.GetOneHourAfterMarketClose( endDate );
+//			new EndOfDayDateTime(
+//				endDate, EndOfDaySpecificTime.OneHourAfterMarketClose );
 			this.benchmark = benchmark;
 			this.ScriptName = "SimpleTestGeneric";
 			this.portfolioType = portfolioType;
@@ -130,10 +134,14 @@ namespace QuantProject.Scripts.TickerSelectionTesting.SimpleSelection
 			this.numberOfTickersToBeChosen = numberOfTickersToBeChosen;
 			this.numDaysForOptimizationPeriod = numDaysForOptimizationPeriod;
 			this.reportTable = new ReportTable( "Summary_Reports" );
-			this.startDateTime = new EndOfDayDateTime(
-				startDate, EndOfDaySpecificTime.FiveMinutesBeforeMarketClose );
-			this.endDateTime = new EndOfDayDateTime(
-				endDate, EndOfDaySpecificTime.OneHourAfterMarketClose );
+			this.startDateTime =
+				HistoricalEndOfDayTimer.GetFiveMinutesBeforeMarketClose( startDate );
+//				new EndOfDayDateTime(
+//				startDate, EndOfDaySpecificTime.FiveMinutesBeforeMarketClose );
+			this.endDateTime =
+				HistoricalEndOfDayTimer.GetOneHourAfterMarketClose( endDate );
+//			new EndOfDayDateTime(
+//				endDate, EndOfDaySpecificTime.OneHourAfterMarketClose );
 			this.benchmark = benchmark;
 			this.ScriptName = "SimpleTestGeneric";
 			this.targetReturn = targetReturn;
@@ -158,9 +166,9 @@ namespace QuantProject.Scripts.TickerSelectionTesting.SimpleSelection
 			//default account with no commissions
 			this.account = new Account( this.scriptName , this.endOfDayTimer ,
 			                           new HistoricalEndOfDayDataStreamer( this.endOfDayTimer ,
-			                                                              this.historicalQuoteProvider ) ,
+			                                                              this.historicalMarketValueProvider ) ,
 			                           new HistoricalEndOfDayOrderExecutor( this.endOfDayTimer ,
-			                                                               this.historicalQuoteProvider ));
+			                                                               this.historicalMarketValueProvider ));
 			
 		}
 		protected virtual void run_initializeEndOfDayTimerHandler()
@@ -179,14 +187,29 @@ namespace QuantProject.Scripts.TickerSelectionTesting.SimpleSelection
 				Directory.CreateDirectory(dirPath);
 		}
 		
-		protected virtual void checkDateForReport(Object sender , EndOfDayTimingEventArgs endOfDayTimingEventArgs)
+//		protected virtual void checkDateForReport(
+//			Object sender , DateTime dateTime)
+//		{
+//			if(dateTime.EndOfDayDateTime.DateTime>=this.endDateTime.DateTime ||
+//			   DateTime.Now >= this.startingTimeForScript.AddHours(this.maxRunningHours))
+//				//last date is reached by the timer or maxRunning hours
+//				//are elapsed from the time script started
+//				this.SaveScriptResults();
+//		}
+		
+		protected virtual void checkDateForReport(
+			Object sender , DateTime dateTime)
 		{
-			if(endOfDayTimingEventArgs.EndOfDayDateTime.DateTime>=this.endDateTime.DateTime ||
-			   DateTime.Now >= this.startingTimeForScript.AddHours(this.maxRunningHours))
-				//last date is reached by the timer or maxRunning hours
-				//are elapsed from the time script started
-				this.SaveScriptResults();
+			if ( HistoricalEndOfDayTimer.IsMarketClose( dateTime ) )
+			{
+				if( dateTime >= this.endDateTime ||
+				   DateTime.Now >= this.startingTimeForScript.AddHours(this.maxRunningHours))
+					//last date is reached by the timer or maxRunning hours
+					//are elapsed from the time script started
+					this.SaveScriptResults();
+			}
 		}
+
 		
 		public virtual void SaveScriptResults()
 		{
@@ -204,7 +227,7 @@ namespace QuantProject.Scripts.TickerSelectionTesting.SimpleSelection
 
 			//default report with numIntervalDays = 1
 			AccountReport accountReport = this.account.CreateReport(fileName,1,
-			                                                        this.endOfDayTimer.GetCurrentTime(),
+			                                                        this.endOfDayTimer.GetCurrentDateTime(),
 			                                                        this.benchmark,
 			                                                        new HistoricalAdjustedQuoteProvider());
 			this.checkDateForReport_createDirIfNotPresent(dirNameWhereToSaveReports);
@@ -228,11 +251,21 @@ namespace QuantProject.Scripts.TickerSelectionTesting.SimpleSelection
 			run_initializeEndOfDayTimerHandler();
 			//run_initializeProgressHandlers();
 		}
+		
+		private void newDateTimeEventHandler( object sender , DateTime dateTime )
+		{
+			if ( HistoricalEndOfDayTimer.IsMarketClose( dateTime ) )
+				this.checkDateForReport( sender , dateTime );
+		}
+
 		protected virtual void run_addEventHandlers()
 		{
-			this.endOfDayTimer.MarketClose +=
-				new MarketCloseEventHandler(
-					this.checkDateForReport);
+			this.endOfDayTimer.NewDateTime +=
+				new NewDateTimeEventHandler( this.newDateTimeEventHandler );
+
+//			this.endOfDayTimer.MarketClose +=
+//				new MarketCloseEventHandler(
+//					this.checkDateForReport);
 			
 			//in inherited classes'override method:
 			//add here TimerHandler's handlers to timer's events

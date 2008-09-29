@@ -43,7 +43,7 @@ namespace QuantProject.Business.Financial.Accounting
 		{
 			foreach( Object key in transactions.Keys )
 			{
-				foreach( EndOfDayTransaction transaction
+				foreach( TimedTransaction transaction
 									 in (ArrayList)transactions[key] )
 				{
 					this.Add( transaction );

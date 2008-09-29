@@ -2,7 +2,7 @@
 QuantProject - Quantitative Finance Library
 
 WalkForwardOpenToCloseDailyStrategy.cs
-Copyright (C) 2003 
+Copyright (C) 2003
 Glauco Siliprandi
 
 This program is free software; you can redistribute it and/or
@@ -18,7 +18,7 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
-*/
+ */
 
 using System;
 using System.Collections;
@@ -39,9 +39,9 @@ namespace QuantProject.Scripts.WalkForwardTesting.LinearCombination
 	/// Open to close daily strategy, for walk forward testing
 	/// </summary>
 	[Serializable]
-	public class WalkForwardOpenToCloseDailyStrategy : IEndOfDayStrategy
+	public class WalkForwardOpenToCloseDailyStrategy : EndOfDayStrategy
 	{
-		private Account account;
+//		private Account account;
 		private string tickerGroupID;
 		private int numDaysForInSampleOptimization;
 		private int numberOfEligibleTickers;
@@ -57,11 +57,11 @@ namespace QuantProject.Scripts.WalkForwardTesting.LinearCombination
 
 		private OptimizationOutput optimizationOutput;
 		
-		public Account Account
-		{
-			get { return this.account; }
-			set { this.account = value; }
-		}
+//		public Account Account
+//		{
+//			get { return this.account; }
+//			set { this.account = value; }
+//		}
 		
 		/// best genomes, one for each optimization process
 		public OptimizationOutput OptimizationOutput
@@ -70,12 +70,12 @@ namespace QuantProject.Scripts.WalkForwardTesting.LinearCombination
 		}
 
 		public WalkForwardOpenToCloseDailyStrategy( Account account ,
-			string tickerGroupID , int numDaysForInSampleOptimization ,
-			int numberOfEligibleTickers ,
-			int numberOfTickersToBeChosen , string benchmark ,
-			double targetReturn , PortfolioType portfolioType ,
-			int populationSizeForGeneticOptimizer ,
-			int generationNumberForGeneticOptimizer )
+		                                           string tickerGroupID , int numDaysForInSampleOptimization ,
+		                                           int numberOfEligibleTickers ,
+		                                           int numberOfTickersToBeChosen , string benchmark ,
+		                                           double targetReturn , PortfolioType portfolioType ,
+		                                           int populationSizeForGeneticOptimizer ,
+		                                           int generationNumberForGeneticOptimizer )
 		{
 			this.account = account;
 			this.tickerGroupID = tickerGroupID;
@@ -106,25 +106,25 @@ namespace QuantProject.Scripts.WalkForwardTesting.LinearCombination
 			string ticker = GenomeRepresentation.GetTicker( signedTicker );
 			long quantity = marketOpenEventHandler_addOrder_getQuantity( ticker );
 			Order order = new Order( orderType , new Instrument( ticker ) ,
-				quantity );
+			                        quantity );
 			this.account.AddOrder( order );
 		}
 		private void marketOpenEventHandler_addOrders()
 		{
 			if ( this.signedTickersFromLastOptimization != null )
 				foreach ( string signedTicker in this.signedTickersFromLastOptimization )
-					marketOpenEventHandler_addOrder( signedTicker );
+				marketOpenEventHandler_addOrder( signedTicker );
 		}
-		public void MarketOpenEventHandler(
-			Object sender , EndOfDayTimingEventArgs endOfDayTimingEventArgs )
+		protected override void marketOpenEventHandler(
+			Object sender , DateTime dateTime )
 		{
 			if ( ( this.account.CashAmount == 0 ) &&
-				( this.account.Transactions.Count == 0 ) )
+			    ( this.account.Transactions.Count == 0 ) )
 				// cash has not been added yet
 				this.account.AddCash( 30000 );
 			marketOpenEventHandler_addOrders();
 		}
-		private void fiveMinutesBeforeMarketCloseEventHandler_closePositions()
+		private void marketCloseEventHandler_closePositions()
 		{
 			ArrayList tickers = new ArrayList();
 			foreach ( Position position in this.account.Portfolio.Positions )
@@ -132,16 +132,12 @@ namespace QuantProject.Scripts.WalkForwardTesting.LinearCombination
 			foreach ( string ticker in tickers )
 				this.account.ClosePosition( ticker );
 		}
-		public void FiveMinutesBeforeMarketCloseEventHandler( Object sender ,
-			EndOfDayTimingEventArgs endOfDayTimingEventArgs)
+		protected override void marketCloseEventHandler( Object sender ,
+		                                                     DateTime dateTime)
 		{
-			this.fiveMinutesBeforeMarketCloseEventHandler_closePositions();
+			this.marketCloseEventHandler_closePositions();
 		}
 
-		public void MarketCloseEventHandler( Object sender ,
-			EndOfDayTimingEventArgs endOfDayTimingEventArgs)
-		{
-		}
 		protected DataTable getSetOfTickersToBeOptimized(
 			DateTime optimizationFirstDate , DateTime optimizationLastDate )
 		{
@@ -149,20 +145,20 @@ namespace QuantProject.Scripts.WalkForwardTesting.LinearCombination
 				this.tickerGroupID , false ,
 				optimizationFirstDate , optimizationLastDate ,
 				this.numberOfEligibleTickers );
-      
+			
 			DataTable eligibleTickers = mostLiquid.GetTableOfSelectedTickers();
 //			SelectorByGroup selectorByGroup =
 //				new SelectorByGroup( "SP500" , optimizationLastDate );
 //			DataTable eligibleTickers = selectorByGroup.GetTableOfSelectedTickers();
-			SelectorByQuotationAtEachMarketDay quotedAtEachMarketDayFromEligible = 
+			SelectorByQuotationAtEachMarketDay quotedAtEachMarketDayFromEligible =
 				new SelectorByQuotationAtEachMarketDay( eligibleTickers,
-				false , optimizationFirstDate ,
-				optimizationLastDate ,
-				this.numberOfEligibleTickers, this.benchmark);
+				                                       false , optimizationFirstDate ,
+				                                       optimizationLastDate ,
+				                                       this.numberOfEligibleTickers, this.benchmark);
 			return quotedAtEachMarketDayFromEligible.GetTableOfSelectedTickers();
 		}
 		private void newGenerationEventHandler( object sender ,
-			NewGenerationEventArgs newGenerationEventArgs )
+		                                       NewGenerationEventArgs newGenerationEventArgs )
 		{
 			Console.WriteLine(
 				newGenerationEventArgs.GenerationCounter.ToString() + " / " +
@@ -170,15 +166,15 @@ namespace QuantProject.Scripts.WalkForwardTesting.LinearCombination
 				" - " + DateTime.Now.ToString() );
 		}
 		private void addGenomeToBestGenomes( Genome genome,
-			DateTime firstOptimizationDate ,
-			DateTime lastOptimizationDate )
+		                                    DateTime firstOptimizationDate ,
+		                                    DateTime lastOptimizationDate )
 		{
 			if( this.optimizationOutput == null)
 				this.optimizationOutput = new OptimizationOutput();
-      
+			
 			this.optimizationOutput.Add( new GenomeRepresentation( genome ,
-				firstOptimizationDate ,
-				lastOptimizationDate ) );
+			                                                      firstOptimizationDate ,
+			                                                      lastOptimizationDate ) );
 		}
 		private void oneHourAfterMarketCloseEventHandler_set_signedTickersFromLastOptimization(
 			DateTime currentDate )
@@ -191,22 +187,22 @@ namespace QuantProject.Scripts.WalkForwardTesting.LinearCombination
 			DateTime optimizationLastDate =	currentDate;
 			DataTable setOfTickersToBeOptimized =
 				this.getSetOfTickersToBeOptimized( optimizationFirstDate ,
-				optimizationLastDate );
+				                                  optimizationLastDate );
 			Console.WriteLine( "Number of tickers to be optimized: " +
-				setOfTickersToBeOptimized.Rows.Count.ToString() );
-			GenomeManagerForEfficientOTCPortfolio genManEfficientOTCPortfolio = 
+			                  setOfTickersToBeOptimized.Rows.Count.ToString() );
+			GenomeManagerForEfficientOTCPortfolio genManEfficientOTCPortfolio =
 				new GenomeManagerForEfficientOTCPortfolio(
-				setOfTickersToBeOptimized ,
-				currentDate.AddDays( -this.numDaysForInSampleOptimization + 1 ) ,
-				currentDate ,
-				this.numberOfTickersToBeChosen ,
-				this.targetReturn ,
-				this.portfolioType,
-				this.benchmark);
-        
+					setOfTickersToBeOptimized ,
+					currentDate.AddDays( -this.numDaysForInSampleOptimization + 1 ) ,
+					currentDate ,
+					this.numberOfTickersToBeChosen ,
+					this.targetReturn ,
+					this.portfolioType,
+					this.benchmark);
+			
 			this.geneticOptimizer = new GeneticOptimizer(genManEfficientOTCPortfolio,
-				this.populationSizeForGeneticOptimizer,
-				this.generationNumberForGeneticOptimizer);
+			                                             this.populationSizeForGeneticOptimizer,
+			                                             this.generationNumberForGeneticOptimizer);
 			this.geneticOptimizer.NewGeneration += new NewGenerationEventHandler(
 				this.newGenerationEventHandler );
 
@@ -219,21 +215,32 @@ namespace QuantProject.Scripts.WalkForwardTesting.LinearCombination
 			this.signedTickersFromLastOptimization =
 				((GenomeMeaning)this.geneticOptimizer.BestGenome.Meaning).Tickers;
 			this.addGenomeToBestGenomes( geneticOptimizer.BestGenome ,
-				optimizationFirstDate , optimizationLastDate );
+			                            optimizationFirstDate , optimizationLastDate );
 		}
-		public void OneHourAfterMarketCloseEventHandler( Object sender ,
-			EndOfDayTimingEventArgs endOfDayTimingEventArgs)
+		protected override void oneHourAfterMarketCloseEventHandler( Object sender ,
+		                                                DateTime dateTime)
 		{
-			if ( endOfDayTimingEventArgs.EndOfDayDateTime.DateTime.DayOfWeek ==
-				DayOfWeek.Friday )
+			if ( dateTime.DayOfWeek ==
+			    DayOfWeek.Friday )
 				// current day is Friday
 			{
 				Console.WriteLine(
-					endOfDayTimingEventArgs.EndOfDayDateTime.DateTime.ToString() +
+					dateTime.ToString() +
 					" - " + DateTime.Now.ToString() );
 				oneHourAfterMarketCloseEventHandler_set_signedTickersFromLastOptimization(
-					endOfDayTimingEventArgs.EndOfDayDateTime.DateTime );
+					dateTime );
 			}
 		}
+		
+//		public virtual void NewDateTimeEventHandler(
+//			Object sender , DateTime dateTime )
+//		{
+//			if ( HistoricalEndOfDayTimer.IsMarketOpen( dateTime ) )
+//				this.marketOpenEventHandler( sender , dateTime );
+//			if ( HistoricalEndOfDayTimer.IsMarketClose( dateTime ) )
+//				this.marketCloseEventHandler( sender , dateTime );
+//			if ( HistoricalEndOfDayTimer.IsOneHourAfterMarketClose( dateTime ) )
+//				this.oneHourAfterMarketCloseEventHandler( sender , dateTime );
+//		}
 	}
 }

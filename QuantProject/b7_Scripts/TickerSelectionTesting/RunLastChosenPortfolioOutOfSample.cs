@@ -2,7 +2,7 @@
 QuantProject - Quantitative Finance Library
 
 RunLastChosenPortfolioOutOfSample.cs
-Copyright (C) 2003 
+Copyright (C) 2003
 Marco Milletti
 
 This program is free software; you can redistribute it and/or
@@ -18,7 +18,7 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
-*/
+ */
 
 using System;
 using System.IO;
@@ -39,7 +39,7 @@ using QuantProject.Business.Testing;
 using QuantProject.Business.Timing;
 using QuantProject.Business.Financial.Accounting.Commissions;
 using QuantProject.Data.DataProviders;
-using QuantProject.Data.Selectors; 
+using QuantProject.Data.Selectors;
 using QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios;
 using QuantProject.Presentation.Reporting.WindowsForm;
 
@@ -55,107 +55,137 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
 	{
 		private string[] tickers;
 		private PortfolioType typeOfPortfolio;
-    public RunLastChosenPortfolioOutOfSample(string[] chosenTickers,
-                                             PortfolioType typeOfPortfolio, 
+		public RunLastChosenPortfolioOutOfSample(string[] chosenTickers,
+		                                         PortfolioType typeOfPortfolio,
 		                                         string benchmark,
-                                						 DateTime startDate,
-                                						 DateTime endDate,
-                                						 double maxRunningHours):
-																						base(benchmark,
-                                						 		 startDate,
-                                						     endDate,
-                                						     typeOfPortfolio,
-                                						     maxRunningHours)
+		                                         DateTime startDate,
+		                                         DateTime endDate,
+		                                         double maxRunningHours):
+			base(benchmark,
+			     startDate,
+			     endDate,
+			     typeOfPortfolio,
+			     maxRunningHours)
 		{
-      this.tickers = chosenTickers;
-      this.typeOfPortfolio = typeOfPortfolio;
-			this.startDateTime = new EndOfDayDateTime(
-        startDate, EndOfDaySpecificTime.MarketOpen );
-    	this.endDateTime = new EndOfDayDateTime(
-        endDate, EndOfDaySpecificTime.MarketClose );
-    	this.ScriptName = "LastChosenPortfolioOutOfSample";
-    	    	
+			this.tickers = chosenTickers;
+			this.typeOfPortfolio = typeOfPortfolio;
+			this.startDateTime =
+				HistoricalEndOfDayTimer.GetMarketOpen( startDate );
+//			new EndOfDayDateTime(
+//				startDate, EndOfDaySpecificTime.MarketOpen );
+			this.endDateTime =
+				HistoricalEndOfDayTimer.GetMarketClose( endDate );
+//			new EndOfDayDateTime(
+//				endDate, EndOfDaySpecificTime.MarketClose );
+			this.ScriptName = "LastChosenPortfolioOutOfSample";
+			
 		}
-    #region Run
- 
-    protected override void run_initializeEndOfDayTimerHandler()
-    {
-    	this.endOfDayTimerHandler =
-    		new EndOfDayTimerHandlerLastChosenPortfolio(this.tickers,
-    		                                            this.typeOfPortfolio,
-    		                                            this.account,
-    		                                            this.benchmark,
-    		                                           	this.startDateTime,
-    		                                           	this.endDateTime);
-    }
-    
-    protected override void run_initializeEndOfDayTimer()
-    {
-    	this.endOfDayTimer = 
-    		new HistoricalEndOfDayTimer(this.startDateTime);
-    }
-    
-    protected override void run_initializeHistoricalQuoteProvider()
-    {
-    	this.historicalQuoteProvider = new HistoricalAdjustedQuoteProvider();
-     		
-    }
-    protected override void run_initializeAccount()
-    {
-      //default account with no commissions
-    	this.account =  new Account( this.scriptName , this.endOfDayTimer ,
-        new HistoricalEndOfDayDataStreamer( this.endOfDayTimer ,
-					this.historicalQuoteProvider ) ,
-        new HistoricalEndOfDayOrderExecutor( this.endOfDayTimer ,
-					this.historicalQuoteProvider ));
-     
-    }
-    
-    protected override void run_addEventHandlers()
-    {
-      this.endOfDayTimer.MarketOpen +=
-        new MarketOpenEventHandler(
-        this.endOfDayTimerHandler.MarketOpenEventHandler);  
-      
-      this.endOfDayTimer.MarketClose +=
-        new MarketCloseEventHandler(
-        this.endOfDayTimerHandler.MarketCloseEventHandler);
-      
-      this.endOfDayTimer.MarketClose +=
-        new MarketCloseEventHandler(
-        this.checkDateForReport);
-      //
-      //this.endOfDayTimer.OneHourAfterMarketClose +=
-      //  new OneHourAfterMarketCloseEventHandler(
-      //  this.endOfDayTimerHandler.OneHourAfterMarketCloseEventHandler );
-      
-    }
-      
-    
-    public override void Run()
-    {
-    	base.Run();
-  	 	Report report = new Report( this.account , this.historicalQuoteProvider );
-    	report.Create( "Run last chosen tickers out of sample", 1 ,
-      new EndOfDayDateTime( this.endDateTime.DateTime ,
-      EndOfDaySpecificTime.MarketClose ) ,
-      "^SPX" );
-    	report.Show();
-    }
-    
-     protected override void checkDateForReport(Object sender , EndOfDayTimingEventArgs endOfDayTimingEventArgs)
-    {
-      if(endOfDayTimingEventArgs.EndOfDayDateTime.DateTime>=this.endDateTime.DateTime ||
-        DateTime.Now >= this.startingTimeForScript.AddHours(this.maxRunningHours))
-        //last date is reached by the timer or maxRunning hours
-        //are elapsed from the time script started
-      {
-        this.endOfDayTimer.Stop();
-      }
+		#region Run
+		
+		protected override void run_initializeEndOfDayTimerHandler()
+		{
+			this.endOfDayTimerHandler =
+				new EndOfDayTimerHandlerLastChosenPortfolio(this.tickers,
+				                                            this.typeOfPortfolio,
+				                                            this.account,
+				                                            this.benchmark,
+				                                            this.startDateTime,
+				                                            this.endDateTime);
+		}
+		
+		protected override void run_initializeEndOfDayTimer()
+		{
+			this.endOfDayTimer =
+				new HistoricalEndOfDayTimer(this.startDateTime);
+		}
+		
+		protected override void run_initializeHistoricalQuoteProvider()
+		{
+			this.historicalMarketValueProvider = new HistoricalAdjustedQuoteProvider();
+			
+		}
+		protected override void run_initializeAccount()
+		{
+			//default account with no commissions
+			this.account =  new Account( this.scriptName , this.endOfDayTimer ,
+			                            new HistoricalEndOfDayDataStreamer( this.endOfDayTimer ,
+			                                                               this.historicalMarketValueProvider ) ,
+			                            new HistoricalEndOfDayOrderExecutor( this.endOfDayTimer ,
+			                                                                this.historicalMarketValueProvider ));
+			
+		}
+		
+		private void newDateTimeEventHandler( object sender , DateTime dateTime )
+		{
+			if ( HistoricalEndOfDayTimer.IsMarketClose( dateTime ) )
+				this.checkDateForReport( sender , dateTime );
+		}
 
-    }
-    
-    #endregion 
-    
+		protected override void run_addEventHandlers()
+		{
+			this.endOfDayTimer.NewDateTime +=
+				new NewDateTimeEventHandler( this.endOfDayTimerHandler.NewDateTimeEventHandler );
+			this.endOfDayTimer.NewDateTime +=
+				new NewDateTimeEventHandler( this.newDateTimeEventHandler );
+			
+//			this.endOfDayTimer.MarketOpen +=
+//				new MarketOpenEventHandler(
+//					this.endOfDayTimerHandler.MarketOpenEventHandler);
+//
+//			this.endOfDayTimer.MarketClose +=
+//				new MarketCloseEventHandler(
+//					this.endOfDayTimerHandler.MarketCloseEventHandler);
+//
+//			this.endOfDayTimer.MarketClose +=
+//				new MarketCloseEventHandler(
+//					this.checkDateForReport);
+			//
+			//this.endOfDayTimer.OneHourAfterMarketClose +=
+			//  new OneHourAfterMarketCloseEventHandler(
+			//  this.endOfDayTimerHandler.OneHourAfterMarketCloseEventHandler );
+			
+		}
+		
+		
+		public override void Run()
+		{
+			base.Run();
+			Report report = new Report( this.account , this.historicalMarketValueProvider );
+			report.Create(
+				"Run last chosen tickers out of sample", 1 ,
+				HistoricalEndOfDayTimer.GetMarketClose( this.endDateTime ) ,
+//				new EndOfDayDateTime( this.endDateTime.DateTime ,
+//				                     EndOfDaySpecificTime.MarketClose ) ,
+				"^SPX" );
+			report.Show();
+		}
+		
+		//     protected override void checkDateForReport(
+		//    	Object sender , DateTime dateTime)
+		//    {
+		//      if(dateTime.EndOfDayDateTime.DateTime>=this.endDateTime.DateTime ||
+		//        DateTime.Now >= this.startingTimeForScript.AddHours(this.maxRunningHours))
+		//        //last date is reached by the timer or maxRunning hours
+		//        //are elapsed from the time script started
+		//      {
+		//        this.endOfDayTimer.Stop();
+		//      }
+//
+		//    }
+
+		protected override void checkDateForReport(
+			Object sender , DateTime dateTime)
+		{
+			if ( HistoricalEndOfDayTimer.IsMarketClose( dateTime ) )
+			{
+				if( dateTime >= this.endDateTime ||
+				   DateTime.Now >= this.startingTimeForScript.AddHours(this.maxRunningHours))
+					//last date is reached by the timer or maxRunning hours
+					//are elapsed from the time script started
+					this.endOfDayTimer.Stop();
+			}
+		}
+		#endregion
+		
 	}
 }

@@ -45,14 +45,13 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AssemblyInfo.cs" />
+    <Compile Include="DataProviders\Quotes\HistoricalQuotesProvider.cs" />
+    <Compile Include="DataProviders\Quotes\MarketStatusSwitch.cs" />
     <Compile Include="ExtendedDataTable.cs" />
     <Compile Include="FilterBuilder.cs" />
-    <Compile Include="DataProviders\HistoricalDataProvider.cs" />
     <Compile Include="DataProviders\IDataStreamer.cs" />
-    <Compile Include="DataProviders\NewExtendedDateTimeEventArgs.cs" />
     <Compile Include="DataProviders\NewQuoteEventArgs.cs" />
     <Compile Include="DataProviders\Quote.cs" />
-    <Compile Include="DataProviders\Timer.cs" />
     <Compile Include="DataProviders\Caching\Cache.cs" />
     <Compile Include="DataTables\GroupQuotes.cs" />
     <Compile Include="DataTables\Quotes.cs" />
@@ -100,6 +99,7 @@
       <Project>{217A1E06-5FA7-49C1-A3D7-586F3690D5DE}</Project>
       <Name>b1_ADT</Name>
     </ProjectReference>
+    <Folder Include="DataProviders\Quotes" />
     <Folder Include="Selectors\ByLinearIndipendence" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.Targets" />

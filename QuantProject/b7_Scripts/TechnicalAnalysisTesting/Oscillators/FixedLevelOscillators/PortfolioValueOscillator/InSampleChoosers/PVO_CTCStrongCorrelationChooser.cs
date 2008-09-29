@@ -154,8 +154,8 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOs
 		{
 			TickersPearsonCorrelation[] averageCorrelations;
 			TickersPearsonCorrelation[] correlations_1Day;
-			DateTime firstDate = returnsManager.ReturnIntervals[0].Begin.DateTime;
-			DateTime lastDate =  returnsManager.ReturnIntervals.LastEndOfDayDateTime.DateTime;
+			DateTime firstDate = returnsManager.ReturnIntervals[0].Begin;
+			DateTime lastDate =  returnsManager.ReturnIntervals.LastDateTime;
 			CloseToCloseCorrelationProvider correlationProviderCTC_1 =
 				new CloseToCloseCorrelationProvider(eligibleTickers.Tickers, firstDate,
 				                                    lastDate, 1 ,

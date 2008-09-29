@@ -2,7 +2,7 @@
 QuantProject - Quantitative Finance Library
 
 HistoricalAdjustedQuoteProvider.cs
-Copyright (C) 2003 
+Copyright (C) 2003
 Glauco Siliprandi
 
 This program is free software; you can redistribute it and/or
@@ -18,12 +18,13 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
-*/
+ */
 
 using System;
 
+using QuantProject.ADT;
 using QuantProject.Business.Timing;
-using QuantProject.Data.DataProviders;
+using QuantProject.Data.DataProviders.Quotes;
 
 namespace QuantProject.Business.DataProviders
 {
@@ -31,19 +32,66 @@ namespace QuantProject.Business.DataProviders
 	/// Returns historical adjusted quotes
 	/// </summary>
 	[Serializable]
-	public class HistoricalAdjustedQuoteProvider : HistoricalQuoteProvider
+	public class HistoricalAdjustedQuoteProvider : HistoricalMarketValueProvider
 	{
 		public HistoricalAdjustedQuoteProvider()
 		{
 		}
-		public override double GetMarketValue( string instrumentKey ,
-			EndOfDayDateTime endOfDayDateTime )
+		
+		// TO DO move GetMarketStatusSwitch to an abstract class
+		// BasicQuotesProvider to be inherited both by HistoricalAdjustedQuoteProvider
+		// and by HistoricalRawQuoteProvider
+		#region GetMarketStatusSwitch
+		private static void riseExceptionIfNotAtMarketSwitch( DateTime dateTime )
 		{
-			double marketValue =
-				HistoricalDataProvider.GetAdjustedMarketValue( instrumentKey ,
-				endOfDayDateTime.GetNearestExtendedDateTime() );
+			if ( !HistoricalEndOfDayTimer.IsMarketStatusSwitch( dateTime ) )
+				throw new Exception(
+					"when GetCurrentMarketStatusSwitch() is invoked, dateTime " +
+					"is expected to either be a market open or a market close." );
+		}
+		/// <summary>
+		/// Returns the market status switch that corresponds to dateTime
+		/// </summary>
+		/// <param name="dateTime">it has to be either a market open or a
+		/// market close</param>
+		/// <returns></returns>
+		public static MarketStatusSwitch GetMarketStatusSwitch(
+			DateTime dateTime )
+		{
+			HistoricalAdjustedQuoteProvider.riseExceptionIfNotAtMarketSwitch( dateTime );
+			MarketStatusSwitch marketStatusSwitch =
+				MarketStatusSwitch.Open;
+			if ( HistoricalEndOfDayTimer.IsMarketClose( dateTime ) )
+				marketStatusSwitch = MarketStatusSwitch.Close;
+			return marketStatusSwitch;
+		}
+		#endregion GetMarketStatusSwitch
+
+//		public override double GetMarketValue(
+//			string instrumentKey ,
+//			DateTime date ,
+//			MarketStatusSwitch marketStatusSwitch )
+//		{
+//			double marketValue =
+//				HistoricalQuotesProvider.GetAdjustedMarketValue(
+//					instrumentKey ,	date , marketStatusSwitch );
+//			return marketValue;
+//		}
+		
+		public override double GetMarketValue(
+			string instrumentKey ,
+			DateTime dateTime )
+		{
+			MarketStatusSwitch marketStatusSwitch =
+				HistoricalAdjustedQuoteProvider.GetMarketStatusSwitch( dateTime );
+				double marketValue =
+				HistoricalQuotesProvider.GetAdjustedMarketValue(
+					instrumentKey ,
+					ExtendedDateTime.GetDate( dateTime ) ,
+					marketStatusSwitch );
 			return marketValue;
 		}
+
 
 		protected override string getDescription()
 		{

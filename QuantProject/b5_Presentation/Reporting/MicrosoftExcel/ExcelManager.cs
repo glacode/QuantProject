@@ -109,7 +109,7 @@ namespace QuantProject.Presentation.Reporting.MicrosoftExcel
           (Excel.Worksheet)excelBook.Worksheets.Add(Missing.Value,
           excelBook.Worksheets.get_Item( excelBook.Worksheets.Count ),1,Missing.Value);       
       excelSheet.Name = reportTable.Name;
-      ((_Worksheet)excelSheet).Activate();
+      ((Excel._Worksheet)excelSheet).Activate();
       drawHeaders( reportTable , excelSheet );
       drawRows( reportTable , excelSheet );
     }

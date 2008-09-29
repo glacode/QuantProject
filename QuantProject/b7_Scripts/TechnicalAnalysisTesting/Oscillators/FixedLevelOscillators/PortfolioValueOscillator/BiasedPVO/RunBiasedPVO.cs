@@ -195,8 +195,8 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOs
 			w.Write("\r\nPopulation size for genetic optimizer: {0}\r", this.populationSizeForGeneticOptimizer.ToString());
 			w.Write("\r\nOptimization each (num of days): {0}\r", this.numDaysBetweenEachOptimization.ToString());
 			w.Write("\r\nBenchmark: {0}\r", this.benchmark);
-			w.Write("\r\nStart date: {0}\r", this.startDateTime.DateTime.ToLongDateString());
-			w.Write("\r\nEnd date: {0}\r", this.endDateTime.DateTime.ToLongDateString());
+			w.Write("\r\nStart date: {0}\r", this.startDateTime.ToLongDateString());
+			w.Write("\r\nEnd date: {0}\r", this.endDateTime.ToLongDateString());
 			w.Write("\r\nNum of genomes to check out of sample: {0}\r", this.numOfDifferentGenomesToEvaluateOutOfSample.ToString());
 			w.Write("\r\nReset thresholds out of sample: {0}\r", this.resetThresholdsBeforeCheckingOutOfSample.ToString());
 			w.Write("\r\nNum of Days for thresholds recomputation out of sample: {0}\r", this.numDaysForThresholdsReComputation.ToString());
@@ -261,7 +261,7 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOs
 			}
 			this.checkDateForReport_createDirIfNotPresent(dirNameWhereToSaveReports);
 			AccountReport accountReport = this.account.CreateReport(fileName,1,
-			                                                        this.endOfDayTimer.GetCurrentTime(),
+			                                                        this.endOfDayTimer.GetCurrentDateTime(),
 			                                                        this.benchmark,
 			                                                        new HistoricalAdjustedQuoteProvider());
 			ObjectArchiver.Archive(accountReport,

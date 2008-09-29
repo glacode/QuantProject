@@ -21,73 +21,73 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
 using System;
-using System.Collections;
 
-using QuantProject.Business.Timing;
+using QuantProject.ADT;
+using QuantProject.ADT.Histories;
 
 namespace QuantProject.Business.Strategies.ReturnsManagement.Time
 {
 	/// <summary>
-	/// End of day interval: to be used to compute a strategy return
+	/// Time interval: to be used to compute a strategy return
 	/// on the interval. The interval's end must be later than the
 	/// interval's begin
 	/// </summary>
+	[Serializable]
 	public class ReturnInterval
 	{
-		private EndOfDayDateTime begin;
-		private EndOfDayDateTime end;
+		private DateTime begin;
+		private DateTime end;
 
-		public EndOfDayDateTime Begin
+		public DateTime Begin
 		{
 			get { return this.begin; }
 		}
-		public EndOfDayDateTime End
+		public DateTime End
 		{
 			get { return this.end; }
 		}
 
 		/// <summary>
-		/// End of day interval: the end must be later than the begin
+		/// Time interval: the end must be later than the begin
 		/// </summary>
 		/// <param name="begin">first interval border</param>
 		/// <param name="end">last interval border</param>
-		public ReturnInterval( EndOfDayDateTime begin ,
-			EndOfDayDateTime end )
+		public ReturnInterval( DateTime begin , DateTime end )
 		{
 			this.checkParameters( begin , end );
-			this.begin = begin.Copy();
-			this.end = end.Copy();
+			this.begin = ExtendedDateTime.Copy( begin );
+			this.end = ExtendedDateTime.Copy( end );
 		}
-		private void checkParameters( EndOfDayDateTime begin ,
-			EndOfDayDateTime end )
+		private void checkParameters( DateTime begin ,
+			DateTime end )
 		{
 			if ( begin.CompareTo( end ) >= 0 )
 				// begin is equal or greater greater or equal to end
 				throw new Exception( "begin must be smaller than end!" ); 
 		}
 		/// <summary>
-		/// True iff for each interval border, there is an EndOfDayDateTime
-		/// value in the EndOfDayHistory that is exactly the same
-		/// EndOfDayDateTime as the border value
+		/// True iff for each interval border, there is a DateTime
+		/// value in the History that is exactly the same
+		/// DateTime as the border value
 		/// </summary>
 		/// <param name="endOfDayHistory"></param>
 		/// <returns></returns>
-		public bool AreBordersCoveredBy( EndOfDayHistory endOfDayHistory )
+		public bool AreBordersCoveredBy( History history )
 		{
 			bool areCovered =
-				endOfDayHistory.ContainsKey( this.Begin ) &&
-				endOfDayHistory.ContainsKey( this.End );
+				history.ContainsKey( this.Begin ) &&
+				history.ContainsKey( this.End );
 			return areCovered;
 		}
 		/// <summary>
-		/// True iif this Interval begins before endOfDayDateTime
+		/// True iif this Interval begins before dateTime
 		/// </summary>
 		/// <param name="endOfDayDateTime"></param>
 		/// <returns></returns>
-		public bool BeginsBefore( EndOfDayDateTime endOfDayDateTime )
+		public bool BeginsBefore( DateTime dateTime )
 		{
 			bool beginsBefore =
-				( this.Begin.CompareTo( endOfDayDateTime ) < 0 );
+				( this.Begin.CompareTo( dateTime ) < 0 );
 			return beginsBefore;
 		}
 	}

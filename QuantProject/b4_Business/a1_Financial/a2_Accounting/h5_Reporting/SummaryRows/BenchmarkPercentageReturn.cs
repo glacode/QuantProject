@@ -12,26 +12,29 @@ namespace QuantProject.Business.Financial.Accounting.Reporting.SummaryRows
 	/// Percentage return for the Benchmark
 	/// </summary>
 	[Serializable]
-  public class BenchmarkPercentageReturn : PercentageSummaryRow
+	public class BenchmarkPercentageReturn : PercentageSummaryRow
 	{
 		public BenchmarkPercentageReturn( Summary summary ,
-			IHistoricalQuoteProvider historicalQuoteProvider )
+		                                 HistoricalMarketValueProvider historicalMarketValueProvider )
 		{
-      if ( summary.AccountReport.Benchmark != "" )
-      {
-        // the report has to compare to a buy and hold benchmark
-				double beginningMarketValue = historicalQuoteProvider.GetMarketValue(
+			if ( summary.AccountReport.Benchmark != "" )
+			{
+				// the report has to compare to a buy and hold benchmark
+				double beginningMarketValue = historicalMarketValueProvider.GetMarketValue(
 					summary.AccountReport.Benchmark ,
-					new EndOfDayDateTime( summary.AccountReport.StartDateTime , EndOfDaySpecificTime.MarketOpen ) );
-				double finalMarketValue = historicalQuoteProvider.GetMarketValue(
+					HistoricalEndOfDayTimer.GetMarketOpen(
+						summary.AccountReport.StartDateTime ) );
+//					new EndOfDayDateTime( summary.AccountReport.StartDateTime , EndOfDaySpecificTime.MarketOpen ) );
+				double finalMarketValue = historicalMarketValueProvider.GetMarketValue(
 					summary.AccountReport.Benchmark ,
-					summary.AccountReport.EndDateTime );
+					HistoricalEndOfDayTimer.GetMarketClose(
+						summary.AccountReport.EndDateTime ) );
 //				summary.BenchmarkPercentageReturn = ( finalMarketValue - beginningMarketValue ) /
 //					beginningMarketValue * 100;
-        this.rowDescription = "Buy & hold % return";
+				this.rowDescription = "Buy & hold % return";
 				this.rowValue = ( finalMarketValue - beginningMarketValue ) /
 					beginningMarketValue * 100;
-      }
-    }
+			}
+		}
 	}
 }

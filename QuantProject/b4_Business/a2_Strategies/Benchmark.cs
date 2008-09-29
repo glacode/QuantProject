@@ -1,5 +1,7 @@
 using System;
 
+using QuantProject.ADT;
+using QuantProject.ADT.Histories;
 using QuantProject.Business.DataProviders;
 using QuantProject.Business.Strategies.ReturnsManagement.Time;
 using QuantProject.Business.Timing;
@@ -14,7 +16,7 @@ namespace QuantProject.Business.Strategies
 	public class Benchmark
 	{
 		private string ticker;
-		private HistoricalQuoteProvider historicalQuoteProvider;
+		private HistoricalMarketValueProvider historicalQuoteProvider;
 		
 		public string Ticker
 		{
@@ -30,7 +32,7 @@ namespace QuantProject.Business.Strategies
 
 		#region GetTimeStep
 		private void getTimeStep_checkParameters(
-			EndOfDayDateTime timeStepBegin )
+			DateTime timeStepBegin )
 		{
 			if ( !this.historicalQuoteProvider.WasExchanged( this.ticker ,
 				timeStepBegin ) )
@@ -39,32 +41,35 @@ namespace QuantProject.Business.Strategies
 					timeStepBegin.ToString() );
 		}
 		private void isExchanged_checkParameter(
-			EndOfDayDateTime endOfDayDateTime )
+			DateTime dateTime )
 		{
-			if ( endOfDayDateTime.DateTime.Year >
+			if ( dateTime.Year >
 				DateTime.Now.Year )
 				throw new Exception( "It looks like this is a loop! " +
 					"You have probably asked for a GetTimeStep, but " +
 					"there is no other trading day for this benchmark: '" +
 					this.ticker + "'" );
 		}
-		private bool isExchanged( EndOfDayDateTime endOfDayDateTime )
+		private bool isExchanged( DateTime dateTime )
 		{
-			this.isExchanged_checkParameter( endOfDayDateTime );
+			this.isExchanged_checkParameter( dateTime );
 			bool isTraded =	this.historicalQuoteProvider.WasExchanged(
-				this.ticker , endOfDayDateTime );
+				this.ticker , dateTime );
 			return isTraded;
 		}
 		private ReturnInterval getTimeStep_actually(
-			EndOfDayDateTime timeStepBegin )
+			DateTime timeStepBegin )
 		{
-			EndOfDayDateTime currentEndOfDayDateTime =
-				timeStepBegin.GetNextMarketStatusSwitch();
-			while ( !this.isExchanged( currentEndOfDayDateTime ) )
-				currentEndOfDayDateTime =
-				currentEndOfDayDateTime.GetNextMarketStatusSwitch();
+			DateTime currentDateTime =
+				HistoricalEndOfDayTimer.GetNextMarketStatusSwitch( timeStepBegin );
+//				timeStepBegin.GetNextMarketStatusSwitch();
+			while ( !this.isExchanged( currentDateTime ) )
+				currentDateTime =
+					HistoricalEndOfDayTimer.GetNextMarketStatusSwitch( currentDateTime );
+//				currentEndOfDayDateTime =
+//				currentEndOfDayDateTime.GetNextMarketStatusSwitch();
 			ReturnInterval timeStep =
-				new ReturnInterval( timeStepBegin , currentEndOfDayDateTime );
+				new ReturnInterval( timeStepBegin , currentDateTime );
 			return timeStep;
 		}
 		/// <summary>
@@ -72,10 +77,11 @@ namespace QuantProject.Business.Strategies
 		/// </summary>
 		/// <param name="timeStepBegin"></param>
 		/// <returns></returns>
-		public ReturnInterval GetTimeStep( EndOfDayDateTime timeStepBegin )
+		public ReturnInterval GetTimeStep( DateTime timeStepBegin )
 		{
 			this.getTimeStep_checkParameters( timeStepBegin );
-			ReturnInterval timeStep = this.getTimeStep_actually( timeStepBegin );
+			ReturnInterval timeStep =
+				this.getTimeStep_actually( timeStepBegin );
 			return timeStep;
 		}
 		#endregion GetTimeStep
@@ -83,42 +89,52 @@ namespace QuantProject.Business.Strategies
 		/// <summary>
 		/// Returns either the next market close or the next market open
 		/// (when the benchmark is exchanged), whichever is the nearest. 
-		/// If endOfDayDateTime is either a market close or a market open
-		/// when the benchmark is exchanged, then endOfDayDateTime itself
+		/// If dateTime is either a market close or a market open
+		/// when the benchmark is exchanged, then dateTime itself
 		/// is returned
 		/// </summary>
-		/// <param name="endOfDayDateTime"></param>
+		/// <param name="dateTime"></param>
 		/// <returns></returns>
-		public EndOfDayDateTime GetThisOrNextMarketStatusSwitch(
-			EndOfDayDateTime endOfDayDateTime )
+		public DateTime GetThisOrNextMarketStatusSwitch(
+			DateTime dateTime )
 		{
-			EndOfDayDateTime currentEndOfDayDateTime = endOfDayDateTime;
-			while ( !this.isExchanged( currentEndOfDayDateTime ) )
-				currentEndOfDayDateTime =
-					currentEndOfDayDateTime.GetNextMarketStatusSwitch();
-			return currentEndOfDayDateTime;
+			DateTime currentDateTime = dateTime;
+			if ( !HistoricalEndOfDayTimer.IsMarketStatusSwitch( currentDateTime ) )
+				currentDateTime =
+					HistoricalEndOfDayTimer.GetNextMarketStatusSwitch(
+						currentDateTime );
+			while ( !this.isExchanged( currentDateTime ) )
+				currentDateTime =
+					HistoricalEndOfDayTimer.GetNextMarketStatusSwitch(
+						currentDateTime );
+//					currentEndOfDayDateTime.GetNextMarketStatusSwitch();
+			return currentDateTime;
 		}
 
 		/// <summary>
-		/// Returns the EndOfDayHistory of the benchmark
+		/// Returns the End of Day History of the benchmark
 		/// between the two given EndOfDayDateTimes
 		/// </summary>
-		public EndOfDayHistory GetEndOfDayHistory(
-			EndOfDayDateTime firstEndOfDayDateTime,
-			EndOfDayDateTime lastEndOfDayDateTime )
+		public History GetEndOfDayHistory(
+			DateTime firstDateTime,
+			DateTime lastDateTime )
 		{
-			if( lastEndOfDayDateTime.IsLessThanOrEqualTo(firstEndOfDayDateTime) )
-				throw new Exception("lastEndOfDayDateTime has to be greater than " +
+			if( lastDateTime <=	firstDateTime )
+				throw new Exception("lastDateTime has to be greater than " +
 					"firstEndOfDayDateTime !!");
-			EndOfDayHistory endOfDayHistory = new EndOfDayHistory();
-			EndOfDayDateTime endOfDayDateTimeToAddToHistory =
-				firstEndOfDayDateTime.Copy();
-			while( endOfDayDateTimeToAddToHistory.IsLessThanOrEqualTo(lastEndOfDayDateTime) )
+			History endOfDayHistory = new History();
+			DateTime dateTimeToAddToHistory =
+				ExtendedDateTime.Copy( firstDateTime );
+//				firstDateTime.Copy();
+			while( dateTimeToAddToHistory <= lastDateTime )
 			{
-				if( this.isExchanged( endOfDayDateTimeToAddToHistory ) )
-					endOfDayHistory.Add( endOfDayDateTimeToAddToHistory, endOfDayDateTimeToAddToHistory );
-				endOfDayDateTimeToAddToHistory =
-					endOfDayDateTimeToAddToHistory.GetNextMarketStatusSwitch();
+				if( this.isExchanged( dateTimeToAddToHistory ) )
+					endOfDayHistory.Add(
+						dateTimeToAddToHistory ,
+						dateTimeToAddToHistory );
+				dateTimeToAddToHistory =
+					HistoricalEndOfDayTimer.GetNextMarketStatusSwitch(
+						dateTimeToAddToHistory );
 			}
 			return endOfDayHistory;
 		}

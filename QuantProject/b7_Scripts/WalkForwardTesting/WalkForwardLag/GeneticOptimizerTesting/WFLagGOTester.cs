@@ -65,7 +65,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag
 			int numberOfDrivingPositions ,
 			int numberOfPositionsToBeChosen ,
 			int inSampleDays ,
-			IEndOfDayTimer endOfDayTimer ,
+			Timer endOfDayTimer ,
 			int generationNumberForGeneticOptimizer ,
 			int populationSizeForGeneticOptimizer ,
 			IEquityEvaluator equityEvaluator
@@ -118,10 +118,10 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag
 			int populationSize , int generationNumber )
 		{
 			this.firstOptimizationDate =
-				this.endOfDayTimer.GetCurrentTime().DateTime.AddDays(
+				this.endOfDayTimer.GetCurrentDateTime().AddDays(
 				-( this.inSampleDays - 1 ) );
 			this.lastOptimizationDate =
-				this.endOfDayTimer.GetCurrentTime().DateTime;
+				this.endOfDayTimer.GetCurrentDateTime();
 
 			WFLagGenomeManager genomeManager = 
 				new WFLagGenomeManager(

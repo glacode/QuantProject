@@ -37,32 +37,22 @@
     <FileAlignment>4096</FileAlignment>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Interop.Excel">
-      <HintPath>..\..\Interop.Excel.dll</HintPath>
-      <SpecificVersion>False</SpecificVersion>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
-    <Reference Include="Interop.VBIDE">
-      <HintPath>..\..\Interop.VBIDE.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="Interop.Office">
-      <HintPath>..\..\Interop.Office.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
     <Reference Include="System.Runtime.Serialization.Formatters.Soap" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="a05_Timing\EndOfDayHistory.cs" />
-    <Compile Include="a07_DataProviders\HistoricalQuoteProvider.cs" />
+    <Compile Include="a05_Timing\Timer.cs" />
+    <Compile Include="a07_DataProviders\HistoricalMarketValueProvider.cs" />
     <Compile Include="a07_DataProviders\TickerNotExchangedException.cs" />
     <Compile Include="a1_Financial\a2_Accounting\AccountProviding\IAccountProvider.cs" />
     <Compile Include="a1_Financial\a2_Accounting\AccountProviding\InteractiveBrokerAccountProvider.cs" />
     <Compile Include="a1_Financial\a2_Accounting\AccountProviding\SimpleAccountProvider.cs" />
+    <Compile Include="a1_Financial\a2_Accounting\h5_Reporting\DateTimeSelectorsForEquityLine\IDateTimeSelectorForEquityLine.cs" />
+    <Compile Include="a1_Financial\a2_Accounting\h5_Reporting\DateTimeSelectorsForEquityLine\SelectorForMaketClose.cs" />
     <Compile Include="a1_Financial\a2_Accounting\h5_Reporting\StatisticsSummaryRows\AverageReturnOnDayOfWeekWithOpenPositions.cs" />
     <Compile Include="a1_Financial\a2_Accounting\h5_Reporting\StatisticsSummaryRows\AverageReturnOnDayWithOpenPositions.cs" />
     <Compile Include="a1_Financial\a2_Accounting\h5_Reporting\StatisticsSummaryRows\AverageReturnOnFridayWithOpenPositions.cs" />
@@ -72,6 +62,7 @@
     <Compile Include="a1_Financial\a2_Accounting\h5_Reporting\StatisticsSummaryRows\AverageReturnOnWednesdayWithOpenPositions.cs" />
     <Compile Include="a1_Financial\a2_Accounting\h5_Reporting\SummaryRows\AverageNumberOfTransactionsPerDay.cs" />
     <Compile Include="a1_Financial\a2_Accounting\h5_Reporting\Tables\StatisticsSummary.cs" />
+    <Compile Include="a1_Financial\a2_Accounting\Transactions\TimedTransaction.cs" />
     <Compile Include="a2_Strategies\Benchmark.cs" />
     <Compile Include="a2_Strategies\Eligibles\ByPriceLessVolatileOTCAlwaysQuoted.cs" />
     <Compile Include="a2_Strategies\Eligibles\ByPriceMostLiquidLessVolatileCTCAlwaysQuoted.cs" />
@@ -82,15 +73,18 @@
     <Compile Include="a2_Strategies\Eligibles\EligibleTickers.cs" />
     <Compile Include="a2_Strategies\Eligibles\IEligiblesSelector.cs" />
     <Compile Include="a2_Strategies\EndOfDayStrategies\BasicEndOfDayStrategyForBacktester.cs" />
+    <Compile Include="a2_Strategies\EndOfDayStrategies\EndOfDayStrategy.cs" />
+    <Compile Include="a2_Strategies\EndOfDayStrategies\EndOfDayTimerHandler.cs" />
     <Compile Include="a2_Strategies\EndOfDayStrategies\SymmetricEndOfDayStrategyForBacktester.cs" />
     <Compile Include="a2_Strategies\EndOfDayStrategyBackTester.cs" />
-    <Compile Include="a2_Strategies\IEndOfDayStrategyForBacktester.cs" />
     <Compile Include="a2_Strategies\InSample\BruteForceChooser.cs" />
     <Compile Include="a2_Strategies\InSample\ConstantWeightedPositionsChooser.cs" />
     <Compile Include="a2_Strategies\InSample\DummyInSampleChooser.cs" />
     <Compile Include="a2_Strategies\InSample\BasicChooserFromSavedBackTestLog.cs" />
     <Compile Include="a2_Strategies\InSample\GeneticChooser.cs" />
     <Compile Include="a2_Strategies\InSample\IInSampleChooser.cs" />
+    <Compile Include="a2_Strategies\IStrategy.cs" />
+    <Compile Include="a2_Strategies\IStrategyForBacktester.cs" />
     <Compile Include="a2_Strategies\Logging\BackTestLog.cs" />
     <Compile Include="a2_Strategies\Logging\DummyLogItem.cs" />
     <Compile Include="a2_Strategies\Logging\ILogDescriptor.cs" />
@@ -139,25 +133,17 @@
     <Compile Include="a0_Validation\Validators\MultiValidator.cs" />
     <Compile Include="a0_Validation\Validators\OHLCvalidator.cs" />
     <Compile Include="a0_Validation\Validators\RangeToRangeValidator.cs" />
-    <Compile Include="a05_Timing\EndOfDayDateTime.cs" />
-    <Compile Include="a05_Timing\EndOfDaySpecificTime.cs" />
-    <Compile Include="a05_Timing\EndOfDayTimingEventArgs.cs" />
     <Compile Include="a05_Timing\HistoricalEndOfDayTimer.cs" />
-    <Compile Include="a05_Timing\IEndOfDayTimer.cs" />
     <Compile Include="a05_Timing\IndexBasedEndOfDayTimer.cs" />
     <Compile Include="a07_DataProviders\HistoricalAdjustedQuoteProvider.cs" />
     <Compile Include="a07_DataProviders\HistoricalEndOfDayDataStreamer.cs" />
     <Compile Include="a07_DataProviders\HistoricalRawQuoteProvider.cs" />
-    <Compile Include="a07_DataProviders\IHistoricalQuoteProvider.cs" />
     <Compile Include="a1_Financial\a1_Instruments\Instrument.cs" />
     <Compile Include="a1_Financial\a1_Instruments\Instruments.cs" />
-    <Compile Include="a1_Financial\a1_Instruments\QuoteCache.cs" />
     <Compile Include="a1_Financial\a2_Accounting\Account.cs" />
-    <Compile Include="a1_Financial\a2_Accounting\AccountReportRecord.cs" />
     <Compile Include="a1_Financial\a2_Accounting\Accounts.cs" />
     <Compile Include="a1_Financial\a2_Accounting\Portfolio.cs" />
     <Compile Include="a1_Financial\a2_Accounting\Position.cs" />
-    <Compile Include="a1_Financial\a2_Accounting\TimedTransaction.cs" />
     <Compile Include="a1_Financial\a2_Accounting\Transaction.cs" />
     <Compile Include="a1_Financial\a2_Accounting\TransactionType.cs" />
     <Compile Include="a1_Financial\a2_Accounting\Commissions\Commission.cs" />
@@ -189,7 +175,6 @@
     <Compile Include="a1_Financial\a2_Accounting\h5_Reporting\Tables\RoundTrades.cs" />
     <Compile Include="a1_Financial\a2_Accounting\h5_Reporting\Tables\Summary.cs" />
     <Compile Include="a1_Financial\a2_Accounting\h5_Reporting\Tables\Transactions.cs" />
-    <Compile Include="a1_Financial\a2_Accounting\Transactions\EndOfDayTransaction.cs" />
     <Compile Include="a1_Financial\a2_Accounting\Transactions\TransactionHistory.cs" />
     <Compile Include="a1_Financial\a3_Ordering\HistoricalEndOfDayOrderExecutor.cs" />
     <Compile Include="a1_Financial\a3_Ordering\IOrderExecutor.cs" />
@@ -218,7 +203,6 @@
     <Compile Include="a1_Financial\a2_Accounting\h5_Reporting\SummaryRows\DoubleSummaryRow.cs" />
     <Compile Include="a1_Financial\a2_Accounting\h5_Reporting\SummaryRows\IntegerSummaryRow.cs" />
     <Compile Include="a1_Financial\a2_Accounting\h5_Reporting\SummaryRows\PercentageSummaryRow.cs" />
-    <Compile Include="a2_Strategies\IEndOfDayStrategy.cs" />
     <Compile Include="a1_Financial\a2_Accounting\h5_Reporting\SummaryRows\SharpeRatio.cs" />
     <Compile Include="a1_Financial\a2_Accounting\EquityLine.cs" />
     <Compile Include="a1_Financial\a2_Accounting\PositionType.cs" />
@@ -256,6 +240,7 @@
       <Name>b3_Data</Name>
     </ProjectReference>
     <Folder Include="a1_Financial\a2_Accounting\AccountProviding" />
+    <Folder Include="a1_Financial\a2_Accounting\h5_Reporting\DateTimeSelectorsForEquityLine" />
     <Folder Include="a1_Financial\a2_Accounting\h5_Reporting\StatisticsSummaryRows" />
     <Folder Include="a2_Strategies\EndOfDayStrategies" />
     <Folder Include="a2_Strategies\Optimizing\BruteForce" />

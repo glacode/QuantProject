@@ -27,6 +27,7 @@ using QuantProject.ADT.Statistics;
 using QuantProject.Data.DataTables;
 using QuantProject.Business.Financial.Accounting.Reporting.Tables;
 using QuantProject.Business.Financial.Accounting.Reporting.SummaryRows;
+using QuantProject.Business.Timing;
 
 namespace QuantProject.Business.Financial.Accounting.Reporting.StatisticsSummaryRows
 {
@@ -40,20 +41,30 @@ namespace QuantProject.Business.Financial.Accounting.Reporting.StatisticsSummary
 
 		private double getReturnForDate(DateTime date, DateTime previousDate)
 		{
+			// TODO: this method works only if the equity line is computed
+			// at market close; an exception is thrown otherwise; change the
+			// logic to be more general
 			double accountValueOnCloseForDate = 
-				(double)this.statisticsSummary.AccountReport.EquityLine.GetValue(date);
+				(double)this.statisticsSummary.AccountReport.EquityLine.GetValue(
+					HistoricalEndOfDayTimer.GetMarketClose( date ) );
 			double accountValueOnCloseForPreviousDate = 
-				(double)this.statisticsSummary.AccountReport.EquityLine.GetValue(previousDate);
+				(double)this.statisticsSummary.AccountReport.EquityLine.GetValue(
+					HistoricalEndOfDayTimer.GetMarketClose( previousDate ) );
 			
 			return (accountValueOnCloseForDate / accountValueOnCloseForPreviousDate) - 1.0;
 		}
 		
 		private bool hasPositionsOnDate( DateTime date, DateTime previousDate )
 		{
+			// TODO: this method works only if the equity line is computed
+			// at market close; an exception is thrown otherwise; change the
+			// logic to be more general
 			double accountValueOnCloseForDate = 
-				(double)this.statisticsSummary.AccountReport.EquityLine.GetValue(date);
+				(double)this.statisticsSummary.AccountReport.EquityLine.GetValue(
+					HistoricalEndOfDayTimer.GetMarketClose( date ) );
 			double accountValueOnCloseForPreviousDate = 
-				(double)this.statisticsSummary.AccountReport.EquityLine.GetValue(previousDate);
+				(double)this.statisticsSummary.AccountReport.EquityLine.GetValue(
+					HistoricalEndOfDayTimer.GetMarketClose( previousDate ) );
 			
 			return accountValueOnCloseForDate != accountValueOnCloseForPreviousDate;
 		}
@@ -79,10 +90,12 @@ namespace QuantProject.Business.Financial.Accounting.Reporting.StatisticsSummary
 			this.statisticsSummary = statisticsSummary;
 			this.rowDescription = this.getRowDescription();
 			DayOfWeek specificDayOfWeek = this.getSpecificDayOfWeek();
-			History marketDays = Quotes.GetMarketDays(
-				statisticsSummary.AccountReport.Benchmark,
-				statisticsSummary.AccountReport.StartDateTime,
-				statisticsSummary.AccountReport.EndDateTime.DateTime);
+//			History marketDays = Quotes.GetMarketDays(
+//				statisticsSummary.AccountReport.Benchmark,
+//				statisticsSummary.AccountReport.StartDateTime,
+//				statisticsSummary.AccountReport.EndDateTime);
+			History marketDays =
+				this.statisticsSummary.AccountReport.EquityLine;
 			DateTime date;
 			DateTime previousDate;
 			int totalNumberOfSpecificDayOfWeek = 0;

@@ -2,7 +2,7 @@
 QuantProject - Quantitative Finance Library
 
 FixedPeriodOscillatorStrategy.cs
-Copyright (C) 2003 
+Copyright (C) 2003
 Marco Milletti
 
 This program is free software; you can redistribute it and/or
@@ -18,7 +18,7 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
-*/
+ */
 
 using System;
 using System.Collections;
@@ -36,99 +36,113 @@ namespace QuantProject.Scripts.WalkForwardTesting.LinearCombination
 	/// Close To Close Oscillator strategy
 	/// </summary>
 	[Serializable]
-	public class FixedPeriodOscillatorStrategy : EndOfDayTimerHandler, IEndOfDayStrategy
+	public class FixedPeriodOscillatorStrategy :
+		QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios.EndOfDayTimerHandler ,
+	IStrategy
 	{
 		private int daysForRightPeriod;
-    private int daysForReversalPeriod;
-    //length for movement upwards or downwards of the given tickers
-    private int daysCounterWithRightPositions;
-    private int daysCounterWithReversalPositions;
-    private bool isReversalPeriodOn = false;
-    private int numOfClosesElapsed = 0;
-     
+		private int daysForReversalPeriod;
+		//length for movement upwards or downwards of the given tickers
+		private int daysCounterWithRightPositions;
+		private int daysCounterWithReversalPositions;
+		private bool isReversalPeriodOn = false;
+		private int numOfClosesElapsed = 0;
+		
 
 		public FixedPeriodOscillatorStrategy( Account account ,
-			                                     WeightedPositions weightedPositions,
-                                           int daysForRightPeriod,
-                                           int daysForReversalPeriod):
-    																		 base("", 0, 
-                                weightedPositions.Count, 0, account,
-                                0,
-                                0,
-                                "^GSPC", 0.0,
-                                PortfolioType.ShortAndLong)
+		                                     WeightedPositions weightedPositions,
+		                                     int daysForRightPeriod,
+		                                     int daysForReversalPeriod):
+			base("", 0,
+			     weightedPositions.Count, 0, account,
+			     0,
+			     0,
+			     "^GSPC", 0.0,
+			     PortfolioType.ShortAndLong)
 		{
 			this.account = account;
 			this.chosenWeightedPositions = weightedPositions;
-      this.daysForRightPeriod = daysForRightPeriod;
-      this.daysForReversalPeriod = daysForReversalPeriod;
+			this.daysForRightPeriod = daysForRightPeriod;
+			this.daysForReversalPeriod = daysForReversalPeriod;
 		}
+		
+		protected override void marketOpenEventHandler(
+			Object sender , DateTime dateTime )
+		{
+			
+		}
+		
+		private void marketCloseEventHandler_updateCounters(bool isTheFirstClose)
+		{
+			if(this.account.Portfolio.Count > 0 && isTheFirstClose == false)
+			{
+				if(this.isReversalPeriodOn)
+					this.daysCounterWithReversalPositions++ ;
+				else
+					this.daysCounterWithRightPositions++ ;
+			}
+		}
+
+		protected override void marketCloseEventHandler(
+			Object sender , DateTime dateTime)
+		{
+			bool firstClose = false;
+			if( (this.numOfClosesElapsed + 1) >=
+			   (this.daysForRightPeriod + this.daysForReversalPeriod) )
+				//strategy can now be applied because it is tuned with the optimization's results
+			{
+				if (this.account.Transactions.Count == 0)
+					// it is the first close
+				{
+					firstClose = true;
+					this.openPositions();
+				}
+
+				this.marketCloseEventHandler_updateCounters(firstClose);
+
+				if(firstClose == false && this.isReversalPeriodOn == false &&
+				   this.daysCounterWithRightPositions == this.daysForRightPeriod)
+					
+				{
+					AccountManager.ReversePositions(this.account);
+					this.isReversalPeriodOn = true;
+				}
 				
-    public override void MarketOpenEventHandler(
-			Object sender , EndOfDayTimingEventArgs endOfDayTimingEventArgs )
-		{
-    	
-		}
-		    
-    private void marketCloseEventHandler_updateCounters(bool isTheFirstClose)
-    {
-      if(this.account.Portfolio.Count > 0 && isTheFirstClose == false)
-      {
-        if(this.isReversalPeriodOn)
-          this.daysCounterWithReversalPositions++ ;
-        else
-          this.daysCounterWithRightPositions++ ;
-      }
-    }
-
-		public override void MarketCloseEventHandler( Object sender ,
-			EndOfDayTimingEventArgs endOfDayTimingEventArgs)
-		{
-      bool firstClose = false;
-      if( (this.numOfClosesElapsed + 1) >= 
-          (this.daysForRightPeriod + this.daysForReversalPeriod) )
-      //strategy can now be applied because it is tuned with the optimization's results
-      {
-        if (this.account.Transactions.Count == 0)
-          // it is the first close
-        {
-          firstClose = true;
-          this.openPositions();
-        }
-
-        this.marketCloseEventHandler_updateCounters(firstClose);
-
-        if(firstClose == false && this.isReversalPeriodOn == false &&
-           this.daysCounterWithRightPositions == this.daysForRightPeriod)
-      
-        {
-        	AccountManager.ReversePositions(this.account);
-          this.isReversalPeriodOn = true;
-        }
-      
-        if(this.isReversalPeriodOn == true &&
-           this.daysCounterWithReversalPositions == this.daysForReversalPeriod)
-      
-        {
-          AccountManager.ReversePositions(this.account);
-          this.isReversalPeriodOn = false;
-        }
-      }
-      
-      this.numOfClosesElapsed++;
+				if(this.isReversalPeriodOn == true &&
+				   this.daysCounterWithReversalPositions == this.daysForReversalPeriod)
+					
+				{
+					AccountManager.ReversePositions(this.account);
+					this.isReversalPeriodOn = false;
+				}
+			}
+			
+			this.numOfClosesElapsed++;
 
 		}
 		
-    public override void OneHourAfterMarketCloseEventHandler( Object sender ,
-			EndOfDayTimingEventArgs endOfDayTimingEventArgs)
+		protected override void oneHourAfterMarketCloseEventHandler( Object sender ,
+		                                                            DateTime dateTime)
 		{
-      
+			
 		}
-    
-    public void FiveMinutesBeforeMarketCloseEventHandler( Object sender ,
-			EndOfDayTimingEventArgs endOfDayTimingEventArgs)
+		
+		public void FiveMinutesBeforeMarketCloseEventHandler( Object sender ,
+		                                                     DateTime dateTime)
 		{
-      
+			
 		}
+		
+		public virtual void NewTimeEventHandler(
+			Object sender , DateTime dateTime )
+		{
+			if ( HistoricalEndOfDayTimer.IsMarketOpen( dateTime ) )
+				this.marketOpenEventHandler( sender , dateTime );
+			if ( HistoricalEndOfDayTimer.IsMarketClose( dateTime ) )
+				this.marketCloseEventHandler( sender , dateTime );
+			if ( HistoricalEndOfDayTimer.IsOneHourAfterMarketClose( dateTime ) )
+				this.oneHourAfterMarketCloseEventHandler( sender , dateTime );
+		}
+
 	}
 }

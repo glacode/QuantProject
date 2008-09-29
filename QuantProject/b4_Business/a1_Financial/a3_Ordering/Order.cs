@@ -38,7 +38,7 @@ namespace QuantProject.Business.Financial.Ordering
     private OrderType orderType;
     private Instrument instrument;
     private long quantity;
-    private EndOfDayDateTime endOfDayDateTime;
+    private DateTime dateTime;
 
     public OrderType Type
     {
@@ -58,10 +58,10 @@ namespace QuantProject.Business.Financial.Ordering
       set { quantity=value;  }
     }
 
-    public EndOfDayDateTime EndOfDayDateTime
+    public DateTime DateTime
     {
-      get { return endOfDayDateTime; }
-      set { endOfDayDateTime=value;  }
+      get { return this.dateTime; }
+      set { this.dateTime = value;  }
     }
 
 //    public Order( OrderType orderType , Instrument instrument , long quantity )
@@ -82,10 +82,10 @@ namespace QuantProject.Business.Financial.Ordering
 			this.order( orderType , instrument , quantity );
 		}
 		public Order( OrderType orderType , Instrument instrument ,
-			long quantity , EndOfDayDateTime endOfDayDateTime )
+			long quantity , DateTime dateTime )
 		{
 			this.order( orderType , instrument , quantity );
-			this.endOfDayDateTime = endOfDayDateTime;
+			this.dateTime = dateTime;
 		}
 	}
 }

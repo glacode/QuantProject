@@ -46,14 +46,14 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
   [Serializable]
   public class EndOfDayTimerHandlerLastChosenPortfolio : EndOfDayTimerHandler
   {
-  	private EndOfDayDateTime firstDate;
-  	private EndOfDayDateTime lastDate;
+  	private DateTime firstDate;
+  	private DateTime lastDate;
   	public EndOfDayTimerHandlerLastChosenPortfolio(string[] chosenTickers,
   	                                               PortfolioType portfolioType,
   	                                              Account account,
   	                                             	string benchmark,
-  	                                             	EndOfDayDateTime firstDate,
-  	                                             	EndOfDayDateTime lastDate):
+  	                                             	DateTime firstDate,
+  	                                             	DateTime lastDate):
   		base(new WeightedPositions( new SignedTickers(chosenTickers) ),
   		     portfolioType, account, benchmark)
     {
@@ -66,27 +66,27 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
     /// </summary>
     /// <param name="sender"></param>
     /// <param name="eventArgs"></param>
-    public override void MarketOpenEventHandler(
-      Object sender , EndOfDayTimingEventArgs endOfDayTimingEventArgs )
+    protected override void marketOpenEventHandler(
+      Object sender , DateTime dateTime )
     {
-    	if(endOfDayTimingEventArgs.EndOfDayDateTime.CompareTo(this.firstDate) == 0)
+    	if( dateTime == this.firstDate )
     	{
     		this.openPositions();
     	}
     }
 		
-    public override void MarketCloseEventHandler(
-      Object sender , EndOfDayTimingEventArgs endOfDayTimingEventArgs )
+    protected override void marketCloseEventHandler(
+      Object sender , DateTime dateTime )
     {
     	
     	//if(endOfDayTimingEventArgs.EndOfDayDateTime.CompareTo(this.lastDate) == 0)
       //	this.closePositions();
-      if(endOfDayTimingEventArgs.EndOfDayDateTime.DateTime.CompareTo(this.lastDate.DateTime.AddDays(-1)) == 0)
+      if(dateTime.CompareTo(this.lastDate.AddDays(-1)) == 0)
       		AccountManager.ClosePositions(this.account);
     }
     
-    public override void OneHourAfterMarketCloseEventHandler(
-      Object sender , EndOfDayTimingEventArgs endOfDayTimingEventArgs )
+    protected override void oneHourAfterMarketCloseEventHandler(
+      Object sender , DateTime dateTime )
     {
     	;
     }

@@ -2,7 +2,7 @@
 QuantProject - Quantitative Finance Library
 
 OpenToCloseDailyStrategy.cs
-Copyright (C) 2003 
+Copyright (C) 2003
 Glauco Siliprandi
 
 This program is free software; you can redistribute it and/or
@@ -18,7 +18,7 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
-*/
+ */
 
 using System;
 using System.Collections;
@@ -35,48 +35,61 @@ namespace QuantProject.Scripts.WalkForwardTesting.LinearCombination
 	/// Open to close daily strategy
 	/// </summary>
 	[Serializable]
-	public class OpenToCloseDailyStrategy : IEndOfDayStrategy
+	public class OpenToCloseDailyStrategy : EndOfDayStrategy
 	{
-		private Account account;
+//		private Account account;
 		private WeightedPositions chosenWeightedPositions;
 		
-		public Account Account
-		{
-			get { return this.account; }
-			set { this.account = value; }
-		}
+//		public Account Account
+//		{
+//			get { return this.account; }
+//			set { this.account = value; }
+//		}
 		
 		public OpenToCloseDailyStrategy( Account account ,
-			WeightedPositions chosenWeightedPositions)
+		                                WeightedPositions chosenWeightedPositions)
 		{
 			this.account = account;
 			this.chosenWeightedPositions = chosenWeightedPositions;
 		}
 		
-		public void MarketOpenEventHandler(
-			Object sender , EndOfDayTimingEventArgs endOfDayTimingEventArgs )
+		protected override void marketOpenEventHandler(
+			Object sender , DateTime dateTime )
 		{
 			if ( ( this.account.CashAmount == 0 ) &&
-				( this.account.Transactions.Count == 0 ) )
+			    ( this.account.Transactions.Count == 0 ) )
 				// cash has not been added yet
 				this.account.AddCash( 15000 );
 			AccountManager.OpenPositions(this.chosenWeightedPositions, this.account);
 		}
 		
-		public void FiveMinutesBeforeMarketCloseEventHandler( Object sender ,
-			EndOfDayTimingEventArgs endOfDayTimingEventArgs)
+//		public void FiveMinutesBeforeMarketCloseEventHandler( Object sender ,
+//		                                                     DateTime dateTime)
+//		{
+//			AccountManager.ClosePositions(this.account);
+//		}
+
+		protected override void marketCloseEventHandler( Object sender ,
+		                                                DateTime dateTime)
 		{
 			AccountManager.ClosePositions(this.account);
 		}
-
-		public void MarketCloseEventHandler( Object sender ,
-			EndOfDayTimingEventArgs endOfDayTimingEventArgs)
+		
+		protected override void oneHourAfterMarketCloseEventHandler( Object sender ,
+		                                                DateTime dateTime)
 		{
 		}
 		
-		public void OneHourAfterMarketCloseEventHandler( Object sender ,
-			EndOfDayTimingEventArgs endOfDayTimingEventArgs)
-		{
-		}
+//		public virtual void NewDateTimeEventHandler(
+//			Object sender , DateTime dateTime )
+//		{
+//			if ( HistoricalEndOfDayTimer.IsMarketOpen( dateTime ) )
+//				this.marketOpenEventHandler( sender , dateTime );
+//			if ( HistoricalEndOfDayTimer.IsMarketClose( dateTime ) )
+//				this.marketCloseEventHandler( sender , dateTime );
+//			if ( HistoricalEndOfDayTimer.IsOneHourAfterMarketClose( dateTime ) )
+//				this.oneHourAfterMarketCloseEventHandler( sender , dateTime );
+//		}
+
 	}
 }

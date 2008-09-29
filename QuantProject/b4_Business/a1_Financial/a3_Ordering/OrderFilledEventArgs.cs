@@ -2,7 +2,7 @@
 QuantProject - Quantitative Finance Library
 
 NewTransactionEventArgs.cs
-Copyright (C) 2003 
+Copyright (C) 2003
 Glauco Siliprandi
 
 This program is free software; you can redistribute it and/or
@@ -18,7 +18,7 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
-*/
+ */
 using System;
 using System.Data;
 
@@ -35,7 +35,7 @@ namespace QuantProject.Business.Financial.Ordering
 	public class OrderFilledEventArgs : EventArgs
 	{
 		private Order order;
-		private EndOfDayTransaction endOfDayTransaction;
+		private TimedTransaction timedTransaction;
 
 		public Order Order
 		{
@@ -43,16 +43,17 @@ namespace QuantProject.Business.Financial.Ordering
 			set { this.order = value; }
 		}
 
-		public EndOfDayTransaction EndOfDayTransaction
+		public TimedTransaction TimedTransaction
 		{
-			get { return this.endOfDayTransaction; }
-			set { this.endOfDayTransaction = value; }
+			get { return this.timedTransaction; }
+			set { this.timedTransaction = value; }
 		}
 
-    public OrderFilledEventArgs( Order order , EndOfDayTransaction endOfDayTransaction )
-    {
-      this.order = order;
-			this.endOfDayTransaction = endOfDayTransaction;
-    }
-  }
+		public OrderFilledEventArgs(
+			Order order , TimedTransaction timedTransaction )
+		{
+			this.order = order;
+			this.timedTransaction = timedTransaction;
+		}
+	}
 }

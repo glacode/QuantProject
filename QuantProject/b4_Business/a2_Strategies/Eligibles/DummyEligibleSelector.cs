@@ -23,10 +23,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 using System;
 using System.Data;
 
+using QuantProject.ADT.Histories;
 using QuantProject.ADT.Messaging;
-using QuantProject.Business.Strategies.ReturnsManagement.Time;
-using QuantProject.Business.Timing;
-using QuantProject.Data.Selectors;
 
 namespace QuantProject.Business.Strategies.Eligibles
 {
@@ -34,6 +32,7 @@ namespace QuantProject.Business.Strategies.Eligibles
 	/// Selects no tickers at all. To be used for log item's
 	/// debugging
 	/// </summary>
+	[Serializable]
 	public class DummyEligibleSelector : IEligiblesSelector
 	{
 		public event NewMessageEventHandler NewMessage;
@@ -54,7 +53,7 @@ namespace QuantProject.Business.Strategies.Eligibles
 		{
 		}
 		public EligibleTickers GetEligibleTickers(
-			EndOfDayHistory endOfDayHistory )
+			History history )
 		{
 			if ( this.NewMessage != null )
 				this.NewMessage( this , new NewMessageEventArgs( "NewEligibles" ) );

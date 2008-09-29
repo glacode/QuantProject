@@ -41,7 +41,7 @@ namespace QuantProject.Scripts.General.Logging
 	{
 		private TestingPositions testingPositions;
 		private int numberOfInSampleDays;
-		private EndOfDayDateTime endOfDayDateTimeWhenThisObjectWasLogged;
+		private DateTime dateTimeWhenThisObjectWasLogged;
 		
 		/// <summary>
 		/// Generation when the TestingPositions object has been created
@@ -69,12 +69,12 @@ namespace QuantProject.Scripts.General.Logging
 		public DummyTesterForTestingPositions(
 			TestingPositions testingPositions ,
 			int numberOfInSampleDays ,
-			EndOfDayDateTime endOfDayDateTimeWhenThisObjectWasLogged )
+			DateTime dateTimeWhenThisObjectWasLogged )
 		{
 			this.testingPositions = testingPositions;
 			this.numberOfInSampleDays = numberOfInSampleDays;
-			this.endOfDayDateTimeWhenThisObjectWasLogged =
-				endOfDayDateTimeWhenThisObjectWasLogged;
+			this.dateTimeWhenThisObjectWasLogged =
+				dateTimeWhenThisObjectWasLogged;
 		}
 						
 		public void Run()

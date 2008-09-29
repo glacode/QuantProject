@@ -18,7 +18,7 @@ namespace QuantProject.Business.Financial.Accounting.Reporting.Tables
 	public class Summary : ReportTable, ISerializable
 	{
 		private AccountReport accountReport;
-		private IHistoricalQuoteProvider historicalQuoteProvider;
+		private HistoricalMarketValueProvider historicalMarketValueProvider;
 		private double totalPnl;
 		private BenchmarkPercentageReturn benchmarkPercentageReturn;
 		private AnnualSystemPercentageReturn annualSystemPercentageReturn;
@@ -184,10 +184,10 @@ namespace QuantProject.Business.Financial.Accounting.Reporting.Tables
 			this.summary( accountReport );
 		}
 		public Summary( AccountReport accountReport ,
-		               IHistoricalQuoteProvider historicalDataProvider ) :
+		               HistoricalMarketValueProvider historicalMarketValueProvider ) :
 			base( accountReport.Name + " - Summary" )
 		{
-			this.historicalQuoteProvider = historicalDataProvider;
+			this.historicalMarketValueProvider = historicalMarketValueProvider;
 			this.summary( accountReport );
 		}
 
@@ -264,7 +264,7 @@ namespace QuantProject.Business.Financial.Accounting.Reporting.Tables
 				            (DateTime)this.accountReport.Equity.DataTable.Rows[ 0 ][ "Date" ])).Days;
 			this.returnOnAccount = new ReturnOnAccount( this );
 			this.benchmarkPercentageReturn =
-				new BenchmarkPercentageReturn( this , this.historicalQuoteProvider );
+				new BenchmarkPercentageReturn( this , this.historicalMarketValueProvider );
 			this.numberWinningPeriods = new NumberWinningPeriods( this );
 			this.numberLosingPeriods = new NumberLosingPeriods( this );
 			this.percentageWinningPeriods = new PercentageWinningPeriods( this );

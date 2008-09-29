@@ -116,18 +116,18 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOs
     
 		protected override void run_initializeHistoricalQuoteProvider()
     {
-    	this.historicalQuoteProvider = new HistoricalRawQuoteProvider();
+    	this.historicalMarketValueProvider = new HistoricalRawQuoteProvider();
     }
 		
 		protected override void run_initializeAccount()
 		{
 			this.account = new Account( this.scriptName , this.endOfDayTimer ,
 				new HistoricalEndOfDayDataStreamer( this.endOfDayTimer ,
-				this.historicalQuoteProvider ) ,
+				this.historicalMarketValueProvider ) ,
 				new HistoricalEndOfDayOrderExecutor( this.endOfDayTimer ,
-				this.historicalQuoteProvider, 
+				this.historicalMarketValueProvider, 
 				new FixedPercentageSlippageManager(
-						this.historicalQuoteProvider, this.endOfDayTimer, 0.05 ) ),
+						this.historicalMarketValueProvider, this.endOfDayTimer, 0.05 ) ),
 				new IBCommissionManager() );
  		}
 //		//no slippage, only commissions
@@ -205,9 +205,9 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOs
 			}
 			this.checkDateForReport_createDirIfNotPresent(dirNameWhereToSaveReports);
 			AccountReport accountReport = this.account.CreateReport(fileName,1,
-				this.endOfDayTimer.GetCurrentTime(),
+				this.endOfDayTimer.GetCurrentDateTime(),
 				this.benchmark,
-				this.historicalQuoteProvider);
+				this.historicalMarketValueProvider);
 			ObjectArchiver.Archive(accountReport,
 				dirNameWhereToSaveReports + 
 				fileName + ".qPr");
