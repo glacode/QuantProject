@@ -163,13 +163,13 @@ namespace QuantProject.DataAccess
 			return quote;
 		}
 		public static bool WasExchanged( string ticker ,
-			ExtendedDateTime extendedDateTime )
+			DateTime dateTime )
 		{
 			string sqlQuery =
 				"select * " +
 				"from quotes where (quTicker='" + ticker + "') " +
 				"and (quDate=" +
-				SQLBuilder.GetDateConstant( extendedDateTime.DateTime ) + ")";
+				SQLBuilder.GetDateConstant( dateTime ) + ")";
 			DataTable quotes = new DataTable();
 			try
 			{

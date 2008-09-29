@@ -53,9 +53,9 @@ namespace QuantProject.Data.DataProviders.Caching
 			return returnValue;
 		}
 		public bool WasExchanged( string ticker ,
-			ExtendedDateTime extendedDateTime )
+			DateTime dateTime )
 		{
-			return DataBase.WasExchanged( ticker , extendedDateTime );
+			return DataBase.WasExchanged( ticker , dateTime );
 		}
 	}
 }

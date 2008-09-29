@@ -32,7 +32,8 @@ namespace QuantProject.Data.DataProviders.Caching
 	/// </summary>
 	public interface ICache
 	{
-		double GetQuote( string ticker , DateTime dateTime , QuoteField quoteField );
-		bool WasExchanged( string ticker , ExtendedDateTime extendedDateTime );
+		double GetQuote(
+			string ticker , DateTime dateTime , QuoteField quoteField );
+		bool WasExchanged( string ticker , DateTime dateTime );
 	}
 }

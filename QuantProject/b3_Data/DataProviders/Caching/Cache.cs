@@ -97,6 +97,7 @@ namespace QuantProject.Data.DataProviders.Caching
 		{
 			return this.getCachePage( ticker , dateTime.Year , quoteField );
 		}
+		
 		#region removeUnusedPages
 		private long removeUnusedPages_getMinPageRankToKeep()
 		{
@@ -129,38 +130,9 @@ namespace QuantProject.Data.DataProviders.Caching
 			foreach ( string key in keysToBeRemoved )
 				this.Remove( key );
 		}
-		#endregion
-//		private void getQuote_checkEarlyDateException( DateTime dateTime )
-//		{
-//			if ( dateTime < ConstantsProvider.MinQuoteDateTime )
-//				throw new EarlyDateException( dateTime );
-//		}
+		#endregion removeUnusedPages
+
 		#region addPage
-//		private void addTicker( string ticker )
-//		{
-//			if ( !this.ContainsKey( ticker ) )
-//			{
-//				this.Add( ticker , new Hashtable() );
-//			}
-//		}
-//		private void addYear( string ticker , int year )
-//		{
-//			Hashtable quotesForTicker = this.getQuotes( ticker );
-//			if ( !quotesForTicker.ContainsKey( year ) )
-//			{
-//				quotesForTicker.Add( year , new Hashtable() );
-//			}
-//		}
-//		private void addCachePage( string ticker , int year , QuoteField quoteField )
-//		{
-//			Hashtable quotesForTickerAndYear = this.getQuotes( ticker , year );
-//			if ( !quotesForTickerAndYear.ContainsKey( quoteField ) )
-//			{
-//				CachePage cachePage = new CachePage( ticker , year , quoteField );
-//				cachePage.LoadData();
-//				quotesForTickerAndYear.Add( quoteField , cachePage );
-//			}
-//		}
 		private void addPage_actually( string ticker , int year , QuoteField quoteField )
 		{
 			if ( this.Count + 1 > this.maxNumPages )
@@ -182,7 +154,9 @@ namespace QuantProject.Data.DataProviders.Caching
 			this.addPage( ticker , dateTime.Year , quoteField );
 		}
 		#endregion
-		public double GetQuote( string ticker , DateTime dateTime , QuoteField quoteField )
+		
+		public double GetQuote(
+			string ticker , DateTime dateTime , QuoteField quoteField )
 		{
 			double returnValue;
 			//			this.getQuote_checkEarlyDateException( dateTime );
@@ -218,19 +192,32 @@ namespace QuantProject.Data.DataProviders.Caching
 			}
 			return returnValue;
 		}
-		public bool WasExchanged( string ticker , ExtendedDateTime extendedDateTime )
+		
+		#region WasExchanged
+		private bool wasExchanged_withCachingAlreadyForced(
+			string ticker , DateTime dateTime )
 		{
-			bool returnValue;
-			// forces quote caching
-			this.GetQuote( ticker , extendedDateTime.DateTime , QuoteField.Open );
-			if ( !((CachePage)this[ this.getKey( ticker , extendedDateTime.DateTime.Year ,
-				QuoteField.Open ) ] ).Quotes.ContainsKey( extendedDateTime.DateTime ) )
-				// the ticker was not exchanged at the given date
-				returnValue = false;
-			else
-				// the ticker was exchanged at the given date
-				returnValue = true;
-			return returnValue;
+			CachePage cachePage = this.getCachePage(
+				ticker , dateTime , QuoteField.Open );
+			DateTime date = ExtendedDateTime.GetDate( dateTime );
+			bool wasExchanged = cachePage.Quotes.ContainsKey( date );
+//			if ( !cachePage.Quotes.ContainsKey( date ) )
+//				// the ticker was not exchanged at the given date
+//				returnValue = false;
+//			else
+//				// the ticker was exchanged at the given date
+//				returnValue = true;
+			return wasExchanged;
 		}
+		public bool WasExchanged(
+			string ticker , DateTime dateTime )
+		{
+			// forces quote caching
+			this.GetQuote( ticker , dateTime , QuoteField.Open );
+			bool wasExchanged = this.wasExchanged_withCachingAlreadyForced(
+				ticker , dateTime );
+			return wasExchanged;
+		}
+		#endregion WasExchanged
 	}
 }

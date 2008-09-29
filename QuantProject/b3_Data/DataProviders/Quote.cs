@@ -32,7 +32,7 @@ namespace QuantProject.Data.DataProviders
 	{
 		private string ticker;
 		private double value;
-		private ExtendedDateTime extendedDateTime;
+		private DateTime dateTime;
 
 		public string Ticker
 		{
@@ -46,10 +46,10 @@ namespace QuantProject.Data.DataProviders
 			set	{	this.value = value;	}
 		}
 
-		public ExtendedDateTime ExtendedDateTime
+		public DateTime DateTime
 		{
-			get	{	return this.extendedDateTime;	}
-			set	{	this.extendedDateTime = value;	}
+			get	{	return this.dateTime;	}
+			set	{	this.dateTime = value;	}
 		}
 
 		public Quote()
