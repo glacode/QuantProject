@@ -45,6 +45,11 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AssemblyInfo.cs" />
+    <Compile Include="DataProviders\Bars\Caching\BarCacheData.cs" />
+    <Compile Include="DataProviders\Bars\Caching\DailyBarCache.cs" />
+    <Compile Include="DataProviders\Bars\Caching\IBarCache.cs" />
+    <Compile Include="DataProviders\Bars\HistoricalBarProvider.cs" />
+    <Compile Include="DataProviders\Bars\MissingBarException.cs" />
     <Compile Include="DataProviders\Quotes\HistoricalQuotesProvider.cs" />
     <Compile Include="DataProviders\Quotes\MarketStatusSwitch.cs" />
     <Compile Include="ExtendedDataTable.cs" />
@@ -99,6 +104,8 @@
       <Project>{217A1E06-5FA7-49C1-A3D7-586F3690D5DE}</Project>
       <Name>b1_ADT</Name>
     </ProjectReference>
+    <Folder Include="DataProviders\Bars" />
+    <Folder Include="DataProviders\Bars\Caching" />
     <Folder Include="DataProviders\Quotes" />
     <Folder Include="Selectors\ByLinearIndipendence" />
   </ItemGroup>
