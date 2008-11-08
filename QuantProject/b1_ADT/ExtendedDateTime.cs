@@ -2,7 +2,7 @@
 QuantProject - Quantitative Finance Library
 
 ExtendedDateTime.cs
-Copyright (C) 2003 
+Copyright (C) 2003
 Glauco Siliprandi
 
 This program is free software; you can redistribute it and/or
@@ -18,7 +18,7 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
-*/
+ */
 
 using System;
 using System.Collections;
@@ -28,8 +28,8 @@ namespace QuantProject.ADT
 	/// <summary>
 	/// Summary description for DateTime.
 	/// </summary>
-  public static class ExtendedDateTime
-  {
+	public static class ExtendedDateTime
+	{
 		/// <summary>
 		/// Returns a DateTime short description suitable for file names (no slashes)
 		/// hours, minutes and seconds are NOT displayed
@@ -100,7 +100,7 @@ namespace QuantProject.ADT
 					dateTime.Year , dateTime.Month , dateTime.Day ,
 					dateTime.Hour , dateTime.Minute , dateTime.Second );
 			return newDateTime;
-		}		
+		}
 		
 		public static bool IsDate( DateTime dateTime )
 		{
@@ -109,6 +109,18 @@ namespace QuantProject.ADT
 				 ( dateTime.Minute == 0 ) &&
 				 ( dateTime.Second == 0 ) );
 			return isDate;
+		}
+		
+		/// <summary>
+		/// true iif the given dateTime can be interpreted as a time
+		/// </summary>
+		/// <param name="dateTime"></param>
+		/// <returns></returns>
+		public static bool IsTime( DateTime dateTime )
+		{
+			bool isTime =
+				( dateTime == ExtendedDateTime.GetTime( dateTime ) );
+			return isTime;
 		}
 		
 		/// <summary>
@@ -128,14 +140,20 @@ namespace QuantProject.ADT
 			return returnValue;
 		}
 		
-		#region IsFirstTimeLessThenSecondTime
-		private static DateTime getTime( DateTime dateTime )
+		/// <summary>
+		/// Returns a standardized version of a given DateTime, that will
+		/// be interpreted as a time
+		/// </summary>
+		/// <param name="dateTime"></param>
+		/// <returns></returns>
+		public static DateTime GetTime( DateTime dateTime )
 		{
 			DateTime time = new DateTime(
 				1900 , 1 , 1 ,
 				dateTime.Hour , dateTime.Minute , dateTime.Second );
 			return time;
 		}
+		
 		/// <summary>
 		/// true iif the time for dateTime1 is less than the time
 		/// for dateTime2
@@ -145,12 +163,11 @@ namespace QuantProject.ADT
 		public static bool IsFirstTimeLessThenSecondTime(
 			DateTime dateTime1 , DateTime dateTime2 )
 		{
-			DateTime time1 = ExtendedDateTime.getTime( dateTime1 );
-			DateTime time2 = ExtendedDateTime.getTime( dateTime2 );
+			DateTime time1 = ExtendedDateTime.GetTime( dateTime1 );
+			DateTime time2 = ExtendedDateTime.GetTime( dateTime2 );
 			bool isFirstTimeLessThenSecondTime =
 				( time1 < time2 );
 			return isFirstTimeLessThenSecondTime;
 		}
-		#endregion IsFirstTimeLessThenSecondTime
 	}
 }
