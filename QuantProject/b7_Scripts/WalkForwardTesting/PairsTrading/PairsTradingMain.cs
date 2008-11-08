@@ -18,7 +18,7 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
-*/
+ */
 
 using System;
 
@@ -36,6 +36,7 @@ using QuantProject.Business.Strategies.ReturnsManagement;
 using QuantProject.Business.Strategies.ReturnsManagement.Time;
 using QuantProject.Business.Strategies.ReturnsManagement.Time.IntervalsSelectors;
 using QuantProject.Business.Timing;
+using QuantProject.Data.DataProviders.Bars.Caching;
 using QuantProject.Presentation;
 using QuantProject.Scripts.General;
 using QuantProject.Scripts.General.Logging;
@@ -67,18 +68,51 @@ namespace QuantProject.Scripts.WalkForwardTesting.PairsTrading
 				new HistoricalRawQuoteProvider();
 
 			this.historicalMarketValueProviderForChosingPositionsOutOfSample =
-				new HistoricalAdjustedQuoteProvider();
+				this.getHistoricalBarProvider();
+//			this.historicalMarketValueProviderForChosingPositionsOutOfSample =
+//				new HistoricalAdjustedQuoteProvider();
 //			this.historicalQuoteProviderForChosingPositionsOutOfSample =
 //				new HistoricalRawQuoteProvider();
 
 			this.historicalMarketValueProviderForTheBacktesterAccount =
-				new HistoricalRawQuoteProvider();
+				this.historicalMarketValueProviderForChosingPositionsOutOfSample;
+//			this.historicalMarketValueProviderForTheBacktesterAccount =
+//				new HistoricalRawQuoteProvider();
 //			this.historicalQuoteProviderForTheBacktesterAccount =
 //				new HistoricalAdjustedQuoteProvider();
 
 			// definition for the Fitness Evaluator
 			//      IEquityEvaluator equityEvaluator = new SharpeRatio();
 		}
+		
+		#region getHistoricalBarProvider
+		
+		#region getBarCache
+		private DateTime[] getDailyTimes()
+		{
+			DateTime[] dailyTimes = {
+				new DateTime( 1900 , 1 , 1 , 10 , 0 , 0 ) ,
+				new DateTime( 1900 , 1 , 1 , 10 , 30 , 0 ) ,
+				new DateTime( 1900 , 1 , 1 , 11 , 0 , 0 )			
+			};
+			return dailyTimes;
+		}
+		private IBarCache getBarCache()
+		{
+			DateTime[] dailyTimes = this.getDailyTimes();
+			IBarCache barCache = new DailyBarCache( 60 , dailyTimes );
+			return barCache;
+		}
+		#endregion getBarCache
+		
+		private HistoricalBarProvider getHistoricalBarProvider()
+		{
+			IBarCache barCache = getBarCache();
+			HistoricalBarProvider historicalBarProvider =
+				new HistoricalBarProvider( barCache );
+			return historicalBarProvider;
+		}
+		#endregion getHistoricalBarProvider
 
 		protected override IEligiblesSelector getEligiblesSelector()
 		{
@@ -100,11 +134,11 @@ namespace QuantProject.Scripts.WalkForwardTesting.PairsTrading
 					10 , 20 , 75 );
 			eligiblesSelector =
 				new ByPriceMostLiquidLessVolatileOTCAlwaysQuoted(
-				tickersGroupId ,
-				true ,
-				maxNumberOfEligiblesToBeChosen ,
-				maxNumberOfEligiblesToBeChosen + 50 ,
-				10 , 10 , 20 , 75 );
+					tickersGroupId ,
+					true ,
+					maxNumberOfEligiblesToBeChosen ,
+					maxNumberOfEligiblesToBeChosen + 50 ,
+					10 , 10 , 20 , 75 );
 
 
 //			uncomment the following line for a (logbased) log based in sample chooser
@@ -136,14 +170,14 @@ namespace QuantProject.Scripts.WalkForwardTesting.PairsTrading
 				QuantProject.ADT.ConstantsProvider.SeedForRandomGenerator;
 			IInSampleChooser inSampleChooser =
 				new PairsTradingGeneticChooser(
-				numberOfBestTestingPositionsToBeReturned ,
-				this.benchmark ,
-				decoderForWeightedPositions , fitnessEvaluator ,
-				this.historicalMarketValueProviderForInSample ,
-				crossoverRate , mutationRate , elitismRate ,
-				populationSizeForGeneticOptimizer ,
-				generationNumberForGeneticOptimizer ,
-				seedForRandomGenerator );
+					numberOfBestTestingPositionsToBeReturned ,
+					this.benchmark ,
+					decoderForWeightedPositions , fitnessEvaluator ,
+					this.historicalMarketValueProviderForInSample ,
+					crossoverRate , mutationRate , elitismRate ,
+					populationSizeForGeneticOptimizer ,
+					generationNumberForGeneticOptimizer ,
+					seedForRandomGenerator );
 			
 			inSampleChooser =
 				new PairsTradingBruteForceChooser(
@@ -186,19 +220,19 @@ namespace QuantProject.Scripts.WalkForwardTesting.PairsTrading
 
 			OutOfSampleChooser outOfSampleChooser =
 				new OutOfSampleChooserForSingleLongAndShort(
-				0.006 , 0.02 , 0.006 , 0.02 );
+					0.006 , 0.02 , 0.006 , 0.02 );
 //			outOfSampleChooser =
 //				new OutOfSampleChooserForExactNumberOfBestLongPositions(
 //				2 ,	0.006 , 0.99 , 0.006 , 0.99 );
 
 			IStrategyForBacktester strategyForBacktester =
 				new PairsTradingStrategy(
-				7 , inSampleDays ,
-				intervalsSelectorForInSample , intervalsSelectorForOutOfSample ,
-				eligiblesSelector , inSampleChooser ,
-				this.historicalMarketValueProviderForInSample ,
-				this.historicalMarketValueProviderForChosingPositionsOutOfSample ,
-				outOfSampleChooser );
+					7 , inSampleDays ,
+					intervalsSelectorForInSample , intervalsSelectorForOutOfSample ,
+					eligiblesSelector , inSampleChooser ,
+					this.historicalMarketValueProviderForInSample ,
+					this.historicalMarketValueProviderForChosingPositionsOutOfSample ,
+					outOfSampleChooser );
 //			IEndOfDayStrategyForBacktester endOfDayStrategyForBacktester =
 //				new PairsTradingStrategy(
 //				7 , inSampleDays , intervalsSelector ,
@@ -223,7 +257,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.PairsTrading
 			double cashToStart = 30000;
 
 			DateTime firstDateTime = new DateTime( 2001 , 1 , 1 );
-						firstDateTime = new DateTime( 2006 , 8 , 1 );
+			firstDateTime = new DateTime( 2006 , 8 , 1 );
 			DateTime lastDateTime = new DateTime( 2008 , 4 , 30 );
 
 			// uncomment the following two lines for a faster script
@@ -234,11 +268,11 @@ namespace QuantProject.Scripts.WalkForwardTesting.PairsTrading
 			
 			EndOfDayStrategyBackTester endOfDayStrategyBackTester =
 				new EndOfDayStrategyBackTester(
-				backTestId , this.strategyForBacktester ,
-				this.historicalMarketValueProviderForTheBacktesterAccount ,
-				accountProvider ,
-				firstDateTime ,	lastDateTime ,
-				this.benchmark , cashToStart , maxRunningHours );
+					backTestId , this.strategyForBacktester ,
+					this.historicalMarketValueProviderForTheBacktesterAccount ,
+					accountProvider ,
+					firstDateTime ,	lastDateTime ,
+					this.benchmark , cashToStart , maxRunningHours );
 			return endOfDayStrategyBackTester;
 		}
 
