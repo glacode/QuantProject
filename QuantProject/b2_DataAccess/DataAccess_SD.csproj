@@ -45,6 +45,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AssemblyInfo.cs" />
+    <Compile Include="BarFieldNames.cs" />
     <Compile Include="ConnectionProvider.cs" />
     <Compile Include="DataBase.cs" />
     <Compile Include="DataBaseLocator.cs" />
@@ -52,6 +53,7 @@
     <Compile Include="OleDbSingleTableAdapter.cs" />
     <Compile Include="QuoteField.cs" />
     <Compile Include="SQLBuilder.cs" />
+    <Compile Include="SqlComparisonOperator.cs" />
     <Compile Include="SqlExecutor.cs" />
     <Compile Include="ValidationTypes.cs" />
     <Compile Include="Tables\FaultyTickers.cs" />
