@@ -2,7 +2,7 @@
 QuantProject - Quantitative Finance Library
 
 DataBase.cs
-Copyright (C) 2003 
+Copyright (C) 2003
 Glauco Siliprandi
 
 This program is free software; you can redistribute it and/or
@@ -18,7 +18,7 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
-*/
+ */
 
 using System;
 using System.Collections;
@@ -82,9 +82,9 @@ namespace QuantProject.DataAccess
 			return fieldName;
 		}
 
-    #region "GetHistory"
+		#region "GetHistory"
 		private static History getHistory_try( string instrumentKey , QuoteField quoteField ,
-			DateTime firstDate , DateTime lastDate )
+		                                      DateTime firstDate , DateTime lastDate )
 		{
 			History history = new History();
 			string commandString =
@@ -98,7 +98,7 @@ namespace QuantProject.DataAccess
 			return history;
 		}
 		private static History getHistory_common( string instrumentKey , QuoteField quoteField ,
-			DateTime firstDate , DateTime lastDate )
+		                                         DateTime firstDate , DateTime lastDate )
 		{
 			History history;
 			try
@@ -134,13 +134,13 @@ namespace QuantProject.DataAccess
 		/// <param name="lastDate">Last date for quotes to be fetched</param>
 		/// <returns>The history for the given instrument and quote field</returns>
 		public static History GetHistory( string instrumentKey , QuoteField quoteField ,
-			DateTime firstDate , DateTime lastDate )
+		                                 DateTime firstDate , DateTime lastDate )
 		{
 			return getHistory_common( instrumentKey , quoteField , firstDate , lastDate );
 		}
 		#endregion
 		public static double GetQuote( string ticker ,
-			QuoteField quoteField , DateTime dateTime )
+		                              QuoteField quoteField , DateTime dateTime )
 		{
 			double quote = Double.MinValue;
 			string sqlQuery =
@@ -163,7 +163,7 @@ namespace QuantProject.DataAccess
 			return quote;
 		}
 		public static bool WasExchanged( string ticker ,
-			DateTime dateTime )
+		                                DateTime dateTime )
 		{
 			string sqlQuery =
 				"select * " +
@@ -181,5 +181,124 @@ namespace QuantProject.DataAccess
 			}
 			return ( quotes.Rows.Count > 0 );
 		}
+		
+		#region getHistory
+		private static History getHistory(
+			DataTable barDataTable , string barFieldName )
+		{
+			History history = new History();
+			history.Import(
+				barDataTable , BarFieldNames.DateTimeForOpen , barFieldName );
+			return history;
+		}
+		#endregion getHistory
+		
+		#region GetBarOpenHistory
+		
+		#region getBarDataTable
+		
+		#region getSqlForBarDataTable
+		
+		#region getFilterForDailyTimes
+		
+//		#region getFilterForDailyTime
+//		private getFilterForDailyTime( DateTime dateTime )
+//		{
+//			string filterForDailyTime =
+//				"(Format([baDateTimeForOpen],'hh:mm:ss')>='" +
+//				this.getSqlTimeConstantForFirstDailyBar() + "')";
+//		}
+//		#endregion getFilterForDailyTime
+		
+		private static string getFilterForDailyTimes( DateTime[] dailyTimes )
+		{
+			string filterForDailyTimes = "";
+			foreach( DateTime dateTime in dailyTimes )
+				filterForDailyTimes =
+					filterForDailyTimes +
+					SQLBuilder.GetFilterForTime(
+						"baDateTimeForOpen" , SqlComparisonOperator.Equal , dateTime ) +
+					" and ";
+			filterForDailyTimes = filterForDailyTimes.Substring(
+				0 , filterForDailyTimes.Length - " and ".Length );
+			return filterForDailyTimes;
+		}
+		#endregion getFilterForDailyTimes
+		
+		private static string getSqlForBarDataTable(
+			string ticker ,
+			int barInterval ,
+			string barFieldName ,
+			DateTime firstDateTime ,
+			DateTime lastDateTime ,
+			DateTime[] dailyTimes )
+		{
+			string sql =
+				"select baOpen from bars " +
+				"where (baTicker='" + ticker + "') and " +
+				"(baInterval=" + barInterval + ") and" +
+				"(baDateTimeForOpen>=" +
+				SQLBuilder.GetDateTimeConstant( firstDateTime ) + ") and" +
+				"(baDateTimeForOpen<=" +
+				SQLBuilder.GetDateTimeConstant( lastDateTime )
+				+ ") and" +
+				DataBase.getFilterForDailyTimes( dailyTimes );
+//			"(Format([baDateTimeForOpen],'hh:mm:ss')>='" +
+//				DataBase.getSqlTimeConstantForFirstDailyBar() + "') and" +
+//				"(Format([baDateTimeForOpen],'hh:mm:ss')<='" +
+//				DataBase.getSqlTimeConstantForLastDailyBar() + "');";
+			return sql;
+		}
+		#endregion getSqlForBarDataTable
+		
+		private static DataTable getBarDataTable(
+			string ticker ,
+			int barInterval ,
+			string barFieldName ,
+			DateTime firstDateTime ,
+			DateTime lastDateTime ,
+			DateTime[] dailyTimes )
+		{
+			string sql = DataBase.getSqlForBarDataTable(
+				ticker ,
+				barInterval ,
+				barFieldName ,
+				firstDateTime ,
+				lastDateTime ,
+				dailyTimes );
+			DataTable barDataTable = SqlExecutor.GetDataTable( sql );
+			return barDataTable;
+		}
+		#endregion getBarDataTable
+		
+		/// <summary>
+		/// returns the market value for the given ticker, for all days in the given
+		/// interval, at the open of all the bars that begin at dailyTimes
+		/// </summary>
+		/// <param name="ticker"></param>
+		/// <param name="barInterval"></param>
+		/// <param name="firstDateTime"></param>
+		/// <param name="lastDateTime"></param>
+		/// <param name="dailyTimes"></param>
+		/// <returns></returns>
+		public static History GetBarOpenHistory(
+			string ticker ,
+			int barInterval ,
+			DateTime firstDateTime ,
+			DateTime lastDateTime ,
+			DateTime[] dailyTimes )
+		{
+			DataTable barDataTable = DataBase.getBarDataTable(
+				ticker ,
+				barInterval ,
+				BarFieldNames.Open ,
+				firstDateTime ,
+				lastDateTime ,
+				dailyTimes );
+			History barOpenHistory = DataBase.getHistory(
+				barDataTable , BarFieldNames.Open );
+			return barOpenHistory;
+		}
+		#endregion GetBarOpenHistory
 	}
 }
