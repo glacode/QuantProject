@@ -1,5 +1,5 @@
 /*
-QuantDownloader - Quantitative Finance Library
+QuantProject - Quantitative Finance Library
 
 TickerDataTable.cs
 Copyright (C) 2003 
@@ -234,6 +234,94 @@ namespace QuantProject.Data.DataTables
     	return returnValue;
     }
     #endregion GetTickersQuotedInEachMarketDay
+    
+    #region GetTickersQuotedAtEachDateTime
+    
+    private static void getTickersQuotedAtAGivenPercentageOfDateTimes_addRow(DataRow rowToBeAdded, int numberOfTradingDateTimes,
+                               DataTable tableToWhichRowIsToBeAdded)
+    {
+      DataRow newRow = tableToWhichRowIsToBeAdded.NewRow();
+      newRow[0]= rowToBeAdded[0];
+      newRow["NumberOfBars"] = numberOfTradingDateTimes;
+      tableToWhichRowIsToBeAdded.Rows.Add(newRow);
+    }
+    
+    private static void getTickersQuotedAtAGivenPercentageOfDateTimes_handleRow(
+    	DataRow row , History marketDateTimes , double percentageOfDateTimes ,
+    	DateTime firstQuoteDate , DateTime lastQuoteDate ,
+    	DataTable tableToWhichRowIsToBeAdded )
+    {
+    	History dateTimesForTicker = Bars.GetMarketDateTimes( (string)row[0],
+    	                                      firstQuoteDate , lastQuoteDate );
+    	if( dateTimesForTicker.ContainsAtAGivenPercentageDateTimesIn( marketDateTimes , percentageOfDateTimes ) )
+    		//the current ticker has been effectively traded at the given percentage of times
+    		//for the given market date times
+    		TickerDataTable.getTickersQuotedAtAGivenPercentageOfDateTimes_addRow(
+    			row , dateTimesForTicker.Count , tableToWhichRowIsToBeAdded );
+    }
+    
+        
+    private static void addColumnNumberOfBars(DataTable tableToAnalyze)
+    {
+      if(!tableToAnalyze.Columns.Contains("NumberOfBars"))
+        tableToAnalyze.Columns.Add("NumberOfBars", System.Type.GetType("System.Int32"));
+    }
+    
+    public static DataTable GetTickersQuotedAtAGivenPercentageOfDateTimes(string marketIndex, double percentageOfDateTimes,
+                                                                          DataTable setOfTickers,
+    																																			DateTime firstBarDateTime, DateTime lastBarDateTime,
+    																																			long maxNumOfReturnedTickers)
+    {
+    	History marketDateTimesForIndex = Bars.GetMarketDateTimes(marketIndex,
+    	                                                  firstBarDateTime , lastBarDateTime);
+    	return GetTickersQuotedAtAGivenPercentageOfDateTimes(
+    		marketDateTimesForIndex , percentageOfDateTimes , setOfTickers ,
+    		firstBarDateTime , lastBarDateTime , maxNumOfReturnedTickers );
+    }
+    
+    public static DataTable GetTickersQuotedAtAGivenPercentageOfDateTimes(string marketIndex, double percentageOfDateTimes,
+                                                                          string groupID,
+    																																			DateTime firstBarDateTime, DateTime lastBarDateTime,
+    																																			long maxNumOfReturnedTickers)
+    {
+    	DataTable groupOfTicker =
+    		QuantProject.DataAccess.Tables.Tickers_tickerGroups.GetTickers(groupID);
+    	return GetTickersQuotedAtAGivenPercentageOfDateTimes(
+    		marketIndex , percentageOfDateTimes , groupOfTicker ,
+    		firstBarDateTime , lastBarDateTime , maxNumOfReturnedTickers );
+    }
+        
+    /// <summary>
+    /// Returns a dataTable containing tickers that are quoted
+    /// at a given percentage of time with respect to
+    /// a history of marketDateTimes
+    /// </summary>
+    /// <param name="percentageOfDateTimes">percentage (0 to 100) of times of quotation
+    /// with respect to a given history of marketDateTimes. For example:
+    /// with 50, it will be returned a dataTable with all the tickers 
+    /// that have at least 0,5*(number of marketDateTimes) quoted dateTimes in common
+    /// with marketDateTimes</param>
+    /// <returns></returns>
+    public static DataTable GetTickersQuotedAtAGivenPercentageOfDateTimes(
+    	History marketDateTimes, double percentageOfDateTimes, 
+    	DataTable setOfTickers,
+    	DateTime firstBarDateTime, DateTime lastBarDateTime,
+    	long maxNumOfReturnedTickers)
+    {
+    	if(percentageOfDateTimes <= 0 || percentageOfDateTimes > 100)
+    		throw new Exception ("invalid percentage");
+    	
+    	TickerDataTable.addColumnNumberOfBars(setOfTickers);
+    	DataTable returnValue = setOfTickers.Clone();
+    	foreach(DataRow row in setOfTickers.Rows)
+    		getTickersQuotedAtAGivenPercentageOfDateTimes_handleRow(
+    			row , marketDateTimes , percentageOfDateTimes ,
+    			firstBarDateTime , lastBarDateTime , returnValue );
+    	ExtendedDataTable.DeleteRows(returnValue, maxNumOfReturnedTickers);
+    	return returnValue;
+    }
+    
+    #endregion GetTickersQuotedAtAGivenPercentageOfDateTimes
     
     public static DataTable GetTickersQuotedInEachMarketDay(string marketIndex, DataTable setOfTickers,
                                                             DateTime firstQuoteDate,
