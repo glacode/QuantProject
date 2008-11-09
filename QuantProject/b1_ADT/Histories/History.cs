@@ -125,6 +125,37 @@ namespace QuantProject.ADT.Histories
 			return returnValue;
 		}
 		
+		/// <summary>
+		/// Returns true iif current history contains all the
+		/// dateTimes contained in the given comparingHistoryOfDateTimes
+		/// </summary>
+		public bool ContainsAllTheDateTimesIn( History comparingHistoryOfDateTimes )
+		{
+			bool returnValue = true;
+			foreach ( DateTime dateTime in comparingHistoryOfDateTimes.Keys )
+				if ( ! this.ContainsKey( dateTime ) )
+					returnValue = false;
+			return returnValue;
+		}
+		
+		/// <summary>
+		/// Returns true iif current history contains at the given percentage the
+		/// dateTimes contained in the given comparingHistoryOfDateTimes
+		/// </summary>
+		public bool ContainsAtAGivenPercentageDateTimesIn( History comparingHistoryOfDateTimes, double percentageOfDateTimes )
+		{
+			if(percentageOfDateTimes <= 0 || percentageOfDateTimes > 100)
+				throw new Exception ("invalid percentage");
+			int numberOfContainedDateTimes = 0;
+			int numberOfComparingDateTimes = comparingHistoryOfDateTimes.Count;
+			foreach ( DateTime dateTime in comparingHistoryOfDateTimes.Keys )
+				if ( this.ContainsKey( dateTime ) )
+					numberOfContainedDateTimes++;
+						
+			return numberOfContainedDateTimes >=
+			    	(percentageOfDateTimes * numberOfComparingDateTimes)/100;
+		}
+		
 		public void Interpolate( ICollection dateTimeCollection ,
 			IInterpolationMethod interpolationMethod )
 		{
