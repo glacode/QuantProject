@@ -29,6 +29,7 @@ namespace QuantProject.Business.Strategies.ReturnsManagement.Time
 	/// <summary>
 	/// Open to close intervals to be used to compute open to close returns
 	/// </summary>
+	[Serializable]
 	public class DailyOpenToCloseIntervals : ReturnIntervals
 	{
 		/// <summary>

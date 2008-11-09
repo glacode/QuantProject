@@ -41,6 +41,7 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOs
 	/// By means of correlation, the AnalyzeInSample method returns the 
 	/// requested number of PVOPositions (positions for the PVO strategy)
 	/// </summary>
+	[Serializable]
 	public class PVO_OTCCorrelationChooser : PVOCorrelationChooser
 	{
 		private float minimumAbsoluteReturnValue;

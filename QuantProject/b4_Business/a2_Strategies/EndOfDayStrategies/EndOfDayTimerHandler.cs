@@ -29,6 +29,7 @@ namespace QuantProject.Business.Strategies
 	/// <summary>
 	/// Abstract class to be extended by end of day timer handlers
 	/// </summary>
+	[Serializable]
 	public abstract class EndOfDayTimerHandler
 	{
 		public EndOfDayTimerHandler()

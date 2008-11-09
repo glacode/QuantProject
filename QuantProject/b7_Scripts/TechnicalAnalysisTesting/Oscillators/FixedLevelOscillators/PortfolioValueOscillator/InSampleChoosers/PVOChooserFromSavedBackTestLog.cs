@@ -34,7 +34,8 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOs
 	/// IInSampleChooser for returning PVOPositions
 	/// already saved in a BackTestLog saved to disk
 	/// </summary>
-	public class PVOChooserFromSavedBackTestLog : BasicChooserFromSavedBackTestLog 
+	[Serializable]
+	public class PVOChooserFromSavedBackTestLog : BasicChooserFromSavedBackTestLog
 	{
 				
 		public override string Description

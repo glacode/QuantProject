@@ -32,6 +32,7 @@ namespace QuantProject.Business.Strategies.ReturnsManagement.Time
 	/// by the next close to open return, and this is followed
 	/// by the next open to close return, and so on
 	/// </summary>
+	[Serializable]
 	public class OpenToCloseCloseToOpenIntervals : ReturnIntervals
 	{
 		/// <summary>
@@ -64,7 +65,7 @@ namespace QuantProject.Business.Strategies.ReturnsManagement.Time
 			DateTime dateTimeForCTOEnd = 
 				(DateTime)this.marketDaysForBenchmark.GetKey( i + 1 );
 			ReturnInterval returnCTOInterval = new ReturnInterval(
-				HistoricalEndOfDayTimer.GetMarketClose( dateTimeForCTOEnd ) ,
+				HistoricalEndOfDayTimer.GetMarketClose( dateTimeForOTC ) ,
 				HistoricalEndOfDayTimer.GetMarketOpen( dateTimeForCTOEnd ) );
 //				new EndOfDayDateTime( dateTimeForOTC ,
 //				EndOfDaySpecificTime.MarketClose ) ,

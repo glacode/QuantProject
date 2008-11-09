@@ -39,6 +39,7 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOs
 	/// <summary>
 	/// In sample genetic analyzer for the Portfolio Value Oscillator 
 	/// </summary>
+	[Serializable]
 	public class PVOGeneticChooser : GeneticChooser
 	{
 		protected int numDaysForOscillatingPeriod;

@@ -211,7 +211,7 @@ namespace QuantProject.Business.Strategies.TickersRelationships
 		{
 			if( this.pearsonCorrelations == null )
 				this.getOrderedTickersPearsonCorrelations_setCorrelations();
-			this.showOutputToConsole();
+			//this.showOutputToConsole();
 			return this.pearsonCorrelations;
 		}
 		
