@@ -23,6 +23,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 using System;
 
 using QuantProject.ADT;
+using QuantProject.ADT.Timing;
 
 namespace QuantProject.DataAccess
 {
@@ -67,32 +68,32 @@ namespace QuantProject.DataAccess
 		}
 		
 		#region GetTimeConstant
-		public static string GetTimeConstant( DateTime dateTime )
+		public static string GetTimeConstant( Time time )
 		{
 			string timeConstant =
 				"'" +
-				dateTime.Hour.ToString( "00" ) + "." +
-				dateTime.Minute.ToString( "00" ) + "." +
-				dateTime.Second.ToString( "00" ) + "'";
+				time.Hour.ToString( "00" ) + "." +
+				time.Minute.ToString( "00" ) + "." +
+				time.Second.ToString( "00" ) + "'";
 			return timeConstant;
 		}
 		#endregion GetTimeConstant
 		
 		#region GetFilterForTime
-		private static void getFilterForTime_checkParameters( DateTime time )
-		{
-//			if ( ( comparisonOperator != "=" ) &&
-//			    ( comparisonOperator != "<" ) &&
-//			    ( comparisonOperator != "<=" ) &&
-//			    ( comparisonOperator != ">" ) &&
-//			    ( comparisonOperator != ">=" ) )
+//		private static void getFilterForTime_checkParameters( DateTime time )
+//		{
+////			if ( ( comparisonOperator != "=" ) &&
+////			    ( comparisonOperator != "<" ) &&
+////			    ( comparisonOperator != "<=" ) &&
+////			    ( comparisonOperator != ">" ) &&
+////			    ( comparisonOperator != ">=" ) )
+////				throw new Exception(
+////					"comparisonOperator can either be '=' or '<' or '<=' or '>' or '>='" );
+//			if ( !ExtendedDateTime.IsTime( time ) )
 //				throw new Exception(
-//					"comparisonOperator can either be '=' or '<' or '<=' or '>' or '>='" );
-			if ( !ExtendedDateTime.IsTime( time ) )
-				throw new Exception(
-					"time is actually not a time. Use the method " +
-					"QuantProject.ADT.ExtendedDateTime.GetTime() to build your time" );
-		}
+//					"time is actually not a time. Use the method " +
+//					"QuantProject.ADT.ExtendedDateTime.GetTime() to build your time" );
+//		}
 		
 		#region getFilterForTime_actually
 		private static string getSqlStringForComparisonOperator(
@@ -120,12 +121,12 @@ namespace QuantProject.DataAccess
 			return sqlStringForComparisonOperator;
 		}
 		private static string getFilterForTime_actually(
-			string fieldName , SqlComparisonOperator sqlComparisonOperator , DateTime time )
+			string fieldName , SqlComparisonOperator sqlComparisonOperator , Time time )
 		{
 			string filterForDailyTime =
 				"(Format([baDateTimeForOpen],'hh:mm:ss')" +
 				SQLBuilder.getSqlStringForComparisonOperator( sqlComparisonOperator ) +
-				SQLBuilder.GetTimeConstant( time );
+				SQLBuilder.GetTimeConstant( time ) + ")";
 			return filterForDailyTime;
 		}
 		#endregion getFilterForTime_actually
@@ -140,9 +141,9 @@ namespace QuantProject.DataAccess
 		/// <param name="dateTime"></param>
 		/// <returns></returns>
 		internal static string GetFilterForTime(
-			string fieldName , SqlComparisonOperator sqlComparisonOperator , DateTime time )
+			string fieldName , SqlComparisonOperator sqlComparisonOperator , Time time )
 		{
-			SQLBuilder.getFilterForTime_checkParameters( time );
+//			SQLBuilder.getFilterForTime_checkParameters( time );
 			string filterForTime =
 				SQLBuilder.getFilterForTime_actually(
 					fieldName , sqlComparisonOperator , time );
