@@ -52,6 +52,7 @@
     <Compile Include="DataProviders\Bars\MissingBarException.cs" />
     <Compile Include="DataProviders\Quotes\HistoricalQuotesProvider.cs" />
     <Compile Include="DataProviders\Quotes\MarketStatusSwitch.cs" />
+    <Compile Include="DataTables\Bars.cs" />
     <Compile Include="ExtendedDataTable.cs" />
     <Compile Include="FilterBuilder.cs" />
     <Compile Include="DataProviders\IDataStreamer.cs" />
