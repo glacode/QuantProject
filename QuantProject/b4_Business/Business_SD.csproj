@@ -45,6 +45,7 @@
     <Reference Include="System.Runtime.Serialization.Formatters.Soap" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="a05_Timing\IndexBasedHistoricalTimer.cs" />
     <Compile Include="a05_Timing\Timer.cs" />
     <Compile Include="a07_DataProviders\HistoricalBarProvider.cs" />
     <Compile Include="a07_DataProviders\HistoricalMarketValueProvider.cs" />
