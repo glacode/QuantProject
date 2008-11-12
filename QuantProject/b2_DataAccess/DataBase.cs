@@ -22,11 +22,14 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Data;
 using System.Data.OleDb;
 using System.Windows.Forms;
+
 using QuantProject.ADT;
 using QuantProject.ADT.Histories;
+using QuantProject.ADT.Timing;
 
 namespace QuantProject.DataAccess
 {
@@ -210,14 +213,14 @@ namespace QuantProject.DataAccess
 //		}
 //		#endregion getFilterForDailyTime
 		
-		private static string getFilterForDailyTimes( DateTime[] dailyTimes )
+		private static string getFilterForDailyTimes( List< Time > dailyTimes )
 		{
 			string filterForDailyTimes = "";
-			foreach( DateTime dateTime in dailyTimes )
+			foreach( Time time in dailyTimes )
 				filterForDailyTimes =
 					filterForDailyTimes +
 					SQLBuilder.GetFilterForTime(
-						"baDateTimeForOpen" , SqlComparisonOperator.Equal , dateTime ) +
+						"baDateTimeForOpen" , SqlComparisonOperator.Equal , time ) +
 					" and ";
 			filterForDailyTimes = filterForDailyTimes.Substring(
 				0 , filterForDailyTimes.Length - " and ".Length );
@@ -231,7 +234,7 @@ namespace QuantProject.DataAccess
 			string barFieldName ,
 			DateTime firstDateTime ,
 			DateTime lastDateTime ,
-			DateTime[] dailyTimes )
+			List< Time > dailyTimes )
 		{
 			string sql =
 				"select baOpen from bars " +
@@ -257,7 +260,7 @@ namespace QuantProject.DataAccess
 			string barFieldName ,
 			DateTime firstDateTime ,
 			DateTime lastDateTime ,
-			DateTime[] dailyTimes )
+			List< Time > dailyTimes )
 		{
 			string sql = DataBase.getSqlForBarDataTable(
 				ticker ,
@@ -286,7 +289,7 @@ namespace QuantProject.DataAccess
 			int barInterval ,
 			DateTime firstDateTime ,
 			DateTime lastDateTime ,
-			DateTime[] dailyTimes )
+			List< Time > dailyTimes )
 		{
 			DataTable barDataTable = DataBase.getBarDataTable(
 				ticker ,
