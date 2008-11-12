@@ -25,6 +25,7 @@ using System.Collections.Generic;
 
 using QuantProject.ADT;
 using QuantProject.ADT.Histories;
+using QuantProject.ADT.Timing;
 using QuantProject.DataAccess;
 
 namespace QuantProject.Data.DataProviders.Bars.Caching
@@ -35,7 +36,7 @@ namespace QuantProject.Data.DataProviders.Bars.Caching
 	public class DailyBarCache : IBarCache
 	{
 		private int barInterval;
-		private DateTime[] dailyTimes;
+		private List< Time > dailyTimes;
 		
 		private int roughNumberOfItemsToBeCachedWithASingleQuery;
 
@@ -56,7 +57,7 @@ namespace QuantProject.Data.DataProviders.Bars.Caching
 
 		public DailyBarCache(
 			int barInterval ,
-			DateTime[] dailyTimes )
+			List< Time > dailyTimes )
 		{
 			this.checkParameters( dailyTimes );
 			this.barInterval = barInterval;
@@ -88,27 +89,29 @@ namespace QuantProject.Data.DataProviders.Bars.Caching
 		#region checkParameters
 		
 		#region checkDailyTimesAreActuallyTimes
-		private void checkIfItActuallyIsATime( DateTime dateTime )
-		{
-			if ( !ExtendedDateTime.IsTime( dateTime ) )
-				throw new Exception(
-					"dailyTimes have to be times: use the method " +
-					"QuantProject.ADT.ExtendedDateTime.GetTime() " +
-					"to build them" );
-		}
-		private void checkDailyTimesAreActuallyTimes( DateTime[] dailyTimes )
-		{
-			foreach ( DateTime dateTime in dailyTimes )
-				this.checkIfItActuallyIsATime( dateTime );
-		}
+//		private void checkIfItActuallyIsATime( DateTime dateTime )
+//		{
+//			if ( !ExtendedDateTime.IsTime( dateTime ) )
+//				throw new Exception(
+//					"dailyTimes have to be times: use the method " +
+//					"QuantProject.ADT.ExtendedDateTime.GetTime() " +
+//					"to build them" );
+//		}
+//		private void checkDailyTimesAreActuallyTimes( DateTime[] dailyTimes )
+//		{
+//			foreach ( DateTime dateTime in dailyTimes )
+//				this.checkIfItActuallyIsATime( dateTime );
+//		}
 		#endregion checkDailyTimesAreActuallyTimes
 		
 		#region checkIfDailyTimesAreInStrictAscendingOrder
 		private void checkIfDailyTimesAreInStrictAscendingOrder(
-			int indexForCurrentDailyTime , DateTime[] dailyTimes )
+			int indexForCurrentDailyTime , List< Time > dailyTimes )
 		{
-			DateTime currentDailyTime = dailyTimes[ indexForCurrentDailyTime ];
-			DateTime nextDailyTime = dailyTimes[ indexForCurrentDailyTime + 1 ];
+			Time currentDailyTime =
+				dailyTimes[ indexForCurrentDailyTime ];
+			Time nextDailyTime =
+				dailyTimes[ indexForCurrentDailyTime + 1 ];
 			if ( currentDailyTime >= nextDailyTime )
 				throw new Exception(
 					"dailyTimes are not in strict ascending order. " +
@@ -118,17 +121,17 @@ namespace QuantProject.Data.DataProviders.Bars.Caching
 					( indexForCurrentDailyTime + 1 ) +
 					" while it should <" );
 		}
-		private void checkIfDailyTimesAreInStrictAscendingOrder( DateTime[] dailyTimes )
+		private void checkIfDailyTimesAreInStrictAscendingOrder( List< Time > dailyTimes )
 		{
-			for ( int index = 0 ; index < dailyTimes.Length - 1 ; index++ )
+			for ( int index = 0 ; index < dailyTimes.Count - 1 ; index++ )
 				this.checkIfDailyTimesAreInStrictAscendingOrder(
 					index , dailyTimes );
 		}
 		#endregion checkIfDailyTimesAreInStrictAscendingOrder
 		
-		private void checkParameters( DateTime[] dailyTimes )
+		private void checkParameters( List< Time > dailyTimes )
 		{
-			this.checkDailyTimesAreActuallyTimes( dailyTimes );
+//			this.checkDailyTimesAreActuallyTimes( dailyTimes );
 			this.checkIfDailyTimesAreInStrictAscendingOrder( dailyTimes );
 		}
 		#endregion checkParameters
@@ -169,7 +172,7 @@ namespace QuantProject.Data.DataProviders.Bars.Caching
 		{
 			int numberOfDaysToBeCachedForASingleQuery =
 				this.roughNumberOfItemsToBeCachedWithASingleQuery /
-				this.dailyTimes.Length;
+				this.dailyTimes.Count;
 			return numberOfDaysToBeCachedForASingleQuery;
 		}
 		private DateTime getLastDateTime( DateTime firstDateTime )
