@@ -55,6 +55,7 @@
     <Compile Include="SQLBuilder.cs" />
     <Compile Include="SqlComparisonOperator.cs" />
     <Compile Include="SqlExecutor.cs" />
+    <Compile Include="Tables\Bars.cs" />
     <Compile Include="ValidationTypes.cs" />
     <Compile Include="Tables\FaultyTickers.cs" />
     <Compile Include="Tables\Quotes.cs" />
