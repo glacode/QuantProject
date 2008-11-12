@@ -110,7 +110,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.FixedLengthTwoPhases
 		{
 			int numberOfBestTestingPositionsToBeReturned = 20;
 			// uncomment the following line for a faster script
-			 numberOfBestTestingPositionsToBeReturned = 5;
+			numberOfBestTestingPositionsToBeReturned = 5;
 			
 			IDecoderForTestingPositions decoderForWeightedPositions =
 				new DecoderForFLTPTestingPositionsWithBalancedWeights();
@@ -211,7 +211,11 @@ namespace QuantProject.Scripts.WalkForwardTesting.FixedLengthTwoPhases
 			
 			EndOfDayStrategyBackTester endOfDayStrategyBackTester =
 				new EndOfDayStrategyBackTester(
-					backTestId , this.strategyForBacktester ,
+					backTestId ,
+					new QuantProject.Business.Timing.IndexBasedEndOfDayTimer(
+						HistoricalEndOfDayTimer.GetMarketOpen( firstDateTime ) ,
+						this.benchmark.Ticker ) ,
+					this.strategyForBacktester ,
 					this.historicalMarketValueProviderForTheBacktesterAccount ,
 					accountProvider ,
 					firstDateTime ,	lastDateTime ,

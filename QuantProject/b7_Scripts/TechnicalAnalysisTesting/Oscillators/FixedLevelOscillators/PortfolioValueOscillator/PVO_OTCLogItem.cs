@@ -18,7 +18,7 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
-*/
+ */
 
 using System;
 
@@ -38,16 +38,16 @@ using QuantProject.Scripts.General.Reporting;
 
 namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOscillators.PortfolioValueOscillator
 {
-  /// <summary>
-  /// LogItem for the PVO_OTC strategy
-  /// portfolio value oscillator strategy
-  /// </summary>
-  [Serializable]
-  public class PVO_OTCLogItem : PVOLogItem
-  {
+	/// <summary>
+	/// LogItem for the PVO_OTC strategy
+	/// portfolio value oscillator strategy
+	/// </summary>
+	[Serializable]
+	public class PVO_OTCLogItem : PVOLogItem
+	{
 		
 		public PVO_OTCLogItem(DateTime dateTime,
-  	                      int numberOfInSampleDays)
+		                      int numberOfInSampleDays)
 			: base( dateTime , numberOfInSampleDays )
 		{
 			
@@ -69,13 +69,13 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOs
 			double cashToStart = 30000;
 			
 			HistoricalMarketValueProvider historicalQuoteProviderForBackTester,
-				historicalQuoteProviderForInSampleChooser,
-				historicalQuoteProviderForStrategy;
+			historicalQuoteProviderForInSampleChooser,
+			historicalQuoteProviderForStrategy;
 			historicalQuoteProviderForBackTester =
 				new HistoricalAdjustedQuoteProvider();
 			historicalQuoteProviderForInSampleChooser = historicalQuoteProviderForBackTester;
 			historicalQuoteProviderForStrategy = historicalQuoteProviderForInSampleChooser;
-						
+			
 			IEligiblesSelector eligiblesSelector =
 				new DummyEligibleSelector();
 			//strategyParameters
@@ -84,28 +84,32 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOs
 			positionsToTest = this.bestPVOPositionsInSample;
 			PVO_OTCStrategy strategy =
 				new PVO_OTCStrategy(eligiblesSelector, 1,
-				positionsToTest, inSampleDays,
-				benchmark ,
-				int.MaxValue ,
-				0 ,
-				((PVOPositions)positionsToTest[0]).OversoldThreshold,
-				((PVOPositions)positionsToTest[0]).OverboughtThreshold,
-				historicalQuoteProviderForStrategy);
+				                    positionsToTest, inSampleDays,
+				                    benchmark ,
+				                    int.MaxValue ,
+				                    0 ,
+				                    ((PVOPositions)positionsToTest[0]).OversoldThreshold,
+				                    ((PVOPositions)positionsToTest[0]).OverboughtThreshold,
+				                    historicalQuoteProviderForStrategy);
 			
 			EndOfDayStrategyBackTester endOfDayStrategyBackTester =
 				new EndOfDayStrategyBackTester(
-				"PVO_OTC" , strategy ,
-				historicalQuoteProviderForBackTester , 
-				new SimpleAccountProvider(),
-				firstDateTime ,
-				lastDateTime , benchmark , cashToStart , maxRunningHours );
+					"PVO_OTC" ,
+					new QuantProject.Business.Timing.IndexBasedEndOfDayTimer(
+						HistoricalEndOfDayTimer.GetMarketOpen( firstDateTime ) ,
+						benchmark.Ticker ) ,
+					strategy ,
+					historicalQuoteProviderForBackTester ,
+					new SimpleAccountProvider(),
+					firstDateTime ,
+					lastDateTime , benchmark , cashToStart , maxRunningHours );
 
 			// TO DO check if you can do this assign in the EndOfDayStrategyBackTester
 			// constructor
 			strategy.Account = endOfDayStrategyBackTester.Account;
 			endOfDayStrategyBackTester.Run();
 			BackTesterReportViewer.ShowReport( lastDateTime ,
-				endOfDayStrategyBackTester );
+			                                  endOfDayStrategyBackTester );
 		}
 	}
 }

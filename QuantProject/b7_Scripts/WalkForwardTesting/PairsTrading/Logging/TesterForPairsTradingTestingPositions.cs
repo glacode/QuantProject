@@ -18,7 +18,7 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
-*/
+ */
 
 using System;
 using System.Drawing;
@@ -99,22 +99,26 @@ namespace QuantProject.Scripts.WalkForwardTesting.PairsTrading
 		{
 			SimpleStrategy simpleStrategy =
 				new SimpleStrategy( weightedPositions ,
-				intervalsSelector , historicalMarketValueProvider );
+				                   intervalsSelector , historicalMarketValueProvider );
 			IAccountProvider accountProvider =
 				new SimpleAccountProvider();
 
 			DateTime firstDateTime =
 				this.dateTimeWhenThisObjectWasLogged.AddDays(
-				- this.numberOfInSampleDays );
+					- this.numberOfInSampleDays );
 			DateTime lastDateTime =
 				this.dateTimeWhenThisObjectWasLogged;
 			double maxRunningHours = 0.3;
 			EndOfDayStrategyBackTester endOfDayStrategyBackTester =
 				new EndOfDayStrategyBackTester(
-				"SinglePosition" , simpleStrategy ,
-				historicalMarketValueProvider , accountProvider ,
-				firstDateTime , lastDateTime ,
-				benchmark , cashToStart , maxRunningHours );
+					"SinglePosition" ,
+					new QuantProject.Business.Timing.IndexBasedEndOfDayTimer(
+						HistoricalEndOfDayTimer.GetMarketOpen( firstDateTime ) ,
+						benchmark.Ticker ) ,
+					simpleStrategy ,
+					historicalMarketValueProvider , accountProvider ,
+					firstDateTime , lastDateTime ,
+					benchmark , cashToStart , maxRunningHours );
 
 //			simpleStrategy.Account = endOfDayStrategyBackTester.Account;
 
@@ -160,21 +164,21 @@ namespace QuantProject.Scripts.WalkForwardTesting.PairsTrading
 
 			WeightedPositions weightedPositions =
 				this.testingPositions.WeightedPositions;
-				
+			
 			WeightedPositions firstPosition =
 				this.getWeightedPositions( weightedPositions[ 0 ] );
 			WeightedPositions secondPosition =
 				this.getWeightedPositions( weightedPositions[ 1 ] );
 			AccountReport accountReportForFirstPosition =
 				this.getAccountReport( firstPosition , intervalsSelector ,
-				historicalMarketValueProvider ,
-				benchmark , 30000 );
+				                      historicalMarketValueProvider ,
+				                      benchmark , 30000 );
 			AccountReport accountReportForSecondPosition =
 				this.getAccountReport( secondPosition , intervalsSelector ,
-				historicalMarketValueProvider ,
-				benchmark ,
-				Math.Abs(	30000 * weightedPositions[ 1 ].Weight /
-				weightedPositions[ 0 ].Weight ) );
+				                      historicalMarketValueProvider ,
+				                      benchmark ,
+				                      Math.Abs(	30000 * weightedPositions[ 1 ].Weight /
+				                               weightedPositions[ 0 ].Weight ) );
 			
 			Report report =
 				new Report( accountReportForFirstPosition , false );
@@ -184,12 +188,12 @@ namespace QuantProject.Scripts.WalkForwardTesting.PairsTrading
 //				new EndOfDayDateTime(
 //				accountReportForFirstPosition.EquityLine.LastDateTime ,
 //				EndOfDaySpecificTime.OneHourAfterMarketClose );
-				
+			
 			//			report.Create( "PearsonDebug" , 1 ,
 			//			              lastEndOfDayDateTimeForReport ,
 			//			              benchmark.Ticker , false );
 			report.AddEquityLine( accountReportForSecondPosition.EquityLine ,
-				Color.Brown );
+			                     Color.Brown );
 			report.ShowDialog();
 		}
 		#endregion Run

@@ -21,8 +21,10 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 
 using System;
+using System.Collections.Generic;
 
 using QuantProject.ADT;
+using QuantProject.ADT.Timing;
 using QuantProject.Business.DataProviders;
 using QuantProject.Business.Financial.Accounting.AccountProviding;
 using QuantProject.Business.Strategies;
@@ -88,18 +90,17 @@ namespace QuantProject.Scripts.WalkForwardTesting.PairsTrading
 		#region getHistoricalBarProvider
 		
 		#region getBarCache
-		private DateTime[] getDailyTimes()
+		private List< Time > getDailyTimes()
 		{
-			DateTime[] dailyTimes = {
-				new DateTime( 1900 , 1 , 1 , 10 , 0 , 0 ) ,
-				new DateTime( 1900 , 1 , 1 , 10 , 30 , 0 ) ,
-				new DateTime( 1900 , 1 , 1 , 11 , 0 , 0 )			
-			};
+			List< Time > dailyTimes = new List< Time >();
+			dailyTimes.Add( new Time( 13 , 0 , 0 ) );
+			dailyTimes.Add( new Time( 14 , 0 , 0 ) );
+			dailyTimes.Add( new Time( 15 , 0 , 0 ) );
 			return dailyTimes;
 		}
 		private IBarCache getBarCache()
 		{
-			DateTime[] dailyTimes = this.getDailyTimes();
+			List< Time > dailyTimes = this.getDailyTimes();
 			IBarCache barCache = new DailyBarCache( 60 , dailyTimes );
 			return barCache;
 		}
@@ -120,7 +121,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.PairsTrading
 			
 			string tickersGroupId = "SP500";
 			// uncomment the following line for a faster script
-//			tickersGroupId = "fastTest";
+			tickersGroupId = "fastTest";
 
 //			IEligiblesSelector eligiblesSelector =
 //				new MostLiquidAndLessVolatile(
@@ -151,7 +152,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.PairsTrading
 		{
 			int numberOfBestTestingPositionsToBeReturned = 50;
 			// uncomment the following line for a faster script
-//			 numberOfBestTestingPositionsToBeReturned = 5;
+			numberOfBestTestingPositionsToBeReturned = 5;
 			
 			IDecoderForTestingPositions decoderForWeightedPositions =
 				new DecoderForPairsTradingTestingPositionsWithBalancedWeights();
@@ -201,7 +202,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.PairsTrading
 			int inSampleDays = 180;
 			// uncomment the following line for a faster script
 //			inSampleDays = 5;
-//			 inSampleDays = 60;
+			inSampleDays = 60;
 			
 			IIntervalsSelector intervalsSelectorForOutOfSample =
 				new OddIntervalsSelector( 1 , 1 , this.benchmark );
@@ -249,6 +250,18 @@ namespace QuantProject.Scripts.WalkForwardTesting.PairsTrading
 //				0.006 , 0.02 , 0.006 , 0.02 );
 			return strategyForBacktester;
 		}
+		
+		#region getEndOfDayStrategyBackTester
+		private Timer getTimer(
+			DateTime firstDateTime , DateTime lastDateTime)
+		{
+			List< Time > dailyTimes = this.getDailyTimes();
+			IndexBasedHistoricalTimer indexBasedTimer =
+				new IndexBasedHistoricalTimer(
+					this.benchmark.Ticker ,
+					firstDateTime , lastDateTime , dailyTimes );
+			return indexBasedTimer;
+		}
 		protected override EndOfDayStrategyBackTester
 			getEndOfDayStrategyBackTester()
 		{
@@ -261,20 +274,23 @@ namespace QuantProject.Scripts.WalkForwardTesting.PairsTrading
 			DateTime lastDateTime = new DateTime( 2008 , 4 , 30 );
 
 			// uncomment the following two lines for a faster script
-			firstDateTime = new DateTime( 2002 , 1 , 1 );
+			firstDateTime = new DateTime( 2006 , 2 , 1 );
 			lastDateTime = new DateTime( 2007 , 6 , 30 );
 
 			double maxRunningHours = 0.05;
 			
 			EndOfDayStrategyBackTester endOfDayStrategyBackTester =
 				new EndOfDayStrategyBackTester(
-					backTestId , this.strategyForBacktester ,
+					backTestId ,
+					this.getTimer( firstDateTime , lastDateTime ) ,
+					this.strategyForBacktester ,
 					this.historicalMarketValueProviderForTheBacktesterAccount ,
 					accountProvider ,
 					firstDateTime ,	lastDateTime ,
 					this.benchmark , cashToStart , maxRunningHours );
 			return endOfDayStrategyBackTester;
 		}
+		#endregion getEndOfDayStrategyBackTester
 
 		protected override string getPathForTheMainFolderWhereScriptsResultsAreToBeSaved()
 		{

@@ -159,6 +159,7 @@ namespace QuantProject.Business.Strategies
 		}
 
 		public EndOfDayStrategyBackTester( string backTestID ,
+		                                  Timer timer ,
 		                                  IStrategyForBacktester strategyForBacktester ,
 		                                  HistoricalMarketValueProvider historicalMarketValueProvider ,
 		                                  IAccountProvider accountProvider,
@@ -184,6 +185,8 @@ namespace QuantProject.Business.Strategies
 			this.benchmark = benchmark;
 			this.cashToStart = cashToStart;
 			this.maxRunningHours = maxRunningHours;
+			
+			this.timer = timer;
 
 			this.initialize_endOfDayTimer();
 			this.account = this.accountProvider.GetAccount(

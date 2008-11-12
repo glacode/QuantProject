@@ -18,7 +18,7 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
-*/
+ */
 
 using System;
 using System.Windows.Forms;
@@ -39,16 +39,16 @@ using QuantProject.Scripts.General.Logging;
 
 namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOscillators.PortfolioValueOscillator
 {
-  /// <summary>
-  /// LogItem for the PVO strategy
-  /// portfolio value oscillator strategy
-  /// </summary>
-  [Serializable]
-  public class PVOLogItem : LogItem
-  {
+	/// <summary>
+	/// LogItem for the PVO strategy
+	/// portfolio value oscillator strategy
+	/// </summary>
+	[Serializable]
+	public class PVOLogItem : LogItem
+	{
 		protected DummyTesterForTestingPositions[]
 			dummyTestersForBestTestingPositionsInSample;
-  	protected TestingPositions[] bestPVOPositionsInSample;
+		protected TestingPositions[] bestPVOPositionsInSample;
 		protected int numberOfEligibleTickers;
 		protected double fitnessOfFirstPVOPositionsInSample;
 		protected double fitnessOfLastPVOPositionsInSample;
@@ -66,8 +66,8 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOs
 			{
 				if ( this.bestPVOPositionsInSample == null )
 					throw new Exception( "This property has not " +
-						"been assigned yet! If you are loading the LogItem from " +
-						"a log, this property was not set before logging the LogItem." );
+					                    "been assigned yet! If you are loading the LogItem from " +
+					                    "a log, this property was not set before logging the LogItem." );
 				return this.bestPVOPositionsInSample;
 			}
 			set { this.bestPVOPositionsInSample = value; }
@@ -78,8 +78,8 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOs
 			{
 				if ( this.numberOfEligibleTickers == int.MinValue )
 					throw new Exception( "This property has not " +
-						"been assigned yet! If you are loading the LogItem from " +
-						"a log, this property was not set before logging the LogItem." );
+					                    "been assigned yet! If you are loading the LogItem from " +
+					                    "a log, this property was not set before logging the LogItem." );
 				return this.numberOfEligibleTickers;
 			}
 			set { this.numberOfEligibleTickers = value; }
@@ -90,8 +90,8 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOs
 			{
 				if ( this.fitnessOfFirstPVOPositionsInSample == double.MinValue )
 					throw new Exception( "This property has not " +
-						"been assigned yet! If you are loading the LogItem from " +
-						"a log, this property was not set before logging the LogItem." );
+					                    "been assigned yet! If you are loading the LogItem from " +
+					                    "a log, this property was not set before logging the LogItem." );
 				return this.fitnessOfFirstPVOPositionsInSample;
 			}
 			set { this.fitnessOfFirstPVOPositionsInSample = value; }
@@ -102,8 +102,8 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOs
 			{
 				if ( this.fitnessOfLastPVOPositionsInSample == double.MinValue )
 					throw new Exception( "This property has not " +
-						"been assigned yet! If you are loading the LogItem from " +
-						"a log, this property was not set before logging the LogItem." );
+					                    "been assigned yet! If you are loading the LogItem from " +
+					                    "a log, this property was not set before logging the LogItem." );
 				return this.fitnessOfLastPVOPositionsInSample;
 			}
 			set { this.fitnessOfLastPVOPositionsInSample = value; }
@@ -167,13 +167,13 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOs
 			double maxAcceptableCloseToCloseDrawdown = 0.02;
 			double minimumAcceptableGain = 0.007;
 			HistoricalMarketValueProvider historicalQuoteProviderForBackTester,
-				historicalQuoteProviderForInSampleChooser,
-				historicalQuoteProviderForStrategy;
+			historicalQuoteProviderForInSampleChooser,
+			historicalQuoteProviderForStrategy;
 			historicalQuoteProviderForBackTester =
 				new HistoricalAdjustedQuoteProvider();
 			historicalQuoteProviderForInSampleChooser = historicalQuoteProviderForBackTester;
 			historicalQuoteProviderForStrategy = historicalQuoteProviderForInSampleChooser;
-						
+			
 			IEligiblesSelector eligiblesSelector =
 				new DummyEligibleSelector();
 			//strategyParameters
@@ -181,30 +181,34 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOs
 				numDaysForOscillatingPeriodForChooser;
 			TestingPositions[] positionsToTest =
 				//new TestingPositions[1];
-			//			int idx = PVOLogItem.rand.Next(bestPVOPositionsInSample.Length);
-			//positionsToTest[0] = this.bestPVOPositionsInSample[0];
-			positionsToTest = this.BestPVOPositionsInSample;
+				//			int idx = PVOLogItem.rand.Next(bestPVOPositionsInSample.Length);
+				//positionsToTest[0] = this.bestPVOPositionsInSample[0];
+				positionsToTest = this.BestPVOPositionsInSample;
 			PVOStrategy strategy =
 				new PVOStrategy(eligiblesSelector,
-				positionsToTest, this.numberOfInSampleDays,
-				numDaysForOscillatingPeriodForOutOfSample,
-				numberOfPortfolioPositions , benchmark ,
-				int.MaxValue ,
-				((PVOPositions)positionsToTest[0]).OversoldThreshold,
-				((PVOPositions)positionsToTest[0]).OverboughtThreshold,
-				historicalQuoteProviderForStrategy ,
-				maxAcceptableCloseToCloseDrawdown , minimumAcceptableGain );
+				                positionsToTest, this.numberOfInSampleDays,
+				                numDaysForOscillatingPeriodForOutOfSample,
+				                numberOfPortfolioPositions , benchmark ,
+				                int.MaxValue ,
+				                ((PVOPositions)positionsToTest[0]).OversoldThreshold,
+				                ((PVOPositions)positionsToTest[0]).OverboughtThreshold,
+				                historicalQuoteProviderForStrategy ,
+				                maxAcceptableCloseToCloseDrawdown , minimumAcceptableGain );
 			
 			EndOfDayStrategyBackTester endOfDayStrategyBackTester =
 				new EndOfDayStrategyBackTester(
-				"PVO" , strategy ,
-				historicalQuoteProviderForBackTester ,
-				new SimpleAccountProvider(), firstDateTime ,
-				lastDateTime , benchmark , cashToStart , maxRunningHours );
+					"PVO" ,
+					new QuantProject.Business.Timing.IndexBasedEndOfDayTimer(
+						HistoricalEndOfDayTimer.GetMarketOpen( firstDateTime ) ,
+						benchmark.Ticker ) ,
+					strategy ,
+					historicalQuoteProviderForBackTester ,
+					new SimpleAccountProvider(), firstDateTime ,
+					lastDateTime , benchmark , cashToStart , maxRunningHours );
 			
 			endOfDayStrategyBackTester.Run();
 			BackTesterReportViewer.ShowReport( lastDateTime ,
-				endOfDayStrategyBackTester );
+			                                  endOfDayStrategyBackTester );
 		}
 		
 		private void showTestingPositionsClickEventHandler_setDummyTesters_setTester(
@@ -218,7 +222,7 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOs
 					this.numberOfInSampleDays ,
 					simulatedCreationDateTime );
 		}
-				
+		
 		private void showTestingPositionsClickEventHandler_setDummyTesters()
 		{
 			this.dummyTestersForBestTestingPositionsInSample =
@@ -244,9 +248,9 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOs
 			MenuItem[] menuItems = new MenuItem[2];
 			menuItems[0] = new MenuItem("Run Strategy");
 			menuItems[1] = new MenuItem("Show TestingPositions");
-			menuItems[0].Click += 
+			menuItems[0].Click +=
 				new System.EventHandler(this.runStrategyClickEventHandler);
-			menuItems[1].Click += 
+			menuItems[1].Click +=
 				new System.EventHandler(this.showTestingPositionsClickEventHandler);
 			ContextMenu contextMenu = new ContextMenu(menuItems);
 			contextMenu.Show(Form.ActiveForm, Form.MousePosition);

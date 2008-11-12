@@ -18,7 +18,7 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
-*/
+ */
 
 using System;
 using System.Drawing;
@@ -101,22 +101,26 @@ namespace QuantProject.Scripts.WalkForwardTesting.FixedLengthTwoPhases
 		{
 			FLTPSimpleStrategy fLTPSimpleStrategy =
 				new FLTPSimpleStrategy( weightedPositions ,
-				intervalsSelector , HistoricalMarketValueProvider );
+				                       intervalsSelector , HistoricalMarketValueProvider );
 			IAccountProvider accountProvider =
 				new SimpleAccountProvider();
 
 			DateTime firstDateTime =
 				this.dateTimeWhenThisObjectWasLogged.AddDays(
-				- this.numberOfInSampleDays );
+					- this.numberOfInSampleDays );
 			DateTime lastDateTime =
 				this.dateTimeWhenThisObjectWasLogged;
 			double maxRunningHours = 0.3;
 			EndOfDayStrategyBackTester endOfDayStrategyBackTester =
 				new EndOfDayStrategyBackTester(
-				"SimpleFLTP" , fLTPSimpleStrategy ,
-				HistoricalMarketValueProvider , accountProvider ,
-				firstDateTime , lastDateTime ,
-				benchmark , cashToStart , maxRunningHours );
+					"SimpleFLTP" ,
+					new QuantProject.Business.Timing.IndexBasedEndOfDayTimer(
+						HistoricalEndOfDayTimer.GetMarketOpen( firstDateTime ) ,
+						benchmark.Ticker ) ,
+					fLTPSimpleStrategy ,
+					HistoricalMarketValueProvider , accountProvider ,
+					firstDateTime , lastDateTime ,
+					benchmark , cashToStart , maxRunningHours );
 
 //			simpleStrategy.Account = endOfDayStrategyBackTester.Account;
 
@@ -135,7 +139,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.FixedLengthTwoPhases
 //		private WeightedPositions getWeightedPositions(
 //			WeightedPosition weightedPosition )
 //		{
-////			double[] weights = { 1 };
+		////			double[] weights = { 1 };
 //			double[] weights = { this.getWeightedPositions_getWeight( weightedPosition ) };
 //			string[] tickers = { weightedPosition.Ticker };
 //			WeightedPositions weightedPositions =
@@ -167,11 +171,11 @@ namespace QuantProject.Scripts.WalkForwardTesting.FixedLengthTwoPhases
 
 			WeightedPositions weightedPositions =
 				this.testingPositions.WeightedPositions;
-				
+			
 			AccountReport accountReport =
 				this.getAccountReport( weightedPositions , intervalsSelector ,
-				historicalMarketValueProvider ,
-				benchmark , 30000 );
+				                      historicalMarketValueProvider ,
+				                      benchmark , 30000 );
 			
 			Report report =
 				new Report( accountReport , false );
@@ -179,7 +183,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.FixedLengthTwoPhases
 //				new EndOfDayDateTime(
 //				accountReportForFirstPosition.EquityLine.LastDateTime ,
 //				EndOfDaySpecificTime.OneHourAfterMarketClose );
-				
+			
 			//			report.Create( "PearsonDebug" , 1 ,
 			//			              lastEndOfDayDateTimeForReport ,
 			//			              benchmark.Ticker , false );

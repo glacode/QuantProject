@@ -94,7 +94,11 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOs
 			
 			EndOfDayStrategyBackTester endOfDayStrategyBackTester =
 				new EndOfDayStrategyBackTester(
-				"PVO_CTO" , strategy ,
+				"PVO_CTO" ,
+				new QuantProject.Business.Timing.IndexBasedEndOfDayTimer(
+					HistoricalEndOfDayTimer.GetMarketOpen( firstDateTime ) ,
+					benchmark.Ticker ) ,
+				strategy ,
 				historicalQuoteProviderForBackTester , 
 				new SimpleAccountProvider(),
 				firstDateTime ,

@@ -215,7 +215,11 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOs
 				new HistoricalAdjustedQuoteProvider();
 			EndOfDayStrategyBackTester endOfDayStrategyBackTester =
 				new EndOfDayStrategyBackTester(
-					backTestId , this.strategyForBacktester ,
+					backTestId ,
+					new QuantProject.Business.Timing.IndexBasedEndOfDayTimer(
+						HistoricalEndOfDayTimer.GetMarketOpen( firstDateTime ) ,
+						this.benchmark.Ticker ) ,
+					this.strategyForBacktester ,
 					quoteProviderForBackTester , accountProvider ,
 					firstDateTime ,	lastDateTime ,
 					this.benchmark , cashToStart , maxRunningHours );
