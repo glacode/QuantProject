@@ -2,7 +2,7 @@
 QuantProject - Quantitative Finance Library
 
 Bars.cs
-Copyright (C) 2008 
+Copyright (C) 2008
 Marco Milletti
 
 This program is free software; you can redistribute it and/or
@@ -18,10 +18,11 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
-*/
+ */
 
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Data;
 using System.Runtime.Serialization;
 using System.Text;
@@ -30,6 +31,7 @@ using QuantProject.ADT;
 using QuantProject.ADT.Collections;
 using QuantProject.ADT.Statistics;
 using QuantProject.ADT.Histories;
+using QuantProject.ADT.Timing;
 using QuantProject.DataAccess;
 using QuantProject.DataAccess.Tables;
 
@@ -42,7 +44,7 @@ namespace QuantProject.Data.DataTables
 	public class Bars : DataTable
 	{
 		public static string TickerFieldName = "baTicker";	// Ticker cannot be simply used because
-		public static string Exchange = "baExchange";		
+		public static string Exchange = "baExchange";
 		public static string DateTimeForOpen = "baDateTimeForOpen";
 		public static string IntervalFrameInSeconds = "baInterval";
 		public static string Open = "baOpen";
@@ -60,7 +62,7 @@ namespace QuantProject.Data.DataTables
 		/// <param name="dateTime">DateTime for the bars to be fetched</param>
 		public Bars( ICollection tickerCollection , DateTime dateTime )
 		{
-			QuantProject.DataAccess.Tables.Bars.SetDataTable( 
+			QuantProject.DataAccess.Tables.Bars.SetDataTable(
 				tickerCollection , dateTime , this );
 		}
 		public Bars( string ticker , DateTime startDateTime , DateTime endDateTime )
@@ -90,7 +92,7 @@ namespace QuantProject.Data.DataTables
 			foreach( DataRow dataRow in this.Rows )
 				if ( !marketDateTimes.ContainsKey(
 					(DateTime)dataRow[ Bars.DateTimeForOpen ] ) )
-					dataRowsToBeRemoved.Add( dataRow );
+				dataRowsToBeRemoved.Add( dataRow );
 			return dataRowsToBeRemoved;
 		}
 		private void removeDataRows( ICollection dataRowsToBeRemoved )
@@ -102,27 +104,27 @@ namespace QuantProject.Data.DataTables
 		{
 			ArrayList dataRowsToBeRemoved =
 				this.removeNonContainedDateTimes_getDataRowsToBeRemoved(
-				marketDateTimes );
+					marketDateTimes );
 			this.removeDataRows( dataRowsToBeRemoved );
 		}
 		#endregion
 
 		public Bars( string ticker )
 		{
-			this.fillDataTable( 
+			this.fillDataTable(
 				ticker ,
 				QuantProject.DataAccess.Tables.Bars.GetFirstBarDateTime( ticker ) ,
 				QuantProject.DataAccess.Tables.Bars.GetLastBarDateTime( ticker ) );
 		}
-    public Bars(SerializationInfo info, StreamingContext context)
-      : base(info, context)
-    {
-    }
+		public Bars(SerializationInfo info, StreamingContext context)
+			: base(info, context)
+		{
+		}
 		private void fillDataTable( string ticker , DateTime startDateTime , DateTime endDateTime )
 		{
-			QuantProject.DataAccess.Tables.Bars.SetDataTable( 
+			QuantProject.DataAccess.Tables.Bars.SetDataTable(
 				ticker , startDateTime , endDateTime , this );
-			this.setPrimaryKeys(); 
+			this.setPrimaryKeys();
 		}
 		private void setPrimaryKeys()
 		{
@@ -131,7 +133,7 @@ namespace QuantProject.Data.DataTables
 			this.PrimaryKey = columnPrimaryKeys;
 		}
 
-    /// <summary>
+		/// <summary>
 		/// returns date times when the ticker was exchanged, within a given
 		/// date time interval
 		/// </summary>
@@ -140,57 +142,143 @@ namespace QuantProject.Data.DataTables
 		/// <param name="lastDateTime">end interval</param>
 		/// <returns></returns>
 		public static History GetMarketDateTimes( string ticker ,
-			DateTime firstDateTime , DateTime lastDateTime )
+		                                         DateTime firstDateTime , DateTime lastDateTime )
 		{
 			Bars bars = new Bars( ticker , firstDateTime , lastDateTime );
 			History marketDateTimes = new History();
-			int i = 0;
+//			int i = 0;
 			foreach ( DataRow dataRow in bars.Rows )
-			{
-				marketDateTimes.Add( (DateTime)dataRow[ Bars.DateTimeForOpen ] , (DateTime)dataRow[ Bars.DateTimeForOpen ] );
-				i++;
-			}
+//			{
+				marketDateTimes.Add(
+					(DateTime)dataRow[ Bars.DateTimeForOpen ] ,
+					(DateTime)dataRow[ Bars.DateTimeForOpen ] );
+//				i++;
+//			}
 			return marketDateTimes;
 		}
-    
+		
+		#region GetMarketDateTimes
+		
+//		#region checkIfAreTimes
+//		private static void checkIfIsTime( DateTime timeCandidate )
+//		{
+//			if ( !ExtendedDateTime.IsTime( timeCandidate ) )
+//				// the timeCandidate does not represent a time
+//				throw new Exception(
+//					"The given DateTime was expected to be a time, but " +
+//					"it is not. Use QuantProject.ADT.ExtendedDateTime.GetTime() " +
+//					"to build such times.";
+//			}
+//		private static void checkIfAreTimes( List< DateTime > dailyTimes )
+//		{
+//			foreach ( DateTime dateTime in dailyTimes )
+//				this.checkIfIsTime( DateTime dateTime );
+//		}
+//		#endregion checkIfAreTimes
+		
+		#region getMarketDateTimes
+		
+		#region removeMissingTimes
+		
+		#region removeMissingTime
+		private static bool isTimeInDailyTimes(
+			DateTime dateTime , List< Time > dailyTimes )
+		{
+			Time time = new Time( dateTime );
+			bool isInDailyTimes =
+				dailyTimes.Contains( time );
+			return isInDailyTimes;
+		}
+		private static void removeMissingTime(
+			DateTime candidateToBeRemoved ,
+			List< Time > dailyTimes , History marketDateTimes )
+		{
+			if ( !Bars.isTimeInDailyTimes( candidateToBeRemoved , dailyTimes ) )
+				// the candidate's time is not in the given list of daily times
+				marketDateTimes.Remove( candidateToBeRemoved );
+		}
+		#endregion removeMissingTime
+		
+		private static void removeMissingTimes(
+			List< Time > dailyTimes , History marketDateTimes )
+		{
+			foreach ( DateTime dateTime in marketDateTimes )
+				Bars.removeMissingTime(
+					dateTime , dailyTimes , marketDateTimes );
+		}
+		private static History getMarketDateTimes(
+			string ticker ,	DateTime firstDateTime , DateTime lastDateTime ,
+			List< Time > dailyTimes )
+		{
+			History marketDateTimes =
+				Bars.GetMarketDateTimes(
+					ticker , firstDateTime  , lastDateTime );
+			Bars.removeMissingTimes( dailyTimes , marketDateTimes );
+			return marketDateTimes;
+		}
+		#endregion removeMissingTimes
+		
+		#endregion getMarketDateTimes
+		
+		/// <summary>
+		/// returns date times when the ticker was exchanged, within a given
+		/// date time interval, but only when the time is in dailyTimes
+		/// </summary>
+		/// <param name="ticker"></param>
+		/// <param name="firstDateTime"></param>
+		/// <param name="lastDateTime"></param>
+		/// <param name="dailyTimes"></param>
+		/// <returns></returns>
+		public static History GetMarketDateTimes(
+			string ticker ,	DateTime firstDateTime , DateTime lastDateTime ,
+			List< Time > dailyTimes )
+		{
+//			Bars.checkIfAreTimes( dailyTimes );
+			History marketDateTimes =
+				Bars.getMarketDateTimes(
+					ticker , firstDateTime , lastDateTime , dailyTimes );
+			return marketDateTimes;
+		}
+		#endregion GetMarketDateTimes
+		
 		#region GetCommonMarketDateTimes
 		private static Hashtable getMarketDateTimes( ICollection tickers , DateTime firstDateTime ,
-			DateTime lastDateTime )
+		                                            DateTime lastDateTime )
 		{
 			Hashtable marketDateTimes = new Hashtable();
 			foreach ( string ticker in tickers )
 				if ( !marketDateTimes.ContainsKey( ticker ) )
-				{
-					SortedList marketDateTimesForSingleTicker =
-						GetMarketDateTimes( ticker , firstDateTime , lastDateTime );
-					marketDateTimes.Add( ticker , marketDateTimesForSingleTicker );
-				}
+			{
+				History marketDateTimesForSingleTicker =
+					GetMarketDateTimes( ticker , firstDateTime , lastDateTime );
+				marketDateTimes.Add( ticker , marketDateTimesForSingleTicker );
+			}
 			return marketDateTimes;
 		}
 		private static bool isCommonDateTime( ICollection tickers , DateTime dateTime ,
-			Hashtable marketDateTimes )
+		                                     Hashtable marketDateTimes )
 		{
 			bool itIsCommon = true;
 			foreach ( string ticker in tickers )
 				itIsCommon = itIsCommon &&
-					((SortedList)marketDateTimes[ ticker ]).ContainsKey( dateTime );
+					((List< DateTime >)marketDateTimes[ ticker ]).Contains( dateTime );
 			return itIsCommon;
 		}
 		private static void getCommonMarketDateTimes_ifTheCaseAdd( ICollection tickers , DateTime dateTime ,
-			Hashtable marketDateTimes , AdvancedSortedList commonMarketDateTimes )
+		                                                          Hashtable marketDateTimes , AdvancedSortedList commonMarketDateTimes )
 		{
 			if ( isCommonDateTime( tickers , dateTime , marketDateTimes ) )
 				commonMarketDateTimes.Add( dateTime , dateTime );
 		}
 		private static SortedList getCommonMarketDateTimes( ICollection tickers ,
-			DateTime firstDateTime , DateTime lastDateTime , Hashtable marketDateTimes )
+		                                                   DateTime firstDateTime , DateTime lastDateTime , Hashtable marketDateTimes )
 		{
 			AdvancedSortedList commonMarketDateTimes = new AdvancedSortedList();
 			DateTime currentDateTime = firstDateTime;
 			while ( currentDateTime <= lastDateTime )
 			{
-				getCommonMarketDateTimes_ifTheCaseAdd( tickers , 
-					currentDateTime , marketDateTimes , commonMarketDateTimes );
+				getCommonMarketDateTimes_ifTheCaseAdd( tickers ,
+				                                      currentDateTime , marketDateTimes , commonMarketDateTimes );
 				currentDateTime = currentDateTime.AddMinutes( 1 );
 				//CHECK this statement: it could be cause great delay ...
 			}
@@ -198,10 +286,10 @@ namespace QuantProject.Data.DataTables
 		}
 
 		public static SortedList GetCommonMarketDateTimes( ICollection tickers ,
-			DateTime firstDateTime , DateTime lastDateTime )
+		                                                  DateTime firstDateTime , DateTime lastDateTime )
 		{
 			Hashtable marketDateTimes = getMarketDateTimes( tickers , firstDateTime , lastDateTime );
-      return getCommonMarketDateTimes( tickers , firstDateTime , lastDateTime , marketDateTimes );
+			return getCommonMarketDateTimes( tickers , firstDateTime , lastDateTime , marketDateTimes );
 		}
 
 		#endregion
@@ -215,23 +303,23 @@ namespace QuantProject.Data.DataTables
 			get{ return ((string)this.Rows[ 0 ][ Bars.TickerFieldName ]); }
 		}
 
-    /// <summary>
-    /// Gets the dateTime of the first bar contained into the Bars object
-    /// </summary>
-    /// <returns></returns>
-    public DateTime StartDateTime
-    {
-      get{ return ((DateTime)this.Rows[ 0 ][ Bars.DateTimeForOpen ]); }
-    }
-    /// <summary>
-    /// Gets the dateTime of the last bar contained into the Bars object
-    /// </summary>
-    /// <returns></returns>
-    public DateTime EndDateTime
-    {
-      get{ return ((DateTime)this.Rows[ this.Rows.Count - 1 ][ Bars.DateTimeForOpen ]); }
-    }
-     
+		/// <summary>
+		/// Gets the dateTime of the first bar contained into the Bars object
+		/// </summary>
+		/// <returns></returns>
+		public DateTime StartDateTime
+		{
+			get{ return ((DateTime)this.Rows[ 0 ][ Bars.DateTimeForOpen ]); }
+		}
+		/// <summary>
+		/// Gets the dateTime of the last bar contained into the Bars object
+		/// </summary>
+		/// <returns></returns>
+		public DateTime EndDateTime
+		{
+			get{ return ((DateTime)this.Rows[ this.Rows.Count - 1 ][ Bars.DateTimeForOpen ]); }
+		}
+		
 		#region GetHashValue
 		/*
 		private string getHashValue_getQuoteString_getRowString_getSingleValueString( Object value )
@@ -301,7 +389,7 @@ namespace QuantProject.Data.DataTables
 				") and (quDate<=" + FilterBuilder.GetDateConstant( endDate ) + ") )";
 			return HashProvider.GetHashValue( getHashValue_getQuoteString( quotes ) );
 		}
-		*/
+		 */
 		#endregion
 		
 		private void setHistory()
@@ -324,8 +412,8 @@ namespace QuantProject.Data.DataTables
 		{
 			setHistory();
 			return (DateTime) history.GetKey( Math.Max( 0 ,
-				history.IndexOfKeyOrPrevious( dateTime ) -
-				precedingMinutes ) );
+			                                           history.IndexOfKeyOrPrevious( dateTime ) -
+			                                           precedingMinutes ) );
 		}
 
 
@@ -345,87 +433,87 @@ namespace QuantProject.Data.DataTables
 			try
 			{
 				followingDateTime =	(DateTime) history.GetKey( Math.Max( 0 ,
-					indexOfKeyOrPrevious + followingMinutes ) );
+				                                                        indexOfKeyOrPrevious + followingMinutes ) );
 			}
 			catch ( ArgumentOutOfRangeException exception )
 			{
 				string message = exception.Message;
 				throw new Exception( "Quotes.GetFollowingDateTime() error: there is not " +
-					"a dateTime for dateTime=" + dateTime.ToString() +
-					" and followingMinutes=" + followingMinutes );
+				                    "a dateTime for dateTime=" + dateTime.ToString() +
+				                    " and followingMinutes=" + followingMinutes );
 			}
 			return followingDateTime;
 		}
-    
-    /// <summary>
-    /// Returns true if a bar is available at the given dateTime
-    /// </summary>
-    /// <param name="dateTime">dateTime</param>
-    /// <returns></returns>
-    public bool HasDateTime( DateTime dateTime )
-    {
-      /*alternative code, but primary keys need to be set first
+		
+		/// <summary>
+		/// Returns true if a bar is available at the given dateTime
+		/// </summary>
+		/// <param name="dateTime">dateTime</param>
+		/// <returns></returns>
+		public bool HasDateTime( DateTime dateTime )
+		{
+			/*alternative code, but primary keys need to be set first
       bool hasDate;
       hasDate = this.Rows.Contains(date.Date);
       return hasDate;*/
-      setHistory();
-      return this.history.ContainsKey(dateTime);
-    }
-    /// <summary>
-    /// If the ticker has a bar at the given dateTime, then it returns the given dateTime,
-    /// else it returns the immediate following dateTime at which a bar is available
-    /// </summary>
-    /// <param name="dateTime">dateTime</param>
-    /// <returns></returns>
-    public DateTime GetBarDateTimeOrFollowing( DateTime dateTime )
-    {
-      if( this.HasDateTime( dateTime ) )
-      {
-        return dateTime;
-      }
-      else
-      {
-        return GetBarDateTimeOrFollowing( dateTime.AddMinutes( 1 ) );
-      }
-    }
-    /// <summary>
-    /// If the ticker has a bar at the given dateTime, then it returns the given dateTime,
-    /// else it returns the immediate preceding dateTime at which a bar is available
-    /// </summary>
-    /// <param name="dateTime">dateTime</param>
-    /// <returns></returns>
-    public DateTime GetBarDateTimeOrPreceding( DateTime dateTime )
-    {
-      if( this.HasDateTime( dateTime ) )
-      {
-        return dateTime;
-      }
-      else
-      {
-        return GetBarDateTimeOrPreceding( dateTime.AddMinutes( - 1 ) );
-      }
-    }
+			setHistory();
+			return this.history.ContainsKey(dateTime);
+		}
+		/// <summary>
+		/// If the ticker has a bar at the given dateTime, then it returns the given dateTime,
+		/// else it returns the immediate following dateTime at which a bar is available
+		/// </summary>
+		/// <param name="dateTime">dateTime</param>
+		/// <returns></returns>
+		public DateTime GetBarDateTimeOrFollowing( DateTime dateTime )
+		{
+			if( this.HasDateTime( dateTime ) )
+			{
+				return dateTime;
+			}
+			else
+			{
+				return GetBarDateTimeOrFollowing( dateTime.AddMinutes( 1 ) );
+			}
+		}
+		/// <summary>
+		/// If the ticker has a bar at the given dateTime, then it returns the given dateTime,
+		/// else it returns the immediate preceding dateTime at which a bar is available
+		/// </summary>
+		/// <param name="dateTime">dateTime</param>
+		/// <returns></returns>
+		public DateTime GetBarDateTimeOrPreceding( DateTime dateTime )
+		{
+			if( this.HasDateTime( dateTime ) )
+			{
+				return dateTime;
+			}
+			else
+			{
+				return GetBarDateTimeOrPreceding( dateTime.AddMinutes( - 1 ) );
+			}
+		}
 
-    /// <summary>
-    /// If the ticker has a bar at the given dateTime, then it returns the given dateTime,
-    /// else it returns the first valid following dateTime at which a bar is available
-    /// (or the first valid preceding dateTime, in case dateTime is >= the dateTime of the last available bar) 
-    /// </summary>
-    /// <param name="dateTime">dateTime</param>
-    /// <returns></returns>
-    public DateTime GetFirstValidBarDateTime(DateTime dateTime)
-    {
-      DateTime startDateTime =  this.StartDateTime;
-      DateTime endDateTime = this.EndDateTime;
-      if( dateTime < startDateTime || (dateTime>=startDateTime && dateTime<=endDateTime))
-      {
-        return this.GetBarDateTimeOrFollowing(dateTime);
-      }
-      else
-      {
-        return this.GetBarDateTimeOrPreceding(dateTime);
-      }
-    }
+		/// <summary>
+		/// If the ticker has a bar at the given dateTime, then it returns the given dateTime,
+		/// else it returns the first valid following dateTime at which a bar is available
+		/// (or the first valid preceding dateTime, in case dateTime is >= the dateTime of the last available bar)
+		/// </summary>
+		/// <param name="dateTime">dateTime</param>
+		/// <returns></returns>
+		public DateTime GetFirstValidBarDateTime(DateTime dateTime)
+		{
+			DateTime startDateTime =  this.StartDateTime;
+			DateTime endDateTime = this.EndDateTime;
+			if( dateTime < startDateTime || (dateTime>=startDateTime && dateTime<=endDateTime))
+			{
+				return this.GetBarDateTimeOrFollowing(dateTime);
+			}
+			else
+			{
+				return this.GetBarDateTimeOrPreceding(dateTime);
+			}
+		}
 		/// <summary>
 		/// returns the first bar dateTime for the ticker
 		/// </summary>
@@ -437,46 +525,46 @@ namespace QuantProject.Data.DataTables
 		}
 
 
-    /// <summary>
-    /// Gets the close at the given dateTime
-    /// </summary>
-    /// <returns></returns>
-    public float GetClose(DateTime dateTime )
-    {
-      object[] keys = new object[1];
-      keys[0] = dateTime.Date;
-      DataRow foundRow = this.Rows.Find(keys);
-      if(foundRow==null)
-        throw new Exception("No bar for such a dateTime!");
-      return (float)foundRow[ Bars.Close ]; 
-    }
+		/// <summary>
+		/// Gets the close at the given dateTime
+		/// </summary>
+		/// <returns></returns>
+		public float GetClose(DateTime dateTime )
+		{
+			object[] keys = new object[1];
+			keys[0] = dateTime.Date;
+			DataRow foundRow = this.Rows.Find(keys);
+			if(foundRow==null)
+				throw new Exception("No bar for such a dateTime!");
+			return (float)foundRow[ Bars.Close ];
+		}
 
-    /// <summary>
-    /// Gets the first valid raw (not adjusted) close at the given date
-    /// </summary>
-    /// <returns></returns>
-    public float GetFirstValidClose(DateTime dateTime )
-    {
-      object[] keys = new object[1];
-      keys[0] = this.GetFirstValidBarDateTime(dateTime);
-      DataRow foundRow = this.Rows.Find(keys);
-      if(foundRow==null)
-        throw new Exception("No bar for such a dateTime!");
-      return (float)foundRow[Bars.Close]; 
-    }
-    
-    /// <summary>
-    /// Gets the first valid open at the given dateTime
-    /// </summary>
-    /// <returns></returns>
-    public float GetFirstValidOpen(DateTime dateTime )
-    {
-      object[] keys = new object[1];
-      keys[0] = this.GetFirstValidBarDateTime(dateTime);
-      DataRow foundRow = this.Rows.Find(keys);
-      if(foundRow==null)
-        throw new Exception("No bar for such a dateTime!");
-      return (float)foundRow[Bars.Open]; 
-    }
+		/// <summary>
+		/// Gets the first valid raw (not adjusted) close at the given date
+		/// </summary>
+		/// <returns></returns>
+		public float GetFirstValidClose(DateTime dateTime )
+		{
+			object[] keys = new object[1];
+			keys[0] = this.GetFirstValidBarDateTime(dateTime);
+			DataRow foundRow = this.Rows.Find(keys);
+			if(foundRow==null)
+				throw new Exception("No bar for such a dateTime!");
+			return (float)foundRow[Bars.Close];
+		}
+		
+		/// <summary>
+		/// Gets the first valid open at the given dateTime
+		/// </summary>
+		/// <returns></returns>
+		public float GetFirstValidOpen(DateTime dateTime )
+		{
+			object[] keys = new object[1];
+			keys[0] = this.GetFirstValidBarDateTime(dateTime);
+			DataRow foundRow = this.Rows.Find(keys);
+			if(foundRow==null)
+				throw new Exception("No bar for such a dateTime!");
+			return (float)foundRow[Bars.Open];
+		}
 	}
 }
