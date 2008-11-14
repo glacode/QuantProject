@@ -36,23 +36,26 @@ namespace QuantProject.Business.Timing
 	public class IndexBasedHistoricalTimer : Timer
 	{
 		private string indexTicker;
-		DateTime firstDateTime;
-		DateTime lastDateTime;
-		List< Time > dailyTimes;
+		private DateTime firstDateTime;
+		private DateTime lastDateTime;
+		private List< Time > dailyTimes;
+		private int intervalFrameInSeconds;
 		
-		List< DateTime > dateTimesToBeThrown;
+		private List< DateTime > dateTimesToBeThrown;
 		private int currentDateTimeIndex;
 		
 		public IndexBasedHistoricalTimer(
 			string indexTicker ,
 			DateTime firstDateTime ,
 			DateTime lastDateTime ,
-			List< Time > dailyTimes )
+			List< Time > dailyTimes,
+			int intervalFrameInSeconds)
 		{
 			this.indexTicker = indexTicker;
 			this.firstDateTime = firstDateTime;
 			this.lastDateTime = lastDateTime;
 			this.dailyTimes = dailyTimes;
+			this.intervalFrameInSeconds = intervalFrameInSeconds;
 		}
 		
 		#region initializeTimer
@@ -70,7 +73,7 @@ namespace QuantProject.Business.Timing
 			History dateTimesToBeThrownHistory =
 				Bars.GetMarketDateTimes(
 					this.indexTicker , this.firstDateTime , this.lastDateTime ,
-					this.dailyTimes );
+					this.dailyTimes, this.intervalFrameInSeconds );
 			this.initialize_dateTimesToBeThrown( dateTimesToBeThrownHistory );
 		}
 		#endregion initialize_dateTimesToBeThrown

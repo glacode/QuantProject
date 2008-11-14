@@ -40,11 +40,13 @@ namespace QuantProject.Data.Selectors
     private string marketIndex;
     private History marketDateTimes;
     private double percentageOfDateTimes;
+    private int intervalFrameInSeconds;
     
     public SelectorByQuotationAtAGivenPercentageOfDateTimes(DataTable setOfTickersToBeSelected, 
                                bool orderInASCmode,
                                DateTime firstBarDateTime,
                                DateTime lastBarDateTime,
+                               int intervalFrameInSeconds,
                                long maxNumOfReturnedTickers, string marketIndex,
                                double percentageOfDateTimes):
                                     base(setOfTickersToBeSelected, 
@@ -55,11 +57,13 @@ namespace QuantProject.Data.Selectors
     {
       this.marketIndex = marketIndex;
       this.percentageOfDateTimes = percentageOfDateTimes;
+      this.intervalFrameInSeconds = intervalFrameInSeconds;
     }
      public SelectorByQuotationAtAGivenPercentageOfDateTimes(string groupID, 
                                 bool orderInASCmode,
                                 DateTime firstBarDateTime,
                                	DateTime lastBarDateTime,
+                               	int intervalFrameInSeconds,
                                 long maxNumOfReturnedTickers, string marketIndex,
                                 double percentageOfDateTimes):
                                   base(groupID, 
@@ -70,11 +74,12 @@ namespace QuantProject.Data.Selectors
     {
     	this.marketIndex = marketIndex;
     	this.percentageOfDateTimes = percentageOfDateTimes;
+    	this.intervalFrameInSeconds = intervalFrameInSeconds;
     }
     
     public SelectorByQuotationAtAGivenPercentageOfDateTimes(
     	DataTable setOfTickersToBeSelected , bool orderInASCmode ,
-    	History marketDateTimes , long maxNumOfReturnedTickers,
+    	History marketDateTimes , int intervalFrameInSeconds, long maxNumOfReturnedTickers,
       double percentageOfDateTimes):
     	base(setOfTickersToBeSelected ,
     	     orderInASCmode ,
@@ -85,6 +90,7 @@ namespace QuantProject.Data.Selectors
     	this.marketIndex = "";
     	this.marketDateTimes = marketDateTimes;
     	this.percentageOfDateTimes = percentageOfDateTimes;
+    	this.intervalFrameInSeconds = intervalFrameInSeconds;
     }
 
 		 #region GetTableOfSelectedTickers
@@ -93,7 +99,7 @@ namespace QuantProject.Data.Selectors
 			 DataTable dataTable =
 				 QuantProject.Data.DataTables.TickerDataTable.GetTickersQuotedAtAGivenPercentageOfDateTimes(
 				 this.marketDateTimes , this.percentageOfDateTimes , this.setOfTickersToBeSelected , this.firstQuoteDate ,
-				 this.lastQuoteDate , this.maxNumOfReturnedTickers );
+				 this.lastQuoteDate , this.intervalFrameInSeconds , this.maxNumOfReturnedTickers );
 			 return dataTable;
 		 }
 		 private DataTable getTableOfSelectedTickers_givenMarketIndex()
@@ -104,12 +110,12 @@ namespace QuantProject.Data.Selectors
 			 if(this.setOfTickersToBeSelected == null)
 				 return QuantProject.Data.DataTables.TickerDataTable.GetTickersQuotedAtAGivenPercentageOfDateTimes(
 					 this.marketIndex, this.percentageOfDateTimes , this.groupID, this.firstQuoteDate, this.lastQuoteDate,
-					 this.maxNumOfReturnedTickers);        
+					 this.intervalFrameInSeconds, this.maxNumOfReturnedTickers);        
 
 			 else
 				 return QuantProject.Data.DataTables.TickerDataTable.GetTickersQuotedAtAGivenPercentageOfDateTimes(
 					 this.marketIndex, this.percentageOfDateTimes , this.setOfTickersToBeSelected, this.firstQuoteDate, this.lastQuoteDate,
-					 this.maxNumOfReturnedTickers);
+					 this.intervalFrameInSeconds, this.maxNumOfReturnedTickers);
 		 }
 		 public DataTable GetTableOfSelectedTickers()
 		 {

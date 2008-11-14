@@ -60,14 +60,17 @@ namespace QuantProject.Data.DataTables
 		/// </summary>
 		/// <param name="tickerCollection">Tickers whose quotes are to be fetched</param>
 		/// <param name="dateTime">DateTime for the bars to be fetched</param>
-		public Bars( ICollection tickerCollection , DateTime dateTime )
+		/// <param name="intervalFrameInSeconds">interval frame in seconds for the ticker's bars</param>
+		public Bars( ICollection tickerCollection , DateTime dateTime, int intervalFrameInSeconds )
 		{
-			QuantProject.DataAccess.Tables.Bars.SetDataTable(
-				tickerCollection , dateTime , this );
+
+			QuantProject.DataAccess.Tables.Bars.SetDataTable( 
+				tickerCollection , dateTime , this, intervalFrameInSeconds );
+
 		}
-		public Bars( string ticker , DateTime startDateTime , DateTime endDateTime )
+		public Bars( string ticker , DateTime startDateTime , DateTime endDateTime, int intervalFrameInSeconds )
 		{
-			this.fillDataTable( ticker , startDateTime , endDateTime );
+			this.fillDataTable( ticker , startDateTime , endDateTime, intervalFrameInSeconds );
 		}
 
 		/// <summary>
@@ -76,12 +79,12 @@ namespace QuantProject.Data.DataTables
 		/// </summary>
 		/// <param name="ticker"></param>
 		/// <param name="marketDateTimes"></param>
-		public Bars( string ticker , SortedList marketDateTimes )
+		public Bars( string ticker , SortedList marketDateTimes, int intervalFrameInSeconds )
 		{
 			DateTime firstDateTime = (DateTime)marketDateTimes.GetByIndex( 0 );
 			DateTime lastDateTime = (DateTime)marketDateTimes.GetByIndex(
 				marketDateTimes.Count - 1 );
-			this.fillDataTable( ticker , firstDateTime , lastDateTime );
+			this.fillDataTable( ticker , firstDateTime , lastDateTime, intervalFrameInSeconds );
 			this.removeNonContainedDateTimes( marketDateTimes );
 		}
 		#region removeNonContainedDateTimes
@@ -109,22 +112,28 @@ namespace QuantProject.Data.DataTables
 		}
 		#endregion
 
-		public Bars( string ticker )
+		public Bars( string ticker, int intervalFrameInSeconds )
 		{
 			this.fillDataTable(
 				ticker ,
-				QuantProject.DataAccess.Tables.Bars.GetFirstBarDateTime( ticker ) ,
-				QuantProject.DataAccess.Tables.Bars.GetLastBarDateTime( ticker ) );
+				QuantProject.DataAccess.Tables.Bars.GetFirstBarDateTime( ticker, intervalFrameInSeconds ) ,
+				QuantProject.DataAccess.Tables.Bars.GetLastBarDateTime( ticker, intervalFrameInSeconds ),
+			  intervalFrameInSeconds);
 		}
-		public Bars(SerializationInfo info, StreamingContext context)
-			: base(info, context)
+
+    public Bars(SerializationInfo info, StreamingContext context)
+      : base(info, context)
+    {
+    }
+		private void fillDataTable( string ticker , DateTime startDateTime , DateTime endDateTime, int intervalFrameInSeconds )
+
+
 		{
-		}
-		private void fillDataTable( string ticker , DateTime startDateTime , DateTime endDateTime )
-		{
-			QuantProject.DataAccess.Tables.Bars.SetDataTable(
-				ticker , startDateTime , endDateTime , this );
-			this.setPrimaryKeys();
+
+			QuantProject.DataAccess.Tables.Bars.SetDataTable( 
+				ticker , startDateTime , endDateTime , this, intervalFrameInSeconds );
+			this.setPrimaryKeys(); 
+
 		}
 		private void setPrimaryKeys()
 		{
@@ -140,11 +149,13 @@ namespace QuantProject.Data.DataTables
 		/// <param name="ticker"></param>
 		/// <param name="firstDateTime">begin interval</param>
 		/// <param name="lastDateTime">end interval</param>
+		/// <param name="intervalFrameInSeconds">interval frame in seconds for the ticker's bars</param>
 		/// <returns></returns>
 		public static History GetMarketDateTimes( string ticker ,
-		                                         DateTime firstDateTime , DateTime lastDateTime )
+			DateTime firstDateTime , DateTime lastDateTime, int intervalFrameInSeconds )
+
 		{
-			Bars bars = new Bars( ticker , firstDateTime , lastDateTime );
+			Bars bars = new Bars( ticker , firstDateTime , lastDateTime, intervalFrameInSeconds );
 			History marketDateTimes = new History();
 //			int i = 0;
 			foreach ( DataRow dataRow in bars.Rows )
@@ -208,11 +219,11 @@ namespace QuantProject.Data.DataTables
 		}
 		private static History getMarketDateTimes(
 			string ticker ,	DateTime firstDateTime , DateTime lastDateTime ,
-			List< Time > dailyTimes )
+			List< Time > dailyTimes, int intervalFrameInSeconds )
 		{
 			History marketDateTimes =
 				Bars.GetMarketDateTimes(
-					ticker , firstDateTime  , lastDateTime );
+					ticker , firstDateTime  , lastDateTime, intervalFrameInSeconds );
 			Bars.removeMissingTimes( dailyTimes , marketDateTimes );
 			return marketDateTimes;
 		}
@@ -231,28 +242,30 @@ namespace QuantProject.Data.DataTables
 		/// <returns></returns>
 		public static History GetMarketDateTimes(
 			string ticker ,	DateTime firstDateTime , DateTime lastDateTime ,
-			List< Time > dailyTimes )
+			List< Time > dailyTimes, int intervalFrameInSeconds )
 		{
 //			Bars.checkIfAreTimes( dailyTimes );
 			History marketDateTimes =
 				Bars.getMarketDateTimes(
-					ticker , firstDateTime , lastDateTime , dailyTimes );
+					ticker , firstDateTime , lastDateTime , dailyTimes, intervalFrameInSeconds );
 			return marketDateTimes;
 		}
 		#endregion GetMarketDateTimes
 		
 		#region GetCommonMarketDateTimes
 		private static Hashtable getMarketDateTimes( ICollection tickers , DateTime firstDateTime ,
-		                                            DateTime lastDateTime )
+			DateTime lastDateTime, int intervalFrameInSeconds )
+
 		{
 			Hashtable marketDateTimes = new Hashtable();
 			foreach ( string ticker in tickers )
 				if ( !marketDateTimes.ContainsKey( ticker ) )
-			{
-				History marketDateTimesForSingleTicker =
-					GetMarketDateTimes( ticker , firstDateTime , lastDateTime );
-				marketDateTimes.Add( ticker , marketDateTimesForSingleTicker );
-			}
+				{
+					SortedList marketDateTimesForSingleTicker =
+						GetMarketDateTimes( ticker , firstDateTime , lastDateTime, intervalFrameInSeconds );
+					marketDateTimes.Add( ticker , marketDateTimesForSingleTicker );
+				}
+
 			return marketDateTimes;
 		}
 		private static bool isCommonDateTime( ICollection tickers , DateTime dateTime ,
@@ -286,10 +299,12 @@ namespace QuantProject.Data.DataTables
 		}
 
 		public static SortedList GetCommonMarketDateTimes( ICollection tickers ,
-		                                                  DateTime firstDateTime , DateTime lastDateTime )
+			DateTime firstDateTime , DateTime lastDateTime, int intervalFrameInSeconds )
 		{
-			Hashtable marketDateTimes = getMarketDateTimes( tickers , firstDateTime , lastDateTime );
-			return getCommonMarketDateTimes( tickers , firstDateTime , lastDateTime , marketDateTimes );
+
+			Hashtable marketDateTimes = getMarketDateTimes( tickers , firstDateTime , lastDateTime, intervalFrameInSeconds );
+      			return getCommonMarketDateTimes( tickers , firstDateTime , lastDateTime , marketDateTimes );
+
 		}
 
 		#endregion
@@ -518,10 +533,11 @@ namespace QuantProject.Data.DataTables
 		/// returns the first bar dateTime for the ticker
 		/// </summary>
 		/// <param name="ticker"></param>
+		/// <param name="intervalFrameInSeconds">interval frame in seconds for the ticker's bars</param>
 		/// <returns></returns>
-		public static DateTime GetFirstBarDateTime( string ticker )
+		public static DateTime GetFirstBarDateTime( string ticker, int intervalFrameInSeconds )
 		{
-			return QuantProject.DataAccess.Tables.Bars.GetFirstBarDateTime( ticker );
+			return QuantProject.DataAccess.Tables.Bars.GetFirstBarDateTime( ticker, intervalFrameInSeconds );
 		}
 
 

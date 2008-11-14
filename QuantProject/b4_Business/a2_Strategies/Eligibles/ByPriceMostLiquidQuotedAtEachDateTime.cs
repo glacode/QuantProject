@@ -53,6 +53,7 @@ namespace QuantProject.Business.Strategies.Eligibles
 		private int numOfDaysForAverageOpenRawPriceComputation;
 		private double minPrice;
 		private double maxPrice;
+		private int intervalFrameInSeconds;
 		private string marketIndex;
 		
 		public string Description
@@ -72,7 +73,7 @@ namespace QuantProject.Business.Strategies.Eligibles
 			string tickersGroupID , bool temporizedGroup, 
 			int maxNumberOfEligibleTickersToBeChosen,
 		 	int numOfDaysForAverageOpenRawPriceComputation, double minPrice, double maxPrice,
-		  string marketIndex)
+		  int intervalFrameInSeconds, string marketIndex)
 		{
 			this.temporizedGroup = temporizedGroup;
 			this.tickersGroupID = tickersGroupID;
@@ -82,6 +83,7 @@ namespace QuantProject.Business.Strategies.Eligibles
 				numOfDaysForAverageOpenRawPriceComputation;
 			this.minPrice = minPrice;
 			this.maxPrice = maxPrice;
+			this.intervalFrameInSeconds = intervalFrameInSeconds;
 			this.marketIndex = marketIndex;
 		}
 
@@ -123,12 +125,13 @@ namespace QuantProject.Business.Strategies.Eligibles
 			
       History marketDateTimes =
       	Bars.GetMarketDateTimes(this.marketIndex,history.FirstDateTime,
-      	                        history.LastDateTime);
+      	                        history.LastDateTime, this.intervalFrameInSeconds);
       double percentageOfDateTimes = 100.0;
       
       SelectorByQuotationAtAGivenPercentageOfDateTimes quotedAtPercOfDateTimesFromLastSelection =
         new SelectorByQuotationAtAGivenPercentageOfDateTimes( dataTableMostLiquid ,
         false, marketDateTimes,
+        this.intervalFrameInSeconds,
         this.maxNumberOfEligibleTickersToBeChosen,
         percentageOfDateTimes);
       DataTable dataTableToBeReturned =
