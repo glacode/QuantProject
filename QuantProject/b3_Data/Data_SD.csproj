@@ -76,6 +76,7 @@
     <Compile Include="Selectors\SelectorByLiquidity.cs" />
     <Compile Include="Selectors\SelectorByOpenToCloseLinearCorrelation.cs" />
     <Compile Include="Selectors\SelectorByOpenToCloseVolatility.cs" />
+    <Compile Include="Selectors\SelectorByQuotationAtAGivenPercentageOfDateTimes.cs" />
     <Compile Include="Selectors\SelectorByQuotationAtEachMarketDay.cs" />
     <Compile Include="Selectors\SelectorByAverageRawOpenPrice.cs" />
     <Compile Include="Selectors\TickerSelector.cs" />

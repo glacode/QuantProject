@@ -74,6 +74,7 @@
     <Compile Include="a2_Strategies\Eligibles\ByPriceMostLiquidAlwaysQuoted.cs" />
     <Compile Include="a2_Strategies\Eligibles\EligibleTickers.cs" />
     <Compile Include="a2_Strategies\Eligibles\IEligiblesSelector.cs" />
+    <Compile Include="a2_Strategies\Eligibles\ByPriceMostLiquidQuotedAtEachDateTime.cs" />
     <Compile Include="a2_Strategies\EndOfDayStrategies\BasicEndOfDayStrategyForBacktester.cs" />
     <Compile Include="a2_Strategies\EndOfDayStrategies\EndOfDayStrategy.cs" />
     <Compile Include="a2_Strategies\EndOfDayStrategies\EndOfDayTimerHandler.cs" />
