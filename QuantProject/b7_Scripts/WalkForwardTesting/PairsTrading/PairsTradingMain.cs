@@ -152,7 +152,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.PairsTrading
 		{
 			int numberOfBestTestingPositionsToBeReturned = 50;
 			// uncomment the following line for a faster script
-			numberOfBestTestingPositionsToBeReturned = 5;
+//			numberOfBestTestingPositionsToBeReturned = 5;
 			
 			IDecoderForTestingPositions decoderForWeightedPositions =
 				new DecoderForPairsTradingTestingPositionsWithBalancedWeights();
@@ -234,20 +234,18 @@ namespace QuantProject.Scripts.WalkForwardTesting.PairsTrading
 					this.historicalMarketValueProviderForInSample ,
 					this.historicalMarketValueProviderForChosingPositionsOutOfSample ,
 					outOfSampleChooser );
-//			IEndOfDayStrategyForBacktester endOfDayStrategyForBacktester =
-//				new PairsTradingStrategy(
-//				7 , inSampleDays , intervalsSelector ,
-//				eligiblesSelector , inSampleChooser ,
-//				this.historicalQuoteProviderForInSample ,
-//				this.historicalQuoteProviderForChosingPositionsOutOfSample ,
-//				0.006 , 0.99 , 0.006 , 0.99 );
-//			endOfDayStrategyForBacktester =
-//				new LongOnlyPairsTradingStrategy(
-//				7 , inSampleDays , intervalsSelector ,
-//				eligiblesSelector , inSampleChooser ,
-//				this.historicalQuoteProviderForInSample ,
-//				this.historicalQuoteProviderForChosingPositionsOutOfSample ,
-//				0.006 , 0.02 , 0.006 , 0.02 );
+			
+			strategyForBacktester =
+				new PairsTradingIntradayStrategy(
+					7 , inSampleDays ,
+					intervalsSelectorForInSample ,
+					new Time( 13 , 0 , 0 ) ,
+					new Time( 14 , 0 , 0 ) ,
+					new Time( 15 , 0 , 0 ) ,
+					eligiblesSelector , inSampleChooser ,
+					this.historicalMarketValueProviderForInSample ,
+					this.historicalMarketValueProviderForChosingPositionsOutOfSample ,
+					outOfSampleChooser );
 			return strategyForBacktester;
 		}
 		
@@ -259,7 +257,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.PairsTrading
 			IndexBasedHistoricalTimer indexBasedTimer =
 				new IndexBasedHistoricalTimer(
 					this.benchmark.Ticker ,
-					firstDateTime , lastDateTime , dailyTimes );
+					firstDateTime , lastDateTime , dailyTimes , 60 );
 			return indexBasedTimer;
 		}
 		protected override EndOfDayStrategyBackTester
@@ -275,7 +273,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.PairsTrading
 
 			// uncomment the following two lines for a faster script
 			firstDateTime = new DateTime( 2006 , 2 , 1 );
-			lastDateTime = new DateTime( 2007 , 6 , 30 );
+			lastDateTime = new DateTime( 2006 , 2 , 28 );
 
 			double maxRunningHours = 0.05;
 			
