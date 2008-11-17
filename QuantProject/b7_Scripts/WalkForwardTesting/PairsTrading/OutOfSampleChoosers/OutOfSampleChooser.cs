@@ -18,7 +18,7 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
-*/
+ */
 
 using System;
 using System.Collections;
@@ -71,13 +71,25 @@ namespace QuantProject.Scripts.WalkForwardTesting.PairsTrading
 			ReturnsManager inSampleReturnsManager );
 
 		#region GetPositionsToBeOpened
+		
+		private void checkParameters(
+			DateTime firstDateTimeToTestInefficiency ,
+			DateTime lastDateTimeToTestInefficiency )
+		{
+			if ( firstDateTimeToTestInefficiency >= lastDateTimeToTestInefficiency )
+				throw new Exception(
+					"The first date time to test inefficiency must be strictly before " +
+					"the last date time to test inefficiency." );
+		}
+		
+		#region getPositionsToBeOpened_actually
 
 		#region getInefficientCouples
 
 		#region getReturnsManagerForLastSecondPhaseInterval
 		private DateTime
 			getIntervalBeginForLastSecondPhaseInterval(
-			ReturnIntervals outOfSampleReturnIntervals )
+				ReturnIntervals outOfSampleReturnIntervals )
 		{
 			// this method will be invoked only if (this.returnIntervals.Count >= 2)
 			int secondLastIntervalIndex =
@@ -88,52 +100,65 @@ namespace QuantProject.Scripts.WalkForwardTesting.PairsTrading
 		}
 		private DateTime
 			getIntervalEndForLastSecondPhaseInterval(
-			ReturnIntervals outOfSampleReturnIntervals )
+				ReturnIntervals outOfSampleReturnIntervals )
 		{
 			return outOfSampleReturnIntervals.LastInterval.Begin;
 		}
 		private ReturnInterval
 			getReturnIntervalForLastSecondPhaseInterval(
-			ReturnIntervals outOfSampleReturnIntervals )
+				DateTime firstDateTimeToTestInefficiency ,
+				DateTime lastDateTimeToTestInefficiency
+//				ReturnIntervals outOfSampleReturnIntervals
+			)
 		{
-			DateTime intervalBegin =
-				this.getIntervalBeginForLastSecondPhaseInterval(
-				outOfSampleReturnIntervals );
-			DateTime intervalEnd =
-				this.getIntervalEndForLastSecondPhaseInterval(
-				outOfSampleReturnIntervals );
+//			DateTime intervalBegin =
+//				this.getIntervalBeginForLastSecondPhaseInterval(
+//					outOfSampleReturnIntervals );
+//			DateTime intervalEnd =
+//				this.getIntervalEndForLastSecondPhaseInterval(
+//					outOfSampleReturnIntervals );
 			ReturnInterval returnIntervalForLastSecondPhaseInterval =
-				new ReturnInterval( intervalBegin , intervalEnd );
+				new ReturnInterval(
+					firstDateTimeToTestInefficiency , lastDateTimeToTestInefficiency );
 			return returnIntervalForLastSecondPhaseInterval;
 		}
 		private ReturnIntervals
 			getReturnIntervalsForLastSecondPhaseInterval(
-			ReturnIntervals outOfSampleReturnIntervals )
+				DateTime firstDateTimeToTestInefficiency ,
+				DateTime lastDateTimeToTestInefficiency
+//				ReturnIntervals outOfSampleReturnIntervals
+			)
 		{
 			ReturnInterval returnIntervalForLastSecondPhaseInterval =
 				this.getReturnIntervalForLastSecondPhaseInterval(
-				outOfSampleReturnIntervals );
+					firstDateTimeToTestInefficiency ,
+					lastDateTimeToTestInefficiency
+//					outOfSampleReturnIntervals
+				);
 			ReturnIntervals returnIntervalsForLastSecondPhaseInterval =
 				new ReturnIntervals( returnIntervalForLastSecondPhaseInterval );
 			return returnIntervalsForLastSecondPhaseInterval;
 		}
 		private ReturnsManager getReturnsManagerForLastSecondPhaseInterval(
-			ReturnIntervals outOfSampleReturnIntervals ,
+			DateTime firstDateTimeToTestInefficiency ,
+			DateTime lastDateTimeToTestInefficiency ,
+//			ReturnIntervals outOfSampleReturnIntervals ,
 			HistoricalMarketValueProvider
 			historicalMarketValueProviderForChosingPositionsOutOfSample )
 		{
 			ReturnIntervals returnIntervals =
 				this.getReturnIntervalsForLastSecondPhaseInterval(
-				outOfSampleReturnIntervals );
-			//			ReturnsManager returnsManager =
-			//				new ReturnsManager( returnIntervals ,
-			//				this.historicalAdjustedQuoteProvider );
+					firstDateTimeToTestInefficiency ,
+					lastDateTimeToTestInefficiency
+//					outOfSampleReturnIntervals
+				);
 			ReturnsManager returnsManager =
 				new ReturnsManager( returnIntervals ,
-				historicalMarketValueProviderForChosingPositionsOutOfSample );
+				                   historicalMarketValueProviderForChosingPositionsOutOfSample );
 			return returnsManager;
 		}
 		#endregion getReturnsManagerForLastSecondPhaseInterval
+		
 		private double getReturnForTheLastSecondPhaseInterval(
 			ReturnsManager returnsManagerForLastSecondPhaseInterval ,
 			WeightedPositions weightedPositions )
@@ -142,7 +167,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.PairsTrading
 			// this ReturnInterval should be the last second phase interval
 			double returnForTheLastSecondPhaseInterval =
 				weightedPositions.GetReturn( 0 ,
-				returnsManagerForLastSecondPhaseInterval );
+				                            returnsManagerForLastSecondPhaseInterval );
 			return returnForTheLastSecondPhaseInterval;
 		}
 
@@ -170,27 +195,27 @@ namespace QuantProject.Scripts.WalkForwardTesting.PairsTrading
 		// satisfy the thresholds) this method returns null
 		private WeightedPositions
 			getPositionsIfInefficiencyIsInTheRange(
-			ReturnsManager returnsManagerForLastSecondPhaseInterval ,
-			WeightedPositions currentWeightedPositions )
+				ReturnsManager returnsManagerForLastSecondPhaseInterval ,
+				WeightedPositions currentWeightedPositions )
 		{
 			WeightedPositions weightedPositionsToBeOpened = null;
 			try
 			{
 				double returnForTheLastSecondPhaseInterval =
 					this.getReturnForTheLastSecondPhaseInterval(
-					returnsManagerForLastSecondPhaseInterval ,
-					currentWeightedPositions );
+						returnsManagerForLastSecondPhaseInterval ,
+						currentWeightedPositions );
 				if ( ( returnForTheLastSecondPhaseInterval >=
-					this.minThresholdForGoingLong ) &&
-					( returnForTheLastSecondPhaseInterval <=
-					this.maxThresholdForGoingLong ) )
+				      this.minThresholdForGoingLong ) &&
+				    ( returnForTheLastSecondPhaseInterval <=
+				     this.maxThresholdForGoingLong ) )
 					// it looks like there has been an inefficiency that
 					// might be recovered, by going short
 					weightedPositionsToBeOpened = currentWeightedPositions.Opposite;
 				if ( ( -returnForTheLastSecondPhaseInterval >=
-					this.minThresholdForGoingShort ) &&
-					( -returnForTheLastSecondPhaseInterval <=
-					this.maxThresholdForGoingShort ) )
+				      this.minThresholdForGoingShort ) &&
+				    ( -returnForTheLastSecondPhaseInterval <=
+				     this.maxThresholdForGoingShort ) )
 					// it looks like there has been an inefficiency that
 					// might be recovered, by going long
 					weightedPositionsToBeOpened = currentWeightedPositions;
@@ -203,10 +228,10 @@ namespace QuantProject.Scripts.WalkForwardTesting.PairsTrading
 		}
 		private void
 			addPositionsIfInefficiencyForCurrentCoupleIsInTheRange(
-			TestingPositions[] bestTestingPositionsInSample ,
-			ReturnsManager returnsManagerForLastSecondPhaseInterval ,
-			int currentTestingPositionsIndex ,
-			ArrayList inefficientCouples )
+				TestingPositions[] bestTestingPositionsInSample ,
+				ReturnsManager returnsManagerForLastSecondPhaseInterval ,
+				int currentTestingPositionsIndex ,
+				ArrayList inefficientCouples )
 		{
 			WeightedPositions currentWeightedPositions =
 				bestTestingPositionsInSample[ currentTestingPositionsIndex ].WeightedPositions;
@@ -214,7 +239,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.PairsTrading
 				this.getCandidateForPortfolio( currentWeightedPositions );
 			WeightedPositions weightedPositionsThatMightBeOpended =
 				this.getPositionsIfInefficiencyIsInTheRange(
-				returnsManagerForLastSecondPhaseInterval , candidateForPortfolio );
+					returnsManagerForLastSecondPhaseInterval , candidateForPortfolio );
 			if ( weightedPositionsThatMightBeOpended != null )
 				// the current couple has not an inefficiency that's in the range
 				inefficientCouples.Add( weightedPositionsThatMightBeOpended );
@@ -225,43 +250,36 @@ namespace QuantProject.Scripts.WalkForwardTesting.PairsTrading
 		{
 			ArrayList inefficientCouples = new ArrayList();
 			for ( int currentTestingPositionsIndex = 0 ;
-				currentTestingPositionsIndex < bestTestingPositionsInSample.Length ;
-				currentTestingPositionsIndex++ )
+			     currentTestingPositionsIndex < bestTestingPositionsInSample.Length ;
+			     currentTestingPositionsIndex++ )
 				this.addPositionsIfInefficiencyForCurrentCoupleIsInTheRange(
 					bestTestingPositionsInSample ,
 					returnsManagerForLastSecondPhaseInterval ,
 					currentTestingPositionsIndex ,
 					inefficientCouples );
-//			
-//			while ( ( weightedPositionsToBeOpended == null )
-//				&& ( currentTestingPositionsIndex < bestTestingPositionsInSample.Length ) )
-//			{
-//				weightedPositionsToBeOpended =
-//					this.getPositionsToBeOpenedWithRespectToCurrentWeightedPositions(
-//					bestTestingPositionsInSample ,
-//					returnsManagerForLastSecondPhaseInterval ,
-//					currentTestingPositionsIndex );
-//				currentTestingPositionsIndex++;
-//			}
-//			return weightedPositionsToBeOpended;
 			return inefficientCouples;
 		}
 		private ArrayList
 			getArrayListOfInefficientCouples(
-			TestingPositions[] bestTestingPositionsInSample ,
-			ReturnIntervals outOfSampleReturnIntervals ,
-			HistoricalMarketValueProvider
-			historicalMarketValueProviderForChosingPositionsOutOfSample )
+				TestingPositions[] bestTestingPositionsInSample ,
+				DateTime firstDateTimeToTestInefficiency ,
+				DateTime lastDateTimeToTestInefficiency ,
+//				ReturnIntervals outOfSampleReturnIntervals ,
+				HistoricalMarketValueProvider
+				historicalMarketValueProviderForChosingPositionsOutOfSample )
 		{
 			ReturnsManager returnsManagerForLastSecondPhaseInterval =
 				this.getReturnsManagerForLastSecondPhaseInterval(
-				outOfSampleReturnIntervals ,
-				historicalMarketValueProviderForChosingPositionsOutOfSample );
+					firstDateTimeToTestInefficiency ,
+					lastDateTimeToTestInefficiency ,
+//					outOfSampleReturnIntervals ,
+					historicalMarketValueProviderForChosingPositionsOutOfSample );
 			ArrayList inefficientCouples =
 				this.getInefficientCouples( bestTestingPositionsInSample ,
-				returnsManagerForLastSecondPhaseInterval );
+				                           returnsManagerForLastSecondPhaseInterval );
 			return inefficientCouples;
 		}
+		
 		#region getInefficientCouplesFromArrayList
 		private WeightedPositions[] getInefficientCouplesFromArrayList_actually(
 			ArrayList arrayListOfInefficientCouples )
@@ -281,79 +299,59 @@ namespace QuantProject.Scripts.WalkForwardTesting.PairsTrading
 				// at least a couple was found, with an inefficiency in the range
 				inefficientCouples =
 					this.getInefficientCouplesFromArrayList_actually(
-					arrayListOfInefficientCouples );
+						arrayListOfInefficientCouples );
 			return inefficientCouples;
 		}
 		#endregion getInefficientCouplesFromArrayList
+		
 		private WeightedPositions[]
 			getInefficientCouples_withAtLeastASecondPhaseInterval(
-			TestingPositions[] bestTestingPositionsInSample ,
-			ReturnIntervals outOfSampleReturnIntervals ,
-			HistoricalMarketValueProvider
-			historicalMarketValueProviderForChosingPositionsOutOfSample )
+				TestingPositions[] bestTestingPositionsInSample ,
+				DateTime firstDateTimeToTestInefficiency ,
+				DateTime lastDateTimeToTestInefficiency ,
+//				ReturnIntervals outOfSampleReturnIntervals ,
+				HistoricalMarketValueProvider
+				historicalMarketValueProviderForChosingPositionsOutOfSample )
 		{
 			ArrayList arrayListOfInefficientCouples =
 				this.getArrayListOfInefficientCouples(
-				bestTestingPositionsInSample ,
-				outOfSampleReturnIntervals ,
-				historicalMarketValueProviderForChosingPositionsOutOfSample );
+					bestTestingPositionsInSample ,
+					firstDateTimeToTestInefficiency ,
+					lastDateTimeToTestInefficiency ,
+//					outOfSampleReturnIntervals ,
+					historicalMarketValueProviderForChosingPositionsOutOfSample );
 			WeightedPositions[] inefficientCouples =
 				this.getInefficientCouplesFromArrayList( arrayListOfInefficientCouples );
 			return inefficientCouples;
 		}
-//		private WeightedPositions
-//			getInfefficientCouples_withAtLeastASecondPhaseInterval(
-//			TestingPositions[] bestTestingPositionsInSample ,
-//			ReturnIntervals outOfSampleReturnIntervals ,
-//			IHistoricalQuoteProvider
-//			historicalQuoteProviderForChosingPositionsOutOfSample )
-//		{
-//			WeightedPositions weightedPositions =
-//				this.getPositionsToBeOpened_withAtLeastASecondPhaseInterval_actually(
-//				bestTestingPositionsInSample ,
-//				outOfSampleReturnIntervals ,
-//				historicalQuoteProviderForChosingPositionsOutOfSample );
-////			WeightedPositions weightedPositionsToBeReturned = null;
-////			if ( weightedPositions != null )
-////				// at least one of the BestTestingPositions shows an inefficiency
-////				// above the threshold
-////				weightedPositionsToBeReturned =
-////					selectWeightedPositions( weightedPositions );
-////			return weightedPositionsToBeReturned;
-//			return weightedPositions;
-//		}
 		private WeightedPositions[] getInefficientCouples(
 			TestingPositions[] bestTestingPositionsInSample ,
-			ReturnIntervals outOfSampleReturnIntervals ,
+			DateTime firstDateTimeToTestInefficiency ,
+			DateTime lastDateTimeToTestInefficiency ,
+//			ReturnIntervals outOfSampleReturnIntervals ,
 			HistoricalMarketValueProvider
 			historicalMarketValueProviderForChosingPositionsOutOfSample )
 		{
 			WeightedPositions[] inefficientCouples = null;
-			if ( outOfSampleReturnIntervals.Count >= 2 )
-				// at least a second phase interval exists
-				inefficientCouples =
-					this.getInefficientCouples_withAtLeastASecondPhaseInterval(
+//			if ( outOfSampleReturnIntervals.Count >= 2 )
+//				// at least a second phase interval exists
+			inefficientCouples =
+				this.getInefficientCouples_withAtLeastASecondPhaseInterval(
 					bestTestingPositionsInSample ,
-					outOfSampleReturnIntervals ,
+					firstDateTimeToTestInefficiency ,
+					lastDateTimeToTestInefficiency ,
+//						outOfSampleReturnIntervals ,
 					historicalMarketValueProviderForChosingPositionsOutOfSample );
 			return inefficientCouples;
 
 		}
 		#endregion getInefficientCouples
-		/// <summary>
-		/// Selects the WeghtedPositions to actually be opened
-		/// </summary>
-		/// <param name="bestTestingPositionsInSample">most correlated couples,
-		/// in sample</param>
-		/// <param name="outOfSampleReturnIntervals">return intervals for
-		/// the current backtest</param>
-		/// <param name="minThreshold">min requested inefficiency</param>
-		/// <param name="maxThreshold">max allowed inefficiency</param>
-		/// <param name="inSampleReturnsManager"></param>
-		/// <returns></returns>
-		public virtual WeightedPositions GetPositionsToBeOpened(
+		
+		private WeightedPositions getPositionsToBeOpened_actually(
 			TestingPositions[] bestTestingPositionsInSample ,
-			ReturnIntervals outOfSampleReturnIntervals ,
+			DateTime firstDateTimeToTestInefficiency ,
+			DateTime lastDateTimeToTestInefficiency ,
+//			ReturnIntervals outOfSampleReturnIntervals ,
 			HistoricalMarketValueProvider
 			historicalMarketValueProviderForChosingPositionsOutOfSample ,
 			ReturnsManager inSampleReturnsManager )
@@ -361,13 +359,46 @@ namespace QuantProject.Scripts.WalkForwardTesting.PairsTrading
 			WeightedPositions positionsToBeOpened = null;
 			WeightedPositions[] inefficientCouples =
 				this.getInefficientCouples(
-				bestTestingPositionsInSample ,
-				outOfSampleReturnIntervals ,
-				historicalMarketValueProviderForChosingPositionsOutOfSample );
+					bestTestingPositionsInSample ,
+					firstDateTimeToTestInefficiency ,
+					lastDateTimeToTestInefficiency ,
+//					outOfSampleReturnIntervals ,
+					historicalMarketValueProviderForChosingPositionsOutOfSample );
 			if ( inefficientCouples != null )
 				// at least an inefficient couple has been found
 				positionsToBeOpened =
 					this.getPositionsToBeOpened( inefficientCouples ,
+					                            inSampleReturnsManager );
+			return positionsToBeOpened;
+		}		
+		#endregion getPositionsToBeOpened_actually
+		
+		/// <summary>
+		/// Selects the WeghtedPositions to actually be opened
+		/// </summary>
+		/// <param name="bestTestingPositionsInSample">most correlated couples,
+		/// in sample</param>
+		/// <param name="minThreshold">min requested inefficiency</param>
+		/// <param name="maxThreshold">max allowed inefficiency</param>
+		/// <param name="inSampleReturnsManager"></param>
+		/// <returns></returns>
+		public virtual WeightedPositions GetPositionsToBeOpened(
+			TestingPositions[] bestTestingPositionsInSample ,
+			DateTime firstDateTimeToTestInefficiency ,
+			DateTime lastDateTimeToTestInefficiency ,
+//			ReturnIntervals outOfSampleReturnIntervals ,
+			HistoricalMarketValueProvider
+			historicalMarketValueProviderForChosingPositionsOutOfSample ,
+			ReturnsManager inSampleReturnsManager )
+		{
+			this.checkParameters(
+				firstDateTimeToTestInefficiency , lastDateTimeToTestInefficiency );
+			WeightedPositions positionsToBeOpened =
+				this.getPositionsToBeOpened_actually(
+					bestTestingPositionsInSample ,
+					firstDateTimeToTestInefficiency ,
+					lastDateTimeToTestInefficiency ,
+					historicalMarketValueProviderForChosingPositionsOutOfSample ,
 					inSampleReturnsManager );
 			return positionsToBeOpened;
 		}
@@ -381,8 +412,8 @@ namespace QuantProject.Scripts.WalkForwardTesting.PairsTrading
 		{
 			if ( inefficientCouple.Count != 2 )
 				throw new Exception( "The method getLongPositionTickers() expects " +
-					"an array of WeightedPositions, each of wich contains exactly " +
-					"two positions!" );
+				                    "an array of WeightedPositions, each of wich contains exactly " +
+				                    "two positions!" );
 		}
 		private void addPositionIfLong(
 			WeightedPosition weightedPosition ,
@@ -390,8 +421,8 @@ namespace QuantProject.Scripts.WalkForwardTesting.PairsTrading
 			ArrayList arrayListOfLongPositionTickers )
 		{
 			if ( ( weightedPosition.IsLong ) &&
-				( !alreadyAddedLongPositionTickers.Contains(
-				weightedPosition.Ticker ) ) )
+			    ( !alreadyAddedLongPositionTickers.Contains(
+			    	weightedPosition.Ticker ) ) )
 				// the given weightedPosition is long and its ticker has not
 				// yet been added to the set of tickers for long positions
 			{
@@ -406,11 +437,11 @@ namespace QuantProject.Scripts.WalkForwardTesting.PairsTrading
 		{
 			this.checkParameters_forCurrentCouple( inefficientCouple );
 			this.addPositionIfLong( inefficientCouple[ 0 ] ,
-				alreadyAddedLongPositionTickers ,
-				arrayListOfLongPositionTickers );
+			                       alreadyAddedLongPositionTickers ,
+			                       arrayListOfLongPositionTickers );
 			this.addPositionIfLong( inefficientCouple[ 1 ] ,
-				alreadyAddedLongPositionTickers ,
-				arrayListOfLongPositionTickers );
+			                       alreadyAddedLongPositionTickers ,
+			                       arrayListOfLongPositionTickers );
 		}
 		private ArrayList getArrayListOfLongPositionTickers(
 			WeightedPositions[] inefficientCouples )
@@ -419,8 +450,8 @@ namespace QuantProject.Scripts.WalkForwardTesting.PairsTrading
 			ArrayList arrayListOfLongPositionTickers = new ArrayList();
 			foreach( WeightedPositions weightedPositions in inefficientCouples )
 				this.addLongPositions( weightedPositions ,
-					alreadyAddedLongPositionTickers ,
-					arrayListOfLongPositionTickers );
+				                      alreadyAddedLongPositionTickers ,
+				                      arrayListOfLongPositionTickers );
 			return arrayListOfLongPositionTickers;
 		}
 		#endregion getArrayListOfLongPositionTickers
