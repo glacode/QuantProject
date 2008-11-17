@@ -130,6 +130,7 @@
     <Compile Include="WalkForwardTesting\PairsTrading\OutOfSampleChoosers\OutOfSampleChooserForSingleLongAndShort.cs" />
     <Compile Include="WalkForwardTesting\PairsTrading\PairsTradingMain.cs" />
     <Compile Include="WalkForwardTesting\PairsTrading\PairsTradingTestingPositions.cs" />
+    <Compile Include="WalkForwardTesting\PairsTrading\Strategies\PairsTradingIntradayStrategy.cs" />
     <Compile Include="WalkForwardTesting\PairsTrading\Strategies\PairsTradingStrategy.cs" />
     <Compile Include="WalkForwardTesting\WalkForwardLag\RunSimpleLag.cs" />
     <Compile Include="WalkForwardTesting\WalkForwardLag\WeightedPositionsChoosers\BruteForce\WFLagBruteForceWeightedPositionsChooserForBalancedFixedPortfolioAndBalancedDriving.cs" />
