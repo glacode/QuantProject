@@ -108,16 +108,71 @@ namespace QuantProject.Scripts.WalkForwardTesting.PairsTrading
 			return ( beginsTheLastInterval );
 		}
 
-		protected override WeightedPositions getPositionsToBeOpened()
+		#region getPositionsToBeOpened
+		
+		#region getPositionsToBeOpened_withAtLeastASecondPhaseInterval
+		
+		#region getFirstDateTimeToTestInefficiency
+		private DateTime
+			getIntervalBeginForLastSecondPhaseInterval()
 		{
-			WeightedPositions weightedPositions =
+			// this method will be invoked only if (this.returnIntervals.Count >= 2)
+			int secondLastIntervalIndex =
+				this.returnIntervals.Count - 2;
+			ReturnInterval secondLastInterval =
+				this.returnIntervals[ secondLastIntervalIndex ];
+			return secondLastInterval.End;
+		}
+		private DateTime getFirstDateTimeToTestInefficiency()
+		{
+			DateTime firstDateTimeToTestInefficiency =
+				this.getIntervalBeginForLastSecondPhaseInterval();
+			return firstDateTimeToTestInefficiency;
+		}
+		#endregion getFirstDateTimeToTestInefficiency
+		
+		#region getLastDateTimeToTestInefficiency
+		private DateTime
+			getIntervalEndForLastSecondPhaseInterval()
+		{
+			return this.returnIntervals.LastInterval.Begin;
+		}
+		private DateTime getLastDateTimeToTestInefficiency()
+		{
+			DateTime lastDateTimeToTestInefficiency =
+				this.getIntervalEndForLastSecondPhaseInterval();
+			return lastDateTimeToTestInefficiency;
+		}
+		#endregion getLastDateTimeToTestInefficiency
+		
+		private WeightedPositions getPositionsToBeOpened_withAtLeastASecondPhaseInterval()
+		{
+			DateTime firstDateTimeToTestInefficiency =
+				this.getFirstDateTimeToTestInefficiency();
+			DateTime lastDateTimeToTestInefficiency =
+				this.getLastDateTimeToTestInefficiency();
+			WeightedPositions positionsToBeOpened =
 				this.outOfSampleChooser.GetPositionsToBeOpened(
 				this.bestTestingPositionsInSample ,
-				this.returnIntervals ,
+				firstDateTimeToTestInefficiency ,
+				lastDateTimeToTestInefficiency ,
+//				this.returnIntervals ,
 				this.historicalMarketValueProviderForChosingPositionsOutOfSample ,
 				this.inSampleReturnsManager );
-			return weightedPositions;
+			return positionsToBeOpened;
 		}
+		#endregion getPositionsToBeOpened_withAtLeastASecondPhaseInterval
+		
+		protected override WeightedPositions getPositionsToBeOpened()
+		{
+			WeightedPositions positionsToBeOpened = null;
+			if ( this.returnIntervals.Count >= 2 )
+//				// at least a second phase interval exists
+				positionsToBeOpened =
+					this.getPositionsToBeOpened_withAtLeastASecondPhaseInterval();
+			return positionsToBeOpened;
+		}
+		#endregion getPositionsToBeOpened
 		
 		protected override LogItem getLogItem( EligibleTickers eligibleTickers )
 		{
