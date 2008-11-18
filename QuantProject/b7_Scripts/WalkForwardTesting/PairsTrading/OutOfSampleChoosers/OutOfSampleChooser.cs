@@ -85,25 +85,29 @@ namespace QuantProject.Scripts.WalkForwardTesting.PairsTrading
 		#region getPositionsToBeOpened_actually
 
 		#region getInefficientCouples
+		
+		#region getArrayListOfInefficientCouples
 
 		#region getReturnsManagerForLastSecondPhaseInterval
-		private DateTime
-			getIntervalBeginForLastSecondPhaseInterval(
-				ReturnIntervals outOfSampleReturnIntervals )
-		{
-			// this method will be invoked only if (this.returnIntervals.Count >= 2)
-			int secondLastIntervalIndex =
-				outOfSampleReturnIntervals.Count - 2;
-			ReturnInterval secondLastInterval =
-				outOfSampleReturnIntervals[ secondLastIntervalIndex ];
-			return secondLastInterval.End;
-		}
-		private DateTime
-			getIntervalEndForLastSecondPhaseInterval(
-				ReturnIntervals outOfSampleReturnIntervals )
-		{
-			return outOfSampleReturnIntervals.LastInterval.Begin;
-		}
+//		private DateTime
+//			getIntervalBeginForLastSecondPhaseInterval(
+//				ReturnIntervals outOfSampleReturnIntervals )
+//		{
+//			// this method will be invoked only if (this.returnIntervals.Count >= 2)
+//			int secondLastIntervalIndex =
+//				outOfSampleReturnIntervals.Count - 2;
+//			ReturnInterval secondLastInterval =
+//				outOfSampleReturnIntervals[ secondLastIntervalIndex ];
+//			return secondLastInterval.End;
+//		}
+//		private DateTime
+//			getIntervalEndForLastSecondPhaseInterval(
+//				ReturnIntervals outOfSampleReturnIntervals )
+//		{
+//			return outOfSampleReturnIntervals.LastInterval.Begin;
+//		}
+		
+		#region getReturnIntervalsForLastSecondPhaseInterval
 		private ReturnInterval
 			getReturnIntervalForLastSecondPhaseInterval(
 				DateTime firstDateTimeToTestInefficiency ,
@@ -139,6 +143,8 @@ namespace QuantProject.Scripts.WalkForwardTesting.PairsTrading
 				new ReturnIntervals( returnIntervalForLastSecondPhaseInterval );
 			return returnIntervalsForLastSecondPhaseInterval;
 		}
+		#endregion getReturnIntervalsForLastSecondPhaseInterval
+		
 		private ReturnsManager getReturnsManagerForLastSecondPhaseInterval(
 			DateTime firstDateTimeToTestInefficiency ,
 			DateTime lastDateTimeToTestInefficiency ,
@@ -158,19 +164,10 @@ namespace QuantProject.Scripts.WalkForwardTesting.PairsTrading
 			return returnsManager;
 		}
 		#endregion getReturnsManagerForLastSecondPhaseInterval
-		
-		private double getReturnForTheLastSecondPhaseInterval(
-			ReturnsManager returnsManagerForLastSecondPhaseInterval ,
-			WeightedPositions weightedPositions )
-		{
-			// returnsManager should contain a single ReturnInterval, and
-			// this ReturnInterval should be the last second phase interval
-			double returnForTheLastSecondPhaseInterval =
-				weightedPositions.GetReturn( 0 ,
-				                            returnsManagerForLastSecondPhaseInterval );
-			return returnForTheLastSecondPhaseInterval;
-		}
+				
+		#region getInefficientCouples
 
+		#region addPositionsIfInefficiencyForCurrentCoupleIsInTheRange
 		/// <summary>
 		/// Inverts one of the two positions
 		/// </summary>
@@ -188,6 +185,19 @@ namespace QuantProject.Scripts.WalkForwardTesting.PairsTrading
 			WeightedPositions candidateForPortfolio =
 				new WeightedPositions( weights , tickers );
 			return candidateForPortfolio;
+		}
+		
+		#region getPositionsIfInefficiencyIsInTheRange
+		private double getReturnForTheLastSecondPhaseInterval(
+			ReturnsManager returnsManagerForLastSecondPhaseInterval ,
+			WeightedPositions weightedPositions )
+		{
+			// returnsManager should contain a single ReturnInterval, and
+			// this ReturnInterval should be the last second phase interval
+			double returnForTheLastSecondPhaseInterval =
+				weightedPositions.GetReturn( 0 ,
+				                            returnsManagerForLastSecondPhaseInterval );
+			return returnForTheLastSecondPhaseInterval;
 		}
 		// if the currentWeightedPositions' return satisfies the thresholds
 		// then this method returns the WeightedPositions that might be opened.
@@ -226,6 +236,8 @@ namespace QuantProject.Scripts.WalkForwardTesting.PairsTrading
 			}
 			return weightedPositionsToBeOpened;
 		}
+		#endregion getPositionsIfInefficiencyIsInTheRange
+		
 		private void
 			addPositionsIfInefficiencyForCurrentCoupleIsInTheRange(
 				TestingPositions[] bestTestingPositionsInSample ,
@@ -244,6 +256,8 @@ namespace QuantProject.Scripts.WalkForwardTesting.PairsTrading
 				// the current couple has not an inefficiency that's in the range
 				inefficientCouples.Add( weightedPositionsThatMightBeOpended );
 		}
+		#endregion addPositionsIfInefficiencyForCurrentCoupleIsInTheRange
+		
 		protected ArrayList getInefficientCouples(
 			TestingPositions[] bestTestingPositionsInSample ,
 			ReturnsManager returnsManagerForLastSecondPhaseInterval )
@@ -259,6 +273,8 @@ namespace QuantProject.Scripts.WalkForwardTesting.PairsTrading
 					inefficientCouples );
 			return inefficientCouples;
 		}
+		#endregion getInefficientCouples
+		
 		private ArrayList
 			getArrayListOfInefficientCouples(
 				TestingPositions[] bestTestingPositionsInSample ,
@@ -279,6 +295,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.PairsTrading
 				                           returnsManagerForLastSecondPhaseInterval );
 			return inefficientCouples;
 		}
+		#endregion getArrayListOfInefficientCouples
 		
 		#region getInefficientCouplesFromArrayList
 		private WeightedPositions[] getInefficientCouplesFromArrayList_actually(
@@ -370,7 +387,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.PairsTrading
 					this.getPositionsToBeOpened( inefficientCouples ,
 					                            inSampleReturnsManager );
 			return positionsToBeOpened;
-		}		
+		}
 		#endregion getPositionsToBeOpened_actually
 		
 		/// <summary>
