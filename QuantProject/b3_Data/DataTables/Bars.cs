@@ -64,7 +64,7 @@ namespace QuantProject.Data.DataTables
 		public Bars( ICollection tickerCollection , DateTime dateTime, int intervalFrameInSeconds )
 		{
 
-			QuantProject.DataAccess.Tables.Bars.SetDataTable( 
+			QuantProject.DataAccess.Tables.Bars.SetDataTable(
 				tickerCollection , dateTime , this, intervalFrameInSeconds );
 
 		}
@@ -118,21 +118,21 @@ namespace QuantProject.Data.DataTables
 				ticker ,
 				QuantProject.DataAccess.Tables.Bars.GetFirstBarDateTime( ticker, intervalFrameInSeconds ) ,
 				QuantProject.DataAccess.Tables.Bars.GetLastBarDateTime( ticker, intervalFrameInSeconds ),
-			  intervalFrameInSeconds);
+				intervalFrameInSeconds);
 		}
 
-    public Bars(SerializationInfo info, StreamingContext context)
-      : base(info, context)
-    {
-    }
+		public Bars(SerializationInfo info, StreamingContext context)
+			: base(info, context)
+		{
+		}
 		private void fillDataTable( string ticker , DateTime startDateTime , DateTime endDateTime, int intervalFrameInSeconds )
 
 
 		{
 
-			QuantProject.DataAccess.Tables.Bars.SetDataTable( 
+			QuantProject.DataAccess.Tables.Bars.SetDataTable(
 				ticker , startDateTime , endDateTime , this, intervalFrameInSeconds );
-			this.setPrimaryKeys(); 
+			this.setPrimaryKeys();
 
 		}
 		private void setPrimaryKeys()
@@ -152,7 +152,7 @@ namespace QuantProject.Data.DataTables
 		/// <param name="intervalFrameInSeconds">interval frame in seconds for the ticker's bars</param>
 		/// <returns></returns>
 		public static History GetMarketDateTimes( string ticker ,
-			DateTime firstDateTime , DateTime lastDateTime, int intervalFrameInSeconds )
+		                                         DateTime firstDateTime , DateTime lastDateTime, int intervalFrameInSeconds )
 
 		{
 			Bars bars = new Bars( ticker , firstDateTime , lastDateTime, intervalFrameInSeconds );
@@ -191,7 +191,11 @@ namespace QuantProject.Data.DataTables
 		
 		#region removeMissingTimes
 		
-		#region removeMissingTime
+		#region getDateTimesToBeRemoved
+
+		#region addDateTimesToBeRemoved
+		
+		#region addMissingTimeIfTheCase
 		private static bool isTimeInDailyTimes(
 			DateTime dateTime , List< Time > dailyTimes )
 		{
@@ -200,23 +204,52 @@ namespace QuantProject.Data.DataTables
 				dailyTimes.Contains( time );
 			return isInDailyTimes;
 		}
-		private static void removeMissingTime(
+		private static void addMissingTimeIfTheCase(
 			DateTime candidateToBeRemoved ,
-			List< Time > dailyTimes , History marketDateTimes )
+			List< Time > dailyTimes , List< DateTime > dateTimesToBeRemoved )
 		{
 			if ( !Bars.isTimeInDailyTimes( candidateToBeRemoved , dailyTimes ) )
 				// the candidate's time is not in the given list of daily times
-				marketDateTimes.Remove( candidateToBeRemoved );
+				dateTimesToBeRemoved.Add( candidateToBeRemoved );
 		}
-		#endregion removeMissingTime
+		#endregion addMissingTimeIfTheCase
+		
+		private static void addDateTimesToBeRemoved(
+			List< Time > dailyTimes , History marketDateTimes ,
+			List< DateTime > dateTimesToBeRemoved)
+		{
+			foreach ( DateTime dateTime in marketDateTimes.Keys )
+				Bars.addMissingTimeIfTheCase(
+					dateTime , dailyTimes , dateTimesToBeRemoved );
+		}
+		#endregion addDateTimesToBeRemoved
+		
+		private static List< DateTime > getDateTimesToBeRemoved(
+			List< Time > dailyTimes , History marketDateTimes )
+		{
+			List< DateTime > dateTimesToBeRemoved = new List< DateTime >();
+			Bars.addDateTimesToBeRemoved(
+				dailyTimes , marketDateTimes , dateTimesToBeRemoved );
+			return dateTimesToBeRemoved;
+		}
+		#endregion getDateTimesToBeRemoved
+		
+		private static void removeMissingTimes(
+			List< DateTime > dateTimesToBeRemoved , History marketDateTimes )
+		{
+			foreach ( DateTime dateTime in dateTimesToBeRemoved )
+				marketDateTimes.Remove( dateTime );
+		}
 		
 		private static void removeMissingTimes(
 			List< Time > dailyTimes , History marketDateTimes )
 		{
-			foreach ( DateTime dateTime in marketDateTimes )
-				Bars.removeMissingTime(
-					dateTime , dailyTimes , marketDateTimes );
+			List< DateTime > dateTimesToBeRemoved = Bars.getDateTimesToBeRemoved(
+				dailyTimes , marketDateTimes );
+			Bars.removeMissingTimes( dateTimesToBeRemoved , marketDateTimes );
 		}
+		#endregion removeMissingTimes
+
 		private static History getMarketDateTimes(
 			string ticker ,	DateTime firstDateTime , DateTime lastDateTime ,
 			List< Time > dailyTimes, int intervalFrameInSeconds )
@@ -227,7 +260,6 @@ namespace QuantProject.Data.DataTables
 			Bars.removeMissingTimes( dailyTimes , marketDateTimes );
 			return marketDateTimes;
 		}
-		#endregion removeMissingTimes
 		
 		#endregion getMarketDateTimes
 		
@@ -254,17 +286,17 @@ namespace QuantProject.Data.DataTables
 		
 		#region GetCommonMarketDateTimes
 		private static Hashtable getMarketDateTimes( ICollection tickers , DateTime firstDateTime ,
-			DateTime lastDateTime, int intervalFrameInSeconds )
+		                                            DateTime lastDateTime, int intervalFrameInSeconds )
 
 		{
 			Hashtable marketDateTimes = new Hashtable();
 			foreach ( string ticker in tickers )
 				if ( !marketDateTimes.ContainsKey( ticker ) )
-				{
-					SortedList marketDateTimesForSingleTicker =
-						GetMarketDateTimes( ticker , firstDateTime , lastDateTime, intervalFrameInSeconds );
-					marketDateTimes.Add( ticker , marketDateTimesForSingleTicker );
-				}
+			{
+				SortedList marketDateTimesForSingleTicker =
+					GetMarketDateTimes( ticker , firstDateTime , lastDateTime, intervalFrameInSeconds );
+				marketDateTimes.Add( ticker , marketDateTimesForSingleTicker );
+			}
 
 			return marketDateTimes;
 		}
@@ -299,11 +331,11 @@ namespace QuantProject.Data.DataTables
 		}
 
 		public static SortedList GetCommonMarketDateTimes( ICollection tickers ,
-			DateTime firstDateTime , DateTime lastDateTime, int intervalFrameInSeconds )
+		                                                  DateTime firstDateTime , DateTime lastDateTime, int intervalFrameInSeconds )
 		{
 
 			Hashtable marketDateTimes = getMarketDateTimes( tickers , firstDateTime , lastDateTime, intervalFrameInSeconds );
-      			return getCommonMarketDateTimes( tickers , firstDateTime , lastDateTime , marketDateTimes );
+			return getCommonMarketDateTimes( tickers , firstDateTime , lastDateTime , marketDateTimes );
 
 		}
 
