@@ -18,10 +18,11 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
-*/
+ */
 
 using System;
 
+using QuantProject.Data.DataProviders.Bars;
 using QuantProject.Data.DataProviders.Bars.Caching;
 
 namespace QuantProject.Business.DataProviders
@@ -45,8 +46,17 @@ namespace QuantProject.Business.DataProviders
 			string ticker ,
 			DateTime dateTime )
 		{
-			double marketValue = this.historicalBarProvider.GetMarketValue(
+			double marketValue = double.MinValue;
+			try
+			{
+				marketValue = this.historicalBarProvider.GetMarketValue(
 					ticker , dateTime );
+			}
+			catch( MissingBarException missingBarException )
+			{
+				string forBreakPoint = missingBarException.Message; forBreakPoint += " ";
+				throw new TickerNotExchangedException( ticker , dateTime );
+			}
 			return marketValue;
 		}
 		
