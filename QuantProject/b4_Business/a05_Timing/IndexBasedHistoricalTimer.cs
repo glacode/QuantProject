@@ -65,7 +65,7 @@ namespace QuantProject.Business.Timing
 			History dateTimesToBeThrownHistory )
 		{
 			this.dateTimesToBeThrown = new List< DateTime >();
-			foreach ( DateTime dateTime in dateTimesToBeThrownHistory )
+			foreach ( DateTime dateTime in dateTimesToBeThrownHistory.Keys )
 				this.dateTimesToBeThrown.Add( dateTime );
 		}
 		private void initialize_dateTimesToBeThrown()

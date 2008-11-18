@@ -188,7 +188,7 @@ namespace QuantProject.Business.Strategies
 			
 			this.timer = timer;
 
-			this.initialize_endOfDayTimer();
+//			this.initialize_endOfDayTimer();
 			this.account = this.accountProvider.GetAccount(
 				this.timer, this.historicalMarketValueProvider);
 			this.strategyForBacktester.Account = this.account;
