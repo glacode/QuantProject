@@ -262,14 +262,14 @@ namespace QuantProject.DataAccess.Tables
 				sql =	"select * from bars INNER JOIN tickers_tickerGroups ON " +
 					"bars." + Bars.TickerFieldName + "=tickers_tickerGroups." + Tickers_tickerGroups.Ticker + " " +
 					"where " + Tickers_tickerGroups.GroupID + "='" + tickerOrGroupID + "' and " + 
-					Bars.IntervalFrameInSeconds + "='" + intervalFrameInSeconds + "' " +
+					Bars.IntervalFrameInSeconds + "=" + intervalFrameInSeconds + " " +
 					"and " + Bars.DateTimeForOpen + ">=" + SQLBuilder.GetDateTimeConstant( startDateTime ) + " " +
 					"and " + Bars.DateTimeForOpen + "<=" + SQLBuilder.GetDateTimeConstant( endDateTime ) + " " +
 					"order by " + Bars.DateTimeForOpen;
 			else
 				sql =	"select * from bars " +
 					"where " + Bars.TickerFieldName + "='" + tickerOrGroupID + "' and " + 
-					Bars.IntervalFrameInSeconds + "='" + intervalFrameInSeconds + "' " +
+					Bars.IntervalFrameInSeconds + "=" + intervalFrameInSeconds + " " +
 					"and " + Bars.DateTimeForOpen + ">=" + SQLBuilder.GetDateTimeConstant( startDateTime ) + " " +
 					"and " + Bars.DateTimeForOpen + "<=" + SQLBuilder.GetDateTimeConstant( endDateTime ) + " " +
 					"order by " + Bars.DateTimeForOpen;
