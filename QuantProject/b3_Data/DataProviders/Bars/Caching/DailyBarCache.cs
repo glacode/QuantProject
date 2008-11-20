@@ -72,10 +72,10 @@ namespace QuantProject.Data.DataProviders.Bars.Caching
 			this.barOpenValues = new BarCacheData(
 				maxNumberOfItemsIn_barOpenValues ,
 				numberOfItemsToBeRemovedFrom_barOpenValues_whenCacheIsCleanedUp );
-				
+			
 //			this.barOpenValues = new Dictionary< DateTime , Dictionary< string , double > >();
 //			this.numberOfBarsIn_barOpenValues = 0;
-				
+			
 			int maxNumberOfItemsIn_barsMissingInTheDatabase = 100000;
 			int numberOfItemsToBeRemovedFrom_barsMissingInTheDatabase_whenCacheIsCleanedUp =
 				maxNumberOfItemsIn_barOpenValues / 2;
@@ -87,22 +87,6 @@ namespace QuantProject.Data.DataProviders.Bars.Caching
 		}
 		
 		#region checkParameters
-		
-		#region checkDailyTimesAreActuallyTimes
-//		private void checkIfItActuallyIsATime( DateTime dateTime )
-//		{
-//			if ( !ExtendedDateTime.IsTime( dateTime ) )
-//				throw new Exception(
-//					"dailyTimes have to be times: use the method " +
-//					"QuantProject.ADT.ExtendedDateTime.GetTime() " +
-//					"to build them" );
-//		}
-//		private void checkDailyTimesAreActuallyTimes( DateTime[] dailyTimes )
-//		{
-//			foreach ( DateTime dateTime in dailyTimes )
-//				this.checkIfItActuallyIsATime( dateTime );
-//		}
-		#endregion checkDailyTimesAreActuallyTimes
 		
 		#region checkIfDailyTimesAreInStrictAscendingOrder
 		private void checkIfDailyTimesAreInStrictAscendingOrder(
@@ -185,7 +169,7 @@ namespace QuantProject.Data.DataProviders.Bars.Caching
 		}
 		#endregion getLastDateTime
 		
-		private History getBarOpenValues( string ticker, DateTime firstDateTime )
+		private History getBarOpenValuesFromDatabase( string ticker, DateTime firstDateTime )
 		{
 			DateTime lastDateTime = this.getLastDateTime( firstDateTime );
 			History barOpenValues = DataBase.GetBarOpenHistory(
@@ -201,43 +185,27 @@ namespace QuantProject.Data.DataProviders.Bars.Caching
 		#region update_barOpenValues
 		
 		private void addBarOpenValue(
-			string ticker, DateTime dateTime , History barOpenValuesFromQuery )
+			string ticker, DateTime dateTime , History barOpenValuesFromDatabase )
 		{
-			double barOpenValue =
-				(double)barOpenValuesFromQuery[ dateTime ];
+			float barOpenValue =
+				(float)barOpenValuesFromDatabase[ dateTime ];
 			this.barOpenValues.AddBar(
 				ticker , dateTime , barOpenValue );
 		}
 		
 		private void update_barOpenValues(
-			string ticker, History barOpenValuesFromQuery )
+			string ticker, History barOpenValuesFromDatabase )
 		{
-			foreach ( DateTime dateTime in barOpenValuesFromQuery.TimeLine )
-				this.addBarOpenValue( ticker , dateTime , barOpenValuesFromQuery );
+			foreach ( DateTime dateTime in barOpenValuesFromDatabase.TimeLine )
+				this.addBarOpenValue( ticker , dateTime , barOpenValuesFromDatabase );
 		}
 		#endregion update_barOpenValues
 
 		#region update_barsMissingInTheDatabase
 		
 		#region getDateTimesForMissingBarsToBeAdded
-//		private List< DateTime > getDateTimesIn_barOpenValues()
-//		{
-//			List< DateTime > dateTimesIn_barOpenValues =
-//				new List<DateTime>( this.barOpenValues.Bars.Keys );
-//			dateTimesIn_barOpenValues.Sort();
-//			return dateTimesIn_barOpenValues;
-//		}
 		
-		#region removeThisDateIfItIsNotToBeAddedToMissingBars
-		
-//		private bool isIn_barsMissingInTheDatabase(
-//			string ticker , DateTime dateTime )
-//		{
-//			bool isInCacheForMissingBars =
-//				( ( this.barsMissingInTheDatabase.Bars.ContainsKey( dateTime ) ) &&
-//				 this.barOpenValues.Bars[ dateTime ].ContainsKey( ticker ) );
-//			return isInCacheForMissingBars;
-//		}
+		#region addThisDateIfItHasToBeAddedToMissingBars
 		private bool hasToBeAddedToMissingBars(
 			string ticker ,
 			DateTime firstDateTime ,
@@ -252,49 +220,56 @@ namespace QuantProject.Data.DataProviders.Bars.Caching
 				 	ticker , candidateDateTime ) ) );
 			return hasToBeAdded;
 		}
-		private void removeThisDateIfItIsNotToBeAddedToMissingBars(
+		private void addThisDateIfItHasToBeAddedToMissingBars(
 			string ticker ,
 			DateTime firstDateTime ,
 			DateTime lastDateTime ,
 			DateTime candidateDateTime ,
-			List< DateTime >  dateTimesForMissingBarsToBeAdded )
+			List< DateTime > dateTimesIn_barOpenValues ,
+			List< DateTime > dateTimesForMissingBarsToBeAdded )
 		{
-			if ( !this.hasToBeAddedToMissingBars(
+			if ( this.hasToBeAddedToMissingBars(
 				ticker , firstDateTime , lastDateTime , candidateDateTime ) )
-				dateTimesForMissingBarsToBeAdded.Remove( candidateDateTime );
+				dateTimesForMissingBarsToBeAdded.Add( candidateDateTime );
 		}
-		private void removeThisDateIfItIsNotToBeAddedToMissingBars(
+		private void addThisDateIfItHasToBeAddedToMissingBars(
 			string ticker ,
 			DateTime firstDateTime ,
 			DateTime lastDateTime ,
 			int indexFor_dateTimesForMissingBarsToBeAdded ,
-			List< DateTime >  dateTimesForMissingBarsToBeAdded )
+			List< DateTime >  dateTimesIn_barOpenValues ,
+			List< DateTime > dateTimesForMissingBarsToBeAdded )
 		{
 			DateTime candidateDateTime =
-				dateTimesForMissingBarsToBeAdded[ indexFor_dateTimesForMissingBarsToBeAdded ];
-			this.removeThisDateIfItIsNotToBeAddedToMissingBars(
+				dateTimesIn_barOpenValues[ indexFor_dateTimesForMissingBarsToBeAdded ];
+			this.addThisDateIfItHasToBeAddedToMissingBars(
 				ticker , firstDateTime , lastDateTime , candidateDateTime ,
-				dateTimesForMissingBarsToBeAdded );
+				dateTimesIn_barOpenValues , dateTimesForMissingBarsToBeAdded );
 		}
-		#endregion removeThisDateIfItIsNotToBeAddedToMissingBars
+		#endregion addThisDateIfItHasToBeAddedToMissingBars
 		
 		private List< DateTime > getDateTimesForMissingBarsToBeAdded(
 			string ticker ,
 			DateTime firstDateTime ,
 			DateTime lastDateTime ,
-			List< DateTime >  dateTimesForMissingBarsToBeAdded )
+			List< DateTime > dateTimesIn_barOpenValues
+		)
 		{
+			List< DateTime > dateTimesForMissingBarsToBeAdded = new List< DateTime >();
 			int indexFor_dateTimesForMissingBarsToBeAdded = 0;
 			while ( ( indexFor_dateTimesForMissingBarsToBeAdded <
-			         dateTimesForMissingBarsToBeAdded.Count ) &&
-			       ( dateTimesForMissingBarsToBeAdded[
+			         dateTimesIn_barOpenValues.Count ) &&
+			       ( dateTimesIn_barOpenValues[
 			       	indexFor_dateTimesForMissingBarsToBeAdded ] <=
 			        lastDateTime ) )
-				this.removeThisDateIfItIsNotToBeAddedToMissingBars(
+			{
+				this.addThisDateIfItHasToBeAddedToMissingBars(
 					ticker , firstDateTime , lastDateTime ,
 					indexFor_dateTimesForMissingBarsToBeAdded ,
-					dateTimesForMissingBarsToBeAdded );
-			return dateTimesForMissingBarsToBeAdded;
+					dateTimesIn_barOpenValues , dateTimesForMissingBarsToBeAdded );
+				indexFor_dateTimesForMissingBarsToBeAdded++;
+			}
+			return dateTimesIn_barOpenValues;
 		}
 		private List< DateTime > getDateTimesForMissingBarsToBeAdded(
 			string ticker , DateTime firstDateTime , DateTime lastDateTime )
@@ -318,75 +293,6 @@ namespace QuantProject.Data.DataProviders.Bars.Caching
 		}
 		#endregion getDateTimesForMissingBarsToBeAdded
 
-		#region update_barsMissingInTheDatabase
-//		
-//		#region addBarTo_barsMissingInTheDatabase
-//		
-//		#region removeValuesFrom_barsMissingInTheDatabase_ifMaxSizeHasBeenReached
-//		
-//		#region removeValuesFrom_barsMissingInTheDatabase
-//		
-//		#region initializeMembersForCleaningUp_barsMissingInTheDatabase
-//		private void initialize_dateTimesForCleaningUp_barsMissingInTheDatabase()
-//		{
-//			this.dateTimesForCleaningUp_barsMissingInTheDatabase =
-//				new List<DateTime>( this.barsMissingInTheDatabase.Keys );
-//			this.dateTimesForCleaningUp_barsMissingInTheDatabase.Sort();
-//		}
-//		
-//		#region initialize_tickersForCleaningUp_barsMissingInTheDatabase
-//		private List< string >
-//			getTickersForTheCurrentDateTimeToBeCleanedUpInMissingBars()
-//		{
-//			DateTime currentDateTimeForCleaningUp_barsMissingInTheDatabase =
-//				this.dateTimesForCleaningUp_barsMissingInTheDatabase[ 0 ];
-//			List< string >
-//				tickersForTheCurrentDateTimeToBeCleanedUpInMissingBars =
-//				this.barsMissingInTheDatabase[
-//					currentDateTimeForCleaningUp_barsMissingInTheDatabase ];
-//			return tickersForTheCurrentDateTimeToBeCleanedUpInMissingBars;
-//		}
-//		private void initialize_tickersForCleaningUp_barsMissingInTheDatabase()
-//		{
-//			this.tickersForCleaningUp_barOpenValues =
-//				this.getTickersForTheCurrentDateTimeToBeCleanedUpInMissingBars();
-//		}
-//		#endregion initialize_tickersForCleaningUp_barsMissingInTheDatabase
-//		
-//		private void initializeMembersForCleaningUp_barsMissingInTheDatabase()
-//		{
-//			this.initialize_dateTimesForCleaningUp_barsMissingInTheDatabase();
-//			this.initialize_tickersForCleaningUp_barsMissingInTheDatabase();
-//		}
-//		#endregion initializeMembersForCleaningUp_barsMissingInTheDatabase
-//		
-//		private void removeValuesFrom_barsMissingInTheDatabase()
-//		{
-//			this.initializeMembersForCleaningUp_barsMissingInTheDatabase();
-//			while ( this.numberOfBarsIn_barsMissingInTheDatabase >
-//			       this.maxNumberOfItemsIn_barsMissingInTheDatabase -
-//			       this.numberOfItemsToBeRemovedFrom_barsMissingInTheDatabase_whenCacheIsCleanedUp )
-//				this.removeNextItemFrom_barsMissingInTheDatabase();
-//		}
-//		#endregion removeValuesFrom_barsMissingInTheDatabase
-//		
-//		private void removeValuesFrom_barsMissingInTheDatabase_ifMaxSizeHasBeenReached()
-//		{
-//			if ( this.numberOfBarsIn_barsMissingInTheDatabase >=
-//			    this.maxNumberOfItemsIn_barsMissingInTheDatabase )
-//				// the cache for missing bars is full
-//				this.removeValuesFrom_barsMissingInTheDatabase();
-//		}
-//		#endregion removeValuesFrom_barsMissingInTheDatabase_ifMaxSizeHasBeenReached
-//		
-//		private void addBarTo_barsMissingInTheDatabase(
-//			string ticker, DateTime dateTime )
-//		{
-//			this.removeValuesFrom_barsMissingInTheDatabase_ifMaxSizeHasBeenReached();
-//			this.addBarTo_barsMissingInTheDatabase_withFreeSpaceAssured();
-//		}
-//		#endregion addBarTo_barsMissingInTheDatabase
-//		
 		private void update_barsMissingInTheDatabase(
 			string ticker, List< DateTime > dateTimesForMissingBarsToBeAdded )
 		{
@@ -394,10 +300,9 @@ namespace QuantProject.Data.DataProviders.Bars.Caching
 				this.barsMissingInTheDatabase.AddBar( ticker , dateTime , double.MinValue );
 //				this.addBarTo_barsMissingInTheDatabase( ticker , dateTime );
 		}
-		#endregion update_barsMissingInTheDatabase
 		
 		private void update_barsMissingInTheDatabase(
-			string ticker, DateTime firstDateTime , History barOpenValues )
+			string ticker, DateTime firstDateTime )
 		{
 			List< DateTime > dateTimesForMissingBarsToBeAdded =
 				this.getDateTimesForMissingBarsToBeAdded(
@@ -408,17 +313,17 @@ namespace QuantProject.Data.DataProviders.Bars.Caching
 		#endregion update_barsMissingInTheDatabase
 		
 		private void updateDictionaries(
-			string ticker, DateTime dateTime , History barOpenValues )
+			string ticker, DateTime dateTime , History barOpenValuesFromDatabase )
 		{
-			this.update_barOpenValues( ticker, barOpenValues );
-			this.update_barsMissingInTheDatabase(
-				ticker , dateTime , barOpenValues );
+			this.update_barOpenValues( ticker, barOpenValuesFromDatabase );
+			this.update_barsMissingInTheDatabase( ticker , dateTime );
 		}
 
 		private void updateDictionaries( string ticker, DateTime dateTime )
 		{
-			History barOpenValues = this.getBarOpenValues( ticker , dateTime );
-			this.updateDictionaries( ticker , dateTime , barOpenValues );
+			History barOpenValuesFromDatabase =
+				this.getBarOpenValuesFromDatabase( ticker , dateTime );
+			this.updateDictionaries( ticker , dateTime , barOpenValuesFromDatabase );
 		}
 		#endregion updateDictionaries
 		
@@ -434,7 +339,7 @@ namespace QuantProject.Data.DataProviders.Bars.Caching
 				// the requested bar is in the database
 				marketValue = this.barOpenValues.GetBarValue( ticker , dateTime );
 			return marketValue;
-		}		
+		}
 		#endregion getMarketValueWithUpdatedDictionaries
 		
 		private double getMarketValueForBarThatsNotInCacheButCouldBeInTheDatabase(
@@ -483,5 +388,13 @@ namespace QuantProject.Data.DataProviders.Bars.Caching
 			return marketValue;
 		}
 		#endregion GetMarketValue
+		
+		public bool WasExchanged( string ticker , DateTime dateTime )
+		{
+			// forces bar caching
+			this.GetMarketValue( ticker , dateTime );
+			bool wasExchanged = this.barOpenValues.ContainsBar( ticker , dateTime );
+			return wasExchanged;
+		}
 	}
 }
