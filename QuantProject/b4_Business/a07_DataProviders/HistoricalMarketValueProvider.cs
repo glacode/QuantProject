@@ -59,13 +59,21 @@ namespace QuantProject.Business.DataProviders
 		/// <param name="ticker"></param>
 		/// <param name="dateTime"></param>
 		/// <returns></returns>
-		public bool WasExchanged( string ticker ,
-		                         DateTime dateTime )
-		{
-			bool wasExchanged =
-				HistoricalQuotesProvider.WasExchanged( ticker , dateTime );
-			return wasExchanged;
-		}
+//		public bool WasExchanged( string ticker ,
+//		                         DateTime dateTime )
+//		{
+//			bool wasExchanged =
+//				HistoricalQuotesProvider.WasExchanged( ticker , dateTime );
+//			return wasExchanged;
+//		}
+		
+		/// <summary>
+		/// True iif the given ticker was traded at the given DateTime
+		/// </summary>
+		/// <param name="ticker"></param>
+		/// <param name="dateTime"></param>
+		/// <returns></returns>
+		public abstract bool WasExchanged( string ticker , DateTime dateTime );
 		
 		#region GetQuotes
 		
