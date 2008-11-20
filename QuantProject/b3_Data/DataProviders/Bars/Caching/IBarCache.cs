@@ -29,6 +29,21 @@ namespace QuantProject.Data.DataProviders.Bars.Caching
 	/// </summary>
 	public interface IBarCache
 	{
+		/// <summary>
+		/// the value of the ticker at the given dateTime; a MissingBarException
+		/// is thrown if the database doesn't contain the requested bar
+		/// </summary>
+		/// <param name="ticker"></param>
+		/// <param name="dateTime"></param>
+		/// <returns></returns>
 		double GetMarketValue( string ticker , DateTime dateTime );
+		
+		/// <summary>
+		/// true iif the ticker was exchange at the given dateTime
+		/// </summary>
+		/// <param name="ticker"></param>
+		/// <param name="dateTime"></param>
+		/// <returns></returns>
+		bool WasExchanged( string ticker , DateTime dateTime );
 	}
 }
