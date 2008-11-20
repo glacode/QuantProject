@@ -96,6 +96,8 @@ namespace QuantProject.Scripts.WalkForwardTesting.PairsTrading
 			dailyTimes.Add( new Time( 13 , 0 , 0 ) );
 			dailyTimes.Add( new Time( 14 , 0 , 0 ) );
 			dailyTimes.Add( new Time( 15 , 0 , 0 ) );
+//			dailyTimes.Add( new Time(
+//				HistoricalEndOfDayTimer.GetOneHourAfterMarketClose( DateTime.Now ) ) );
 			return dailyTimes;
 		}
 		private IBarCache getBarCache()
@@ -273,7 +275,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.PairsTrading
 
 			// uncomment the following two lines for a faster script
 			firstDateTime = new DateTime( 2006 , 2 , 1 );
-			lastDateTime = new DateTime( 2006 , 2 , 28 );
+			lastDateTime = new DateTime( 2006 , 2 , 15 );
 
 			double maxRunningHours = 0.05;
 			
