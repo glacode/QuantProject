@@ -264,7 +264,8 @@ namespace QuantProject.Business.Financial.Accounting.Reporting.Tables
 				            (DateTime)this.accountReport.Equity.DataTable.Rows[ 0 ][ "Date" ])).Days;
 			this.returnOnAccount = new ReturnOnAccount( this );
 			this.benchmarkPercentageReturn =
-				new BenchmarkPercentageReturn( this , this.historicalMarketValueProvider );
+				new BenchmarkPercentageReturn( this );
+//				                              , this.historicalMarketValueProvider );
 			this.numberWinningPeriods = new NumberWinningPeriods( this );
 			this.numberLosingPeriods = new NumberLosingPeriods( this );
 			this.percentageWinningPeriods = new PercentageWinningPeriods( this );
