@@ -105,6 +105,8 @@ namespace QuantProject.Scripts.WalkForwardTesting.PairsTrading
 			bool beginsTheLastInterval =
 				( this.now() ==
 				this.lastIntervalAppended().Begin );
+			bool areToBeOpened =
+				( beginsTheLastInterval && this.bestTestingPositionsInSample != null );
 			return ( beginsTheLastInterval );
 		}
 

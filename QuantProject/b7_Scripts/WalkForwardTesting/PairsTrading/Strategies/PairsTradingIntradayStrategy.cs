@@ -35,6 +35,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.PairsTrading
 	/// <summary>
 	/// Pairs trading strategy with intraday bars
 	/// </summary>
+	[Serializable]
 	public class PairsTradingIntradayStrategy : BasicStrategyForBacktester
 	{
 		private Time firstTimeToTestInefficiency;
@@ -103,6 +104,9 @@ namespace QuantProject.Scripts.WalkForwardTesting.PairsTrading
 		protected override bool arePositionsToBeOpened()
 		{
 			bool areToBeOpened = ( this.time() == this.lastTimeToTestInefficiency );
+			areToBeOpened =
+				( areToBeOpened &&
+				 ( this.bestTestingPositionsInSample != null ) );
 			return ( areToBeOpened );
 		}
 
