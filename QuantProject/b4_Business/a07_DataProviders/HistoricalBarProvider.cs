@@ -30,6 +30,7 @@ namespace QuantProject.Business.DataProviders
 	/// <summary>
 	/// Returns historical bars
 	/// </summary>
+	[Serializable]
 	public class HistoricalBarProvider : HistoricalMarketValueProvider
 	{
 		private QuantProject.Data.DataProviders.Bars.HistoricalBarProvider
@@ -63,6 +64,13 @@ namespace QuantProject.Business.DataProviders
 		protected override string getDescription()
 		{
 			return "barProvider";
+		}
+		
+		public override bool WasExchanged(string ticker, DateTime dateTime)
+		{
+			bool wasExchanged =
+				this.historicalBarProvider.WasExchanged( ticker , dateTime );
+			return wasExchanged;
 		}
 	}
 }
