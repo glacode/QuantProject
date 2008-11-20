@@ -33,6 +33,7 @@ namespace QuantProject.Business.Timing
 	/// Throws out DateTime(s) at given daily times, but only if the given
 	/// index is quoted at those DateTime(s)
 	/// </summary>
+	[Serializable]
 	public class IndexBasedHistoricalTimer : Timer
 	{
 		private string indexTicker;
@@ -61,12 +62,74 @@ namespace QuantProject.Business.Timing
 		#region initializeTimer
 		
 		#region initialize_dateTimesToBeThrown
+		
+		#region addDateTimeAndIfTheCaseAddEndOfDayDateTime
+		
+		#region addOneHourAfterMarketCloseDateTimeIfTheCase
+		
+		#region isOneHourAfterMarktetCloseToBeInserted
+		private bool isOneHourAfterMarktetCloseToBeInserted_withOneAdded(
+			DateTime nextDateTimeToBeAdded )
+		{
+			Date dateForLastDateTimeAdded =
+				new Date( this.dateTimesToBeThrown[ this.dateTimesToBeThrown.Count - 1 ] );
+			Date dateForNextDateTimeToBeAdded =
+				new Date( nextDateTimeToBeAdded );
+			bool isToBeInserted = ( dateForNextDateTimeToBeAdded > dateForLastDateTimeAdded );
+			return isToBeInserted;
+		}
+		private bool isOneHourAfterMarktetCloseToBeInserted( DateTime nextDateTimeToBeAdded )
+		{
+			bool isToBeInserted = false;
+			if ( this.dateTimesToBeThrown.Count > 0 )
+				// at least one DateTime has already been added
+				isToBeInserted = isOneHourAfterMarktetCloseToBeInserted_withOneAdded(
+					nextDateTimeToBeAdded );
+			return isToBeInserted;
+		}
+		#endregion isOneHourAfterMarktetCloseToBeInserted
+		
+		#region addOneHourAfterMarketCloseDateTime
+		private DateTime getOneHourAfterMarketCloseForLastDateTimeAdded()
+		{
+			DateTime dateTimeForLastDateTimeAdded =
+				this.dateTimesToBeThrown[ this.dateTimesToBeThrown.Count - 1 ];
+			DateTime oneHourAfterMarketCloseForLastDateTimeAdded =
+				HistoricalEndOfDayTimer.GetOneHourAfterMarketClose(
+					dateTimeForLastDateTimeAdded );
+			return oneHourAfterMarketCloseForLastDateTimeAdded;
+		}
+		private void addOneHourAfterMarketCloseDateTime( DateTime dateTime )
+		{
+			DateTime oneHourAfterMarketCloseForLastDateTimeAdded =
+				this.getOneHourAfterMarketCloseForLastDateTimeAdded();
+			this.dateTimesToBeThrown.Add(
+				oneHourAfterMarketCloseForLastDateTimeAdded );			
+		}
+		#endregion addOneHourAfterMarketCloseDateTime
+		
+		private void addOneHourAfterMarketCloseDateTimeIfTheCase(
+			DateTime nextDateTimeToBeAdded )
+		{
+			if ( this.isOneHourAfterMarktetCloseToBeInserted( nextDateTimeToBeAdded ) )
+				this.addOneHourAfterMarketCloseDateTime( nextDateTimeToBeAdded );
+		}
+		#endregion addOneHourAfterMarketCloseDateTimeIfTheCase
+		
+		private void addDateTimeAndIfTheCaseAddOneHourAfterMarketCloseDateTime(
+			DateTime nextDateTimeToBeAdded )
+		{
+			this.addOneHourAfterMarketCloseDateTimeIfTheCase( nextDateTimeToBeAdded );
+			this.dateTimesToBeThrown.Add( nextDateTimeToBeAdded );
+		}
+		#endregion addDateTimeAndIfTheCaseAddEndOfDayDateTime
+		
 		private void initialize_dateTimesToBeThrown(
 			History dateTimesToBeThrownHistory )
 		{
 			this.dateTimesToBeThrown = new List< DateTime >();
 			foreach ( DateTime dateTime in dateTimesToBeThrownHistory.Keys )
-				this.dateTimesToBeThrown.Add( dateTime );
+				this.addDateTimeAndIfTheCaseAddOneHourAfterMarketCloseDateTime( dateTime );
 		}
 		private void initialize_dateTimesToBeThrown()
 		{
@@ -89,22 +152,32 @@ namespace QuantProject.Business.Timing
 		#region moveNext
 		private void checkIfNoMoreDateTimesAreToBeThrown()
 		{
-			if ( this.currentDateTimeIndex >= this.dateTimesToBeThrown.Count )
+			if ( this.currentDateTimeIndex >= this.dateTimesToBeThrown.Count - 1 )
 				throw new Exception(
 					"This timer has no other DateTime(s) to be thrown out. " +
 					"This should never happen, the backtest should have invoked the method " +
-					"QuantProject.Business.Timing.Timer.Stop() before gettint to this " +
+					"QuantProject.Business.Timing.Timer.Stop() before getting to this " +
 					"point." );
-			}
-		private void moveNext_actually()
+		}
+		
+		protected override bool isDone()
+		{
+			bool isThisTimerDone =
+				( this.currentDateTimeIndex >= ( this.dateTimesToBeThrown.Count - 1 ) );
+			return isThisTimerDone;
+		}
+//
+//		private void moveNext_actually()
+//		{
+//			this.currentDateTimeIndex++;
+//			this.currentDateTime = this.dateTimesToBeThrown[ currentDateTimeIndex ];
+//			this.setCompleteIfTheCase();
+//		}
+		
+		protected override void moveNext()
 		{
 			this.currentDateTimeIndex++;
 			this.currentDateTime = this.dateTimesToBeThrown[ currentDateTimeIndex ];
-		}
-		protected override void moveNext()
-		{
-			this.checkIfNoMoreDateTimesAreToBeThrown();
-			this.moveNext_actually();
 		}
 		#endregion moveNext
 	}
