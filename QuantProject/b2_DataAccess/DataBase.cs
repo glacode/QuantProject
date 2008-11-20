@@ -221,9 +221,9 @@ namespace QuantProject.DataAccess
 					filterForDailyTimes +
 					SQLBuilder.GetFilterForTime(
 						"baDateTimeForOpen" , SqlComparisonOperator.Equal , time ) +
-					" and ";
+					" or ";
 			filterForDailyTimes = filterForDailyTimes.Substring(
-				0 , filterForDailyTimes.Length - " and ".Length );
+				0 , filterForDailyTimes.Length - " or ".Length );
 			return filterForDailyTimes;
 		}
 		#endregion getFilterForDailyTimes
@@ -237,15 +237,17 @@ namespace QuantProject.DataAccess
 			List< Time > dailyTimes )
 		{
 			string sql =
-				"select baOpen from bars " +
+				"select " + BarFieldNames.DateTimeForOpen + "," + BarFieldNames.Open +
+				" from bars " +
 				"where (baTicker='" + ticker + "') and " +
 				"(baInterval=" + barInterval + ") and" +
 				"(baDateTimeForOpen>=" +
 				SQLBuilder.GetDateTimeConstant( firstDateTime ) + ") and" +
 				"(baDateTimeForOpen<=" +
 				SQLBuilder.GetDateTimeConstant( lastDateTime )
-				+ ") and" +
-				DataBase.getFilterForDailyTimes( dailyTimes );
+				+ ") and (" +
+				DataBase.getFilterForDailyTimes( dailyTimes ) +
+				")";
 //			"(Format([baDateTimeForOpen],'hh:mm:ss')>='" +
 //				DataBase.getSqlTimeConstantForFirstDailyBar() + "') and" +
 //				"(Format([baDateTimeForOpen],'hh:mm:ss')<='" +
