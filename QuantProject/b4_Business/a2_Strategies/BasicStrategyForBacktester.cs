@@ -79,6 +79,10 @@ namespace QuantProject.Business.Strategies
 				( ( ( this.account.Portfolio.Count == 0 )
 				   && ( ( this.lastOptimizationDateTime == DateTime.MinValue ) ) ) ||
 				 ( currentSimulatedDateTime >= dateTimeForNextOptimization ) );
+			areToBeUpdated = (
+				areToBeUpdated &&
+				HistoricalEndOfDayTimer.IsOneHourAfterMarketClose(
+					currentSimulatedDateTime ) );
 			return areToBeUpdated;
 		}
 		public virtual bool StopBacktestIfMaxRunningHoursHasBeenReached
