@@ -14,9 +14,11 @@ namespace QuantProject.Business.Financial.Accounting.Reporting.SummaryRows
 	[Serializable]
 	public class BenchmarkPercentageReturn : PercentageSummaryRow
 	{
-		public BenchmarkPercentageReturn( Summary summary ,
-		                                 HistoricalMarketValueProvider historicalMarketValueProvider )
+		public BenchmarkPercentageReturn( Summary summary )
+//		                                 HistoricalMarketValueProvider historicalMarketValueProvider )
 		{
+			HistoricalAdjustedQuoteProvider historicalMarketValueProvider =
+				new HistoricalAdjustedQuoteProvider();
 			if ( summary.AccountReport.Benchmark != "" )
 			{
 				// the report has to compare to a buy and hold benchmark
