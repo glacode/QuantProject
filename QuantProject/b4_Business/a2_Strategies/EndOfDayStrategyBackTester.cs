@@ -152,7 +152,8 @@ namespace QuantProject.Business.Strategies
 
 		private void checkThisPropertyRequiresBacktestIsCompleted()
 		{
-			if ( this.actualLastDateTime == DateTime.MinValue )
+//			if ( this.actualLastDateTime == DateTime.MinValue )
+			if ( !this.timer.IsDone )
 				// the timer has not been stopped yet
 				throw new Exception( "This property cannot be invoked " +
 				                    "while the backtest is still running!" );
@@ -293,6 +294,20 @@ namespace QuantProject.Business.Strategies
 					this.newLogItemEventHandler	);
 		}
 		#endregion run_addEventHandlers
+		
+		private void completeTheScript()
+		{
+			this.actualLastDateTime =
+				ExtendedDateTime.Min(
+					this.lastDateTime , this.timer.GetCurrentDateTime() );
+			this.realDateTimeWhenTheBackTestIsStopped = DateTime.Now;
+			this.accountReport = this.account.CreateReport(
+				"" , 1 ,
+				this.timer.GetCurrentDateTime() , this.benchmark.Ticker ,
+				this.historicalMarketValueProvider );
+			this.accountReport.Name = this.Description;
+		}
+		
 		/// <summary>
 		/// Performes the actual backtest
 		/// </summary>
@@ -307,49 +322,50 @@ namespace QuantProject.Business.Strategies
 			run_addEventHandlers();
 			//			this.progressBarForm.Show();
 			this.timer.Start();
+			this.completeTheScript();
 		}
 		#endregion Run
 
 		#region newDateTimeEventHandler
 		
-		private bool isTimeToStop( DateTime currentTime )
+		#region isTimeToStop
+		private bool getIsMaxScriptRealTimeElapsed()
 		{
 			DateTime maxEndingDateTimeForScript =
 				this.startingTimeForScript.AddHours( this.maxRunningHours );
 			DateTime realTime = DateTime.Now;
-			bool scriptTimeElapsed = ( realTime >= maxEndingDateTimeForScript );
+			bool isMaxScriptRealTimeElapsed = ( realTime >= maxEndingDateTimeForScript );
+			return isMaxScriptRealTimeElapsed;
+		}
+		private bool isTimeToStop( DateTime currentTime )
+		{
+			bool isMaxScriptRealTimeElapsed =
+				this.getIsMaxScriptRealTimeElapsed();
 			bool stopBacktestIfMaxRunningHoursHasBeenReached =
 				this.strategyForBacktester.StopBacktestIfMaxRunningHoursHasBeenReached;
+			bool hasTheTimerAlreadyThrownOutAllItsNewDateTime =	this.timer.IsDone;
 			return
 				( ( currentTime > this.lastDateTime ) ||
-				 ( scriptTimeElapsed &&
-				  stopBacktestIfMaxRunningHoursHasBeenReached ) );
+				 ( isMaxScriptRealTimeElapsed &&
+				  stopBacktestIfMaxRunningHoursHasBeenReached ) ||
+				 hasTheTimerAlreadyThrownOutAllItsNewDateTime );
 		}
-//		private void removeTimerEventHandlers()
-//		{
-//			foreach( NewDateTimeEventHandler newDateTimeEventHandler in
-//			        this.timer.NewDateTime.GetInvocationList())
-//			{
-//				this.timer.NewDateTime -= newDateTimeEventHandler;
-//			}
-//		}
+		#endregion isTimeToStop
 		
 		#region stopTheScript
 		private void stopTheScript( DateTime currentDateTime )
 		{
-			this.actualLastDateTime =
-				ExtendedDateTime.Min( this.lastDateTime , currentDateTime );
+//			this.actualLastDateTime =
+//				ExtendedDateTime.Min( this.lastDateTime , currentDateTime );
+
 			this.timer.Stop();
-//			this.removeTimerEventHandlers();
-//			this.timer.NewDateTime -=
-//				new NewDateTimeEventHandler(
-//					this.strategyForBacktester.NewDateTimeEventHandler );
-			this.realDateTimeWhenTheBackTestIsStopped = DateTime.Now;
-			this.accountReport = this.account.CreateReport(
-				"" ,
-				1 , currentDateTime , this.benchmark.Ticker ,
-				this.historicalMarketValueProvider );
-			this.accountReport.Name = this.Description;
+
+//			this.realDateTimeWhenTheBackTestIsStopped = DateTime.Now;
+//			this.accountReport = this.account.CreateReport(
+//				"" ,
+//				1 , currentDateTime , this.benchmark.Ticker ,
+//				this.historicalMarketValueProvider );
+//			this.accountReport.Name = this.Description;
 		}
 //		private void stopTheScriptIfTheCase( Object sender )
 //		{
