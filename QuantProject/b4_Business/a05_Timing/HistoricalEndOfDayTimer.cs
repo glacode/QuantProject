@@ -119,6 +119,11 @@ namespace QuantProject.Business.Timing
 						this.currentDateTime );
 		}
 		#endregion moveNext
+		
+		protected override bool isDone()
+		{
+			return false;
+		}
 
 		/// <summary>
 		/// true iif the argument is at market open

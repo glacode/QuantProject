@@ -37,16 +37,25 @@ namespace QuantProject.Business.Timing
 	{
 		public event NewDateTimeEventHandler NewDateTime;
 		
-		protected bool isActive;	// true iff the timer is started and not stopped
+		private bool hasTheTimerBeenStarted;
+		private bool hasTheTimerBeenStopped;	// true iff the timer was stop
 		protected DateTime currentDateTime;
 		
-		public bool IsActive
+		#region IsDone
+		protected abstract bool isDone();
+		/// <summary>
+		/// true iif all DateTime(s) have been thrown out by this timer
+		/// </summary>
+		public bool IsDone
 		{
-			get { return this.isActive; }
+			get { return this.isDone(); }
 		}
+		#endregion IsDone
 		
 		public Timer()
 		{
+			this.hasTheTimerBeenStarted = false;
+			this.hasTheTimerBeenStopped = false;
 		}
 		
 		protected abstract void initializeTimer();
@@ -58,9 +67,11 @@ namespace QuantProject.Business.Timing
 		/// <returns></returns>
 		public virtual DateTime GetCurrentDateTime()
 		{
-			if ( !this.isActive )
+			if ( !this.hasTheTimerBeenStarted )
 				throw new Exception(
-					"Either Start() has not been invoked yet, or " +
+					"Start() has not been invoked yet" );
+			if ( this.hasTheTimerBeenStopped )
+				throw new Exception(
 					"Stop() has already been invoked" );
 			return this.currentDateTime;
 		}
@@ -71,7 +82,7 @@ namespace QuantProject.Business.Timing
 		private void activateTimer()
 		{
 			this.initializeTimer();
-			this.isActive = true;
+			this.hasTheTimerBeenStarted = true;
 		}
 		#endregion activateTimer
 		
@@ -90,19 +101,12 @@ namespace QuantProject.Business.Timing
 						this.currentDateTime.Hour ,
 						this.currentDateTime.Minute ,
 						this.currentDateTime.Second ) );
-			
-//			if ( ( this.MarketOpen != null ) && ( this.currentTime.EndOfDaySpecificTime ==
-//			                                     EndOfDaySpecificTime.MarketOpen ) )
-//				this.MarketOpen( this , new EndOfDayTimingEventArgs( this.currentTime ) );
-//			if ( ( this.FiveMinutesBeforeMarketClose != null ) && ( this.currentTime.EndOfDaySpecificTime ==
-//			                                                       EndOfDaySpecificTime.FiveMinutesBeforeMarketClose ) )
-//				this.FiveMinutesBeforeMarketClose( this , new EndOfDayTimingEventArgs( this.currentTime ) );
-//			if ( ( this.MarketClose != null ) && ( this.currentTime.EndOfDaySpecificTime ==
-//			                                      EndOfDaySpecificTime.MarketClose ) )
-//				this.MarketClose( this , new EndOfDayTimingEventArgs( this.currentTime ) );
-//			if ( ( this.OneHourAfterMarketClose != null ) && ( this.currentTime.EndOfDaySpecificTime ==
-//			                                                  EndOfDaySpecificTime.OneHourAfterMarketClose ) )
-//				this.OneHourAfterMarketClose( this , new EndOfDayTimingEventArgs( this.currentTime ) );
+		}
+		private void moveNextIfPossible()
+		{
+			if ( !this.IsDone )
+				// there is at least one more bar to be thrown out, yet
+				this.moveNext();
 		}
 		/// <summary>
 		/// The timer is instructed to begin to fire timing events
@@ -110,10 +114,10 @@ namespace QuantProject.Business.Timing
 		public virtual void Start()
 		{
 			this.activateTimer();
-			while ( this.isActive )
+			while ( !this.hasTheTimerBeenStopped && !this.IsDone )
 			{
 				this.callEvents();
-				this.moveNext();
+				this.moveNextIfPossible();
 			}
 		}
 		#endregion Start
@@ -123,7 +127,7 @@ namespace QuantProject.Business.Timing
 		/// </summary>
 		public void Stop()
 		{
-			this.isActive = false;
+			this.hasTheTimerBeenStopped = true;
 		}
 	}
 }
