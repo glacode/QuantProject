@@ -32,7 +32,7 @@ namespace QuantProject.Business.DataProviders
 	/// Returns historical adjusted quotes
 	/// </summary>
 	[Serializable]
-	public class HistoricalAdjustedQuoteProvider : HistoricalMarketValueProvider
+	public class HistoricalAdjustedQuoteProvider : HistoricalQuoteProvider
 	{
 		public HistoricalAdjustedQuoteProvider()
 		{
@@ -97,5 +97,12 @@ namespace QuantProject.Business.DataProviders
 		{
 			return "adj";
 		}
+		
+//		public override bool WasExchanged(string ticker, DateTime dateTime)
+//		{
+//			bool wasExchanged =
+//				HistoricalQuotesProvider.WasExchanged( ticker , dateTime );
+//			return wasExchanged;
+//		}
 	}
 }

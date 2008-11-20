@@ -32,7 +32,7 @@ namespace QuantProject.Business.DataProviders
 	/// Returns historical raw quotes
 	/// </summary>
 	[Serializable]
-	public class HistoricalRawQuoteProvider : HistoricalMarketValueProvider
+	public class HistoricalRawQuoteProvider : HistoricalQuoteProvider
 	{
 		public HistoricalRawQuoteProvider()
 		{
@@ -54,5 +54,12 @@ namespace QuantProject.Business.DataProviders
 		{
 			return "raw";
 		}
+		
+//		public override bool WasExchanged(string ticker, DateTime dateTime)
+//		{
+//			bool wasExchanged =
+//				HistoricalQuotesProvider.WasExchanged( ticker , dateTime );
+//			return wasExchanged;
+//		}
 	}
 }
