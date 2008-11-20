@@ -49,6 +49,7 @@
     <Compile Include="a05_Timing\Timer.cs" />
     <Compile Include="a07_DataProviders\HistoricalBarProvider.cs" />
     <Compile Include="a07_DataProviders\HistoricalMarketValueProvider.cs" />
+    <Compile Include="a07_DataProviders\HistoricalQuoteProvider.cs" />
     <Compile Include="a07_DataProviders\TickerNotExchangedException.cs" />
     <Compile Include="a1_Financial\a2_Accounting\AccountProviding\IAccountProvider.cs" />
     <Compile Include="a1_Financial\a2_Accounting\AccountProviding\InteractiveBrokerAccountProvider.cs" />
