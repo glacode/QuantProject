@@ -80,9 +80,9 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
     protected override void run_initializeAccount()
     {
       this.account = new Account( this.ScriptName , this.endOfDayTimer ,
-        new HistoricalEndOfDayDataStreamer( this.endOfDayTimer ,
+        new HistoricalDataStreamer( this.endOfDayTimer ,
           this.historicalQuoteProvider ) ,
-        new HistoricalEndOfDayOrderExecutor( this.endOfDayTimer ,
+        new HistoricalOrderExecutor( this.endOfDayTimer ,
           this.historicalQuoteProvider ), new IBCommissionManager());
      
     }

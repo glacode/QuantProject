@@ -133,9 +133,9 @@ namespace QuantProject.Scripts.WalkForwardTesting.LinearCombination
 					"MSFT" );
 			run_setHistoricalQuoteProvider();
 			this.account = new Account( "LinearCombination" , historicalEndOfDayTimer ,
-			                           new HistoricalEndOfDayDataStreamer( historicalEndOfDayTimer ,
+			                           new HistoricalDataStreamer( historicalEndOfDayTimer ,
 			                                                              this.historicalMarketValueProvider ) ,
-			                           new HistoricalEndOfDayOrderExecutor( historicalEndOfDayTimer ,
+			                           new HistoricalOrderExecutor( historicalEndOfDayTimer ,
 			                                                               this.historicalMarketValueProvider ) );
 			run_setStrategy();
 //			OneRank oneRank = new OneRank( account ,

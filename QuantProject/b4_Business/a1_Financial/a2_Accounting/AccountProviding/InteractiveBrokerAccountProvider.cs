@@ -76,9 +76,9 @@ namespace QuantProject.Business.Financial.Accounting.AccountProviding
 			Account account =
 				new Account(
 					"IBAccount" , timer ,
-					new HistoricalEndOfDayDataStreamer(
+					new HistoricalDataStreamer(
 						timer , historicalMarketValueProvider ) ,
-					new HistoricalEndOfDayOrderExecutor(
+					new HistoricalOrderExecutor(
 						timer , historicalMarketValueProvider ,
 						this.getAccount_getSlippageManager(
 							timer , historicalMarketValueProvider ) ),

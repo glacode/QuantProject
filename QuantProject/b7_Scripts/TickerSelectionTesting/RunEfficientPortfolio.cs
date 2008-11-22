@@ -187,9 +187,9 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
 		{
 			//default account with no commissions and no slippage calculation
 			this.account = new Account( this.scriptName , this.endOfDayTimer ,
-			                           new HistoricalEndOfDayDataStreamer( this.endOfDayTimer ,
+			                           new HistoricalDataStreamer( this.endOfDayTimer ,
 			                                                              this.historicalMarketValueProvider ) ,
-			                           new HistoricalEndOfDayOrderExecutor( this.endOfDayTimer ,
+			                           new HistoricalOrderExecutor( this.endOfDayTimer ,
 			                                                               this.historicalMarketValueProvider ));
 			
 		}

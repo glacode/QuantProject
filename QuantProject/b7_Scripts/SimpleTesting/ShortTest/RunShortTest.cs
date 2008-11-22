@@ -58,15 +58,15 @@ namespace QuantProject.Scripts.SimpleTesting.ShortTest
 //				EndOfDaySpecificTime.MarketOpen ) ,
 					"MSFT" );
 			//			this.account = new Account( "MSFT" , historicalEndOfDayTimer ,
-			//				new HistoricalEndOfDayDataStreamer( historicalEndOfDayTimer ,
+			//				new HistoricalDataStreamer( historicalEndOfDayTimer ,
 			//				this.historicalQuoteProvider ) ,
-			//				new HistoricalEndOfDayOrderExecutor( historicalEndOfDayTimer ,
+			//				new HistoricalOrderExecutor( historicalEndOfDayTimer ,
 			//				this.historicalQuoteProvider ) ,
 			//				new IBCommissionManager() );
 			this.account = new Account( "MSFT" , historicalEndOfDayTimer ,
-			                           new HistoricalEndOfDayDataStreamer( historicalEndOfDayTimer ,
+			                           new HistoricalDataStreamer( historicalEndOfDayTimer ,
 			                                                              this.historicalMarketValueProvider ) ,
-			                           new HistoricalEndOfDayOrderExecutor( historicalEndOfDayTimer ,
+			                           new HistoricalOrderExecutor( historicalEndOfDayTimer ,
 			                                                               this.historicalMarketValueProvider ) );
 			EndOfDayTimerHandler endOfDayTimerHandler =
 				new EndOfDayTimerHandler( this.account , endDateTime );

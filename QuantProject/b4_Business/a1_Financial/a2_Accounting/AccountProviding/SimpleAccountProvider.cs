@@ -47,9 +47,9 @@ namespace QuantProject.Business.Financial.Accounting.AccountProviding
 			Account account =
 				new Account(
 					"SimpleAccount" , timer ,
-					new HistoricalEndOfDayDataStreamer(
+					new HistoricalDataStreamer(
 						timer , historicalMarketValueProvider ) ,
-					new HistoricalEndOfDayOrderExecutor(
+					new HistoricalOrderExecutor(
 						timer , historicalMarketValueProvider ) );
 			return account;
 		}

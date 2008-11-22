@@ -94,9 +94,9 @@ namespace QuantProject.Scripts.ArbitrageTesting.OverReactionHypothesis.SimpleOHT
 			this.startingTimeForScript = DateTime.Now;
 			
 			this.account = new Account( "SimpleOH" , this.timer ,
-			                           new HistoricalEndOfDayDataStreamer( this.timer ,
+			                           new HistoricalDataStreamer( this.timer ,
 			                                                              this.historicalMarketValueProvider ) ,
-			                           new HistoricalEndOfDayOrderExecutor( this.timer ,
+			                           new HistoricalOrderExecutor( this.timer ,
 			                                                               this.historicalMarketValueProvider ) );
 			
 			EndOfDayTimerHandlerSimpleOHTest endOfDayTimerHandler =

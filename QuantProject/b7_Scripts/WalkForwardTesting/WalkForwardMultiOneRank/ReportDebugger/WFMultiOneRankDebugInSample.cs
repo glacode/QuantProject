@@ -75,9 +75,9 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardMultiOneRank
 		{
 			this.account = new Account( "WFMultiOneRankDebugInSample" ,
 			                           this.endOfDayTimer ,
-			                           new HistoricalEndOfDayDataStreamer( this.endOfDayTimer ,
+			                           new HistoricalDataStreamer( this.endOfDayTimer ,
 			                                                              this.historicalMarketValueProvider ) ,
-			                           new HistoricalEndOfDayOrderExecutor( this.endOfDayTimer ,
+			                           new HistoricalOrderExecutor( this.endOfDayTimer ,
 			                                                               this.historicalMarketValueProvider ) );
 		}
 		private void run_initializeEndOfDayTimerHandler()

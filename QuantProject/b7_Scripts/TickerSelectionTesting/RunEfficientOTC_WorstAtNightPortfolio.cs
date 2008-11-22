@@ -83,9 +83,9 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
 		{
 			this.account = new Account(this.ScriptName,
 			                           this.endOfDayTimer ,
-			                           new HistoricalEndOfDayDataStreamer(this.endOfDayTimer ,
+			                           new HistoricalDataStreamer(this.endOfDayTimer ,
 			                                                              this.historicalMarketValueProvider ) ,
-			                           new HistoricalEndOfDayOrderExecutor(this.endOfDayTimer ,
+			                           new HistoricalOrderExecutor(this.endOfDayTimer ,
 			                                                               this.historicalMarketValueProvider)//,
 			                           // new FixedPercentageSlippageManager(this.historicalQuoteProvider,
 			                           // this.endOfDayTimer,0.08)),

@@ -94,9 +94,9 @@ namespace QuantProject.Scripts.ArbitrageTesting.OverReactionHypothesis.DoubleOve
 		{
 			this.startingTimeForScript = DateTime.Now;
 			this.account = new Account( "DoubleOverReaction_OTC" , this.timer ,
-			                           new HistoricalEndOfDayDataStreamer( this.timer ,
+			                           new HistoricalDataStreamer( this.timer ,
 			                                                              this.historicalMarketValueProvider ) ,
-			                           new HistoricalEndOfDayOrderExecutor( this.timer ,
+			                           new HistoricalOrderExecutor( this.timer ,
 			                                                               this.historicalMarketValueProvider ) );
 			EndOfDayTimerHandlerDOR_OTC endOfDayTimerHandler =
 				new EndOfDayTimerHandlerDOR_OTC(this.tickerGroupID, this.numberOfEligibleTickers,

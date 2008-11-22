@@ -97,9 +97,9 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardOneRank
 		private void run_initializeAccount()
 		{
 			this.account = new Account( "WalkForwardOneRank" , this.endOfDayTimer ,
-			                           new HistoricalEndOfDayDataStreamer( this.endOfDayTimer ,
+			                           new HistoricalDataStreamer( this.endOfDayTimer ,
 			                                                              this.historicalMarketValueProvider ) ,
-			                           new HistoricalEndOfDayOrderExecutor( this.endOfDayTimer ,
+			                           new HistoricalOrderExecutor( this.endOfDayTimer ,
 			                                                               this.historicalMarketValueProvider ) );
 		}
 		private void run_initializeEndOfDayTimerHandler()

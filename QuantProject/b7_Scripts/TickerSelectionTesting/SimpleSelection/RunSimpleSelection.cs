@@ -165,9 +165,9 @@ namespace QuantProject.Scripts.TickerSelectionTesting.SimpleSelection
 		{
 			//default account with no commissions
 			this.account = new Account( this.scriptName , this.endOfDayTimer ,
-			                           new HistoricalEndOfDayDataStreamer( this.endOfDayTimer ,
+			                           new HistoricalDataStreamer( this.endOfDayTimer ,
 			                                                              this.historicalMarketValueProvider ) ,
-			                           new HistoricalEndOfDayOrderExecutor( this.endOfDayTimer ,
+			                           new HistoricalOrderExecutor( this.endOfDayTimer ,
 			                                                               this.historicalMarketValueProvider ));
 			
 		}

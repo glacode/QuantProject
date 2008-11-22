@@ -99,9 +99,9 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag.WFLagDebugger
 		{
 			this.account = new Account( "WFLagDebugPositions" ,
 			                           this.endOfDayTimer ,
-			                           new HistoricalEndOfDayDataStreamer( this.endOfDayTimer ,
+			                           new HistoricalDataStreamer( this.endOfDayTimer ,
 			                                                              this.historicalQuoteProvider ) ,
-			                           new HistoricalEndOfDayOrderExecutor( this.endOfDayTimer ,
+			                           new HistoricalOrderExecutor( this.endOfDayTimer ,
 			                                                               this.historicalQuoteProvider ) );
 		}
 		private void run_initializeEndOfDayTimerHandler()

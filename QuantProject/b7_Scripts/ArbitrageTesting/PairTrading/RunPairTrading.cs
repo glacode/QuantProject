@@ -156,9 +156,9 @@ namespace QuantProject.Scripts.ArbitrageTesting.PairTrading
 		{
 			//default account with no commissions and no slippage calculation
 			this.account = new Account( this.scriptName , this.timer ,
-			                           new HistoricalEndOfDayDataStreamer( this.timer ,
+			                           new HistoricalDataStreamer( this.timer ,
 			                                                              this.historicalMarketValueProvider ) ,
-			                           new HistoricalEndOfDayOrderExecutor( this.timer ,
+			                           new HistoricalOrderExecutor( this.timer ,
 			                                                               this.historicalMarketValueProvider ));
 			
 		}

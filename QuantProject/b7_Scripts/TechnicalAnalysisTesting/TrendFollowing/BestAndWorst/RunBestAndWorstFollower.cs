@@ -100,9 +100,9 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.TrendFollowing.BestAndWo
 		{
 			this.startingTimeForScript = DateTime.Now;
 			this.account = new Account( "BestAndWorstFollower" , this.endOfDayTimer ,
-			                           new HistoricalEndOfDayDataStreamer( this.endOfDayTimer ,
+			                           new HistoricalDataStreamer( this.endOfDayTimer ,
 			                                                              this.historicalMarketValueProvider ) ,
-			                           new HistoricalEndOfDayOrderExecutor( this.endOfDayTimer ,
+			                           new HistoricalOrderExecutor( this.endOfDayTimer ,
 			                                                               this.historicalMarketValueProvider ) );
 			EndOfDayTimerHandlerBWFollower endOfDayTimerHandler =
 				new EndOfDayTimerHandlerBWFollower(this.tickerGroupID, this.numberOfEligibleTickers,

@@ -79,9 +79,9 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardOneRank
 //				new EndOfDayDateTime( dateTime.AddDays( -this.numberDaysForPerformanceCalculation ) ,
 //				EndOfDaySpecificTime.MarketOpen ) );
 			ComparableAccount account = new ComparableAccount( ticker , historicalEndOfDayTimer ,
-				new HistoricalEndOfDayDataStreamer( historicalEndOfDayTimer ,
+				new HistoricalDataStreamer( historicalEndOfDayTimer ,
 				this.historicalMarketValueProvider ) ,
-				new HistoricalEndOfDayOrderExecutor( historicalEndOfDayTimer ,
+				new HistoricalOrderExecutor( historicalEndOfDayTimer ,
 				this.historicalMarketValueProvider ) );
 			OneRank oneRank = new OneRank( account , dateTime );
 			double goodness = account.Goodness;  // forces Goodness computation here (for a better ProgressBar effect)
@@ -125,9 +125,9 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardOneRank
 //				new EndOfDayDateTime( dateTime.AddDays( -this.numberDaysForPerformanceCalculation ) ,
 //				EndOfDaySpecificTime.MarketOpen ) );
 			ComparableAccount account = new ComparableAccount( ticker , historicalEndOfDayTimer ,
-				new HistoricalEndOfDayDataStreamer( historicalEndOfDayTimer ,
+				new HistoricalDataStreamer( historicalEndOfDayTimer ,
 				this.historicalMarketValueProvider ) ,
-				new HistoricalEndOfDayOrderExecutor( historicalEndOfDayTimer ,
+				new HistoricalOrderExecutor( historicalEndOfDayTimer ,
 				this.historicalMarketValueProvider ) );
 			OneRank oneRank = new OneRank( account , dateTime );
 			this.tickersWithGoodness.Add( new EstimatedObject( account.Key , account.Goodness ) );

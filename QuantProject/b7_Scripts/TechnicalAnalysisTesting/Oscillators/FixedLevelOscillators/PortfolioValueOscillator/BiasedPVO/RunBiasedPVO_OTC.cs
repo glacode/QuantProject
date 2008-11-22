@@ -122,9 +122,9 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOs
 		protected override void run_initializeAccount()
 		{
 			this.account = new Account( this.scriptName , this.endOfDayTimer ,
-				new HistoricalEndOfDayDataStreamer( this.endOfDayTimer ,
+				new HistoricalDataStreamer( this.endOfDayTimer ,
 				this.historicalMarketValueProvider ) ,
-				new HistoricalEndOfDayOrderExecutor( this.endOfDayTimer ,
+				new HistoricalOrderExecutor( this.endOfDayTimer ,
 				this.historicalMarketValueProvider, 
 				new FixedPercentageSlippageManager(
 						this.historicalMarketValueProvider, this.endOfDayTimer, 0.05 ) ),
@@ -134,9 +134,9 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOs
 //		protected override void run_initializeAccount()
 //		{
 //			this.account = new Account( this.scriptName , this.endOfDayTimer ,
-//				new HistoricalEndOfDayDataStreamer( this.endOfDayTimer ,
+//				new HistoricalDataStreamer( this.endOfDayTimer ,
 //				this.historicalQuoteProvider ) ,
-//				new HistoricalEndOfDayOrderExecutor( this.endOfDayTimer ,
+//				new HistoricalOrderExecutor( this.endOfDayTimer ,
 //				this.historicalQuoteProvider ),
 //				new IBCommissionManager() );
 //		}

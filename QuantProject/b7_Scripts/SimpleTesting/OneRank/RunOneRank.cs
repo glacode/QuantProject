@@ -89,17 +89,17 @@ namespace QuantProject.Scripts.SimpleTesting
 
 //			with IB commission
 //			this.account = new Account( "MSFT" , historicalEndOfDayTimer ,
-//				new HistoricalEndOfDayDataStreamer( historicalEndOfDayTimer ,
+//				new HistoricalDataStreamer( historicalEndOfDayTimer ,
 //				this.historicalQuoteProvider ) ,
-//				new HistoricalEndOfDayOrderExecutor( historicalEndOfDayTimer ,
+//				new HistoricalOrderExecutor( historicalEndOfDayTimer ,
 //				this.historicalQuoteProvider ) ,
 //				new IBCommissionManager() );
 
 //			with no commission
 			this.account = new Account( "MSFT" , historicalEndOfDayTimer ,
-				new HistoricalEndOfDayDataStreamer( historicalEndOfDayTimer ,
+				new HistoricalDataStreamer( historicalEndOfDayTimer ,
 				this.historicalMarketValueProvider ) ,
-				new HistoricalEndOfDayOrderExecutor( historicalEndOfDayTimer ,
+				new HistoricalOrderExecutor( historicalEndOfDayTimer ,
 				this.historicalMarketValueProvider ) );
 			OneRank oneRank = new OneRank( account ,
 				this.endDateTime );
