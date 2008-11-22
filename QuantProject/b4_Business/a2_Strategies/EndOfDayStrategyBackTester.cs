@@ -297,13 +297,10 @@ namespace QuantProject.Business.Strategies
 		
 		private void completeTheScript()
 		{
-			this.actualLastDateTime =
-				ExtendedDateTime.Min(
-					this.lastDateTime , this.timer.GetCurrentDateTime() );
 			this.realDateTimeWhenTheBackTestIsStopped = DateTime.Now;
 			this.accountReport = this.account.CreateReport(
 				"" , 1 ,
-				this.timer.GetCurrentDateTime() , this.benchmark.Ticker ,
+				this.actualLastDateTime , this.benchmark.Ticker ,
 				this.historicalMarketValueProvider );
 			this.accountReport.Name = this.Description;
 		}
@@ -357,7 +354,9 @@ namespace QuantProject.Business.Strategies
 		{
 //			this.actualLastDateTime =
 //				ExtendedDateTime.Min( this.lastDateTime , currentDateTime );
-
+			this.actualLastDateTime =
+				ExtendedDateTime.Min(
+					this.lastDateTime , this.timer.GetCurrentDateTime() );
 			this.timer.Stop();
 
 //			this.realDateTimeWhenTheBackTestIsStopped = DateTime.Now;
