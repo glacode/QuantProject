@@ -48,6 +48,7 @@
     <Compile Include="a05_Timing\IndexBasedHistoricalTimer.cs" />
     <Compile Include="a05_Timing\Timer.cs" />
     <Compile Include="a07_DataProviders\HistoricalBarProvider.cs" />
+    <Compile Include="a07_DataProviders\HistoricalDataStreamer.cs" />
     <Compile Include="a07_DataProviders\HistoricalMarketValueProvider.cs" />
     <Compile Include="a07_DataProviders\HistoricalQuoteProvider.cs" />
     <Compile Include="a07_DataProviders\TickerNotExchangedException.cs" />
@@ -66,6 +67,7 @@
     <Compile Include="a1_Financial\a2_Accounting\h5_Reporting\SummaryRows\AverageNumberOfTransactionsPerDay.cs" />
     <Compile Include="a1_Financial\a2_Accounting\h5_Reporting\Tables\StatisticsSummary.cs" />
     <Compile Include="a1_Financial\a2_Accounting\Transactions\TimedTransaction.cs" />
+    <Compile Include="a1_Financial\a3_Ordering\HistoricalOrderExecutor.cs" />
     <Compile Include="a2_Strategies\BasicStrategyForBacktester.cs" />
     <Compile Include="a2_Strategies\Benchmark.cs" />
     <Compile Include="a2_Strategies\Eligibles\ByPriceLessVolatileOTCAlwaysQuoted.cs" />
@@ -141,7 +143,6 @@
     <Compile Include="a05_Timing\HistoricalEndOfDayTimer.cs" />
     <Compile Include="a05_Timing\IndexBasedEndOfDayTimer.cs" />
     <Compile Include="a07_DataProviders\HistoricalAdjustedQuoteProvider.cs" />
-    <Compile Include="a07_DataProviders\HistoricalEndOfDayDataStreamer.cs" />
     <Compile Include="a07_DataProviders\HistoricalRawQuoteProvider.cs" />
     <Compile Include="a1_Financial\a1_Instruments\Instrument.cs" />
     <Compile Include="a1_Financial\a1_Instruments\Instruments.cs" />
@@ -181,7 +182,6 @@
     <Compile Include="a1_Financial\a2_Accounting\h5_Reporting\Tables\Summary.cs" />
     <Compile Include="a1_Financial\a2_Accounting\h5_Reporting\Tables\Transactions.cs" />
     <Compile Include="a1_Financial\a2_Accounting\Transactions\TransactionHistory.cs" />
-    <Compile Include="a1_Financial\a3_Ordering\HistoricalEndOfDayOrderExecutor.cs" />
     <Compile Include="a1_Financial\a3_Ordering\IOrderExecutor.cs" />
     <Compile Include="a1_Financial\a3_Ordering\Order.cs" />
     <Compile Include="a1_Financial\a3_Ordering\OrderFilledEventArgs.cs" />
