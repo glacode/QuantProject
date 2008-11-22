@@ -27,8 +27,9 @@ using QuantProject.Data.DataProviders.Quotes;
 namespace QuantProject.Business.DataProviders
 {
 	/// <summary>
-	/// To be extended by those HistoricalMarketValueProvider who will use the Quote table
+	/// Description of HistoricalQuoteProvider.
 	/// </summary>
+	[Serializable]
 	public abstract class HistoricalQuoteProvider : HistoricalMarketValueProvider
 	{
 		public HistoricalQuoteProvider()
