@@ -1,8 +1,8 @@
 /*
 QuantProject - Quantitative Finance Library
 
-HistoricalEndOfDayOrderExecutor.cs
-Copyright (C) 2003
+HistoricalOrderExecutor.cs
+Copyright (C) 2008
 Glauco Siliprandi
 
 This program is free software; you can redistribute it and/or
@@ -37,20 +37,20 @@ namespace QuantProject.Business.Financial.Ordering
 	/// Simulates historical order executions/rejections for end of day simulation
 	/// </summary>
 	[Serializable]
-	public class HistoricalEndOfDayOrderExecutor : IOrderExecutor
+	public class HistoricalOrderExecutor : IOrderExecutor
 	{
 		private Timer timer;
 		private HistoricalMarketValueProvider historicalMarketValueProvider;
 		private ISlippageManager slippageManager;
 
-		public HistoricalEndOfDayOrderExecutor(
+		public HistoricalOrderExecutor(
 			Timer timer , HistoricalMarketValueProvider historicalMarketValueProvider )
 		{
 			this.timer = timer;
 			this.historicalMarketValueProvider = historicalMarketValueProvider;
 			this.slippageManager = new ZeroSlippageManager();
 		}
-		public HistoricalEndOfDayOrderExecutor(
+		public HistoricalOrderExecutor(
 			Timer timer ,
 			HistoricalMarketValueProvider historicalMarketValueProvider ,
 			ISlippageManager slippageManager )
