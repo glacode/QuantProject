@@ -269,7 +269,7 @@ namespace QuantProject.Data.DataProviders.Bars.Caching
 					dateTimesIn_barOpenValues , dateTimesForMissingBarsToBeAdded );
 				indexFor_dateTimesForMissingBarsToBeAdded++;
 			}
-			return dateTimesIn_barOpenValues;
+			return dateTimesForMissingBarsToBeAdded;
 		}
 		private List< DateTime > getDateTimesForMissingBarsToBeAdded(
 			string ticker , DateTime firstDateTime , DateTime lastDateTime )
@@ -392,7 +392,14 @@ namespace QuantProject.Data.DataProviders.Bars.Caching
 		public bool WasExchanged( string ticker , DateTime dateTime )
 		{
 			// forces bar caching
+			try
+			{
 			this.GetMarketValue( ticker , dateTime );
+			}
+			catch ( MissingBarException missingBarException )
+			{
+				string doNothing = missingBarException.Message; doNothing += "";
+			}
 			bool wasExchanged = this.barOpenValues.ContainsBar( ticker , dateTime );
 			return wasExchanged;
 		}
