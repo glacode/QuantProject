@@ -253,7 +253,8 @@ namespace QuantProject.Business.Strategies
 					this.getPositionsToBeOpened();
 				if ( positionsToBeOpened != null )
 					// positions to be opened are available, actually
-					AccountManager.OpenPositions( positionsToBeOpened , this.account );
+					AccountManager.OpenPositions(
+						positionsToBeOpened , this.account , this.account.CashAmount );
 			}
 		}
 		#endregion NewDateTimeEventHandler
