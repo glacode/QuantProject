@@ -46,8 +46,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ArbitrageTesting\OverReactionHypothesis\DoubleOverReaction_OTC\EndOfDayTimerHandlerDOR_OTC.cs" />
-    <Compile Include="ArbitrageTesting\OverReactionHypothesis\DoubleOverReaction_OTC\RunDOR_OTC.cs" />
     <Compile Include="AssemblyInfo.cs" />
     <Compile Include="EvaluatingOptimizationTechnique\TechnicalAnalysis\RunTestingOptimizationExtremeCounterTrend.cs" />
     <Compile Include="General\BasicScriptForBacktesting.cs" />
@@ -86,6 +84,8 @@
     <Compile Include="TechnicalAnalysisTesting\Oscillators\FixedLevelOscillators\PortfolioValueOscillator\PVOPositions.cs" />
     <Compile Include="TechnicalAnalysisTesting\Oscillators\FixedLevelOscillators\PortfolioValueOscillator\PVOPositionsStatus.cs" />
     <Compile Include="TechnicalAnalysisTesting\Oscillators\FixedLevelOscillators\PortfolioValueOscillator\PVOStrategy.cs" />
+    <Compile Include="TechnicalAnalysisTesting\Oscillators\FixedLevelOscillators\PortfolioValueOscillator\PVOStrategyIntraday.cs" />
+    <Compile Include="TechnicalAnalysisTesting\Oscillators\FixedLevelOscillators\PortfolioValueOscillator\PVOStrategyIntradayMain.cs" />
     <Compile Include="TechnicalAnalysisTesting\Oscillators\FixedLevelOscillators\PortfolioValueOscillator\PVO_CTOLogItem.cs" />
     <Compile Include="TechnicalAnalysisTesting\Oscillators\FixedLevelOscillators\PortfolioValueOscillator\PVO_CTOMain.cs" />
     <Compile Include="TechnicalAnalysisTesting\Oscillators\FixedLevelOscillators\PortfolioValueOscillator\PVO_CTOStrategy.cs" />
@@ -247,9 +247,6 @@
     <Compile Include="WalkForwardTesting\WalkForwardLag\WFLagGenomesDebugger\WFLagDebugChosenPositionsCollection.cs" />
     <Compile Include="WalkForwardTesting\WalkForwardLag\WFLagGenomesDebugger\WFLagRunGenomesDebugger.cs" />
     <Compile Include="WalkForwardTesting\WalkForwardLag\WFLagGenomesDebugger\WFLagSharpeRatioComputer.cs" />
-    <Compile Include="TechnicalAnalysisTesting\TrendFollowing\ImmediateTrendFollower\EndOfDayTimerHandlerITF.cs" />
-    <Compile Include="TechnicalAnalysisTesting\TrendFollowing\ImmediateTrendFollower\GenomeManagerITF.cs" />
-    <Compile Include="TechnicalAnalysisTesting\TrendFollowing\ImmediateTrendFollower\RunImmediateTrendFollower.cs" />
     <Compile Include="WalkForwardTesting\WalkForwardLag\WFLagGenomeManagerWithWeights.cs" />
     <Compile Include="WalkForwardTesting\WalkForwardLag\WFLagWeightedPositions.cs" />
     <Compile Include="WalkForwardTesting\LinearCombination\ImmediateTrendFollowerStrategy.cs" />
@@ -267,24 +264,15 @@
     <Compile Include="WalkForwardTesting\LinearCombination\FixedLevelOscillatorBiasedPVOStrategy.cs" />
     <Compile Include="WalkForwardTesting\WalkForwardLag\WFLagNewChosenPositionsEventArgs.cs" />
     <Compile Include="WalkForwardTesting\WalkForwardLag\WeightedPositionsChoosers\IWFLagWeightedPositionsChooser.cs" />
-    <Compile Include="ArbitrageTesting\OverReactionHypothesis\SimpleOHTest\EndOfDayTimerHandlerSimpleOHTest.cs" />
-    <Compile Include="ArbitrageTesting\OverReactionHypothesis\SimpleOHTest\RunSimpleOHTest.cs" />
-    <Compile Include="TechnicalAnalysisTesting\TrendFollowing\BestAndWorst\EndOfDayTimerHandlerBWFollower.cs" />
-    <Compile Include="TechnicalAnalysisTesting\TrendFollowing\BestAndWorst\RunBestAndWorstFollower.cs" />
     <Compile Include="TickerSelectionTesting\RunEfficientOTC_WorstAtNightPortfolio.cs" />
     <Compile Include="TickerSelectionTesting\EndOfDayTimerHandlerOTC_WorstAtNight.cs" />
-    <Compile Include="ArbitrageTesting\OverReactionHypothesis\DoubleOverReaction_WeekEndBounce\EndOfDayTimerHandlerDOR_WeekEndBounce.cs" />
-    <Compile Include="ArbitrageTesting\OverReactionHypothesis\DoubleOverReaction_WeekEndBounce\RunDOR_WeekEndBounce.cs" />
     <Compile Include="TickerSelectionTesting\EndOfDayTimerHandlerCTO_WorstAtDay.cs" />
     <Compile Include="TickerSelectionTesting\RunEfficientCTO_WorstAtDayPortfolio.cs" />
     <Compile Include="WalkForwardTesting\WalkForwardLag\WeightedPositionsChoosers\WFLagGeneticFixedPortfolioWithNormalDrivingAndPortfolio\WFLagGeneticFixedPortfolioWithNormalDrivingAndPortfolio.cs" />
     <Compile Include="WalkForwardTesting\WalkForwardLag\WeightedPositionsChoosers\WFLagGeneticFixedPortfolioWithNormalDrivingAndPortfolio\WFLagGenomeManagerForFixedPortfolioWithNormalDrivingAndPortfolio.cs" />
     <Compile Include="WalkForwardTesting\WalkForwardLag\WFLagMeaningForUndecodableGenomes.cs" />
-    <Compile Include="TechnicalAnalysisTesting\TrendFollowing\OTC_CTOTrendFollower\EndOfDayTimerHandlerOTC_CTOTrendFollower.cs" />
-    <Compile Include="TechnicalAnalysisTesting\TrendFollowing\OTC_CTOTrendFollower\RunEfficientOTC_CTOTrendFollower.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="ArbitrageTesting\OverReactionHypothesis\DoubleOverReaction_OTC" />
     <Folder Include="EvaluatingOptimizationTechnique\" />
     <Folder Include="EvaluatingOptimizationTechnique\EfficientPortfolio\" />
     <Folder Include="BackTesting" />
@@ -343,20 +331,13 @@
     </ProjectReference>
     <Folder Include="WalkForwardTesting\WalkForwardLag\WFLagLogDebugger" />
     <Folder Include="WalkForwardTesting\WalkForwardLag\WFLagGenomesDebugger" />
-    <Folder Include="TechnicalAnalysisTesting\TrendFollowing" />
-    <Folder Include="TechnicalAnalysisTesting\TrendFollowing\ImmediateTrendFollower" />
     <Folder Include="TechnicalAnalysisTesting\Oscillators\FixedLevelOscillators" />
     <Folder Include="TechnicalAnalysisTesting\Oscillators\FixedLevelOscillators\PortfolioValueOscillator" />
     <Folder Include="TickerSelectionTesting\TestingOTCTypes\BruteForceOptimization" />
     <Folder Include="WalkForwardTesting\WalkForwardLag\GeneticOptimizerTesting" />
     <Folder Include="TechnicalAnalysisTesting\Oscillators\FixedLevelOscillators\PortfolioValueOscillator\BiasedPVO" />
     <Folder Include="WalkForwardTesting\WalkForwardLag\WeightedPositionsChoosers" />
-    <Folder Include="ArbitrageTesting\OverReactionHypothesis" />
-    <Folder Include="ArbitrageTesting\OverReactionHypothesis\SimpleOHTest" />
-    <Folder Include="TechnicalAnalysisTesting\TrendFollowing\BestAndWorst" />
-    <Folder Include="ArbitrageTesting\OverReactionHypothesis\DoubleOverReaction_WeekEndBounce" />
     <Folder Include="WalkForwardTesting\WalkForwardLag\WeightedPositionsChoosers\WFLagGeneticFixedPortfolioWithNormalDrivingAndPortfolio" />
-    <Folder Include="TechnicalAnalysisTesting\TrendFollowing\OTC_CTOTrendFollower" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.Targets" />
 </Project>
