@@ -62,8 +62,8 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOs
 		
 		public PVO_OTCMain()
 		{
-			this.benchmark = new Benchmark( "^GSPC" );
-
+			//this.benchmark = new Benchmark( "^GSPC" );
+			this.benchmark = new Benchmark( "MSFTHour" );
 			this.historicalQuoteProvider =
 				new HistoricalAdjustedQuoteProvider();
 
@@ -85,6 +85,14 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOs
 			
 			int maxNumberOfMostLiquidTickersToBeChosen = 150;
 			int numDaysForVolatility = 10;
+			
+//			IEligiblesSelector eligiblesSelector =
+//				new ByPriceMostLiquidQuotedAtEachDateTime(
+//				tickersGroupId , temporizedGroup ,
+//				maxNumberOfEligiblesToBeChosen ,
+//			  numDaysForAverageRawOpenPriceComputation ,
+//			 	minPrice , maxPrice, this.benchmark.Ticker );
+//			
 			IEligiblesSelector eligiblesSelector =
 				new ByPriceMostLiquidLessVolatileOTCAlwaysQuoted(
 					tickersGroupId , temporizedGroup ,
@@ -156,16 +164,17 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOs
 
 		protected override IStrategyForBacktester getStrategyForBacktester()
 		{
-			int inSampleDays = 25;
+			//int inSampleDays = 90;
+			int inSampleDays = 6;
 			// uncomment the following line for a faster script
 			//inSampleDays = 50;
-			int numDaysBetweenEachOptimization = 1;
+			int numDaysBetweenEachOptimization = 5;
 			int numOfClosingsBeforeExit = 0;
 			int minNumOfEligiblesForValidOptimization = 20;
-			double oversoldThreshold = 0.0025;
-			double overboughtThreshold = 0.0025;
-			double oversoldThresholdMAX = 0.05;
-			double overboughtThresholdMAX = 0.05;
+			double oversoldThreshold = 0.0075;
+			double overboughtThreshold = 0.0075;
+			double oversoldThresholdMAX = 0.02;
+			double overboughtThresholdMAX = 0.02;
 			IStrategyForBacktester strategyForBacktester
 //				 = new PVO_OTCStrategyLessCorrelated(eligiblesSelector ,inSampleChooser ,
 //				inSampleDays , benchmark , numDaysBetweenEachOptimization ,
@@ -188,9 +197,9 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOs
 //				new InteractiveBrokerAccountProvider(fixedPercentageSlippage);
 			double cashToStart = 25000;
 
-			DateTime firstDateTime = new DateTime( 2004 , 1 , 1 );
-			DateTime lastDateTime = new DateTime( 2008 , 4, 28 );
-			double maxRunningHours = 10;
+			DateTime firstDateTime = new DateTime( 2007 , 1 , 1 );
+			DateTime lastDateTime = new DateTime( 2007 , 1, 31 );
+			double maxRunningHours = 0.40;
 			HistoricalMarketValueProvider quoteProviderForBackTester =
 				this.historicalQuoteProvider;
 			quoteProviderForBackTester =
