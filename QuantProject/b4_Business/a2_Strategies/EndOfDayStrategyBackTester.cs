@@ -61,7 +61,7 @@ namespace QuantProject.Business.Strategies
 		private IAccountProvider accountProvider;
 		private DateTime startingTimeForScript;
 		private Timer timer;
-		private DateTime actualLastDateTime;
+		private DateTime lastDateTimeThrownOutByTheTimer;
 		private Account account;
 		private AccountReport accountReport;
 		private BackTestLog backTestLog;
@@ -95,7 +95,7 @@ namespace QuantProject.Business.Strategies
 			get
 			{
 				this.checkThisPropertyRequiresBacktestIsCompleted();
-				return this.actualLastDateTime;
+				return this.lastDateTimeThrownOutByTheTimer;
 			}
 		}
 		public Account Account
@@ -141,7 +141,7 @@ namespace QuantProject.Business.Strategies
 					"from_" +
 					ExtendedDateTime.GetShortDescriptionForFileName( this.firstDateTime ) +
 					"_to_" +
-					ExtendedDateTime.GetShortDescriptionForFileName( this.actualLastDateTime ) +
+					ExtendedDateTime.GetShortDescriptionForFileName( this.lastDateTimeThrownOutByTheTimer ) +
 					"_annlRtrn_" + this.AccountReport.Summary.AnnualSystemPercentageReturn.FormattedValue +
 					"_maxDD_" + this.AccountReport.Summary.MaxEquityDrawDown.FormattedValue +
 					"_" + this.historicalMarketValueProvider.Description +
@@ -195,7 +195,7 @@ namespace QuantProject.Business.Strategies
 			this.strategyForBacktester.Account = this.account;
 			this.backTestLog = new BackTestLog( backTestID , firstDateTime ,
 			                                   lastDateTime , benchmark );
-			this.actualLastDateTime = DateTime.MinValue;
+			this.lastDateTimeThrownOutByTheTimer = DateTime.MinValue;
 			this.realDateTimeWhenTheBackTestIsStopped = DateTime.MinValue;
 		}
 		private void endOfDayStrategyBackTester_checkParameters(
@@ -297,10 +297,11 @@ namespace QuantProject.Business.Strategies
 		
 		private void completeTheScript()
 		{
+			this.timer.Stop();
 			this.realDateTimeWhenTheBackTestIsStopped = DateTime.Now;
 			this.accountReport = this.account.CreateReport(
 				"" , 1 ,
-				this.actualLastDateTime , this.benchmark.Ticker ,
+				this.lastDateTimeThrownOutByTheTimer , this.benchmark.Ticker ,
 				this.historicalMarketValueProvider );
 			this.accountReport.Name = this.Description;
 		}
@@ -349,12 +350,12 @@ namespace QuantProject.Business.Strategies
 		}
 		#endregion isTimeToStop
 		
-		#region stopTheScript
+		#region stopTheScriptIfTheCase
 		private void stopTheScript( DateTime currentDateTime )
 		{
 //			this.actualLastDateTime =
 //				ExtendedDateTime.Min( this.lastDateTime , currentDateTime );
-			this.actualLastDateTime =
+			this.lastDateTimeThrownOutByTheTimer =
 				ExtendedDateTime.Min(
 					this.lastDateTime , this.timer.GetCurrentDateTime() );
 			this.timer.Stop();
@@ -377,7 +378,7 @@ namespace QuantProject.Business.Strategies
 //				this.stopTheScript( currentDateTime );
 //			}
 //		}
-		#endregion stopTheScript
+		#endregion stopTheScriptIfTheCase
 		
 		private void notifyProgress(
 			Timer timer )
@@ -398,6 +399,7 @@ namespace QuantProject.Business.Strategies
 //			EndOfDayDateTime currentEndOfDayDateTime =
 //				( ( IEndOfDayTimer )sender ).GetCurrentTime();
 //			DateTime currentDateTime = currentEndOfDayDateTime.DateTime;
+			this.lastDateTimeThrownOutByTheTimer = dateTime;
 			if ( this.isTimeToStop( dateTime ) )
 				this.stopTheScript( dateTime );
 			else
