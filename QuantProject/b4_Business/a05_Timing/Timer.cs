@@ -48,7 +48,7 @@ namespace QuantProject.Business.Timing
 		/// </summary>
 		public bool IsDone
 		{
-			get { return this.isDone(); }
+			get { return ( this.hasTheTimerBeenStopped || this.isDone() ); }
 		}
 		#endregion IsDone
 		
