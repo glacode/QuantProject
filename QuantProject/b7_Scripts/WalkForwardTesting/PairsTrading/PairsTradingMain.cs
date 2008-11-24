@@ -123,7 +123,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.PairsTrading
 			
 			string tickersGroupId = "SP500";
 			// uncomment the following line for a faster script
-			tickersGroupId = "fastTest";
+//			tickersGroupId = "fastTest";
 
 //			IEligiblesSelector eligiblesSelector =
 //				new MostLiquidAndLessVolatile(
@@ -275,9 +275,9 @@ namespace QuantProject.Scripts.WalkForwardTesting.PairsTrading
 
 			// uncomment the following two lines for a faster script
 			firstDateTime = new DateTime( 2006 , 2 , 1 );
-			lastDateTime = new DateTime( 2006 , 2 , 15 );
+			lastDateTime = new DateTime( 2006 , 2 , 12 );
 
-			double maxRunningHours = 0.05;
+			double maxRunningHours = 1;
 			
 			EndOfDayStrategyBackTester endOfDayStrategyBackTester =
 				new EndOfDayStrategyBackTester(
@@ -301,7 +301,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.PairsTrading
 
 		protected override string getCustomSmallTextForFolderName()
 		{
-			return "pairsTrdng";
+			return "pairsTrdngIntrdy_13_14_15";
 		}
 
 		protected override string getFullPathFileNameForMain()
