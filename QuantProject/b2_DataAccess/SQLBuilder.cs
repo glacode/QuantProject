@@ -124,7 +124,7 @@ namespace QuantProject.DataAccess
 			string fieldName , SqlComparisonOperator sqlComparisonOperator , Time time )
 		{
 			string filterForDailyTime =
-				"(Format([baDateTimeForOpen],'hh:mm:ss')" +
+				"(Format([baDateTimeForOpen],'hh.mm.ss')" +
 				SQLBuilder.getSqlStringForComparisonOperator( sqlComparisonOperator ) +
 				SQLBuilder.GetTimeConstant( time ) + ")";
 			return filterForDailyTime;
