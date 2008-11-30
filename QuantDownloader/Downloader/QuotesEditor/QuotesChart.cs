@@ -25,7 +25,7 @@ using System.Drawing;
 using NPlot;
 using NPlot.Windows;
 using QuantProject.ADT.Histories;
-using QuantProject.Data.DataProviders;
+using QuantProject.Data.DataProviders.Quotes;
 using QuantProject.Presentation.Charting;
 
 namespace QuantProject.Applications.Downloader
@@ -44,7 +44,7 @@ namespace QuantProject.Applications.Downloader
 			{
 				this.ticker = value;
 				this.Clear();
-				this.Add( HistoricalDataProvider.GetAdjustedCloseHistory( this.ticker ) );
+				this.Add( HistoricalQuotesProvider.GetAdjustedCloseHistory( this.ticker ) );
 			}
     }
 

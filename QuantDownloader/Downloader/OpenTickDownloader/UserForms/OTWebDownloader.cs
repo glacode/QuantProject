@@ -359,7 +359,7 @@ namespace QuantProject.Applications.Downloader.OpenTickDownloader.UserForms
 									0,
 									0});
 			this.numberOfBars.Name = "numberOfBars";
-			this.numberOfBars.Size = new System.Drawing.Size(38, 20);
+			this.numberOfBars.Size = new System.Drawing.Size(59, 20);
 			this.numberOfBars.TabIndex = 24;
 			this.numberOfBars.Value = new decimal(new int[] {
 									1,

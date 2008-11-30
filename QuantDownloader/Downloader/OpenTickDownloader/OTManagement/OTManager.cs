@@ -308,6 +308,7 @@ namespace QuantProject.Applications.Downloader.OpenTickDownloader
 			string openTickUser , string openTickPassword )
 		{
 			OTManager.oTClient.addHost( "feed1.opentick.com" , 10010 );
+			//OTManager.oTClient.addHost( "delayed1.opentick.com" , 10010 );
 //			string username =
 //				System.Configuration.ConfigurationManager.AppSettings[
 //					"usrnm" ];

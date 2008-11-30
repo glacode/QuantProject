@@ -1,7 +1,7 @@
 using System;
 using System.Drawing;
 using QuantProject.ADT.Histories;
-using QuantProject.Data.DataProviders;
+using QuantProject.Data.DataProviders.Quotes;
 using QuantProject.Presentation.Charting;
 
 namespace QuantProject.Applications.Downloader
@@ -20,9 +20,9 @@ namespace QuantProject.Applications.Downloader
 		}
 		protected override void addHistories()
 		{
-			History lowHistory = HistoricalDataProvider.GetLowHistory( ((QuotesEditor)this.FindForm()).Ticker );
+			History lowHistory = HistoricalQuotesProvider.GetLowHistory( ((QuotesEditor)this.FindForm()).Ticker );
 			this.add( lowHistory , Color.Green );
-			History highHistory = HistoricalDataProvider.GetHighHistory( ((QuotesEditor)this.FindForm()).Ticker );
+			History highHistory = HistoricalQuotesProvider.GetHighHistory( ((QuotesEditor)this.FindForm()).Ticker );
 			this.add( highHistory , Color.Blue );
 		}
 	}
