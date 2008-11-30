@@ -22,40 +22,37 @@ namespace QuantProject.Applications.Downloader
 	public class WebDownloader : System.Windows.Forms.Form, ITickerSelector 
 	{
     public OleDbConnection OleDbConnection1 = ConnectionProvider.OleDbConnection;
-    private System.Windows.Forms.Button button1;
     public System.Windows.Forms.DataGrid dataGrid1;
     private System.Data.OleDb.OleDbDataAdapter oleDbDataAdapter1;
     private System.Data.OleDb.OleDbCommand oleDbSelectCommand1;
     private System.Data.OleDb.OleDbCommand oleDbInsertCommand1;
     private System.Data.OleDb.OleDbCommand oleDbUpdateCommand1;
     private System.Data.OleDb.OleDbCommand oleDbDeleteCommand1;
-//    private QuantProject.DataSet1 dataSet11;
     private System.Data.OleDb.OleDbCommand oleDbCommand1;
     public DataSet1 DsTickerCurrentlyDownloaded = new DataSet1();
 	  private System.Windows.Forms.Button buttonDownloadQuotesOfSelectedTickers;
 	  private DataTable tableOfSelectedTickers;
-    internal System.Windows.Forms.Label labelNumberOfTickersToDownload;
-    internal System.Windows.Forms.Label labelTickersLeft;
     private System.Windows.Forms.Label labelStartingDateTime;
     private System.Windows.Forms.DateTimePicker dateTimePickerStartingDate;
-    private System.Windows.Forms.RadioButton radioButtonAllAvailableUntilNow;
-    private System.Windows.Forms.GroupBox groupBoxWebDownloaderOptions;
     private System.Windows.Forms.GroupBox groupBoxUpdateDatabaseOptions;
     internal System.Windows.Forms.RadioButton radioButtonOverWriteYes;
-    private System.Windows.Forms.RadioButton radioButtonOverWriteNo;
-    private System.Windows.Forms.RadioButton radioButtonAllAvailableUntilNowSinceStartingDate;
     internal System.Windows.Forms.CheckBox checkBoxIsDicotomicSearchActivated;
-    private System.Windows.Forms.RadioButton radioButtonDownloadBeforeMinAndAfterMax;
     private System.Windows.Forms.RadioButton radioButtonDownloadOnlyAfterMax;
-    private System.Windows.Forms.Button buttonAbort;
-    private Thread downloadThread = null;
     internal System.Windows.Forms.CheckBox checkBoxComputeCloseToCloseValues;
     private System.Windows.Forms.ToolTip toolTip1;
     internal System.Windows.Forms.CheckBox checkBoxDownloadOnlyAfterCloseToCloseCheck;
     private System.Windows.Forms.DateTimePicker dateTimePickerSelectedDate;
     private System.Windows.Forms.RadioButton radioButtonDownloadSingleQuote;
     private System.ComponentModel.IContainer components;
-
+    private Hashtable downloadingTickers;
+    private int indexOfCurrentUpdatingTicker;
+    private string lastQuoteInDB;
+    private string currentState;
+    private string databaseUpdated;
+    private string adjustedClose;
+    private string adjCloseToCloseRatio;
+    private bool downloadingInProgress;
+    
 		public WebDownloader()
 		{
 			//
@@ -63,15 +60,9 @@ namespace QuantProject.Applications.Downloader
 			//
 			InitializeComponent();
 			this.commonInitialization();
-      
-      //
-			this.Text = "Download quotes of all tickers in the database"; 
-			this.buttonDownloadQuotesOfSelectedTickers.Visible = false;
-      // TODO: retrieve number of all the tickers symbol stored in DB
-      this.labelNumberOfTickersToDownload.Visible = false;
-      this.labelTickersLeft.Visible = false;
-			//
-			
+      this.Text = "Download quotes of all tickers in the database"; 
+			// TODO: set tableOfSelectedTickers by retrieving all the tickers'symbols stored in the DB
+			this.initializeDownloadingTickers();
 		}
 
 		public WebDownloader(DataTable tableOfSelectedTickers)
@@ -83,11 +74,9 @@ namespace QuantProject.Applications.Downloader
 			this.commonInitialization();
 			//
 			this.Text = "Download quotes of selected tickers"; 
-			this.button1.Visible = false;
 			this.tableOfSelectedTickers = tableOfSelectedTickers;
-      this.labelNumberOfTickersToDownload.Text = Convert.ToString(tableOfSelectedTickers.Rows.Count);
+			this.initializeDownloadingTickers();
 			//
-			
 		}
 
 		/// <summary>
@@ -112,16 +101,25 @@ namespace QuantProject.Applications.Downloader
     {
       this.dateTimePickerStartingDate.Value = QuantProject.ADT.ConstantsProvider.InitialDateTimeForDownload;
       //this.dateTimePickerStartingDate.Refresh();
-      this.radioButtonAllAvailableUntilNow.Checked = true;
       this.radioButtonDownloadOnlyAfterMax.Checked = true;
       this.dataGrid1.ContextMenu = new TickerViewerMenu(this);
       this.toolTip1.SetToolTip(this.checkBoxComputeCloseToCloseValues,
                                 "It is possible to compute close to close " +
                                 "ratios out of connection");
-      //this.downloadThread = new Thread( new ThreadStart( this.downloadQuotes_createTickerDataSet));
+      this.lastQuoteInDB = "...";
+      this.currentState = "...";
+      this.databaseUpdated = "...";
+      this.adjCloseToCloseRatio = "...";
+      this.adjustedClose = "...";
     }
-
-
+		
+    private void initializeDownloadingTickers()
+    {
+    	this.downloadingTickers = new Hashtable();
+    	for(int i = 0; i<this.tableOfSelectedTickers.Rows.Count; i++)
+    		this.downloadingTickers.Add( this.tableOfSelectedTickers.Rows[i][0], i );
+    }
+    
 		#region Windows Form Designer generated code
 		/// <summary>
 		/// Required method for Designer support - do not modify
@@ -129,343 +127,256 @@ namespace QuantProject.Applications.Downloader
 		/// </summary>
 		private void InitializeComponent()
 		{
-      this.components = new System.ComponentModel.Container();
-      this.button1 = new System.Windows.Forms.Button();
-      this.dataGrid1 = new System.Windows.Forms.DataGrid();
-      this.oleDbDataAdapter1 = new System.Data.OleDb.OleDbDataAdapter();
-      this.oleDbDeleteCommand1 = new System.Data.OleDb.OleDbCommand();
-      this.oleDbInsertCommand1 = new System.Data.OleDb.OleDbCommand();
-      this.oleDbSelectCommand1 = new System.Data.OleDb.OleDbCommand();
-      this.oleDbUpdateCommand1 = new System.Data.OleDb.OleDbCommand();
-      this.oleDbCommand1 = new System.Data.OleDb.OleDbCommand();
-      this.buttonDownloadQuotesOfSelectedTickers = new System.Windows.Forms.Button();
-      this.labelNumberOfTickersToDownload = new System.Windows.Forms.Label();
-      this.labelTickersLeft = new System.Windows.Forms.Label();
-      this.dateTimePickerStartingDate = new System.Windows.Forms.DateTimePicker();
-      this.labelStartingDateTime = new System.Windows.Forms.Label();
-      this.radioButtonAllAvailableUntilNow = new System.Windows.Forms.RadioButton();
-      this.radioButtonAllAvailableUntilNowSinceStartingDate = new System.Windows.Forms.RadioButton();
-      this.groupBoxWebDownloaderOptions = new System.Windows.Forms.GroupBox();
-      this.checkBoxIsDicotomicSearchActivated = new System.Windows.Forms.CheckBox();
-      this.groupBoxUpdateDatabaseOptions = new System.Windows.Forms.GroupBox();
-      this.radioButtonDownloadOnlyAfterMax = new System.Windows.Forms.RadioButton();
-      this.radioButtonDownloadBeforeMinAndAfterMax = new System.Windows.Forms.RadioButton();
-      this.radioButtonOverWriteNo = new System.Windows.Forms.RadioButton();
-      this.radioButtonOverWriteYes = new System.Windows.Forms.RadioButton();
-      this.buttonAbort = new System.Windows.Forms.Button();
-      this.checkBoxComputeCloseToCloseValues = new System.Windows.Forms.CheckBox();
-      this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
-      this.checkBoxDownloadOnlyAfterCloseToCloseCheck = new System.Windows.Forms.CheckBox();
-      this.dateTimePickerSelectedDate = new System.Windows.Forms.DateTimePicker();
-      this.radioButtonDownloadSingleQuote = new System.Windows.Forms.RadioButton();
-      ((System.ComponentModel.ISupportInitialize)(this.dataGrid1)).BeginInit();
-      this.groupBoxWebDownloaderOptions.SuspendLayout();
-      this.groupBoxUpdateDatabaseOptions.SuspendLayout();
-      this.SuspendLayout();
-      // 
-      // button1
-      // 
-      this.button1.Location = new System.Drawing.Point(16, 424);
-      this.button1.Name = "button1";
-      this.button1.Size = new System.Drawing.Size(112, 32);
-      this.button1.TabIndex = 0;
-      this.button1.Text = "Download all Tickers\'quotes";
-      this.button1.Click += new System.EventHandler(this.button1_Click);
-      // 
-      // dataGrid1
-      // 
-      this.dataGrid1.DataMember = "";
-      this.dataGrid1.HeaderForeColor = System.Drawing.SystemColors.ControlText;
-      this.dataGrid1.Location = new System.Drawing.Point(304, 8);
-      this.dataGrid1.Name = "dataGrid1";
-      this.dataGrid1.Size = new System.Drawing.Size(528, 456);
-      this.dataGrid1.TabIndex = 1;
-      // 
-      // oleDbDataAdapter1
-      // 
-      this.oleDbDataAdapter1.DeleteCommand = this.oleDbDeleteCommand1;
-      this.oleDbDataAdapter1.InsertCommand = this.oleDbInsertCommand1;
-      this.oleDbDataAdapter1.SelectCommand = this.oleDbSelectCommand1;
-      this.oleDbDataAdapter1.TableMappings.AddRange(new System.Data.Common.DataTableMapping[] {
-                                                                                                new System.Data.Common.DataTableMapping("Table", "quotes", new System.Data.Common.DataColumnMapping[] {
-                                                                                                                                                                                                        new System.Data.Common.DataColumnMapping("quId", "quId"),
-                                                                                                                                                                                                        new System.Data.Common.DataColumnMapping("quTicker", "quTicker"),
-                                                                                                                                                                                                        new System.Data.Common.DataColumnMapping("quDate", "quDate"),
-                                                                                                                                                                                                        new System.Data.Common.DataColumnMapping("quOpen", "quOpen"),
-                                                                                                                                                                                                        new System.Data.Common.DataColumnMapping("quHigh", "quHigh"),
-                                                                                                                                                                                                        new System.Data.Common.DataColumnMapping("quLow", "quLow"),
-                                                                                                                                                                                                        new System.Data.Common.DataColumnMapping("quClose", "quClose")})});
-      this.oleDbDataAdapter1.UpdateCommand = this.oleDbUpdateCommand1;
-      // 
-      // oleDbDeleteCommand1
-      // 
-      this.oleDbDeleteCommand1.CommandText = @"DELETE FROM quotes WHERE (quId = ?) AND (quClose = ? OR ? IS NULL AND quClose IS NULL) AND (quDate = ? OR ? IS NULL AND quDate IS NULL) AND (quHigh = ? OR ? IS NULL AND quHigh IS NULL) AND (quLow = ? OR ? IS NULL AND quLow IS NULL) AND (quOpen = ? OR ? IS NULL AND quOpen IS NULL) AND (quTicker = ? OR ? IS NULL AND quTicker IS NULL)";
-      this.oleDbDeleteCommand1.Parameters.Add(new System.Data.OleDb.OleDbParameter("Original_quId", System.Data.OleDb.OleDbType.Integer, 0, System.Data.ParameterDirection.Input, false, ((System.Byte)(10)), ((System.Byte)(0)), "quId", System.Data.DataRowVersion.Original, null));
-      this.oleDbDeleteCommand1.Parameters.Add(new System.Data.OleDb.OleDbParameter("Original_quClose", System.Data.OleDb.OleDbType.Single, 0, System.Data.ParameterDirection.Input, false, ((System.Byte)(7)), ((System.Byte)(0)), "quClose", System.Data.DataRowVersion.Original, null));
-      this.oleDbDeleteCommand1.Parameters.Add(new System.Data.OleDb.OleDbParameter("Original_quClose1", System.Data.OleDb.OleDbType.Single, 0, System.Data.ParameterDirection.Input, false, ((System.Byte)(7)), ((System.Byte)(0)), "quClose", System.Data.DataRowVersion.Original, null));
-      this.oleDbDeleteCommand1.Parameters.Add(new System.Data.OleDb.OleDbParameter("Original_quDate", System.Data.OleDb.OleDbType.DBDate, 0, System.Data.ParameterDirection.Input, false, ((System.Byte)(0)), ((System.Byte)(0)), "quDate", System.Data.DataRowVersion.Original, null));
-      this.oleDbDeleteCommand1.Parameters.Add(new System.Data.OleDb.OleDbParameter("Original_quDate1", System.Data.OleDb.OleDbType.DBDate, 0, System.Data.ParameterDirection.Input, false, ((System.Byte)(0)), ((System.Byte)(0)), "quDate", System.Data.DataRowVersion.Original, null));
-      this.oleDbDeleteCommand1.Parameters.Add(new System.Data.OleDb.OleDbParameter("Original_quHigh", System.Data.OleDb.OleDbType.Single, 0, System.Data.ParameterDirection.Input, false, ((System.Byte)(7)), ((System.Byte)(0)), "quHigh", System.Data.DataRowVersion.Original, null));
-      this.oleDbDeleteCommand1.Parameters.Add(new System.Data.OleDb.OleDbParameter("Original_quHigh1", System.Data.OleDb.OleDbType.Single, 0, System.Data.ParameterDirection.Input, false, ((System.Byte)(7)), ((System.Byte)(0)), "quHigh", System.Data.DataRowVersion.Original, null));
-      this.oleDbDeleteCommand1.Parameters.Add(new System.Data.OleDb.OleDbParameter("Original_quLow", System.Data.OleDb.OleDbType.Single, 0, System.Data.ParameterDirection.Input, false, ((System.Byte)(7)), ((System.Byte)(0)), "quLow", System.Data.DataRowVersion.Original, null));
-      this.oleDbDeleteCommand1.Parameters.Add(new System.Data.OleDb.OleDbParameter("Original_quLow1", System.Data.OleDb.OleDbType.Single, 0, System.Data.ParameterDirection.Input, false, ((System.Byte)(7)), ((System.Byte)(0)), "quLow", System.Data.DataRowVersion.Original, null));
-      this.oleDbDeleteCommand1.Parameters.Add(new System.Data.OleDb.OleDbParameter("Original_quOpen", System.Data.OleDb.OleDbType.Single, 0, System.Data.ParameterDirection.Input, false, ((System.Byte)(7)), ((System.Byte)(0)), "quOpen", System.Data.DataRowVersion.Original, null));
-      this.oleDbDeleteCommand1.Parameters.Add(new System.Data.OleDb.OleDbParameter("Original_quOpen1", System.Data.OleDb.OleDbType.Single, 0, System.Data.ParameterDirection.Input, false, ((System.Byte)(7)), ((System.Byte)(0)), "quOpen", System.Data.DataRowVersion.Original, null));
-      this.oleDbDeleteCommand1.Parameters.Add(new System.Data.OleDb.OleDbParameter("Original_quTicker", System.Data.OleDb.OleDbType.VarWChar, 8, System.Data.ParameterDirection.Input, false, ((System.Byte)(0)), ((System.Byte)(0)), "quTicker", System.Data.DataRowVersion.Original, null));
-      this.oleDbDeleteCommand1.Parameters.Add(new System.Data.OleDb.OleDbParameter("Original_quTicker1", System.Data.OleDb.OleDbType.VarWChar, 8, System.Data.ParameterDirection.Input, false, ((System.Byte)(0)), ((System.Byte)(0)), "quTicker", System.Data.DataRowVersion.Original, null));
-      // 
-      // oleDbInsertCommand1
-      // 
-      this.oleDbInsertCommand1.CommandText = "INSERT INTO quotes (quClose, quDate, quHigh, quLow, quOpen, quTicker, quVolume) V" +
-        "ALUES (?, ?, ?, ?, ?, ?, ?)";
-      this.oleDbInsertCommand1.Parameters.Add(new System.Data.OleDb.OleDbParameter("quClose", System.Data.OleDb.OleDbType.Single, 0, System.Data.ParameterDirection.Input, false, ((System.Byte)(7)), ((System.Byte)(0)), "quClose", System.Data.DataRowVersion.Current, null));
-      this.oleDbInsertCommand1.Parameters.Add(new System.Data.OleDb.OleDbParameter("quDate", System.Data.OleDb.OleDbType.DBDate, 0, "quDate"));
-      this.oleDbInsertCommand1.Parameters.Add(new System.Data.OleDb.OleDbParameter("quHigh", System.Data.OleDb.OleDbType.Single, 0, System.Data.ParameterDirection.Input, false, ((System.Byte)(7)), ((System.Byte)(0)), "quHigh", System.Data.DataRowVersion.Current, null));
-      this.oleDbInsertCommand1.Parameters.Add(new System.Data.OleDb.OleDbParameter("quLow", System.Data.OleDb.OleDbType.Single, 0, System.Data.ParameterDirection.Input, false, ((System.Byte)(7)), ((System.Byte)(0)), "quLow", System.Data.DataRowVersion.Current, null));
-      this.oleDbInsertCommand1.Parameters.Add(new System.Data.OleDb.OleDbParameter("quOpen", System.Data.OleDb.OleDbType.Single, 0, System.Data.ParameterDirection.Input, false, ((System.Byte)(7)), ((System.Byte)(0)), "quOpen", System.Data.DataRowVersion.Current, null));
-      this.oleDbInsertCommand1.Parameters.Add(new System.Data.OleDb.OleDbParameter("quTicker", System.Data.OleDb.OleDbType.VarWChar, 8, "quTicker"));
-      this.oleDbInsertCommand1.Parameters.Add(new System.Data.OleDb.OleDbParameter("quVolume", System.Data.OleDb.OleDbType.Integer, 0, System.Data.ParameterDirection.Input, false, ((System.Byte)(10)), ((System.Byte)(0)), "quVolume", System.Data.DataRowVersion.Current, null));
-      // 
-      // oleDbSelectCommand1
-      // 
-      this.oleDbSelectCommand1.CommandText = "SELECT quClose, quDate, quHigh, quLow, quOpen, quTicker FROM quotes";
-      // 
-      // oleDbUpdateCommand1
-      // 
-      this.oleDbUpdateCommand1.CommandText = @"UPDATE quotes SET quClose = ?, quDate = ?, quHigh = ?, quLow = ?, quOpen = ?, quTicker = ? WHERE (quId = ?) AND (quClose = ? OR ? IS NULL AND quClose IS NULL) AND (quDate = ? OR ? IS NULL AND quDate IS NULL) AND (quHigh = ? OR ? IS NULL AND quHigh IS NULL) AND (quLow = ? OR ? IS NULL AND quLow IS NULL) AND (quOpen = ? OR ? IS NULL AND quOpen IS NULL) AND (quTicker = ? OR ? IS NULL AND quTicker IS NULL)";
-      this.oleDbUpdateCommand1.Parameters.Add(new System.Data.OleDb.OleDbParameter("quClose", System.Data.OleDb.OleDbType.Single, 0, System.Data.ParameterDirection.Input, false, ((System.Byte)(7)), ((System.Byte)(0)), "quClose", System.Data.DataRowVersion.Current, null));
-      this.oleDbUpdateCommand1.Parameters.Add(new System.Data.OleDb.OleDbParameter("quDate", System.Data.OleDb.OleDbType.DBDate, 0, "quDate"));
-      this.oleDbUpdateCommand1.Parameters.Add(new System.Data.OleDb.OleDbParameter("quHigh", System.Data.OleDb.OleDbType.Single, 0, System.Data.ParameterDirection.Input, false, ((System.Byte)(7)), ((System.Byte)(0)), "quHigh", System.Data.DataRowVersion.Current, null));
-      this.oleDbUpdateCommand1.Parameters.Add(new System.Data.OleDb.OleDbParameter("quLow", System.Data.OleDb.OleDbType.Single, 0, System.Data.ParameterDirection.Input, false, ((System.Byte)(7)), ((System.Byte)(0)), "quLow", System.Data.DataRowVersion.Current, null));
-      this.oleDbUpdateCommand1.Parameters.Add(new System.Data.OleDb.OleDbParameter("quOpen", System.Data.OleDb.OleDbType.Single, 0, System.Data.ParameterDirection.Input, false, ((System.Byte)(7)), ((System.Byte)(0)), "quOpen", System.Data.DataRowVersion.Current, null));
-      this.oleDbUpdateCommand1.Parameters.Add(new System.Data.OleDb.OleDbParameter("quTicker", System.Data.OleDb.OleDbType.VarWChar, 8, "quTicker"));
-      this.oleDbUpdateCommand1.Parameters.Add(new System.Data.OleDb.OleDbParameter("Original_quId", System.Data.OleDb.OleDbType.Integer, 0, System.Data.ParameterDirection.Input, false, ((System.Byte)(10)), ((System.Byte)(0)), "quId", System.Data.DataRowVersion.Original, null));
-      this.oleDbUpdateCommand1.Parameters.Add(new System.Data.OleDb.OleDbParameter("Original_quClose", System.Data.OleDb.OleDbType.Single, 0, System.Data.ParameterDirection.Input, false, ((System.Byte)(7)), ((System.Byte)(0)), "quClose", System.Data.DataRowVersion.Original, null));
-      this.oleDbUpdateCommand1.Parameters.Add(new System.Data.OleDb.OleDbParameter("Original_quClose1", System.Data.OleDb.OleDbType.Single, 0, System.Data.ParameterDirection.Input, false, ((System.Byte)(7)), ((System.Byte)(0)), "quClose", System.Data.DataRowVersion.Original, null));
-      this.oleDbUpdateCommand1.Parameters.Add(new System.Data.OleDb.OleDbParameter("Original_quDate", System.Data.OleDb.OleDbType.DBDate, 0, System.Data.ParameterDirection.Input, false, ((System.Byte)(0)), ((System.Byte)(0)), "quDate", System.Data.DataRowVersion.Original, null));
-      this.oleDbUpdateCommand1.Parameters.Add(new System.Data.OleDb.OleDbParameter("Original_quDate1", System.Data.OleDb.OleDbType.DBDate, 0, System.Data.ParameterDirection.Input, false, ((System.Byte)(0)), ((System.Byte)(0)), "quDate", System.Data.DataRowVersion.Original, null));
-      this.oleDbUpdateCommand1.Parameters.Add(new System.Data.OleDb.OleDbParameter("Original_quHigh", System.Data.OleDb.OleDbType.Single, 0, System.Data.ParameterDirection.Input, false, ((System.Byte)(7)), ((System.Byte)(0)), "quHigh", System.Data.DataRowVersion.Original, null));
-      this.oleDbUpdateCommand1.Parameters.Add(new System.Data.OleDb.OleDbParameter("Original_quHigh1", System.Data.OleDb.OleDbType.Single, 0, System.Data.ParameterDirection.Input, false, ((System.Byte)(7)), ((System.Byte)(0)), "quHigh", System.Data.DataRowVersion.Original, null));
-      this.oleDbUpdateCommand1.Parameters.Add(new System.Data.OleDb.OleDbParameter("Original_quLow", System.Data.OleDb.OleDbType.Single, 0, System.Data.ParameterDirection.Input, false, ((System.Byte)(7)), ((System.Byte)(0)), "quLow", System.Data.DataRowVersion.Original, null));
-      this.oleDbUpdateCommand1.Parameters.Add(new System.Data.OleDb.OleDbParameter("Original_quLow1", System.Data.OleDb.OleDbType.Single, 0, System.Data.ParameterDirection.Input, false, ((System.Byte)(7)), ((System.Byte)(0)), "quLow", System.Data.DataRowVersion.Original, null));
-      this.oleDbUpdateCommand1.Parameters.Add(new System.Data.OleDb.OleDbParameter("Original_quOpen", System.Data.OleDb.OleDbType.Single, 0, System.Data.ParameterDirection.Input, false, ((System.Byte)(7)), ((System.Byte)(0)), "quOpen", System.Data.DataRowVersion.Original, null));
-      this.oleDbUpdateCommand1.Parameters.Add(new System.Data.OleDb.OleDbParameter("Original_quOpen1", System.Data.OleDb.OleDbType.Single, 0, System.Data.ParameterDirection.Input, false, ((System.Byte)(7)), ((System.Byte)(0)), "quOpen", System.Data.DataRowVersion.Original, null));
-      this.oleDbUpdateCommand1.Parameters.Add(new System.Data.OleDb.OleDbParameter("Original_quTicker", System.Data.OleDb.OleDbType.VarWChar, 8, System.Data.ParameterDirection.Input, false, ((System.Byte)(0)), ((System.Byte)(0)), "quTicker", System.Data.DataRowVersion.Original, null));
-      this.oleDbUpdateCommand1.Parameters.Add(new System.Data.OleDb.OleDbParameter("Original_quTicker1", System.Data.OleDb.OleDbType.VarWChar, 8, System.Data.ParameterDirection.Input, false, ((System.Byte)(0)), ((System.Byte)(0)), "quTicker", System.Data.DataRowVersion.Original, null));
-      // 
-      // oleDbCommand1
-      // 
-      this.oleDbCommand1.CommandText = "DELETE quotes.* FROM quotes INNER JOIN tickers ON quotes.quTicker = tickers.tiTic" +
-        "ker";
-      // 
-      // buttonDownloadQuotesOfSelectedTickers
-      // 
-      this.buttonDownloadQuotesOfSelectedTickers.Location = new System.Drawing.Point(136, 424);
-      this.buttonDownloadQuotesOfSelectedTickers.Name = "buttonDownloadQuotesOfSelectedTickers";
-      this.buttonDownloadQuotesOfSelectedTickers.Size = new System.Drawing.Size(112, 32);
-      this.buttonDownloadQuotesOfSelectedTickers.TabIndex = 2;
-      this.buttonDownloadQuotesOfSelectedTickers.Text = "Download quotes";
-      this.buttonDownloadQuotesOfSelectedTickers.Click += new System.EventHandler(this.buttonDownloadQuotesOfSelectedTickers_Click);
-      // 
-      // labelNumberOfTickersToDownload
-      // 
-      this.labelNumberOfTickersToDownload.Location = new System.Drawing.Point(160, 472);
-      this.labelNumberOfTickersToDownload.Name = "labelNumberOfTickersToDownload";
-      this.labelNumberOfTickersToDownload.Size = new System.Drawing.Size(48, 24);
-      this.labelNumberOfTickersToDownload.TabIndex = 4;
-      this.labelNumberOfTickersToDownload.Text = "0";
-      // 
-      // labelTickersLeft
-      // 
-      this.labelTickersLeft.Location = new System.Drawing.Point(16, 472);
-      this.labelTickersLeft.Name = "labelTickersLeft";
-      this.labelTickersLeft.Size = new System.Drawing.Size(136, 24);
-      this.labelTickersLeft.TabIndex = 5;
-      this.labelTickersLeft.Text = "Tickers Left to download:";
-      // 
-      // dateTimePickerStartingDate
-      // 
-      this.dateTimePickerStartingDate.Location = new System.Drawing.Point(96, 96);
-      this.dateTimePickerStartingDate.Name = "dateTimePickerStartingDate";
-      this.dateTimePickerStartingDate.Size = new System.Drawing.Size(184, 20);
-      this.dateTimePickerStartingDate.TabIndex = 6;
-      // 
-      // labelStartingDateTime
-      // 
-      this.labelStartingDateTime.Location = new System.Drawing.Point(8, 96);
-      this.labelStartingDateTime.Name = "labelStartingDateTime";
-      this.labelStartingDateTime.Size = new System.Drawing.Size(80, 23);
-      this.labelStartingDateTime.TabIndex = 8;
-      this.labelStartingDateTime.Text = "Starting date";
-      // 
-      // radioButtonAllAvailableUntilNow
-      // 
-      this.radioButtonAllAvailableUntilNow.Location = new System.Drawing.Point(8, 24);
-      this.radioButtonAllAvailableUntilNow.Name = "radioButtonAllAvailableUntilNow";
-      this.radioButtonAllAvailableUntilNow.Size = new System.Drawing.Size(272, 24);
-      this.radioButtonAllAvailableUntilNow.TabIndex = 10;
-      this.radioButtonAllAvailableUntilNow.Text = "All available quotes until now, since starting date";
-      this.radioButtonAllAvailableUntilNow.CheckedChanged += new System.EventHandler(this.radioButtonAllAvailableUntilNow_CheckedChanged);
-      // 
-      // radioButtonAllAvailableUntilNowSinceStartingDate
-      // 
-      this.radioButtonAllAvailableUntilNowSinceStartingDate.Location = new System.Drawing.Point(8, 48);
-      this.radioButtonAllAvailableUntilNowSinceStartingDate.Name = "radioButtonAllAvailableUntilNowSinceStartingDate";
-      this.radioButtonAllAvailableUntilNowSinceStartingDate.Size = new System.Drawing.Size(272, 32);
-      this.radioButtonAllAvailableUntilNowSinceStartingDate.TabIndex = 12;
-      this.radioButtonAllAvailableUntilNowSinceStartingDate.Text = "All available quotes until now, changing starting date";
-      // 
-      // groupBoxWebDownloaderOptions
-      // 
-      this.groupBoxWebDownloaderOptions.Controls.AddRange(new System.Windows.Forms.Control[] {
-                                                                                               this.radioButtonAllAvailableUntilNowSinceStartingDate,
-                                                                                               this.radioButtonAllAvailableUntilNow});
-      this.groupBoxWebDownloaderOptions.Location = new System.Drawing.Point(8, 0);
-      this.groupBoxWebDownloaderOptions.Name = "groupBoxWebDownloaderOptions";
-      this.groupBoxWebDownloaderOptions.Size = new System.Drawing.Size(288, 88);
-      this.groupBoxWebDownloaderOptions.TabIndex = 13;
-      this.groupBoxWebDownloaderOptions.TabStop = false;
-      this.groupBoxWebDownloaderOptions.Text = "Web Downloader options (source: Yahoo)";
-      // 
-      // checkBoxIsDicotomicSearchActivated
-      // 
-      this.checkBoxIsDicotomicSearchActivated.Checked = true;
-      this.checkBoxIsDicotomicSearchActivated.CheckState = System.Windows.Forms.CheckState.Checked;
-      this.checkBoxIsDicotomicSearchActivated.Location = new System.Drawing.Point(16, 320);
-      this.checkBoxIsDicotomicSearchActivated.Name = "checkBoxIsDicotomicSearchActivated";
-      this.checkBoxIsDicotomicSearchActivated.Size = new System.Drawing.Size(272, 24);
-      this.checkBoxIsDicotomicSearchActivated.TabIndex = 13;
-      this.checkBoxIsDicotomicSearchActivated.Text = "Use dicotomic search";
-      // 
-      // groupBoxUpdateDatabaseOptions
-      // 
-      this.groupBoxUpdateDatabaseOptions.Controls.AddRange(new System.Windows.Forms.Control[] {
-                                                                                                this.radioButtonDownloadSingleQuote,
-                                                                                                this.dateTimePickerSelectedDate,
-                                                                                                this.radioButtonDownloadOnlyAfterMax,
-                                                                                                this.radioButtonDownloadBeforeMinAndAfterMax,
-                                                                                                this.radioButtonOverWriteNo,
-                                                                                                this.radioButtonOverWriteYes});
-      this.groupBoxUpdateDatabaseOptions.Location = new System.Drawing.Point(8, 136);
-      this.groupBoxUpdateDatabaseOptions.Name = "groupBoxUpdateDatabaseOptions";
-      this.groupBoxUpdateDatabaseOptions.Size = new System.Drawing.Size(288, 176);
-      this.groupBoxUpdateDatabaseOptions.TabIndex = 14;
-      this.groupBoxUpdateDatabaseOptions.TabStop = false;
-      this.groupBoxUpdateDatabaseOptions.Text = "Update Database options";
-      // 
-      // radioButtonDownloadOnlyAfterMax
-      // 
-      this.radioButtonDownloadOnlyAfterMax.Checked = true;
-      this.radioButtonDownloadOnlyAfterMax.Location = new System.Drawing.Point(16, 24);
-      this.radioButtonDownloadOnlyAfterMax.Name = "radioButtonDownloadOnlyAfterMax";
-      this.radioButtonDownloadOnlyAfterMax.Size = new System.Drawing.Size(256, 24);
-      this.radioButtonDownloadOnlyAfterMax.TabIndex = 3;
-      this.radioButtonDownloadOnlyAfterMax.TabStop = true;
-      this.radioButtonDownloadOnlyAfterMax.Text = "Download only quotes after last quote (fastest)";
-      // 
-      // radioButtonDownloadBeforeMinAndAfterMax
-      // 
-      this.radioButtonDownloadBeforeMinAndAfterMax.Enabled = false;
-      this.radioButtonDownloadBeforeMinAndAfterMax.Location = new System.Drawing.Point(200, 104);
-      this.radioButtonDownloadBeforeMinAndAfterMax.Name = "radioButtonDownloadBeforeMinAndAfterMax";
-      this.radioButtonDownloadBeforeMinAndAfterMax.Size = new System.Drawing.Size(40, 32);
-      this.radioButtonDownloadBeforeMinAndAfterMax.TabIndex = 2;
-      this.radioButtonDownloadBeforeMinAndAfterMax.Text = "Download only quotes before first quote and after last quote (TO BE TESTED)";
-      this.radioButtonDownloadBeforeMinAndAfterMax.Visible = false;
-      // 
-      // radioButtonOverWriteNo
-      // 
-      this.radioButtonOverWriteNo.Enabled = false;
-      this.radioButtonOverWriteNo.Location = new System.Drawing.Point(240, 104);
-      this.radioButtonOverWriteNo.Name = "radioButtonOverWriteNo";
-      this.radioButtonOverWriteNo.Size = new System.Drawing.Size(40, 32);
-      this.radioButtonOverWriteNo.TabIndex = 1;
-      this.radioButtonOverWriteNo.Text = "Download all quotes, adding to database only the missing ones (TO BE TESTED)";
-      this.radioButtonOverWriteNo.Visible = false;
-      // 
-      // radioButtonOverWriteYes
-      // 
-      this.radioButtonOverWriteYes.Location = new System.Drawing.Point(16, 136);
-      this.radioButtonOverWriteYes.Name = "radioButtonOverWriteYes";
-      this.radioButtonOverWriteYes.Size = new System.Drawing.Size(256, 32);
-      this.radioButtonOverWriteYes.TabIndex = 0;
-      this.radioButtonOverWriteYes.Text = "Download all quotes, deleting all existing ones in database";
-      // 
-      // buttonAbort
-      // 
-      this.buttonAbort.Enabled = false;
-      this.buttonAbort.Location = new System.Drawing.Point(256, 440);
-      this.buttonAbort.Name = "buttonAbort";
-      this.buttonAbort.Size = new System.Drawing.Size(32, 23);
-      this.buttonAbort.TabIndex = 15;
-      this.buttonAbort.Text = "Abort";
-      this.buttonAbort.Visible = false;
-      this.buttonAbort.Click += new System.EventHandler(this.buttonAbort_Click);
-      // 
-      // checkBoxComputeCloseToCloseValues
-      // 
-      this.checkBoxComputeCloseToCloseValues.Location = new System.Drawing.Point(16, 352);
-      this.checkBoxComputeCloseToCloseValues.Name = "checkBoxComputeCloseToCloseValues";
-      this.checkBoxComputeCloseToCloseValues.Size = new System.Drawing.Size(272, 24);
-      this.checkBoxComputeCloseToCloseValues.TabIndex = 16;
-      this.checkBoxComputeCloseToCloseValues.Text = "Compute close to close ratios (slower)";
-      // 
-      // checkBoxDownloadOnlyAfterCloseToCloseCheck
-      // 
-      this.checkBoxDownloadOnlyAfterCloseToCloseCheck.Location = new System.Drawing.Point(16, 384);
-      this.checkBoxDownloadOnlyAfterCloseToCloseCheck.Name = "checkBoxDownloadOnlyAfterCloseToCloseCheck";
-      this.checkBoxDownloadOnlyAfterCloseToCloseCheck.Size = new System.Drawing.Size(272, 24);
-      this.checkBoxDownloadOnlyAfterCloseToCloseCheck.TabIndex = 17;
-      this.checkBoxDownloadOnlyAfterCloseToCloseCheck.Text = "Download only after CTC check (slower)";
-      this.toolTip1.SetToolTip(this.checkBoxDownloadOnlyAfterCloseToCloseCheck, "If checked, commit to database is performed only for tickers for which new adjust" +
-        "ed values respect current close to close ratio  ");
-      // 
-      // dateTimePickerSelectedDate
-      // 
-      this.dateTimePickerSelectedDate.Enabled = false;
-      this.dateTimePickerSelectedDate.Location = new System.Drawing.Point(24, 96);
-      this.dateTimePickerSelectedDate.Name = "dateTimePickerSelectedDate";
-      this.dateTimePickerSelectedDate.Size = new System.Drawing.Size(184, 20);
-      this.dateTimePickerSelectedDate.TabIndex = 7;
-      // 
-      // radioButtonDownloadSingleQuote
-      // 
-      this.radioButtonDownloadSingleQuote.Checked = true;
-      this.radioButtonDownloadSingleQuote.Location = new System.Drawing.Point(16, 56);
-      this.radioButtonDownloadSingleQuote.Name = "radioButtonDownloadSingleQuote";
-      this.radioButtonDownloadSingleQuote.Size = new System.Drawing.Size(256, 24);
-      this.radioButtonDownloadSingleQuote.TabIndex = 8;
-      this.radioButtonDownloadSingleQuote.TabStop = true;
-      this.radioButtonDownloadSingleQuote.Text = "Download single quote";
-      this.radioButtonDownloadSingleQuote.CheckedChanged += new System.EventHandler(this.radioButtonDownloadSingleQuote_CheckedChanged);
-      // 
-      // WebDownloader
-      // 
-      this.AutoScaleBaseSize = new System.Drawing.Size(5, 13);
-      this.ClientSize = new System.Drawing.Size(840, 494);
-      this.Controls.AddRange(new System.Windows.Forms.Control[] {
-                                                                  this.checkBoxDownloadOnlyAfterCloseToCloseCheck,
-                                                                  this.checkBoxComputeCloseToCloseValues,
-                                                                  this.buttonAbort,
-                                                                  this.groupBoxUpdateDatabaseOptions,
-                                                                  this.groupBoxWebDownloaderOptions,
-                                                                  this.labelStartingDateTime,
-                                                                  this.dateTimePickerStartingDate,
-                                                                  this.labelTickersLeft,
-                                                                  this.labelNumberOfTickersToDownload,
-                                                                  this.buttonDownloadQuotesOfSelectedTickers,
-                                                                  this.dataGrid1,
-                                                                  this.button1,
-                                                                  this.checkBoxIsDicotomicSearchActivated});
-      this.Name = "WebDownloader";
-      this.Text = "Web downloader";
-      this.Load += new System.EventHandler(this.WebDownloader_Load);
-      ((System.ComponentModel.ISupportInitialize)(this.dataGrid1)).EndInit();
-      this.groupBoxWebDownloaderOptions.ResumeLayout(false);
-      this.groupBoxUpdateDatabaseOptions.ResumeLayout(false);
-      this.ResumeLayout(false);
-
+			this.components = new System.ComponentModel.Container();
+			System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(WebDownloader));
+			this.dataGrid1 = new System.Windows.Forms.DataGrid();
+			this.oleDbDataAdapter1 = new System.Data.OleDb.OleDbDataAdapter();
+			this.oleDbDeleteCommand1 = new System.Data.OleDb.OleDbCommand();
+			this.oleDbInsertCommand1 = new System.Data.OleDb.OleDbCommand();
+			this.oleDbSelectCommand1 = new System.Data.OleDb.OleDbCommand();
+			this.oleDbUpdateCommand1 = new System.Data.OleDb.OleDbCommand();
+			this.oleDbCommand1 = new System.Data.OleDb.OleDbCommand();
+			this.buttonDownloadQuotesOfSelectedTickers = new System.Windows.Forms.Button();
+			this.dateTimePickerStartingDate = new System.Windows.Forms.DateTimePicker();
+			this.labelStartingDateTime = new System.Windows.Forms.Label();
+			this.checkBoxIsDicotomicSearchActivated = new System.Windows.Forms.CheckBox();
+			this.groupBoxUpdateDatabaseOptions = new System.Windows.Forms.GroupBox();
+			this.radioButtonDownloadSingleQuote = new System.Windows.Forms.RadioButton();
+			this.dateTimePickerSelectedDate = new System.Windows.Forms.DateTimePicker();
+			this.radioButtonDownloadOnlyAfterMax = new System.Windows.Forms.RadioButton();
+			this.radioButtonOnlyAddMissing = new System.Windows.Forms.RadioButton();
+			this.radioButtonOverWriteYes = new System.Windows.Forms.RadioButton();
+			this.checkBoxComputeCloseToCloseValues = new System.Windows.Forms.CheckBox();
+			this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
+			this.checkBoxDownloadOnlyAfterCloseToCloseCheck = new System.Windows.Forms.CheckBox();
+			((System.ComponentModel.ISupportInitialize)(this.dataGrid1)).BeginInit();
+			this.groupBoxUpdateDatabaseOptions.SuspendLayout();
+			this.SuspendLayout();
+			// 
+			// dataGrid1
+			// 
+			this.dataGrid1.DataMember = "";
+			this.dataGrid1.Dock = System.Windows.Forms.DockStyle.Right;
+			this.dataGrid1.HeaderForeColor = System.Drawing.SystemColors.ControlText;
+			this.dataGrid1.Location = new System.Drawing.Point(278, 0);
+			this.dataGrid1.Name = "dataGrid1";
+			this.dataGrid1.ReadOnly = true;
+			this.dataGrid1.Size = new System.Drawing.Size(579, 472);
+			this.dataGrid1.TabIndex = 1;
+			// 
+			// oleDbDataAdapter1
+			// 
+			this.oleDbDataAdapter1.DeleteCommand = this.oleDbDeleteCommand1;
+			this.oleDbDataAdapter1.InsertCommand = this.oleDbInsertCommand1;
+			this.oleDbDataAdapter1.SelectCommand = this.oleDbSelectCommand1;
+			this.oleDbDataAdapter1.TableMappings.AddRange(new System.Data.Common.DataTableMapping[] {
+									new System.Data.Common.DataTableMapping("Table", "quotes", new System.Data.Common.DataColumnMapping[] {
+																		new System.Data.Common.DataColumnMapping("quId", "quId"),
+																		new System.Data.Common.DataColumnMapping("quTicker", "quTicker"),
+																		new System.Data.Common.DataColumnMapping("quDate", "quDate"),
+																		new System.Data.Common.DataColumnMapping("quOpen", "quOpen"),
+																		new System.Data.Common.DataColumnMapping("quHigh", "quHigh"),
+																		new System.Data.Common.DataColumnMapping("quLow", "quLow"),
+																		new System.Data.Common.DataColumnMapping("quClose", "quClose")})});
+			this.oleDbDataAdapter1.UpdateCommand = this.oleDbUpdateCommand1;
+			// 
+			// oleDbDeleteCommand1
+			// 
+			this.oleDbDeleteCommand1.CommandText = resources.GetString("oleDbDeleteCommand1.CommandText");
+			this.oleDbDeleteCommand1.Parameters.AddRange(new System.Data.OleDb.OleDbParameter[] {
+									new System.Data.OleDb.OleDbParameter("Original_quId", System.Data.OleDb.OleDbType.Integer, 0, System.Data.ParameterDirection.Input, false, ((byte)(10)), ((byte)(0)), "quId", System.Data.DataRowVersion.Original, null),
+									new System.Data.OleDb.OleDbParameter("Original_quClose", System.Data.OleDb.OleDbType.Single, 0, System.Data.ParameterDirection.Input, false, ((byte)(7)), ((byte)(0)), "quClose", System.Data.DataRowVersion.Original, null),
+									new System.Data.OleDb.OleDbParameter("Original_quClose1", System.Data.OleDb.OleDbType.Single, 0, System.Data.ParameterDirection.Input, false, ((byte)(7)), ((byte)(0)), "quClose", System.Data.DataRowVersion.Original, null),
+									new System.Data.OleDb.OleDbParameter("Original_quDate", System.Data.OleDb.OleDbType.DBDate, 0, System.Data.ParameterDirection.Input, false, ((byte)(0)), ((byte)(0)), "quDate", System.Data.DataRowVersion.Original, null),
+									new System.Data.OleDb.OleDbParameter("Original_quDate1", System.Data.OleDb.OleDbType.DBDate, 0, System.Data.ParameterDirection.Input, false, ((byte)(0)), ((byte)(0)), "quDate", System.Data.DataRowVersion.Original, null),
+									new System.Data.OleDb.OleDbParameter("Original_quHigh", System.Data.OleDb.OleDbType.Single, 0, System.Data.ParameterDirection.Input, false, ((byte)(7)), ((byte)(0)), "quHigh", System.Data.DataRowVersion.Original, null),
+									new System.Data.OleDb.OleDbParameter("Original_quHigh1", System.Data.OleDb.OleDbType.Single, 0, System.Data.ParameterDirection.Input, false, ((byte)(7)), ((byte)(0)), "quHigh", System.Data.DataRowVersion.Original, null),
+									new System.Data.OleDb.OleDbParameter("Original_quLow", System.Data.OleDb.OleDbType.Single, 0, System.Data.ParameterDirection.Input, false, ((byte)(7)), ((byte)(0)), "quLow", System.Data.DataRowVersion.Original, null),
+									new System.Data.OleDb.OleDbParameter("Original_quLow1", System.Data.OleDb.OleDbType.Single, 0, System.Data.ParameterDirection.Input, false, ((byte)(7)), ((byte)(0)), "quLow", System.Data.DataRowVersion.Original, null),
+									new System.Data.OleDb.OleDbParameter("Original_quOpen", System.Data.OleDb.OleDbType.Single, 0, System.Data.ParameterDirection.Input, false, ((byte)(7)), ((byte)(0)), "quOpen", System.Data.DataRowVersion.Original, null),
+									new System.Data.OleDb.OleDbParameter("Original_quOpen1", System.Data.OleDb.OleDbType.Single, 0, System.Data.ParameterDirection.Input, false, ((byte)(7)), ((byte)(0)), "quOpen", System.Data.DataRowVersion.Original, null),
+									new System.Data.OleDb.OleDbParameter("Original_quTicker", System.Data.OleDb.OleDbType.VarWChar, 8, System.Data.ParameterDirection.Input, false, ((byte)(0)), ((byte)(0)), "quTicker", System.Data.DataRowVersion.Original, null),
+									new System.Data.OleDb.OleDbParameter("Original_quTicker1", System.Data.OleDb.OleDbType.VarWChar, 8, System.Data.ParameterDirection.Input, false, ((byte)(0)), ((byte)(0)), "quTicker", System.Data.DataRowVersion.Original, null)});
+			// 
+			// oleDbInsertCommand1
+			// 
+			this.oleDbInsertCommand1.CommandText = "INSERT INTO quotes (quClose, quDate, quHigh, quLow, quOpen, quTicker, quVolume) V" +
+			"ALUES (?, ?, ?, ?, ?, ?, ?)";
+			this.oleDbInsertCommand1.Parameters.AddRange(new System.Data.OleDb.OleDbParameter[] {
+									new System.Data.OleDb.OleDbParameter("quClose", System.Data.OleDb.OleDbType.Single, 0, System.Data.ParameterDirection.Input, false, ((byte)(7)), ((byte)(0)), "quClose", System.Data.DataRowVersion.Current, null),
+									new System.Data.OleDb.OleDbParameter("quDate", System.Data.OleDb.OleDbType.DBDate, 0, "quDate"),
+									new System.Data.OleDb.OleDbParameter("quHigh", System.Data.OleDb.OleDbType.Single, 0, System.Data.ParameterDirection.Input, false, ((byte)(7)), ((byte)(0)), "quHigh", System.Data.DataRowVersion.Current, null),
+									new System.Data.OleDb.OleDbParameter("quLow", System.Data.OleDb.OleDbType.Single, 0, System.Data.ParameterDirection.Input, false, ((byte)(7)), ((byte)(0)), "quLow", System.Data.DataRowVersion.Current, null),
+									new System.Data.OleDb.OleDbParameter("quOpen", System.Data.OleDb.OleDbType.Single, 0, System.Data.ParameterDirection.Input, false, ((byte)(7)), ((byte)(0)), "quOpen", System.Data.DataRowVersion.Current, null),
+									new System.Data.OleDb.OleDbParameter("quTicker", System.Data.OleDb.OleDbType.VarWChar, 8, "quTicker"),
+									new System.Data.OleDb.OleDbParameter("quVolume", System.Data.OleDb.OleDbType.Integer, 0, System.Data.ParameterDirection.Input, false, ((byte)(10)), ((byte)(0)), "quVolume", System.Data.DataRowVersion.Current, null)});
+			// 
+			// oleDbSelectCommand1
+			// 
+			this.oleDbSelectCommand1.CommandText = "SELECT quClose, quDate, quHigh, quLow, quOpen, quTicker FROM quotes";
+			// 
+			// oleDbUpdateCommand1
+			// 
+			this.oleDbUpdateCommand1.CommandText = resources.GetString("oleDbUpdateCommand1.CommandText");
+			this.oleDbUpdateCommand1.Parameters.AddRange(new System.Data.OleDb.OleDbParameter[] {
+									new System.Data.OleDb.OleDbParameter("quClose", System.Data.OleDb.OleDbType.Single, 0, System.Data.ParameterDirection.Input, false, ((byte)(7)), ((byte)(0)), "quClose", System.Data.DataRowVersion.Current, null),
+									new System.Data.OleDb.OleDbParameter("quDate", System.Data.OleDb.OleDbType.DBDate, 0, "quDate"),
+									new System.Data.OleDb.OleDbParameter("quHigh", System.Data.OleDb.OleDbType.Single, 0, System.Data.ParameterDirection.Input, false, ((byte)(7)), ((byte)(0)), "quHigh", System.Data.DataRowVersion.Current, null),
+									new System.Data.OleDb.OleDbParameter("quLow", System.Data.OleDb.OleDbType.Single, 0, System.Data.ParameterDirection.Input, false, ((byte)(7)), ((byte)(0)), "quLow", System.Data.DataRowVersion.Current, null),
+									new System.Data.OleDb.OleDbParameter("quOpen", System.Data.OleDb.OleDbType.Single, 0, System.Data.ParameterDirection.Input, false, ((byte)(7)), ((byte)(0)), "quOpen", System.Data.DataRowVersion.Current, null),
+									new System.Data.OleDb.OleDbParameter("quTicker", System.Data.OleDb.OleDbType.VarWChar, 8, "quTicker"),
+									new System.Data.OleDb.OleDbParameter("Original_quId", System.Data.OleDb.OleDbType.Integer, 0, System.Data.ParameterDirection.Input, false, ((byte)(10)), ((byte)(0)), "quId", System.Data.DataRowVersion.Original, null),
+									new System.Data.OleDb.OleDbParameter("Original_quClose", System.Data.OleDb.OleDbType.Single, 0, System.Data.ParameterDirection.Input, false, ((byte)(7)), ((byte)(0)), "quClose", System.Data.DataRowVersion.Original, null),
+									new System.Data.OleDb.OleDbParameter("Original_quClose1", System.Data.OleDb.OleDbType.Single, 0, System.Data.ParameterDirection.Input, false, ((byte)(7)), ((byte)(0)), "quClose", System.Data.DataRowVersion.Original, null),
+									new System.Data.OleDb.OleDbParameter("Original_quDate", System.Data.OleDb.OleDbType.DBDate, 0, System.Data.ParameterDirection.Input, false, ((byte)(0)), ((byte)(0)), "quDate", System.Data.DataRowVersion.Original, null),
+									new System.Data.OleDb.OleDbParameter("Original_quDate1", System.Data.OleDb.OleDbType.DBDate, 0, System.Data.ParameterDirection.Input, false, ((byte)(0)), ((byte)(0)), "quDate", System.Data.DataRowVersion.Original, null),
+									new System.Data.OleDb.OleDbParameter("Original_quHigh", System.Data.OleDb.OleDbType.Single, 0, System.Data.ParameterDirection.Input, false, ((byte)(7)), ((byte)(0)), "quHigh", System.Data.DataRowVersion.Original, null),
+									new System.Data.OleDb.OleDbParameter("Original_quHigh1", System.Data.OleDb.OleDbType.Single, 0, System.Data.ParameterDirection.Input, false, ((byte)(7)), ((byte)(0)), "quHigh", System.Data.DataRowVersion.Original, null),
+									new System.Data.OleDb.OleDbParameter("Original_quLow", System.Data.OleDb.OleDbType.Single, 0, System.Data.ParameterDirection.Input, false, ((byte)(7)), ((byte)(0)), "quLow", System.Data.DataRowVersion.Original, null),
+									new System.Data.OleDb.OleDbParameter("Original_quLow1", System.Data.OleDb.OleDbType.Single, 0, System.Data.ParameterDirection.Input, false, ((byte)(7)), ((byte)(0)), "quLow", System.Data.DataRowVersion.Original, null),
+									new System.Data.OleDb.OleDbParameter("Original_quOpen", System.Data.OleDb.OleDbType.Single, 0, System.Data.ParameterDirection.Input, false, ((byte)(7)), ((byte)(0)), "quOpen", System.Data.DataRowVersion.Original, null),
+									new System.Data.OleDb.OleDbParameter("Original_quOpen1", System.Data.OleDb.OleDbType.Single, 0, System.Data.ParameterDirection.Input, false, ((byte)(7)), ((byte)(0)), "quOpen", System.Data.DataRowVersion.Original, null),
+									new System.Data.OleDb.OleDbParameter("Original_quTicker", System.Data.OleDb.OleDbType.VarWChar, 8, System.Data.ParameterDirection.Input, false, ((byte)(0)), ((byte)(0)), "quTicker", System.Data.DataRowVersion.Original, null),
+									new System.Data.OleDb.OleDbParameter("Original_quTicker1", System.Data.OleDb.OleDbType.VarWChar, 8, System.Data.ParameterDirection.Input, false, ((byte)(0)), ((byte)(0)), "quTicker", System.Data.DataRowVersion.Original, null)});
+			// 
+			// oleDbCommand1
+			// 
+			this.oleDbCommand1.CommandText = "DELETE quotes.* FROM quotes INNER JOIN tickers ON quotes.quTicker = tickers.tiTic" +
+			"ker";
+			// 
+			// buttonDownloadQuotesOfSelectedTickers
+			// 
+			this.buttonDownloadQuotesOfSelectedTickers.Location = new System.Drawing.Point(85, 419);
+			this.buttonDownloadQuotesOfSelectedTickers.Name = "buttonDownloadQuotesOfSelectedTickers";
+			this.buttonDownloadQuotesOfSelectedTickers.Size = new System.Drawing.Size(112, 32);
+			this.buttonDownloadQuotesOfSelectedTickers.TabIndex = 2;
+			this.buttonDownloadQuotesOfSelectedTickers.Text = "Download quotes";
+			this.buttonDownloadQuotesOfSelectedTickers.Click += new System.EventHandler(this.buttonDownloadQuotesOfSelectedTickers_Click);
+			// 
+			// dateTimePickerStartingDate
+			// 
+			this.dateTimePickerStartingDate.Location = new System.Drawing.Point(8, 36);
+			this.dateTimePickerStartingDate.Name = "dateTimePickerStartingDate";
+			this.dateTimePickerStartingDate.Size = new System.Drawing.Size(184, 20);
+			this.dateTimePickerStartingDate.TabIndex = 6;
+			// 
+			// labelStartingDateTime
+			// 
+			this.labelStartingDateTime.Location = new System.Drawing.Point(8, 9);
+			this.labelStartingDateTime.Name = "labelStartingDateTime";
+			this.labelStartingDateTime.Size = new System.Drawing.Size(80, 23);
+			this.labelStartingDateTime.TabIndex = 8;
+			this.labelStartingDateTime.Text = "Starting date";
+			// 
+			// checkBoxIsDicotomicSearchActivated
+			// 
+			this.checkBoxIsDicotomicSearchActivated.Checked = true;
+			this.checkBoxIsDicotomicSearchActivated.CheckState = System.Windows.Forms.CheckState.Checked;
+			this.checkBoxIsDicotomicSearchActivated.Location = new System.Drawing.Point(8, 306);
+			this.checkBoxIsDicotomicSearchActivated.Name = "checkBoxIsDicotomicSearchActivated";
+			this.checkBoxIsDicotomicSearchActivated.Size = new System.Drawing.Size(137, 24);
+			this.checkBoxIsDicotomicSearchActivated.TabIndex = 13;
+			this.checkBoxIsDicotomicSearchActivated.Text = "Use dicotomic search";
+			// 
+			// groupBoxUpdateDatabaseOptions
+			// 
+			this.groupBoxUpdateDatabaseOptions.Controls.Add(this.radioButtonDownloadSingleQuote);
+			this.groupBoxUpdateDatabaseOptions.Controls.Add(this.dateTimePickerSelectedDate);
+			this.groupBoxUpdateDatabaseOptions.Controls.Add(this.radioButtonDownloadOnlyAfterMax);
+			this.groupBoxUpdateDatabaseOptions.Controls.Add(this.radioButtonOnlyAddMissing);
+			this.groupBoxUpdateDatabaseOptions.Controls.Add(this.radioButtonOverWriteYes);
+			this.groupBoxUpdateDatabaseOptions.Location = new System.Drawing.Point(8, 62);
+			this.groupBoxUpdateDatabaseOptions.Name = "groupBoxUpdateDatabaseOptions";
+			this.groupBoxUpdateDatabaseOptions.Size = new System.Drawing.Size(249, 238);
+			this.groupBoxUpdateDatabaseOptions.TabIndex = 14;
+			this.groupBoxUpdateDatabaseOptions.TabStop = false;
+			this.groupBoxUpdateDatabaseOptions.Text = "Update Database options";
+			// 
+			// radioButtonDownloadSingleQuote
+			// 
+			this.radioButtonDownloadSingleQuote.Checked = true;
+			this.radioButtonDownloadSingleQuote.Location = new System.Drawing.Point(8, 80);
+			this.radioButtonDownloadSingleQuote.Name = "radioButtonDownloadSingleQuote";
+			this.radioButtonDownloadSingleQuote.Size = new System.Drawing.Size(192, 24);
+			this.radioButtonDownloadSingleQuote.TabIndex = 8;
+			this.radioButtonDownloadSingleQuote.TabStop = true;
+			this.radioButtonDownloadSingleQuote.Text = "Download single quote";
+			this.radioButtonDownloadSingleQuote.CheckedChanged += new System.EventHandler(this.radioButtonDownloadSingleQuote_CheckedChanged);
+			// 
+			// dateTimePickerSelectedDate
+			// 
+			this.dateTimePickerSelectedDate.Enabled = false;
+			this.dateTimePickerSelectedDate.Location = new System.Drawing.Point(16, 110);
+			this.dateTimePickerSelectedDate.Name = "dateTimePickerSelectedDate";
+			this.dateTimePickerSelectedDate.Size = new System.Drawing.Size(184, 20);
+			this.dateTimePickerSelectedDate.TabIndex = 7;
+			// 
+			// radioButtonDownloadOnlyAfterMax
+			// 
+			this.radioButtonDownloadOnlyAfterMax.Checked = true;
+			this.radioButtonDownloadOnlyAfterMax.Location = new System.Drawing.Point(8, 19);
+			this.radioButtonDownloadOnlyAfterMax.Name = "radioButtonDownloadOnlyAfterMax";
+			this.radioButtonDownloadOnlyAfterMax.Size = new System.Drawing.Size(192, 55);
+			this.radioButtonDownloadOnlyAfterMax.TabIndex = 3;
+			this.radioButtonDownloadOnlyAfterMax.TabStop = true;
+			this.radioButtonDownloadOnlyAfterMax.Text = "Download only quotes after last quote (fastest)";
+			// 
+			// radioButtonOnlyAddMissing
+			// 
+			this.radioButtonOnlyAddMissing.Location = new System.Drawing.Point(6, 185);
+			this.radioButtonOnlyAddMissing.Name = "radioButtonOnlyAddMissing";
+			this.radioButtonOnlyAddMissing.Size = new System.Drawing.Size(237, 47);
+			this.radioButtonOnlyAddMissing.TabIndex = 1;
+			this.radioButtonOnlyAddMissing.Text = "Download all quotes from starting date, adding to database only the missing ones";
+			// 
+			// radioButtonOverWriteYes
+			// 
+			this.radioButtonOverWriteYes.Location = new System.Drawing.Point(6, 147);
+			this.radioButtonOverWriteYes.Name = "radioButtonOverWriteYes";
+			this.radioButtonOverWriteYes.Size = new System.Drawing.Size(237, 41);
+			this.radioButtonOverWriteYes.TabIndex = 0;
+			this.radioButtonOverWriteYes.Text = "Download all quotes from starting date, deleting all existing ones in database";
+			// 
+			// checkBoxComputeCloseToCloseValues
+			// 
+			this.checkBoxComputeCloseToCloseValues.Location = new System.Drawing.Point(8, 349);
+			this.checkBoxComputeCloseToCloseValues.Name = "checkBoxComputeCloseToCloseValues";
+			this.checkBoxComputeCloseToCloseValues.Size = new System.Drawing.Size(209, 24);
+			this.checkBoxComputeCloseToCloseValues.TabIndex = 16;
+			this.checkBoxComputeCloseToCloseValues.Text = "Compute close to close ratios (slower)";
+			// 
+			// checkBoxDownloadOnlyAfterCloseToCloseCheck
+			// 
+			this.checkBoxDownloadOnlyAfterCloseToCloseCheck.Location = new System.Drawing.Point(8, 389);
+			this.checkBoxDownloadOnlyAfterCloseToCloseCheck.Name = "checkBoxDownloadOnlyAfterCloseToCloseCheck";
+			this.checkBoxDownloadOnlyAfterCloseToCloseCheck.Size = new System.Drawing.Size(230, 24);
+			this.checkBoxDownloadOnlyAfterCloseToCloseCheck.TabIndex = 17;
+			this.checkBoxDownloadOnlyAfterCloseToCloseCheck.Text = "Download only after CTC check (slower)";
+			this.toolTip1.SetToolTip(this.checkBoxDownloadOnlyAfterCloseToCloseCheck, "If checked, commit to database is performed only for tickers for which new adjust" +
+						"ed values respect current close to close ratio  ");
+			// 
+			// WebDownloader
+			// 
+			this.AutoScaleBaseSize = new System.Drawing.Size(5, 13);
+			this.ClientSize = new System.Drawing.Size(857, 472);
+			this.Controls.Add(this.checkBoxDownloadOnlyAfterCloseToCloseCheck);
+			this.Controls.Add(this.checkBoxComputeCloseToCloseValues);
+			this.Controls.Add(this.groupBoxUpdateDatabaseOptions);
+			this.Controls.Add(this.labelStartingDateTime);
+			this.Controls.Add(this.dateTimePickerStartingDate);
+			this.Controls.Add(this.buttonDownloadQuotesOfSelectedTickers);
+			this.Controls.Add(this.dataGrid1);
+			this.Controls.Add(this.checkBoxIsDicotomicSearchActivated);
+			this.Name = "WebDownloader";
+			this.Text = "Web downloader";
+			this.Load += new System.EventHandler(this.WebDownloader_Load);
+			this.Paint += new System.Windows.Forms.PaintEventHandler(this.WebDownloaderPaint);
+			this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.WebDownloaderFormClosing);
+			((System.ComponentModel.ISupportInitialize)(this.dataGrid1)).EndInit();
+			this.groupBoxUpdateDatabaseOptions.ResumeLayout(false);
+			this.ResumeLayout(false);
     }
+		private System.Windows.Forms.RadioButton radioButtonOnlyAddMissing;
 		#endregion
 
     #region Code not used anymore
@@ -619,98 +530,53 @@ namespace QuantProject.Applications.Downloader
     }    
     #endregion
 
-
-    private void downloadQuotes_withTickerDataSet_create_dsTickerCurrentlyDownloaded( DataTable dt )
-    {
-      if (!this.DsTickerCurrentlyDownloaded.Tables.Contains( "Tickers" ))
-      {
-        this.DsTickerCurrentlyDownloaded.Tables.Add( "Tickers" );
-        this.DsTickerCurrentlyDownloaded.Tables[ "Tickers" ].Columns.Add( 
-          new DataColumn( dt.Columns[0].ColumnName , dt.Columns[0].DataType ) );
-        this.DsTickerCurrentlyDownloaded.Tables[ "Tickers" ].Columns.Add( "currentState" , System.Type.GetType( "System.String" ) );
-        this.DsTickerCurrentlyDownloaded.Tables[ "Tickers" ].Columns.Add( "databaseUpdated" , System.Type.GetType( "System.String" ) );
-        this.DsTickerCurrentlyDownloaded.Tables[ "Tickers" ].Columns.Add( "adjustedClose" , System.Type.GetType( "System.String" ) );
-        this.DsTickerCurrentlyDownloaded.Tables[ "Tickers" ].Columns.Add( "adjCloseToCloseRatio" , System.Type.GetType( "System.String" ) );
-        this.dataGrid1.DataSource = this.DsTickerCurrentlyDownloaded.Tables[ "Tickers" ];
-      }
-    }
-
-    private void downloadQuotes_withTickerDataSet( DataSet ds )
-    {
-      
-        downloadQuotes_withTickerDataSet_create_dsTickerCurrentlyDownloaded( ds.Tables[0] );
-        foreach (DataRow myRow in ds.Tables[0].Rows) 
-        {
-          //if (this.dsTickerCurrentlyDownloaded.Tables[ "Tickers" ].Rows.Count>5)
-          //  Monitor.Wait( this.dsTickerCurrentlyDownloaded.Tables[ "Tickers" ] );
-          TickerDownloader qd = new TickerDownloader( this , myRow , myRow[0].ToString() , ds.Tables[0].Rows.Count );
-          //Thread newThread = new Thread( new ThreadStart( qd.downloadTicker));
-          //newThread.Start();
-          if(this.radioButtonAllAvailableUntilNowSinceStartingDate.Checked)
-          {
-            qd.DownloadTicker(this.dateTimePickerStartingDate.Value);
-          }
-          else
-          {
-            qd.DownloadTicker();
-          }
-        
-          //newThread.Join();
-          //qd.downloadTicker();
-        }
-      
-    }
     
-    private void downloadQuotes_createTickerDataSet( DataSet ds )
-	  {
-		  System.Data.OleDb.OleDbDataAdapter oleDbDataAdapter1=new OleDbDataAdapter( "select * from tickers" , this.OleDbConnection1);
-		  oleDbDataAdapter1.Fill(ds);
-	  }	
+//    private void downloadQuotes( )
+//    {
+////  		DataTable dt = this.DsTickerCurrentlyDownloaded.Tables["Tickers"];
+//  		this.downloadingInProgress = true;
+//  		try{
+//  				TickerDownloader qd = new TickerDownloader( this );
+//        	qd.DownloadTickers();
+//  		}
+//    	catch(Exception ex)
+//    	{
+//    		MessageBox.Show(ex.Message);
+//    	}
+//    	finally{
+//    		this.downloadingInProgress = false;
+//    		this.OleDbConnection1.Close();
+//    	}
+//    }
     
-    private void downloadQuotesOfAllTickers()
-    {
-      try
-      {
-        DataSet ds=new DataSet();
-        downloadQuotes_createTickerDataSet( ds );
-        downloadQuotes_withTickerDataSet( ds );
-        this.OleDbConnection1.Close();
-      }
-      catch(Exception ex)
-      {
-        MessageBox.Show(ex.ToString());
-      }
-  		
-      finally
-      {
-        
-      }
-
-    }
-    
-
-	  private void downloadQuotesOfSelectedTickers()
-	  {
-      try
-      {
-        DataSet ds=new DataSet();
-        ds.Tables.Add(this.tableOfSelectedTickers);
-        downloadQuotes_withTickerDataSet( ds );
-        this.OleDbConnection1.Close();
-      }
-      
-      catch(Exception ex)
-      {
-        MessageBox.Show(ex.ToString());
-      }
-  		
-      finally
-      {
-        
-      }
-    }  
-     
-  	
+//    private void downloadQuotes_createTickerDataSet( DataSet ds )
+//	  {
+//		  System.Data.OleDb.OleDbDataAdapter oleDbDataAdapter1=new OleDbDataAdapter( "select * from tickers" , this.OleDbConnection1);
+//		  oleDbDataAdapter1.Fill(ds);
+//	  }	
+//    
+//    private void downloadQuotesOfAllTickers()
+//    {
+//      try
+//      {
+//        DataSet ds=new DataSet();
+//        downloadQuotes_createTickerDataSet( ds );
+//        downloadQuotes_withTickerDataSet( ds );
+//        this.OleDbConnection1.Close();
+//      }
+//      catch(Exception ex)
+//      {
+//        MessageBox.Show(ex.ToString());
+//      }
+//  		
+//      finally
+//      {
+//        
+//      }
+//
+//    }
+//    
+      	
 	  private void openDbAndSetOleDbCommand()
 	  {
 		  try
@@ -718,71 +584,27 @@ namespace QuantProject.Applications.Downloader
 			  if (this.OleDbConnection1.State != ConnectionState.Open)
             this.OleDbConnection1.Open();
 			  oleDbCommand1.Connection = this.OleDbConnection1;
-			  //this.oleDbCommand1.ExecuteNonQuery();
-			  // NOTE that the execution of the previous line
-			  // causes the deletion of all records in quotes !
-  	
-		  }
+			}
 		  catch(Exception ex)
 		  {
 			  MessageBox.Show(ex.ToString());
 		  }
-  		
-		  finally
+  		finally
 		  {
 			  this.OleDbConnection1.Close();
 		  }
-  	
-	  }
-
-
-    private void button1_Click(object sender, System.EventArgs e)
-    {
-      this.button1.Enabled = false;
-      this.buttonAbort.Enabled = true;
-      this.openDbAndSetOleDbCommand();
-      //this.downloadThread = new Thread( new ThreadStart(this.downloadQuotesOfAllTickers));
-      //this.downloadThread.Start();
-	    this.downloadQuotesOfAllTickers();
-      this.buttonAbort.Enabled = false;
-    }
+ 	  }
 
     private void buttonDownloadQuotesOfSelectedTickers_Click(object sender, System.EventArgs e)
     {
       this.buttonDownloadQuotesOfSelectedTickers.Enabled = false;
-      this.buttonAbort.Enabled = true;
       this.openDbAndSetOleDbCommand();
-      //this.downloadThread = new Thread( new ThreadStart(this.downloadQuotesOfSelectedTickers));
-      //this.downloadThread.Start();
-	    this.downloadQuotesOfSelectedTickers();
-      this.buttonAbort.Enabled = false;
-    }
-
-    private void radioButtonAllAvailableUntilNow_CheckedChanged(object sender, System.EventArgs e)
-    {
-      if(this.radioButtonAllAvailableUntilNow.Checked == true)
-      {
-        this.dateTimePickerStartingDate.Enabled = false;
-      }
-      else
-      {
-        this.dateTimePickerStartingDate.Enabled = true;
-      }
-    }
-
-    private void WebDownloader_Load(object sender, System.EventArgs e)
-    {
-      // this is just used for testing code
-      //QuantProject.DataAccess.Tables.Quotes.ComputeAndCommitCloseToCloseRatios("ACE.MI");
-
-
-    }
-
-    private void buttonAbort_Click(object sender, System.EventArgs e)
-    {
-      this.buttonAbort.Enabled = false; 
-      this.downloadThread.Abort(); 
-    }
+      TickerDownloader tickerDownloader = 
+      	new TickerDownloader(this);
+      Thread downloadThread = new Thread( tickerDownloader.DownloadTickers );
+      this.downloadingInProgress = true;
+      downloadThread.Start();
+		}
 
     private void radioButtonDownloadSingleQuote_CheckedChanged(object sender, System.EventArgs e)
     {
@@ -792,6 +614,8 @@ namespace QuantProject.Applications.Downloader
         this.dateTimePickerSelectedDate.Enabled = false;
     }
     
+    #region Properties
+    
     public bool IsComputeCloseToCloseRatioSelected
     {
       get
@@ -800,14 +624,6 @@ namespace QuantProject.Applications.Downloader
       }
     }
     
-    public bool IsBeforeAndAfterSelected
-    {
-      get
-      {
-        return this.radioButtonDownloadBeforeMinAndAfterMax.Checked;
-      }
-    }
-
     public bool IsOnlyAfterLastQuoteSelected
     {
       get
@@ -819,7 +635,7 @@ namespace QuantProject.Applications.Downloader
     {
       get
       {
-        return (this.radioButtonOverWriteNo.Checked ||
+        return (this.radioButtonOnlyAddMissing.Checked ||
                 this.radioButtonOverWriteYes.Checked);
       }
     }
@@ -830,11 +646,11 @@ namespace QuantProject.Applications.Downloader
         return this.radioButtonOverWriteYes.Checked;
       }
     }
-    public bool IsOverWriteNoSelected
+    public bool IsOnlyAddMissingSelected
     {
       get
       {
-        return this.radioButtonOverWriteNo.Checked;
+        return this.radioButtonOnlyAddMissing.Checked;
       }
     }
     public bool IsCheckCloseToCloseSelected
@@ -858,5 +674,228 @@ namespace QuantProject.Applications.Downloader
         return this.dateTimePickerSelectedDate.Value;
       }
     }
-  }
+    public DateTime StartingDate
+    {
+      get
+      {
+        return this.dateTimePickerStartingDate.Value;
+      }
+    }
+   
+    public Hashtable DownloadingTickers
+    {
+      get
+      {
+        return this.downloadingTickers;
+      }
+    }
+    public int IndexOfCurrentUpdatingTicker
+    {
+      get
+      {
+        return this.indexOfCurrentUpdatingTicker;
+      }
+      set
+      {
+      	this.indexOfCurrentUpdatingTicker = value;
+      }
+    }
+		public string LastQuoteInDBForCurrentUpdatingTicker
+    {
+      get
+      {
+        return this.lastQuoteInDB;
+      }
+      set
+      {
+      	this.lastQuoteInDB = value;
+      }
+    }
+    
+    public string CurrentStateForCurrentUpdatingTicker
+    {
+      get
+      {
+        return this.currentState;
+      }
+      set
+      {
+      	this.currentState = value;
+      }
+    }
+    public string DatabaseUpdatedInfoForCurrentUpdatingTicker
+    {
+      get
+      {
+        return this.databaseUpdated;
+      }
+      set
+      {
+      	this.databaseUpdated = value;
+      }
+    }
+    public string AdjustedCloseInfoForCurrentUpdatingTicker
+    {
+      get
+      {
+        return this.adjustedClose;
+      }
+      set
+      {
+      	this.adjustedClose = value;
+      }
+    }
+    public string AdjCloseToCloseRatioInfoForCurrentUpdatingTicker
+    {
+      get
+      {
+        return this.adjCloseToCloseRatio;
+      }
+      set
+      {
+      	this.adjCloseToCloseRatio = value;
+      }
+    }
+    
+    public bool DownloadingInProgress
+    {
+      get
+      {
+        return this.downloadingInProgress;
+      }
+      set
+      {
+      	this.downloadingInProgress = value;
+      }
+    }
+    
+		#endregion
+		
+		private void webDownloaderLoad_createDataSourceForDataGrid( )
+    {
+    	if (!this.DsTickerCurrentlyDownloaded.Tables.Contains( "Tickers" ))
+      {
+        //structure for table
+      	this.DsTickerCurrentlyDownloaded.Tables.Add( "Tickers" );
+        this.DsTickerCurrentlyDownloaded.Tables[ "Tickers" ].Columns.Add( 
+          new DataColumn( this.tableOfSelectedTickers.Columns[0].ColumnName , this.tableOfSelectedTickers.Columns[0].DataType ) );
+        this.DsTickerCurrentlyDownloaded.Tables[ "Tickers" ].Columns.Add( "currentState" , System.Type.GetType( "System.String" ) );
+        this.DsTickerCurrentlyDownloaded.Tables[ "Tickers" ].Columns.Add( "lastQuoteInDB" , System.Type.GetType( "System.String" ) );
+        this.DsTickerCurrentlyDownloaded.Tables[ "Tickers" ].Columns.Add( "databaseUpdated" , System.Type.GetType( "System.String" ) );
+        this.DsTickerCurrentlyDownloaded.Tables[ "Tickers" ].Columns.Add( "adjustedClose" , System.Type.GetType( "System.String" ) );
+        this.DsTickerCurrentlyDownloaded.Tables[ "Tickers" ].Columns.Add( "adjCloseToCloseRatio" , System.Type.GetType( "System.String" ) );
+        //populate table
+        for(int i = 0; i < this.tableOfSelectedTickers.Rows.Count; i++)
+        {
+        	DataRow newRow = this.DsTickerCurrentlyDownloaded.Tables[ "Tickers" ].NewRow();
+        	newRow[ 0 ] = this.tableOfSelectedTickers.Rows[ i ][ 0 ];
+        	newRow[ "lastQuoteInDB" ] = "...";
+		      newRow[ "currentState" ] = "...";
+		      newRow[ "databaseUpdated" ] = "...";
+		      newRow[ "adjustedClose"] = "...";
+		      newRow[ "adjCloseToCloseRatio"] = "...";
+		      this.DsTickerCurrentlyDownloaded.Tables[ "Tickers" ].Rows.Add( newRow );
+        }
+        this.dataGrid1.DataSource = this.DsTickerCurrentlyDownloaded.Tables[ "Tickers" ];
+      }
+    }
+	
+		private void webDownloaderLoad_setStyleForDataGrid()
+		{
+			DataGridTableStyle dataGrid1TableStyle = new DataGridTableStyle();
+			dataGrid1TableStyle.MappingName = this.DsTickerCurrentlyDownloaded.Tables[ "Tickers" ].TableName;
+			dataGrid1TableStyle.ColumnHeadersVisible = true;
+			dataGrid1TableStyle.ReadOnly = true;
+			dataGrid1TableStyle.SelectionBackColor = Color.DimGray ;
+						
+      DataGridTextBoxColumn columnStyle_Tickers = new DataGridTextBoxColumn();
+			columnStyle_Tickers.MappingName = "tiTicker";
+			columnStyle_Tickers.HeaderText = "Tickers";
+			columnStyle_Tickers.TextBox.Enabled = false;
+			columnStyle_Tickers.NullText = "";
+			columnStyle_Tickers.Width = 58;
+			
+			DataGridTextBoxColumn columnStyle_lastQuoteInDB = new DataGridTextBoxColumn();
+			columnStyle_lastQuoteInDB.MappingName = "lastQuoteInDB";
+			columnStyle_lastQuoteInDB.HeaderText = "Last Quote In DB";
+			columnStyle_lastQuoteInDB.TextBox.Enabled = false;
+			columnStyle_lastQuoteInDB.NullText = "";
+			columnStyle_lastQuoteInDB.Width = 95;
+			
+			DataGridTextBoxColumn columnStyle_currentState = new DataGridTextBoxColumn();
+			columnStyle_currentState.MappingName = "currentState";
+			columnStyle_currentState.HeaderText = "Current State";
+			columnStyle_currentState.TextBox.Enabled = false;
+			columnStyle_currentState.NullText = "";
+			columnStyle_currentState.Width = 95;
+      
+			DataGridTextBoxColumn columnStyle_databaseUpdated = new DataGridTextBoxColumn();
+      columnStyle_databaseUpdated.MappingName = "databaseUpdated";
+      columnStyle_databaseUpdated.HeaderText = "DB Updated";
+      columnStyle_databaseUpdated.TextBox.Enabled = false;
+      columnStyle_databaseUpdated.NullText = "";
+      columnStyle_databaseUpdated.Width = 80;
+
+      DataGridTextBoxColumn columnStyle_adjustedClose = new DataGridTextBoxColumn();
+      columnStyle_adjustedClose.MappingName = "adjustedClose";
+      columnStyle_adjustedClose.HeaderText = "Adj Close";
+      columnStyle_adjustedClose.TextBox.Enabled = false;
+      columnStyle_adjustedClose.NullText = "";
+      columnStyle_adjustedClose.Width = 70;
+      
+      DataGridTextBoxColumn columnStyle_adjCloseToCloseRatio = new DataGridTextBoxColumn();
+      columnStyle_adjCloseToCloseRatio.MappingName = "adjCloseToCloseRatio";
+      columnStyle_adjCloseToCloseRatio.HeaderText = "Adj Close To Close Ratio";
+      columnStyle_adjCloseToCloseRatio.TextBox.Enabled = false;
+      columnStyle_adjCloseToCloseRatio.NullText = "";
+      columnStyle_adjCloseToCloseRatio.Width = 110;
+      
+      dataGrid1TableStyle.GridColumnStyles.Add(columnStyle_Tickers);
+      dataGrid1TableStyle.GridColumnStyles.Add(columnStyle_lastQuoteInDB);
+			dataGrid1TableStyle.GridColumnStyles.Add(columnStyle_currentState);
+      dataGrid1TableStyle.GridColumnStyles.Add(columnStyle_databaseUpdated);
+      dataGrid1TableStyle.GridColumnStyles.Add(columnStyle_adjustedClose);
+      dataGrid1TableStyle.GridColumnStyles.Add(columnStyle_adjCloseToCloseRatio);
+			
+      this.dataGrid1.TableStyles.Add(dataGrid1TableStyle);
+		}
+	  
+		private void WebDownloader_Load(object sender, System.EventArgs e)
+    {
+			this.webDownloaderLoad_createDataSourceForDataGrid();
+			this.webDownloaderLoad_setStyleForDataGrid();
+    }
+    
+    private void webDownloaderPaint_refreshTableForGrid()
+		{
+			lock( this.DsTickerCurrentlyDownloaded.Tables[ "Tickers" ] )
+      {
+				DataRow row = this.DsTickerCurrentlyDownloaded.Tables[ "Tickers" ].Rows[ this.IndexOfCurrentUpdatingTicker ];
+				row["lastQuoteInDB"] = this.LastQuoteInDBForCurrentUpdatingTicker;
+				row["currentState"] = this.CurrentStateForCurrentUpdatingTicker;
+				row["adjustedClose"] = this.AdjustedCloseInfoForCurrentUpdatingTicker;
+				row["adjCloseToCloseRatio"] = this.AdjCloseToCloseRatioInfoForCurrentUpdatingTicker;
+				row["databaseUpdated"] = this.DatabaseUpdatedInfoForCurrentUpdatingTicker;	
+      }
+		}
+    
+    void WebDownloaderPaint(object sender, PaintEventArgs e)
+		{
+    	if( this.DsTickerCurrentlyDownloaded.Tables[ "Tickers" ] != null)
+    		this.webDownloaderPaint_refreshTableForGrid();
+    }
+		
+		void WebDownloaderFormClosing(object sender, FormClosingEventArgs e)
+		{
+			if (this.downloadingInProgress)
+       {
+          e.Cancel = true;
+          MessageBox.Show("You can't close the form if downloading is still in progress!");
+       }
+       else
+       {
+          e.Cancel = false;
+       }
+		}
+	}
 }
