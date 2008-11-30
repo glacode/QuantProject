@@ -16,8 +16,8 @@ namespace QuantProject.ADT
 		public static int SuspiciousRatio = 7;
 		public static int PrecedingDaysForVisualValidation = 20;
 		public static int DaysForMovingAverageForSuspiciousRatioValidation = 20;
-		public static DateTime InitialDateTimeForDownload = new DateTime(1985,1,1);
-    public static int TimeOutValue = 15000;
+		public static DateTime InitialDateTimeForDownload = new DateTime(1995,1,1);
+    public static int TimeOutValue = 10000;
     public static int NumberOfCheckToPerformOnAdjustedValues = 3;
     public static double MaxDifferenceForAdjustedValues = 0.01;
     public static double MaxDifferenceForCloseToCloseRatios = 0.005;
