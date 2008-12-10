@@ -192,6 +192,22 @@ namespace QuantProject.Business.Timing
 			return isEndOfDayDateTime;
 		}
 		
+		/// <summary>
+		/// true iif instruments are exchanged at dateTime
+		/// </summary>
+		/// <param name="dateTime"></param>
+		/// <returns></returns>
+		public static bool IsMarketTime( DateTime dateTime )
+		{
+			bool isMarketTime =
+				(
+					( dateTime >= HistoricalEndOfDayTimer.GetMarketOpen( dateTime ) ) &&
+					( dateTime <= HistoricalEndOfDayTimer.GetMarketClose( dateTime ) )
+				);
+			return isMarketTime;
+		}
+
+		
 		#region GetNextMarketStatusSwitch
 //		private void getNextMarketStatusSwitch_checkParameters(
 //			DateTime dateTime)
