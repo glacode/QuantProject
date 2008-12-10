@@ -21,6 +21,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 
 using System;
+using System.Collections.Generic;
 
 namespace QuantProject.ADT.Timing
 {
@@ -35,37 +36,37 @@ namespace QuantProject.ADT.Timing
 		{
 			bool returnValue = false;
 			char[] chars = stringRepresentingTime.ToCharArray();
-			if( 
-			   //first - hour
-			   (chars[0]=='0' || chars[0]=='1' || chars[0]=='2') &&
-			   //second - hour
-			   ( (chars[0]=='0' || chars[0]=='1') &&
-			   		(chars[1]=='0' || chars[1]=='1' || chars[1]=='2' ||
-			    	chars[1]=='3' || chars[1]=='4' || chars[1]=='5' ||
-			    	chars[1]=='6' || chars[1]=='7' || chars[1]=='8' || chars[1]=='9')	||
-			     	chars[0] == '2' && 
-			     	(chars[1]=='0' || chars[1]=='1' || chars[1]=='2' ||
-			    	chars[1]=='3' || chars[1]=='4') ) &&
-			   //third - separator
-			   (chars[2]==':') &&
-			   //fourth - minute
-				 (chars[3]=='0' || chars[3]=='1' || chars[3]=='2' ||
-			    chars[3]=='3' || chars[3]=='4' || chars[3]=='5') &&
-			   //fifth - minute
-				 (chars[4]=='0' || chars[4]=='1' || chars[4]=='2' ||
-			    	chars[4]=='3' || chars[4]=='4' || chars[4]=='5' ||
-			    	chars[4]=='6' || chars[4]=='7' || chars[4]=='8' || chars[4]=='9') &&
-			   //sixth - separator
-			   (chars[5]==':') &&
-			   //seventh - second
-				 (chars[6]=='0' || chars[6]=='1' || chars[6]=='2' ||
-			    chars[6]=='3' || chars[6]=='4' || chars[6]=='5') &&
-			   //eighth - second
-				 (chars[7]=='0' || chars[7]=='1' || chars[7]=='2' ||
-			    	chars[7]=='3' || chars[7]=='4' || chars[7]=='5' ||
-			    	chars[7]=='6' || chars[7]=='7' || chars[7]=='8' || chars[7]=='9') 
-			  )
-					returnValue = true;
+			if(
+				//first - hour
+				(chars[0]=='0' || chars[0]=='1' || chars[0]=='2') &&
+				//second - hour
+				( (chars[0]=='0' || chars[0]=='1') &&
+				 (chars[1]=='0' || chars[1]=='1' || chars[1]=='2' ||
+				  chars[1]=='3' || chars[1]=='4' || chars[1]=='5' ||
+				  chars[1]=='6' || chars[1]=='7' || chars[1]=='8' || chars[1]=='9')	||
+				 chars[0] == '2' &&
+				 (chars[1]=='0' || chars[1]=='1' || chars[1]=='2' ||
+				  chars[1]=='3' || chars[1]=='4') ) &&
+				//third - separator
+				(chars[2]==':') &&
+				//fourth - minute
+				(chars[3]=='0' || chars[3]=='1' || chars[3]=='2' ||
+				 chars[3]=='3' || chars[3]=='4' || chars[3]=='5') &&
+				//fifth - minute
+				(chars[4]=='0' || chars[4]=='1' || chars[4]=='2' ||
+				 chars[4]=='3' || chars[4]=='4' || chars[4]=='5' ||
+				 chars[4]=='6' || chars[4]=='7' || chars[4]=='8' || chars[4]=='9') &&
+				//sixth - separator
+				(chars[5]==':') &&
+				//seventh - second
+				(chars[6]=='0' || chars[6]=='1' || chars[6]=='2' ||
+				 chars[6]=='3' || chars[6]=='4' || chars[6]=='5') &&
+				//eighth - second
+				(chars[7]=='0' || chars[7]=='1' || chars[7]=='2' ||
+				 chars[7]=='3' || chars[7]=='4' || chars[7]=='5' ||
+				 chars[7]=='6' || chars[7]=='7' || chars[7]=='8' || chars[7]=='9')
+			)
+				returnValue = true;
 			
 			return returnValue;
 		}
@@ -82,7 +83,7 @@ namespace QuantProject.ADT.Timing
 		public static DateTime GetDateTimeFromMerge ( DateTime dateTime, Time time )
 		{
 			return new DateTime( dateTime.Year , dateTime.Month , dateTime.Day,
-			                     time.Hour , time.Minute , time.Second );
+			                    time.Hour , time.Minute , time.Second );
 		}
 		
 		
@@ -126,8 +127,8 @@ namespace QuantProject.ADT.Timing
 		
 		private void time_checkParameter ( string stringRepresentingTime )
 		{
-			if( stringRepresentingTime.Length != 8 || 
-			    !Time.IsValidTimeFormat( stringRepresentingTime ) )
+			if( stringRepresentingTime.Length != 8 ||
+			   !Time.IsValidTimeFormat( stringRepresentingTime ) )
 				throw new Exception("string is not in the requested time-format hh:mm:ss");
 		}
 		
@@ -140,7 +141,7 @@ namespace QuantProject.ADT.Timing
 			this.standardDateTime = new DateTime(1900,1,1,0,0,0);
 			//just for compiling next two lines
 			this.time_checkParameter( stringRepresentingTime );
-			this.standardDateTime = 
+			this.standardDateTime =
 				this.time_getStandardTimeFromString( stringRepresentingTime );
 		}
 		
@@ -230,5 +231,22 @@ namespace QuantProject.ADT.Timing
 				( this.Second == dateTime.Second );
 			return returnValue;
 		}
+		
+		#region CheckStrictlyAscending
+		private static void checkStrictlyAscending(
+			List< Time > times , int timeIndex )
+		{
+			Time currentTime = times[ timeIndex ];
+			Time nextTime = times[ timeIndex + 1 ];
+			if ( currentTime >= nextTime )
+				throw new Exception(
+					"Given times are not in strict ascending order" );
+		}
+		public static void CheckStrictlyAscending( List< Time > times )
+		{
+			for ( int i = 0 ; i < times.Count - 1 ; i++ )
+				Time.checkStrictlyAscending( times , i );
+		}
+		#endregion CheckStrictlyAscending
 	}
 }
