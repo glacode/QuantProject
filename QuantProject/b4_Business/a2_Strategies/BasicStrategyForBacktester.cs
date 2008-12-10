@@ -185,7 +185,9 @@ namespace QuantProject.Business.Strategies
 		{
 			string message = "Number of Eligible tickers: " +
 				eligibleTickers.Count +
-				" - " +
+				" - Simulated time: " +
+				this.account.Timer.GetCurrentDateTime().ToString() +
+				" - Real time: " +
 				DateTime.Now.ToString();
 			NewMessageEventArgs newMessageEventArgs =
 				new NewMessageEventArgs( message );
@@ -245,6 +247,10 @@ namespace QuantProject.Business.Strategies
 		{
 			if ( this.areOptimalWeightedPositionsToBeUpdated() )
 				this.updateOptimalTestingPositions();
+			if ( ( dateTime.Month == 3 ) && ( dateTime.Day == 15 ) )
+			{
+				;
+			}
 			if ( this.arePositionsToBeClosed() )
 				AccountManager.ClosePositions( this.account );
 			if ( this.arePositionsToBeOpened() )
