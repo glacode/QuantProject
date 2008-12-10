@@ -62,6 +62,8 @@ namespace QuantProject.Business.Financial.Accounting.Reporting
 		private EquityLine equityLine;
 		private Tables.Summary summary;
 		private Tables.StatisticsSummary statisticsSummary;
+		
+		private HistoricalMarketValueProvider historicalAdjustedQuoteProvider;
 
 		public string Name
 		{
@@ -160,6 +162,8 @@ namespace QuantProject.Business.Financial.Accounting.Reporting
 			this.account = account;
 			this.historicalMarketValueProvider = historicalMarketValueProvider;
 			this.dateTimeSelectorForEquityLine = dateTimeSelectorForEquityLine;
+			
+			this.historicalAdjustedQuoteProvider = new HistoricalAdjustedQuoteProvider();
 		}
 
 		#region Create
@@ -184,12 +188,31 @@ namespace QuantProject.Business.Financial.Accounting.Reporting
 		}
 		
 		#region setRows
+		
+		#region addBalanceItems
+		
+		private double getMarketValue( DateTime dateTime )
+		{
+			double marketValue = double.MinValue;
+			if ( HistoricalEndOfDayTimer.IsMarketTime( dateTime ) )
+				// market is open
+				marketValue = this.accountCopy.Portfolio.GetMarketValue(
+					dateTime , this.historicalMarketValueProvider );
+			else
+				// instruments are not exchanged at dateTime
+				marketValue = this.accountCopy.Portfolio.GetMarketValue(
+					dateTime , this.historicalAdjustedQuoteProvider );
+			return marketValue;
+		}
+		
 		private void addBalanceItems ( DateTime dateTime ,  DataRow dataRow )
 		{
 			dataRow[ "AccountCash" ] = this.accountCopy.CashAmount;
 
-			dataRow[ "PortfolioValue" ] = this.accountCopy.Portfolio.GetMarketValue(
-				dateTime , this.historicalMarketValueProvider );
+			dataRow[ "PortfolioValue" ] = this.getMarketValue( dateTime );
+//			this.accountCopy.Portfolio.GetMarketValue(
+//				dateTime , this.historicalAdjustedQuoteProvider );
+//				dateTime , this.historicalMarketValueProvider );
 
 			dataRow[ "AccountValue" ] = (double)dataRow[ "AccountCash" ] +
 				(double)dataRow[ "PortfolioValue" ];
@@ -197,6 +220,7 @@ namespace QuantProject.Business.Financial.Accounting.Reporting
 				this.accountCopy.Transactions.TotalWithdrawn -
 				this.accountCopy.Transactions.TotalAddedCash;
 		}
+		#endregion addBalanceItems
 		
 		#region setRows_addRowsForTransactionsBefore_nextDateTimeForEquityLine
 		private bool isNextTransactionToBeAdded(
@@ -205,17 +229,17 @@ namespace QuantProject.Business.Financial.Accounting.Reporting
 		{
 			bool isToBeAdded = false;
 			if ( indexForTheNextTransactionToBeAdded <
-				 this.account.Transactions.Count )
+			    this.account.Transactions.Count )
 				// not all transactions have been added, yet
 			{
 				DateTime dateTimeForTheNextTransactionToBeAdded =
-				(DateTime)this.account.Transactions.GetKey(
-					indexForTheNextTransactionToBeAdded );
+					(DateTime)this.account.Transactions.GetKey(
+						indexForTheNextTransactionToBeAdded );
 				isToBeAdded = ( dateTimeForTheNextTransactionToBeAdded <=
 				               nextDateTimeForEquityLine );
 			}
 			return isToBeAdded;
-		}			
+		}
 		
 		#region addRowsForTransactionsAtTheGivenDateTime
 		private void addTransactionRow( TimedTransaction transaction )
@@ -233,7 +257,7 @@ namespace QuantProject.Business.Financial.Accounting.Reporting
 			dataRow[ "TransactionAmount" ] = transaction.InstrumentPrice * transaction.Quantity;
 			if ( transaction.Commission != null )
 				dataRow[ "Commission" ] = transaction.Commission.Value;
-			addBalanceItems( transaction.DateTime , dataRow );
+			this.addBalanceItems( transaction.DateTime , dataRow );
 			this.detailedDataTable.Rows.Add( dataRow );
 		}
 		private void addRowsForTransactionsAtTheGivenDateTime(
