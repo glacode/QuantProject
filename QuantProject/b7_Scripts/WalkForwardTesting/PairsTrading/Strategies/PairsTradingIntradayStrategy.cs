@@ -68,12 +68,29 @@ namespace QuantProject.Scripts.WalkForwardTesting.PairsTrading
 				inSampleChooser ,
 				historicalMarketValueProviderForInSample )
 		{
+			this.checkParameters(
+				firstTimeToTestInefficiency ,
+				lastTimeToTestInefficiency ,
+				timeToClosePositions );
 			this.firstTimeToTestInefficiency = firstTimeToTestInefficiency;
 			this.lastTimeToTestInefficiency = lastTimeToTestInefficiency;
 			this.timeToClosePositions = timeToClosePositions;
 			this.historicalMarketValueProviderForChosingPositionsOutOfSample =
 				historicalMarketValueProviderForChosingPositionsOutOfSample;
 			this.outOfSampleChooser = outOfSampleChooser;
+		}
+		
+		private void checkParameters(
+			Time firstTimeToTestInefficiency ,
+			Time lastTimeToTestInefficiency ,
+			Time timeToClosePositions )
+		{
+			if ( firstTimeToTestInefficiency >= lastTimeToTestInefficiency )
+				throw new Exception(
+					"firstTimeToTestInefficiency must come before lastTimeToTestInefficiency" );
+			if ( lastTimeToTestInefficiency >= timeToClosePositions )
+				throw new Exception(
+					"lastTimeToTestInefficiency must come before timeToClosePositions" );
 		}
 		
 		protected override string getTextIdentifier()
@@ -111,25 +128,43 @@ namespace QuantProject.Scripts.WalkForwardTesting.PairsTrading
 		}
 
 		#region getPositionsToBeOpened
-		private DateTime getFirstDateTimeToTestInefficiency()
+		private DateTime getDateTimeForCurrentDate( Time time )
 		{
 			DateTime now = this.now();
-			DateTime firstDateTimeToTestInefficiency = new DateTime(
+			DateTime dateTimeForCurrentDate = new DateTime(
 				now.Year , now.Month , now.Day ,
-				this.firstTimeToTestInefficiency.Hour ,
-				this.firstTimeToTestInefficiency.Minute ,
-				this.firstTimeToTestInefficiency.Second );
+				time.Hour ,	time.Minute , time.Second );
+			return dateTimeForCurrentDate;
+		}
+		private DateTime getFirstDateTimeToTestInefficiency()
+		{
+//			DateTime now = this.now();
+//			DateTime firstDateTimeToTestInefficiency = new DateTime(
+//				now.Year , now.Month , now.Day ,
+//				this.firstTimeToTestInefficiency.Hour ,
+//				this.firstTimeToTestInefficiency.Minute ,
+//				this.firstTimeToTestInefficiency.Second );
+			DateTime firstDateTimeToTestInefficiency =
+				this.getDateTimeForCurrentDate( this.firstTimeToTestInefficiency );
 			return firstDateTimeToTestInefficiency;
 		}
 		private DateTime getLastDateTimeToTestInefficiency()
 		{
-			DateTime now = this.now();
-			DateTime lastDateTimeToTestInefficiency = new DateTime(
-				now.Year , now.Month , now.Day ,
-				this.lastTimeToTestInefficiency.Hour ,
-				this.lastTimeToTestInefficiency.Minute ,
-				this.lastTimeToTestInefficiency.Second );
+//			DateTime now = this.now();
+//			DateTime lastDateTimeToTestInefficiency = new DateTime(
+//				now.Year , now.Month , now.Day ,
+//				this.lastTimeToTestInefficiency.Hour ,
+//				this.lastTimeToTestInefficiency.Minute ,
+//				this.lastTimeToTestInefficiency.Second );
+			DateTime lastDateTimeToTestInefficiency =
+				this.getDateTimeForCurrentDate( this.lastTimeToTestInefficiency );
 			return lastDateTimeToTestInefficiency;
+		}
+		private DateTime getDateTimeToClosePositions()
+		{
+			DateTime dateTimeToClosePositions =
+				this.getDateTimeForCurrentDate( this.timeToClosePositions );
+			return dateTimeToClosePositions;
 		}
 		protected override WeightedPositions getPositionsToBeOpened()
 		{
@@ -137,11 +172,17 @@ namespace QuantProject.Scripts.WalkForwardTesting.PairsTrading
 				this.getFirstDateTimeToTestInefficiency();
 			DateTime lastDateTimeToTestInefficiency =
 				this.getLastDateTimeToTestInefficiency();
+			// attention! we are looking in the future here, but we do it
+			// just to avoid picking a ticker for which we don't have
+			// the market value when we will close the positions
+			DateTime dateTimeToClosePositions =
+				this.getDateTimeToClosePositions();
 			WeightedPositions weightedPositions =
 				this.outOfSampleChooser.GetPositionsToBeOpened(
 					this.bestTestingPositionsInSample ,
 					firstDateTimeToTestInefficiency ,
 					lastDateTimeToTestInefficiency ,
+					dateTimeToClosePositions ,
 					this.historicalMarketValueProviderForChosingPositionsOutOfSample ,
 					this.inSampleReturnsManager );
 			return weightedPositions;
