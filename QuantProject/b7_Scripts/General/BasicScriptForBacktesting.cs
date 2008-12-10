@@ -57,6 +57,7 @@ namespace QuantProject.Scripts.General
 		/// </summary>
 		public BasicScriptForBacktesting()
 		{
+			this.doThisBeforeAnythingElse();
 			string pathForTheMainFolderWhereScriptsResultsAreToBeSaved =
 				this.getPathForTheMainFolderWhereScriptsResultsAreToBeSaved();
 			string customSmallTextForFolderName =
@@ -70,6 +71,16 @@ namespace QuantProject.Scripts.General
 				pathForTheMainFolderWhereScriptsResultsAreToBeSaved ,
 				customSmallTextForFolderName ,
 				fullPathFileNameForMain );
+		}
+		
+		/// <summary>
+		/// override this method if you need to do anything that will be used
+		/// by the other abstract methods (that are invoked later); this method
+		/// is invoked before all the other methods
+		/// </summary>
+		protected virtual void doThisBeforeAnythingElse()
+		{
+			;
 		}
 
 		/// <summary>
