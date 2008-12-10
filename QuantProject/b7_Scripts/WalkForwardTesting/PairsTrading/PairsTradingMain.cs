@@ -56,6 +56,9 @@ namespace QuantProject.Scripts.WalkForwardTesting.PairsTrading
 	{
 		private Benchmark benchmark;
 		private HistoricalMarketValueProvider historicalMarketValueProviderForInSample;
+		private Time firstTimeToTestInefficiency;
+		private Time lastTimeToTestInefficiency;
+		private Time timeToClosePositions;
 		private HistoricalMarketValueProvider
 			historicalMarketValueProviderForChosingPositionsOutOfSample;
 		private HistoricalMarketValueProvider
@@ -84,7 +87,14 @@ namespace QuantProject.Scripts.WalkForwardTesting.PairsTrading
 //				new HistoricalAdjustedQuoteProvider();
 
 			// definition for the Fitness Evaluator
-			//      IEquityEvaluator equityEvaluator = new SharpeRatio();
+			//      IEquityEvaluator equityEvaluator = new SharpeRatio();	
+		}
+		
+		protected override void doThisBeforeAnythingElse()
+		{
+			this.firstTimeToTestInefficiency = new Time( 10 , 0 , 0 );
+			this.lastTimeToTestInefficiency = new Time( 14 , 0 , 0 );
+			this.timeToClosePositions = new Time( 15 , 50 , 0 );
 		}
 		
 		#region getHistoricalBarProvider
@@ -93,9 +103,9 @@ namespace QuantProject.Scripts.WalkForwardTesting.PairsTrading
 		private List< Time > getDailyTimes()
 		{
 			List< Time > dailyTimes = new List< Time >();
-			dailyTimes.Add( new Time( 13 , 0 , 0 ) );
-			dailyTimes.Add( new Time( 14 , 0 , 0 ) );
-			dailyTimes.Add( new Time( 15 , 0 , 0 ) );
+			dailyTimes.Add( this.firstTimeToTestInefficiency );
+			dailyTimes.Add( this.lastTimeToTestInefficiency );
+			dailyTimes.Add( this.timeToClosePositions );
 //			dailyTimes.Add( new Time(
 //				HistoricalEndOfDayTimer.GetOneHourAfterMarketClose( DateTime.Now ) ) );
 			return dailyTimes;
@@ -154,7 +164,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.PairsTrading
 		{
 			int numberOfBestTestingPositionsToBeReturned = 50;
 			// uncomment the following line for a faster script
-//			numberOfBestTestingPositionsToBeReturned = 5;
+			numberOfBestTestingPositionsToBeReturned = 10;
 			
 			IDecoderForTestingPositions decoderForWeightedPositions =
 				new DecoderForPairsTradingTestingPositionsWithBalancedWeights();
@@ -204,7 +214,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.PairsTrading
 			int inSampleDays = 180;
 			// uncomment the following line for a faster script
 //			inSampleDays = 5;
-			inSampleDays = 60;
+//			inSampleDays = 60;
 			
 			IIntervalsSelector intervalsSelectorForOutOfSample =
 				new OddIntervalsSelector( 1 , 1 , this.benchmark );
@@ -241,9 +251,9 @@ namespace QuantProject.Scripts.WalkForwardTesting.PairsTrading
 				new PairsTradingIntradayStrategy(
 					7 , inSampleDays ,
 					intervalsSelectorForInSample ,
-					new Time( 13 , 0 , 0 ) ,
-					new Time( 14 , 0 , 0 ) ,
-					new Time( 15 , 0 , 0 ) ,
+					this.firstTimeToTestInefficiency ,
+					this.lastTimeToTestInefficiency ,
+					this.timeToClosePositions ,
 					eligiblesSelector , inSampleChooser ,
 					this.historicalMarketValueProviderForInSample ,
 					this.historicalMarketValueProviderForChosingPositionsOutOfSample ,
@@ -275,9 +285,9 @@ namespace QuantProject.Scripts.WalkForwardTesting.PairsTrading
 
 			// uncomment the following two lines for a faster script
 			firstDateTime = new DateTime( 2006 , 2 , 1 );
-			lastDateTime = new DateTime( 2006 , 2 , 12 );
+			lastDateTime = new DateTime( 2007 , 12 , 31 );
 
-			double maxRunningHours = 1;
+			double maxRunningHours = 5;
 			
 			EndOfDayStrategyBackTester endOfDayStrategyBackTester =
 				new EndOfDayStrategyBackTester(
@@ -301,7 +311,10 @@ namespace QuantProject.Scripts.WalkForwardTesting.PairsTrading
 
 		protected override string getCustomSmallTextForFolderName()
 		{
-			return "pairsTrdngIntrdy_13_14_15";
+			return "pairsTrdngIntrdy_" +
+				this.firstTimeToTestInefficiency.Hour + "_" +
+				this.lastTimeToTestInefficiency.Hour + "_" +
+				this.timeToClosePositions.Hour;
 		}
 
 		protected override string getFullPathFileNameForMain()
