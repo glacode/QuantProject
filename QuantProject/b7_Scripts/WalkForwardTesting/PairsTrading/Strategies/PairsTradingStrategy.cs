@@ -147,17 +147,27 @@ namespace QuantProject.Scripts.WalkForwardTesting.PairsTrading
 		}
 		#endregion getLastDateTimeToTestInefficiency
 		
+		private DateTime getDateTimeToClosePositions()
+		{
+			DateTime dateTimeToClosePositions =
+				this.returnIntervals.LastInterval.End;
+			return dateTimeToClosePositions;
+		}
+		
 		private WeightedPositions getPositionsToBeOpened_withAtLeastASecondPhaseInterval()
 		{
 			DateTime firstDateTimeToTestInefficiency =
 				this.getFirstDateTimeToTestInefficiency();
 			DateTime lastDateTimeToTestInefficiency =
 				this.getLastDateTimeToTestInefficiency();
+			DateTime dateTimeToClosePositions =
+				this.getDateTimeToClosePositions();
 			WeightedPositions positionsToBeOpened =
 				this.outOfSampleChooser.GetPositionsToBeOpened(
 				this.bestTestingPositionsInSample ,
 				firstDateTimeToTestInefficiency ,
 				lastDateTimeToTestInefficiency ,
+				dateTimeToClosePositions ,
 //				this.returnIntervals ,
 				this.historicalMarketValueProviderForChosingPositionsOutOfSample ,
 				this.inSampleReturnsManager );
