@@ -50,7 +50,7 @@ namespace QuantProject.Business.Strategies
     	orders = new ArrayList();
     }
     
-		static private string[] getTickersInOpenedPositions(Account account)
+		static public string[] GetTickersInOpenedPositions(Account account)
 		{
 			Position[] positions = new Position[account.Portfolio.Count];
 			account.Portfolio.Positions.CopyTo( positions, 0);
@@ -62,7 +62,7 @@ namespace QuantProject.Business.Strategies
 
     static public void ClosePositions(Account account)
     {
-      string[] tickers = getTickersInOpenedPositions( account );
+      string[] tickers = GetTickersInOpenedPositions( account );
 			foreach( string ticker in tickers)
 				account.ClosePosition( ticker );
     }
@@ -130,7 +130,7 @@ namespace QuantProject.Business.Strategies
 		static public WeightedPositions GetWeightedPositions(Account account)
 		{
 			double positionsAbsoluteValue = getWeightedPositions_getPositionsAbsoluteValue(account); 
-			string[] tickers = getTickersInOpenedPositions( account );
+			string[] tickers = GetTickersInOpenedPositions( account );
 			double[] weights = new double[tickers.Length];
 			for(int i = 0; i < tickers.Length; i++)
 				weights[i] = 
