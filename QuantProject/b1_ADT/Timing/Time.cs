@@ -34,41 +34,18 @@ namespace QuantProject.ADT.Timing
 		#region IsValidTimeFormat
 		public static bool IsValidTimeFormat ( string stringRepresentingTime )
 		{
-			bool returnValue = false;
-			char[] chars = stringRepresentingTime.ToCharArray();
-			if(
-				//first - hour
-				(chars[0]=='0' || chars[0]=='1' || chars[0]=='2') &&
-				//second - hour
-				( (chars[0]=='0' || chars[0]=='1') &&
-				 (chars[1]=='0' || chars[1]=='1' || chars[1]=='2' ||
-				  chars[1]=='3' || chars[1]=='4' || chars[1]=='5' ||
-				  chars[1]=='6' || chars[1]=='7' || chars[1]=='8' || chars[1]=='9')	||
-				 chars[0] == '2' &&
-				 (chars[1]=='0' || chars[1]=='1' || chars[1]=='2' ||
-				  chars[1]=='3' || chars[1]=='4') ) &&
-				//third - separator
-				(chars[2]==':') &&
-				//fourth - minute
-				(chars[3]=='0' || chars[3]=='1' || chars[3]=='2' ||
-				 chars[3]=='3' || chars[3]=='4' || chars[3]=='5') &&
-				//fifth - minute
-				(chars[4]=='0' || chars[4]=='1' || chars[4]=='2' ||
-				 chars[4]=='3' || chars[4]=='4' || chars[4]=='5' ||
-				 chars[4]=='6' || chars[4]=='7' || chars[4]=='8' || chars[4]=='9') &&
-				//sixth - separator
-				(chars[5]==':') &&
-				//seventh - second
-				(chars[6]=='0' || chars[6]=='1' || chars[6]=='2' ||
-				 chars[6]=='3' || chars[6]=='4' || chars[6]=='5') &&
-				//eighth - second
-				(chars[7]=='0' || chars[7]=='1' || chars[7]=='2' ||
-				 chars[7]=='3' || chars[7]=='4' || chars[7]=='5' ||
-				 chars[7]=='6' || chars[7]=='7' || chars[7]=='8' || chars[7]=='9')
-			)
-				returnValue = true;
-			
-			return returnValue;
+			int hour = Convert.ToInt32(stringRepresentingTime.Substring(0,2));
+			int minute = Convert.ToInt32(stringRepresentingTime.Substring(3,2));
+			int second = Convert.ToInt32(stringRepresentingTime.Substring(6,2));
+			string firstSeparator = stringRepresentingTime.Substring(2,1);
+			string secondSeparator = stringRepresentingTime.Substring(5,1);
+			return (stringRepresentingTime.Length == 8) &&
+						(hour >= 0 && hour <= 24) &&
+						(firstSeparator == ":") &&
+						(minute >= 0 && minute <= 59) &&
+						(secondSeparator == ":") &&
+						(second >= 0 && second <= 59);
+
 		}
 		#endregion isValidTimeFormat
 		
@@ -127,8 +104,7 @@ namespace QuantProject.ADT.Timing
 		
 		private void time_checkParameter ( string stringRepresentingTime )
 		{
-			if( stringRepresentingTime.Length != 8 ||
-			   !Time.IsValidTimeFormat( stringRepresentingTime ) )
+			if( !Time.IsValidTimeFormat( stringRepresentingTime ) )
 				throw new Exception("string is not in the requested time-format hh:mm:ss");
 		}
 		
