@@ -49,6 +49,17 @@ namespace QuantProject.ADT.Timing
 		}
 		#endregion isValidTimeFormat
 		
+		/// <summary>
+		/// Adds the given minutes to the current instance's value
+		/// </summary>
+		/// <param name="minutesToAdd">minutes to add (if positive) or to
+		/// subtract (if negative) from the current instance</param>
+		public Time AddMinutes( double minutesToAdd )
+		{
+			DateTime standardDateTimeWithMinutesAdded =
+				this.standardDateTime.AddMinutes(minutesToAdd);
+			return new Time(standardDateTimeWithMinutesAdded);
+		}
 		
 		/// <summary>
 		/// Returns a new DateTime, having the date as the given dateTime
@@ -62,7 +73,6 @@ namespace QuantProject.ADT.Timing
 			return new DateTime( dateTime.Year , dateTime.Month , dateTime.Day,
 			                    time.Hour , time.Minute , time.Second );
 		}
-		
 		
 		private DateTime standardDateTime;
 		
