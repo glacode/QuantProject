@@ -64,7 +64,7 @@ namespace QuantProject.Data.DataProviders.Bars.Caching
 		{
 			this.maxNumberOfItemsIn_bars = maxNumberOfItemsIn_bars;
 			this.numberOfItemsToBeRemovedFrom_bars_whenCacheIsCleanedUp =
-				numberOfBarsIn_bars;
+				numberOfItemsToBeRemovedFrom_bars_whenCacheIsCleanedUp;
 			
 			this.bars = new Dictionary< DateTime , Dictionary< string , double > >();
 			this.numberOfBarsIn_bars = 0;
@@ -125,27 +125,34 @@ namespace QuantProject.Data.DataProviders.Bars.Caching
 		}
 		#endregion initializeMembersForCleaningUp_bars
 		
+//		#region removeNextItemFrom_bars
+		
 		#region removeNextItemFrom_bars
-		
-//		private void update_tickersForCleaningUp_bars()
-//		{
-//			344
-//		}
-		
-		#region removeNextItemFrom_bars_withUpdated_tickersForCleaningUp
 		
 		#region removeCurrentItemFrom_bars
 		
 		#region removeCurrentItemFrom_bars_actually
+		
+		#region removeCurrentItemFrom_bars_only
+		private void removeCurrentDateTimeFromCache_ifAllBarsHaveBeenRemovedForThatDateTime(
+			DateTime dateTimeForLastBarRemovedFromCache )
+		{
+			if ( this.bars[ dateTimeForLastBarRemovedFromCache ].Count == 0 )
+				// all bars have been removed from the cache, for dateTimeForCurrentItemToBeRemoved
+				this.bars.Remove( dateTimeForLastBarRemovedFromCache );
+		}
 		private void removeCurrentItemFrom_bars_only()
 		{
-			DateTime dateTimeForCurrentItemToBeRemoved =
+			DateTime dateTimeForCurrentBarToBeRemoved =
 				this.dateTimesForCleaningUp_bars[ 0 ];
 			string tickerForCurrentItemToBeRemoved =
 				this.tickersForCleaningUp_bars[ 0 ];
-			this.bars[ dateTimeForCurrentItemToBeRemoved ].Remove(
+			this.bars[ dateTimeForCurrentBarToBeRemoved ].Remove(
 				tickerForCurrentItemToBeRemoved );
+			this.removeCurrentDateTimeFromCache_ifAllBarsHaveBeenRemovedForThatDateTime(
+				dateTimeForCurrentBarToBeRemoved );
 		}
+		#endregion removeCurrentItemFrom_bars_only
 		
 		#region updateMembersUsedToCleanUp_bars
 		
@@ -169,7 +176,7 @@ namespace QuantProject.Data.DataProviders.Bars.Caching
 		private void removeCurrentItemFrom_bars_actually()
 		{
 			this.removeCurrentItemFrom_bars_only();
-			this.updateMembersUsedToCleanUp_bars();
+//			this.updateMembersUsedToCleanUp_bars();
 		}
 		#endregion removeCurrentItemFrom_bars_actually
 		
@@ -180,18 +187,18 @@ namespace QuantProject.Data.DataProviders.Bars.Caching
 		}
 		#endregion removeCurrentItemFrom_bars
 		
-		private void removeNextItemFrom_bars_withUpdated_tickersForCleaningUp()
+		private void removeNextItemFrom_bars()
 		{
 			this.removeCurrentItemFrom_bars();
 			this.updateMembersUsedToCleanUp_bars();
 		}
-		#endregion removeNextItemFrom_bars_withUpdated_tickersForCleaningUp
-		
-		private void removeNextItemFrom_bars()
-		{
-			this.removeNextItemFrom_bars_withUpdated_tickersForCleaningUp();
-		}
 		#endregion removeNextItemFrom_bars
+		
+//		private void removeNextItemFrom_bars()
+//		{
+//			this.removeNextItemFrom_bars_withUpdated_tickersForCleaningUp();
+//		}
+//		#endregion removeNextItemFrom_bars
 		
 		private void removeValuesFromTheCache()
 		{
