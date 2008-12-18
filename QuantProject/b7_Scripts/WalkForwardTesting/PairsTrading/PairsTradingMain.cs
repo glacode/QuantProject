@@ -93,7 +93,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.PairsTrading
 		protected override void doThisBeforeAnythingElse()
 		{
 			this.firstTimeToTestInefficiency = new Time( 10 , 0 , 0 );
-			this.lastTimeToTestInefficiency = new Time( 14 , 0 , 0 );
+			this.lastTimeToTestInefficiency = new Time( 11 , 0 , 0 );
 			this.timeToClosePositions = new Time( 15 , 50 , 0 );
 		}
 		
@@ -233,7 +233,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.PairsTrading
 
 			OutOfSampleChooser outOfSampleChooser =
 				new OutOfSampleChooserForSingleLongAndShort(
-					0.006 , 0.02 , 0.006 , 0.02 );
+					0.01 , 0.03 , 0.01 , 0.03 );
 //			outOfSampleChooser =
 //				new OutOfSampleChooserForExactNumberOfBestLongPositions(
 //				2 ,	0.006 , 0.99 , 0.006 , 0.99 );
@@ -284,7 +284,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.PairsTrading
 			DateTime lastDateTime = new DateTime( 2008 , 4 , 30 );
 
 			// uncomment the following two lines for a faster script
-			firstDateTime = new DateTime( 2006 , 2 , 1 );
+			firstDateTime = new DateTime( 2006 , 1 , 2 );
 			lastDateTime = new DateTime( 2007 , 12 , 31 );
 
 			double maxRunningHours = 5;
@@ -309,13 +309,25 @@ namespace QuantProject.Scripts.WalkForwardTesting.PairsTrading
 			return pathForTheMainFolderWhereScriptsResultsAreToBeSaved;
 		}
 
+		#region getCustomSmallTextForFolderName
+		private string getSmallText( Time time )
+		{
+			string smallText = time.Hour.ToString();
+			if ( time.Minute != 0 )
+				smallText += "." + time.Minute.ToString();
+			return smallText;
+		}
 		protected override string getCustomSmallTextForFolderName()
 		{
 			return "pairsTrdngIntrdy_" +
-				this.firstTimeToTestInefficiency.Hour + "_" +
-				this.lastTimeToTestInefficiency.Hour + "_" +
-				this.timeToClosePositions.Hour;
+				this.getSmallText( this.firstTimeToTestInefficiency ) + "_" +
+				this.getSmallText( this.lastTimeToTestInefficiency ) + "_" +
+				this.getSmallText( this.timeToClosePositions );
+//				this.firstTimeToTestInefficiency.Hour + "_" +
+//				this.lastTimeToTestInefficiency.Hour + "_" +
+//				this.timeToClosePositions.Hour;
 		}
+		#endregion getCustomSmallTextForFolderName
 
 		protected override string getFullPathFileNameForMain()
 		{
