@@ -79,12 +79,6 @@
     <Compile Include="Tables\VisuallyValidatedQuotes.cs" />
     <Compile Include="Tables\EventType.cs" />
     <Compile Include="MissingQuoteException.cs" />
-    <EmbeddedResource Include="ConfigurationManagement\DbTypeChooser.resx">
-      <DependentUpon>DbTypeChooser.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="ConfigurationManagement\MySqlConnectionForm.resx">
-      <DependentUpon>MySqlConnectionForm.cs</DependentUpon>
-    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\b1_ADT\ADT_SD.csproj">
