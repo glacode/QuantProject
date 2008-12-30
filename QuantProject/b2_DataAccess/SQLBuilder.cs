@@ -39,21 +39,50 @@ namespace QuantProject.DataAccess
 			//
 		}
 
+		#region GetDateConstant
+		private static string getDateConstantForAccess( DateTime dateTime )
+		{
+			string dateConstantForAccess = "#" + dateTime.Month + "/" + dateTime.Day + "/" +
+				dateTime.Year + "#";
+			return dateConstantForAccess;			
+		}
+		private static string getDateConstantForMySQL( DateTime dateTime )
+		{
+			string dateConstantForMySql =
+				"'" +
+				dateTime.Year + "-" +
+				dateTime.Month + "-" +
+				dateTime.Day +
+//				" " +
+//				dateTime.Hour + ":" +
+//				dateTime.Minute + ":" +
+//				dateTime.Second +
+				"'";
+			return dateConstantForMySql;			
+		}
 		internal static string GetDateConstant( DateTime dateTime )
 		{
-			string getDateConstant;
-			getDateConstant = "#" + dateTime.Month + "/" + dateTime.Day + "/" +
-				dateTime.Year + "#";
+			string getDateConstant = null;
+			switch ( ConnectionProvider.DbType )
+			{
+				case DbType.Access:
+					getDateConstant =
+						SQLBuilder.getDateConstantForAccess( dateTime );
+					break;
+				case DbType.MySql:
+					getDateConstant =
+						SQLBuilder.getDateConstantForMySQL( dateTime );
+					break;
+				default:
+					throw new Exception(
+						"Unknown database type. Complete the switch statement, please" );
+			}
 			return getDateConstant;
 		}
+		#endregion GetDateConstant
 
-		/// <summary>
-		/// returns a string to be used as a DateTime constant for a query
-		/// for an Access database
-		/// </summary>
-		/// <param name="dateTime"></param>
-		/// <returns></returns>
-		internal static string GetDateTimeConstant( DateTime dateTime )
+		#region GetDateTimeConstant
+		private static string getDateTimeConstantForAccess( DateTime dateTime )
 		{
 			string dateTimeConstant =
 				"#" +
@@ -64,8 +93,47 @@ namespace QuantProject.DataAccess
 				dateTime.Minute + ":" +
 				dateTime.Second +
 				"#";
+			return dateTimeConstant;		
+		}
+		private static string getDateTimeConstantForMySQL( DateTime dateTime )
+		{
+			string dateTimeConstant =
+				"'" +
+				dateTime.Year + "-" +
+				dateTime.Month + "-" +
+				dateTime.Day + " " +
+				dateTime.Hour + ":" +
+				dateTime.Minute + ":" +
+				dateTime.Second +
+				"'";
+			return dateTimeConstant;		
+		}
+		/// <summary>
+		/// returns a string to be used as a DateTime constant for a query
+		/// for an Access database
+		/// </summary>
+		/// <param name="dateTime"></param>
+		/// <returns></returns>
+		internal static string GetDateTimeConstant( DateTime dateTime )
+		{
+			string dateTimeConstant = null;
+			switch ( ConnectionProvider.DbType )
+			{
+				case DbType.Access:
+					dateTimeConstant =
+						SQLBuilder.getDateTimeConstantForAccess( dateTime );
+					break;
+				case DbType.MySql:
+					dateTimeConstant =
+						SQLBuilder.getDateTimeConstantForMySQL( dateTime );
+					break;
+				default:
+					throw new Exception(
+						"Unknown database type. Complete the switch statement, please" );
+			}
 			return dateTimeConstant;
 		}
+		#endregion GetDateTimeConstant
 		
 		#region GetTimeConstant
 		public static string GetTimeConstant( Time time )
@@ -82,13 +150,13 @@ namespace QuantProject.DataAccess
 		#region GetFilterForTime
 //		private static void getFilterForTime_checkParameters( DateTime time )
 //		{
-////			if ( ( comparisonOperator != "=" ) &&
-////			    ( comparisonOperator != "<" ) &&
-////			    ( comparisonOperator != "<=" ) &&
-////			    ( comparisonOperator != ">" ) &&
-////			    ( comparisonOperator != ">=" ) )
-////				throw new Exception(
-////					"comparisonOperator can either be '=' or '<' or '<=' or '>' or '>='" );
+		////			if ( ( comparisonOperator != "=" ) &&
+		////			    ( comparisonOperator != "<" ) &&
+		////			    ( comparisonOperator != "<=" ) &&
+		////			    ( comparisonOperator != ">" ) &&
+		////			    ( comparisonOperator != ">=" ) )
+		////				throw new Exception(
+		////					"comparisonOperator can either be '=' or '<' or '<=' or '>' or '>='" );
 //			if ( !ExtendedDateTime.IsTime( time ) )
 //				throw new Exception(
 //					"time is actually not a time. Use the method " +
@@ -96,6 +164,27 @@ namespace QuantProject.DataAccess
 //		}
 		
 		#region getFilterForTime_actually
+		
+		#region getFormatFunctionForTime
+		private static string getFormatFunctionForTime( string dateTimeFieldName )
+		{
+			string formatFunctionForTime = null;
+			switch ( ConnectionProvider.DbType )
+			{
+				case DbType.Access:
+					formatFunctionForTime = "Format([" + dateTimeFieldName + "],'hh.mm.ss')";
+					break;
+				case DbType.MySql:
+					formatFunctionForTime = "Date_Format(" + dateTimeFieldName + ",'%H.%i.%s')";
+					break;
+				default:
+					throw new Exception(
+						"Unknown database type. Complete the switch statement, please" );
+			}
+			return formatFunctionForTime;
+		}
+		#endregion getFormatFunctionForTime
+		
 		private static string getSqlStringForComparisonOperator(
 			SqlComparisonOperator sqlComparisonOperator )
 		{
@@ -124,7 +213,9 @@ namespace QuantProject.DataAccess
 			string fieldName , SqlComparisonOperator sqlComparisonOperator , Time time )
 		{
 			string filterForDailyTime =
-				"(Format([baDateTimeForOpen],'hh.mm.ss')" +
+//				"(Format([baDateTimeForOpen],'hh.mm.ss')" +
+				"(" +
+				SQLBuilder.getFormatFunctionForTime( "baDateTimeForOpen" ) +
 				SQLBuilder.getSqlStringForComparisonOperator( sqlComparisonOperator ) +
 				SQLBuilder.GetTimeConstant( time ) + ")";
 			return filterForDailyTime;
@@ -150,5 +241,28 @@ namespace QuantProject.DataAccess
 			return filterForTime;
 		}
 		#endregion GetFilterForTime
+	
+		/// <summary>
+		/// returns the name of the function used by the current database type,
+		/// to compute the standard deviation
+		/// </summary>
+		/// <returns></returns>
+		public static string GetStandardDeviationFunctionName()
+		{
+			string setStandardDeviationFunctionName = null;
+			switch ( ConnectionProvider.DbType )
+			{
+				case DbType.Access:
+					setStandardDeviationFunctionName = "StDev";
+					break;
+				case DbType.MySql:
+					setStandardDeviationFunctionName = "STDDEV_POP";
+					break;
+				default:
+					throw new Exception(
+						"Unknown database type. Complete the switch statement, please" );
+			}
+			return setStandardDeviationFunctionName;
+		}
 	}
 }

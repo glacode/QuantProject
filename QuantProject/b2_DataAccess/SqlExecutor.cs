@@ -1,6 +1,6 @@
 using System;
 using System.Data;
-using System.Data.OleDb;
+using System.Data.Common;
 
 namespace QuantProject.DataAccess
 {
@@ -18,23 +18,27 @@ namespace QuantProject.DataAccess
 		public static DataTable GetDataTable( string SqlQuery )
 		{
 			DataTable dataTable = new DataTable();
-			OleDbDataAdapter oleDbDataAdapter = new OleDbDataAdapter( SqlQuery , ConnectionProvider.OleDbConnection );
-			oleDbDataAdapter.Fill( dataTable );
+//			OleDbDataAdapter oleDbDataAdapter = new OleDbDataAdapter( SqlQuery , ConnectionProvider.DbConnection );
+			DbDataAdapter dbDataAdapter =
+				DbDataAdapterProvider.GetDbDataAdapter( SqlQuery );
+			dbDataAdapter.Fill( dataTable );
 			return dataTable;
 		}
-		public static void SetDataTable( string SqlQuery , DataTable dataTable )
+		public static void SetDataTable( string sqlQuery , DataTable dataTable )
 		{
-			OleDbDataAdapter oleDbDataAdapter = new OleDbDataAdapter( SqlQuery , ConnectionProvider.OleDbConnection );
-			oleDbDataAdapter.Fill( dataTable );
+			DbDataAdapter dbDataAdapter =
+				DbDataAdapterProvider.GetDbDataAdapter( sqlQuery );
+			dbDataAdapter.Fill( dataTable );
 		}
-		public static void ExecuteNonQuery( string SqlNonQuery )
+		public static int ExecuteNonQuery( string sqlNonQuery )
 		{
-				if(ConnectionProvider.OleDbConnection.State != ConnectionState.Open)
-          ConnectionProvider.OleDbConnection.Open();
-        OleDbCommand oleDbCommand = new OleDbCommand( SqlNonQuery ,
-				ConnectionProvider.OleDbConnection );
-
-      oleDbCommand.ExecuteNonQuery();
+			if(ConnectionProvider.DbConnection.State != ConnectionState.Open)
+				ConnectionProvider.DbConnection.Open();
+			//        OleDbCommand oleDbCommand = new OleDbCommand( SqlNonQuery ,
+//				ConnectionProvider.DbConnection );
+			DbCommand dbCommand = DbCommandProvider.GetDbCommand( sqlNonQuery );
+			int numberOfRowsAffected = dbCommand.ExecuteNonQuery();
+			return numberOfRowsAffected;
 		}
 	}
 }

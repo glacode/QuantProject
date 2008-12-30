@@ -46,8 +46,8 @@ namespace QuantProject.Data.DataTables
 					"delete * from visuallyValidatedQuotes where " +
 					"vvTicker='" + quotes.Ticker + "' and " +
 					"vvDate=" + FilterBuilder.GetDateConstant( quoteDate ) );
-				OleDbSingleTableAdapter oleDbSingleTableAdapter =
-					new OleDbSingleTableAdapter(
+				SingleTableDbDataAdapter oleDbSingleTableAdapter =
+					new SingleTableDbDataAdapter(
 					"select * from visuallyValidatedQuotes where 1=2" );
 				string hashValue = getHashValue( quotes , quoteDate );
 				oleDbSingleTableAdapter.DataTable.Rows.Add(	oleDbSingleTableAdapter.DataTable.NewRow() );
@@ -57,7 +57,7 @@ namespace QuantProject.Data.DataTables
 					validationType;
 				oleDbSingleTableAdapter.DataTable.Rows[ 0 ][ VisuallyValidatedQuotes.HashValue ] = hashValue;
 				oleDbSingleTableAdapter.DataTable.Rows[ 0 ][ VisuallyValidatedQuotes.EditDate ] = DateTime.Now;
-				oleDbSingleTableAdapter.OleDbDataAdapter.Update( oleDbSingleTableAdapter.DataTable );
+				oleDbSingleTableAdapter.DbDataAdapter.Update( oleDbSingleTableAdapter.DataTable );
 			}
 			catch ( Exception ex )
 			{

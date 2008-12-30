@@ -1,6 +1,6 @@
 using System;
 using System.Data;
-using System.Data.OleDb;
+using System.Data.Common;
 using QuantProject.ADT;
 using QuantProject.Business.Validation.Validators;
 using QuantProject.DataAccess;
@@ -16,8 +16,8 @@ namespace QuantProject.Business.Validation
 	public class ValidateDataTable : DataTable
 	{
 		private string selectStatement;
-		private OleDbCommandBuilder oleDbCommandBuilder;
-		private OleDbDataAdapter oleDbDataAdapter;
+		private DbCommandBuilder dbCommandBuilder;
+		private DbDataAdapter dbDataAdapter;
 		private DataTable tableOfTickersToBeValidated;
 
 		public Quotes Quotes;
@@ -41,11 +41,14 @@ namespace QuantProject.Business.Validation
 		{
 			this.selectStatement =
 				"select * from quotes where 1=2";
-			this.oleDbDataAdapter =
-				new OleDbDataAdapter( selectStatement , ConnectionProvider.OleDbConnection );
-			this.oleDbCommandBuilder = new OleDbCommandBuilder( oleDbDataAdapter );
-			this.oleDbDataAdapter.UpdateCommand = this.oleDbCommandBuilder.GetUpdateCommand();
-			this.oleDbDataAdapter.Fill( this );
+			this.dbDataAdapter =
+				DbDataAdapterProvider.GetDbDataAdapter( this.selectStatement );
+//				new OleDbDataAdapter( selectStatement , ConnectionProvider.DbConnection );
+//			this.oleDbCommandBuilder = new OleDbCommandBuilder( dbDataAdapter );
+			this.dbCommandBuilder =
+				DbCommandBuilderProvider.GetDbCommanBuilder( dbDataAdapter );
+			this.dbDataAdapter.UpdateCommand = this.dbCommandBuilder.GetUpdateCommand();
+			this.dbDataAdapter.Fill( this );
 			DataColumn dataColumn = new DataColumn( "CloseToCloseHasBeenVisuallyValidated" ,
 				System.Type.GetType( "System.Boolean" ) );
 			dataColumn.DefaultValue = false;
@@ -124,7 +127,7 @@ namespace QuantProject.Business.Validation
 		{
 			try
 			{
-				this.oleDbDataAdapter.Update( this );
+				this.dbDataAdapter.Update( this );
 				this.AcceptChanges();
 			}
 			catch (Exception exception)

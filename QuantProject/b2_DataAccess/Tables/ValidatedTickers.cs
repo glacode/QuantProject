@@ -57,15 +57,15 @@ namespace QuantProject.DataAccess.Tables
 			{
 				SqlExecutor.ExecuteNonQuery( "delete * from validatedTickers " +
 					"where " + ValidatedTickers.Ticker + "='" + ticker + "'" );
-				OleDbSingleTableAdapter oleDbSingleTableAdapter =
-					new OleDbSingleTableAdapter();
+				SingleTableDbDataAdapter oleDbSingleTableAdapter =
+					new SingleTableDbDataAdapter();
 				oleDbSingleTableAdapter.SetAdapter( "validatedTickers" );
 				oleDbSingleTableAdapter.DataTable.Rows.Add(	oleDbSingleTableAdapter.DataTable.NewRow() );
 				oleDbSingleTableAdapter.DataTable.Rows[ 0 ][ ValidatedTickers.Ticker ] = ticker;
 				oleDbSingleTableAdapter.DataTable.Rows[ 0 ][ ValidatedTickers.StartDate ] = startDate;
 				oleDbSingleTableAdapter.DataTable.Rows[ 0 ][ ValidatedTickers.EndDate ] = endDate;
 				oleDbSingleTableAdapter.DataTable.Rows[ 0 ][ ValidatedTickers.HashValue ] = hashValue;
-				oleDbSingleTableAdapter.OleDbDataAdapter.Update( oleDbSingleTableAdapter.DataTable );
+				oleDbSingleTableAdapter.DbDataAdapter.Update( oleDbSingleTableAdapter.DataTable );
 			}
 			catch ( Exception ex )
 			{

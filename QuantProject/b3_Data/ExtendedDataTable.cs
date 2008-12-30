@@ -9,15 +9,15 @@ namespace QuantProject.Data
 	/// </summary>
 	public class ExtendedDataTable : QuantProject.ADT.ExtendedDataTable
 	{
-		private OleDbSingleTableAdapter oleDbSingleTableAdapter;
+		private SingleTableDbDataAdapter oleDbSingleTableAdapter;
 
 		public ExtendedDataTable( string sql )
 		{
-			this.oleDbSingleTableAdapter = new OleDbSingleTableAdapter( sql , this );
+			this.oleDbSingleTableAdapter = new SingleTableDbDataAdapter( sql , this );
 		}
 		public void Update()
 		{
-			this.oleDbSingleTableAdapter.OleDbDataAdapter.Update( this );
+			this.oleDbSingleTableAdapter.DbDataAdapter.Update( this );
 		}
 	}
 }

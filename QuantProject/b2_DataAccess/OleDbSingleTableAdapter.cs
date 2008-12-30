@@ -22,15 +22,15 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 using System;
 using System.Data;
-using System.Data.OleDb;
+using System.Data.Common;
 
 namespace QuantProject.DataAccess
 {
 	/// <summary>
-	/// Returns a complete OleDbDataAdapter (with proper edit commands already set) to work with
+	/// Returns a complete DbDataAdapter (with proper edit commands already set) to work with
 	/// the given table
 	/// </summary>
-	public class OleDbSingleTableAdapter
+	public class SingleTableDbDataAdapter
 	{
 		private string tableName;
 		public string TableName
@@ -38,10 +38,10 @@ namespace QuantProject.DataAccess
 			get { return this.tableName; }
 			set { this.tableName = value; }
 		}
-		private OleDbDataAdapter oleDbDataAdapter;
-		public OleDbDataAdapter OleDbDataAdapter
+		private DbDataAdapter dbDataAdapter;
+		public DbDataAdapter DbDataAdapter
 		{
-			get { return this.oleDbDataAdapter; }
+			get { return this.dbDataAdapter; }
 		}
 		
 		private DataTable dataTable;
@@ -54,13 +54,16 @@ namespace QuantProject.DataAccess
 		{
 			try
 			{
-				this.oleDbDataAdapter =
-					new OleDbDataAdapter( selectStatement , ConnectionProvider.OleDbConnection );
-				OleDbCommandBuilder oleDbCommandBuilder = new OleDbCommandBuilder( oleDbDataAdapter );
-				this.oleDbDataAdapter.InsertCommand = oleDbCommandBuilder.GetInsertCommand();
-				this.oleDbDataAdapter.UpdateCommand = oleDbCommandBuilder.GetUpdateCommand();
-				this.oleDbDataAdapter.DeleteCommand = oleDbCommandBuilder.GetDeleteCommand();
-				this.oleDbDataAdapter.Fill( this.dataTable );
+//				this.dbDataAdapter =
+//					new DbDataAdapter( selectStatement , ConnectionProvider.DbConnection );
+				this.dbDataAdapter = DbDataAdapterProvider.GetDbDataAdapter( selectStatement );
+//				DbCommandBuilder oleDbCommandBuilder = new DbCommandBuilder( dbDataAdapter );
+				DbCommandBuilder dbCommandBuilder =
+					DbCommandBuilderProvider.GetDbCommanBuilder( this.dbDataAdapter );
+				this.dbDataAdapter.InsertCommand = dbCommandBuilder.GetInsertCommand();
+				this.dbDataAdapter.UpdateCommand = dbCommandBuilder.GetUpdateCommand();
+				this.dbDataAdapter.DeleteCommand = dbCommandBuilder.GetDeleteCommand();
+				this.dbDataAdapter.Fill( this.dataTable );
 			}
 			catch ( Exception ex )
 			{
@@ -70,19 +73,19 @@ namespace QuantProject.DataAccess
 			}
 		}
 
-		public OleDbSingleTableAdapter( string selectStatement )
+		public SingleTableDbDataAdapter( string selectStatement )
 		{
 			this.dataTable = new DataTable();
-			setAdapter( selectStatement );
+			this.setAdapter( selectStatement );
 		}
     
-    public OleDbSingleTableAdapter(string selectStatement, DataTable table )
+    public SingleTableDbDataAdapter(string selectStatement, DataTable table )
     {
 			this.dataTable = table;
 			setAdapter( selectStatement );
     }
 
-		public OleDbSingleTableAdapter()
+		public SingleTableDbDataAdapter()
 		{
 			this.dataTable = new DataTable();
 		}
