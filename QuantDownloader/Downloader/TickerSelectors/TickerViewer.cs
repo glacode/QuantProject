@@ -678,9 +678,9 @@ namespace QuantProject.Applications.Downloader.TickerSelectors
         {
           DataTable changedData = this.tableTickers.GetChanges();
           this.skipRowChangedEvent = true;
-          OleDbSingleTableAdapter adapter = new OleDbSingleTableAdapter();
+          SingleTableDbDataAdapter adapter = new SingleTableDbDataAdapter();
           adapter.SetAdapter("tickers");
-          adapter.OleDbDataAdapter.Update(changedData);
+          adapter.DbDataAdapter.Update(changedData);
           this.tableTickers.AcceptChanges();
         }
        }

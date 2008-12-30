@@ -4,7 +4,7 @@ using System.Collections;
 using System.ComponentModel;
 using System.Windows.Forms;
 using System.Data;
-using System.Data.OleDb;
+using System.Data.Common;
 using System.Net;
 using System.IO;
 using System.Threading;
@@ -21,14 +21,13 @@ namespace QuantProject.Applications.Downloader
 	/// </summary>
 	public class WebDownloader : System.Windows.Forms.Form, ITickerSelector 
 	{
-    public OleDbConnection OleDbConnection1 = ConnectionProvider.OleDbConnection;
+//    public DbConnection DbConnection1 = ConnectionProvider.DbConnection;
     public System.Windows.Forms.DataGrid dataGrid1;
     private System.Data.OleDb.OleDbDataAdapter oleDbDataAdapter1;
     private System.Data.OleDb.OleDbCommand oleDbSelectCommand1;
     private System.Data.OleDb.OleDbCommand oleDbInsertCommand1;
     private System.Data.OleDb.OleDbCommand oleDbUpdateCommand1;
     private System.Data.OleDb.OleDbCommand oleDbDeleteCommand1;
-    private System.Data.OleDb.OleDbCommand oleDbCommand1;
     public DataSet1 DsTickerCurrentlyDownloaded = new DataSet1();
 	  private System.Windows.Forms.Button buttonDownloadQuotesOfSelectedTickers;
 	  private DataTable tableOfSelectedTickers;
@@ -128,14 +127,12 @@ namespace QuantProject.Applications.Downloader
 		private void InitializeComponent()
 		{
 			this.components = new System.ComponentModel.Container();
-			System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(WebDownloader));
 			this.dataGrid1 = new System.Windows.Forms.DataGrid();
 			this.oleDbDataAdapter1 = new System.Data.OleDb.OleDbDataAdapter();
 			this.oleDbDeleteCommand1 = new System.Data.OleDb.OleDbCommand();
 			this.oleDbInsertCommand1 = new System.Data.OleDb.OleDbCommand();
 			this.oleDbSelectCommand1 = new System.Data.OleDb.OleDbCommand();
 			this.oleDbUpdateCommand1 = new System.Data.OleDb.OleDbCommand();
-			this.oleDbCommand1 = new System.Data.OleDb.OleDbCommand();
 			this.buttonDownloadQuotesOfSelectedTickers = new System.Windows.Forms.Button();
 			this.dateTimePickerStartingDate = new System.Windows.Forms.DateTimePicker();
 			this.labelStartingDateTime = new System.Windows.Forms.Label();
@@ -182,7 +179,6 @@ namespace QuantProject.Applications.Downloader
 			// 
 			// oleDbDeleteCommand1
 			// 
-			this.oleDbDeleteCommand1.CommandText = resources.GetString("oleDbDeleteCommand1.CommandText");
 			this.oleDbDeleteCommand1.Parameters.AddRange(new System.Data.OleDb.OleDbParameter[] {
 									new System.Data.OleDb.OleDbParameter("Original_quId", System.Data.OleDb.OleDbType.Integer, 0, System.Data.ParameterDirection.Input, false, ((byte)(10)), ((byte)(0)), "quId", System.Data.DataRowVersion.Original, null),
 									new System.Data.OleDb.OleDbParameter("Original_quClose", System.Data.OleDb.OleDbType.Single, 0, System.Data.ParameterDirection.Input, false, ((byte)(7)), ((byte)(0)), "quClose", System.Data.DataRowVersion.Original, null),
@@ -217,7 +213,6 @@ namespace QuantProject.Applications.Downloader
 			// 
 			// oleDbUpdateCommand1
 			// 
-			this.oleDbUpdateCommand1.CommandText = resources.GetString("oleDbUpdateCommand1.CommandText");
 			this.oleDbUpdateCommand1.Parameters.AddRange(new System.Data.OleDb.OleDbParameter[] {
 									new System.Data.OleDb.OleDbParameter("quClose", System.Data.OleDb.OleDbType.Single, 0, System.Data.ParameterDirection.Input, false, ((byte)(7)), ((byte)(0)), "quClose", System.Data.DataRowVersion.Current, null),
 									new System.Data.OleDb.OleDbParameter("quDate", System.Data.OleDb.OleDbType.DBDate, 0, "quDate"),
@@ -238,11 +233,6 @@ namespace QuantProject.Applications.Downloader
 									new System.Data.OleDb.OleDbParameter("Original_quOpen1", System.Data.OleDb.OleDbType.Single, 0, System.Data.ParameterDirection.Input, false, ((byte)(7)), ((byte)(0)), "quOpen", System.Data.DataRowVersion.Original, null),
 									new System.Data.OleDb.OleDbParameter("Original_quTicker", System.Data.OleDb.OleDbType.VarWChar, 8, System.Data.ParameterDirection.Input, false, ((byte)(0)), ((byte)(0)), "quTicker", System.Data.DataRowVersion.Original, null),
 									new System.Data.OleDb.OleDbParameter("Original_quTicker1", System.Data.OleDb.OleDbType.VarWChar, 8, System.Data.ParameterDirection.Input, false, ((byte)(0)), ((byte)(0)), "quTicker", System.Data.DataRowVersion.Original, null)});
-			// 
-			// oleDbCommand1
-			// 
-			this.oleDbCommand1.CommandText = "DELETE quotes.* FROM quotes INNER JOIN tickers ON quotes.quTicker = tickers.tiTic" +
-			"ker";
 			// 
 			// buttonDownloadQuotesOfSelectedTickers
 			// 
@@ -579,20 +569,20 @@ namespace QuantProject.Applications.Downloader
       	
 	  private void openDbAndSetOleDbCommand()
 	  {
-		  try
-		  {
-			  if (this.OleDbConnection1.State != ConnectionState.Open)
-            this.OleDbConnection1.Open();
-			  oleDbCommand1.Connection = this.OleDbConnection1;
-			}
-		  catch(Exception ex)
-		  {
-			  MessageBox.Show(ex.ToString());
-		  }
-  		finally
-		  {
-			  this.OleDbConnection1.Close();
-		  }
+//		  try
+//		  {
+//			  if (this.DbConnection1.State != ConnectionState.Open)
+//            this.DbConnection1.Open();
+//			  oleDbCommand1.Connection = this.DbConnection1;
+//			}
+//		  catch(Exception ex)
+//		  {
+//			  MessageBox.Show(ex.ToString());
+//		  }
+//  		finally
+//		  {
+//			  this.DbConnection1.Close();
+//		  }
  	  }
 
     private void buttonDownloadQuotesOfSelectedTickers_Click(object sender, System.EventArgs e)

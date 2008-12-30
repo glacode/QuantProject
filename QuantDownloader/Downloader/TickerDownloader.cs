@@ -1,6 +1,7 @@
 using System;
 using System.Threading;
 using System.Data;
+using System.Data.Common;
 using System.IO;
 using System.Net;
 using System.Windows.Forms;
@@ -15,7 +16,7 @@ namespace QuantProject.Applications.Downloader
 	/// </summary>
   public class TickerDownloader
   {
-    private System.Data.OleDb.OleDbConnection oleDbConnection1;
+//    private DbConnection dbConnection1;
     private WebDownloader p_myForm;
     private int numOfTickersToDownload;
     private bool checkBoxIsDicotomicSearchActivated;
@@ -36,7 +37,7 @@ namespace QuantProject.Applications.Downloader
     private int endYear = DateTime.Now.Year;
     private int numberOfQuotesInDatabase;
     private DataTable downloadedValuesFromSource;
-    private OleDbSingleTableAdapter adapter;
+    private SingleTableDbDataAdapter adapter;
     private Stream stream;
     private StreamReader streamReader;
     private HttpWebResponse httpWebResponse;
@@ -63,9 +64,9 @@ namespace QuantProject.Applications.Downloader
       this.INITIAL_DATE = ConstantsProvider.InitialDateTimeForDownload;
     	p_myForm = myForm;
     	this.tickerDownloader_copyPropertiesFromForm( myForm );
-      this.oleDbConnection1 = myForm.OleDbConnection1;
+//      this.dbConnection1 = myForm.DbConnection1;
       this.downloadedValuesFromSource = new DataTable("quotes");
-      this.adapter = new OleDbSingleTableAdapter("SELECT * FROM quotes WHERE 1=2",
+      this.adapter = new SingleTableDbDataAdapter("SELECT * FROM quotes WHERE 1=2",
                                                   this.downloadedValuesFromSource);
       this.downloadedValuesFromSource.Columns[Quotes.AdjustedCloseToCloseRatio].DefaultValue = 0;
     }
@@ -149,17 +150,27 @@ namespace QuantProject.Applications.Downloader
 
     private void addTickerToFaultyTickers()
     {
-      System.Data.OleDb.OleDbCommand odc = new System.Data.OleDb.OleDbCommand();
-      odc.CommandText = "insert into faultyTickers ( ftTicker , ftDateTime ) " +
-        "values ( '" + currentTicker + "' , #" +
-        DateTime.Now.Month + "/" +
-        DateTime.Now.Day + "/" +
-        DateTime.Now.Year + " " +
-        DateTime.Now.Hour + "." +
-        DateTime.Now.Minute + "." +
-        DateTime.Now.Second + "# )";
-      odc.Connection = this.oleDbConnection1;
-      odc.ExecuteNonQuery();
+    	string sqlNonQuery =
+    		"insert into faultyTickers ( ftTicker , ftDateTime ) " +
+    		"values ( '" + currentTicker + "' , #" +
+    		DateTime.Now.Month + "/" +
+    		DateTime.Now.Day + "/" +
+    		DateTime.Now.Year + " " +
+    		DateTime.Now.Hour + "." +
+    		DateTime.Now.Minute + "." +
+    		DateTime.Now.Second + "# )";
+    	SqlExecutor.ExecuteNonQuery( sqlNonQuery );
+//      System.Data.OleDb.OleDbCommand odc = new System.Data.OleDb.OleDbCommand();
+//      odc.CommandText = "insert into faultyTickers ( ftTicker , ftDateTime ) " +
+//        "values ( '" + currentTicker + "' , #" +
+//        DateTime.Now.Month + "/" +
+//        DateTime.Now.Day + "/" +
+//        DateTime.Now.Year + " " +
+//        DateTime.Now.Hour + "." +
+//        DateTime.Now.Minute + "." +
+//        DateTime.Now.Second + "# )";
+//      odc.Connection = this.dbConnection1;
+//      odc.ExecuteNonQuery();
     }
     
     /*
@@ -520,8 +531,8 @@ namespace QuantProject.Applications.Downloader
       }
       if(this.isComputeCloseToCloseRatioSelected)
         QuantProject.DataAccess.Tables.Quotes.ComputeCloseToCloseValues(this.downloadedValuesFromSource);
-      this.adapter.OleDbDataAdapter.ContinueUpdateOnError = true;
-      int rowsUpdated = this.adapter.OleDbDataAdapter.Update(this.downloadedValuesFromSource);
+      this.adapter.DbDataAdapter.ContinueUpdateOnError = true;
+      int rowsUpdated = this.adapter.DbDataAdapter.Update(this.downloadedValuesFromSource);
       if(rowsUpdated > 0)
       	this.updateCurrentStatusDatabaseUpdated("Added " + rowsUpdated.ToString() + " rows");
       else
