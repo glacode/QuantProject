@@ -188,7 +188,7 @@ namespace QuantProject.Data.DataProviders.Bars.Caching
 			string ticker, DateTime dateTime , History barOpenValuesFromDatabase )
 		{
 			float barOpenValue =
-				(float)barOpenValuesFromDatabase[ dateTime ];
+				Convert.ToSingle( barOpenValuesFromDatabase[ dateTime ] );
 			this.barOpenValues.AddBar(
 				ticker , dateTime , barOpenValue );
 		}

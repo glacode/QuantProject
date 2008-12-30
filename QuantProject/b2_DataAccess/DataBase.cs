@@ -24,6 +24,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Data;
+using System.Data.Common;
 using System.Data.OleDb;
 using System.Windows.Forms;
 
@@ -39,7 +40,7 @@ namespace QuantProject.DataAccess
 	/// 
 	public class DataBase
 	{
-		private static OleDbConnection oleDbConnection = ConnectionProvider.OleDbConnection;
+		private static DbConnection dbConnection = ConnectionProvider.DbConnection;
 
 		public DataBase()
 		{
@@ -94,9 +95,10 @@ namespace QuantProject.DataAccess
 				"select * from quotes where (quTicker='" + instrumentKey + "') " +
 				"and (quDate>=" + SQLBuilder.GetDateConstant( firstDate ) + ") " +
 				"and (quDate<=" + SQLBuilder.GetDateConstant( lastDate ) + ")";
-			OleDbDataAdapter oleDbDataAdapter = new OleDbDataAdapter( commandString , oleDbConnection );
-			DataTable dataTable = new DataTable();
-			oleDbDataAdapter.Fill( dataTable );
+//			OleDbDataAdapter oleDbDataAdapter = new OleDbDataAdapter( commandString , dbConnection );
+//			DataTable dataTable = new DataTable();
+			DataTable dataTable = SqlExecutor.GetDataTable( commandString );
+//			oleDbDataAdapter.Fill( dataTable );
 			history.Import( dataTable , "quDate" , getFieldName( quoteField ) );
 			return history;
 		}

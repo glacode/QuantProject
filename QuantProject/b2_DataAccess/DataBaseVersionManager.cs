@@ -22,9 +22,13 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 using System;
 using System.Windows.Forms;
+using System.Data.Common;
 using System.Data.OleDb;
 using System.Data;
 using System.Collections;
+
+using MySql.Data.MySqlClient;
+
 using QuantProject.ADT;
 
 
@@ -46,7 +50,7 @@ namespace QuantProject.DataAccess
 	
 	public class DataBaseVersionManager
 	{
-		private OleDbConnection oleDbConnection;
+		private DbConnection dbConnection;
 		delegate void updatingMethodHandler();
 		private ArrayList updatingMethods;
 		
@@ -74,17 +78,17 @@ namespace QuantProject.DataAccess
 		this.updatingMethods.Add(new updatingMethodHandler(this.updateTables));
 		
     }
-		public DataBaseVersionManager(OleDbConnection oleDbConnection)
+		public DataBaseVersionManager( DbConnection dbConnection)
 		{
 			try
 			{
-				this.oleDbConnection = oleDbConnection;
+				this.dbConnection = dbConnection;
 				this.initialize_updatingMethods();
 			}
 			catch(Exception ex)
 			{
 				MessageBox.Show(ex.ToString());
-				this.oleDbConnection.Close();
+				this.dbConnection.Close();
 			}
 		}
 		
@@ -216,18 +220,21 @@ namespace QuantProject.DataAccess
 		                    "WHERE tickers_tickerGroups.ttEventType Is Null " +
 		                    "AND tickers_tickerGroups.ttEventDate Is Null");
 		
-	}	
+	}
+	
 	private void executeCommand(string commandToBeExecuted)
 	{
 		try
 		{		
-			OleDbCommand oleDbCommand = new OleDbCommand( commandToBeExecuted , this.oleDbConnection );
-			int checkCommandExecution = oleDbCommand.ExecuteNonQuery();
+//			DbCommand dbCommand = new DbCommand( commandToBeExecuted , this.dbConnection );
+//			DbCommand dbCommand = this.getDbCommand( commandToBeExecuted );
+			DbCommand dbCommand = DbCommandProvider.GetDbCommand( commandToBeExecuted );
+			int checkCommandExecution = dbCommand.ExecuteNonQuery();
 		}
 		catch(Exception ex)
 		{
       string notUsed = ex.ToString();// to avoid warning after compilation
-    }	
+    }
 	}
 	
     #endregion
