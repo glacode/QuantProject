@@ -31,7 +31,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="OTFeed_NET">
-      <HintPath>..\..\OTFeed_NET\OTFeed_NET.dll</HintPath>
+      <HintPath>..\..\OTFeed_NET.dll</HintPath>
       <SpecificVersion>False</SpecificVersion>
     </Reference>
     <Reference Include="System" />
@@ -106,6 +106,9 @@
     <None Include="App.ico" />
     <EmbeddedResource Include="OpenTickDownloader\UserForms\OTWebDownloader.resx">
       <DependentUpon>OTWebDownloader.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="WebDownloader.resx">
+      <DependentUpon>WebDownloader.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
