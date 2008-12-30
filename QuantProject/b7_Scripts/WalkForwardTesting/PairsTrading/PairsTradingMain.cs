@@ -133,7 +133,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.PairsTrading
 			
 			string tickersGroupId = "SP500";
 			// uncomment the following line for a faster script
-//			tickersGroupId = "fastTest";
+			tickersGroupId = "fastTest";
 
 //			IEligiblesSelector eligiblesSelector =
 //				new MostLiquidAndLessVolatile(
@@ -214,7 +214,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.PairsTrading
 			int inSampleDays = 180;
 			// uncomment the following line for a faster script
 //			inSampleDays = 5;
-//			inSampleDays = 60;
+			inSampleDays = 60;
 			
 			IIntervalsSelector intervalsSelectorForOutOfSample =
 				new OddIntervalsSelector( 1 , 1 , this.benchmark );
@@ -285,9 +285,9 @@ namespace QuantProject.Scripts.WalkForwardTesting.PairsTrading
 
 			// uncomment the following two lines for a faster script
 			firstDateTime = new DateTime( 2006 , 1 , 2 );
-			lastDateTime = new DateTime( 2007 , 12 , 31 );
+			lastDateTime = new DateTime( 2006 , 1 , 31 );
 
-			double maxRunningHours = 5;
+			double maxRunningHours = .3;
 			
 			EndOfDayStrategyBackTester endOfDayStrategyBackTester =
 				new EndOfDayStrategyBackTester(
