@@ -26,12 +26,20 @@ using System.Collections.Generic;
 namespace QuantProject.Data.DataProviders.Bars.Caching
 {
 	/// <summary>
+	/// this event is risen when the cache has reached it max size and it needs to
+	/// remove some items
+	/// </summary>
+	public delegate void CleaningUpEventHandler( object sender );
+	
+	/// <summary>
 	/// Basic data structure used by bar caches: each IBarCache will use its own
 	/// strategy, but it will probably use this class for adding bars to the cache
 	/// and for checking if bars are already in the cache
 	/// </summary>
 	public class BarCacheData
 	{
+		public event CleaningUpEventHandler CleaningUp;
+		
 		private int maxNumberOfItemsIn_bars;
 		private int numberOfItemsToBeRemovedFrom_bars_whenCacheIsCleanedUp;
 
@@ -71,17 +79,8 @@ namespace QuantProject.Data.DataProviders.Bars.Caching
 		}
 		
 		#region AddBar
-		private void add_dateTime_toCacheIfTheCase(
-			DateTime dateTime )
-		{
-			if ( !this.bars.ContainsKey( dateTime ) )
-				// no data is yet in cache for this dateTime and a
-				this.bars.Add( dateTime , new Dictionary< string , double >() );
-		}
 		
-		#region addBar_with_dateTime_alreadyInCache
-		
-		#region addBar_actually
+		#region addNonPresentBar
 		
 		#region removeValuesFromTheCacheIfMaxSizeHasBeenReached
 		
@@ -132,8 +131,6 @@ namespace QuantProject.Data.DataProviders.Bars.Caching
 		#region removeCurrentItemFrom_bars
 		
 		#region removeCurrentItemFrom_bars_actually
-		
-		#region removeCurrentItemFrom_bars_only
 		private void removeCurrentDateTimeFromCache_ifAllBarsHaveBeenRemovedForThatDateTime(
 			DateTime dateTimeForLastBarRemovedFromCache )
 		{
@@ -141,7 +138,7 @@ namespace QuantProject.Data.DataProviders.Bars.Caching
 				// all bars have been removed from the cache, for dateTimeForCurrentItemToBeRemoved
 				this.bars.Remove( dateTimeForLastBarRemovedFromCache );
 		}
-		private void removeCurrentItemFrom_bars_only()
+		private void removeCurrentItemFrom_bars_actually()
 		{
 			DateTime dateTimeForCurrentBarToBeRemoved =
 				this.dateTimesForCleaningUp_bars[ 0 ];
@@ -152,7 +149,14 @@ namespace QuantProject.Data.DataProviders.Bars.Caching
 			this.removeCurrentDateTimeFromCache_ifAllBarsHaveBeenRemovedForThatDateTime(
 				dateTimeForCurrentBarToBeRemoved );
 		}
-		#endregion removeCurrentItemFrom_bars_only
+		#endregion removeCurrentItemFrom_bars_actually
+		
+		private void removeCurrentItemFrom_bars()
+		{
+			removeCurrentItemFrom_bars_actually();
+			this.numberOfBarsIn_bars--;
+		}
+		#endregion removeCurrentItemFrom_bars
 		
 		#region updateMembersUsedToCleanUp_bars
 		
@@ -172,20 +176,6 @@ namespace QuantProject.Data.DataProviders.Bars.Caching
 				this.moveToTheNextDateTimeForCleaningUp_bars();
 		}
 		#endregion updateMembersUsedToCleanUp_bars
-		
-		private void removeCurrentItemFrom_bars_actually()
-		{
-			this.removeCurrentItemFrom_bars_only();
-//			this.updateMembersUsedToCleanUp_bars();
-		}
-		#endregion removeCurrentItemFrom_bars_actually
-		
-		private void removeCurrentItemFrom_bars()
-		{
-			removeCurrentItemFrom_bars_actually();
-			this.numberOfBarsIn_bars--;
-		}
-		#endregion removeCurrentItemFrom_bars
 		
 		private void removeNextItemFrom_bars()
 		{
@@ -214,46 +204,70 @@ namespace QuantProject.Data.DataProviders.Bars.Caching
 		{
 			if ( this.numberOfBarsIn_bars >= this.maxNumberOfItemsIn_bars )
 				// the cache is full
+			{
+				if ( this.CleaningUp != null )
+					this.CleaningUp( this );
 				this.removeValuesFromTheCache();
+			}
 		}
 		#endregion removeValuesFromTheCacheIfMaxSizeHasBeenReached
 		
-		private void addBar_actually(
+		#region addBarWithEnsuredSpaceInTheCache
+		private void add_dateTime_toCacheIfTheCase(
+			DateTime dateTime )
+		{
+			if ( !this.bars.ContainsKey( dateTime ) )
+				// no data is yet in cache for this dateTime and a
+				this.bars.Add( dateTime , new Dictionary< string , double >() );
+		}
+		
+		#region addBar_with_dateTime_alreadyInCache
+		
+		private void addNonPresentBar_actually(
 			string ticker, double barOpenValue ,
 			Dictionary< string , double > barsInDictionaryForTheGivenDateTime )
 		{
-			this.removeValuesFromTheCacheIfMaxSizeHasBeenReached();
+//			this.removeValuesFromTheCacheIfMaxSizeHasBeenReached();
 			barsInDictionaryForTheGivenDateTime.Add( ticker , barOpenValue );
 			this.numberOfBarsIn_bars++;
 		}
-		#endregion addBar_actually
 		
-		private void addBar(
-			string ticker, double barOpenValue ,
-			Dictionary< string , double > barsInDictionaryForTheGivenDateTime )
-		{
-			if ( !barsInDictionaryForTheGivenDateTime.ContainsKey( ticker ) )
-				// the cache doesn't contain the open value
-				// for the given ticker and the given dateTime
-				this.addBar_actually(
-					ticker , barOpenValue ,	barsInDictionaryForTheGivenDateTime);
-		}
-//		private void addBarOpenValue(
-//			Dictionary< string , double > barOpenValuesInCacheForGivenDateTime ,
-//			string ticker, DateTime dateTime , double theValue )
+//		private void addBar(
+//			string ticker, double barOpenValue ,
+//			Dictionary< string , double > barsInDictionaryForTheGivenDateTime )
 //		{
-//			this.addBarOpenValue(
-//				barOpenValuesInCacheForGivenDateTime , ticker , barOpenValue );
+//			if ( !barsInDictionaryForTheGivenDateTime.ContainsKey( ticker ) )
+//				// the cache doesn't contain the open value
+//				// for the given ticker and the given dateTime
+//				this.addBar_actually(
+//					ticker , barOpenValue ,	barsInDictionaryForTheGivenDateTime);
 //		}
-		private void addBar_with_dateTime_alreadyInCache(
+		private void addNonPresentBar_with_dateTime_alreadyInCache(
 			string ticker, DateTime dateTime , double theValue )
 		{
 			Dictionary< string , double > barsInDictionaryForTheGivenDateTime =
 				this.bars[ dateTime ];
-			this.addBar(
+			this.addNonPresentBar_actually(
 				ticker , theValue , barsInDictionaryForTheGivenDateTime );
 		}
 		#endregion addBar_with_dateTime_alreadyInCache
+		
+		private void addNonPresentBarWithEnsuredSpaceInTheCache(
+			string ticker, DateTime dateTime , double theValue )
+		{
+			this.add_dateTime_toCacheIfTheCase( dateTime );
+			this.addNonPresentBar_with_dateTime_alreadyInCache(
+				ticker , dateTime , theValue );
+		}
+		#endregion addBarWithEnsuredSpaceInTheCache
+		
+		private void addNonPresentBar(
+			string ticker, DateTime dateTime , double theValue )
+		{
+			this.removeValuesFromTheCacheIfMaxSizeHasBeenReached();
+			this.addNonPresentBarWithEnsuredSpaceInTheCache( ticker , dateTime , theValue );
+		}
+		#endregion addNonPresentBar
 		
 		/// <summary>
 		/// adds a bar to the cache; if there is no more space in the cache, (supposed)
@@ -265,9 +279,8 @@ namespace QuantProject.Data.DataProviders.Bars.Caching
 		public void AddBar(
 			string ticker, DateTime dateTime , double theValue )
 		{
-			this.add_dateTime_toCacheIfTheCase( dateTime );
-			this.addBar_with_dateTime_alreadyInCache(
-				ticker , dateTime , theValue );
+			if ( !this.ContainsBar( ticker , dateTime ) )
+				this.addNonPresentBar( ticker , dateTime , theValue );
 		}
 		#endregion AddBar
 		
