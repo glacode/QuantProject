@@ -69,8 +69,8 @@ namespace QuantProject.Data.DataProviders.Bars.Caching
 			
 //			this.hasTheCacheBeenCleanedUpInThePreviousUpdateActually = false;
 
-//			int maxNumberOfItemsIn_barOpenValues = 100000;
-			int maxNumberOfItemsIn_barOpenValues = 1000;
+			int maxNumberOfItemsIn_barOpenValues = 100000;
+//			int maxNumberOfItemsIn_barOpenValues = 1000;   // use to debug, only
 			int numberOfItemsToBeRemovedFrom_barOpenValues_whenCacheIsCleanedUp =
 				maxNumberOfItemsIn_barOpenValues / 2;
 			
@@ -83,8 +83,8 @@ namespace QuantProject.Data.DataProviders.Bars.Caching
 //			this.barOpenValues = new Dictionary< DateTime , Dictionary< string , double > >();
 //			this.numberOfBarsIn_barOpenValues = 0;
 			
-//			int maxNumberOfItemsIn_barsMissingInTheDatabase = 100000;
-			int maxNumberOfItemsIn_barsMissingInTheDatabase = 1000;
+			int maxNumberOfItemsIn_barsMissingInTheDatabase = 100000;
+//			int maxNumberOfItemsIn_barsMissingInTheDatabase = 1000;  // use to debug, only
 			int numberOfItemsToBeRemovedFrom_barsMissingInTheDatabase_whenCacheIsCleanedUp =
 				maxNumberOfItemsIn_barsMissingInTheDatabase / 2;
 
