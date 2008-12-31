@@ -133,7 +133,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.PairsTrading
 			
 			string tickersGroupId = "SP500";
 			// uncomment the following line for a faster script
-			tickersGroupId = "fastTest";
+//			tickersGroupId = "fastTest";
 
 //			IEligiblesSelector eligiblesSelector =
 //				new MostLiquidAndLessVolatile(
@@ -164,7 +164,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.PairsTrading
 		{
 			int numberOfBestTestingPositionsToBeReturned = 50;
 			// uncomment the following line for a faster script
-			numberOfBestTestingPositionsToBeReturned = 10;
+//			numberOfBestTestingPositionsToBeReturned = 10;
 			
 			IDecoderForTestingPositions decoderForWeightedPositions =
 				new DecoderForPairsTradingTestingPositionsWithBalancedWeights();
@@ -285,9 +285,10 @@ namespace QuantProject.Scripts.WalkForwardTesting.PairsTrading
 
 			// uncomment the following two lines for a faster script
 			firstDateTime = new DateTime( 2006 , 1 , 2 );
-			lastDateTime = new DateTime( 2006 , 1 , 31 );
+			lastDateTime = new DateTime( 2007 , 12 , 31 );
+//			lastDateTime = new DateTime( 2006 , 1 , 31 );
 
-			double maxRunningHours = .3;
+			double maxRunningHours = 2.5;
 			
 			EndOfDayStrategyBackTester endOfDayStrategyBackTester =
 				new EndOfDayStrategyBackTester(
