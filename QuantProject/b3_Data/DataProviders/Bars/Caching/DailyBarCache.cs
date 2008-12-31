@@ -53,6 +53,8 @@ namespace QuantProject.Data.DataProviders.Bars.Caching
 //		private int	numberOfItemsToBeRemovedFrom_barsMissingInTheDatabase_whenCacheIsCleanedUp;
 //		List<DateTime> dateTimesForCleaningUp_barsMissingInTheDatabase;
 //		List<string> tickersForCleaningUp_barsMissingInTheDatabase;
+		
+//		private bool hasTheCacheBeenCleanedUpInThePreviousUpdateActually;
 
 
 		public DailyBarCache(
@@ -64,27 +66,47 @@ namespace QuantProject.Data.DataProviders.Bars.Caching
 			this.dailyTimes = dailyTimes;
 
 			this.roughNumberOfItemsToBeCachedWithASingleQuery = 100;
+			
+//			this.hasTheCacheBeenCleanedUpInThePreviousUpdateActually = false;
 
-			int maxNumberOfItemsIn_barOpenValues = 100000;
+//			int maxNumberOfItemsIn_barOpenValues = 100000;
+			int maxNumberOfItemsIn_barOpenValues = 1000;
 			int numberOfItemsToBeRemovedFrom_barOpenValues_whenCacheIsCleanedUp =
 				maxNumberOfItemsIn_barOpenValues / 2;
 			
 			this.barOpenValues = new BarCacheData(
 				maxNumberOfItemsIn_barOpenValues ,
 				numberOfItemsToBeRemovedFrom_barOpenValues_whenCacheIsCleanedUp );
+//			this.barOpenValues.CleaningUp +=
+//				new CleaningUpEventHandler( this.cleaningUpEventHandler );
 			
 //			this.barOpenValues = new Dictionary< DateTime , Dictionary< string , double > >();
 //			this.numberOfBarsIn_barOpenValues = 0;
 			
-			int maxNumberOfItemsIn_barsMissingInTheDatabase = 100000;
+//			int maxNumberOfItemsIn_barsMissingInTheDatabase = 100000;
+			int maxNumberOfItemsIn_barsMissingInTheDatabase = 1000;
 			int numberOfItemsToBeRemovedFrom_barsMissingInTheDatabase_whenCacheIsCleanedUp =
-				maxNumberOfItemsIn_barOpenValues / 2;
+				maxNumberOfItemsIn_barsMissingInTheDatabase / 2;
 
 			this.barsMissingInTheDatabase = new BarCacheData(
 				maxNumberOfItemsIn_barsMissingInTheDatabase ,
 				numberOfItemsToBeRemovedFrom_barsMissingInTheDatabase_whenCacheIsCleanedUp );
 //			this.numberOfBarsIn_barsMissingInTheDatabase = 0;
 		}
+		
+//		private void cleaningUpEventHandler( object sender )
+//		{
+//			if ( this.hasTheCacheBeenCleanedUpInThePreviousUpdateActually )
+//				throw new Exception(
+//					"The cache has reached its size limit twice while doing a single " +
+//					"this.update_barOpenValues() method. It should never happen, it looks like " +
+//					"the cache max size is too small" );
+//			else
+//				// the cache has reached its limit size while doing
+//				// the this.update_barOpenValues_actually() method, and it's not the second
+//				// time in a row (a second chance will be given)
+//				this.hasTheCacheBeenCleanedUpInThePreviousUpdateActually = true;
+//		}
 		
 		#region checkParameters
 		
@@ -184,7 +206,10 @@ namespace QuantProject.Data.DataProviders.Bars.Caching
 		
 		#region update_barOpenValues
 		
-		private void addBarOpenValue(
+		#region update_barOpenValues_actually
+		
+		#region update_barOpenValues_addBarForCurrent_dateTimeIndex
+		private void update_barOpenValues_addBarFor_currentDateTime(
 			string ticker, DateTime dateTime , History barOpenValuesFromDatabase )
 		{
 			float barOpenValue =
@@ -192,12 +217,59 @@ namespace QuantProject.Data.DataProviders.Bars.Caching
 			this.barOpenValues.AddBar(
 				ticker , dateTime , barOpenValue );
 		}
+		private void update_barOpenValues_addBarForCurrent_dateTimeIndex(
+			string ticker , int dateTimeIndex , History barOpenValuesFromDatabase )
+		{
+			DateTime currentDateTime =
+				(DateTime)barOpenValuesFromDatabase.GetKey( dateTimeIndex );
+			this.update_barOpenValues_addBarFor_currentDateTime(
+				ticker , currentDateTime , barOpenValuesFromDatabase );
+		}
+		#endregion update_barOpenValues_addBarForCurrent_dateTimeIndex
 		
+		private void update_barOpenValues_actually(
+			string ticker, History barOpenValuesFromDatabase )
+		{
+			for ( int dateTimeIndex = barOpenValuesFromDatabase.Count - 1 ;
+			     dateTimeIndex >=0 ; dateTimeIndex-- )
+				// we use a descending order because we want to be sure that
+				// the first date time of the History will be in the cache,
+				// at the end of the cycle;
+				// we don't want the first date time to be removed by the cache,
+				// and that could happen if dateTime(s) were added after the first one
+				// in the History;
+				// notice that the bar requested by the GetMarketValue() that lead to
+				// this point, if present in the database, is the first date time in
+				// the History, so we absolutely want it to be in the cache,
+				// when this method is done; the first date time in the History is the
+				// last one to be inserted into the cache, because we don't want to run the risk
+				// that the cache is cleaned up after it has been inserted
+				this.update_barOpenValues_addBarForCurrent_dateTimeIndex(
+					ticker , dateTimeIndex , barOpenValuesFromDatabase );
+//			foreach ( DateTime dateTime in barOpenValuesFromDatabase.TimeLine )
+//				this.addBarOpenValue( ticker , dateTime , barOpenValuesFromDatabase );
+		}
+		#endregion update_barOpenValues_actually
+		
+//		private void updateAgainIfCacheHasBeenCleanedUpInThePreviousUpdate(
+//			string ticker, History barOpenValuesFromDatabase )
+//		{
+//			if ( this.hasTheCacheBeenCleanedUpInThePreviousUpdateActually )
+//				// executing this.update_barOpenValues_actually() the cache has reached
+//				// its size limit and then it has removed some items;
+//				// we want to be sure that barOpenValuesFromDatabase are not removed by that event
+//				// thus we add them again
+//			{
+//				this.update_barOpenValues_actually( ticker , barOpenValuesFromDatabase );
+//				this.hasTheCacheBeenCleanedUpInThePreviousUpdateActually = false;
+//			}
+//		}
 		private void update_barOpenValues(
 			string ticker, History barOpenValuesFromDatabase )
 		{
-			foreach ( DateTime dateTime in barOpenValuesFromDatabase.TimeLine )
-				this.addBarOpenValue( ticker , dateTime , barOpenValuesFromDatabase );
+			this.update_barOpenValues_actually( ticker , barOpenValuesFromDatabase );
+//			this.updateAgainIfCacheHasBeenCleanedUpInThePreviousUpdate(
+//				ticker , barOpenValuesFromDatabase );
 		}
 		#endregion update_barOpenValues
 
@@ -394,7 +466,7 @@ namespace QuantProject.Data.DataProviders.Bars.Caching
 			// forces bar caching
 			try
 			{
-			this.GetMarketValue( ticker , dateTime );
+				this.GetMarketValue( ticker , dateTime );
 			}
 			catch ( MissingBarException missingBarException )
 			{
