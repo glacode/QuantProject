@@ -63,10 +63,8 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOs
 		private Benchmark benchmark;
 		private HistoricalMarketValueProvider historicalMarketValueProviderForInSample;
 		private HistoricalMarketValueProvider historicalMarketValueProviderForOutOfSample;
-		private Time timeForCheckingCrossingThreshold_begin;
-		private Time timeForCheckingCrossingThreshold_end;
-		private Time timeForEntry;
-		private Time timeForExit;
+		private double inefficiencyLengthInMinutes;
+		private double maxOpeningLengthInMinutes;
 		private Timer timerForBackTester;
 		private DateTime firstDateTime;
 		private DateTime lastDateTime;
@@ -75,16 +73,11 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOs
 		public PVOStrategyIntradayMain()
 		{
 			//this.benchmark = new Benchmark( "^GSPC" );
-			this.timeForCheckingCrossingThreshold_begin =
-				new Time("10:00:00");
-			this.timeForCheckingCrossingThreshold_end =
-				new Time("11:00:00");
-			this.timeForEntry = this.timeForCheckingCrossingThreshold_end;
-//				new Time("11:01:00");
-			this.timeForExit =
-				new Time("12:00:00");
-			this.firstDateTime = new DateTime( 2007 , 1 , 1 );
-			this.lastDateTime = new DateTime( 2007 , 1, 31 );
+			this.inefficiencyLengthInMinutes = 30;
+			this.maxOpeningLengthInMinutes = 120;
+			
+			this.firstDateTime = new DateTime( 2006 , 1 , 1 );
+			this.lastDateTime = new DateTime( 2007 , 12, 31 );
 			this.intervalFrameInSeconds = 60;
 			this.benchmark = new Benchmark( "MSFT" );
 			this.historicalMarketValueProviderForInSample =
@@ -165,8 +158,8 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOs
 //				new DecoderForPairsTradingTestingPositionsWithBalancedWeights();
 
 			double maxCorrelationAllowed = 0.96;
-			int numberOfBestTestingPositionsToBeReturned = 100;
-			numberOfBestTestingPositionsToBeReturned = 100;
+			int numberOfBestTestingPositionsToBeReturned = 50;
+			numberOfBestTestingPositionsToBeReturned = 50;
 			bool balancedWeightsOnVolatilityBase = true;
 			float minimumAbsoluteReturnValue = 0.000001f;
 			float maximumAbsoluteReturnValue = 100000f;
@@ -200,13 +193,15 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOs
 		protected override IStrategyForBacktester getStrategyForBacktester()
 		{
 			//int inSampleDays = 90;
-			int inSampleDays = 10;
+			int inSampleDays = 150;
 			int numDaysBetweenEachOptimization = 5;
 			int minNumOfEligiblesForValidOptimization = 20;
-			double oversoldThreshold = 0.0075;
-			double overboughtThreshold = 0.0075;
+			double oversoldThreshold = 0.0065;
+			double overboughtThreshold = 0.0065;
 			double oversoldThresholdMAX = 0.02;
 			double overboughtThresholdMAX = 0.02;
+			double stopLoss = 0.02;
+			double takeProfit = 0.005;
 			
 			IStrategyForBacktester strategyForBacktester
 //				 = new PVO_OTCStrategyLessCorrelated(eligiblesSelector ,inSampleChooser ,
@@ -220,8 +215,8 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOs
 				oversoldThresholdMAX , overboughtThresholdMAX ,
 				historicalMarketValueProviderForInSample,
 			  historicalMarketValueProviderForOutOfSample,
-			  timeForCheckingCrossingThreshold_begin, timeForCheckingCrossingThreshold_end,
-			  timeForEntry, timeForExit);
+			  inefficiencyLengthInMinutes , maxOpeningLengthInMinutes, this.getDailyTimes(),
+			  stopLoss , takeProfit );
 			return strategyForBacktester;
 		}
 		#region getHistoricalBarProvider
@@ -230,11 +225,18 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOs
 		private List<Time> getDailyTimes()
 		{
 			List<Time> dailyTimes = new List<Time>();
-			dailyTimes.Add(this.timeForCheckingCrossingThreshold_begin);
-			dailyTimes.Add(this.timeForCheckingCrossingThreshold_end);
-			if(this.timeForEntry > this.timeForCheckingCrossingThreshold_end)
-				dailyTimes.Add(this.timeForEntry);
-			dailyTimes.Add(this.timeForExit);
+			dailyTimes.Add( new Time("10:00:00") );
+			dailyTimes.Add( new Time("10:30:00") );
+			dailyTimes.Add( new Time("11:00:00") );
+			dailyTimes.Add( new Time("11:30:00") );
+			dailyTimes.Add( new Time("12:00:00") );
+			dailyTimes.Add( new Time("12:30:00") );
+			dailyTimes.Add( new Time("13:00:00") );
+			dailyTimes.Add( new Time("13:30:00") );
+			dailyTimes.Add(new Time("14:00:00") );
+			dailyTimes.Add(new Time("14:30:00") );
+			dailyTimes.Add(new Time("15:00:00") );
+			dailyTimes.Add(new Time("16:00:00") );
 			return dailyTimes;
 		}
 		private IBarCache getBarCache()
@@ -263,7 +265,7 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOs
 //			accountProvider =
 //				new InteractiveBrokerAccountProvider(fixedPercentageSlippage);
 			double cashToStart = 25000;
-			double maxRunningHours = 0.40;
+			double maxRunningHours = 5;
 			HistoricalMarketValueProvider quoteProviderForBackTester =
 				this.historicalMarketValueProviderForOutOfSample;
 //			quoteProviderForBackTester =
@@ -277,19 +279,19 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOs
 				this.benchmark , cashToStart , maxRunningHours );
 			return endOfDayStrategyBackTester;
 		}
-
+		
+		protected override string getCustomSmallTextForFolderName()
+		{
+			return "PVOIntraday";
+		}
+		
 		protected override string getPathForTheMainFolderWhereScriptsResultsAreToBeSaved()
 		{
 			string pathForTheMainFolderWhereScriptsResultsAreToBeSaved =
 				System.Configuration.ConfigurationManager.AppSettings["LogArchive"];
 			return pathForTheMainFolderWhereScriptsResultsAreToBeSaved;
 		}
-
-		protected override string getCustomSmallTextForFolderName()
-		{
-			return "PVOIntraday";
-		}
-
+		
 		protected override string getFullPathFileNameForMain()
 		{
 			string returnValue;
