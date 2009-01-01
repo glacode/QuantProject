@@ -812,6 +812,7 @@ namespace QuantProject.DataAccess.Tables
 			
 		{
 			DataTable dt;
+			double returnValue;
 			string sql = "SELECT quotes.quTicker, " +
 				SQLBuilder.GetStandardDeviationFunctionName() +
 				"(quotes.quClose/quotes.quOpen - 1) AS OpenToCloseStandDev " +
@@ -821,7 +822,11 @@ namespace QuantProject.DataAccess.Tables
 				" AND " + SQLBuilder.GetDateConstant(lastQuoteDate) +
 				" GROUP BY quotes.quTicker";
 			dt = SqlExecutor.GetDataTable( sql );
-			return (double)dt.Rows[0]["OpenToCloseStandDev"];
+			if( dt.Rows[0]["OpenToCloseStandDev"] is System.DBNull )
+				returnValue = double.NaN;
+			else
+				returnValue = (double)dt.Rows[0]["OpenToCloseStandDev"];
+			return returnValue;
 		}
 
 		/// <summary>
