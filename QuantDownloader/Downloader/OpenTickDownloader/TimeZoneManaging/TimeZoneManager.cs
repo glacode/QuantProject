@@ -2,7 +2,7 @@
 QuantProject - Quantitative Finance Library
 
 TimeZoneManager.cs
-Copyright (C) 2008 
+Copyright (C) 2008
 Glauco Siliprandi
 
 This program is free software; you can redistribute it and/or
@@ -18,7 +18,7 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
-*/
+ */
 
 using System;
 using System.Collections;
@@ -38,6 +38,10 @@ namespace QuantProject.Applications.Downloader.OpenTickDownloader
 		}
 		
 		#region IsDaylightSavingTime
+		
+		#region getDstPeriod
+		
+		#region initialize_dstPeriods_ifTheCase
 		
 		#region initialize_dstPeriods
 		
@@ -75,6 +79,44 @@ namespace QuantProject.Applications.Downloader.OpenTickDownloader
 		}
 		#endregion initialize_dstPeriods
 		
+		private static void initialize_dstPeriods_ifTheCase()
+		{
+			if ( dSTPeriods == null )
+				initialize_dstPeriods();
+		}
+		#endregion initialize_dstPeriods_ifTheCase
+		
+		#region getDstPeriod_withInitialized_dstPeriods
+		private static void getDstPeriod_withInitialized_dstPeriods_checkParameters(
+			DateTime dateTimeInNewYorkTimeZone )
+		{
+			if ( !TimeZoneManager.dSTPeriods.ContainsKey( dateTimeInNewYorkTimeZone.Year ) )
+				throw new Exception(
+					"We don't have DaylightSavingTime information for the year " +
+					dateTimeInNewYorkTimeZone.Year + ". Please check the method " +
+					"initialize_dstPeriods() and possibly complete it with more years" );
+		}
+		private static DSTPeriod getDstPeriod_withInitialized_dstPeriods(
+			DateTime dateTimeInNewYorkTimeZone )
+		{
+			TimeZoneManager.getDstPeriod_withInitialized_dstPeriods_checkParameters(
+				dateTimeInNewYorkTimeZone );
+			DSTPeriod dSTPeriod =
+				(DSTPeriod)dSTPeriods[ dateTimeInNewYorkTimeZone.Year ];
+			return dSTPeriod;
+		}
+		#endregion getDstPeriod_withInitialized_dstPeriods
+		
+		private static DSTPeriod getDstPeriod( DateTime dateTimeInNewYorkTimeZone )
+		{
+			TimeZoneManager.initialize_dstPeriods_ifTheCase();
+			DSTPeriod dSTPeriod =
+				TimeZoneManager.getDstPeriod_withInitialized_dstPeriods(
+					dateTimeInNewYorkTimeZone );
+			return dSTPeriod;
+		}
+		#endregion getDstPeriod
+		
 		/// <summary>
 		/// True iif the given DateTime is a daylightSavingTime
 		/// </summary>
@@ -83,14 +125,12 @@ namespace QuantProject.Applications.Downloader.OpenTickDownloader
 		public static bool IsDaylightSavingTime(
 			DateTime dateTimeInNewYorkTimeZone )
 		{
-			if ( dSTPeriods == null )
-				initialize_dstPeriods();
 			DSTPeriod dSTPeriod =
-				(DSTPeriod)dSTPeriods[ dateTimeInNewYorkTimeZone.Year ];
+				TimeZoneManager.getDstPeriod( dateTimeInNewYorkTimeZone );
 			bool isDaylightSavingTime =
 				( dSTPeriod.Begin.CompareTo( dateTimeInNewYorkTimeZone ) < 0 ) &&
 				( dSTPeriod.End.CompareTo( dateTimeInNewYorkTimeZone ) > 0 );
-			return isDaylightSavingTime;				
+			return isDaylightSavingTime;
 		}
 		#endregion IsDaylightSavingTime
 		
@@ -120,5 +160,5 @@ namespace QuantProject.Applications.Downloader.OpenTickDownloader
 				dateTimeInEST = dateTimeInUTC.AddHours( -4 );
 			return dateTimeInEST;
 		}
-	}		
+	}
 }
