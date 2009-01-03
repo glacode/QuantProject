@@ -22,6 +22,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 using System;
 using System.Data;
 using System.Threading;
+using System.Windows.Forms;
 
 using QuantProject.ADT;
 using QuantProject.Presentation;
@@ -259,8 +260,10 @@ namespace QuantProject.Applications.Downloader.OpenTickDownloader
 		#region setMessageManager
 		private string getLogFileName()
 		{
+//			string logFileName =
+//				@"C:\Quant\OpenTickDownloader\textFilesForLoggingNotification\textFileForLoggingNotification";
 			string logFileName =
-				@"C:\Quant\OpenTickDownloader\textFilesForLoggingNotification\textFileForLoggingNotification";
+				Application.StartupPath + "\\textFileForLoggingNotification";			
 			logFileName = logFileName + "_" +
 				ExtendedDateTime.GetCompleteShortDescriptionForFileName(
 					DateTime.Now ) + ".txt";
