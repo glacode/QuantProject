@@ -177,12 +177,12 @@ namespace QuantProject.Applications.Downloader.OpenTickDownloader
 		}
 		#endregion doNextStep
 		
-		private bool isTheCurrentBarBeyondTheLastDate()
-		{
-			bool isBeyondTheLastDate =
-				( this.currentDate.CompareTo( this.lastDate ) > 0 );
-			return isBeyondTheLastDate;
-		}
+//		private bool isTheCurrentBarBeyondTheLastDate()
+//		{
+//			bool isBeyondTheLastDate =
+//				( this.currentDate.CompareTo( this.lastDate ) > 0 );
+//			return isBeyondTheLastDate;
+//		}
 		
 		#region isTheCurrentBarSelectable
 		protected bool isAPossibleMarketDay( DateTime currentDate )
@@ -206,7 +206,9 @@ namespace QuantProject.Applications.Downloader.OpenTickDownloader
 		private void moveToTheNextSelectedBar()
 		{
 			this.doNextStep();
-			while ( !this.isTheCurrentBarBeyondTheLastDate() &&
+//			while ( !this.isTheCurrentBarBeyondTheLastDate() &&
+//				!this.isTheCurrentBarSelectable() )
+			while ( !this.AreAllBarsAlredyGiven &&
 				!this.isTheCurrentBarSelectable() )
 				this.doNextStep();
 //			DateTime currentDate = this.firstDate;
