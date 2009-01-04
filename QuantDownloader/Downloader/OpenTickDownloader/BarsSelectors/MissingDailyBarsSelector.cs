@@ -2,7 +2,7 @@
 QuantProject - Quantitative Finance Library
 
 MissingDailyBarsSelector.cs
-Copyright (C) 2008 
+Copyright (C) 2008
 Glauco Siliprandi
 
 This program is free software; you can redistribute it and/or
@@ -18,13 +18,14 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
-*/
+ */
 
 using System;
 using System.Collections;
 using System.Data;
 
 using QuantProject.ADT.Collections;
+using QuantProject.ADT.Timing;
 using QuantProject.Data;
 using QuantProject.DataAccess;
 
@@ -49,7 +50,7 @@ namespace QuantProject.Applications.Downloader.OpenTickDownloader
 		private string currentTicker;
 		
 		public MissingDailyBarsSelector(
-					string[] tickers ,
+			string[] tickers ,
 			DateTime firstDate ,
 			DateTime lastDate ,
 			int barInterval ,
@@ -74,60 +75,81 @@ namespace QuantProject.Applications.Downloader.OpenTickDownloader
 		#region updateBarsAlreadyInTheDatabase_actually
 		
 		#region getBarsInTheDatabase
-		private string getSqlTimeConstant( DateTime time )
-		{
-			string sqlTimeConstant =
-				time.Hour.ToString().PadLeft( 2 , '0' ) + ":" +
-				time.Minute.ToString().PadLeft( 2 , '0' ) + ":" +
-				time.Second.ToString().PadLeft( 2 , '0' );
-			return sqlTimeConstant;
-		}
-		private string getSqlTimeConstantForFirstDailyBar()
-		{
-			string sqlTimeConstantForFirstDailyBar =
-				this.getSqlTimeConstant(
-					this.firstBarOpenTimeInNewYorkTimeZone );
-			return sqlTimeConstantForFirstDailyBar;
-		}
+//		private string getSqlTimeConstant( DateTime time )
+//		{
+//			string sqlTimeConstant =
+//				time.Hour.ToString().PadLeft( 2 , '0' ) + ":" +
+//				time.Minute.ToString().PadLeft( 2 , '0' ) + ":" +
+//				time.Second.ToString().PadLeft( 2 , '0' );
+//			return sqlTimeConstant;
+//		}
+//		private string getSqlTimeConstantForFirstDailyBar()
+//		{
+//			string sqlTimeConstantForFirstDailyBar =
+//				this.getSqlTimeConstant(
+//					this.firstBarOpenTimeInNewYorkTimeZone );
+//			return sqlTimeConstantForFirstDailyBar;
+//		}
 		
-		#region getSqlTimeConstantForLastDailyBar
-		private DateTime getLastBarOpenTimeInNewYorkTimeZone()
+//		#region getSqlTimeConstantForLastDailyBar
+//		private DateTime getLastBarOpenTimeInNewYorkTimeZone()
+//		{
+//			int secondsToBeAdded = this.barInterval *
+//				( this.numberOfBarsToBeDownloadedForEachDay - 1 );
+//			DateTime lastBarOpenTimeInNewYorkTimeZone =
+//				this.firstBarOpenTimeInNewYorkTimeZone.AddSeconds(
+//					secondsToBeAdded );
+//			return lastBarOpenTimeInNewYorkTimeZone;
+//		}
+//		private string getSqlTimeConstantForLastDailyBar()
+//		{
+//			DateTime lastBarOpenTimeInNewYorkTimeZone =
+//				this.getLastBarOpenTimeInNewYorkTimeZone();
+//			string sqlTimeConstantForLastDailyBar =
+//				this.getSqlTimeConstant(
+//					lastBarOpenTimeInNewYorkTimeZone );
+//			return sqlTimeConstantForLastDailyBar;
+//		}
+//		#endregion getSqlTimeConstantForLastDailyBar
+		
+		
+		private Time getLastBarOpenTimeInNewYorkTimeZone()
 		{
 			int secondsToBeAdded = this.barInterval *
 				( this.numberOfBarsToBeDownloadedForEachDay - 1 );
-			DateTime lastBarOpenTimeInNewYorkTimeZone =
+			DateTime lastBarOpenDateTimeInNewYorkTimeZone =
 				this.firstBarOpenTimeInNewYorkTimeZone.AddSeconds(
 					secondsToBeAdded );
+			Time lastBarOpenTimeInNewYorkTimeZone =
+				new Time( lastBarOpenDateTimeInNewYorkTimeZone );
 			return lastBarOpenTimeInNewYorkTimeZone;
 		}
-		private string getSqlTimeConstantForLastDailyBar()
-		{
-			DateTime lastBarOpenTimeInNewYorkTimeZone =
-				this.getLastBarOpenTimeInNewYorkTimeZone();
-			string sqlTimeConstantForLastDailyBar =
-				this.getSqlTimeConstant(
-					lastBarOpenTimeInNewYorkTimeZone );
-			return sqlTimeConstantForLastDailyBar;
-		}
-		#endregion getSqlTimeConstantForLastDailyBar
 		
 		private DataTable getBarsInTheDatabase( string ticker )
 		{
-			string sql =
-				"select baDateTimeForOpen from bars " +
-				"where (baTicker='" + ticker + "') and " +
-				"(baInterval=" + this.barInterval + ") and" +
-				"(baDateTimeForOpen>=" +
-				DataBaseWriter.GetDateConstant( this.firstDate ) + ") and" +
-				"(baDateTimeForOpen<" +
-				DataBaseWriter.GetDateConstant( this.lastDate.AddDays( 1 ) )
-				+ ") and" +
-				"(Format([baDateTimeForOpen],'hh:mm:ss')>='" +
-				this.getSqlTimeConstantForFirstDailyBar() + "') and" +
-				"(Format([baDateTimeForOpen],'hh:mm:ss')<='" +
-				this.getSqlTimeConstantForLastDailyBar() + "');";
+			Time lastBarOpenTimeInNewYorkTimeZone =
+				this.getLastBarOpenTimeInNewYorkTimeZone();
 			DataTable barsInTheDatabase =
-				SqlExecutor.GetDataTable( sql );
+				new QuantProject.Data.DataTables.Bars(
+					ticker , this.firstDate , this.lastDate ,
+					new Time( this.firstBarOpenTimeInNewYorkTimeZone ) ,
+					lastBarOpenTimeInNewYorkTimeZone ,
+					this.barInterval );
+//			string sql =
+//				"select baDateTimeForOpen from bars " +
+//				"where (baTicker='" + ticker + "') and " +
+//				"(baInterval=" + this.barInterval + ") and" +
+//				"(baDateTimeForOpen>=" +
+//				DataBaseWriter.GetDateConstant( this.firstDate ) + ") and" +
+//				"(baDateTimeForOpen<" +
+//				DataBaseWriter.GetDateConstant( this.lastDate.AddDays( 1 ) )
+//				+ ") and" +
+//				"(Format([baDateTimeForOpen],'hh:mm:ss')>='" +
+//				this.getSqlTimeConstantForFirstDailyBar() + "') and" +
+//				"(Format([baDateTimeForOpen],'hh:mm:ss')<='" +
+//				this.getSqlTimeConstantForLastDailyBar() + "');";
+//			DataTable barsInTheDatabase =
+//				SqlExecutor.GetDataTable( sql );
 			return barsInTheDatabase;
 		}
 		#endregion getBarsInTheDatabase
