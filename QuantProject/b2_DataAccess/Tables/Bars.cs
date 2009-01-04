@@ -25,8 +25,10 @@ using System.Collections;
 using System.Data;
 using System.Text;
 using System.Windows.Forms;
+
 using QuantProject.ADT;
 using QuantProject.ADT.Histories;
+using QuantProject.ADT.Timing;
 
 namespace QuantProject.DataAccess.Tables
 {
@@ -316,5 +318,133 @@ namespace QuantProject.DataAccess.Tables
 			SqlExecutor.SetDataTable( sql , dataTable );
 		}
 		#endregion
+	
+		#region SetDataTable
+		
+		#region getSql
+		private static string getSql(
+			string ticker , DateTime firstDate , DateTime lastDate ,
+			Time firstBarOpenTimeInNewYorkTimeZone , Time lastBarOpenTimeInNewYorkTimeZone ,
+			int intervalFrameInSeconds )
+		{
+			string sql =
+				"select baDateTimeForOpen from bars " +
+				"where (baTicker='" + ticker + "') and " +
+				"(baInterval=" + intervalFrameInSeconds + ") and" +
+				"(baDateTimeForOpen>=" +
+				SQLBuilder.GetDateConstant( firstDate ) + ") and" +
+				"(baDateTimeForOpen<" +
+				SQLBuilder.GetDateConstant( lastDate.AddDays( 1 ) )
+				+ ") and (" +
+				SQLBuilder.GetFilterForTime(
+					"baDateTimeForOpen" , SqlComparisonOperator.GreaterThanOrEqual ,
+					firstBarOpenTimeInNewYorkTimeZone ) + 
+//				"(Format([baDateTimeForOpen],'hh:mm:ss')>='" +
+//				this.getSqlTimeConstantForFirstDailyBar() +
+				") and (" +
+				SQLBuilder.GetFilterForTime(
+					"baDateTimeForOpen" , SqlComparisonOperator.LessThanOrEqual ,
+					lastBarOpenTimeInNewYorkTimeZone ) +
+//				"(Format([baDateTimeForOpen],'hh:mm:ss')<='" +
+//				this.getSqlTimeConstantForLastDailyBar() +
+				");";
+			return sql;
+		}
+		#endregion getSql
+		
+		/// <summary>
+		/// fills the parameter dataTable with all the daily bars between
+		/// firstBarOpenTimeInNewYorkTimeZone and lastBarOpenTimeInNewYorkTimeZone
+		/// </summary>
+		/// <param name="ticker"></param>
+		/// <param name="firstDate"></param>
+		/// <param name="lastDate"></param>
+		/// <param name="firstBarOpenTimeInNewYorkTimeZone"></param>
+		/// <param name="lastBarOpenTimeInNewYorkTimeZone"></param>
+		/// <param name="dataTable"></param>
+		/// <param name="intervalFrameInSeconds"></param>
+		public static void SetDataTable(
+			string ticker , DateTime firstDate , DateTime lastDate ,
+			Time firstBarOpenTimeInNewYorkTimeZone , Time lastBarOpenTimeInNewYorkTimeZone ,
+			DataTable dataTable, int intervalFrameInSeconds )
+		{
+			string sql = Bars.getSql(
+				ticker , firstDate , lastDate ,
+				firstBarOpenTimeInNewYorkTimeZone , lastBarOpenTimeInNewYorkTimeZone ,
+				intervalFrameInSeconds );
+			SqlExecutor.SetDataTable( sql , dataTable );
+		}
+		#endregion SetDataTable
+		
+		
+		#region AddBar
+		
+		#region getSqlCommand
+		
+//		#region getSqlCommand_getValues
+//		private string getSqlCommandFor_AddBar( double value )
+//		{
+//			string formattedValue =
+//				value.ToString().Replace( ',' , '.' );
+//			return formattedValue;
+//		}
+		private static string getSqlCommandFor_AddBar_getValues(
+			string ticker , string exchange , DateTime dateTimeForOpenInESTTime , long interval ,
+			double open , double high , double low , double close , double volume )
+		{
+			string values =
+				"'" + ticker + "' , " +
+				"'" + exchange + "' , " +
+				SQLBuilder.GetDateTimeConstant( dateTimeForOpenInESTTime ) + " , " +
+				interval + " , " +
+				SQLBuilder.FormatDoubleForSql( open ) + " , " +
+				SQLBuilder.FormatDoubleForSql( high ) + " , " +
+				SQLBuilder.FormatDoubleForSql( low ) + " , " +
+				SQLBuilder.FormatDoubleForSql( close ) + " , " +
+				volume + " , " +
+				SQLBuilder.GetDateTimeConstant( DateTime.Now );
+			return values;
+		}
+//		#endregion getSqlCommand_getValues
+		
+		private static string getSqlCommandFor_AddBar(
+			string ticker , string exchange , DateTime dateTimeForOpenInESTTime , long interval ,
+			double open , double high , double low , double close , double volume )
+		{
+			string sqlCommand =
+				"INSERT INTO bars " +
+				"( baTicker, baExchange, baDateTimeForOpen, baInterval, " +
+				"baOpen, baHigh, baLow, baClose, baVolume, baWhenAdded ) " +
+				"SELECT " +
+				Bars.getSqlCommandFor_AddBar_getValues(
+					ticker , exchange , dateTimeForOpenInESTTime , interval ,
+					open , high , low , close , volume ) + ";";
+			return sqlCommand;
+		}
+		#endregion getSqlCommand
+		
+		/// <summary>
+		/// Adds a bar to the database. A new record is added to the table 'bars'
+		/// </summary>
+		/// <param name="ticker"></param>
+		/// <param name="exchange"></param>
+		/// <param name="dateTimeForOpenInESTTime"></param>
+		/// <param name="interval"></param>
+		/// <param name="open"></param>
+		/// <param name="high"></param>
+		/// <param name="low"></param>
+		/// <param name="close"></param>
+		/// <param name="volume"></param>
+		public static void AddBar(
+			string ticker , string exchange , DateTime dateTimeForOpenInESTTime , long interval ,
+			double open , double high , double low , double close , double volume )
+		{
+			string sqlCommand =
+				Bars.getSqlCommandFor_AddBar(
+					ticker , exchange , dateTimeForOpenInESTTime , interval ,
+					open , high , low , close , volume );
+			SqlExecutor.ExecuteNonQuery( sqlCommand );
+		}
+		#endregion AddBar
 	}
 }
