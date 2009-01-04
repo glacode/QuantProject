@@ -264,5 +264,17 @@ namespace QuantProject.DataAccess
 			}
 			return setStandardDeviationFunctionName;
 		}
+		
+		/// <summary>
+		/// returns a string that can be used in a Sql query
+		/// </summary>
+		/// <param name="value"></param>
+		/// <returns></returns>
+		internal static string FormatDoubleForSql( double value )
+		{
+			string formattedValue =
+				value.ToString().Replace( ',' , '.' );
+			return formattedValue;
+		}
 	}
 }
