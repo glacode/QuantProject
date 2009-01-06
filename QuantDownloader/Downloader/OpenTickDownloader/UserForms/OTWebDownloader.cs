@@ -22,6 +22,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 using System;
 using System.Drawing;
 using System.Collections;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Windows.Forms;
 using System.Data;
@@ -29,6 +30,8 @@ using System.Data.OleDb;
 using System.Net;
 using System.IO;
 using System.Threading;
+
+using QuantProject.ADT.Timing;
 using QuantProject.DataAccess;
 using QuantProject.DataAccess.Tables;
 using QuantProject.Applications.Downloader.TickerSelectors;
@@ -59,7 +62,7 @@ namespace QuantProject.Applications.Downloader.OpenTickDownloader.UserForms
     private string textForEndingDownloadingTimeLabel;
     private string[] tickersToDownload;
     private SortedList downloadingTickersSortedList;
-    private int indexOfCurrentUpdatingTicker;
+		private int indexOfCurrentUpdatingTicker;
     private DateTime currentUpdatingTickerDateTimeOfLastBarUpdate;
     
 		public OTWebDownloader(DataTable tableOfSelectedTickers)
@@ -127,15 +130,6 @@ namespace QuantProject.Applications.Downloader.OpenTickDownloader.UserForms
 			this.dateTimeOverwriteQuotesBefore = new System.Windows.Forms.DateTimePicker();
 			this.timeFrameInSeconds = new System.Windows.Forms.NumericUpDown();
 			this.label2 = new System.Windows.Forms.Label();
-			this.label3 = new System.Windows.Forms.Label();
-			this.fromHour = new System.Windows.Forms.NumericUpDown();
-			this.label4 = new System.Windows.Forms.Label();
-			this.label5 = new System.Windows.Forms.Label();
-			this.fromMin = new System.Windows.Forms.NumericUpDown();
-			this.label6 = new System.Windows.Forms.Label();
-			this.numberOfBars = new System.Windows.Forms.NumericUpDown();
-			this.fromSec = new System.Windows.Forms.NumericUpDown();
-			this.label7 = new System.Windows.Forms.Label();
 			this.txtOpenTickUser = new System.Windows.Forms.TextBox();
 			this.label8 = new System.Windows.Forms.Label();
 			this.label9 = new System.Windows.Forms.Label();
@@ -146,13 +140,11 @@ namespace QuantProject.Applications.Downloader.OpenTickDownloader.UserForms
 			this.endingDownloadingTimeLabel = new System.Windows.Forms.Label();
 			this.startingDownloadingTimeLabel = new System.Windows.Forms.Label();
 			this.signallingLabel = new System.Windows.Forms.Label();
+			this.checkedListOfDailyTimes = new System.Windows.Forms.CheckedListBox();
+			this.button1 = new System.Windows.Forms.Button();
 			((System.ComponentModel.ISupportInitialize)(this.dataGrid1)).BeginInit();
 			this.groupBoxWebDownloaderOptions.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)(this.timeFrameInSeconds)).BeginInit();
-			((System.ComponentModel.ISupportInitialize)(this.fromHour)).BeginInit();
-			((System.ComponentModel.ISupportInitialize)(this.fromMin)).BeginInit();
-			((System.ComponentModel.ISupportInitialize)(this.numberOfBars)).BeginInit();
-			((System.ComponentModel.ISupportInitialize)(this.fromSec)).BeginInit();
 			this.SuspendLayout();
 			// 
 			// dataGrid1
@@ -163,12 +155,12 @@ namespace QuantProject.Applications.Downloader.OpenTickDownloader.UserForms
 			this.dataGrid1.Location = new System.Drawing.Point(382, 0);
 			this.dataGrid1.Name = "dataGrid1";
 			this.dataGrid1.ReadOnly = true;
-			this.dataGrid1.Size = new System.Drawing.Size(352, 459);
+			this.dataGrid1.Size = new System.Drawing.Size(352, 469);
 			this.dataGrid1.TabIndex = 1;
 			// 
 			// buttonDownloadQuotesOfSelectedTickers
 			// 
-			this.buttonDownloadQuotesOfSelectedTickers.Location = new System.Drawing.Point(6, 408);
+			this.buttonDownloadQuotesOfSelectedTickers.Location = new System.Drawing.Point(5, 418);
 			this.buttonDownloadQuotesOfSelectedTickers.Name = "buttonDownloadQuotesOfSelectedTickers";
 			this.buttonDownloadQuotesOfSelectedTickers.Size = new System.Drawing.Size(72, 32);
 			this.buttonDownloadQuotesOfSelectedTickers.TabIndex = 2;
@@ -207,16 +199,16 @@ namespace QuantProject.Applications.Downloader.OpenTickDownloader.UserForms
 			this.groupBoxWebDownloaderOptions.Controls.Add(this.radioButtonAllAvailableUntilNow);
 			this.groupBoxWebDownloaderOptions.Controls.Add(this.dateTimePickerStartingDate);
 			this.groupBoxWebDownloaderOptions.Controls.Add(this.labelStartingDateTime);
-			this.groupBoxWebDownloaderOptions.Location = new System.Drawing.Point(10, 97);
+			this.groupBoxWebDownloaderOptions.Location = new System.Drawing.Point(12, 122);
 			this.groupBoxWebDownloaderOptions.Name = "groupBoxWebDownloaderOptions";
-			this.groupBoxWebDownloaderOptions.Size = new System.Drawing.Size(336, 134);
+			this.groupBoxWebDownloaderOptions.Size = new System.Drawing.Size(336, 141);
 			this.groupBoxWebDownloaderOptions.TabIndex = 13;
 			this.groupBoxWebDownloaderOptions.TabStop = false;
 			this.groupBoxWebDownloaderOptions.Text = "Web Downloader options (source: OpenTick)";
 			// 
 			// radioButtonDownloadOnlyAfterMax
 			// 
-			this.radioButtonDownloadOnlyAfterMax.Location = new System.Drawing.Point(8, 75);
+			this.radioButtonDownloadOnlyAfterMax.Location = new System.Drawing.Point(6, 79);
 			this.radioButtonDownloadOnlyAfterMax.Name = "radioButtonDownloadOnlyAfterMax";
 			this.radioButtonDownloadOnlyAfterMax.Size = new System.Drawing.Size(307, 55);
 			this.radioButtonDownloadOnlyAfterMax.TabIndex = 3;
@@ -225,7 +217,7 @@ namespace QuantProject.Applications.Downloader.OpenTickDownloader.UserForms
 			// 
 			// label1
 			// 
-			this.label1.Location = new System.Drawing.Point(10, 243);
+			this.label1.Location = new System.Drawing.Point(10, 269);
 			this.label1.Name = "label1";
 			this.label1.Size = new System.Drawing.Size(80, 41);
 			this.label1.TabIndex = 16;
@@ -233,7 +225,7 @@ namespace QuantProject.Applications.Downloader.OpenTickDownloader.UserForms
 			// 
 			// dateTimeOverwriteQuotesBefore
 			// 
-			this.dateTimeOverwriteQuotesBefore.Location = new System.Drawing.Point(96, 247);
+			this.dateTimeOverwriteQuotesBefore.Location = new System.Drawing.Point(98, 269);
 			this.dateTimeOverwriteQuotesBefore.Name = "dateTimeOverwriteQuotesBefore";
 			this.dateTimeOverwriteQuotesBefore.Size = new System.Drawing.Size(229, 20);
 			this.dateTimeOverwriteQuotesBefore.TabIndex = 15;
@@ -246,7 +238,7 @@ namespace QuantProject.Applications.Downloader.OpenTickDownloader.UserForms
 									0,
 									0,
 									0});
-			this.timeFrameInSeconds.Location = new System.Drawing.Point(114, 56);
+			this.timeFrameInSeconds.Location = new System.Drawing.Point(299, 55);
 			this.timeFrameInSeconds.Maximum = new decimal(new int[] {
 									3600,
 									0,
@@ -268,135 +260,22 @@ namespace QuantProject.Applications.Downloader.OpenTickDownloader.UserForms
 			// 
 			// label2
 			// 
-			this.label2.Location = new System.Drawing.Point(6, 58);
+			this.label2.Location = new System.Drawing.Point(191, 57);
 			this.label2.Name = "label2";
 			this.label2.Size = new System.Drawing.Size(102, 20);
 			this.label2.TabIndex = 18;
 			this.label2.Text = "Time Frame (sec.)";
 			// 
-			// label3
-			// 
-			this.label3.Location = new System.Drawing.Point(6, 26);
-			this.label3.Name = "label3";
-			this.label3.Size = new System.Drawing.Size(46, 23);
-			this.label3.TabIndex = 19;
-			this.label3.Text = "From:";
-			// 
-			// fromHour
-			// 
-			this.fromHour.Location = new System.Drawing.Point(72, 25);
-			this.fromHour.Maximum = new decimal(new int[] {
-									16,
-									0,
-									0,
-									0});
-			this.fromHour.Minimum = new decimal(new int[] {
-									9,
-									0,
-									0,
-									0});
-			this.fromHour.Name = "fromHour";
-			this.fromHour.Size = new System.Drawing.Size(42, 20);
-			this.fromHour.TabIndex = 20;
-			this.fromHour.Value = new decimal(new int[] {
-									9,
-									0,
-									0,
-									0});
-			// 
-			// label4
-			// 
-			this.label4.Location = new System.Drawing.Point(44, 27);
-			this.label4.Name = "label4";
-			this.label4.Size = new System.Drawing.Size(22, 13);
-			this.label4.TabIndex = 21;
-			this.label4.Text = "H.";
-			// 
-			// label5
-			// 
-			this.label5.Location = new System.Drawing.Point(120, 27);
-			this.label5.Name = "label5";
-			this.label5.Size = new System.Drawing.Size(30, 13);
-			this.label5.TabIndex = 23;
-			this.label5.Text = "Min.";
-			// 
-			// fromMin
-			// 
-			this.fromMin.Location = new System.Drawing.Point(156, 25);
-			this.fromMin.Maximum = new decimal(new int[] {
-									59,
-									0,
-									0,
-									0});
-			this.fromMin.Name = "fromMin";
-			this.fromMin.Size = new System.Drawing.Size(45, 20);
-			this.fromMin.TabIndex = 22;
-			this.fromMin.Value = new decimal(new int[] {
-									30,
-									0,
-									0,
-									0});
-			// 
-			// label6
-			// 
-			this.label6.Location = new System.Drawing.Point(169, 58);
-			this.label6.Name = "label6";
-			this.label6.Size = new System.Drawing.Size(68, 20);
-			this.label6.TabIndex = 25;
-			this.label6.Text = "n° of bars";
-			// 
-			// numberOfBars
-			// 
-			this.numberOfBars.Location = new System.Drawing.Point(243, 56);
-			this.numberOfBars.Maximum = new decimal(new int[] {
-									10000,
-									0,
-									0,
-									0});
-			this.numberOfBars.Minimum = new decimal(new int[] {
-									1,
-									0,
-									0,
-									0});
-			this.numberOfBars.Name = "numberOfBars";
-			this.numberOfBars.Size = new System.Drawing.Size(59, 20);
-			this.numberOfBars.TabIndex = 24;
-			this.numberOfBars.Value = new decimal(new int[] {
-									1,
-									0,
-									0,
-									0});
-			// 
-			// fromSec
-			// 
-			this.fromSec.Location = new System.Drawing.Point(257, 24);
-			this.fromSec.Maximum = new decimal(new int[] {
-									59,
-									0,
-									0,
-									0});
-			this.fromSec.Name = "fromSec";
-			this.fromSec.Size = new System.Drawing.Size(45, 20);
-			this.fromSec.TabIndex = 26;
-			// 
-			// label7
-			// 
-			this.label7.Location = new System.Drawing.Point(219, 26);
-			this.label7.Name = "label7";
-			this.label7.Size = new System.Drawing.Size(30, 13);
-			this.label7.TabIndex = 27;
-			this.label7.Text = "Sec.";
-			// 
 			// txtOpenTickUser
 			// 
-			this.txtOpenTickUser.Location = new System.Drawing.Point(63, 361);
+			this.txtOpenTickUser.Location = new System.Drawing.Point(63, 382);
 			this.txtOpenTickUser.Name = "txtOpenTickUser";
 			this.txtOpenTickUser.Size = new System.Drawing.Size(78, 20);
 			this.txtOpenTickUser.TabIndex = 28;
 			// 
 			// label8
 			// 
-			this.label8.Location = new System.Drawing.Point(6, 361);
+			this.label8.Location = new System.Drawing.Point(6, 382);
 			this.label8.Name = "label8";
 			this.label8.Size = new System.Drawing.Size(37, 23);
 			this.label8.TabIndex = 29;
@@ -404,7 +283,7 @@ namespace QuantProject.Applications.Downloader.OpenTickDownloader.UserForms
 			// 
 			// label9
 			// 
-			this.label9.Location = new System.Drawing.Point(169, 361);
+			this.label9.Location = new System.Drawing.Point(169, 382);
 			this.label9.Name = "label9";
 			this.label9.Size = new System.Drawing.Size(58, 23);
 			this.label9.TabIndex = 31;
@@ -412,7 +291,7 @@ namespace QuantProject.Applications.Downloader.OpenTickDownloader.UserForms
 			// 
 			// txtOpenTickPassword
 			// 
-			this.txtOpenTickPassword.Location = new System.Drawing.Point(247, 361);
+			this.txtOpenTickPassword.Location = new System.Drawing.Point(247, 382);
 			this.txtOpenTickPassword.Name = "txtOpenTickPassword";
 			this.txtOpenTickPassword.Size = new System.Drawing.Size(78, 20);
 			this.txtOpenTickPassword.TabIndex = 30;
@@ -420,7 +299,7 @@ namespace QuantProject.Applications.Downloader.OpenTickDownloader.UserForms
 			// 
 			// checkBoxCheckingForMissingQuotes
 			// 
-			this.checkBoxCheckingForMissingQuotes.Location = new System.Drawing.Point(12, 331);
+			this.checkBoxCheckingForMissingQuotes.Location = new System.Drawing.Point(12, 352);
 			this.checkBoxCheckingForMissingQuotes.Name = "checkBoxCheckingForMissingQuotes";
 			this.checkBoxCheckingForMissingQuotes.Size = new System.Drawing.Size(315, 24);
 			this.checkBoxCheckingForMissingQuotes.TabIndex = 32;
@@ -429,7 +308,7 @@ namespace QuantProject.Applications.Downloader.OpenTickDownloader.UserForms
 			// 
 			// checkBoxOverWrite
 			// 
-			this.checkBoxOverWrite.Location = new System.Drawing.Point(12, 287);
+			this.checkBoxOverWrite.Location = new System.Drawing.Point(12, 308);
 			this.checkBoxOverWrite.Name = "checkBoxOverWrite";
 			this.checkBoxOverWrite.Size = new System.Drawing.Size(246, 38);
 			this.checkBoxOverWrite.TabIndex = 33;
@@ -438,39 +317,60 @@ namespace QuantProject.Applications.Downloader.OpenTickDownloader.UserForms
 			// 
 			// label10
 			// 
-			this.label10.Location = new System.Drawing.Point(93, -1);
+			this.label10.Location = new System.Drawing.Point(12, 0);
 			this.label10.Name = "label10";
 			this.label10.Size = new System.Drawing.Size(131, 23);
 			this.label10.TabIndex = 34;
-			this.label10.Text = "New York Local Time";
+			this.label10.Text = "New York Local Times";
 			// 
 			// endingDownloadingTimeLabel
 			// 
-			this.endingDownloadingTimeLabel.Location = new System.Drawing.Point(84, 436);
+			this.endingDownloadingTimeLabel.Location = new System.Drawing.Point(83, 452);
 			this.endingDownloadingTimeLabel.Name = "endingDownloadingTimeLabel";
-			this.endingDownloadingTimeLabel.Size = new System.Drawing.Size(262, 23);
+			this.endingDownloadingTimeLabel.Size = new System.Drawing.Size(262, 20);
 			this.endingDownloadingTimeLabel.TabIndex = 36;
 			this.endingDownloadingTimeLabel.Text = ".";
 			// 
 			// startingDownloadingTimeLabel
 			// 
-			this.startingDownloadingTimeLabel.Location = new System.Drawing.Point(84, 392);
+			this.startingDownloadingTimeLabel.Location = new System.Drawing.Point(83, 405);
 			this.startingDownloadingTimeLabel.Name = "startingDownloadingTimeLabel";
-			this.startingDownloadingTimeLabel.Size = new System.Drawing.Size(262, 23);
+			this.startingDownloadingTimeLabel.Size = new System.Drawing.Size(262, 22);
 			this.startingDownloadingTimeLabel.TabIndex = 37;
 			this.startingDownloadingTimeLabel.Text = ".";
 			// 
 			// signallingLabel
 			// 
-			this.signallingLabel.Location = new System.Drawing.Point(84, 415);
+			this.signallingLabel.Location = new System.Drawing.Point(83, 427);
 			this.signallingLabel.Name = "signallingLabel";
-			this.signallingLabel.Size = new System.Drawing.Size(274, 12);
+			this.signallingLabel.Size = new System.Drawing.Size(274, 23);
 			this.signallingLabel.TabIndex = 38;
+			// 
+			// checkedListOfDailyTimes
+			// 
+			this.checkedListOfDailyTimes.FormattingEnabled = true;
+			this.checkedListOfDailyTimes.Location = new System.Drawing.Point(12, 22);
+			this.checkedListOfDailyTimes.Name = "checkedListOfDailyTimes";
+			this.checkedListOfDailyTimes.Size = new System.Drawing.Size(173, 94);
+			this.checkedListOfDailyTimes.TabIndex = 39;
+			// 
+			// button1
+			// 
+			this.button1.Location = new System.Drawing.Point(227, 12);
+			this.button1.Name = "button1";
+			this.button1.Size = new System.Drawing.Size(66, 23);
+			this.button1.TabIndex = 40;
+			this.button1.Text = "button1";
+			this.button1.UseVisualStyleBackColor = true;
+			this.button1.Visible = false;
+			this.button1.Click += new System.EventHandler(this.Button1Click);
 			// 
 			// OTWebDownloader
 			// 
 			this.AutoScaleBaseSize = new System.Drawing.Size(5, 13);
-			this.ClientSize = new System.Drawing.Size(734, 459);
+			this.ClientSize = new System.Drawing.Size(734, 469);
+			this.Controls.Add(this.button1);
+			this.Controls.Add(this.checkedListOfDailyTimes);
 			this.Controls.Add(this.signallingLabel);
 			this.Controls.Add(this.startingDownloadingTimeLabel);
 			this.Controls.Add(this.endingDownloadingTimeLabel);
@@ -481,15 +381,6 @@ namespace QuantProject.Applications.Downloader.OpenTickDownloader.UserForms
 			this.Controls.Add(this.txtOpenTickPassword);
 			this.Controls.Add(this.label8);
 			this.Controls.Add(this.txtOpenTickUser);
-			this.Controls.Add(this.label7);
-			this.Controls.Add(this.fromSec);
-			this.Controls.Add(this.label6);
-			this.Controls.Add(this.numberOfBars);
-			this.Controls.Add(this.label5);
-			this.Controls.Add(this.fromMin);
-			this.Controls.Add(this.label4);
-			this.Controls.Add(this.fromHour);
-			this.Controls.Add(this.label3);
 			this.Controls.Add(this.label2);
 			this.Controls.Add(this.timeFrameInSeconds);
 			this.Controls.Add(this.label1);
@@ -504,13 +395,11 @@ namespace QuantProject.Applications.Downloader.OpenTickDownloader.UserForms
 			((System.ComponentModel.ISupportInitialize)(this.dataGrid1)).EndInit();
 			this.groupBoxWebDownloaderOptions.ResumeLayout(false);
 			((System.ComponentModel.ISupportInitialize)(this.timeFrameInSeconds)).EndInit();
-			((System.ComponentModel.ISupportInitialize)(this.fromHour)).EndInit();
-			((System.ComponentModel.ISupportInitialize)(this.fromMin)).EndInit();
-			((System.ComponentModel.ISupportInitialize)(this.numberOfBars)).EndInit();
-			((System.ComponentModel.ISupportInitialize)(this.fromSec)).EndInit();
 			this.ResumeLayout(false);
 			this.PerformLayout();
     }
+		private System.Windows.Forms.Button button1;
+		private System.Windows.Forms.CheckedListBox checkedListOfDailyTimes;
 		private System.Windows.Forms.Label signallingLabel;
 		private System.Windows.Forms.Label endingDownloadingTimeLabel;
 		private System.Windows.Forms.Label startingDownloadingTimeLabel;
@@ -522,16 +411,7 @@ namespace QuantProject.Applications.Downloader.OpenTickDownloader.UserForms
 		private System.Windows.Forms.Label label8;
 		private System.Windows.Forms.TextBox txtOpenTickUser;
 		private System.Windows.Forms.NumericUpDown timeFrameInSeconds;
-		private System.Windows.Forms.Label label7;
-		private System.Windows.Forms.NumericUpDown fromSec;
-		private System.Windows.Forms.NumericUpDown numberOfBars;
 		private System.Windows.Forms.DateTimePicker dateTimeOverwriteQuotesBefore;
-		private System.Windows.Forms.Label label6;
-		private System.Windows.Forms.NumericUpDown fromMin;
-		private System.Windows.Forms.Label label5;
-		private System.Windows.Forms.Label label4;
-		private System.Windows.Forms.NumericUpDown fromHour;
-		private System.Windows.Forms.Label label3;
 		private System.Windows.Forms.Label label2;
 		private System.Windows.Forms.Label label1;
 		#endregion
@@ -575,15 +455,17 @@ namespace QuantProject.Applications.Downloader.OpenTickDownloader.UserForms
 	  private void buttonDownloadQuotesOfSelectedTickers_Click(object sender, System.EventArgs e)
     {
 	  	try{
+	  		if(this.CheckedDailyTimes.Count == 0)
+	  			throw new Exception("Check at least one daily time!");
 	  		OTTickerDownloader tickerDownloader =
 	  			new OTTickerDownloader(
 	  				this.TickersToDownload,
 	  				this.StartingNewYorkDateTime,
-	  				Convert.ToInt32( this.fromHour.Value ) ,
-	  				Convert.ToInt32( this.fromMin.Value ) ,
-	  				Convert.ToInt32( this.fromSec.Value ) ,
+	  				this.CheckedDailyTimes[0].Hour ,
+	  				this.CheckedDailyTimes[0].Minute ,
+	  				this.CheckedDailyTimes[0].Second ,
 	  				Convert.ToInt32( this.timeFrameInSeconds.Value ) ,
-	  				Convert.ToInt32( this.numberOfBars.Value ) ,
+	  				1 ,
 	  				this.dateTimeOverwriteQuotesBefore.Value,
 	  				this.checkBoxCheckingForMissingQuotes.Checked,
 	  				this.checkBoxOverWrite.Checked,
@@ -653,12 +535,10 @@ namespace QuantProject.Applications.Downloader.OpenTickDownloader.UserForms
     {
       get
       {
-      	return new DateTime(this.dateTimePickerStartingDate.Value.Year,
-      			             this.dateTimePickerStartingDate.Value.Month,
-      			             this.dateTimePickerStartingDate.Value.Day,
-      			             Convert.ToInt32(this.fromHour.Value),
-      			             Convert.ToInt32(this.fromMin.Value),
-      			             Convert.ToInt32(this.fromSec.Value));
+      	return Time.GetDateTimeFromMerge( new DateTime(this.dateTimePickerStartingDate.Value.Year,
+      			             											this.dateTimePickerStartingDate.Value.Month,
+      			             											this.dateTimePickerStartingDate.Value.Day) ,
+      			             									new Time((string)this.checkedListOfDailyTimes.CheckedItems[0]) );
       }
     }
     public int TimeFrameInSeconds
@@ -668,13 +548,23 @@ namespace QuantProject.Applications.Downloader.OpenTickDownloader.UserForms
       	return Convert.ToInt32(this.timeFrameInSeconds.Value);
       }
     }
-    public int NumberOfBars
+    
+    public List<Time> CheckedDailyTimes
     {
-      get
+     	get
       {
-      	return Convert.ToInt32(this.numberOfBars.Value);
+     		List<Time> checkedDailyTimes = 
+     			new List<Time>();
+     		for(int i = 0; 
+     		    i < this.checkedListOfDailyTimes.CheckedItems.Count;
+     		    i++)
+     			checkedDailyTimes.Add(new Time((string)this.checkedListOfDailyTimes.CheckedItems[i]) );
+     			
+      	return checkedDailyTimes;
       }
     }
+		
+
     public string[] TickersToDownload
     {
     	get
@@ -698,7 +588,7 @@ namespace QuantProject.Applications.Downloader.OpenTickDownloader.UserForms
       }
     }
     
-    #endregion
+    #endregion properties
     
     private void otWebDownloaderLoad_setStyleForDataGrid()
 		{
@@ -761,10 +651,23 @@ namespace QuantProject.Applications.Downloader.OpenTickDownloader.UserForms
     	this.dataGrid1.DataSource = this.DsTickerCurrentlyDownloaded.Tables[ "Tickers" ];
     	this.otWebDownloaderLoad_setStyleForDataGrid();
     }
+    		
+    private void otWebDownloaderLoad_populateCheckedListOfDailyTimes()
+    {
+    	Time firstTimeToAdd = new Time(9,30,0);
+    	Time lastTimeToAdd = new Time(16,0,0);
+    	Time currentTimeToAdd = firstTimeToAdd;
+    	while( currentTimeToAdd <= lastTimeToAdd )
+    	{
+    		this.checkedListOfDailyTimes.Items.Add(currentTimeToAdd.GetFormattedString(), false);
+    		currentTimeToAdd = currentTimeToAdd.AddMinutes( 1 );
+    	}
+    }
     
-		private void otWebDownloaderLoad(object sender, EventArgs e)
+    private void otWebDownloaderLoad(object sender, EventArgs e)
 		{
 			this.otWebDownloaderLoad_fillDataGridWithTickersToBeDownloaded();
+			this.otWebDownloaderLoad_populateCheckedListOfDailyTimes();
 		}
 								
 		private void OTWebDownloader_Closing(Object sender, CancelEventArgs e)
@@ -840,6 +743,12 @@ namespace QuantProject.Applications.Downloader.OpenTickDownloader.UserForms
 			this.OTWebDownloaderPaint_refreshSignallingLabel();
 			this.OTWebDownloaderPaint_refreshTableOfSelectedTickers();
 			this.OTWebDownloaderPaint_refreshEndingDownloadingTimeLabel();
+		}
+		
+		void Button1Click(object sender, EventArgs e)
+		{
+			List<Time> listDT = 
+				this.CheckedDailyTimes;
 		}
 	}
 }
