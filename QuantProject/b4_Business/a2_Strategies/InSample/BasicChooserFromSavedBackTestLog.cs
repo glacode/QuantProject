@@ -40,6 +40,7 @@ namespace QuantProject.Business.Strategies.InSample
 	/// Abstract basic IInSampleChooser for returning
 	/// log items already saved in a BackTestLog saved to disk
 	/// </summary>
+	[Serializable]
 	public abstract class BasicChooserFromSavedBackTestLog : IInSampleChooser
 	{
 		public event NewProgressEventHandler NewProgress;
