@@ -218,6 +218,27 @@ namespace QuantProject.ADT.Timing
 			return returnValue;
 		}
 		
+		/// <summary>
+		/// Returns a formatted string ("hh:mm:ss") for the current instance
+		/// </summary>
+		/// <returns></returns>
+		public string GetFormattedString()
+		{
+			string hour, minute, second;
+			hour = this.Hour.ToString();
+			if( hour.Length < 2 )
+				hour = "0" + hour;
+			minute = this.Minute.ToString();
+			if( minute.Length < 2 )
+				minute = "0" + minute;
+			second = this.Second.ToString();
+			if ( second.Length < 2 )
+				second = "0" + second;
+			string returnValue = hour + ":" + minute + ":" + second;
+			
+			return returnValue;
+		}
+		
 		#region CheckStrictlyAscending
 		private static void checkStrictlyAscending(
 			List< Time > times , int timeIndex )
