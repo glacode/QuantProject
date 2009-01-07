@@ -20,11 +20,13 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 using System;
+using System.Collections.Generic;
 using System.Data;
 using System.Threading;
 using System.Windows.Forms;
 
 using QuantProject.ADT;
+using QuantProject.ADT.Timing;
 using QuantProject.Presentation;
 
 namespace QuantProject.Applications.Downloader.OpenTickDownloader
@@ -41,20 +43,21 @@ namespace QuantProject.Applications.Downloader.OpenTickDownloader
 	public class OTTickerDownloader
 	{
 		private string[] tickersToDownload;
+		private List<Time> dailyTimes;
 		private DateTime firstDate;
-		/// <summary>
-		/// time (date doesn't matter for this member) for the first
-		/// bar to be downloaded, each day
-		/// </summary>
-		private DateTime firstBarOpenTimeInNewYorkTimeZone;
+//		/// <summary>
+//		/// time (date doesn't matter for this member) for the first
+//		/// bar to be downloaded, each day
+//		/// </summary>
+//		private DateTime firstBarOpenTimeInNewYorkTimeZone;
 		/// <summary>
 		/// number of seconds in each bar
 		/// </summary>
 		private int barInterval;
-		/// <summary>
-		/// number of bars to be downloaded for each day
-		/// </summary>
-		private int numberOfDailyBars;
+//		/// <summary>
+//		/// number of bars to be downloaded for each day
+//		/// </summary>
+//		private int numberOfDailyBars;
 		private DateTime dateTimeForOverWritingQuotes;//before this
 		//date quotes should be overwritten automatically
 		private bool checkForMissingQuotes;//it downloads and writes
@@ -104,12 +107,13 @@ namespace QuantProject.Applications.Downloader.OpenTickDownloader
 		
 		public OTTickerDownloader(
 			string[] tickersToDownload,
+			List<Time> dailyTimes ,
 			DateTime firstDate,
-			int fromHour ,
-			int fromMinute ,
-			int fromSecond ,
+//			int fromHour ,
+//			int fromMinute ,
+//			int fromSecond ,
 			int barInterval ,
-			int numberOfDailyBars ,
+//			int numberOfDailyBars ,
 			DateTime dateTimeForOverWritingQuotes,
 			bool checkForMissingQuotes,
 			bool overwriteAllQuotesInDatabase,
@@ -126,12 +130,13 @@ namespace QuantProject.Applications.Downloader.OpenTickDownloader
 			                                        openTickUser,
 			                                        openTickPassword);
 			this.tickersToDownload = tickersToDownload;
+			this.dailyTimes = dailyTimes;
 			this.firstDate = firstDate;
-			this.firstBarOpenTimeInNewYorkTimeZone =
-				new DateTime(
-					1 , 1 , 1 , fromHour , fromMinute , fromSecond );
+//			this.firstBarOpenTimeInNewYorkTimeZone =
+//				new DateTime(
+//					1 , 1 , 1 , fromHour , fromMinute , fromSecond );
 			this.barInterval = barInterval;
-			this.numberOfDailyBars = numberOfDailyBars;
+//			this.numberOfDailyBars = numberOfDailyBars;
 			this.dateTimeForOverWritingQuotes = dateTimeForOverWritingQuotes;
 			this.checkForMissingQuotes = checkForMissingQuotes;
 			this.overwriteAllQuotesInDatabase = overwriteAllQuotesInDatabase;
@@ -196,8 +201,9 @@ namespace QuantProject.Applications.Downloader.OpenTickDownloader
 						this.setBarsSelector_getDate( this.firstDate ) ,
 						this.setBarsSelector_getDate( DateTime.Now ) ,
 						this.barInterval ,
-						this.firstBarOpenTimeInNewYorkTimeZone ,
-						this.numberOfDailyBars );
+						this.dailyTimes );
+//						this.firstBarOpenTimeInNewYorkTimeZone ,
+//						this.numberOfDailyBars );
 			else
 				// all quotes are to be downloaded, even if they
 				// are in the database already
@@ -207,13 +213,14 @@ namespace QuantProject.Applications.Downloader.OpenTickDownloader
 						this.setBarsSelector_getDate( this.firstDate ) ,
 						this.setBarsSelector_getDate( DateTime.Now ) ,
 						this.barInterval ,
-						this.firstBarOpenTimeInNewYorkTimeZone ,
-						this.numberOfDailyBars );
+						this.dailyTimes );
+//						this.firstBarOpenTimeInNewYorkTimeZone ,
+//						this.numberOfDailyBars );
 		}
 		private void setExchangeSelector()
 		{
-        	this.exchangeSelector =
-        		new MostLiquidExchangeSelector();
+			this.exchangeSelector =
+				new MostLiquidExchangeSelector();
 		}
 		#region setBarsDownloaderAndRunIt
 		
@@ -263,7 +270,7 @@ namespace QuantProject.Applications.Downloader.OpenTickDownloader
 //			string logFileName =
 //				@"C:\Quant\OpenTickDownloader\textFilesForLoggingNotification\textFileForLoggingNotification";
 			string logFileName =
-				Application.StartupPath + "\\textFileForLoggingNotification";			
+				Application.StartupPath + "\\textFileForLoggingNotification";
 			logFileName = logFileName + "_" +
 				ExtendedDateTime.GetCompleteShortDescriptionForFileName(
 					DateTime.Now ) + ".txt";
