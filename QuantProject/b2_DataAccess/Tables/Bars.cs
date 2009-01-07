@@ -2,7 +2,7 @@
 QuantDownloader - Quantitative Finance Library
 
 Bars.cs
-Copyright (C) 2008 
+Copyright (C) 2008
 Marco Milletti
 
 This program is free software; you can redistribute it and/or
@@ -18,10 +18,11 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
-*/
+ */
 
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Data;
 using System.Text;
 using System.Windows.Forms;
@@ -37,18 +38,18 @@ namespace QuantProject.DataAccess.Tables
 	/// </summary>
 	public class Bars
 	{
-    // these static fields provide field name in the database table
+		// these static fields provide field name in the database table
 		// They are intended to be used through intellisense when necessary
 		public static string TickerFieldName = "baTicker";	// Ticker cannot be simply used because
-		public static string Exchange = "baExchange";		
+		public static string Exchange = "baExchange";
 		public static string DateTimeForOpen = "baDateTimeForOpen";
 		public static string IntervalFrameInSeconds = "baInterval";
 		public static string Open = "baOpen";
 		public static string High = "baHigh";
 		public static string Low = "baLow";
 		public static string Close = "baClose";
-		public static string Volume = "baVolume";   
-    		
+		public static string Volume = "baVolume";
+		
 		public Bars( string ticker)
 		{
 			
@@ -68,7 +69,7 @@ namespace QuantProject.DataAccess.Tables
 		{
 			DataTable dataTable = SqlExecutor.GetDataTable(
 				"select min(" + Bars.DateTimeForOpen + ") as minDate from bars " +
-				"where " + Bars.TickerFieldName + "='" + ticker + "' and " + 
+				"where " + Bars.TickerFieldName + "='" + ticker + "' and " +
 				Bars.IntervalFrameInSeconds + "='" + intervalFrameInSeconds + "' " +
 				"group by " + Bars.TickerFieldName + ")" );
 			return (DateTime)(dataTable.Rows[ 0 ][ "minDate" ]);
@@ -82,139 +83,139 @@ namespace QuantProject.DataAccess.Tables
 		public static DateTime GetLastBarDateTime( string ticker, int intervalFrameInSeconds )
 		{
 			DataTable dataTable = SqlExecutor.GetDataTable(
-				"select * from bars where " + Bars.TickerFieldName + "='" + ticker + "' and " + 
+				"select * from bars where " + Bars.TickerFieldName + "='" + ticker + "' and " +
 				Bars.IntervalFrameInSeconds + "='" + intervalFrameInSeconds + "' " +
 				"order by " + Bars.DateTimeForOpen + " DESC");
 			return (DateTime)(dataTable.Rows[0][ Bars.DateTimeForOpen ]);
 		}
-    /// <summary>
-    /// Returns the number of Bars for the given ticker
-    /// </summary>
-    /// <param name="ticker">ticker for which the number of bars has to be returned</param>
-    /// <param name="intervalFrameInSeconds">interval frame in seconds for the ticker's bars</param>
-    /// <returns></returns>
-    public static int GetNumberOfBars( string ticker, int intervalFrameInSeconds )
-    {
-      DataTable dataTable = SqlExecutor.GetDataTable(
-        "select * from bars " + 
-        "where " + Bars.TickerFieldName + "='" + ticker + "' and " +
+		/// <summary>
+		/// Returns the number of Bars for the given ticker
+		/// </summary>
+		/// <param name="ticker">ticker for which the number of bars has to be returned</param>
+		/// <param name="intervalFrameInSeconds">interval frame in seconds for the ticker's bars</param>
+		/// <returns></returns>
+		public static int GetNumberOfBars( string ticker, int intervalFrameInSeconds )
+		{
+			DataTable dataTable = SqlExecutor.GetDataTable(
+				"select * from bars " +
+				"where " + Bars.TickerFieldName + "='" + ticker + "' and " +
 				Bars.IntervalFrameInSeconds + "='" + intervalFrameInSeconds + "' " );
-      return dataTable.Rows.Count;
-    }
+			return dataTable.Rows.Count;
+		}
 
-    /// <summary>
-    /// Returns the number of bars at which the given ticker has been effectively traded
-    /// (volume > 0)
-    /// </summary>
-    /// <param name="ticker">ticker for which the number of bars has to be returned</param>
-    /// <param name="intervalFrameInSeconds">interval frame in seconds for the ticker's bars</param>
-    /// <returns></returns>
-    public static int GetNumberOfBarsWithEffectiveTrades( string ticker, DateTime firstDateTime,
-                                                          DateTime lastDateTime, int intervalFrameInSeconds)
-    {
-      DataTable dataTable = SqlExecutor.GetDataTable(
-        "select * from bars " + 
-        "WHERE " + Bars.TickerFieldName + "='" + ticker + "' and " + 
+		/// <summary>
+		/// Returns the number of bars at which the given ticker has been effectively traded
+		/// (volume > 0)
+		/// </summary>
+		/// <param name="ticker">ticker for which the number of bars has to be returned</param>
+		/// <param name="intervalFrameInSeconds">interval frame in seconds for the ticker's bars</param>
+		/// <returns></returns>
+		public static int GetNumberOfBarsWithEffectiveTrades( string ticker, DateTime firstDateTime,
+		                                                     DateTime lastDateTime, int intervalFrameInSeconds)
+		{
+			DataTable dataTable = SqlExecutor.GetDataTable(
+				"select * from bars " +
+				"WHERE " + Bars.TickerFieldName + "='" + ticker + "' and " +
 				Bars.IntervalFrameInSeconds + "='" + intervalFrameInSeconds + "' " +
-        "and " + Bars.Volume + ">0" + " and " + Bars.DateTimeForOpen + " BETWEEN " + SQLBuilder.GetDateConstant(firstDateTime) + " " +
-        "and " + SQLBuilder.GetDateConstant(lastDateTime) );
-      return dataTable.Rows.Count;
-    }
-    
-    /// <summary>
-    /// Returns the close for the given ticker at the specified date
-    /// time
-    /// </summary>
-    /// <param name="ticker">ticker for which the close has to be returned</param>
-    /// <param name="intervalFrameInSeconds">interval frame in seconds for the ticker's bars</param>
-    /// <returns></returns>
-    public static float GetClose( string ticker, DateTime dateTime, int intervalFrameInSeconds )
-    {
-      DataTable dataTable = SqlExecutor.GetDataTable(
-        "select " + Bars.Close + " from bars " + 
-        "where " + Bars.TickerFieldName + "='" + ticker + "' and " + 
+				"and " + Bars.Volume + ">0" + " and " + Bars.DateTimeForOpen + " BETWEEN " + SQLBuilder.GetDateConstant(firstDateTime) + " " +
+				"and " + SQLBuilder.GetDateConstant(lastDateTime) );
+			return dataTable.Rows.Count;
+		}
+		
+		/// <summary>
+		/// Returns the close for the given ticker at the specified date
+		/// time
+		/// </summary>
+		/// <param name="ticker">ticker for which the close has to be returned</param>
+		/// <param name="intervalFrameInSeconds">interval frame in seconds for the ticker's bars</param>
+		/// <returns></returns>
+		public static float GetClose( string ticker, DateTime dateTime, int intervalFrameInSeconds )
+		{
+			DataTable dataTable = SqlExecutor.GetDataTable(
+				"select " + Bars.Close + " from bars " +
+				"where " + Bars.TickerFieldName + "='" + ticker + "' and " +
 				Bars.IntervalFrameInSeconds + "='" + intervalFrameInSeconds + "' " +
-        "and " + Bars.DateTimeForOpen + "=" + SQLBuilder.GetDateConstant(dateTime) );
-      return (float)dataTable.Rows[0][0];
-    }
-    /// <summary>
-    /// Returns the open for the given ticker at the specified date
-    /// time
-    /// </summary>
-    /// <param name="ticker">ticker for which the raw open has to be returned</param>
-    /// <param name="intervalFrameInSeconds">interval frame in seconds for the ticker's bars</param>
-    /// <returns></returns>
-    public static float GetOpen( string ticker, DateTime dateTime, int intervalFrameInSeconds )
-    {
-      DataTable dataTable = SqlExecutor.GetDataTable(
-        "select " + Bars.Open + " from bars " + 
-        "where " + Bars.TickerFieldName + "='" + ticker + "' and " + 
+				"and " + Bars.DateTimeForOpen + "=" + SQLBuilder.GetDateConstant(dateTime) );
+			return (float)dataTable.Rows[0][0];
+		}
+		/// <summary>
+		/// Returns the open for the given ticker at the specified date
+		/// time
+		/// </summary>
+		/// <param name="ticker">ticker for which the raw open has to be returned</param>
+		/// <param name="intervalFrameInSeconds">interval frame in seconds for the ticker's bars</param>
+		/// <returns></returns>
+		public static float GetOpen( string ticker, DateTime dateTime, int intervalFrameInSeconds )
+		{
+			DataTable dataTable = SqlExecutor.GetDataTable(
+				"select " + Bars.Open + " from bars " +
+				"where " + Bars.TickerFieldName + "='" + ticker + "' and " +
 				Bars.IntervalFrameInSeconds + "='" + intervalFrameInSeconds + "' " +
-        "and " + Bars.DateTimeForOpen + "=" + SQLBuilder.GetDateConstant(dateTime) );
-      return (float)dataTable.Rows[0][0];
-    }
-    
-    
-//    /// <summary>
-//    /// It provides deletion of the quote from the table "quotes" for
-//    /// the given ticker for a specified date
-//    /// </summary>
-//    public static void Delete( string ticker, DateTime dateOfTheQuoteToBeDeleted )
-//    {
-//      try
-//      {
-//      SqlExecutor.ExecuteNonQuery("DELETE * FROM quotes " +
-//                                  "WHERE quTicker ='" +
-//                                  ticker + "' AND quDate =" +
-//                                  SQLBuilder.GetDateConstant(dateOfTheQuoteToBeDeleted));
-//      }
-//      catch(Exception ex)
-//      {
-//        string notUsed = ex.ToString();
-//      }
-//    }
-//    /// <summary>
-//    /// It provides deletion of the quote from the table "quotes" for
-//    /// the given ticker for the specified interval
-//    /// </summary>
-//    public static void Delete( string ticker, DateTime fromDate,
-//                                DateTime toDate)
-//    {
-//      try
-//      {
-//        SqlExecutor.ExecuteNonQuery("DELETE * FROM quotes " +
-//          "WHERE quTicker ='" +
-//          ticker + "' AND quDate >=" +
-//          SQLBuilder.GetDateConstant(fromDate) + " " +
-//          "AND quDate<=" + SQLBuilder.GetDateConstant(toDate));
-//      }
-//      catch(Exception ex)
-//      {
-//        string notUsed = ex.ToString();
-//      }
-//    }
-//    /// <summary>
-//    /// It provides addition of the given quote's values into table "quotes" 
-//    /// </summary>
-//    public static void Add( string ticker, DateTime date, double open, 
-//                            double high, double low, double close,
-//                            double volume, double adjustedClose)
-//    {
-//      try
-//      {
-//      SqlExecutor.ExecuteNonQuery("INSERT INTO quotes(quTicker, quDate, quOpen, " +
-//                                  "quHigh, quLow, quClose, quVolume, quAdjustedClose) " +
-//                                  "VALUES('" + ticker + "', " + SQLBuilder.GetDateConstant(date) + ", " +
-//                                  open + ", " + high + ", " + low + ", " + close + ", " +
-//                                  volume + ", " + adjustedClose + ")");
-//      }
-//      catch(Exception ex)
-//      {
-//        string notUsed = ex.ToString();
-//      }
-//    }             
-  	
-  	/// <summary>
+				"and " + Bars.DateTimeForOpen + "=" + SQLBuilder.GetDateConstant(dateTime) );
+			return (float)dataTable.Rows[0][0];
+		}
+		
+		
+		//    /// <summary>
+		//    /// It provides deletion of the quote from the table "quotes" for
+		//    /// the given ticker for a specified date
+		//    /// </summary>
+		//    public static void Delete( string ticker, DateTime dateOfTheQuoteToBeDeleted )
+		//    {
+		//      try
+		//      {
+		//      SqlExecutor.ExecuteNonQuery("DELETE * FROM quotes " +
+		//                                  "WHERE quTicker ='" +
+		//                                  ticker + "' AND quDate =" +
+		//                                  SQLBuilder.GetDateConstant(dateOfTheQuoteToBeDeleted));
+		//      }
+		//      catch(Exception ex)
+		//      {
+		//        string notUsed = ex.ToString();
+		//      }
+		//    }
+		//    /// <summary>
+		//    /// It provides deletion of the quote from the table "quotes" for
+		//    /// the given ticker for the specified interval
+		//    /// </summary>
+		//    public static void Delete( string ticker, DateTime fromDate,
+		//                                DateTime toDate)
+		//    {
+		//      try
+		//      {
+		//        SqlExecutor.ExecuteNonQuery("DELETE * FROM quotes " +
+		//          "WHERE quTicker ='" +
+		//          ticker + "' AND quDate >=" +
+		//          SQLBuilder.GetDateConstant(fromDate) + " " +
+		//          "AND quDate<=" + SQLBuilder.GetDateConstant(toDate));
+		//      }
+		//      catch(Exception ex)
+		//      {
+		//        string notUsed = ex.ToString();
+		//      }
+		//    }
+		//    /// <summary>
+		//    /// It provides addition of the given quote's values into table "quotes"
+		//    /// </summary>
+		//    public static void Add( string ticker, DateTime date, double open,
+		//                            double high, double low, double close,
+		//                            double volume, double adjustedClose)
+		//    {
+		//      try
+		//      {
+		//      SqlExecutor.ExecuteNonQuery("INSERT INTO quotes(quTicker, quDate, quOpen, " +
+		//                                  "quHigh, quLow, quClose, quVolume, quAdjustedClose) " +
+		//                                  "VALUES('" + ticker + "', " + SQLBuilder.GetDateConstant(date) + ", " +
+		//                                  open + ", " + high + ", " + low + ", " + close + ", " +
+		//                                  volume + ", " + adjustedClose + ")");
+		//      }
+		//      catch(Exception ex)
+		//      {
+		//        string notUsed = ex.ToString();
+		//      }
+		//    }
+		
+		/// <summary>
 		/// returns the bars DataTable for the given ticker
 		/// </summary>
 		/// <param name="ticker">ticker whose bars are to be returned</param>
@@ -222,32 +223,32 @@ namespace QuantProject.DataAccess.Tables
 		/// <returns></returns>
 		public static DataTable GetTickerBars( string ticker, int intervalFrameInSeconds )
 		{
-			string sql = "select * from bars " + 
-				"where " + Bars.TickerFieldName + "='" + ticker + "' and " + 
+			string sql = "select * from bars " +
+				"where " + Bars.TickerFieldName + "='" + ticker + "' and " +
 				Bars.IntervalFrameInSeconds + "='" + intervalFrameInSeconds + "' " +
 				"order by " + Bars.DateTimeForOpen;
 			return SqlExecutor.GetDataTable( sql );
 		}
-    
-    /// <summary>
-    /// returns the bars DataTable for the given ticker
-    /// </summary>
-    /// <param name="ticker">ticker whose quotes are to be returned</param>
-    /// <param name="firstBarDateTime">The first bar date time</param>
-    /// <param name="lastBarDateTime">The last bar date time</param>
-    /// <param name="intervalFrameInSeconds">interval frame in seconds for the ticker's bars</param>
-    /// <returns></returns>
-    public static DataTable GetTickerBars( string ticker, DateTime firstBarDateTime,
-                                              DateTime lastBarDateTime, int intervalFrameInSeconds)
-    {
-      string sql = "select * from bars " + 
-      	"where " + Bars.TickerFieldName + "='" + ticker + "' and " + 
+		
+		/// <summary>
+		/// returns the bars DataTable for the given ticker
+		/// </summary>
+		/// <param name="ticker">ticker whose quotes are to be returned</param>
+		/// <param name="firstBarDateTime">The first bar date time</param>
+		/// <param name="lastBarDateTime">The last bar date time</param>
+		/// <param name="intervalFrameInSeconds">interval frame in seconds for the ticker's bars</param>
+		/// <returns></returns>
+		public static DataTable GetTickerBars( string ticker, DateTime firstBarDateTime,
+		                                      DateTime lastBarDateTime, int intervalFrameInSeconds)
+		{
+			string sql = "select * from bars " +
+				"where " + Bars.TickerFieldName + "='" + ticker + "' and " +
 				Bars.IntervalFrameInSeconds + "='" + intervalFrameInSeconds + "' " +
-        "and " + Bars.DateTimeForOpen + " between " + SQLBuilder.GetDateConstant(firstBarDateTime) + " " +
-        "and " + SQLBuilder.GetDateConstant(lastBarDateTime) + " " +
-        "order by " + Bars.DateTimeForOpen;
-      return SqlExecutor.GetDataTable( sql );
-    }
+				"and " + Bars.DateTimeForOpen + " between " + SQLBuilder.GetDateConstant(firstBarDateTime) + " " +
+				"and " + SQLBuilder.GetDateConstant(lastBarDateTime) + " " +
+				"order by " + Bars.DateTimeForOpen;
+			return SqlExecutor.GetDataTable( sql );
+		}
 		/// <summary>
 		/// Returns the bars for the given instrument , since startDateTime to endDateTime
 		/// </summary>
@@ -257,20 +258,20 @@ namespace QuantProject.DataAccess.Tables
 		/// <param name="intervalFrameInSeconds">interval frame in seconds for the ticker's bars</param>
 		/// <returns></returns>
 		public static void SetDataTable( string tickerOrGroupID , DateTime startDateTime , DateTime endDateTime ,
-			DataTable dataTable, int intervalFrameInSeconds)
+		                                DataTable dataTable, int intervalFrameInSeconds)
 		{
 			string sql;
 			if(Tickers_tickerGroups.HasTickers(tickerOrGroupID))
 				sql =	"select * from bars INNER JOIN tickers_tickerGroups ON " +
 					"bars." + Bars.TickerFieldName + "=tickers_tickerGroups." + Tickers_tickerGroups.Ticker + " " +
-					"where " + Tickers_tickerGroups.GroupID + "='" + tickerOrGroupID + "' and " + 
+					"where " + Tickers_tickerGroups.GroupID + "='" + tickerOrGroupID + "' and " +
 					Bars.IntervalFrameInSeconds + "=" + intervalFrameInSeconds + " " +
 					"and " + Bars.DateTimeForOpen + ">=" + SQLBuilder.GetDateTimeConstant( startDateTime ) + " " +
 					"and " + Bars.DateTimeForOpen + "<=" + SQLBuilder.GetDateTimeConstant( endDateTime ) + " " +
 					"order by " + Bars.DateTimeForOpen;
 			else
 				sql =	"select * from bars " +
-					"where " + Bars.TickerFieldName + "='" + tickerOrGroupID + "' and " + 
+					"where " + Bars.TickerFieldName + "='" + tickerOrGroupID + "' and " +
 					Bars.IntervalFrameInSeconds + "=" + intervalFrameInSeconds + " " +
 					"and " + Bars.DateTimeForOpen + ">=" + SQLBuilder.GetDateTimeConstant( startDateTime ) + " " +
 					"and " + Bars.DateTimeForOpen + "<=" + SQLBuilder.GetDateTimeConstant( endDateTime ) + " " +
@@ -290,12 +291,12 @@ namespace QuantProject.DataAccess.Tables
 			string returnValue = "";
 			foreach (string ticker in tickerCollection)
 				if ( returnValue == "" )
-					// this is the first ticker to handle
-					returnValue += setDataTable_getTickerListWhereClause_getSingleTickerWhereClause( ticker );
-				else
-					// this is not the first ticker to handle
-					returnValue += " or " +
-						setDataTable_getTickerListWhereClause_getSingleTickerWhereClause( ticker );
+				// this is the first ticker to handle
+				returnValue += setDataTable_getTickerListWhereClause_getSingleTickerWhereClause( ticker );
+			else
+				// this is not the first ticker to handle
+				returnValue += " or " +
+					setDataTable_getTickerListWhereClause_getSingleTickerWhereClause( ticker );
 			return "( " + returnValue + " )";
 		}
 		/// <summary>
@@ -310,7 +311,7 @@ namespace QuantProject.DataAccess.Tables
 		{
 			string sql;
 			sql =	"select * from bars " +
-				"where " + setDataTable_getTickerListWhereClause( tickerCollection ) + " and " + 
+				"where " + setDataTable_getTickerListWhereClause( tickerCollection ) + " and " +
 				Bars.IntervalFrameInSeconds + "='" + intervalFrameInSeconds + "' " +
 				" and " + Bars.DateTimeForOpen + "=" + SQLBuilder.GetDateTimeConstant( dateTime ) + " " +
 				"order by " + Bars.TickerFieldName;
@@ -318,10 +319,9 @@ namespace QuantProject.DataAccess.Tables
 			SqlExecutor.SetDataTable( sql , dataTable );
 		}
 		#endregion
-	
+		
 		#region SetDataTable
 		
-		#region getSql
 		private static string getSql(
 			string ticker , DateTime firstDate , DateTime lastDate ,
 			Time firstBarOpenTimeInNewYorkTimeZone , Time lastBarOpenTimeInNewYorkTimeZone ,
@@ -338,7 +338,7 @@ namespace QuantProject.DataAccess.Tables
 				+ ") and (" +
 				SQLBuilder.GetFilterForTime(
 					"baDateTimeForOpen" , SqlComparisonOperator.GreaterThanOrEqual ,
-					firstBarOpenTimeInNewYorkTimeZone ) + 
+					firstBarOpenTimeInNewYorkTimeZone ) +
 //				"(Format([baDateTimeForOpen],'hh:mm:ss')>='" +
 //				this.getSqlTimeConstantForFirstDailyBar() +
 				") and (" +
@@ -350,7 +350,6 @@ namespace QuantProject.DataAccess.Tables
 				");";
 			return sql;
 		}
-		#endregion getSql
 		
 		/// <summary>
 		/// fills the parameter dataTable with all the daily bars between
@@ -376,6 +375,100 @@ namespace QuantProject.DataAccess.Tables
 		}
 		#endregion SetDataTable
 		
+		
+		#region SetDataTable
+
+		#region getSql
+		
+		#region getFilterForTimeList
+		
+		#region getFilterForTimeList_withTailToBeRemoved
+		private static string getFilterForTimeList( Time time )
+		{
+			string filterForTimeList =
+				SQLBuilder.GetFilterForTime(
+					"baDateTimeForOpen" , SqlComparisonOperator.Equal , time ) +
+				" OR ";
+			return filterForTimeList;
+		}
+		private static string getFilterForTimeList_withTailToBeRemoved(
+			List<Time> dailyTimes )
+		{
+			string filterForTimeList_withTailToBeRemoved = "";
+			foreach ( Time time in dailyTimes )
+				filterForTimeList_withTailToBeRemoved +=
+					Bars.getFilterForTimeList( time );
+			return filterForTimeList_withTailToBeRemoved;
+		}
+		#endregion getFilterForTimeList_withTailToBeRemoved
+		
+		private static string getFilterForTimeList(
+			List<Time> dailyTimes )
+		{
+			// TO DO
+			// a "where ... in ..." statement could be used here, it would lead to a
+			// shorter Sql statement
+			string filterWithTailToBeRemoved =
+				Bars.getFilterForTimeList_withTailToBeRemoved( dailyTimes );
+			string filterForTimeList =
+				filterWithTailToBeRemoved.Substring(
+					0 , filterWithTailToBeRemoved.Length - " OR ".Length );
+			return filterForTimeList;
+		}
+		#endregion getFilterForTimeList
+		
+		private static string getSql(
+			string ticker , DateTime firstDate , DateTime lastDate ,
+			List<Time> dailyTimes , int intervalFrameInSeconds )
+		{
+			string sql =
+				"select baDateTimeForOpen from bars " +
+				"where (baTicker='" + ticker + "') and " +
+				"(baInterval=" + intervalFrameInSeconds + ") and" +
+				"(baDateTimeForOpen>=" +
+				SQLBuilder.GetDateConstant( firstDate ) + ") and" +
+				"(baDateTimeForOpen<" +
+				SQLBuilder.GetDateConstant( lastDate.AddDays( 1 ) )
+				+ ") and (" +
+				Bars.getFilterForTimeList( dailyTimes ) +
+//				SQLBuilder.GetFilterForTime(
+//					"baDateTimeForOpen" , SqlComparisonOperator.GreaterThanOrEqual ,
+//					firstBarOpenTimeInNewYorkTimeZone ) +
+				////				"(Format([baDateTimeForOpen],'hh:mm:ss')>='" +
+				////				this.getSqlTimeConstantForFirstDailyBar() +
+//				") and (" +
+//				SQLBuilder.GetFilterForTime(
+//					"baDateTimeForOpen" , SqlComparisonOperator.LessThanOrEqual ,
+//					lastBarOpenTimeInNewYorkTimeZone ) +
+				////				"(Format([baDateTimeForOpen],'hh:mm:ss')<='" +
+				////				this.getSqlTimeConstantForLastDailyBar() +
+				");";
+			return sql;
+		}
+		#endregion getSql
+		
+		/// <summary>
+		/// fills the parameter dataTable with all the daily bars at the given
+		/// daily times
+		/// </summary>
+		/// <param name="ticker"></param>
+		/// <param name="firstDate"></param>
+		/// <param name="lastDate"></param>
+		/// <param name="dailyTimes"></param>
+		/// <param name="dataTable"></param>
+		/// <param name="intervalFrameInSeconds"></param>
+		public static void SetDataTable(
+			string ticker , DateTime firstDate , DateTime lastDate ,
+			List<Time> dailyTimes ,
+			DataTable dataTable, int intervalFrameInSeconds )
+		{
+			string sql = Bars.getSql(
+				ticker , firstDate , lastDate ,
+				dailyTimes ,
+				intervalFrameInSeconds );
+			SqlExecutor.SetDataTable( sql , dataTable );
+		}
+		#endregion SetDataTable
 		
 		#region AddBar
 		
