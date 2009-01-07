@@ -22,6 +22,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Data;
 
 using QuantProject.ADT.Collections;
@@ -54,15 +55,18 @@ namespace QuantProject.Applications.Downloader.OpenTickDownloader
 			DateTime firstDate ,
 			DateTime lastDate ,
 			int barInterval ,
-			DateTime firstBarOpenTimeInNewYorkTimeZone ,
-			int numberOfBarsToBeDownloadedForEachDay ) :
+			List<Time> dailyTimes ) :
+			
+//			DateTime firstBarOpenTimeInNewYorkTimeZone ,
+//			int numberOfBarsToBeDownloadedForEachDay ) :
 			base(
 				tickers ,
 				firstDate ,
 				lastDate ,
 				barInterval ,
-				firstBarOpenTimeInNewYorkTimeZone ,
-				numberOfBarsToBeDownloadedForEachDay )
+				dailyTimes )
+//				firstBarOpenTimeInNewYorkTimeZone ,
+//				numberOfBarsToBeDownloadedForEachDay )
 		{
 		}
 		
@@ -113,27 +117,31 @@ namespace QuantProject.Applications.Downloader.OpenTickDownloader
 //		#endregion getSqlTimeConstantForLastDailyBar
 		
 		
-		private Time getLastBarOpenTimeInNewYorkTimeZone()
-		{
-			int secondsToBeAdded = this.barInterval *
-				( this.numberOfBarsToBeDownloadedForEachDay - 1 );
-			DateTime lastBarOpenDateTimeInNewYorkTimeZone =
-				this.firstBarOpenTimeInNewYorkTimeZone.AddSeconds(
-					secondsToBeAdded );
-			Time lastBarOpenTimeInNewYorkTimeZone =
-				new Time( lastBarOpenDateTimeInNewYorkTimeZone );
-			return lastBarOpenTimeInNewYorkTimeZone;
-		}
+//		private Time getLastBarOpenTimeInNewYorkTimeZone()
+//		{
+////			int secondsToBeAdded = this.barInterval *
+////				( this.numberOfBarsToBeDownloadedForEachDay - 1 );
+////			DateTime lastBarOpenDateTimeInNewYorkTimeZone =
+////				this.firstBarOpenTimeInNewYorkTimeZone.AddSeconds(
+////					secondsToBeAdded );
+////			Time lastBarOpenTimeInNewYorkTimeZone =
+////				new Time( lastBarOpenDateTimeInNewYorkTimeZone );
+//			int indexForTheLastDailyTime = this.dailyTimes.Count - 1;
+//			Time lastBarOpenTimeInNewYorkTimeZone =
+//				this.dailyTimes[ indexForTheLastDailyTime ];
+//			return lastBarOpenTimeInNewYorkTimeZone;
+//		}
 		
 		private DataTable getBarsInTheDatabase( string ticker )
 		{
-			Time lastBarOpenTimeInNewYorkTimeZone =
-				this.getLastBarOpenTimeInNewYorkTimeZone();
+//			Time lastBarOpenTimeInNewYorkTimeZone =
+//				this.getLastBarOpenTimeInNewYorkTimeZone();
 			DataTable barsInTheDatabase =
 				new QuantProject.Data.DataTables.Bars(
 					ticker , this.firstDate , this.lastDate ,
-					new Time( this.firstBarOpenTimeInNewYorkTimeZone ) ,
-					lastBarOpenTimeInNewYorkTimeZone ,
+					this.dailyTimes ,
+//					new Time( this.firstBarOpenTimeInNewYorkTimeZone ) ,
+//					lastBarOpenTimeInNewYorkTimeZone ,
 					this.barInterval );
 //			string sql =
 //				"select baDateTimeForOpen from bars " +
