@@ -2,7 +2,7 @@
 QuantProject - Quantitative Finance Library
 
 DailyBarsSelector.cs
-Copyright (C) 2008 
+Copyright (C) 2008
 Glauco Siliprandi
 
 This program is free software; you can redistribute it and/or
@@ -18,10 +18,13 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
-*/
+ */
 
 
 using System;
+using System.Collections.Generic;
+
+using QuantProject.ADT.Timing;
 
 namespace QuantProject.Applications.Downloader.OpenTickDownloader
 {
@@ -37,8 +40,9 @@ namespace QuantProject.Applications.Downloader.OpenTickDownloader
 		/// lenght, in seconds, for a bar (60 for a one minute bar)
 		/// </summary>
 		protected int barInterval;
-		protected DateTime firstBarOpenTimeInNewYorkTimeZone;
-		protected int numberOfBarsToBeDownloadedForEachDay;
+		protected List<Time> dailyTimes;
+//		protected DateTime firstBarOpenTimeInNewYorkTimeZone;
+//		protected int numberOfBarsToBeDownloadedForEachDay;
 		
 		/// <summary>
 		/// points to the ticker for the current bar to be selected
@@ -49,7 +53,7 @@ namespace QuantProject.Applications.Downloader.OpenTickDownloader
 		/// (0 based) current bar in the currentDate
 		/// </summary>
 		private int currentDailyBar;
-				
+		
 		public bool AreAllBarsAlredyGiven
 		{
 			get
@@ -57,8 +61,9 @@ namespace QuantProject.Applications.Downloader.OpenTickDownloader
 				bool areAllBarsAlredyGiven =
 					( this.currentTickerIndex == ( this.tickers.Length - 1 ) ) &&
 					( ( this.currentDate.CompareTo( this.lastDate ) == 0 ) &&
-					( this.currentDailyBar ==
-					  this.numberOfBarsToBeDownloadedForEachDay - 1 ) );
+					 ( this.currentDailyBar ==
+					  this.dailyTimes.Count - 1 ) );
+//					  this.numberOfBarsToBeDownloadedForEachDay - 1 ) );
 				return areAllBarsAlredyGiven; }
 		}
 		
@@ -81,25 +86,29 @@ namespace QuantProject.Applications.Downloader.OpenTickDownloader
 			DateTime firstDate ,
 			DateTime lastDate ,
 			int barInterval ,
-			DateTime firstBarOpenTimeInNewYorkTimeZone ,
-			int numberOfBarsToBeDownloadedForEachDay )
+			List<Time> dailyTimes )
+//			DateTime firstBarOpenTimeInNewYorkTimeZone ,
+//			int numberOfBarsToBeDownloadedForEachDay )
 		{
 			this.checkParameters(
-			firstDate , lastDate , numberOfBarsToBeDownloadedForEachDay );
+				firstDate , lastDate , dailyTimes );
+//			numberOfBarsToBeDownloadedForEachDay );
 			
 			this.tickers = tickers;
 			this.firstDate = firstDate;
 			this.lastDate = lastDate;
 			this.barInterval = barInterval;
-			this.firstBarOpenTimeInNewYorkTimeZone =
-				firstBarOpenTimeInNewYorkTimeZone;
-			this.numberOfBarsToBeDownloadedForEachDay =
-				numberOfBarsToBeDownloadedForEachDay;
+			this.dailyTimes = dailyTimes;
+//			this.firstBarOpenTimeInNewYorkTimeZone =
+//				firstBarOpenTimeInNewYorkTimeZone;
+//			this.numberOfBarsToBeDownloadedForEachDay =
+//				numberOfBarsToBeDownloadedForEachDay;
 			
 			this.currentTickerIndex = 0;
 			this.currentDate = this.firstDate.AddDays( - 1 );
 			this.currentDailyBar =
-				numberOfBarsToBeDownloadedForEachDay - 1;
+				this.dailyTimes.Count - 1;
+//				numberOfBarsToBeDownloadedForEachDay - 1;
 			
 			this.moveToTheNextSelectedBar();
 		}
@@ -115,15 +124,19 @@ namespace QuantProject.Applications.Downloader.OpenTickDownloader
 		}
 		private void checkParameters(
 			DateTime firstDate , DateTime lastDate ,
-			int numberOfBarsToBeDownloadedForEachDay )
+			List<Time> dailyTimes )
+//			int numberOfBarsToBeDownloadedForEachDay )
 		{
 			this.checkParameters_checkNoTime( firstDate );
 			this.checkParameters_checkNoTime( lastDate );
 			if ( firstDate.CompareTo( lastDate ) > 0 )
-				throw new Exception( "firstDate cannot follow lastDate!" );
-			if ( numberOfBarsToBeDownloadedForEachDay <= 0 )
+				throw new Exception( "firstDate cannot follow lastDate" );
+			if ( dailyTimes.Count == 0 )
 				throw new Exception(
-					"numberOfBarsToBeDownloadedForEachDay must be greater than zero!" );
+					"At least one daily bar has to be chosen" );
+//			if ( numberOfBarsToBeDownloadedForEachDay <= 0 )
+//				throw new Exception(
+//					"numberOfBarsToBeDownloadedForEachDay must be greater than zero!" );
 		}
 		#endregion checkParameters
 		
@@ -160,7 +173,8 @@ namespace QuantProject.Applications.Downloader.OpenTickDownloader
 		private void doNextStep_actually()
 		{
 			if ( this.currentDailyBar ==
-			    ( this.numberOfBarsToBeDownloadedForEachDay - 1 ) )
+			    ( this.dailyTimes.Count - 1 ) )
+//			    ( this.numberOfBarsToBeDownloadedForEachDay - 1 ) )
 				// the current bar identifier is the last one for the
 				// current (ticker,date)
 				this.doNextStep_actually_moveToTheNextDay();
@@ -209,7 +223,7 @@ namespace QuantProject.Applications.Downloader.OpenTickDownloader
 //			while ( !this.isTheCurrentBarBeyondTheLastDate() &&
 //				!this.isTheCurrentBarSelectable() )
 			while ( !this.AreAllBarsAlredyGiven &&
-				!this.isTheCurrentBarSelectable() )
+			       !this.isTheCurrentBarSelectable() )
 				this.doNextStep();
 //			DateTime currentDate = this.firstDate;
 //			while ( currentDate <= this.lastDate )
@@ -231,15 +245,19 @@ namespace QuantProject.Applications.Downloader.OpenTickDownloader
 		#region getNextBarIdentifier_actually
 		protected DateTime getDateTimeForCurrentCandidateBarOpenInNewYorkTimeZone()
 		{
+			Time currentDailyTime = this.dailyTimes[ this.currentDailyBar ];
 			DateTime dateTimeForCurrentCandidateBarOpenInNewYorkTimeZone =
 				new DateTime(
 					currentDate.Year ,
 					currentDate.Month ,
 					currentDate.Day ,
-					this.firstBarOpenTimeInNewYorkTimeZone.Hour ,
-					this.firstBarOpenTimeInNewYorkTimeZone.Minute ,
-					this.firstBarOpenTimeInNewYorkTimeZone.Second ).AddSeconds(
-				this.currentDailyBar * this.barInterval );
+					currentDailyTime.Hour ,
+					currentDailyTime.Minute ,
+					currentDailyTime.Second );
+//					this.firstBarOpenTimeInNewYorkTimeZone.Hour ,
+//					this.firstBarOpenTimeInNewYorkTimeZone.Minute ,
+//					this.firstBarOpenTimeInNewYorkTimeZone.Second ).AddSeconds(
+//				this.currentDailyBar * this.barInterval );
 			return dateTimeForCurrentCandidateBarOpenInNewYorkTimeZone;
 		}
 		private BarIdentifier getNextBarIdentifier_actually()
