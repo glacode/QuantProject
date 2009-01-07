@@ -73,7 +73,6 @@ namespace QuantProject.Data.DataTables
 			this.fillDataTable( ticker , startDateTime , endDateTime, intervalFrameInSeconds );
 		}
 
-		#region Bars
 		/// <summary>
 		/// returns all daily bars between firstBarOpenTimeInNewYorkTimeZone and
 		/// lastBarOpenTimeInNewYorkTimeZone
@@ -95,7 +94,25 @@ namespace QuantProject.Data.DataTables
 				this , intervalFrameInSeconds );
 			this.setPrimaryKeys();
 		}
-		#endregion Bars
+		
+		/// <summary>
+		/// returns all daily bars at the given daily times
+		/// </summary>
+		/// <param name="ticker"></param>
+		/// <param name="startDateTime"></param>
+		/// <param name="endDateTime"></param>
+		/// <param name="dailyTimes"></param>
+		/// <param name="intervalFrameInSeconds"></param>
+		public Bars(
+			string ticker , DateTime startDateTime , DateTime endDateTime ,
+			List<Time> dailyTimes ,	int intervalFrameInSeconds )
+		{
+			QuantProject.DataAccess.Tables.Bars.SetDataTable(
+				ticker , startDateTime , endDateTime ,
+				dailyTimes ,
+				this , intervalFrameInSeconds );
+			this.setPrimaryKeys();			
+		}
 
 		
 		/// <summary>
