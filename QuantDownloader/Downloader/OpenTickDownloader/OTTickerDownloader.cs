@@ -45,19 +45,10 @@ namespace QuantProject.Applications.Downloader.OpenTickDownloader
 		private string[] tickersToDownload;
 		private List<Time> dailyTimes;
 		private DateTime firstDate;
-//		/// <summary>
-//		/// time (date doesn't matter for this member) for the first
-//		/// bar to be downloaded, each day
-//		/// </summary>
-//		private DateTime firstBarOpenTimeInNewYorkTimeZone;
 		/// <summary>
 		/// number of seconds in each bar
 		/// </summary>
 		private int barInterval;
-//		/// <summary>
-//		/// number of bars to be downloaded for each day
-//		/// </summary>
-//		private int numberOfDailyBars;
 		private DateTime dateTimeForOverWritingQuotes;//before this
 		//date quotes should be overwritten automatically
 		private bool checkForMissingQuotes;//it downloads and writes
@@ -109,11 +100,7 @@ namespace QuantProject.Applications.Downloader.OpenTickDownloader
 			string[] tickersToDownload,
 			List<Time> dailyTimes ,
 			DateTime firstDate,
-//			int fromHour ,
-//			int fromMinute ,
-//			int fromSecond ,
 			int barInterval ,
-//			int numberOfDailyBars ,
 			DateTime dateTimeForOverWritingQuotes,
 			bool checkForMissingQuotes,
 			bool overwriteAllQuotesInDatabase,
@@ -132,11 +119,7 @@ namespace QuantProject.Applications.Downloader.OpenTickDownloader
 			this.tickersToDownload = tickersToDownload;
 			this.dailyTimes = dailyTimes;
 			this.firstDate = firstDate;
-//			this.firstBarOpenTimeInNewYorkTimeZone =
-//				new DateTime(
-//					1 , 1 , 1 , fromHour , fromMinute , fromSecond );
 			this.barInterval = barInterval;
-//			this.numberOfDailyBars = numberOfDailyBars;
 			this.dateTimeForOverWritingQuotes = dateTimeForOverWritingQuotes;
 			this.checkForMissingQuotes = checkForMissingQuotes;
 			this.overwriteAllQuotesInDatabase = overwriteAllQuotesInDatabase;
@@ -202,8 +185,6 @@ namespace QuantProject.Applications.Downloader.OpenTickDownloader
 						this.setBarsSelector_getDate( DateTime.Now ) ,
 						this.barInterval ,
 						this.dailyTimes );
-//						this.firstBarOpenTimeInNewYorkTimeZone ,
-//						this.numberOfDailyBars );
 			else
 				// all quotes are to be downloaded, even if they
 				// are in the database already
@@ -214,8 +195,6 @@ namespace QuantProject.Applications.Downloader.OpenTickDownloader
 						this.setBarsSelector_getDate( DateTime.Now ) ,
 						this.barInterval ,
 						this.dailyTimes );
-//						this.firstBarOpenTimeInNewYorkTimeZone ,
-//						this.numberOfDailyBars );
 		}
 		private void setExchangeSelector()
 		{
@@ -243,14 +222,6 @@ namespace QuantProject.Applications.Downloader.OpenTickDownloader
 
 		private void setBarsDownloader()
 		{
-//			DailyBarsSelector barsSelector =
-//				new DailyBarsSelector(
-//					new string[]{ "GE" , "MSFT" } ,
-//					new DateTime( 2002 , 3 , 1 ) ,
-//					new DateTime( 2002 , 4 , 30 ) ,
-//					60 ,
-//					new DateTime( 1 , 1 , 1 , 9 , 29 , 0 ) ,
-//					3 );
 			this.barsDownloader =
 				new BarsDownloader(
 					this.barsSelector ,
@@ -258,9 +229,6 @@ namespace QuantProject.Applications.Downloader.OpenTickDownloader
 					this.openTickUser ,
 					this.openTickPassword );
 			this.setBarsDownloader_setEventHandlers();
-//			this.barsDownloader.NewOHLCRequest +=
-//				new NewOHLCRequestEventHandler (
-//					this.newOHLCRequestEventHandler );
 		}
 		#endregion setBarsDownloader
 		
@@ -280,8 +248,8 @@ namespace QuantProject.Applications.Downloader.OpenTickDownloader
 		{
 			this.messageManager =
 				new MessageManager( this.getLogFileName() );
-			this.messageManager.Monitor(
-				this.barsDownloader );
+			// uncomment the following line if you want to see the log file
+//			this.messageManager.Monitor( this.barsDownloader );
 		}
 		#endregion setMessageManager
 		
