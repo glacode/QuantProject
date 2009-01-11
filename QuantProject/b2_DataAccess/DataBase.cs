@@ -28,6 +28,8 @@ using System.Data.Common;
 using System.Data.OleDb;
 using System.Windows.Forms;
 
+using MySql.Data.MySqlClient;
+
 using QuantProject.ADT;
 using QuantProject.ADT.Histories;
 using QuantProject.ADT.Timing;
@@ -307,5 +309,29 @@ namespace QuantProject.DataAccess
 			return barOpenHistory;
 		}
 		#endregion GetBarOpenHistory
+		
+		/// <summary>
+		/// true iif exception is risen by the attempt to duplicate a value in
+		/// a table
+		/// </summary>
+		/// <param name="exception"></param>
+		/// <returns></returns>
+		public static bool IsExceptionForForbiddenDataDuplication(
+			Exception exception )
+		{
+			bool isExceptionForForbiddenDataDuplication =
+				(
+					(
+						( exception is OleDbException ) &&
+						exception.Message.Contains( "duplicate values" )
+					)
+					||
+					(
+						( exception is MySqlException ) &&
+						exception.Message.Contains( "Duplicate entry" )
+					)
+				);
+			return isExceptionForForbiddenDataDuplication;
+		}
 	}
 }
