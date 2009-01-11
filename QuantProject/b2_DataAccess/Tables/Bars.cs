@@ -536,7 +536,16 @@ namespace QuantProject.DataAccess.Tables
 				Bars.getSqlCommandFor_AddBar(
 					ticker , exchange , dateTimeForOpenInESTTime , interval ,
 					open , high , low , close , volume );
-			SqlExecutor.ExecuteNonQuery( sqlCommand );
+			try
+			{
+				SqlExecutor.ExecuteNonQuery( sqlCommand );
+			}
+			catch( Exception exception )
+			{
+				if ( !DataBase.IsExceptionForForbiddenDataDuplication( exception ) )
+					// the exception is not due to a duplicated bar
+					throw exception;
+			}
 		}
 		#endregion AddBar
 	}
