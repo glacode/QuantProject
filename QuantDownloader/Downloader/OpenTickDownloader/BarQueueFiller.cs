@@ -46,20 +46,11 @@ namespace QuantProject.Applications.Downloader.OpenTickDownloader
 		
 		private OTManager oTManager;
 		
-//		private string ticker;
-//		private string exchange;
-//		private DateTime firstDate;
-//		private DateTime lastDate;
-//		private long barInterval;
-//		private DateTime firstBarOpenTime;
-//		private int numberOfBarsToBeDownloadedForEachDay;
 		private BarQueue barQueue;
 		
 		private IExchangeSelector exchangeSelector;
 
 		private Thread fillQueueThread;
-//		private bool working;
-//		private DateTime currentDate;
 
 		/// <summary>
 		/// Downloads all the bars for a given ticker and
@@ -83,13 +74,6 @@ namespace QuantProject.Applications.Downloader.OpenTickDownloader
 			IBarsSelector barsSelector ,
 			IExchangeSelector exchangeSelector ,
 			OTManager oTManager ,
-//			string ticker ,
-//			string exchange ,
-//			DateTime firstDate ,
-//			DateTime lastDate ,
-//			long barInterval ,
-//			DateTime firstBarOpenTime ,
-//			int numberOfBarsToBeDownloadedForEachDay ,
 			BarQueue barQueue 
 		)
 		{
@@ -102,14 +86,6 @@ namespace QuantProject.Applications.Downloader.OpenTickDownloader
 			this.oTManager.NewMessage +=
 				new NewMessageEventHandler(
 					this.newMessageEventHandler );
-//			this.ticker = ticker;
-//			this.exchange = exchange;
-//			this.firstDate = firstDate;
-//			this.lastDate = lastDate;
-//			this.barInterval = barInterval;
-//			this.firstBarOpenTime = firstBarOpenTime;
-//			this.numberOfBarsToBeDownloadedForEachDay =
-//				numberOfBarsToBeDownloadedForEachDay;
 			this.barQueue = barQueue;			
 		}
 		private void newMessageEventHandler(
@@ -166,17 +142,7 @@ namespace QuantProject.Applications.Downloader.OpenTickDownloader
 		}
 		
 		#region fillQueue_requestBarsForEachMarketDay
-//		private bool isAPossibleMarketDay( DateTime currentDate )
-//		{
-//			bool isAPossibleMarkDay =
-//				( currentDate.DayOfWeek != DayOfWeek.Saturday ) &&
-//				( currentDate.DayOfWeek != DayOfWeek.Sunday ) &&
-//				!( ( currentDate.Month == 1 ) && ( currentDate.Day == 1 ) ) &&
-//				!( ( currentDate.Month == 12 ) && ( currentDate.Day == 25 ) );
-//			
-//			return isAPossibleMarkDay;
-//		}
-		
+	
 		#region fillQueue_requestBar
 		private void fillQueue_requestBar_actually(
 			BarIdentifier barIdentifier , string exchange )
@@ -206,14 +172,6 @@ namespace QuantProject.Applications.Downloader.OpenTickDownloader
 				// the exchange has been actually selected
 				this.fillQueue_requestBar_actually( barIdentifier , exchange );
 		}
-//		private void fillQueue_requestBars( DateTime currentDate )
-//		{
-//			for ( int currentDailyBarIndex = 0 ;
-//			     currentDailyBarIndex < this.numberOfBarsToBeDownloadedForEachDay ;
-//			     currentDailyBarIndex++ )
-//				this.fillQueue_requestBar(
-//					currentDate , currentDailyBarIndex );
-//		}
 		#endregion fillQueue_requestBar
 		
 		private void fillQueue_requestBarsForEachMarketDay()
@@ -221,13 +179,6 @@ namespace QuantProject.Applications.Downloader.OpenTickDownloader
 			while ( !this.barsSelector.AreAllBarsAlredyGiven )
 				this.fillQueue_requestBar(
 					this.barsSelector.GetNextBarIdentifier() );
-//			DateTime currentDate = this.firstDate;
-//			while ( currentDate <= this.lastDate )
-//			{
-//				if ( this.isAPossibleMarketDay( currentDate ) )
-//					this.fillQueue_requestBars( currentDate );
-//				currentDate = currentDate.AddDays( 1 );
-//			}
 		}
 		#endregion fillQueue_requestBarsForEachMarketDay
 			

@@ -67,12 +67,6 @@ namespace QuantProject.Applications.Downloader.OpenTickDownloader
 //		private string logFileName;
 		
 		private static OTClient oTClient;
-		/// <summary>
-		/// used to lock OTManager.oTClient: we use a dummy BarRequest
-		/// but any reference type would have done the job
-		/// </summary>
-//		private static BarRequest oTClientCreatorLocker =
-//			new BarRequest( "A" , "A" , new DateTime( 1 , 1 , 2008 ) );
 		
 		static OTManager()
 		{
@@ -104,7 +98,6 @@ namespace QuantProject.Applications.Downloader.OpenTickDownloader
 		/// </summary>
 		public OTManager()
 		{
-//			this.logFileName = "";
 			this.commonInitialization();
 		}
 		
@@ -180,9 +173,6 @@ namespace QuantProject.Applications.Downloader.OpenTickDownloader
 			string message , OTDataEntity oTDataEntity , int requestId )
 		{
 			BarRequest barRequest =	this.GetBarRequest( requestId );
-//			DateTime dateTimeForRequest = (DateTime)
-//				this.requestsThatAreNotCompletedYet[ requestId ];
-//			this.requestsThatAreNotCompletedYet.Remove( requestId );
 			string completeMessage = message + "---" +
 				"Ticker: " + oTDataEntity.Symbol + "---" +
 				"Exchange: " + oTDataEntity.Exchange + "---" +
@@ -280,15 +270,6 @@ namespace QuantProject.Applications.Downloader.OpenTickDownloader
 			OTManager.oTClient.onError += new OTErrorEvent( this.onOTClientError );
 			OTManager.oTClient.onMessage += new OTMessageEvent(
 				this.onMessageEventHandler );
-//			if ( oTClientWasJustCreated )
-//				// oTClient was null. We want only one OTManager instance
-//				// to monitor (and possibly log) oTClient status changes
-//			{
-//				OTManager.oTClient.onLogin += new OTLoginEvent(
-//					OTManager.onLoginEventHandler );
-//				OTManager.oTClient.onStatusChanged += new OTStatusChangedEvent(
-//					OTManager.onStatusChangedEventHandler );
-//			}
 			OTManager.oTClient.onHistoricalOHLC +=
 				new OTOHLCEvent( this.onHistoricalOHLC );
 		}
@@ -309,35 +290,8 @@ namespace QuantProject.Applications.Downloader.OpenTickDownloader
 		{
 			OTManager.oTClient.addHost( "feed1.opentick.com" , 10010 );
 			//OTManager.oTClient.addHost( "delayed1.opentick.com" , 10010 );
-//			string username =
-//				System.Configuration.ConfigurationManager.AppSettings[
-//					"usrnm" ];
-//			string password =
-//				System.Configuration.ConfigurationManager.AppSettings[
-//					"pswd" ];
 			OTManager.oTClient.login( openTickUser , openTickPassword );
 		}
-//		/// <summary>
-//		/// This method can be 
-//		/// </summary>
-//		public void SubmitLogin()
-//		{
-//			bool oTCLientWasNullWhenThisMethodBegan;
-//			// TO DO add a lock to the following two statements
-////			lock( ??? what could I use here??? )
-////			{
-////				oTCLientWasNullWhenThisMethodBegan =
-////					( OTManager.oTClient == null );
-////				if ( oTCLientWasNullWhenThisMethodBegan )
-////					OTManager.oTClient = new OTClient();
-////			}
-//			this.setOTClientEventHandlers( oTCLientWasNullWhenThisMethodBegan );
-//			if ( oTCLientWasNullWhenThisMethodBegan )
-//				this.submitLogin();
-//		}
-
-
-
 		
 		public BarRequest GetBarRequest( int requestId )
 		{

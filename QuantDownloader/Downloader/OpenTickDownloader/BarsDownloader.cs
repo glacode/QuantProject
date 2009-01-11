@@ -2,7 +2,7 @@
 QuantProject - Quantitative Finance Library
 
 BarsDownloader.cs
-Copyright (C) 2008 
+Copyright (C) 2008
 Glauco Siliprandi
 
 This program is free software; you can redistribute it and/or
@@ -18,7 +18,7 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
-*/
+ */
 
 using System;
 using System.Collections.Generic;
@@ -47,21 +47,10 @@ namespace QuantProject.Applications.Downloader.OpenTickDownloader
 		
 		private OTManager oTManager;
 		
-//		private string ticker;
-//		private DateTime firstDate;
-//		private DateTime lastDate;
-//		private int barInterval;
-//		private DateTime firstBarOpenTime;
-//		private int numberOfBarsToBeDownloadedForEachDay;
-		
 		private BarQueue barQueue;
 		private BarQueueFiller barQueueFiller;
 		private DataBaseWriter dataBaseWriter;
 		
-//		private MainExchangeFinder mainExchangeFinder;
-		
-//		public event ExchangeNotFoundEventHandler ExchangeNotFound;
-
 		/// <summary>
 		/// Downloads and writes to database the requested bars
 		/// </summary>
@@ -81,13 +70,6 @@ namespace QuantProject.Applications.Downloader.OpenTickDownloader
 			IExchangeSelector exchangeSelector ,
 			string openTickUser ,
 			string openTickPassword
-//			,
-//			string ticker ,
-//			DateTime firstDate ,
-//			DateTime lastDate ,
-//			int barInterval ,
-//			DateTime firstBarOpenTime ,
-//			int numberOfBarsToBeDownloadedForEachDay
 		)
 		{
 			this.barsSelector = barsSelector;
@@ -95,30 +77,9 @@ namespace QuantProject.Applications.Downloader.OpenTickDownloader
 			this.openTickUser = openTickUser;
 			this.openTickPassword = openTickPassword;
 			this.oTManager = new OTManager();
-//			this.ticker = ticker;
-//			this.firstDate = firstDate;
-//			this.lastDate = lastDate;
-//			this.barInterval = barInterval;
-//			this.firstBarOpenTime = firstBarOpenTime;
-//			this.numberOfBarsToBeDownloadedForEachDay =
-//				numberOfBarsToBeDownloadedForEachDay;
 		}
 		
 		#region DownloadBars
-		
-//		private void runMainExchangeFinder()
-//		{
-//			// consider using this.oTClient.requestListSymbols( string exchange );
-////			this.mainExchangeFinder =
-////				new MainExchangeFinder( this.oTClient , this.ticker );
-//			this.mainExchangeFinder.NewOHLCRequest +=
-//				new NewOHLCRequestEventHandler( this.newOHLCRequestEventHandler );
-//			mainExchangeFinder.FindMainExchange();
-//			while ( !mainExchangeFinder.IsSearchComplete )
-//				// the main exchange has not been found, yet
-//				Thread.Sleep( 200 );
-//		}
-
 		private void initializeBarQueue()
 		{
 			this.barQueue = new BarQueue(
@@ -146,14 +107,7 @@ namespace QuantProject.Applications.Downloader.OpenTickDownloader
 					this.barsSelector ,
 					this.exchangeSelector ,
 					this.oTManager ,
-//					this.ticker ,
-//					this.mainExchangeFinder.MainExchange ,
-//					this.firstDate ,
-//					this.lastDate ,
-//					this.barInterval ,
-//					this.firstBarOpenTime ,
-//					this.numberOfBarsToBeDownloadedForEachDay ,
-					this.barQueue 
+					this.barQueue
 				);
 			this.barQueueFiller.NewOHLCRequest +=
 				new NewOHLCRequestEventHandler( this.newOHLCRequestEventHandler );
@@ -197,22 +151,9 @@ namespace QuantProject.Applications.Downloader.OpenTickDownloader
 		
 		private void onLoginEventHandler()
 		{
-//			this.runMainExchangeFinder();
-//			if ( this.mainExchangeFinder.IsMainExchangeFound )
-//				// the main exchange has been found and
-//			{
-				this.initializeDownloadingObjects();
-				this.startThreadToFillBarQueue();
-				this.startThreadToWriteBarsFromBuffersToTheDatabase();
-//			}
-//			else
-//				this.ExchangeNotFound( this , this.ticker );
-
-//			this.downloadBarsThread = new Thread(
-//				new ThreadStart( this.downloadBars ) );
-//			this.downloadBarsThread.Start();
-			
-//			this.testForDaylightSavingTime();
+			this.initializeDownloadingObjects();
+			this.startThreadToFillBarQueue();
+			this.startThreadToWriteBarsFromBuffersToTheDatabase();
 		}
 		
 		public void DownloadBars()

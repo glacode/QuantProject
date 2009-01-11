@@ -81,44 +81,6 @@ namespace QuantProject.Applications.Downloader.OpenTickDownloader
 			return bar;
 		}
 		
-//		#region getSqlCommand
-//		
-//		#region getSqlCommand_getValues
-//		private string formatDoubleForSql( double value )
-//		{
-//			string formattedValue =
-//				value.ToString().Replace( ',' , '.' );
-//			return formattedValue;
-//		}
-//		private string getSqlCommand_getValues( Bar bar )
-//		{
-//			DateTime utcDateTimeForOpen =
-//				TimeZoneManager.ConvertToEST( bar.DateTimeForOpenInUTCTime );
-//			string values =
-//				"'" + bar.Ticker + "' , " +
-//				"'" + bar.Exchange + "' , " +
-//				DataBaseWriter.GetDateConstant( utcDateTimeForOpen ) + " , " +
-//				bar.Interval + " , " +
-//				formatDoubleForSql( bar.Open ) + " , " +
-//				formatDoubleForSql( bar.High ) + " , " +
-//				formatDoubleForSql( bar.Low ) + " , " +
-//				formatDoubleForSql( bar.Close ) + " , " +
-//				bar.Volume;
-//			return values;
-//		}
-//		#endregion getSqlCommand_getValues
-//		
-//		private string getSqlCommand( Bar bar )
-//		{
-//			string sqlCommand =
-//				"INSERT INTO bars " +
-//				"( baTicker, baExchange, baDateTimeForOpen, baInterval, baOpen, baHigh, baLow, baClose, baVolume ) " +
-//				"SELECT " + this.getSqlCommand_getValues( bar ) + ";";
-////				"SELECT 'MSFT' , 'Q' , #12/13/2004 15:16:17# , 60 , 30.2 , 30.5 , 29.9 , 30.3 , 100000 ;";
-//			return sqlCommand;
-//		}
-//		#endregion getSqlCommand
-		
 		private void writeToDataBaseActually( Bar bar )
 		{
 			DateTime dateTimeForOpenInESTTime =
@@ -126,9 +88,6 @@ namespace QuantProject.Applications.Downloader.OpenTickDownloader
 			Bars.AddBar(
 				bar.Ticker , bar.Exchange , dateTimeForOpenInESTTime , bar.Interval ,
 				bar.Open , bar.High , bar.Low , bar.Close , bar.Volume );
-//			string sqlCommand =
-//				this.getSqlCommand( bar );
-//			SqlExecutor.ExecuteNonQuery( sqlCommand );
 		}
 		private void riseDatabaseUpdatedEvent( Bar bar )
 		{
@@ -172,24 +131,5 @@ namespace QuantProject.Applications.Downloader.OpenTickDownloader
 				new ThreadStart( this.writeToDataBase ) );
 			this.writeToDataBaseThread.Start();
 		}
-		
-//		/// <summary>
-//		/// Builds a date to be used in a Sql query
-//		/// </summary>
-//		/// <param name="dateTime"></param>
-//		/// <returns></returns>
-//		public static string GetDateConstant( DateTime dateTime )
-//		{
-//			string dateConstant =
-//				"#" +
-//				dateTime.Month + "/" +
-//				dateTime.Day + "/" +
-//				dateTime.Year + " " +
-//				dateTime.Hour + ":" +
-//				dateTime.Minute + ":" +
-//				dateTime.Second +
-//				"#";
-//			return dateConstant;
-//		}
 	}
 }
