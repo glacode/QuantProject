@@ -102,7 +102,9 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOs
 		protected bool takeProfitConditionReached;
 		protected double inefficiencyLengthInMinutes;
 		protected double maxOpeningLengthInMinutes;
+		protected double minutesFromLastInefficiencyTimeToWaitBeforeOpening;
 		protected Time lastEntryTime;
+		protected Time lastInefficiencyTime;
 		protected List<Time> openingTimesForAvailableBars;
 		protected double currentAccountValue;
 		protected double previousAccountValue;
@@ -168,6 +170,7 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOs
 		                             HistoricalMarketValueProvider historicalMarketValueProviderForInSample,
 		                             HistoricalMarketValueProvider historicalMarketValueProviderForOutOfSample,
 		                             double inefficiencyLengthInMinutes,
+		                             double minutesFromLastInefficiencyTimeToWaitBeforeOpening,
 																 double maxOpeningLengthInMinutes,
 																 List<Time> openingTimesForAvailableBars,
 																 double stopLoss, double takeProfit)
@@ -185,6 +188,8 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOs
 			this.historicalMarketValueProviderForInSample = historicalMarketValueProviderForInSample;
 			this.historicalMarketValueProviderForOutOfSample = historicalMarketValueProviderForOutOfSample;
 			this.inefficiencyLengthInMinutes = inefficiencyLengthInMinutes;
+			this.minutesFromLastInefficiencyTimeToWaitBeforeOpening = 
+				minutesFromLastInefficiencyTimeToWaitBeforeOpening;
 			this.maxOpeningLengthInMinutes = maxOpeningLengthInMinutes;
 			this.openingTimesForAvailableBars = openingTimesForAvailableBars;
 			this.stopLoss = stopLoss;
@@ -193,6 +198,7 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOs
 			
 			this.pvoStrategyIntraday_checkTimeParameters();
 			this.lastEntryTime = new Time("00:00:00");
+			this.lastInefficiencyTime = new Time("00:00:00");
 //			this.optimalPositionsHaveBeenUpdated = false;
 		}
 
@@ -209,6 +215,7 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOs
 		                       HistoricalMarketValueProvider historicalMarketValueProviderForInSample,
 		                       HistoricalMarketValueProvider historicalMarketValueProviderForOutOfSample,
 		                       double inefficiencyLengthInMinutes,
+		                       double minutesFromLastInefficiencyTimeToWaitBeforeOpening,
 													 double maxOpeningLengthInMinutes,
 													 List<Time> openingTimesForAvailableBars,
 													 double stopLoss, double takeProfit)
@@ -221,6 +228,7 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOs
 			                     historicalMarketValueProviderForInSample,
 		                       historicalMarketValueProviderForOutOfSample,
 		                       inefficiencyLengthInMinutes,
+		                       minutesFromLastInefficiencyTimeToWaitBeforeOpening,
 		                       maxOpeningLengthInMinutes,
 		                       openingTimesForAvailableBars,
 		                       stopLoss, takeProfit);
@@ -238,6 +246,7 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOs
 		                       HistoricalMarketValueProvider historicalMarketValueProviderForInSample,
 		                       HistoricalMarketValueProvider historicalMarketValueProviderForOutOfSample,
 		                       double inefficiencyLengthInMinutes,
+		                       double minutesFromLastInefficiencyTimeToWaitBeforeOpening,
 		                       double maxOpeningLengthInMinutes,
 													 List<Time> openingTimesForAvailableBars,
 													 double stopLoss, double takeProfit)
@@ -250,6 +259,7 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOs
 			                     historicalMarketValueProviderForInSample,
 		                       historicalMarketValueProviderForOutOfSample,
 		                       inefficiencyLengthInMinutes,
+		                       minutesFromLastInefficiencyTimeToWaitBeforeOpening,
 		                       maxOpeningLengthInMinutes,
 		                       openingTimesForAvailableBars,
 		                       stopLoss, takeProfit);
@@ -268,6 +278,7 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOs
 		                       HistoricalMarketValueProvider historicalMarketValueProviderForInSample,
 		                       HistoricalMarketValueProvider historicalMarketValueProviderForOutOfSample,
 		                       double inefficiencyLengthInMinutes,
+		                       double minutesFromLastInefficiencyTimeToWaitBeforeOpening,
 		                       double maxOpeningLengthInMinutes,
 													 List<Time> openingTimesForAvailableBars,
 													 double stopLoss, double takeProfit)
@@ -280,6 +291,7 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOs
 			                     historicalMarketValueProviderForInSample,
 		                       historicalMarketValueProviderForOutOfSample,
 		                       inefficiencyLengthInMinutes,
+		                       minutesFromLastInefficiencyTimeToWaitBeforeOpening,
 		                       maxOpeningLengthInMinutes,
 		                       openingTimesForAvailableBars,
 		                       stopLoss, takeProfit);
@@ -296,6 +308,7 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOs
 		                       HistoricalMarketValueProvider historicalMarketValueProviderForInSample,
 		                       HistoricalMarketValueProvider historicalMarketValueProviderForOutOfSample,
 		                       double inefficiencyLengthInMinutes,
+		                       double minutesFromLastInefficiencyTimeToWaitBeforeOpening,
 		                       double maxOpeningLengthInMinutes,
 													 List<Time> openingTimesForAvailableBars,
 													 double stopLoss, double takeProfit)
@@ -307,6 +320,7 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOs
 			                     historicalMarketValueProviderForInSample,
 		                       historicalMarketValueProviderForOutOfSample,
 		                       inefficiencyLengthInMinutes,
+		                       minutesFromLastInefficiencyTimeToWaitBeforeOpening,
 		                       maxOpeningLengthInMinutes,
 													 openingTimesForAvailableBars,
 													 stopLoss, takeProfit);
@@ -451,6 +465,7 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOs
 			{
 				  	AccountManager.ClosePositions( this.account );
 				  	this.lastEntryTime = new Time("00:00:00");
+				  	this.lastInefficiencyTime = new Time("00:00:00");
 			}
 		}
 		#endregion newDateTimeEventHandler_closePositions
@@ -521,7 +536,42 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOs
 			}
 		}
 		#endregion newDateTimeEventHandler_openPositions
-			
+		
+		#region newDateTimeEventHandler_inefficiencyIsMovingBack
+		private bool newDateTimeEventHandler_inefficiencyIsMovingBack(Time currentDailyTime)
+		{
+			bool returnValue = false;
+			DateTime beginOfOscillatingPeriod =
+				Time.GetDateTimeFromMerge( this.now() , this.lastInefficiencyTime );
+			DateTime endOfOscillatingPeriod = 
+				Time.GetDateTimeFromMerge( this.now() , currentDailyTime );
+			PVOPositionsStatus currentStatusForCurrentPositions =
+				PVOPositionsStatus.InTheMiddle;
+			double coefficientForThresholdLevelComputationForMovingBackSignal = 
+				this.minutesFromLastInefficiencyTimeToWaitBeforeOpening/this.inefficiencyLengthInMinutes;
+			if(this.positionsForOutOfSample != null)
+				try{
+					currentStatusForCurrentPositions =
+						this.positionsForOutOfSample.GetStatus( beginOfOscillatingPeriod, endOfOscillatingPeriod,
+					                                          this.benchmark.Ticker, this.historicalMarketValueProviderForOutOfSample,
+					                                          this.oversoldThreshold * coefficientForThresholdLevelComputationForMovingBackSignal,
+					                                          0.50,
+					                                          this.overboughtThreshold * coefficientForThresholdLevelComputationForMovingBackSignal,
+					                                          0.50);
+							
+			}catch(Exception ex){string str = ex.ToString();}
+			returnValue = ( (currentStatusForCurrentPositions == PVOPositionsStatus.Overbought &&
+			          this.positionsForOutOfSampleStatus == PVOPositionsStatus.Oversold) || 
+			          (currentStatusForCurrentPositions == PVOPositionsStatus.Oversold  &&
+			           this.positionsForOutOfSampleStatus == PVOPositionsStatus.Overbought) );
+			if( returnValue == false )
+				this.positionsForOutOfSample = null; //it forces a new research for inefficiencies
+			return returnValue;
+		}
+		
+		
+		#endregion newDateTimeEventHandler_inefficiencyIsMovingBack
+				
 		#region newDateTimeEventHandler_updateStatus
 		private void newDateTimeEventHandler_setPositionsAndStatus(Time currentDailyTime)
 		{
@@ -529,9 +579,10 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOs
 				Time.GetDateTimeFromMerge(this.now() , currentDailyTime.AddMinutes(-inefficiencyLengthInMinutes) );
 			DateTime endOfOscillatingPeriod = 
 				Time.GetDateTimeFromMerge(this.now() , currentDailyTime);
-			this.positionsForOutOfSample = null;
+//			this.positionsForOutOfSample = null;
 			this.positionsForOutOfSampleStatus =
 				PVOPositionsStatus.InTheMiddle;
+			this.lastInefficiencyTime = new Time("00:00:00");
 			for(int i = 0; i<this.chosenPVOPositions.Length; i++)
 			{
 				if(this.chosenPVOPositions[i] != null)
@@ -540,12 +591,14 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOs
 							((PVOPositions)this.chosenPVOPositions[i]).GetStatus(beginOfOscillatingPeriod, endOfOscillatingPeriod,
 						                                                     this.benchmark.Ticker, this.historicalMarketValueProviderForOutOfSample,
 						                                                     this.oversoldThresholdMAX, this.overboughtThresholdMAX);
-					}catch(Exception ex){string str = ex.ToString();}
+								
+				}catch(Exception ex){string str = ex.ToString();}
 					
 				if(this.positionsForOutOfSampleStatus == PVOPositionsStatus.Oversold ||
 				   this.positionsForOutOfSampleStatus == PVOPositionsStatus.Overbought )
 				{
 					this.positionsForOutOfSample = (PVOPositions)this.chosenPVOPositions[i];
+					this.lastInefficiencyTime = currentDailyTime;
 					i = this.chosenPVOPositions.Length;//exit from for
 				}
 			}
@@ -592,18 +645,31 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOs
 			Time currentTime = new Time( dateTime );
 			this.newDateTimeEventHandler_updateStopLossAndTakeProfitConditions();
 			this.newDateTimeEventHandler_closePositions(currentTime);
+			
 			if( currentTime < getLastEventTimeWithCachedBars() &&
 			   	currentTime >=
 			    getFirstEventTimeWithCachedBars().AddMinutes(inefficiencyLengthInMinutes) &&
-			    this.chosenPVOPositions != null )
-			//it's possible to compute inefficiency and optimization
-			//has been done
-			{			
+			    this.chosenPVOPositions != null && this.positionsForOutOfSample == null )
+			//it's possible to compute inefficiency and optimization has been done and no inefficiency
+			//has been found	
 				this.newDateTimeEventHandler_setPositionsAndStatus(currentTime);
+			
+			if( currentTime ==
+			    this.lastInefficiencyTime.AddMinutes(this.minutesFromLastInefficiencyTimeToWaitBeforeOpening) &&
+			    this.newDateTimeEventHandler_inefficiencyIsMovingBack(currentTime) )
+			//it's time for checking if inefficiency is moving back and the last inefficiency found is
+			//moving back
 				this.newDateTimeEventHandler_openPositions(currentTime);
-			}
+			
 			if( currentTime == getLastEventTimeWithCachedBars() )
+			//it's time for new optimization, if the case
+			{
 				this.newDateTimeEventHandler_updateTestingPositions( dateTime );
+				this.positionsForOutOfSample = null;
+				this.positionsForOutOfSampleStatus = PVOPositionsStatus.InTheMiddle;
+				this.lastInefficiencyTime = new Time(0,0,0);
+			}
+				
 		}
 		
 		#region UpdateTestingPositions

@@ -127,7 +127,9 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOs
 		                                    DateTime endOfPeriod,
 		                                    string benchmark,
 		                                    HistoricalMarketValueProvider quoteProvider,
+		                                    double oversoldThreshold,
 		                                    double maxOversoldThreshold,
+		                                    double overboughtThreshold,
 		                                    double maxOverboughtThreshold)
 		{
 			PVOPositionsStatus returnValue;
@@ -135,10 +137,10 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOs
 			oscillatingPeriodReturn =
 				this.getOscillatingPeriodReturn(beginOfPeriod, endOfPeriod, benchmark,
 				                                quoteProvider);
-			if(oscillatingPeriodReturn >= this.overboughtThreshold &&
+			if(oscillatingPeriodReturn >= overboughtThreshold &&
 			   oscillatingPeriodReturn <= maxOverboughtThreshold)
 				returnValue = PVOPositionsStatus.Overbought;
-			else if(oscillatingPeriodReturn <= -this.oversoldThreshold &&
+			else if(oscillatingPeriodReturn <= -oversoldThreshold &&
 			        Math.Abs(oscillatingPeriodReturn) <= maxOversoldThreshold)
 				returnValue = PVOPositionsStatus.Oversold;
 			else if ( Math.Abs(oscillatingPeriodReturn) > maxOversoldThreshold ||
@@ -148,6 +150,19 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOs
 				returnValue = PVOPositionsStatus.InTheMiddle;
 			
 			return returnValue;
+		}
+		
+		public PVOPositionsStatus GetStatus(DateTime beginOfPeriod,
+		                                    DateTime endOfPeriod,
+		                                    string benchmark,
+		                                    HistoricalMarketValueProvider quoteProvider,
+		                                    double maxOversoldThreshold,
+		                                    double maxOverboughtThreshold)
+		{
+			return this.GetStatus(beginOfPeriod, endOfPeriod,
+		                        benchmark, quoteProvider,
+		                        this.oversoldThreshold, maxOversoldThreshold,
+		                        this.overboughtThreshold, maxOverboughtThreshold );
 		}
 		
 		public bool AreAllTickersMovingTogetherUpOrDown(DateTime beginOfPeriod,
