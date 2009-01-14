@@ -249,6 +249,33 @@ namespace QuantProject.DataAccess.Tables
 				"order by " + Bars.DateTimeForOpen;
 			return SqlExecutor.GetDataTable( sql );
 		}
+		
+		/// <summary>
+		/// returns the bars DataTable for the given ticker
+		/// </summary>
+		/// <param name="ticker">ticker whose quotes are to be returned</param>
+		/// <param name="exchange">the exchange where the ticker was traded</param>
+		/// <param name="firstBarDateTime">The first bar date time</param>
+		/// <param name="lastBarDateTime">The last bar date time</param>
+		/// <param name="intervalFrameInSeconds">interval frame in seconds for
+		/// the ticker's bars</param>
+		/// <returns></returns>
+		public static DataTable GetTickerBars(
+			string ticker , string exchange ,
+			DateTime firstBarDateTime , DateTime lastBarDateTime , long intervalFrameInSeconds )
+		{
+			string sql = "select * from bars " +
+				"where " + Bars.TickerFieldName + "='" + ticker + "' and " +
+				Bars.Exchange + "='" + exchange + "' and " +
+				Bars.IntervalFrameInSeconds + "=" + intervalFrameInSeconds + " " +
+				"and " + Bars.DateTimeForOpen + " between " +
+				SQLBuilder.GetDateTimeConstant(firstBarDateTime) + " " +
+				"and " + SQLBuilder.GetDateTimeConstant(lastBarDateTime) + " " +
+				"order by " + Bars.DateTimeForOpen;
+			return SqlExecutor.GetDataTable( sql );
+		}
+
+		
 		/// <summary>
 		/// Returns the bars for the given instrument , since startDateTime to endDateTime
 		/// </summary>
@@ -536,17 +563,33 @@ namespace QuantProject.DataAccess.Tables
 				Bars.getSqlCommandFor_AddBar(
 					ticker , exchange , dateTimeForOpenInESTTime , interval ,
 					open , high , low , close , volume );
-			try
-			{
-				SqlExecutor.ExecuteNonQuery( sqlCommand );
-			}
-			catch( Exception exception )
-			{
-				if ( !DataBase.IsExceptionForForbiddenDataDuplication( exception ) )
-					// the exception is not due to a duplicated bar
-					throw exception;
-			}
+//			try
+//			{
+			SqlExecutor.ExecuteNonQuery( sqlCommand );
+//			}
+//			catch( Exception exception )
+//			{
+//				if ( !DataBase.IsExceptionForForbiddenDataDuplication( exception ) )
+//					// the exception is not due to a duplicated bar
+//					throw exception;
+//			}
 		}
 		#endregion AddBar
+		
+		/// <summary>
+		/// true iif the database contains a bar for the given key values
+		/// </summary>
+		/// <param name="ticker"></param>
+		/// <param name="exchange"></param>
+		/// <param name="dateTimeForOpenInESTTime"></param>
+		/// <param name="interval"></param>
+		public static bool ContainsBar(
+			string ticker , string exchange , DateTime dateTimeForOpenInESTTime , long interval )
+		{
+			DataTable bars = Bars.GetTickerBars(
+				ticker , exchange , dateTimeForOpenInESTTime , dateTimeForOpenInESTTime , interval );
+			bool containsBar = ( bars.Rows.Count > 0 );
+			return containsBar;
+		}
 	}
 }
