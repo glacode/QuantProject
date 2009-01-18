@@ -2,7 +2,7 @@
 QuantProject - Quantitative Finance Library
 
 BarQueueFiller.cs
-Copyright (C) 2008 
+Copyright (C) 2008
 Glauco Siliprandi
 
 This program is free software; you can redistribute it and/or
@@ -18,7 +18,7 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
-*/
+ */
 
 using System;
 using System.Threading;
@@ -31,7 +31,7 @@ namespace QuantProject.Applications.Downloader.OpenTickDownloader
 {
 	public delegate void NewOHLCRequestEventHandler(
 		int requestId , DateTime dateTimeForRequest , long barInterval );
-		
+	
 	/// <summary>
 	/// Downloads all the bars for a given ticker and
 	/// writes them into a queue
@@ -47,6 +47,7 @@ namespace QuantProject.Applications.Downloader.OpenTickDownloader
 		private OTManager oTManager;
 		
 		private BarQueue barQueue;
+		private DateTime minDateTimeForAcceptablesBars;
 		
 		private IExchangeSelector exchangeSelector;
 
@@ -74,7 +75,7 @@ namespace QuantProject.Applications.Downloader.OpenTickDownloader
 			IBarsSelector barsSelector ,
 			IExchangeSelector exchangeSelector ,
 			OTManager oTManager ,
-			BarQueue barQueue 
+			BarQueue barQueue
 		)
 		{
 			this.barsSelector = barsSelector;
@@ -86,7 +87,8 @@ namespace QuantProject.Applications.Downloader.OpenTickDownloader
 			this.oTManager.NewMessage +=
 				new NewMessageEventHandler(
 					this.newMessageEventHandler );
-			this.barQueue = barQueue;			
+			this.barQueue = barQueue;
+			this.minDateTimeForAcceptablesBars = new DateTime( 1950 , 1 , 1 );
 		}
 		private void newMessageEventHandler(
 			object sender , NewMessageEventArgs eventArgs )
@@ -97,8 +99,40 @@ namespace QuantProject.Applications.Downloader.OpenTickDownloader
 		
 		#region fillQueue
 		
-		#region onHistoricalOHLC
+		#region onHistoricalOHLCEventHandler
 		
+		#region isAcceptable
+		private bool isAcceptableDateTime( OTOHLC ohlc )
+		{
+			bool isAcceptable =
+				(
+					( ohlc.Timestamp >= this.minDateTimeForAcceptablesBars ) &&
+					( ohlc.Timestamp <= DateTime.Now )
+				);
+			return isAcceptable;
+		}
+		private bool areAcceptableOHLCvalues( OTOHLC ohlc )
+		{
+			bool areAcceptable =
+				(
+					( ohlc.LowPrice > 0 ) &&
+					( ohlc.OpenPrice <= ohlc.HighPrice ) &&
+					( ohlc.OpenPrice >= ohlc.LowPrice ) &&
+					( ohlc.ClosePrice <= ohlc.HighPrice ) &&
+					( ohlc.ClosePrice >= ohlc.LowPrice )
+				);
+			return areAcceptable;
+		}
+		private bool isAcceptable( OTOHLC ohlc )
+		{
+			bool isOk =
+				( this.isAcceptableDateTime( ohlc ) ) &&
+				( this.areAcceptableOHLCvalues( ohlc ) );
+			return isOk;
+		}
+		#endregion isAcceptable
+		
+		#region enqueueBar
 		#region getBar
 		private long getBar_getInterval( OTOHLC ohlc )
 		{
@@ -125,15 +159,24 @@ namespace QuantProject.Applications.Downloader.OpenTickDownloader
 			return bar;
 		}
 		#endregion getBar
-        private void onHistoricalOHLCEventHandler(
+		
+		private void enqueueBar( OTOHLC ohlc )
+		{
+				Bar bar = this.getBar( ohlc );
+				this.barQueue.Enqueue( bar );
+		}
+		#endregion enqueueBar
+		
+		private void onHistoricalOHLCEventHandler(
 			OTOHLC ohlc , BarRequest barRequest )
-        {
-        	Bar bar = this.getBar( ohlc );
-        	this.barQueue.Enqueue( bar );
-        }
-        
-        #endregion onHistoricalOHLC
-        
+		{
+			if ( this.isAcceptable( ohlc ) )
+				// the bar is acceptable
+				this.enqueueBar( ohlc );
+		}
+		
+		#endregion onHistoricalOHLCEventHandler
+		
 		private void fillQueue_setEventHandlers()
 		{
 			this.oTManager.OnHistoricalOHLC +=
@@ -142,7 +185,7 @@ namespace QuantProject.Applications.Downloader.OpenTickDownloader
 		}
 		
 		#region fillQueue_requestBarsForEachMarketDay
-	
+		
 		#region fillQueue_requestBar
 		private void fillQueue_requestBar_actually(
 			BarIdentifier barIdentifier , string exchange )
@@ -161,7 +204,7 @@ namespace QuantProject.Applications.Downloader.OpenTickDownloader
 			if ( this.NewOHLCRequest != null )
 				this.NewOHLCRequest(
 					requestId , dateTimeForBarOpenInUTC ,
-					barIdentifier.Interval );			
+					barIdentifier.Interval );
 		}
 		private void fillQueue_requestBar(
 			BarIdentifier barIdentifier )
@@ -181,7 +224,7 @@ namespace QuantProject.Applications.Downloader.OpenTickDownloader
 					this.barsSelector.GetNextBarIdentifier() );
 		}
 		#endregion fillQueue_requestBarsForEachMarketDay
-			
+		
 		private void fillQueue()
 		{
 			this.fillQueue_setEventHandlers();
