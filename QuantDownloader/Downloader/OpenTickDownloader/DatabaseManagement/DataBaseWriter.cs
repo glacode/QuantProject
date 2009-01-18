@@ -141,7 +141,7 @@ namespace QuantProject.Applications.Downloader.OpenTickDownloader
 			while ( !this.areAllBarsWrittenToDatabase )
 			{
 				this.writeToDataBaseIfEnoughBars();
-				Thread.Sleep( 50 );
+				Thread.Sleep( 15 );
 			}
 		}
 		#endregion writeToDataBase
