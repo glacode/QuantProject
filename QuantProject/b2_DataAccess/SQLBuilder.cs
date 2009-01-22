@@ -163,10 +163,12 @@ namespace QuantProject.DataAccess
 //					"QuantProject.ADT.ExtendedDateTime.GetTime() to build your time" );
 //		}
 		
-		#region getFilterForTime_actually
-		
-		#region getFormatFunctionForTime
-		private static string getFormatFunctionForTime( string dateTimeFieldName )
+		/// <summary>
+		/// builds a database dependent DateTime format function for the given field name
+		/// </summary>
+		/// <param name="dateTimeFieldName"></param>
+		/// <returns></returns>
+		public static string GetFormatFunctionForTime( string dateTimeFieldName )
 		{
 			string formatFunctionForTime = null;
 			switch ( ConnectionProvider.DbType )
@@ -183,8 +185,8 @@ namespace QuantProject.DataAccess
 			}
 			return formatFunctionForTime;
 		}
-		#endregion getFormatFunctionForTime
 		
+		#region getFilterForTime_actually
 		private static string getSqlStringForComparisonOperator(
 			SqlComparisonOperator sqlComparisonOperator )
 		{
@@ -215,7 +217,7 @@ namespace QuantProject.DataAccess
 			string filterForDailyTime =
 //				"(Format([baDateTimeForOpen],'hh.mm.ss')" +
 				"(" +
-				SQLBuilder.getFormatFunctionForTime( "baDateTimeForOpen" ) +
+				SQLBuilder.GetFormatFunctionForTime( "baDateTimeForOpen" ) +
 				SQLBuilder.getSqlStringForComparisonOperator( sqlComparisonOperator ) +
 				SQLBuilder.GetTimeConstant( time ) + ")";
 			return filterForDailyTime;
