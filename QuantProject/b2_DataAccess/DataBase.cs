@@ -208,26 +208,18 @@ namespace QuantProject.DataAccess
 		
 		#region getFilterForDailyTimes
 		
-//		#region getFilterForDailyTime
-//		private getFilterForDailyTime( DateTime dateTime )
-//		{
-//			string filterForDailyTime =
-//				"(Format([baDateTimeForOpen],'hh:mm:ss')>='" +
-//				this.getSqlTimeConstantForFirstDailyBar() + "')";
-//		}
-//		#endregion getFilterForDailyTime
-		
 		private static string getFilterForDailyTimes( List< Time > dailyTimes )
 		{
-			string filterForDailyTimes = "";
+			string filterForDailyTimes =
+				SQLBuilder.GetFormatFunctionForTime( "baDateTimeForOpen" ) + " in ( ";
 			foreach( Time time in dailyTimes )
 				filterForDailyTimes =
 					filterForDailyTimes +
-					SQLBuilder.GetFilterForTime(
-						"baDateTimeForOpen" , SqlComparisonOperator.Equal , time ) +
-					" or ";
+					SQLBuilder.GetTimeConstant( time ) +
+					" , ";
 			filterForDailyTimes = filterForDailyTimes.Substring(
-				0 , filterForDailyTimes.Length - " or ".Length );
+				0 , filterForDailyTimes.Length - " , ".Length );
+			filterForDailyTimes += " )";
 			return filterForDailyTimes;
 		}
 		#endregion getFilterForDailyTimes
