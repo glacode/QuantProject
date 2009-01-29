@@ -2,7 +2,7 @@
 QuantProject - Quantitative Finance Library
 
 BarRequest.cs
-Copyright (C) 2008 
+Copyright (C) 2008
 Glauco Siliprandi
 
 This program is free software; you can redistribute it and/or
@@ -18,7 +18,7 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
-*/
+ */
 
 using System;
 
@@ -29,10 +29,11 @@ namespace QuantProject.Applications.Downloader.OpenTickDownloader
 	/// </summary>
 	public class BarRequest
 	{
-		private string exchange;		
+		private string exchange;
 		private string symbol;
 		private DateTime dateTimeForOpenInUTC;
-				
+		private short intervalValueInSeconds;
+		
 		public string Exchange {
 			get { return exchange; }
 		}
@@ -42,14 +43,19 @@ namespace QuantProject.Applications.Downloader.OpenTickDownloader
 		public DateTime DateTimeForOpenInUTC {
 			get { return dateTimeForOpenInUTC; }
 		}
+		public short IntervalValueInSeconds {
+			get { return this.intervalValueInSeconds; }
+		}
 		public BarRequest(
 			string exchange ,
 			string symbol ,
-			DateTime dateTimeForOpenInUTC )
+			DateTime dateTimeForOpenInUTC ,
+			short intervalValueInSeconds )
 		{
 			this.exchange = exchange;
 			this.symbol = symbol;
 			this.dateTimeForOpenInUTC = dateTimeForOpenInUTC;
+			this.intervalValueInSeconds = intervalValueInSeconds;
 		}
 	}
 }
