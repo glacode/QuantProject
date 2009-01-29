@@ -66,6 +66,10 @@
     <Compile Include="OpenTickDownloader\ExchangeSelectors\IExchangeSelector.cs" />
     <Compile Include="OpenTickDownloader\ExchangeSelectors\MostLiquid\MostLiquidExchangeSelector.cs" />
     <Compile Include="OpenTickDownloader\ExchangeSelectors\MostLiquid\MostLiquidExchangeSelectorForSingleTicker.cs" />
+    <Compile Include="OpenTickDownloader\OHLCRequesters\BarsSelectorBasedOHLCRequester.cs" />
+    <Compile Include="OpenTickDownloader\OHLCRequesters\OHLCRequest.cs" />
+    <Compile Include="OpenTickDownloader\OHLCRequesters\IOHLCRequester.cs" />
+    <Compile Include="OpenTickDownloader\OHLCRequesters\OHLCRequesterForConsecutiveBars.cs" />
     <Compile Include="OpenTickDownloader\OTManagement\BarRequest.cs" />
     <Compile Include="OpenTickDownloader\OTManagement\OTManager.cs" />
     <Compile Include="OpenTickDownloader\OTTickerDownloader.cs" />
@@ -131,6 +135,7 @@
     <Folder Include="OpenTickDownloader\DatabaseManagement" />
     <Folder Include="OpenTickDownloader\ExchangeSelectors" />
     <Folder Include="OpenTickDownloader\ExchangeSelectors\MostLiquid" />
+    <Folder Include="OpenTickDownloader\OHLCRequesters" />
     <Folder Include="OpenTickDownloader\OTManagement" />
     <Folder Include="OpenTickDownloader\TimeZoneManaging" />
     <Folder Include="OpenTickDownloader\UserForms" />
