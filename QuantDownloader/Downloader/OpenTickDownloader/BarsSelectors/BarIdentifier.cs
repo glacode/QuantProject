@@ -32,7 +32,7 @@ namespace QuantProject.Applications.Downloader.OpenTickDownloader
 	{
 		private string ticker;
 		private DateTime dateTimeForOpenInNewYorkTimeZone;
-		private long interval;
+		private long barIntervalInSeconds;
 		
 		public string Ticker {
 			get { return this.ticker; }
@@ -40,8 +40,8 @@ namespace QuantProject.Applications.Downloader.OpenTickDownloader
 		public DateTime DateTimeForOpenInNewYorkTimeZone {
 			get { return this.dateTimeForOpenInNewYorkTimeZone; }
 		}
-		public long Interval {
-			get { return this.interval; }
+		public long BarIntervalInSeconds {
+			get { return this.barIntervalInSeconds; }
 		}
 
 		/// <summary>
@@ -61,7 +61,7 @@ namespace QuantProject.Applications.Downloader.OpenTickDownloader
 			this.ticker = ticker;
 			this.dateTimeForOpenInNewYorkTimeZone =
 				dateTimeForOpenInNewYorkTimeZone;
-			this.interval = interval;
+			this.barIntervalInSeconds = interval;
 		}
 	}
 }
