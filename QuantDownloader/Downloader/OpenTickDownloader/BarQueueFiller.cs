@@ -30,7 +30,10 @@ using QuantProject.ADT.Messaging;
 namespace QuantProject.Applications.Downloader.OpenTickDownloader
 {
 	public delegate void NewOHLCRequestEventHandler(
-		int requestId , DateTime dateTimeForRequest , long barInterval );
+		int requestId ,
+		DateTime dateTimeForFirstBarOpenInUTC ,
+		DateTime dateTimeForLastBarOpenInUTC ,
+		long barInterval );
 	
 	/// <summary>
 	/// Downloads all the bars for a given ticker and
@@ -42,7 +45,8 @@ namespace QuantProject.Applications.Downloader.OpenTickDownloader
 		
 		public event NewMessageEventHandler NewMessage;
 		
-		private IBarsSelector barsSelector;
+		private IOHLCRequester oHLCRequester;
+//		private IBarsSelector barsSelector;
 		
 		private OTManager oTManager;
 		
@@ -72,13 +76,13 @@ namespace QuantProject.Applications.Downloader.OpenTickDownloader
 		/// <param name="barQueue">queue to be filled with the
 		/// downloaded bars</param>
 		public BarQueueFiller(
-			IBarsSelector barsSelector ,
+			IOHLCRequester oHLCRequester ,
 			IExchangeSelector exchangeSelector ,
 			OTManager oTManager ,
 			BarQueue barQueue
 		)
 		{
-			this.barsSelector = barsSelector;
+			this.oHLCRequester = oHLCRequester;
 			this.exchangeSelector = exchangeSelector;
 			this.exchangeSelector.NewMessage +=
 				new NewMessageEventHandler(
@@ -134,18 +138,18 @@ namespace QuantProject.Applications.Downloader.OpenTickDownloader
 		
 		#region enqueueBar
 		#region getBar
-		private long getBar_getInterval( OTOHLC ohlc )
-		{
-			int interval = 60; // TO DO use an internal list to handle this data
-			return interval;
-		}
+//		private long getBar_getInterval( OTOHLC ohlc )
+//		{
+//			int interval = 60; // TO DO use an internal list to handle this data
+//			return interval;
+//		}
 		private Bar getBar( OTOHLC ohlc )
 		{
 			BarRequest barRequest =
 				this.oTManager.GetBarRequest( ohlc.RequestId );
 			string ticker = barRequest.Symbol;
 			string exchange = barRequest.Exchange;
-			long interval = this.getBar_getInterval( ohlc );
+			long interval = barRequest.IntervalValueInSeconds;
 			Bar bar = new Bar(
 				ticker ,
 				exchange ,
@@ -188,40 +192,43 @@ namespace QuantProject.Applications.Downloader.OpenTickDownloader
 		
 		#region fillQueue_requestBar
 		private void fillQueue_requestBar_actually(
-			BarIdentifier barIdentifier , string exchange )
+			OHLCRequest oHLCRequest , string exchange )
 		{
 			short numberOfMinutesInEachBar =
 				Convert.ToInt16( Math.Round(
-					Convert.ToDouble( barIdentifier.Interval / 60 ) ) );
-			DateTime dateTimeForBarOpenInUTC =
+					Convert.ToDouble( oHLCRequest.BarIntervalInSeconds / 60 ) ) );
+			DateTime dateTimeForFirstBarOpenInUTC =
 				TimeZoneManager.ConvertToUTC(
-					barIdentifier.DateTimeForOpenInNewYorkTimeZone );
+					oHLCRequest.DateTimeForFirstBarOpenInNewYorkTimeZone );
+			DateTime dateTimeForLastBarOpenInUTC =
+				TimeZoneManager.ConvertToUTC(
+					oHLCRequest.DateTimeForLastBarOpenInNewYorkTimeZone );
 			int requestId = this.oTManager.RequestHistData(
-				exchange , barIdentifier.Ticker ,
-				dateTimeForBarOpenInUTC ,
-				dateTimeForBarOpenInUTC ,
+				exchange , oHLCRequest.Ticker ,
+				dateTimeForFirstBarOpenInUTC ,
+				dateTimeForLastBarOpenInUTC ,
 				OTHistoricalType.OhlcMinutely , numberOfMinutesInEachBar );
 			if ( this.NewOHLCRequest != null )
 				this.NewOHLCRequest(
-					requestId , dateTimeForBarOpenInUTC ,
-					barIdentifier.Interval );
+					requestId , dateTimeForFirstBarOpenInUTC , dateTimeForLastBarOpenInUTC ,
+					oHLCRequest.BarIntervalInSeconds );
 		}
 		private void fillQueue_requestBar(
-			BarIdentifier barIdentifier )
+			OHLCRequest oHLCRequest )
 		{
 			string exchange =
-				this.exchangeSelector.SelectExchange( barIdentifier.Ticker );
+				this.exchangeSelector.SelectExchange( oHLCRequest.Ticker );
 			if ( exchange != "" )
 				// the exchange has been actually selected
-				this.fillQueue_requestBar_actually( barIdentifier , exchange );
+				this.fillQueue_requestBar_actually( oHLCRequest , exchange );
 		}
 		#endregion fillQueue_requestBar
 		
 		private void fillQueue_requestBarsForEachMarketDay()
 		{
-			while ( !this.barsSelector.AreAllBarsAlredyGiven )
+			while ( !this.oHLCRequester.AreAllOHLCRequestsAlredyGiven )
 				this.fillQueue_requestBar(
-					this.barsSelector.GetNextBarIdentifier() );
+					this.oHLCRequester.GetNextOHLCRequest() );
 		}
 		#endregion fillQueue_requestBarsForEachMarketDay
 		

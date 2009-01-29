@@ -40,7 +40,7 @@ namespace QuantProject.Applications.Downloader.OpenTickDownloader
 		public event NewMessageEventHandler NewMessage;
 		public event DatabaseUpdatedEventHandler DatabaseUpdated;
 
-		private IBarsSelector barsSelector;
+		private IOHLCRequester oHLCRequester;
 		private IExchangeSelector exchangeSelector;
 		private string openTickUser;
 		private string openTickPassword;
@@ -66,13 +66,13 @@ namespace QuantProject.Applications.Downloader.OpenTickDownloader
 		/// <param name="numberOfBarsToBeDownloadedForEachDay">number of bars
 		/// to be downloaded every day</param>
 		public BarsDownloader(
-			IBarsSelector barsSelector ,
+			IOHLCRequester oHLCRequester ,
 			IExchangeSelector exchangeSelector ,
 			string openTickUser ,
 			string openTickPassword
 		)
 		{
-			this.barsSelector = barsSelector;
+			this.oHLCRequester = oHLCRequester;
 			this.exchangeSelector = exchangeSelector;
 			this.openTickUser = openTickUser;
 			this.openTickPassword = openTickPassword;
@@ -88,11 +88,13 @@ namespace QuantProject.Applications.Downloader.OpenTickDownloader
 		
 		#region initializeBarQueueFiller
 		private void newOHLCRequestEventHandler(
-			int requestID , DateTime dateTimeForRequestInUTC , long barInterval )
+			int requestID , DateTime dateTimeForFirstBarOpenInUTC ,
+			DateTime dateTimeForLastBarOpenInUTC , long barInterval )
 		{
 			if ( this.NewOHLCRequest != null )
 				this.NewOHLCRequest(
-					requestID , dateTimeForRequestInUTC , barInterval );
+					requestID , dateTimeForFirstBarOpenInUTC ,
+					dateTimeForLastBarOpenInUTC , barInterval );
 		}
 		private void newMessageEventHandler(
 			object sender , NewMessageEventArgs eventArgs )
@@ -104,7 +106,7 @@ namespace QuantProject.Applications.Downloader.OpenTickDownloader
 		{
 			this.barQueueFiller =
 				new BarQueueFiller(
-					this.barsSelector ,
+					this.oHLCRequester ,
 					this.exchangeSelector ,
 					this.oTManager ,
 					this.barQueue
