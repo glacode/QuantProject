@@ -151,7 +151,7 @@ namespace QuantProject.Applications.Downloader.OpenTickDownloader
 			this.onOTClientError_riseOnNoDataIfTheCase( error );
 			this.onOTClientError_logMessage( error );
 			if ( this.OnError != null )
-				this.OnError( error );			
+				this.OnError( error );
 		}
 		#endregion onOTClientError_actually
 		
@@ -213,7 +213,7 @@ namespace QuantProject.Applications.Downloader.OpenTickDownloader
 		private void onMessageEventHandler_actually( OTMessage oTMessage )
 		{
 			this.onMessageEventHandler_logMessage( oTMessage );
-			this.onMessageEventHandler_riseOnEndOfDataIfTheCase( oTMessage );			
+			this.onMessageEventHandler_riseOnEndOfDataIfTheCase( oTMessage );
 		}
 		#endregion onMessageEventHandler_actually
 		
@@ -327,7 +327,7 @@ namespace QuantProject.Applications.Downloader.OpenTickDownloader
 					( this.pendingBarRequests.Count >=
 					 DownloaderConstants.MAX_NUMBER_OF_PENDING_REQUESTS_FOR_A_SINGLE_OTMANAGER );
 			}
-			return areThereTooMany;				
+			return areThereTooMany;
 		}
 		
 		#region requestHistDataWithoutTooManyPendentBarRequests
@@ -359,7 +359,8 @@ namespace QuantProject.Applications.Downloader.OpenTickDownloader
 				new BarRequest(
 					exchange ,
 					symbol ,
-					startingDateInUTC );
+					startingDateInUTC ,
+					intervalValue );
 			lock ( this.pendingBarRequests )
 			{
 				this.pendingBarRequests.Add( requestId , barRequest );
@@ -403,13 +404,13 @@ namespace QuantProject.Applications.Downloader.OpenTickDownloader
 //			while ( this.areThereTooManyPendentBarRequests() )
 //				Thread.Sleep( 10 );
 			int	requestId =
-					this.requestHistDataWithoutTooManyPendentBarRequests(
-						exchange ,
-						symbol ,
-						startingDateInUTC ,
-						endingDateInUTC ,
-						oTHistoricalType ,
-						intervalValue );
+				this.requestHistDataWithoutTooManyPendentBarRequests(
+					exchange ,
+					symbol ,
+					startingDateInUTC ,
+					endingDateInUTC ,
+					oTHistoricalType ,
+					intervalValue );
 			return requestId;
 		}
 		#endregion RequestHistData
