@@ -283,7 +283,7 @@ namespace QuantProject.Applications.Downloader.OpenTickDownloader
 			long barInterval = this.getBarInterval();
 			if ( this.NewOHLCRequest != null )
 				this.NewOHLCRequest(
-					requestId , this.startingDate , barInterval );
+					requestId , this.startingDate , this.endingDate , barInterval );
 		}
 		#endregion riseNewOHLCRequestEvent
 		
