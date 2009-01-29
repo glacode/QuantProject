@@ -43,8 +43,13 @@ namespace QuantProject.Applications.Downloader.OpenTickDownloader
 	public class OTTickerDownloader
 	{
 		private string[] tickersToDownload;
+		
 		private List<Time> dailyTimes;
 		private DateTime firstDate;
+		
+		private DateTime dateTimeForFirstBarOpenInNewYorkTimeZone;
+		private DateTime dateTimeForLastBarOpenInNewYorkTimeZone;
+		
 		/// <summary>
 		/// number of seconds in each bar
 		/// </summary>
@@ -63,7 +68,7 @@ namespace QuantProject.Applications.Downloader.OpenTickDownloader
 		private string openTickPassword;
 		
 		private IExchangeSelector exchangeSelector;
-		private IBarsSelector barsSelector;
+		private IOHLCRequester oHLCRequester;
 		private BarsDownloader barsDownloader;
 		private MessageManager messageManager;
 		
@@ -129,6 +134,35 @@ namespace QuantProject.Applications.Downloader.OpenTickDownloader
 			this.openTickPassword = openTickPassword;
 		}
 		
+		public OTTickerDownloader(
+			string[] tickersToDownload,
+			DateTime dateTimeForFirstBarOpenInNewYorkTimeZone,
+			DateTime dateTimeForLastBarOpenInNewYorkTimeZone,
+			int barInterval ,
+			string openTickUser,
+			string openTickPassword)
+		{
+			this.otTickerDownloader_checkParameters(tickersToDownload,
+			                                        firstDate,
+			                                        dateTimeForFirstBarOpenInNewYorkTimeZone,
+			                                        false,
+			                                        false,
+			                                        false,
+			                                        openTickUser,
+			                                        openTickPassword);
+			this.tickersToDownload = tickersToDownload;
+			this.dailyTimes = null;
+			this.dateTimeForFirstBarOpenInNewYorkTimeZone = dateTimeForFirstBarOpenInNewYorkTimeZone;
+			this.dateTimeForLastBarOpenInNewYorkTimeZone = dateTimeForLastBarOpenInNewYorkTimeZone;
+			this.barInterval = barInterval;
+			this.dateTimeForOverWritingQuotes = DateTime.MaxValue;
+			this.checkForMissingQuotes = false;
+			this.overwriteAllQuotesInDatabase = false;
+			this.downloadOnlySuccessiveQuotesToTheLastQuoteInDatabase =	false;
+			this.openTickUser = openTickUser;
+			this.openTickPassword = openTickPassword;
+		}
+		
 		public event DownloadingStartedEventHandler DownloadingStarted;
 		public event DatabaseUpdatedEventHandler DatabaseUpdated;
 		public event DownloadingCompletedEventHandler DownloadingCompleted;
@@ -170,7 +204,8 @@ namespace QuantProject.Applications.Downloader.OpenTickDownloader
 				dateTime.Year , dateTime.Month , dateTime.Day );
 			return date;
 		}
-		private void setBarsSelector()
+		#region oHLCRequester
+		private void setOHLCRequester_forSpecificDailyTimes()
 		{
 			DateTime firstDateForBarsSelector =
 				this.setBarsSelector_getDate( this.firstDate );
@@ -178,24 +213,45 @@ namespace QuantProject.Applications.Downloader.OpenTickDownloader
 				this.setBarsSelector_getDate( DateTime.Now );
 			if ( this.checkForMissingQuotes )
 				// only missing quotes are to be downloaded
-				this.barsSelector =
-					new MissingDailyBarsSelector(
-						this.tickersToDownload ,
-						this.setBarsSelector_getDate( this.firstDate ) ,
-						this.setBarsSelector_getDate( DateTime.Now ) ,
-						this.barInterval ,
-						this.dailyTimes );
+				this.oHLCRequester =
+					new BarsSelectorBasedOHLCRequester(
+						new MissingDailyBarsSelector(
+							this.tickersToDownload ,
+							this.setBarsSelector_getDate( this.firstDate ) ,
+							this.setBarsSelector_getDate( DateTime.Now ) ,
+							this.barInterval ,
+							this.dailyTimes ) );
 			else
 				// all quotes are to be downloaded, even if they
 				// are in the database already
-				this.barsSelector =
-					new DailyBarsSelector(
-						this.tickersToDownload ,
-						this.setBarsSelector_getDate( this.firstDate ) ,
-						this.setBarsSelector_getDate( DateTime.Now ) ,
-						this.barInterval ,
-						this.dailyTimes );
+				this.oHLCRequester =
+					new BarsSelectorBasedOHLCRequester(
+						new DailyBarsSelector(
+							this.tickersToDownload ,
+							this.setBarsSelector_getDate( this.firstDate ) ,
+							this.setBarsSelector_getDate( DateTime.Now ) ,
+							this.barInterval ,
+							this.dailyTimes ) );
 		}
+		private void setOHLCRequester_forAllDailyBars()
+		{
+			this.oHLCRequester =
+				new OHLCRequesterForConsecutiveBars(
+							this.tickersToDownload ,
+							this.dateTimeForFirstBarOpenInNewYorkTimeZone ,
+							this.dateTimeForLastBarOpenInNewYorkTimeZone ,
+							this.barInterval );
+		}
+		private void setOHLCRequester()
+		{
+			if ( this.dailyTimes != null )
+				// only some specific daily times have been requested
+				this.setOHLCRequester_forSpecificDailyTimes();
+			else
+				// all daily bars have been requested
+				this.setOHLCRequester_forAllDailyBars();
+		}
+		#endregion oHLCRequester
 		private void setExchangeSelector()
 		{
 			this.exchangeSelector =
@@ -224,7 +280,7 @@ namespace QuantProject.Applications.Downloader.OpenTickDownloader
 		{
 			this.barsDownloader =
 				new BarsDownloader(
-					this.barsSelector ,
+					this.oHLCRequester ,
 					this.exchangeSelector ,
 					this.openTickUser ,
 					this.openTickPassword );
@@ -268,7 +324,7 @@ namespace QuantProject.Applications.Downloader.OpenTickDownloader
 		#endregion setBarsDownloaderAndRunIt
 		private void downloadTickersActually()
 		{
-			this.setBarsSelector();
+			this.setOHLCRequester();
 			this.setExchangeSelector();
 			this.setBarsDownloaderAndRunIt();
 		}
