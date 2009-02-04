@@ -114,9 +114,9 @@ namespace QuantProject.Applications.Downloader.OpenTickDownloader
 //			this.commonInitialization( ticker );
 //		}
 		public MostLiquidExchangeSelectorForSingleTicker(
-			string ticker )
+			OTManager oTManager , string ticker )
 		{
-			this.oTManager = new OTManager();
+			this.oTManager = oTManager;
 			this.oTManager.NewMessage +=
 				new NewMessageEventHandler(
 					this.newMessageEventHandler );
@@ -292,6 +292,11 @@ namespace QuantProject.Applications.Downloader.OpenTickDownloader
 //			OTDataEntity oTDataEntity = new OTDataEntity(
 //				exchangeCode , this.ticker );
 			int requestId =
+//				this.oTManager.RequestHistData(
+//					exchangeCode , this.ticker ,
+//					new DateTime( 2008 , 02 , 07, 15 , 0 , 0 ) ,
+//					new DateTime( 2008 , 02 , 28, 15 , 0 , 0 ) ,
+//					OTHistoricalType.OhlcMinutely , 1 );
 				this.oTManager.RequestHistData(
 					exchangeCode , this.ticker
 					, this.startingDate , this.endingDate ,
