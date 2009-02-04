@@ -67,6 +67,7 @@ namespace QuantProject.Applications.Downloader.OpenTickDownloader
 		private string openTickUser;
 		private string openTickPassword;
 		
+//		private OTManager oTManager;
 		private IExchangeSelector exchangeSelector;
 		private IOHLCRequester oHLCRequester;
 		private BarsDownloader barsDownloader;
