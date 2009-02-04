@@ -71,6 +71,7 @@
     <Compile Include="OpenTickDownloader\OHLCRequesters\IOHLCRequester.cs" />
     <Compile Include="OpenTickDownloader\OHLCRequesters\OHLCRequesterForConsecutiveBars.cs" />
     <Compile Include="OpenTickDownloader\OTManagement\BarRequest.cs" />
+    <Compile Include="OpenTickDownloader\OTManagement\OTIntervalValueCalculator.cs" />
     <Compile Include="OpenTickDownloader\OTManagement\OTManager.cs" />
     <Compile Include="OpenTickDownloader\OTTickerDownloader.cs" />
     <Compile Include="OpenTickDownloader\TimeZoneManaging\DSTPeriod.cs" />
