@@ -2,7 +2,7 @@
 QuantProject - Quantitative Finance Library
 
 BarQueue.cs
-Copyright (C) 2008 
+Copyright (C) 2008
 Glauco Siliprandi
 
 This program is free software; you can redistribute it and/or
@@ -18,7 +18,7 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
-*/
+ */
 
 using System;
 using System.Collections.Generic;
@@ -28,7 +28,7 @@ namespace QuantProject.Applications.Downloader.OpenTickDownloader
 {
 	public delegate void
 		NewChunkOfBarsToBeWrittenWithASingleSqlCommandEventHandler();
-		
+	
 	/// <summary>
 	/// Keeps a queue of bars, rises events when needed.
 	/// </summary>
@@ -36,16 +36,29 @@ namespace QuantProject.Applications.Downloader.OpenTickDownloader
 	{
 		public event NewChunkOfBarsToBeWrittenWithASingleSqlCommandEventHandler
 			NewChunkOfBarsToBeWrittenWithASingleSqlCommand;
-			
+		
 //		private Queue<Bar> barQueue;
 		private int numberOfBarsToBeWrittenWithASingleSqlCommand;
 		private int numberOfBarsEnqueuedSinceLast_NewChunkOfBarsEvent;
 		
 		private Queue<Bar> queue;
 		
-		public Queue<Bar> Queue
+//		public Queue<Bar> Queue
+//		{
+//			get { return this.queue; }
+//		}
+		
+		public int Count
 		{
-			get { return this.queue; }
+			get
+			{
+				int count;
+				lock ( ((System.Collections.ICollection)(this.queue)).SyncRoot )
+				{
+					count = this.queue.Count;
+				}
+				return count;
+			}
 		}
 		
 		public BarQueue(
@@ -60,6 +73,16 @@ namespace QuantProject.Applications.Downloader.OpenTickDownloader
 		}
 		
 		#region Enqueue
+		
+		private void enqueueThreadSafely( Bar bar )
+		{
+			lock ( ((System.Collections.ICollection)(this.queue)).SyncRoot )
+			{
+				this.queue.Enqueue( bar );
+			}
+		}
+		
+		#region enqueue_handleChunkOfBarsToBeWrittenToDatabase
 		private void riseNewChunkOfBarsToBeWrittenWithASingleSqlCommand()
 		{
 			if ( this.NewChunkOfBarsToBeWrittenWithASingleSqlCommand != null )
@@ -73,11 +96,27 @@ namespace QuantProject.Applications.Downloader.OpenTickDownloader
 			    == this.numberOfBarsToBeWrittenWithASingleSqlCommand )
 				this.riseNewChunkOfBarsToBeWrittenWithASingleSqlCommand();
 		}
+		#endregion enqueue_handleChunkOfBarsToBeWrittenToDatabase
+		
 		public void Enqueue( Bar bar )
 		{
-			this.Queue.Enqueue( bar );
+			this.enqueueThreadSafely( bar );
 			this.enqueue_handleChunkOfBarsToBeWrittenToDatabase();
 		}
 		#endregion Enqueue
+		
+		/// <summary>
+		/// thread safe bar dequeue
+		/// </summary>
+		/// <returns></returns>
+		public Bar Dequeue()
+		{
+			Bar bar;
+			lock ( ((System.Collections.ICollection)(this.queue)).SyncRoot )
+			{
+				bar = this.queue.Dequeue();
+			}
+			return bar;
+		}
 	}
 }
