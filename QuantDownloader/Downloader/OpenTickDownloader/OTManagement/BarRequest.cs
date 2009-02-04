@@ -32,7 +32,7 @@ namespace QuantProject.Applications.Downloader.OpenTickDownloader
 		private string exchange;
 		private string symbol;
 		private DateTime dateTimeForOpenInUTC;
-		private short intervalValueInSeconds;
+		private int intervalValueInSeconds;
 		
 		public string Exchange {
 			get { return exchange; }
@@ -43,14 +43,14 @@ namespace QuantProject.Applications.Downloader.OpenTickDownloader
 		public DateTime DateTimeForOpenInUTC {
 			get { return dateTimeForOpenInUTC; }
 		}
-		public short IntervalValueInSeconds {
+		public int IntervalValueInSeconds {
 			get { return this.intervalValueInSeconds; }
 		}
 		public BarRequest(
 			string exchange ,
 			string symbol ,
 			DateTime dateTimeForOpenInUTC ,
-			short intervalValueInSeconds )
+			int intervalValueInSeconds )
 		{
 			this.exchange = exchange;
 			this.symbol = symbol;
