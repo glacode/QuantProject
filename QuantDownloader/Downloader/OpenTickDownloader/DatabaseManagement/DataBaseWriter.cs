@@ -56,30 +56,31 @@ namespace QuantProject.Applications.Downloader.OpenTickDownloader
 		
 		#region writeToDataBase
 		
-		#region writeToDataBaseIfEnoughBars
-		private bool isThereEnoughBarsInTheQueue()
-		{
-			bool isThereEnoughBars;
-			lock( this.barQueue )
-			{
-				isThereEnoughBars =
-					( this.barQueue.Queue.Count >=
-					 this.maxNumberOfBarsToBeWrittenWithASingleSqlCommand );
-			}
-			return isThereEnoughBars;
-		}
+		#region writeToDataBaseBarsInTheQueue
+//		private bool isThereEnoughBarsInTheQueue()
+//		{
+//			bool isThereEnoughBars;
+//			lock( this.barQueue )
+//			{
+//				isThereEnoughBars =
+//					( this.barQueue.Queue.Count >=
+//					 this.maxNumberOfBarsToBeWrittenWithASingleSqlCommand );
+//			}
+//			return isThereEnoughBars;
+//		}
 		
 		#region writeToDataBaseActually
 		
-		private Bar dequeue()
-		{
-			Bar bar;
-			lock( this.barQueue )
-			{
-				bar = this.barQueue.Queue.Dequeue();
-			}
-			return bar;
-		}
+//		private Bar dequeue()
+//		{
+////			Bar bar;
+////			lock( this.barQueue )
+////			{
+////				bar = this.barQueue.Queue.Dequeue();
+////			}
+//			Bar bar = this.barQueue.Dequeue();
+//			return bar;
+//		}
 		
 		#region writeToDataBaseActually
 		private void throwExceptionIfOtherThanBarAlreadyInTheDatabase(
@@ -98,13 +99,13 @@ namespace QuantProject.Applications.Downloader.OpenTickDownloader
 			try
 			{
 				Bars.AddBar(
-					bar.Ticker , bar.Exchange , dateTimeForOpenInESTTime , bar.Interval ,
+					bar.Ticker , bar.Exchange , dateTimeForOpenInESTTime , bar.IntervalValueInSeconds ,
 					bar.Open , bar.High , bar.Low , bar.Close , bar.Volume );
 			}
 			catch ( Exception exception )
 			{
 				this.throwExceptionIfOtherThanBarAlreadyInTheDatabase(
-					bar.Ticker , bar.Exchange , dateTimeForOpenInESTTime , bar.Interval ,
+					bar.Ticker , bar.Exchange , dateTimeForOpenInESTTime , bar.IntervalValueInSeconds ,
 					exception );
 			}
 		}
@@ -123,25 +124,26 @@ namespace QuantProject.Applications.Downloader.OpenTickDownloader
 		}
 		private void writeToDataBaseActually()
 		{
-			Bar bar = this.dequeue();
+			Bar bar = this.barQueue.Dequeue();
 			this.writeToDataBaseActually( bar );
 			this.riseDatabaseUpdatedEvent( bar );
 		}
 		#endregion writeToDataBaseActually
 		
-		private void writeToDataBaseIfEnoughBars()
+		private void writeToDataBaseBarsInTheQueue()
 		{
-			if ( this.isThereEnoughBarsInTheQueue() )
+			while ( this.barQueue.Count > 0 )
+				// at least one bar is in the queue
 				this.writeToDataBaseActually();
 		}
-		#endregion writeToDataBaseIfEnoughBars
+		#endregion writeToDataBaseBarsInTheQueue
 		
 		private void writeToDataBase()
 		{
 			while ( !this.areAllBarsWrittenToDatabase )
 			{
-				this.writeToDataBaseIfEnoughBars();
-				Thread.Sleep( 15 );
+				this.writeToDataBaseBarsInTheQueue();
+				Thread.Sleep( 5 );
 			}
 		}
 		#endregion writeToDataBase
