@@ -47,7 +47,7 @@ namespace QuantProject.Applications.Downloader.OpenTickDownloader
 	public class OTManager : IMessageSender
 	{
 		public event OnErrorEventHandler OnError;
-		public static OnLoginEventHandler OnLogin;
+		public event OnLoginEventHandler OnLogin;
 		public event OnNoDataEventHandler OnNoData;
 		public event OnEndOfDataEventHandler OnEndOfData;
 		public event OnHistoricalOHLCEventHandler OnHistoricalOHLC;
@@ -66,29 +66,29 @@ namespace QuantProject.Applications.Downloader.OpenTickDownloader
 		/// </summary>
 //		private string logFileName;
 		
-		private static OTClient oTClient;
+		private static OTClient staticOTClient;
+		private OTClient oTClient;
 		
-		static OTManager()
+//		static OTManager()
+//		{
+//			OTManager.oTClient = new OTClient();
+//			OTManager.oTClient.onLogin += new OTLoginEvent(
+//				OTManager.onLoginEventHandler );
+//			OTManager.oTClient.onStatusChanged += new OTStatusChangedEvent(
+//				OTManager.onStatusChangedEventHandler );
+//		}
+		private void onLoginEventHandler()
 		{
-			OTManager.oTClient = new OTClient();
-			OTManager.oTClient.onLogin += new OTLoginEvent(
-				OTManager.onLoginEventHandler );
-			OTManager.oTClient.onStatusChanged += new OTStatusChangedEvent(
-				OTManager.onStatusChangedEventHandler );
+			if ( this.OnLogin != null )
+				this.OnLogin();
 		}
-		private static void onLoginEventHandler()
-		{
-			if ( OTManager.OnLogin != null )
-				OTManager.OnLogin();
-		}
-		private static void onStatusChangedEventHandler( int status )
+		private void onStatusChangedEventHandler( int status )
 		{
 			string currentStatusHasChangedTo =
-				OTStatus.GetName(
-					typeof( OTStatus ) , status );
+				OTStatus.GetName( typeof( OTStatus ) , status );
 			string message =
 				"Current status has changed to: " +	currentStatusHasChangedTo;
-//			this.riseNewMessageEvent( message );
+			this.riseNewMessageEvent( message );
 		}
 
 		
@@ -102,6 +102,19 @@ namespace QuantProject.Applications.Downloader.OpenTickDownloader
 		}
 		
 		#region commonInitialization
+		private void set_oTClient()
+		{
+			if ( OTManager.staticOTClient == null )
+			{
+				// this is the first OTManager's instance created
+				this.oTClient = new OTClient();
+				OTManager.staticOTClient = this.oTClient;
+			}
+			else
+				// this is not the first OTManager's instance created
+				this.oTClient = OTManager.staticOTClient;
+		}
+		
 		#region setOTCLientEventHandlers
 		private bool wasThisRequestSubmittedByThisOTManagerInstance( int requestId )
 		{
@@ -138,7 +151,7 @@ namespace QuantProject.Applications.Downloader.OpenTickDownloader
 				"RequestId: " + error.RequestId + "---" +
 				"Type: " + error.Type;
 			OTDataEntity oTDataEntity =
-				OTManager.oTClient.getEntityById( error.RequestId );
+				this.oTClient.getEntityById( error.RequestId );
 			if ( oTDataEntity != null )
 				// RequestId was refered to a OTDataEntity
 				message = message + "---" +
@@ -187,7 +200,7 @@ namespace QuantProject.Applications.Downloader.OpenTickDownloader
 				"Description: " + oTMessage.Description + "---" +
 				"RequestId: " + oTMessage.RequestId;
 			OTDataEntity oTDataEntity =
-				OTManager.oTClient.getEntityById( oTMessage.RequestId );
+				this.oTClient.getEntityById( oTMessage.RequestId );
 			if ( oTDataEntity != null )
 				// RequestId was refered to a OTDataEntity
 				message = this.getCompleteMessage(
@@ -230,7 +243,7 @@ namespace QuantProject.Applications.Downloader.OpenTickDownloader
 		private void onHistoricalOHLC_logMessage( OTOHLC ohlc )
 		{
 			OTDataEntity oTDataEntity =
-				OTManager.oTClient.getEntityById( ohlc.RequestId );
+				this.oTClient.getEntityById( ohlc.RequestId );
 			string message = String.Format(
 				"OHLC({7}):time={0} o={1,-6} h={2,-6} " +
 				"l={3,-6} c={4,-6} v={5,-8} now is {6} " +
@@ -267,16 +280,20 @@ namespace QuantProject.Applications.Downloader.OpenTickDownloader
 		
 		private void setOTClientEventHandlers()
 		{
-			OTManager.oTClient.onError += new OTErrorEvent( this.onOTClientError );
-			OTManager.oTClient.onMessage += new OTMessageEvent(
-				this.onMessageEventHandler );
-			OTManager.oTClient.onHistoricalOHLC +=
+			this.oTClient.onLogin += new OTLoginEvent(
+				this.onLoginEventHandler );
+			this.oTClient.onStatusChanged += new OTStatusChangedEvent(
+				this.onStatusChangedEventHandler );
+			this.oTClient.onError += new OTErrorEvent( this.onOTClientError );
+			this.oTClient.onMessage += new OTMessageEvent(	this.onMessageEventHandler );
+			this.oTClient.onHistoricalOHLC +=
 				new OTOHLCEvent( this.onHistoricalOHLC );
 		}
 		#endregion setOTCLientEventHandlers
-		
+
 		private void commonInitialization()
 		{
+			this.set_oTClient();
 			this.pendingBarRequests = new Hashtable();
 			this.setOTClientEventHandlers();
 		}
@@ -285,12 +302,12 @@ namespace QuantProject.Applications.Downloader.OpenTickDownloader
 
 		
 
-		public static void SubmitLogin(
+		public void SubmitLogin(
 			string openTickUser , string openTickPassword )
 		{
-			OTManager.oTClient.addHost( "feed1.opentick.com" , 10010 );
-			//OTManager.oTClient.addHost( "delayed1.opentick.com" , 10010 );
-			OTManager.oTClient.login( openTickUser , openTickPassword );
+//			this.oTClient.addHost( "feed1.opentick.com" , 10010 );
+			this.oTClient.addHost( "delayed1.opentick.com" , 10015 );
+			this.oTClient.login( openTickUser , openTickPassword );
 		}
 		
 		public BarRequest GetBarRequest( int requestId )
@@ -341,7 +358,7 @@ namespace QuantProject.Applications.Downloader.OpenTickDownloader
 		{
 			OTDataEntity oTDataEntity =
 				new OTDataEntity( exchange , symbol );
-			int requestId = OTManager.oTClient.requestHistData(
+			int requestId = this.oTClient.requestHistData(
 				oTDataEntity , startingDateInUTC , endingDateInUTC ,
 				oTHistoricalType , intervalValue );
 			return requestId;
@@ -355,12 +372,15 @@ namespace QuantProject.Applications.Downloader.OpenTickDownloader
 			OTHistoricalType oTHistoricalType ,
 			short intervalValue)
 		{
+			int intervalValueInSeconds =
+				intervalValue *
+				OTIntervalValueCalculator.GetIntervalValueInSeconds( oTHistoricalType );
 			BarRequest barRequest =
 				new BarRequest(
 					exchange ,
 					symbol ,
 					startingDateInUTC ,
-					intervalValue );
+					intervalValueInSeconds );
 			lock ( this.pendingBarRequests )
 			{
 				this.pendingBarRequests.Add( requestId , barRequest );
