@@ -50,7 +50,7 @@ namespace QuantProject.Applications.Downloader.OpenTickDownloader
 //		
 //		public event NewOHLCRequestEventHandler NewOHLCRequest;
 		
-//		private OTManager oTManager;
+		private OTManager oTManager;
 		/// <summary>
 		/// if non empty, contains the full path to the file where
 		/// OTManager's events will be logged 
@@ -74,7 +74,7 @@ namespace QuantProject.Applications.Downloader.OpenTickDownloader
 //		}
 		public MostLiquidExchangeSelector()
 		{
-//			this.oTManager = oTManager;
+			this.oTManager = new OTManager();
 //			this.logFileName = "";
 			this.mostLiquidExchange = new Hashtable();
 		}
@@ -100,6 +100,7 @@ namespace QuantProject.Applications.Downloader.OpenTickDownloader
 			MostLiquidExchangeSelectorForSingleTicker
 				mostLiquidExchangeSelectorForSingleTicker =
 				new MostLiquidExchangeSelectorForSingleTicker(
+					this.oTManager ,
 					ticker );
 			mostLiquidExchangeSelectorForSingleTicker.NewMessage +=
 				new NewMessageEventHandler(

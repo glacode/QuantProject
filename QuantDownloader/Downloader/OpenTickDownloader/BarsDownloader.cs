@@ -76,6 +76,7 @@ namespace QuantProject.Applications.Downloader.OpenTickDownloader
 			this.exchangeSelector = exchangeSelector;
 			this.openTickUser = openTickUser;
 			this.openTickPassword = openTickPassword;
+			
 			this.oTManager = new OTManager();
 		}
 		
@@ -160,10 +161,10 @@ namespace QuantProject.Applications.Downloader.OpenTickDownloader
 		
 		public void DownloadBars()
 		{
-			OTManager.OnLogin += new OnLoginEventHandler(
+			this.oTManager.OnLogin += new OnLoginEventHandler(
 				this.onLoginEventHandler );
 
-			OTManager.SubmitLogin(
+			this.oTManager.SubmitLogin(
 				this.openTickUser , this.openTickPassword );
 		}
 		#endregion DownloadBars
