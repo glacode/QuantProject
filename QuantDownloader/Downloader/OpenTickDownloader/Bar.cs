@@ -32,7 +32,7 @@ namespace QuantProject.Applications.Downloader.OpenTickDownloader
 		private string ticker;
 		private string exchange;
 		private DateTime dateTimeForOpenInUTCTime;
-		private long interval;
+		private long intervalValueInSeconds;
 		private double open;
 		private double high;
 		private double low;
@@ -52,9 +52,9 @@ namespace QuantProject.Applications.Downloader.OpenTickDownloader
 		{
 			get { return this.dateTimeForOpenInUTCTime; }
 		}
-		public long Interval
+		public long IntervalValueInSeconds
 		{
-			get { return this.interval; }
+			get { return this.intervalValueInSeconds; }
 		}
 		public double Open
 		{
@@ -92,7 +92,7 @@ namespace QuantProject.Applications.Downloader.OpenTickDownloader
 			this.ticker = ticker;
 			this.exchange = exchange;
 			this.dateTimeForOpenInUTCTime = dateTimeForOpenInUTCTime;
-			this.interval = interval;
+			this.intervalValueInSeconds = interval;
 			this.open = open;
 			this.high = high;
 			this.low = low;
