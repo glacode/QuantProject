@@ -48,6 +48,7 @@
     <Compile Include="DataProviders\Bars\Caching\BarCacheData.cs" />
     <Compile Include="DataProviders\Bars\Caching\DailyBarCache.cs" />
     <Compile Include="DataProviders\Bars\Caching\IBarCache.cs" />
+    <Compile Include="DataProviders\Bars\Caching\SimpleBarCache.cs" />
     <Compile Include="DataProviders\Bars\HistoricalBarProvider.cs" />
     <Compile Include="DataProviders\Bars\MissingBarException.cs" />
     <Compile Include="DataProviders\Quotes\HistoricalQuotesProvider.cs" />
