@@ -50,6 +50,27 @@ namespace QuantProject.ADT.Timing
 		#endregion isValidTimeFormat
 		
 		/// <summary>
+		/// Returns a list of all the daily times between the given times (firstTime and lastTime)
+		/// </summary>
+		/// <param name="firstTime">First time (it will be returned)</param>
+		/// <param name="lastTime">Last time (it will be returned)</param>
+		/// <param name="stepInMinutesForIntermediateTimes">Number of minutes between the intermediate
+		/// times that are to be returned</param>
+		/// <returns></returns>
+		public static List<Time> GetIntermediateTimes ( Time firstTime, Time lastTime, 
+		                                                int stepInMinutesForIntermediateTimes)
+		{
+			Time currentTimeToAdd = firstTime;
+			List<Time> returnValue = new List<Time>();
+    	while( currentTimeToAdd <= lastTime )
+    	{
+    		returnValue.Add( currentTimeToAdd );
+    		currentTimeToAdd = currentTimeToAdd.AddMinutes( stepInMinutesForIntermediateTimes );
+    	}
+    	return returnValue;
+		}
+		
+		/// <summary>
 		/// Adds the given minutes to the current instance's value
 		/// </summary>
 		/// <param name="minutesToAdd">minutes to add (if positive) or to
