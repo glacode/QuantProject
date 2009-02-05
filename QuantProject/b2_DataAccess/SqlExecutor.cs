@@ -21,7 +21,18 @@ namespace QuantProject.DataAccess
 //			OleDbDataAdapter oleDbDataAdapter = new OleDbDataAdapter( SqlQuery , ConnectionProvider.DbConnection );
 			DbDataAdapter dbDataAdapter =
 				DbDataAdapterProvider.GetDbDataAdapter( SqlQuery );
-			dbDataAdapter.Fill( dataTable );
+			dbDataAdapter.SelectCommand.CommandTimeout = 300;
+//			try{
+				dbDataAdapter.Fill( dataTable );
+//			}
+//			catch(Exception ex){
+//				string s = ex.ToString();
+//				ConnectionProvider.DbConnection.Close();
+//				//ConnectionProvider.DbConnection.ConnectionTimeout = 300;
+//				ConnectionProvider.DbConnection.Open();
+//				dbDataAdapter.Fill( dataTable );
+//			}
+							
 			return dataTable;
 		}
 		public static void SetDataTable( string sqlQuery , DataTable dataTable )
