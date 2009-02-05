@@ -129,14 +129,14 @@ namespace QuantProject.DataAccess.Tables
 		/// <param name="ticker">ticker for which the close has to be returned</param>
 		/// <param name="intervalFrameInSeconds">interval frame in seconds for the ticker's bars</param>
 		/// <returns></returns>
-		public static float GetClose( string ticker, DateTime dateTime, int intervalFrameInSeconds )
+		public static double GetClose( string ticker, DateTime dateTime, int intervalFrameInSeconds )
 		{
 			DataTable dataTable = SqlExecutor.GetDataTable(
 				"select " + Bars.Close + " from bars " +
 				"where " + Bars.TickerFieldName + "='" + ticker + "' and " +
 				Bars.IntervalFrameInSeconds + "='" + intervalFrameInSeconds + "' " +
-				"and " + Bars.DateTimeForOpen + "=" + SQLBuilder.GetDateConstant(dateTime) );
-			return (float)dataTable.Rows[0][0];
+				"and " + Bars.DateTimeForOpen + "=" + SQLBuilder.GetDateTimeConstant(dateTime) );
+			return (double)dataTable.Rows[0][0];
 		}
 		/// <summary>
 		/// Returns the open for the given ticker at the specified date
@@ -145,14 +145,14 @@ namespace QuantProject.DataAccess.Tables
 		/// <param name="ticker">ticker for which the raw open has to be returned</param>
 		/// <param name="intervalFrameInSeconds">interval frame in seconds for the ticker's bars</param>
 		/// <returns></returns>
-		public static float GetOpen( string ticker, DateTime dateTime, int intervalFrameInSeconds )
+		public static double GetOpen( string ticker, DateTime dateTime, int intervalFrameInSeconds )
 		{
 			DataTable dataTable = SqlExecutor.GetDataTable(
 				"select " + Bars.Open + " from bars " +
 				"where " + Bars.TickerFieldName + "='" + ticker + "' and " +
 				Bars.IntervalFrameInSeconds + "='" + intervalFrameInSeconds + "' " +
-				"and " + Bars.DateTimeForOpen + "=" + SQLBuilder.GetDateConstant(dateTime) );
-			return (float)dataTable.Rows[0][0];
+				"and " + Bars.DateTimeForOpen + "=" + SQLBuilder.GetDateTimeConstant(dateTime) );
+			return (double)dataTable.Rows[0][0];
 		}
 		
 		
