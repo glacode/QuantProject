@@ -94,7 +94,7 @@ namespace QuantProject.Applications.Downloader.OpenTickDownloader
 				throw new Exception("Date Time for OverWriting Quotes can't precede " +
 				                    "starting Date for download!");
 			if( checkForMissingQuotes && downloadOnlySuccessiveQuotesToTheLastQuoteInDatabase  )
-				//the two options have to be different in value or both false
+				//the two options have to be different in value or both false. They can't be both true
 				throw new Exception("Downloading only quotes successive to the last quote in the DB " +
 				                    "implies that missing quotes will not be checked" );
 			if( ( openTickUser == null || openTickUser == "" ) ||
