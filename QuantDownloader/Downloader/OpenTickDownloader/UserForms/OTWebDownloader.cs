@@ -51,8 +51,8 @@ namespace QuantProject.Applications.Downloader.OpenTickDownloader.UserForms
 	  private DataTable tableOfSelectedTickers;
     private System.Windows.Forms.Label labelStartingDateTime;
     private System.Windows.Forms.DateTimePicker dateTimePickerStartingDate;
-    private System.Windows.Forms.RadioButton radioButtonAllAvailableUntilNow;
-    private System.Windows.Forms.GroupBox groupBoxWebDownloaderOptions;
+    private System.Windows.Forms.RadioButton radioButtonAllAvailableFromStartingDateToEndingDate;
+    private System.Windows.Forms.GroupBox groupBoxDateOptions;
     private System.Windows.Forms.RadioButton radioButtonDownloadOnlyAfterMax;
     private Thread downloadThread;
     private System.Windows.Forms.ToolTip toolTip1;
@@ -96,7 +96,7 @@ namespace QuantProject.Applications.Downloader.OpenTickDownloader.UserForms
     private void commonInitialization()
     {
       this.dateTimePickerStartingDate.Value = QuantProject.ADT.ConstantsProvider.InitialDateTimeForDownload;
-      this.radioButtonAllAvailableUntilNow.Checked = true;
+      this.radioButtonAllAvailableFromStartingDateToEndingDate.Checked = true;
       this.radioButtonDownloadOnlyAfterMax.Checked = false;
       this.dataGrid1.ContextMenu = new TickerViewerMenu(this);
       this.Closing += new CancelEventHandler(this.OTWebDownloader_Closing);
@@ -122,12 +122,12 @@ namespace QuantProject.Applications.Downloader.OpenTickDownloader.UserForms
 			this.buttonDownloadQuotesOfSelectedTickers = new System.Windows.Forms.Button();
 			this.dateTimePickerStartingDate = new System.Windows.Forms.DateTimePicker();
 			this.labelStartingDateTime = new System.Windows.Forms.Label();
-			this.radioButtonAllAvailableUntilNow = new System.Windows.Forms.RadioButton();
-			this.groupBoxWebDownloaderOptions = new System.Windows.Forms.GroupBox();
+			this.radioButtonAllAvailableFromStartingDateToEndingDate = new System.Windows.Forms.RadioButton();
+			this.groupBoxDateOptions = new System.Windows.Forms.GroupBox();
+			this.dateTimePickerEndingDate = new System.Windows.Forms.DateTimePicker();
+			this.labelEndingDateTime = new System.Windows.Forms.Label();
 			this.radioButtonDownloadOnlyAfterMax = new System.Windows.Forms.RadioButton();
 			this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
-			this.label1 = new System.Windows.Forms.Label();
-			this.dateTimeOverwriteQuotesBefore = new System.Windows.Forms.DateTimePicker();
 			this.timeFrameInSeconds = new System.Windows.Forms.NumericUpDown();
 			this.label2 = new System.Windows.Forms.Label();
 			this.txtOpenTickUser = new System.Windows.Forms.TextBox();
@@ -141,10 +141,13 @@ namespace QuantProject.Applications.Downloader.OpenTickDownloader.UserForms
 			this.startingDownloadingTimeLabel = new System.Windows.Forms.Label();
 			this.signallingLabel = new System.Windows.Forms.Label();
 			this.checkedListOfDailyTimes = new System.Windows.Forms.CheckedListBox();
-			this.button1 = new System.Windows.Forms.Button();
+			this.groupBoxTimeOptions = new System.Windows.Forms.GroupBox();
+			this.radioButtonConsecutiveDailyTimes = new System.Windows.Forms.RadioButton();
+			this.radioButtonChooseSingleDailyTimes = new System.Windows.Forms.RadioButton();
 			((System.ComponentModel.ISupportInitialize)(this.dataGrid1)).BeginInit();
-			this.groupBoxWebDownloaderOptions.SuspendLayout();
+			this.groupBoxDateOptions.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)(this.timeFrameInSeconds)).BeginInit();
+			this.groupBoxTimeOptions.SuspendLayout();
 			this.SuspendLayout();
 			// 
 			// dataGrid1
@@ -155,7 +158,7 @@ namespace QuantProject.Applications.Downloader.OpenTickDownloader.UserForms
 			this.dataGrid1.Location = new System.Drawing.Point(382, 0);
 			this.dataGrid1.Name = "dataGrid1";
 			this.dataGrid1.ReadOnly = true;
-			this.dataGrid1.Size = new System.Drawing.Size(352, 469);
+			this.dataGrid1.Size = new System.Drawing.Size(352, 474);
 			this.dataGrid1.TabIndex = 1;
 			// 
 			// buttonDownloadQuotesOfSelectedTickers
@@ -183,53 +186,56 @@ namespace QuantProject.Applications.Downloader.OpenTickDownloader.UserForms
 			this.labelStartingDateTime.TabIndex = 8;
 			this.labelStartingDateTime.Text = "Starting date";
 			// 
-			// radioButtonAllAvailableUntilNow
+			// radioButtonAllAvailableFromStartingDateToEndingDate
 			// 
-			this.radioButtonAllAvailableUntilNow.Checked = true;
-			this.radioButtonAllAvailableUntilNow.Location = new System.Drawing.Point(6, 19);
-			this.radioButtonAllAvailableUntilNow.Name = "radioButtonAllAvailableUntilNow";
-			this.radioButtonAllAvailableUntilNow.Size = new System.Drawing.Size(272, 24);
-			this.radioButtonAllAvailableUntilNow.TabIndex = 10;
-			this.radioButtonAllAvailableUntilNow.TabStop = true;
-			this.radioButtonAllAvailableUntilNow.Text = "All available quotes until now, since starting date";
+			this.radioButtonAllAvailableFromStartingDateToEndingDate.Checked = true;
+			this.radioButtonAllAvailableFromStartingDateToEndingDate.Location = new System.Drawing.Point(6, 19);
+			this.radioButtonAllAvailableFromStartingDateToEndingDate.Name = "radioButtonAllAvailableFromStartingDateToEndingDate";
+			this.radioButtonAllAvailableFromStartingDateToEndingDate.Size = new System.Drawing.Size(315, 24);
+			this.radioButtonAllAvailableFromStartingDateToEndingDate.TabIndex = 10;
+			this.radioButtonAllAvailableFromStartingDateToEndingDate.TabStop = true;
+			this.radioButtonAllAvailableFromStartingDateToEndingDate.Text = "All available quotes from starting to ending date";
 			// 
-			// groupBoxWebDownloaderOptions
+			// groupBoxDateOptions
 			// 
-			this.groupBoxWebDownloaderOptions.Controls.Add(this.radioButtonDownloadOnlyAfterMax);
-			this.groupBoxWebDownloaderOptions.Controls.Add(this.radioButtonAllAvailableUntilNow);
-			this.groupBoxWebDownloaderOptions.Controls.Add(this.dateTimePickerStartingDate);
-			this.groupBoxWebDownloaderOptions.Controls.Add(this.labelStartingDateTime);
-			this.groupBoxWebDownloaderOptions.Location = new System.Drawing.Point(12, 122);
-			this.groupBoxWebDownloaderOptions.Name = "groupBoxWebDownloaderOptions";
-			this.groupBoxWebDownloaderOptions.Size = new System.Drawing.Size(336, 141);
-			this.groupBoxWebDownloaderOptions.TabIndex = 13;
-			this.groupBoxWebDownloaderOptions.TabStop = false;
-			this.groupBoxWebDownloaderOptions.Text = "Web Downloader options (source: OpenTick)";
+			this.groupBoxDateOptions.Controls.Add(this.dateTimePickerEndingDate);
+			this.groupBoxDateOptions.Controls.Add(this.labelEndingDateTime);
+			this.groupBoxDateOptions.Controls.Add(this.radioButtonDownloadOnlyAfterMax);
+			this.groupBoxDateOptions.Controls.Add(this.radioButtonAllAvailableFromStartingDateToEndingDate);
+			this.groupBoxDateOptions.Controls.Add(this.dateTimePickerStartingDate);
+			this.groupBoxDateOptions.Controls.Add(this.labelStartingDateTime);
+			this.groupBoxDateOptions.Location = new System.Drawing.Point(12, 173);
+			this.groupBoxDateOptions.Name = "groupBoxDateOptions";
+			this.groupBoxDateOptions.Size = new System.Drawing.Size(336, 173);
+			this.groupBoxDateOptions.TabIndex = 13;
+			this.groupBoxDateOptions.TabStop = false;
+			this.groupBoxDateOptions.Text = "Date Options";
+			// 
+			// dateTimePickerEndingDate
+			// 
+			this.dateTimePickerEndingDate.Enabled = false;
+			this.dateTimePickerEndingDate.Location = new System.Drawing.Point(86, 75);
+			this.dateTimePickerEndingDate.Name = "dateTimePickerEndingDate";
+			this.dateTimePickerEndingDate.Size = new System.Drawing.Size(231, 20);
+			this.dateTimePickerEndingDate.TabIndex = 11;
+			this.dateTimePickerEndingDate.Value = new System.DateTime(2009, 2, 6, 0, 0, 0, 0);
+			// 
+			// labelEndingDateTime
+			// 
+			this.labelEndingDateTime.Location = new System.Drawing.Point(8, 75);
+			this.labelEndingDateTime.Name = "labelEndingDateTime";
+			this.labelEndingDateTime.Size = new System.Drawing.Size(80, 23);
+			this.labelEndingDateTime.TabIndex = 12;
+			this.labelEndingDateTime.Text = "Ending date";
 			// 
 			// radioButtonDownloadOnlyAfterMax
 			// 
-			this.radioButtonDownloadOnlyAfterMax.Location = new System.Drawing.Point(6, 79);
+			this.radioButtonDownloadOnlyAfterMax.Location = new System.Drawing.Point(6, 101);
 			this.radioButtonDownloadOnlyAfterMax.Name = "radioButtonDownloadOnlyAfterMax";
 			this.radioButtonDownloadOnlyAfterMax.Size = new System.Drawing.Size(307, 55);
 			this.radioButtonDownloadOnlyAfterMax.TabIndex = 3;
 			this.radioButtonDownloadOnlyAfterMax.Text = "Download only quotes after last available quote in the DB (in case no quotes are " +
 			"available in the local DB, quotes are downloaded from starting date)";
-			// 
-			// label1
-			// 
-			this.label1.Location = new System.Drawing.Point(10, 269);
-			this.label1.Name = "label1";
-			this.label1.Size = new System.Drawing.Size(80, 41);
-			this.label1.TabIndex = 16;
-			this.label1.Text = "OverWrite quotes before";
-			// 
-			// dateTimeOverwriteQuotesBefore
-			// 
-			this.dateTimeOverwriteQuotesBefore.Location = new System.Drawing.Point(98, 269);
-			this.dateTimeOverwriteQuotesBefore.Name = "dateTimeOverwriteQuotesBefore";
-			this.dateTimeOverwriteQuotesBefore.Size = new System.Drawing.Size(229, 20);
-			this.dateTimeOverwriteQuotesBefore.TabIndex = 15;
-			this.dateTimeOverwriteQuotesBefore.Value = new System.DateTime(2000, 1, 1, 0, 0, 0, 0);
 			// 
 			// timeFrameInSeconds
 			// 
@@ -238,7 +244,7 @@ namespace QuantProject.Applications.Downloader.OpenTickDownloader.UserForms
 									0,
 									0,
 									0});
-			this.timeFrameInSeconds.Location = new System.Drawing.Point(299, 55);
+			this.timeFrameInSeconds.Location = new System.Drawing.Point(114, 28);
 			this.timeFrameInSeconds.Maximum = new decimal(new int[] {
 									3600,
 									0,
@@ -260,7 +266,7 @@ namespace QuantProject.Applications.Downloader.OpenTickDownloader.UserForms
 			// 
 			// label2
 			// 
-			this.label2.Location = new System.Drawing.Point(191, 57);
+			this.label2.Location = new System.Drawing.Point(12, 30);
 			this.label2.Name = "label2";
 			this.label2.Size = new System.Drawing.Size(102, 20);
 			this.label2.TabIndex = 18;
@@ -283,7 +289,7 @@ namespace QuantProject.Applications.Downloader.OpenTickDownloader.UserForms
 			// 
 			// label9
 			// 
-			this.label9.Location = new System.Drawing.Point(169, 382);
+			this.label9.Location = new System.Drawing.Point(189, 380);
 			this.label9.Name = "label9";
 			this.label9.Size = new System.Drawing.Size(58, 23);
 			this.label9.TabIndex = 31;
@@ -291,7 +297,7 @@ namespace QuantProject.Applications.Downloader.OpenTickDownloader.UserForms
 			// 
 			// txtOpenTickPassword
 			// 
-			this.txtOpenTickPassword.Location = new System.Drawing.Point(247, 382);
+			this.txtOpenTickPassword.Location = new System.Drawing.Point(270, 380);
 			this.txtOpenTickPassword.Name = "txtOpenTickPassword";
 			this.txtOpenTickPassword.Size = new System.Drawing.Size(78, 20);
 			this.txtOpenTickPassword.TabIndex = 30;
@@ -299,25 +305,26 @@ namespace QuantProject.Applications.Downloader.OpenTickDownloader.UserForms
 			// 
 			// checkBoxCheckingForMissingQuotes
 			// 
-			this.checkBoxCheckingForMissingQuotes.Location = new System.Drawing.Point(12, 352);
+			this.checkBoxCheckingForMissingQuotes.Location = new System.Drawing.Point(18, 352);
 			this.checkBoxCheckingForMissingQuotes.Name = "checkBoxCheckingForMissingQuotes";
-			this.checkBoxCheckingForMissingQuotes.Size = new System.Drawing.Size(315, 24);
+			this.checkBoxCheckingForMissingQuotes.Size = new System.Drawing.Size(161, 24);
 			this.checkBoxCheckingForMissingQuotes.TabIndex = 32;
 			this.checkBoxCheckingForMissingQuotes.Text = "Check for missing quotes";
 			this.checkBoxCheckingForMissingQuotes.UseVisualStyleBackColor = true;
 			// 
 			// checkBoxOverWrite
 			// 
-			this.checkBoxOverWrite.Location = new System.Drawing.Point(12, 308);
+			this.checkBoxOverWrite.Location = new System.Drawing.Point(352, 262);
 			this.checkBoxOverWrite.Name = "checkBoxOverWrite";
-			this.checkBoxOverWrite.Size = new System.Drawing.Size(246, 38);
+			this.checkBoxOverWrite.Size = new System.Drawing.Size(24, 38);
 			this.checkBoxOverWrite.TabIndex = 33;
 			this.checkBoxOverWrite.Text = "OverWrite all quotes,  also after the given date";
 			this.checkBoxOverWrite.UseVisualStyleBackColor = true;
+			this.checkBoxOverWrite.Visible = false;
 			// 
 			// label10
 			// 
-			this.label10.Location = new System.Drawing.Point(12, 0);
+			this.label10.Location = new System.Drawing.Point(175, 2);
 			this.label10.Name = "label10";
 			this.label10.Size = new System.Drawing.Size(131, 23);
 			this.label10.TabIndex = 34;
@@ -349,27 +356,48 @@ namespace QuantProject.Applications.Downloader.OpenTickDownloader.UserForms
 			// checkedListOfDailyTimes
 			// 
 			this.checkedListOfDailyTimes.FormattingEnabled = true;
-			this.checkedListOfDailyTimes.Location = new System.Drawing.Point(12, 22);
+			this.checkedListOfDailyTimes.Location = new System.Drawing.Point(175, 28);
 			this.checkedListOfDailyTimes.Name = "checkedListOfDailyTimes";
-			this.checkedListOfDailyTimes.Size = new System.Drawing.Size(173, 94);
+			this.checkedListOfDailyTimes.Size = new System.Drawing.Size(173, 139);
 			this.checkedListOfDailyTimes.TabIndex = 39;
 			// 
-			// button1
+			// groupBoxTimeOptions
 			// 
-			this.button1.Location = new System.Drawing.Point(227, 12);
-			this.button1.Name = "button1";
-			this.button1.Size = new System.Drawing.Size(66, 23);
-			this.button1.TabIndex = 40;
-			this.button1.Text = "button1";
-			this.button1.UseVisualStyleBackColor = true;
-			this.button1.Visible = false;
-			this.button1.Click += new System.EventHandler(this.Button1Click);
+			this.groupBoxTimeOptions.Controls.Add(this.radioButtonConsecutiveDailyTimes);
+			this.groupBoxTimeOptions.Controls.Add(this.radioButtonChooseSingleDailyTimes);
+			this.groupBoxTimeOptions.Location = new System.Drawing.Point(12, 56);
+			this.groupBoxTimeOptions.Name = "groupBoxTimeOptions";
+			this.groupBoxTimeOptions.Size = new System.Drawing.Size(151, 111);
+			this.groupBoxTimeOptions.TabIndex = 40;
+			this.groupBoxTimeOptions.TabStop = false;
+			this.groupBoxTimeOptions.Text = "Time Options";
+			// 
+			// radioButtonConsecutiveDailyTimes
+			// 
+			this.radioButtonConsecutiveDailyTimes.Location = new System.Drawing.Point(6, 58);
+			this.radioButtonConsecutiveDailyTimes.Name = "radioButtonConsecutiveDailyTimes";
+			this.radioButtonConsecutiveDailyTimes.Size = new System.Drawing.Size(139, 49);
+			this.radioButtonConsecutiveDailyTimes.TabIndex = 1;
+			this.radioButtonConsecutiveDailyTimes.Text = "all consecutive times, from starting to ending date";
+			this.radioButtonConsecutiveDailyTimes.UseVisualStyleBackColor = true;
+			// 
+			// radioButtonChooseSingleDailyTimes
+			// 
+			this.radioButtonChooseSingleDailyTimes.Checked = true;
+			this.radioButtonChooseSingleDailyTimes.Location = new System.Drawing.Point(6, 28);
+			this.radioButtonChooseSingleDailyTimes.Name = "radioButtonChooseSingleDailyTimes";
+			this.radioButtonChooseSingleDailyTimes.Size = new System.Drawing.Size(139, 24);
+			this.radioButtonChooseSingleDailyTimes.TabIndex = 0;
+			this.radioButtonChooseSingleDailyTimes.TabStop = true;
+			this.radioButtonChooseSingleDailyTimes.Text = "choose single times";
+			this.radioButtonChooseSingleDailyTimes.UseVisualStyleBackColor = true;
+			this.radioButtonChooseSingleDailyTimes.CheckedChanged += new System.EventHandler(this.RadioButtonChooseSingleDailyTimesCheckedChanged);
 			// 
 			// OTWebDownloader
 			// 
 			this.AutoScaleBaseSize = new System.Drawing.Size(5, 13);
-			this.ClientSize = new System.Drawing.Size(734, 469);
-			this.Controls.Add(this.button1);
+			this.ClientSize = new System.Drawing.Size(734, 474);
+			this.Controls.Add(this.groupBoxTimeOptions);
 			this.Controls.Add(this.checkedListOfDailyTimes);
 			this.Controls.Add(this.signallingLabel);
 			this.Controls.Add(this.startingDownloadingTimeLabel);
@@ -383,22 +411,25 @@ namespace QuantProject.Applications.Downloader.OpenTickDownloader.UserForms
 			this.Controls.Add(this.txtOpenTickUser);
 			this.Controls.Add(this.label2);
 			this.Controls.Add(this.timeFrameInSeconds);
-			this.Controls.Add(this.label1);
-			this.Controls.Add(this.dateTimeOverwriteQuotesBefore);
-			this.Controls.Add(this.groupBoxWebDownloaderOptions);
+			this.Controls.Add(this.groupBoxDateOptions);
 			this.Controls.Add(this.buttonDownloadQuotesOfSelectedTickers);
 			this.Controls.Add(this.dataGrid1);
 			this.Name = "OTWebDownloader";
-			this.Text = "OT Web downloader";
+			this.Text = "Web downloader (source: OpenTick)";
 			this.Load += new System.EventHandler(this.otWebDownloaderLoad);
 			this.Paint += new System.Windows.Forms.PaintEventHandler(this.OTWebDownloaderPaint);
 			((System.ComponentModel.ISupportInitialize)(this.dataGrid1)).EndInit();
-			this.groupBoxWebDownloaderOptions.ResumeLayout(false);
+			this.groupBoxDateOptions.ResumeLayout(false);
 			((System.ComponentModel.ISupportInitialize)(this.timeFrameInSeconds)).EndInit();
+			this.groupBoxTimeOptions.ResumeLayout(false);
 			this.ResumeLayout(false);
 			this.PerformLayout();
     }
-		private System.Windows.Forms.Button button1;
+		private System.Windows.Forms.GroupBox groupBoxTimeOptions;
+		private System.Windows.Forms.RadioButton radioButtonChooseSingleDailyTimes;
+		private System.Windows.Forms.RadioButton radioButtonConsecutiveDailyTimes;
+		private System.Windows.Forms.Label labelEndingDateTime;
+		private System.Windows.Forms.DateTimePicker dateTimePickerEndingDate;
 		private System.Windows.Forms.CheckedListBox checkedListOfDailyTimes;
 		private System.Windows.Forms.Label signallingLabel;
 		private System.Windows.Forms.Label endingDownloadingTimeLabel;
@@ -411,9 +442,7 @@ namespace QuantProject.Applications.Downloader.OpenTickDownloader.UserForms
 		private System.Windows.Forms.Label label8;
 		private System.Windows.Forms.TextBox txtOpenTickUser;
 		private System.Windows.Forms.NumericUpDown timeFrameInSeconds;
-		private System.Windows.Forms.DateTimePicker dateTimeOverwriteQuotesBefore;
 		private System.Windows.Forms.Label label2;
-		private System.Windows.Forms.Label label1;
 		#endregion
 	  
     #region ITickerSelector's implementation
@@ -452,28 +481,46 @@ namespace QuantProject.Applications.Downloader.OpenTickDownloader.UserForms
     }
     #endregion
     
-	  private void buttonDownloadQuotesOfSelectedTickers_Click(object sender, System.EventArgs e)
+    private OTTickerDownloader buttonDownloadQuotesOfSelectedTickers_Click_getTickerDownloader()
     {
-	  	try{
-	  		if(this.CheckedDailyTimes.Count == 0)
-	  			throw new Exception("Check at least one daily time!");
-	  		OTTickerDownloader tickerDownloader =
-	  			new OTTickerDownloader(
+    	OTTickerDownloader tickerDownloader;
+    	if ( this.radioButtonChooseSingleDailyTimes.Checked )
+    	{	
+    		if(this.CheckedDailyTimes.Count == 0)
+	  				throw new Exception("Check at least one daily time!");
+    		tickerDownloader = new OTTickerDownloader(
 	  				this.TickersToDownload,
 	  				this.CheckedDailyTimes ,
 	  				this.dateTimePickerStartingDate.Value ,
-//	  				this.StartingNewYorkDateTime,
-//	  				this.CheckedDailyTimes[0].Hour ,
-//	  				this.CheckedDailyTimes[0].Minute ,
-//	  				this.CheckedDailyTimes[0].Second ,
 	  				Convert.ToInt32( this.timeFrameInSeconds.Value ) ,
-//	  				1 ,
-	  				this.dateTimeOverwriteQuotesBefore.Value,
+	  				DateTime.MaxValue,
 	  				this.checkBoxCheckingForMissingQuotes.Checked,
 	  				this.checkBoxOverWrite.Checked,
 	  				this.radioButtonDownloadOnlyAfterMax.Checked,
 	  				this.txtOpenTickUser.Text,
 	  				this.txtOpenTickPassword.Text);
+    	}
+    	else//option consecutive times has been chosen
+    	{	
+    		if( this.dateTimePickerEndingDate.Value.CompareTo(this.dateTimePickerStartingDate.Value)<0 )
+	  				throw new Exception("Ending date can't precede starting date!");
+    		tickerDownloader = new OTTickerDownloader(
+	  				this.TickersToDownload,
+	  				this.dateTimePickerStartingDate.Value,
+	  				this.dateTimePickerEndingDate.Value,
+	  				Convert.ToInt32( this.timeFrameInSeconds.Value ) ,
+	  				this.txtOpenTickUser.Text,
+	  				this.txtOpenTickPassword.Text);
+    	}	
+    	return tickerDownloader;
+    }
+    
+	  private void buttonDownloadQuotesOfSelectedTickers_Click(object sender, System.EventArgs e)
+    {
+	  	try{
+	  		OTTickerDownloader tickerDownloader =
+	  			this.buttonDownloadQuotesOfSelectedTickers_Click_getTickerDownloader();
+	  			
 	  		tickerDownloader.DownloadingStarted +=
 	  			new DownloadingStartedEventHandler(this.setStartingTime_atDownloadedStarted);
 	  		tickerDownloader.DatabaseUpdated +=
@@ -670,6 +717,7 @@ namespace QuantProject.Applications.Downloader.OpenTickDownloader.UserForms
 		{
 			this.otWebDownloaderLoad_fillDataGridWithTickersToBeDownloaded();
 			this.otWebDownloaderLoad_populateCheckedListOfDailyTimes();
+			this.dateTimePickerEndingDate.Value = DateTime.Now;
 		}
 								
 		private void OTWebDownloader_Closing(Object sender, CancelEventArgs e)
@@ -747,10 +795,24 @@ namespace QuantProject.Applications.Downloader.OpenTickDownloader.UserForms
 			this.OTWebDownloaderPaint_refreshEndingDownloadingTimeLabel();
 		}
 		
-		void Button1Click(object sender, EventArgs e)
+		void RadioButtonChooseSingleDailyTimesCheckedChanged(object sender, EventArgs e)
 		{
-			List<Time> listDT = 
-				this.CheckedDailyTimes;
+			if ( this.radioButtonChooseSingleDailyTimes.Checked )
+			{	
+				this.checkedListOfDailyTimes.Enabled = true;
+				this.checkBoxCheckingForMissingQuotes.Enabled = true;
+	  		this.checkBoxOverWrite.Enabled = true;
+	  		this.radioButtonDownloadOnlyAfterMax.Enabled = true;
+	  		this.dateTimePickerEndingDate.Enabled = false;
+			}
+			else
+			{	
+				this.checkedListOfDailyTimes.Enabled = false;
+				this.checkBoxCheckingForMissingQuotes.Enabled = false;
+	  		this.checkBoxOverWrite.Enabled = false;
+	  		this.radioButtonDownloadOnlyAfterMax.Enabled = false;
+	  		this.dateTimePickerEndingDate.Enabled = true;
+			}
 		}
 	}
 }
