@@ -122,39 +122,65 @@ namespace QuantProject.DataAccess.Tables
 			return dataTable.Rows.Count;
 		}
 		
-		/// <summary>
-		/// Returns the close for the given ticker at the specified date
-		/// time
-		/// </summary>
-		/// <param name="ticker">ticker for which the close has to be returned</param>
-		/// <param name="intervalFrameInSeconds">interval frame in seconds for the ticker's bars</param>
-		/// <returns></returns>
-		public static double GetClose( string ticker, DateTime dateTime, int intervalFrameInSeconds )
+		#region GetOpen, GetHigh, GetLow, GetClose
+		
+		private static double getValueFromBar( string ticker, DateTime dateTime, int intervalFrameInSeconds,
+		                                     	 string fieldNameContainingValue)
 		{
-			DataTable dataTable = SqlExecutor.GetDataTable(
-				"select " + Bars.Close + " from bars " +
+			double returnValue = Double.NaN;
+			string sqlQuery = "select " + fieldNameContainingValue + " from bars " +
 				"where " + Bars.TickerFieldName + "='" + ticker + "' and " +
 				Bars.IntervalFrameInSeconds + "='" + intervalFrameInSeconds + "' " +
-				"and " + Bars.DateTimeForOpen + "=" + SQLBuilder.GetDateTimeConstant(dateTime) );
-			return (double)dataTable.Rows[0][0];
+				"and " + Bars.DateTimeForOpen + "=" + SQLBuilder.GetDateTimeConstant(dateTime);
+			DataTable dataTable = SqlExecutor.GetDataTable( sqlQuery );
+			if( dataTable.Rows.Count > 0 )
+				returnValue = (double)dataTable.Rows[0][0];
+			else
+				throw new EmptyQueryException( sqlQuery );
+			return returnValue;
 		}
 		/// <summary>
-		/// Returns the open for the given ticker at the specified date
-		/// time
+		/// Returns the open for the given ticker for the given bar that opens at the specified date time
 		/// </summary>
 		/// <param name="ticker">ticker for which the raw open has to be returned</param>
-		/// <param name="intervalFrameInSeconds">interval frame in seconds for the ticker's bars</param>
+		/// <param name="intervalFrameInSeconds">interval frame in seconds for the ticker's bar</param>
 		/// <returns></returns>
 		public static double GetOpen( string ticker, DateTime dateTime, int intervalFrameInSeconds )
 		{
-			DataTable dataTable = SqlExecutor.GetDataTable(
-				"select " + Bars.Open + " from bars " +
-				"where " + Bars.TickerFieldName + "='" + ticker + "' and " +
-				Bars.IntervalFrameInSeconds + "='" + intervalFrameInSeconds + "' " +
-				"and " + Bars.DateTimeForOpen + "=" + SQLBuilder.GetDateTimeConstant(dateTime) );
-			return (double)dataTable.Rows[0][0];
+			return getValueFromBar(ticker, dateTime, intervalFrameInSeconds, Bars.Open);
+		}
+		/// <summary>
+		/// Returns the high for the given ticker for the given bar that opens at the specified date time
+		/// </summary>
+		/// <param name="ticker">ticker for which the raw high has to be returned</param>
+		/// <param name="intervalFrameInSeconds">interval frame in seconds for the ticker's bar</param>
+		/// <returns></returns>
+		public static double GetHigh( string ticker, DateTime dateTime, int intervalFrameInSeconds )
+		{
+			return getValueFromBar(ticker, dateTime, intervalFrameInSeconds, Bars.High);
+		}
+		/// <summary>
+		/// Returns the low for the given ticker for the given bar that opens at the specified date time
+		/// </summary>
+		/// <param name="ticker">ticker for which the raw low has to be returned</param>
+		/// <param name="intervalFrameInSeconds">interval frame in seconds for the ticker's bar</param>
+		/// <returns></returns>
+		public static double GetLow( string ticker, DateTime dateTime, int intervalFrameInSeconds )
+		{
+			return getValueFromBar(ticker, dateTime, intervalFrameInSeconds, Bars.Low);
+		}
+		/// <summary>
+		/// Returns the close for the given ticker for the given bar that opens at the specified date time
+		/// </summary>
+		/// <param name="ticker">ticker for which the raw close has to be returned</param>
+		/// <param name="intervalFrameInSeconds">interval frame in seconds for the ticker's bar</param>
+		/// <returns></returns>
+		public static double GetClose( string ticker, DateTime dateTime, int intervalFrameInSeconds )
+		{
+			return getValueFromBar(ticker, dateTime, intervalFrameInSeconds, Bars.Close);
 		}
 		
+		#endregion
 		
 		//    /// <summary>
 		//    /// It provides deletion of the quote from the table "quotes" for
