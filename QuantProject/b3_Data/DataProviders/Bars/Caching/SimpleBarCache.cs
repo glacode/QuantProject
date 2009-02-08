@@ -53,13 +53,10 @@ namespace QuantProject.Data.DataProviders.Bars.Caching
 				returnValue = 
 					QuantProject.DataAccess.Tables.Bars.GetOpen( ticker , dateTime , this.intervalFrameInSeconds );
 			}
-			catch( Exception ex )
+			catch( EmptyQueryException ex )
 			{
-				if( ex.GetType() == Type.GetType("QuantProject.DataAccess.EmptyQueryException") )
-					throw new MissingBarException(
-						ticker , dateTime , this.intervalFrameInSeconds);
-				else
-					throw ex;
+				string notUsed = ex.ToString();
+				throw new MissingBarException(ticker , dateTime , this.intervalFrameInSeconds);
 			}
 			return returnValue;
 		}
