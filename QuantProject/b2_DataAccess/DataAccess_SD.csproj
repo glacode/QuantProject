@@ -63,6 +63,7 @@
     <Compile Include="DbCommandBuilderProvider.cs" />
     <Compile Include="DbCommandProvider.cs" />
     <Compile Include="DbDataAdapterProvider.cs" />
+    <Compile Include="EmptyQueryException.cs" />
     <Compile Include="OleDbSingleTableAdapter.cs" />
     <Compile Include="QuoteField.cs" />
     <Compile Include="SQLBuilder.cs" />
