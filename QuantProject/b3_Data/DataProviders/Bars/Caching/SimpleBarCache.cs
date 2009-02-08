@@ -22,6 +22,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 using System;
 
+using QuantProject.DataAccess;
+
 namespace QuantProject.Data.DataProviders.Bars.Caching
 {
 	/// <summary>
@@ -30,6 +32,7 @@ namespace QuantProject.Data.DataProviders.Bars.Caching
 	public class SimpleBarCache : IBarCache
 	{
 		private int intervalFrameInSeconds;
+		
 		public SimpleBarCache(int intervalFrameInSeconds)
 		{
 			this.intervalFrameInSeconds = intervalFrameInSeconds;
@@ -52,16 +55,18 @@ namespace QuantProject.Data.DataProviders.Bars.Caching
 			}
 			catch( Exception ex )
 			{
-				string message = ex.Message; // used to avoid warning
-				throw new MissingBarException(
-					ticker , dateTime , this.intervalFrameInSeconds);
+				if( ex.GetType() == Type.GetType("QuantProject.DataAccess.EmptyQueryException") )
+					throw new MissingBarException(
+						ticker , dateTime , this.intervalFrameInSeconds);
+				else
+					throw ex;
 			}
 			return returnValue;
 		}
 				
 		public bool WasExchanged( string ticker , DateTime dateTime )
 		{
-			double marketValue = double.MinValue;
+			double marketValue = double.NaN;
 			try
 			{
 				marketValue = this.GetMarketValue( ticker , dateTime );
@@ -70,7 +75,7 @@ namespace QuantProject.Data.DataProviders.Bars.Caching
 			{
 				string doNothing = missingBarException.Message; doNothing += "";
 			}
-			return (marketValue != Double.MinValue);
+			return (marketValue != Double.NaN);
 		}
 	}
 }
