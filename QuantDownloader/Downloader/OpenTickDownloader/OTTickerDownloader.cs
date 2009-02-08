@@ -46,6 +46,7 @@ namespace QuantProject.Applications.Downloader.OpenTickDownloader
 		
 		private List<Time> dailyTimes;
 		private DateTime firstDate;
+		private DateTime lastDate;
 		
 		private DateTime dateTimeForFirstBarOpenInNewYorkTimeZone;
 		private DateTime dateTimeForLastBarOpenInNewYorkTimeZone;
@@ -53,7 +54,7 @@ namespace QuantProject.Applications.Downloader.OpenTickDownloader
 		/// <summary>
 		/// number of seconds in each bar
 		/// </summary>
-		private int barInterval;
+		private int barIntervalInSeconds;
 		private DateTime dateTimeForOverWritingQuotes;//before this
 		//date quotes should be overwritten automatically
 		private bool checkForMissingQuotes;//it downloads and writes
@@ -105,8 +106,9 @@ namespace QuantProject.Applications.Downloader.OpenTickDownloader
 		public OTTickerDownloader(
 			string[] tickersToDownload,
 			List<Time> dailyTimes ,
-			DateTime firstDate,
-			int barInterval ,
+			DateTime firstDate ,
+			DateTime lastDate ,
+			int barIntervalInSeconds ,
 			DateTime dateTimeForOverWritingQuotes,
 			bool checkForMissingQuotes,
 			bool overwriteAllQuotesInDatabase,
@@ -125,7 +127,8 @@ namespace QuantProject.Applications.Downloader.OpenTickDownloader
 			this.tickersToDownload = tickersToDownload;
 			this.dailyTimes = dailyTimes;
 			this.firstDate = firstDate;
-			this.barInterval = barInterval;
+			this.lastDate = lastDate;
+			this.barIntervalInSeconds = barIntervalInSeconds;
 			this.dateTimeForOverWritingQuotes = dateTimeForOverWritingQuotes;
 			this.checkForMissingQuotes = checkForMissingQuotes;
 			this.overwriteAllQuotesInDatabase = overwriteAllQuotesInDatabase;
@@ -155,7 +158,7 @@ namespace QuantProject.Applications.Downloader.OpenTickDownloader
 			this.dailyTimes = null;
 			this.dateTimeForFirstBarOpenInNewYorkTimeZone = dateTimeForFirstBarOpenInNewYorkTimeZone;
 			this.dateTimeForLastBarOpenInNewYorkTimeZone = dateTimeForLastBarOpenInNewYorkTimeZone;
-			this.barInterval = barInterval;
+			this.barIntervalInSeconds = barInterval;
 			this.dateTimeForOverWritingQuotes = DateTime.MaxValue;
 			this.checkForMissingQuotes = false;
 			this.overwriteAllQuotesInDatabase = false;
@@ -219,8 +222,8 @@ namespace QuantProject.Applications.Downloader.OpenTickDownloader
 						new MissingDailyBarsSelector(
 							this.tickersToDownload ,
 							this.setBarsSelector_getDate( this.firstDate ) ,
-							this.setBarsSelector_getDate( DateTime.Now ) ,
-							this.barInterval ,
+							this.setBarsSelector_getDate( this.lastDate ) ,
+							this.barIntervalInSeconds ,
 							this.dailyTimes ) );
 			else
 				// all quotes are to be downloaded, even if they
@@ -231,7 +234,7 @@ namespace QuantProject.Applications.Downloader.OpenTickDownloader
 							this.tickersToDownload ,
 							this.setBarsSelector_getDate( this.firstDate ) ,
 							this.setBarsSelector_getDate( DateTime.Now ) ,
-							this.barInterval ,
+							this.barIntervalInSeconds ,
 							this.dailyTimes ) );
 		}
 		private void setOHLCRequester_forAllDailyBars()
@@ -241,7 +244,7 @@ namespace QuantProject.Applications.Downloader.OpenTickDownloader
 							this.tickersToDownload ,
 							this.dateTimeForFirstBarOpenInNewYorkTimeZone ,
 							this.dateTimeForLastBarOpenInNewYorkTimeZone ,
-							this.barInterval );
+							this.barIntervalInSeconds );
 		}
 		private void setOHLCRequester()
 		{

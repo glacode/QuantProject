@@ -213,7 +213,6 @@ namespace QuantProject.Applications.Downloader.OpenTickDownloader.UserForms
 			// 
 			// dateTimePickerEndingDate
 			// 
-			this.dateTimePickerEndingDate.Enabled = false;
 			this.dateTimePickerEndingDate.Location = new System.Drawing.Point(86, 75);
 			this.dateTimePickerEndingDate.Name = "dateTimePickerEndingDate";
 			this.dateTimePickerEndingDate.Size = new System.Drawing.Size(231, 20);
@@ -492,6 +491,7 @@ namespace QuantProject.Applications.Downloader.OpenTickDownloader.UserForms
 	  				this.TickersToDownload,
 	  				this.CheckedDailyTimes ,
 	  				this.dateTimePickerStartingDate.Value ,
+	  				this.dateTimePickerEndingDate.Value ,
 	  				Convert.ToInt32( this.timeFrameInSeconds.Value ) ,
 	  				DateTime.MaxValue,
 	  				this.checkBoxCheckingForMissingQuotes.Checked,
@@ -803,7 +803,7 @@ namespace QuantProject.Applications.Downloader.OpenTickDownloader.UserForms
 				this.checkBoxCheckingForMissingQuotes.Enabled = true;
 	  		this.checkBoxOverWrite.Enabled = true;
 	  		this.radioButtonDownloadOnlyAfterMax.Enabled = true;
-	  		this.dateTimePickerEndingDate.Enabled = false;
+//	  		this.dateTimePickerEndingDate.Enabled = false;
 			}
 			else
 			{	
@@ -811,7 +811,7 @@ namespace QuantProject.Applications.Downloader.OpenTickDownloader.UserForms
 				this.checkBoxCheckingForMissingQuotes.Enabled = false;
 	  		this.checkBoxOverWrite.Enabled = false;
 	  		this.radioButtonDownloadOnlyAfterMax.Enabled = false;
-	  		this.dateTimePickerEndingDate.Enabled = true;
+//	  		this.dateTimePickerEndingDate.Enabled = true;
 			}
 		}
 	}
