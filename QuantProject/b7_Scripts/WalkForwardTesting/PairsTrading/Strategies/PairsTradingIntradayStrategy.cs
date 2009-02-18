@@ -168,8 +168,8 @@ namespace QuantProject.Scripts.WalkForwardTesting.PairsTrading
 		}
 		protected override WeightedPositions getPositionsToBeOpened()
 		{
-			DateTime firstDateTimeToTestInefficiency =
-				this.getFirstDateTimeToTestInefficiency();
+//			DateTime firstDateTimeToTestInefficiency =
+//				this.getFirstDateTimeToTestInefficiency();
 			DateTime lastDateTimeToTestInefficiency =
 				this.getLastDateTimeToTestInefficiency();
 			// attention! we are looking in the future here, but we do it
@@ -180,9 +180,9 @@ namespace QuantProject.Scripts.WalkForwardTesting.PairsTrading
 			WeightedPositions weightedPositions =
 				this.outOfSampleChooser.GetPositionsToBeOpened(
 					this.bestTestingPositionsInSample ,
-					firstDateTimeToTestInefficiency ,
+//					firstDateTimeToTestInefficiency ,
 					lastDateTimeToTestInefficiency ,
-					dateTimeToClosePositions ,
+//					dateTimeToClosePositions ,
 					this.historicalMarketValueProviderForChosingPositionsOutOfSample ,
 					this.inSampleReturnsManager );
 			return weightedPositions;

@@ -87,7 +87,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.PairsTrading
 //				new HistoricalAdjustedQuoteProvider();
 
 			// definition for the Fitness Evaluator
-			//      IEquityEvaluator equityEvaluator = new SharpeRatio();	
+			//      IEquityEvaluator equityEvaluator = new SharpeRatio();
 		}
 		
 		protected override void doThisBeforeAnythingElse()
@@ -103,11 +103,15 @@ namespace QuantProject.Scripts.WalkForwardTesting.PairsTrading
 		private List< Time > getDailyTimes()
 		{
 			List< Time > dailyTimes = new List< Time >();
-			dailyTimes.Add( this.firstTimeToTestInefficiency );
-			dailyTimes.Add( this.lastTimeToTestInefficiency );
-			dailyTimes.Add( this.timeToClosePositions );
-//			dailyTimes.Add( new Time(
-//				HistoricalEndOfDayTimer.GetOneHourAfterMarketClose( DateTime.Now ) ) );
+			Time time = new Time( 9 , 30 , 0 );
+			while ( time <= new Time( 16 , 0 , 0 ) )
+			{
+				dailyTimes.Add( time );
+				time = time.AddMinutes( 1 );
+			}
+//			dailyTimes.Add( this.firstTimeToTestInefficiency );
+//			dailyTimes.Add( this.lastTimeToTestInefficiency );
+//			dailyTimes.Add( this.timeToClosePositions );
 			return dailyTimes;
 		}
 		private IBarCache getBarCache()
@@ -133,18 +137,18 @@ namespace QuantProject.Scripts.WalkForwardTesting.PairsTrading
 			
 			string tickersGroupId = "SP500";
 			// uncomment the following line for a faster script
-//			tickersGroupId = "fastTest";
+			tickersGroupId = "fastTest";
 
 //			IEligiblesSelector eligiblesSelector =
 //				new MostLiquidAndLessVolatile(
 //				tickersGroupId ,
 //				maxNumberOfEligiblesToBeChosen );
-			IEligiblesSelector eligiblesSelector =
-				new ByPriceMostLiquidAlwaysQuoted(
-					tickersGroupId ,
-					true ,
-					maxNumberOfEligiblesToBeChosen ,
-					10 , 20 , 75 );
+//			IEligiblesSelector eligiblesSelector =
+//				new ByPriceMostLiquidAlwaysQuoted(
+//					tickersGroupId ,
+//					true ,
+//					maxNumberOfEligiblesToBeChosen ,
+//					10 , 20 , 75 );
 			eligiblesSelector =
 				new ByPriceMostLiquidLessVolatileOTCAlwaysQuoted(
 					tickersGroupId ,
@@ -152,7 +156,6 @@ namespace QuantProject.Scripts.WalkForwardTesting.PairsTrading
 					maxNumberOfEligiblesToBeChosen ,
 					maxNumberOfEligiblesToBeChosen + 50 ,
 					10 , 10 , 20 , 75 );
-
 
 //			uncomment the following line for a (logbased) log based in sample chooser
 //			eligiblesSelector = new DummyEligibleSelector();
@@ -164,7 +167,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.PairsTrading
 		{
 			int numberOfBestTestingPositionsToBeReturned = 50;
 			// uncomment the following line for a faster script
-//			numberOfBestTestingPositionsToBeReturned = 10;
+			numberOfBestTestingPositionsToBeReturned = 10;
 			
 			IDecoderForTestingPositions decoderForWeightedPositions =
 				new DecoderForPairsTradingTestingPositionsWithBalancedWeights();
@@ -237,6 +240,9 @@ namespace QuantProject.Scripts.WalkForwardTesting.PairsTrading
 //			outOfSampleChooser =
 //				new OutOfSampleChooserForExactNumberOfBestLongPositions(
 //				2 ,	0.006 , 0.99 , 0.006 , 0.99 );
+			outOfSampleChooser =
+				new OutOfSampleChooserForAlreadyClosing(
+					0.01 , 0.03 , 0.01 , 0.03 , 4 );
 
 			IStrategyForBacktester strategyForBacktester =
 				new PairsTradingStrategy(
@@ -258,6 +264,15 @@ namespace QuantProject.Scripts.WalkForwardTesting.PairsTrading
 					this.historicalMarketValueProviderForInSample ,
 					this.historicalMarketValueProviderForChosingPositionsOutOfSample ,
 					outOfSampleChooser );
+//			qui!!!
+//			strategyForBacktester =
+//				new PairsTradingAfterClosingStrategy(
+//					7 , inSampleDays ,
+//					intervalsSelectorForInSample ,
+//					eligiblesSelector , inSampleChooser ,
+//					this.historicalMarketValueProviderForInSample ,
+//					this.historicalMarketValueProviderForChosingPositionsOutOfSample ,
+//					outOfSampleChooser );
 			return strategyForBacktester;
 		}
 		
@@ -285,8 +300,8 @@ namespace QuantProject.Scripts.WalkForwardTesting.PairsTrading
 
 			// uncomment the following two lines for a faster script
 			firstDateTime = new DateTime( 2006 , 1 , 2 );
-			lastDateTime = new DateTime( 2007 , 12 , 31 );
-//			lastDateTime = new DateTime( 2006 , 1 , 31 );
+//			lastDateTime = new DateTime( 2007 , 12 , 31 );
+			lastDateTime = new DateTime( 2006 , 1 , 31 );
 
 			double maxRunningHours = 2.5;
 			

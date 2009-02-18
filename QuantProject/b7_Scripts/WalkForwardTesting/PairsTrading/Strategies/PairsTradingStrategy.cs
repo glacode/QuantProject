@@ -156,19 +156,18 @@ namespace QuantProject.Scripts.WalkForwardTesting.PairsTrading
 		
 		private WeightedPositions getPositionsToBeOpened_withAtLeastASecondPhaseInterval()
 		{
-			DateTime firstDateTimeToTestInefficiency =
-				this.getFirstDateTimeToTestInefficiency();
+//			DateTime firstDateTimeToTestInefficiency =
+//				this.getFirstDateTimeToTestInefficiency();
 			DateTime lastDateTimeToTestInefficiency =
 				this.getLastDateTimeToTestInefficiency();
-			DateTime dateTimeToClosePositions =
-				this.getDateTimeToClosePositions();
+//			DateTime dateTimeToClosePositions =
+//				this.getDateTimeToClosePositions();
 			WeightedPositions positionsToBeOpened =
 				this.outOfSampleChooser.GetPositionsToBeOpened(
 				this.bestTestingPositionsInSample ,
-				firstDateTimeToTestInefficiency ,
+//				firstDateTimeToTestInefficiency ,
 				lastDateTimeToTestInefficiency ,
-				dateTimeToClosePositions ,
-//				this.returnIntervals ,
+//				dateTimeToClosePositions ,
 				this.historicalMarketValueProviderForChosingPositionsOutOfSample ,
 				this.inSampleReturnsManager );
 			return positionsToBeOpened;
