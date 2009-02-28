@@ -70,17 +70,17 @@ namespace QuantProject.Scripts.WalkForwardTesting.PairsTrading
 			this.benchmark = new Benchmark( "CCE" );
 
 			this.historicalMarketValueProviderForInSample =
-				new HistoricalRawQuoteProvider();
+				new HistoricalAdjustedQuoteProvider();
 
 			this.historicalMarketValueProviderForChosingPositionsOutOfSample =
-				this.getHistoricalBarProvider();
+				this.getHistoricalMarketValueProviderForChosingPositionsOutOfSample();
 //			this.historicalMarketValueProviderForChosingPositionsOutOfSample =
 //				new HistoricalAdjustedQuoteProvider();
 //			this.historicalQuoteProviderForChosingPositionsOutOfSample =
 //				new HistoricalRawQuoteProvider();
 
 			this.historicalMarketValueProviderForTheBacktesterAccount =
-				this.historicalMarketValueProviderForChosingPositionsOutOfSample;
+				this.getHistoricalMarketValueProviderForTheBacktesterAccount();
 //			this.historicalMarketValueProviderForTheBacktesterAccount =
 //				new HistoricalRawQuoteProvider();
 //			this.historicalQuoteProviderForTheBacktesterAccount =
@@ -96,6 +96,8 @@ namespace QuantProject.Scripts.WalkForwardTesting.PairsTrading
 			this.lastTimeToTestInefficiency = new Time( 11 , 0 , 0 );
 			this.timeToClosePositions = new Time( 15 , 50 , 0 );
 		}
+		
+		#region getHistoricalMarketValueProviderForChosingPositionsOutOfSample
 		
 		#region getHistoricalBarProvider
 		
@@ -116,8 +118,9 @@ namespace QuantProject.Scripts.WalkForwardTesting.PairsTrading
 		}
 		private IBarCache getBarCache()
 		{
-			List< Time > dailyTimes = this.getDailyTimes();
-			IBarCache barCache = new DailyBarCache( 60 , dailyTimes );
+//			List< Time > dailyTimes = this.getDailyTimes();
+//			IBarCache barCache = new DailyBarCache( 60 , dailyTimes );
+			IBarCache barCache = new SimpleBarCache( 60 );
 			return barCache;
 		}
 		#endregion getBarCache
@@ -125,11 +128,32 @@ namespace QuantProject.Scripts.WalkForwardTesting.PairsTrading
 		private HistoricalBarProvider getHistoricalBarProvider()
 		{
 			IBarCache barCache = getBarCache();
-			HistoricalBarProvider historicalBarProvider =
-				new HistoricalBarProvider( barCache );
+			HistoricalBarProvider historicalBarProvider = new HistoricalBarProvider( barCache );
 			return historicalBarProvider;
 		}
 		#endregion getHistoricalBarProvider
+		
+		private HistoricalMarketValueProvider
+			getHistoricalMarketValueProviderForChosingPositionsOutOfSample()
+		{
+			HistoricalBarProvider historicalBarProvider =
+				this.getHistoricalBarProvider();
+//			HistoricalMarketValueProviderWithQuoteBackupOnClose
+//				historicalMarketValueProviderForChosingPositionsOutOfSample =
+//				new HistoricalMarketValueProviderWithQuoteBackupOnClose( historicalBarProvider );
+			return historicalBarProvider;
+		}
+		#endregion getHistoricalMarketValueProviderForChosingPositionsOutOfSample
+		
+		private HistoricalMarketValueProvider
+			getHistoricalMarketValueProviderForTheBacktesterAccount()
+		{
+			HistoricalMarketValueProviderWithQuoteBackupOnClose
+				historicalMarketValueProviderForTheBacktesterAccount =
+				new HistoricalMarketValueProviderWithQuoteBackupOnClose(
+					this.historicalMarketValueProviderForChosingPositionsOutOfSample );
+			return historicalMarketValueProviderForTheBacktesterAccount;
+		}
 
 		protected override IEligiblesSelector getEligiblesSelector()
 		{
@@ -137,7 +161,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.PairsTrading
 			
 			string tickersGroupId = "SP500";
 			// uncomment the following line for a faster script
-			tickersGroupId = "fastTest";
+//			tickersGroupId = "fastTest";
 
 //			IEligiblesSelector eligiblesSelector =
 //				new MostLiquidAndLessVolatile(
@@ -167,7 +191,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.PairsTrading
 		{
 			int numberOfBestTestingPositionsToBeReturned = 50;
 			// uncomment the following line for a faster script
-			numberOfBestTestingPositionsToBeReturned = 10;
+//			numberOfBestTestingPositionsToBeReturned = 10;
 			
 			IDecoderForTestingPositions decoderForWeightedPositions =
 				new DecoderForPairsTradingTestingPositionsWithBalancedWeights();
@@ -236,13 +260,16 @@ namespace QuantProject.Scripts.WalkForwardTesting.PairsTrading
 
 			OutOfSampleChooser outOfSampleChooser =
 				new OutOfSampleChooserForSingleLongAndShort(
-					0.01 , 0.03 , 0.01 , 0.03 );
+					this.firstTimeToTestInefficiency , 0.01 , 0.03 , 0.01 , 0.03 );
 //			outOfSampleChooser =
 //				new OutOfSampleChooserForExactNumberOfBestLongPositions(
 //				2 ,	0.006 , 0.99 , 0.006 , 0.99 );
+			IInefficiencyCorrectionDetector inefficiencyCorrectionDetector =
+				new ConsecutiveMinutesOfCorrectionDetector(
+					this.historicalMarketValueProviderForChosingPositionsOutOfSample , 4 );
 			outOfSampleChooser =
 				new OutOfSampleChooserForAlreadyClosing(
-					0.01 , 0.03 , 0.01 , 0.03 , 4 );
+					0.006 , 0.03 , 0.006 , 0.03 , inefficiencyCorrectionDetector );
 
 			IStrategyForBacktester strategyForBacktester =
 				new PairsTradingStrategy(
@@ -252,6 +279,10 @@ namespace QuantProject.Scripts.WalkForwardTesting.PairsTrading
 					this.historicalMarketValueProviderForInSample ,
 					this.historicalMarketValueProviderForChosingPositionsOutOfSample ,
 					outOfSampleChooser );
+			
+			IExitStrategy exitStrategy = new TakeProfitStrategyOrOnMarketClose(
+				outOfSampleChooser.MinThresholdForGoingLong / 2 ,
+				this.historicalMarketValueProviderForChosingPositionsOutOfSample );
 			
 			strategyForBacktester =
 				new PairsTradingIntradayStrategy(
@@ -263,16 +294,10 @@ namespace QuantProject.Scripts.WalkForwardTesting.PairsTrading
 					eligiblesSelector , inSampleChooser ,
 					this.historicalMarketValueProviderForInSample ,
 					this.historicalMarketValueProviderForChosingPositionsOutOfSample ,
-					outOfSampleChooser );
-//			qui!!!
-//			strategyForBacktester =
-//				new PairsTradingAfterClosingStrategy(
-//					7 , inSampleDays ,
-//					intervalsSelectorForInSample ,
-//					eligiblesSelector , inSampleChooser ,
-//					this.historicalMarketValueProviderForInSample ,
-//					this.historicalMarketValueProviderForChosingPositionsOutOfSample ,
-//					outOfSampleChooser );
+					outOfSampleChooser , exitStrategy ,
+					new Time(  10 , 0 , 0 ) ,
+					new Time(  15 , 30 , 0 )
+				);
 			return strategyForBacktester;
 		}
 		
@@ -301,9 +326,9 @@ namespace QuantProject.Scripts.WalkForwardTesting.PairsTrading
 			// uncomment the following two lines for a faster script
 			firstDateTime = new DateTime( 2006 , 1 , 2 );
 //			lastDateTime = new DateTime( 2007 , 12 , 31 );
-			lastDateTime = new DateTime( 2006 , 1 , 31 );
+			lastDateTime = new DateTime( 2006 , 12 , 31 );
 
-			double maxRunningHours = 2.5;
+			double maxRunningHours = 11;
 			
 			EndOfDayStrategyBackTester endOfDayStrategyBackTester =
 				new EndOfDayStrategyBackTester(
@@ -321,7 +346,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.PairsTrading
 		protected override string getPathForTheMainFolderWhereScriptsResultsAreToBeSaved()
 		{
 			string pathForTheMainFolderWhereScriptsResultsAreToBeSaved =
-				"C:\\qpReports\\pairsTrading\\";
+				@"T:\senzaBackup\qpReports\pairsTrading\";
 			return pathForTheMainFolderWhereScriptsResultsAreToBeSaved;
 		}
 
@@ -348,7 +373,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.PairsTrading
 		protected override string getFullPathFileNameForMain()
 		{
 			string fullPathFileNameForMain =
-				@"C:\QuantProject\QuantProject\b7_Scripts\WalkForwardTesting\PairsTrading\PairsTradingMain.cs";
+				@"T:\QuantProject\QuantProject\b7_Scripts\WalkForwardTesting\PairsTrading\PairsTradingMain.cs";
 			return fullPathFileNameForMain;
 		}
 	}
