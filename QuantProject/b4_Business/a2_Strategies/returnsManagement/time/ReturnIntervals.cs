@@ -18,7 +18,7 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
-*/
+ */
 
 using System;
 using System.Collections;
@@ -45,13 +45,13 @@ namespace QuantProject.Business.Strategies.ReturnsManagement.Time
 		
 		private IIntervalsSelector intervalsSelector;
 
-		public ReturnInterval this[ int index ] 
+		public ReturnInterval this[ int index ]
 		{
-			get  
+			get
 			{
 				return( (ReturnInterval) this.List[ index ] );
 			}
-			set  
+			set
 			{
 				this.List[ index ] = value;
 			}
@@ -66,8 +66,8 @@ namespace QuantProject.Business.Strategies.ReturnsManagement.Time
 			{
 				if ( this.Count == 0 )
 					throw new Exception( "LastEndOfDayDateTime " +
-						"cannot be used when ReturnIntervals has " +
-						"no ReturnInterval added yet!" );
+					                    "cannot be used when ReturnIntervals has " +
+					                    "no ReturnInterval added yet!" );
 				return this[ this.Count - 1 ].End;
 			}
 		}
@@ -77,8 +77,8 @@ namespace QuantProject.Business.Strategies.ReturnsManagement.Time
 			{
 				if ( this.Count == 0 )
 					throw new Exception( "LastInterval " +
-						"cannot be used when ReturnIntervals has " +
-						"no ReturnInterval added yet!" );
+					                    "cannot be used when ReturnIntervals has " +
+					                    "no ReturnInterval added yet!" );
 				ReturnInterval lastInterval = this[ this.Count - 1 ];
 				return lastInterval;
 			}
@@ -134,7 +134,7 @@ namespace QuantProject.Business.Strategies.ReturnsManagement.Time
 			DateTime firstDateTime , DateTime lastDateTime , string benchmark )
 		{
 			this.returnIntervals_initialize( firstDateTime,
-				lastDateTime , benchmark , 1 );//default intervals are daily
+			                                lastDateTime , benchmark , 1 );//default intervals are daily
 		}
 		
 		/// <summary>
@@ -144,7 +144,7 @@ namespace QuantProject.Business.Strategies.ReturnsManagement.Time
 		/// <param name="firstDateTime"></param>
 		/// <param name="lastDateTime"></param>
 		/// <param name="benchmark"></param>
-		/// <param name="intervalLength"></param> 
+		/// <param name="intervalLength"></param>
 		public ReturnIntervals(
 			DateTime firstDateTime , DateTime lastDateTime ,
 			string benchmark, int intervalLength )
@@ -166,6 +166,14 @@ namespace QuantProject.Business.Strategies.ReturnsManagement.Time
 		}
 		
 		/// <summary>
+		/// creates a ReturnIntervals with no ReturnInterval
+		/// </summary>
+		public ReturnIntervals()
+		{
+		}
+
+		
+		/// <summary>
 		/// It creates a ReturnIntervals with just a ReturnInterval
 		/// </summary>
 		public ReturnIntervals( ReturnInterval returnInterval )
@@ -177,7 +185,7 @@ namespace QuantProject.Business.Strategies.ReturnsManagement.Time
 		{
 			this.marketDaysForBenchmark =
 				QuantProject.Data.DataTables.Quotes.GetMarketDays( this.benchmark ,
-				this.firstDateTime , this.lastDateTime );
+				                                                  this.firstDateTime , this.lastDateTime );
 		}
 		
 		protected virtual void setIntervals()
@@ -199,18 +207,18 @@ namespace QuantProject.Business.Strategies.ReturnsManagement.Time
 			bool areAllCovered = true;
 			foreach ( ReturnInterval returnInterval in this  )
 				if ( !returnInterval.AreBordersCoveredBy( history ) )
-					areAllCovered = false;
+				areAllCovered = false;
 			return areAllCovered;
 		}
 		#region setBordersHistory
 		private bool beginsBeforeTheLastAdded( ReturnInterval
-			returnInterval )
+		                                      returnInterval )
 		{
 			bool beginsBefore =
 				( ( this.bordersHistory != null ) &&
-				( this.bordersHistory.Count > 0 ) &&
-				( returnInterval.BeginsBefore(
-				this.bordersHistory.LastDateTime ) ) );
+				 ( this.bordersHistory.Count > 0 ) &&
+				 ( returnInterval.BeginsBefore(
+				 	this.bordersHistory.LastDateTime ) ) );
 			return beginsBefore;
 		}
 		private void checkIfTheIntervalIsWellOrdered(
@@ -218,14 +226,14 @@ namespace QuantProject.Business.Strategies.ReturnsManagement.Time
 		{
 			if ( this.beginsBeforeTheLastAdded( returnInterval ) )
 				throw new Exception( "The first border of the given interval " +
-					"begins before the last EndOfDayDateTime added to the history" );
+				                    "begins before the last EndOfDayDateTime added to the history" );
 		}
 		private bool beginsOnTheLastAddedTime( ReturnInterval returnInterval )
 		{
 			bool returnValue =
-        ( ( this.bordersHistory != null ) &&
-				( this.bordersHistory.Count > 0 ) &&
-				( this.bordersHistory.LastDateTime == returnInterval.Begin ) );
+				( ( this.bordersHistory != null ) &&
+				 ( this.bordersHistory.Count > 0 ) &&
+				 ( this.bordersHistory.LastDateTime == returnInterval.Begin ) );
 			return returnValue;
 		}
 		private void setEndOfDayHistoryForCurrentInterval(
@@ -253,10 +261,19 @@ namespace QuantProject.Business.Strategies.ReturnsManagement.Time
 				this.setEndOfDayHistoryForCurrentInterval( this[ i ] );
 		}
 		#endregion setBordersHistory
+
+		#region Add
+		private void checkParameter( ReturnInterval returnInterval )
+		{
+			if ( ( this.Count > 0 ) && ( returnInterval.Begin < this.LastDateTime ) )
+				throw new Exception( "returnInterval must be later" );
+		}
 		public void Add( ReturnInterval returnInterval )
 		{
+			this.checkParameter( returnInterval );
 			this.List.Add( returnInterval );
 		}
+		#endregion Add
 		
 		#region appendIntervalsButDontGoBeyondLastDate
 		private void appendIntervalsButDontGoBeyondLastDate_checkParameters(
@@ -271,7 +288,7 @@ namespace QuantProject.Business.Strategies.ReturnsManagement.Time
 					this[ this.Count - 1 ].End;
 				if ( firstDate < currentLastDateTime )
 					throw new Exception( "firstDate cannot be smaller than " +
-						"the end of the last interval already in this collection!" );
+					                    "the end of the last interval already in this collection!" );
 			}
 		}
 		private ReturnInterval getFirstIntervalToBeAdded( DateTime firstDate )
@@ -378,7 +395,7 @@ namespace QuantProject.Business.Strategies.ReturnsManagement.Time
 			this.appendIntervalsToGoJustBeyondLastDate_checkParameters(
 				lastDate );
 			if ( this.LastDateTime < lastDate )
-				// lastDate comes after the last interval already added				
+				// lastDate comes after the last interval already added
 				this.AppendIntervalsButDontGoBeyondLastDate( lastDate );
 			ReturnInterval lastInterval =
 				this.intervalsSelector.GetNextInterval( this );
