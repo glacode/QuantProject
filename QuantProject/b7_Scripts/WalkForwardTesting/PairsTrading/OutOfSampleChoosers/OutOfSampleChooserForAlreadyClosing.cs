@@ -2,7 +2,7 @@
 QuantProject - Quantitative Finance Library
 
 OutOfSampleChooserForAlreadyClosing.cs
-Copyright (C) 2008
+Copyright (C) 2009
 Glauco Siliprandi
 
 This program is free software; you can redistribute it and/or
@@ -22,14 +22,20 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 using System;
 
+using QuantProject.ADT.Timing;
+using QuantProject.Business.DataProviders;
 using QuantProject.Business.Strategies;
 using QuantProject.Business.Strategies.ReturnsManagement;
+using QuantProject.Business.Strategies.ReturnsManagement.Time;
+using QuantProject.Business.Timing;
 
 namespace QuantProject.Scripts.WalkForwardTesting.PairsTrading
 {
 	/// <summary>
 	/// Chooses two positions that seem to be an arbitrage opportunity.
-	/// Among the eligible couples, a couple is discard if any of the two tickers
+	/// The measured inefficiency must be seen to have narrowed now, before
+	/// giving the entry signal.
+	/// Among the eligible couples, a couple is discarded if any of the two tickers
 	/// have had a either split, or dividend, or any other event that may
 	/// have caused an overnight price adjustment
 	/// </summary>
@@ -37,62 +43,104 @@ namespace QuantProject.Scripts.WalkForwardTesting.PairsTrading
 	public class OutOfSampleChooserForAlreadyClosing :
 		OutOfSampleChooserForSingleLongAndShort
 	{
-		private int numberOfConsecutiveMinutesToSayTheInefficiencyIsClosing;
+		private IInefficiencyCorrectionDetector inefficiencyCorrectionDetector;
+		
+		private PriceAdjustmentDetector adjustmentDetector;
 		
 		public OutOfSampleChooserForAlreadyClosing(
 			double minThresholdForGoingLong ,
 			double maxThresholdForGoingLong ,
 			double minThresholdForGoingShort ,
 			double maxThresholdForGoingShort ,
-			int numberOfConsecutiveMinutesToSayTheInefficiencyIsClosing ) :
+			IInefficiencyCorrectionDetector inefficiencyCorrectionDetector ) :
 			base(
+				new Time( 1 , 0 , 0 ) ,  // dummy parameter, not used by this derived class
 				minThresholdForGoingLong ,
 				maxThresholdForGoingLong ,
 				minThresholdForGoingShort ,
 				maxThresholdForGoingShort )
 		{
-			this.numberOfConsecutiveMinutesToSayTheInefficiencyIsClosing =
-				numberOfConsecutiveMinutesToSayTheInefficiencyIsClosing;
+			this.inefficiencyCorrectionDetector = inefficiencyCorrectionDetector;
+			
+			this.adjustmentDetector = new PriceAdjustmentDetector();
+		}
+		
+		protected override DateTime getFirstDateTimeToTestInefficiency(DateTime currentDateTime)
+		{
+			DateTime yesterdayAtCurrentTime = currentDateTime.AddDays( -1 );
+			DateTime yesterdayAtClose = HistoricalEndOfDayTimer.GetMarketClose(
+				yesterdayAtCurrentTime ).AddMinutes( - 1 );  // I'm subtracting 1 minute
+										// because the bar for 15.59 is there much more often
+										// and I believe that bar open value to be really
+										// next to the official close
+			return yesterdayAtClose;
 		}
 		
 		#region getPositionsFromCandidate
 		
-		#region hasThePriceBeenAdjustedLastNight
-		private bool hasThePriceBeenAdjustedLastNight( WeightedPositions candidate )
+		#region hasThePriceBeenAdjustedWithinTheInterval
+		
+//		private double getAdjustedCloseToCloseReturn( string ticker , ReturnInterval returnInterval )
+//		{
+//			ReturnsManager returnManager = new ReturnsManager(
+//				returnIntervals , this.historicalAdjustedQuoteProvider
+//
+//			}
+
+		private bool doWeKnowThePriceHasNotBeenAdjustedWithinTheInterval(
+			WeightedPositions candidate , ReturnInterval returnInterval	)
 		{
-			// qui!!!
-			return false;
+			bool doWeKnowNotAdjusted = false;
+			try
+			{
+				doWeKnowNotAdjusted =
+					(
+						( !this.adjustmentDetector.HasThePriceBeenAdjusted(
+							candidate[ 0 ].Ticker , returnInterval.Begin , returnInterval.End ) )
+						&&
+						( !this.adjustmentDetector.HasThePriceBeenAdjusted(
+							candidate[ 1 ].Ticker , returnInterval.Begin , returnInterval.End ) )
+					);
+			}
+			catch( TickerNotExchangedException tickerNotExchangedException )
+			{
+				string toAvoidCompileWarning = tickerNotExchangedException.Message;
+			}
+			return doWeKnowNotAdjusted;
 		}
-		#endregion hasThePriceBeenAdjustedLastNight
+		#endregion hasThePriceBeenAdjustedWithinTheInterval
 		
 		#region getWeightedPositionsFromCandidateWithoutAdjustment
 		private WeightedPositions getWeightedPositionsFromCandidateWithoutAdjustment(
-			ReturnsManager returnsManagerForLastSecondPhaseInterval ,
+			DateTime currentDateTime ,
+			ReturnsManager returnsManagerToTestInefficiency ,
 			WeightedPositions candidate )
 		{
-//			qui!!!!
-//			vedi OutOfSampleChooser.getWeightedPositionsFromCandidate(),
-//			testa l'inefficienza allo stesso modo, ma poi aggiungi il test
-//				per vedere se c'e' l'inizio di chiusura; devi considerare
-//				il passaggio dei tempi: probabilmente ti converra' modificare
-//				OutOfSampleChooserForSingleLongAndShort e passargli
-//				firstTimeToTestInefficiency nel costruttore per poi modificare
-//				OutOfSampleChooser.GetPositionsToBeOpened() togliendo i
-//				parametri firstDateTimeToTestInefficiency e dateTimeToClosePositions
-			// qui!!!
-			return candidate;
+			WeightedPositions weightedPositions = base.getWeightedPositionsIfThereIsInefficiency(
+				currentDateTime , returnsManagerToTestInefficiency , candidate );
+			if ( ( weightedPositions != null ) &&
+			    this.inefficiencyCorrectionDetector.IsInefficiencyCorrectionHappening(
+			    	currentDateTime ,
+			    	returnsManagerToTestInefficiency.ReturnIntervals[ 0 ] ,
+			    	weightedPositions ) )
+				// the candidate is inefficient but the gap is closing
+				weightedPositions = candidate;
+			return weightedPositions;
 		}
 		#endregion getWeightedPositionsFromCandidateWithoutAdjustment
 		
-		protected override WeightedPositions getWeightedPositionsFromCandidate(
+		protected override WeightedPositions getWeightedPositionsIfThereIsInefficiency(
+			DateTime currentDateTime ,
 			ReturnsManager returnsManagerForLastSecondPhaseInterval ,
 			WeightedPositions candidate )
 		{
 			WeightedPositions weightedPositionsFromCandidate = null;
-			if ( !this.hasThePriceBeenAdjustedLastNight( candidate ) )
+			if ( this.doWeKnowThePriceHasNotBeenAdjustedWithinTheInterval(
+				candidate ,
+				returnsManagerForLastSecondPhaseInterval.ReturnIntervals[ 0 ] ) )
 				weightedPositionsFromCandidate =
 					this.getWeightedPositionsFromCandidateWithoutAdjustment(
-						returnsManagerForLastSecondPhaseInterval , candidate );
+						currentDateTime , returnsManagerForLastSecondPhaseInterval , candidate );
 			return weightedPositionsFromCandidate;
 		}
 		#endregion getPositionsFromCandidate
