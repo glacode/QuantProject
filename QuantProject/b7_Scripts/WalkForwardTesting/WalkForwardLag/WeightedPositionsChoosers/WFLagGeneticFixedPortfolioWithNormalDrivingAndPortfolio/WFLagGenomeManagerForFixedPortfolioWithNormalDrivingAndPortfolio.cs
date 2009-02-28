@@ -514,16 +514,6 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag
 				this.closeToCloseReturnsManager );
 			WeightedPositions weightedPositions = new WeightedPositions(
 				balancedWeightsForDrivingPositions , signedTickers.Tickers );
-//			string[] tickersForDrivingPositions =
-//				this.getTickersForDrivingPositions( genome );
-//			double[] weightsForDrivingPositions =
-//				this.getWeightsForDrivingPositions( genome );
-//			double[] balancedWeightsForDrivingPositions =
-//				WeightedPositions.GetBalancedWeights( qui!!!! , weightsForDrivingPositions );
-//			return this.decodeWeightedPositions(
-//				weightsForDrivingPositions ,
-//				tickersForDrivingPositions ,
-//				this.eligibleTickersForDrivingWeightedPositions );
 			return weightedPositions;
 		}
 		private double[] getBalancedWeightsForPortfolioPositions()
