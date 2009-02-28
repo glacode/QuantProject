@@ -2,7 +2,7 @@
 QuantProject - Quantitative Finance Library
 
 TesterForPairsTradingTestingPositions.cs
-Copyright (C) 2008
+Copyright (C) 2009
 Glauco Siliprandi
 
 This program is free software; you can redistribute it and/or
@@ -23,6 +23,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 using System;
 using System.Drawing;
 
+using QuantProject.ADT.Histories;
+using QuantProject.Data.DataProviders.Bars.Caching;
 using QuantProject.Business.DataProviders;
 using QuantProject.Business.Financial.Accounting.AccountProviding;
 using QuantProject.Business.Financial.Accounting.Reporting;
@@ -32,6 +34,7 @@ using QuantProject.Business.Strategies.Eligibles;
 using QuantProject.Business.Strategies.OutOfSample;
 using QuantProject.Business.Strategies.ReturnsManagement.Time.IntervalsSelectors;
 using QuantProject.Business.Timing;
+using QuantProject.Presentation;
 using QuantProject.Presentation.Reporting.WindowsForm;
 using QuantProject.Scripts.General.Strategies;
 
@@ -46,6 +49,8 @@ namespace QuantProject.Scripts.WalkForwardTesting.PairsTrading
 		private PairsTradingTestingPositions testingPositions;
 		private int numberOfInSampleDays;
 		private DateTime dateTimeWhenThisObjectWasLogged;
+		
+		private HistoricalMarketValueProvider historicalMarketValueProvider;
 		
 		/// <summary>
 		/// Generation when the TestingPositions object has been created
@@ -78,8 +83,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.PairsTrading
 			this.checkParameters( testingPositions );
 			this.testingPositions = (PairsTradingTestingPositions)testingPositions;
 			this.numberOfInSampleDays = numberOfInSampleDays;
-			this.dateTimeWhenThisObjectWasLogged =
-				dateTimeWhenThisObjectWasLogged;
+			this.dateTimeWhenThisObjectWasLogged =	dateTimeWhenThisObjectWasLogged;
 		}
 		private void checkParameters( TestingPositions testingPositions )
 		{
@@ -88,115 +92,81 @@ namespace QuantProject.Scripts.WalkForwardTesting.PairsTrading
 					"The given testingPositions is NOT a " +
 					"PairsTradingTestingPositions!" );
 		}
-		
+
 		#region Run
-		private AccountReport getAccountReport(
-			WeightedPositions weightedPositions ,
-			IIntervalsSelector intervalsSelector ,
-			HistoricalMarketValueProvider historicalMarketValueProvider ,
-			Benchmark benchmark ,
-			double cashToStart )
+		
+		#region getHistory
+		
+		#region addItemsToHistory
+		private DateTime getFirstDateTime()
 		{
-			SimpleStrategy simpleStrategy =
-				new SimpleStrategy( weightedPositions ,
-				                   intervalsSelector , historicalMarketValueProvider );
-			IAccountProvider accountProvider =
-				new SimpleAccountProvider();
-
 			DateTime firstDateTime =
-				this.dateTimeWhenThisObjectWasLogged.AddDays(
-					- this.numberOfInSampleDays );
+				HistoricalEndOfDayTimer.GetMarketOpen(
+					this.dateTimeWhenThisObjectWasLogged.AddDays( 1 ) );
+			return firstDateTime;
+		}
+		private DateTime getLastDateTime()
+		{
+			DateTime firstDateTime = this.getFirstDateTime();
 			DateTime lastDateTime =
-				this.dateTimeWhenThisObjectWasLogged;
-			double maxRunningHours = 0.3;
-			EndOfDayStrategyBackTester endOfDayStrategyBackTester =
-				new EndOfDayStrategyBackTester(
-					"SinglePosition" ,
-					new QuantProject.Business.Timing.IndexBasedEndOfDayTimer(
-						HistoricalEndOfDayTimer.GetMarketOpen( firstDateTime ) ,
-						benchmark.Ticker ) ,
-					simpleStrategy ,
-					historicalMarketValueProvider , accountProvider ,
-					firstDateTime , lastDateTime ,
-					benchmark , cashToStart , maxRunningHours );
-
-//			simpleStrategy.Account = endOfDayStrategyBackTester.Account;
-
-			endOfDayStrategyBackTester.Run();
-			return endOfDayStrategyBackTester.AccountReport;
+				HistoricalEndOfDayTimer.GetMarketClose( firstDateTime );
+			return lastDateTime;
 		}
-		private double getWeightedPositions_getWeight(
-			WeightedPosition weightedPosition )
+		private void addItemToHistory(
+			WeightedPosition weightedPosition , DateTime dateTime , History history )
 		{
-			double weight = 1;
-			if ( weightedPosition.IsShort )
-				// the current WeightedPosition is short in the couple correlation
-				weight = -1;
-			return weight;
+			try
+			{
+			double marketValue = this.historicalMarketValueProvider.GetMarketValue(
+				weightedPosition.Ticker , dateTime );
+			history.Add( dateTime , marketValue );
+			}
+			catch( TickerNotExchangedException tickerNotExchangedException )
+			{
+				string toAvoidWarning = tickerNotExchangedException.Message;
+			}
 		}
-		private WeightedPositions getWeightedPositions(
-			WeightedPosition weightedPosition )
+		private void addItemsToHistory( WeightedPosition weightedPosition , History history )
 		{
-//			double[] weights = { 1 };
-			double[] weights = { this.getWeightedPositions_getWeight( weightedPosition ) };
-			string[] tickers = { weightedPosition.Ticker };
-			WeightedPositions weightedPositions =
-				new WeightedPositions( weights , tickers );
-			return weightedPositions;
+			DateTime currentDateTime = this.getFirstDateTime();
+			DateTime lastDateTime = this.getLastDateTime();
+			while ( currentDateTime <= lastDateTime )
+			{
+				this.addItemToHistory( weightedPosition , currentDateTime , history );
+				currentDateTime = currentDateTime.AddMinutes( 1 );
+			}
 		}
+		#endregion addItemsToHistory
+		
+		private History getHistory( WeightedPosition weightedPosition )
+		{
+			History history = new History();
+			this.addItemsToHistory( weightedPosition , history );
+			return history;
+		}
+		#endregion getHistory
+		
+		private void showHistoriesPlots(
+			History historyForFirstPosition , History historyForSecondPosition )
+		{
+			HistoriesViewer historiesViewer = new HistoriesViewer();
+			historiesViewer.Add( historyForFirstPosition , Color.Green );
+			historiesViewer.Add( historyForSecondPosition , Color.Red );
+			historiesViewer.ShowDialog();
+		}
+		
 		public void Run()
 		{
-			//			string backTestId = "SimplePairsTrading";
-			//			double cashToStart = 30000;
-
-			Benchmark benchmark = new Benchmark( "MSFT" );
-
-			HistoricalMarketValueProvider historicalMarketValueProvider =
-				new HistoricalAdjustedQuoteProvider();
-
-			//			IInSampleChooser inSampleChooser =
-			//				(IInSampleChooser)new ConstantWeightedPositionsChooser(
-			//				this.BestWeightedPositionsInSample );
-
-			IIntervalsSelector intervalsSelector =
-				new OddIntervalsSelector(	1 , 1 , benchmark );
-			IEligiblesSelector eligiblesSelector = new DummyEligibleSelector();
-
-			WeightedPositions weightedPositions =
-				this.testingPositions.WeightedPositions;
-			
-			WeightedPositions firstPosition =
-				this.getWeightedPositions( weightedPositions[ 0 ] );
-			WeightedPositions secondPosition =
-				this.getWeightedPositions( weightedPositions[ 1 ] );
-			AccountReport accountReportForFirstPosition =
-				this.getAccountReport( firstPosition , intervalsSelector ,
-				                      historicalMarketValueProvider ,
-				                      benchmark , 30000 );
-			AccountReport accountReportForSecondPosition =
-				this.getAccountReport( secondPosition , intervalsSelector ,
-				                      historicalMarketValueProvider ,
-				                      benchmark ,
-				                      Math.Abs(	30000 * weightedPositions[ 1 ].Weight /
-				                               weightedPositions[ 0 ].Weight ) );
-			
-			Report report =
-				new Report( accountReportForFirstPosition , false );
-			DateTime lastDateTimeForReport =
-				HistoricalEndOfDayTimer.GetOneHourAfterMarketClose(
-					accountReportForFirstPosition.EquityLine.LastDateTime );
-//				new EndOfDayDateTime(
-//				accountReportForFirstPosition.EquityLine.LastDateTime ,
-//				EndOfDaySpecificTime.OneHourAfterMarketClose );
-			
-			//			report.Create( "PearsonDebug" , 1 ,
-			//			              lastEndOfDayDateTimeForReport ,
-			//			              benchmark.Ticker , false );
-			report.AddEquityLine( accountReportForSecondPosition.EquityLine ,
-			                     Color.Brown );
-			report.ShowDialog();
+			this.historicalMarketValueProvider = new HistoricalBarProvider(
+				new SimpleBarCache( 60 ) );
+			History historyForFirstPosition = this.getHistory(
+				this.testingPositions.WeightedPositions[ 0 ] );
+			History historyForSecondPosition = this.getHistory(
+				this.testingPositions.WeightedPositions[ 1 ] );
+			this.showHistoriesPlots( historyForFirstPosition , historyForSecondPosition );
 		}
 		#endregion Run
+
 
 	}
 }
