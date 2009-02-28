@@ -82,6 +82,25 @@ namespace QuantProject.ADT.Timing
 			return new Time(standardDateTimeWithMinutesAdded);
 		}
 		
+		#region AddHours
+		/// <summary>
+		/// Adds the given hours to the current instance's value
+		/// </summary>
+		/// <param name="hoursToAdd">hours to add (if positive) or to
+		/// subtract (if negative) from the current instance</param>
+		/// <returns></returns>
+		public Time AddHours( double hoursToAdd )
+		{
+			DateTime standardDateTimeWithHoursAdded =
+				this.standardDateTime.AddHours( hoursToAdd );
+			if ( standardDateTimeWithHoursAdded.Day != this.standardDateTime.Day )
+				throw new Exception(
+					"hoursToAdd is too big, for the current time. " +
+					"The resulting Time would be the day after" );
+			return new Time( standardDateTimeWithHoursAdded );
+		}
+		#endregion AddHours
+		
 		/// <summary>
 		/// Returns a new DateTime, having the date as the given dateTime
 		/// and the time as the given time
