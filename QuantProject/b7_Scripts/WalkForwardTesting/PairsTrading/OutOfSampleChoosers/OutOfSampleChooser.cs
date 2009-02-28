@@ -24,6 +24,7 @@ using System;
 using System.Collections;
 
 using QuantProject.ADT.Collections;
+using QuantProject.ADT.Timing;
 using QuantProject.Business.DataProviders;
 using QuantProject.Business.Strategies;
 using QuantProject.Business.Strategies.OutOfSample;
@@ -40,18 +41,24 @@ namespace QuantProject.Scripts.WalkForwardTesting.PairsTrading
 	[Serializable]
 	public abstract class OutOfSampleChooser
 	{
+		private Time firstTimeToTestInefficiency;
 		private double minThresholdForGoingLong;
 		private double maxThresholdForGoingLong;
 		private double minThresholdForGoingShort;
 		private double maxThresholdForGoingShort;
 
+		public double MinThresholdForGoingLong {
+			get { return this.minThresholdForGoingLong; }
+		}
 
 		public OutOfSampleChooser(
+			Time firstTimeToTestInefficiency ,
 			double minThresholdForGoingLong ,
 			double maxThresholdForGoingLong ,
 			double minThresholdForGoingShort ,
 			double maxThresholdForGoingShort )
 		{
+			this.firstTimeToTestInefficiency = firstTimeToTestInefficiency;
 			this.minThresholdForGoingLong = minThresholdForGoingLong;
 			this.maxThresholdForGoingLong = maxThresholdForGoingLong;
 			this.minThresholdForGoingShort = minThresholdForGoingShort;
@@ -63,7 +70,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.PairsTrading
 		/// </summary>
 		/// <param name="inefficientCouples">a collection of couples that
 		/// are strongly correlated in sample, but were not so
-		/// correlated in the latest second phase interval</param>
+		/// correlated in the interval to test for inefficiency</param>
 		/// <param name="inSampleReturnsManager"></param>
 		/// <returns></returns>
 		protected abstract WeightedPositions getPositionsToBeOpened(
@@ -113,6 +120,21 @@ namespace QuantProject.Scripts.WalkForwardTesting.PairsTrading
 //		}
 		
 		#region getReturnIntervalsForLastSecondPhaseInterval
+		
+		protected virtual DateTime getFirstDateTimeToTestInefficiency( DateTime currentDateTime )
+		{
+//			DateTime now = this.now();
+//			DateTime firstDateTimeToTestInefficiency = new DateTime(
+//				now.Year , now.Month , now.Day ,
+//				this.firstTimeToTestInefficiency.Hour ,
+//				this.firstTimeToTestInefficiency.Minute ,
+//				this.firstTimeToTestInefficiency.Second );
+			DateTime firstDateTimeToTestInefficiency =
+				Time.GetDateTimeFromMerge(
+					currentDateTime , this.firstTimeToTestInefficiency );
+			return firstDateTimeToTestInefficiency;
+		}
+		
 		private ReturnInterval
 			getReturnIntervalToTestInefficiency(
 				DateTime currentDateTime
@@ -120,14 +142,14 @@ namespace QuantProject.Scripts.WalkForwardTesting.PairsTrading
 //				DateTime lastDateTimeToTestInefficiency
 			)
 		{
-//			qui!!!
 			DateTime firstDateTimeToTestInefficiency =
-				currentDateTime.AddMinutes( 30 );
+				this.getFirstDateTimeToTestInefficiency( currentDateTime );
+//				currentDateTime.AddMinutes( 30 );
 
-			ReturnInterval returnIntervalForLastSecondPhaseInterval =
+			ReturnInterval returnIntervalToTestInefficiency =
 				new ReturnInterval(
 					firstDateTimeToTestInefficiency , currentDateTime );
-			return returnIntervalForLastSecondPhaseInterval;
+			return returnIntervalToTestInefficiency;
 		}
 		private ReturnIntervals
 			getReturnIntervalsToTestInefficiency(
@@ -136,15 +158,15 @@ namespace QuantProject.Scripts.WalkForwardTesting.PairsTrading
 //				DateTime lastDateTimeToTestInefficiency
 			)
 		{
-			ReturnInterval returnIntervalForLastSecondPhaseInterval =
+			ReturnInterval returnIntervalToTestInefficiency =
 				this.getReturnIntervalToTestInefficiency(
 					currentDateTime
 //					firstDateTimeToTestInefficiency ,
 //					lastDateTimeToTestInefficiency
 				);
-			ReturnIntervals returnIntervalsForLastSecondPhaseInterval =
-				new ReturnIntervals( returnIntervalForLastSecondPhaseInterval );
-			return returnIntervalsForLastSecondPhaseInterval;
+			ReturnIntervals returnIntervalsToTestInefficiency =
+				new ReturnIntervals( returnIntervalToTestInefficiency );
+			return returnIntervalsToTestInefficiency;
 		}
 		#endregion getReturnIntervalsForLastSecondPhaseInterval
 		
@@ -170,44 +192,42 @@ namespace QuantProject.Scripts.WalkForwardTesting.PairsTrading
 		
 		#region getInefficientCouples
 		
-		#region areAllNeededMarketValuesAvailableForTheCurrentCouple
-		private bool areAllNeededMarketValuesAvailableForTheCurrentCouple(
-			TestingPositions currentCouple ,
-			DateTime dateTimeToClosePositions ,
-			HistoricalMarketValueProvider
-			historicalMarketValueProviderForChosingPositionsOutOfSample )
-		{
-			bool areAllAvailable = true;
-			foreach ( WeightedPosition weightedPosition in
-			         currentCouple.WeightedPositions.Values )
-				areAllAvailable =
-					(
-						areAllAvailable &&
-						// attention! we are looking in the future here, but we do it
-						// just to avoid picking a ticker for which we don't have
-						// the market value when we will close the positions
-						historicalMarketValueProviderForChosingPositionsOutOfSample.WasExchanged(
-							weightedPosition.Ticker , dateTimeToClosePositions )
-					);
-			return areAllAvailable;
-		}
-		private bool areAllNeededMarketValuesAvailableForTheCurrentCouple(
-			TestingPositions[] bestTestingPositionsInSample ,
-			int currentTestingPositionsIndex ,
+//		#region areAllNeededMarketValuesAvailableForTheCurrentCouple
+//		private bool areAllNeededMarketValuesAvailableForTheCurrentCouple(
+//			TestingPositions currentCouple ,
 //			DateTime dateTimeToClosePositions ,
-			HistoricalMarketValueProvider
-			historicalMarketValueProviderForChosingPositionsOutOfSample )
-		{
-			TestingPositions currentCouple =
-				bestTestingPositionsInSample[ currentTestingPositionsIndex ];
-			bool areAllAvailable = true;
-			//  qui!!!
-//				this.areAllNeededMarketValuesAvailableForTheCurrentCouple(
-//					currentCouple , dateTimeToClosePositions ,
-//					historicalMarketValueProviderForChosingPositionsOutOfSample );
-			return areAllAvailable;
-		}
-		#endregion areAllNeededMarketValuesAvailableForTheCurrentCouple
+//			HistoricalMarketValueProvider
+//			historicalMarketValueProviderForChosingPositionsOutOfSample )
+//		{
+//			bool areAllAvailable = true;
+//			foreach ( WeightedPosition weightedPosition in
+//			         currentCouple.WeightedPositions.Values )
+//				areAllAvailable =
+//					(
+//						areAllAvailable &&
+//						// attention! we are looking in the future here, but we do it
+//						// just to avoid picking a ticker for which we don't have
+//						// the market value when we will close the positions
+//						historicalMarketValueProviderForChosingPositionsOutOfSample.WasExchanged(
+//							weightedPosition.Ticker , dateTimeToClosePositions )
+//					);
+//			return areAllAvailable;
+//		}
+//		private bool areAllNeededMarketValuesAvailableForTheCurrentCouple(
+//			TestingPositions[] bestTestingPositionsInSample ,
+//			int currentTestingPositionsIndex ,
+		////			DateTime dateTimeToClosePositions ,
+//			HistoricalMarketValueProvider
+//			historicalMarketValueProviderForChosingPositionsOutOfSample )
+//		{
+//			TestingPositions currentCouple =
+//				bestTestingPositionsInSample[ currentTestingPositionsIndex ];
+//			this.areAllNeededMarketValuesAvailableForTheCurrentCouple(
+//				currentCouple , dateTimeToClosePositions ,
+//				historicalMarketValueProviderForChosingPositionsOutOfSample );
+//			return areAllAvailable;
+//		}
+//		#endregion areAllNeededMarketValuesAvailableForTheCurrentCouple
 
 		#region addPositionsIfInefficiencyForCurrentCoupleIsInTheRange
 		/// <summary>
@@ -230,16 +250,16 @@ namespace QuantProject.Scripts.WalkForwardTesting.PairsTrading
 		}
 		
 		#region getPositionsIfInefficiencyIsInTheRange
-		private double getReturnForTheLastSecondPhaseInterval(
-			ReturnsManager returnsManagerForLastSecondPhaseInterval ,
+		private double getReturnToTestInefficiency(
+			ReturnsManager returnsManagerToTestInefficiency ,
 			WeightedPositions weightedPositions )
 		{
 			// returnsManager should contain a single ReturnInterval, and
 			// this ReturnInterval should be the last second phase interval
-			double returnForTheLastSecondPhaseInterval =
+			double returnToTestInefficiency =
 				weightedPositions.GetReturn( 0 ,
-				                            returnsManagerForLastSecondPhaseInterval );
-			return returnForTheLastSecondPhaseInterval;
+				                            returnsManagerToTestInefficiency );
+			return returnToTestInefficiency;
 		}
 
 		// if the currentWeightedPositions' return satisfies the thresholds
@@ -247,27 +267,28 @@ namespace QuantProject.Scripts.WalkForwardTesting.PairsTrading
 		// Otherwise (currentWeightedPositions' return does NOT
 		// satisfy the thresholds) this method returns null
 		protected virtual WeightedPositions
-			getWeightedPositionsFromCandidate(
-				ReturnsManager returnsManagerForLastSecondPhaseInterval ,
+			getWeightedPositionsIfThereIsInefficiency(
+				DateTime currentDateTime ,
+				ReturnsManager returnsManagerToTestInefficiency ,
 				WeightedPositions currentWeightedPositions )
 		{
 			WeightedPositions weightedPositionsToBeOpened = null;
 			try
 			{
-				double returnForTheLastSecondPhaseInterval =
-					this.getReturnForTheLastSecondPhaseInterval(
-						returnsManagerForLastSecondPhaseInterval ,
+				double returnForTheIntervalToTestInefficiency =
+					this.getReturnToTestInefficiency(
+						returnsManagerToTestInefficiency ,
 						currentWeightedPositions );
-				if ( ( returnForTheLastSecondPhaseInterval >=
+				if ( ( returnForTheIntervalToTestInefficiency >=
 				      this.minThresholdForGoingShort ) &&
-				    ( returnForTheLastSecondPhaseInterval <=
+				    ( returnForTheIntervalToTestInefficiency <=
 				     this.maxThresholdForGoingShort ) )
 					// it looks like there has been an inefficiency that
 					// might be recovered, by going short
 					weightedPositionsToBeOpened = currentWeightedPositions.Opposite;
-				if ( ( -returnForTheLastSecondPhaseInterval >=
+				if ( ( -returnForTheIntervalToTestInefficiency >=
 				      this.minThresholdForGoingLong ) &&
-				    ( -returnForTheLastSecondPhaseInterval <=
+				    ( -returnForTheIntervalToTestInefficiency <=
 				     this.maxThresholdForGoingLong ) )
 					// it looks like there has been an inefficiency that
 					// might be recovered, by going long
@@ -284,7 +305,8 @@ namespace QuantProject.Scripts.WalkForwardTesting.PairsTrading
 		private void
 			addPositionsIfInefficiencyForCurrentCoupleIsInTheRange(
 				TestingPositions[] bestTestingPositionsInSample ,
-				ReturnsManager returnsManagerForLastSecondPhaseInterval ,
+				DateTime currentDateTime ,
+				ReturnsManager returnsManagerToTestInefficiency ,
 				int currentTestingPositionsIndex ,
 				ArrayList inefficientCouples )
 		{
@@ -293,8 +315,8 @@ namespace QuantProject.Scripts.WalkForwardTesting.PairsTrading
 			WeightedPositions candidateForPortfolio =
 				this.getCandidateForPortfolio( currentWeightedPositions );
 			WeightedPositions weightedPositionsThatMightBeOpended =
-				this.getWeightedPositionsFromCandidate(
-					returnsManagerForLastSecondPhaseInterval , candidateForPortfolio );
+				this.getWeightedPositionsIfThereIsInefficiency(
+					currentDateTime , returnsManagerToTestInefficiency , candidateForPortfolio );
 			if ( weightedPositionsThatMightBeOpended != null )
 				// the current couple has not an inefficiency that's in the range
 				inefficientCouples.Add( weightedPositionsThatMightBeOpended );
@@ -303,7 +325,8 @@ namespace QuantProject.Scripts.WalkForwardTesting.PairsTrading
 		
 		protected ArrayList getInefficientCouples(
 			TestingPositions[] bestTestingPositionsInSample ,
-			ReturnsManager returnsManagerForLastSecondPhaseInterval ,
+			DateTime currentDateTime ,
+			ReturnsManager returnsManagerToTestInefficiency ,
 //			DateTime dateTimeToClosePositions ,
 			HistoricalMarketValueProvider
 			historicalMarketValueProviderForChosingPositionsOutOfSample )
@@ -313,16 +336,17 @@ namespace QuantProject.Scripts.WalkForwardTesting.PairsTrading
 			     currentTestingPositionsIndex < bestTestingPositionsInSample.Length ;
 			     currentTestingPositionsIndex++ )
 			{
-				if ( this.areAllNeededMarketValuesAvailableForTheCurrentCouple(
+//				if ( this.areAllNeededMarketValuesAvailableForTheCurrentCouple(
+//					bestTestingPositionsInSample ,
+//					currentTestingPositionsIndex ,
+				////					dateTimeToClosePositions ,
+//					historicalMarketValueProviderForChosingPositionsOutOfSample ) )
+				this.addPositionsIfInefficiencyForCurrentCoupleIsInTheRange(
 					bestTestingPositionsInSample ,
+					currentDateTime ,
+					returnsManagerToTestInefficiency ,
 					currentTestingPositionsIndex ,
-//					dateTimeToClosePositions ,
-					historicalMarketValueProviderForChosingPositionsOutOfSample ) )
-					this.addPositionsIfInefficiencyForCurrentCoupleIsInTheRange(
-						bestTestingPositionsInSample ,
-						returnsManagerForLastSecondPhaseInterval ,
-						currentTestingPositionsIndex ,
-						inefficientCouples );
+					inefficientCouples );
 			}
 			return inefficientCouples;
 		}
@@ -339,7 +363,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.PairsTrading
 				HistoricalMarketValueProvider
 				historicalMarketValueProviderForChosingPositionsOutOfSample )
 		{
-			ReturnsManager returnsManagerForLastSecondPhaseInterval =
+			ReturnsManager returnsManagerToTestInefficiency =
 				this.getReturnsManagerToTestInefficiency(
 					currentDateTime ,
 //					firstDateTimeToTestInefficiency ,
@@ -348,7 +372,8 @@ namespace QuantProject.Scripts.WalkForwardTesting.PairsTrading
 			ArrayList inefficientCouples =
 				this.getInefficientCouples(
 					bestTestingPositionsInSample ,
-					returnsManagerForLastSecondPhaseInterval ,
+					currentDateTime ,
+					returnsManagerToTestInefficiency ,
 //					dateTimeToClosePositions ,
 					historicalMarketValueProviderForChosingPositionsOutOfSample );
 			return inefficientCouples;
