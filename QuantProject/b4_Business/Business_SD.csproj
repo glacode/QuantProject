@@ -47,6 +47,8 @@
   <ItemGroup>
     <Compile Include="a05_Timing\IndexBasedHistoricalTimer.cs" />
     <Compile Include="a05_Timing\Timer.cs" />
+    <Compile Include="a07_DataProviders\HistoricalMarketValueProviderWithQuoteBackupOnClose.cs" />
+    <Compile Include="a07_DataProviders\PriceAdjustmentDetector.cs" />
     <Compile Include="a07_DataProviders\HistoricalBarProvider.cs" />
     <Compile Include="a07_DataProviders\HistoricalDataStreamer.cs" />
     <Compile Include="a07_DataProviders\HistoricalMarketValueProvider.cs" />
