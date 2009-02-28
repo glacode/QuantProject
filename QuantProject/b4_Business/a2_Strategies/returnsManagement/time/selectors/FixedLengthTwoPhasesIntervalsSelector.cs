@@ -119,12 +119,6 @@ namespace QuantProject.Business.Strategies.ReturnsManagement.Time.IntervalsSelec
 		private DateTime getFirstIntervalBegin(
 			DateTime startingDateTime )
 		{
-//			qui!!!! fai un ciclo while non exchanged (trova
-//			                                          il primo
-//			                                          successivo
-//			                                          in cui il
-//			                                          benchmark e'
-//			                                          scambiato)
 			DateTime firstIntervalBegin =
 				this.benchmark.GetThisOrNextMarketStatusSwitch(
 				startingDateTime );
