@@ -23,6 +23,7 @@ using System;
 using System.Collections;
 
 using QuantProject.ADT;
+using QuantProject.ADT.Timing;
 
 namespace QuantProject.Business.Timing
 {
@@ -37,29 +38,29 @@ namespace QuantProject.Business.Timing
 		protected DateTime startDateTime;
 //		private EndOfDayDateTime endDateTime;
 		
-		private static DateTime timeForMarketOpen =
-			new DateTime( 1900 , 1 , 1 , 9 , 30 , 00 );
-		private static DateTime timeForMarketClose =
-			new DateTime( 1900 , 1 , 1 , 16 , 00 , 00 );
+		private static Time timeForMarketOpen =
+			new Time( 9 , 30 , 00 );
+		private static Time timeForMarketClose =
+			new Time( 16 , 00 , 00 );
 		
 		/// <summary>
 		/// time when the market opens
 		/// </summary>
-		public static DateTime TimeForMarketOpen {
+		public static Time TimeForMarketOpen {
 			get { return HistoricalEndOfDayTimer.timeForMarketOpen; }
 		}
 		
 		/// <summary>
 		/// time when the market closes
 		/// </summary>
-		public static DateTime TimeForMarketClose {
+		public static Time TimeForMarketClose {
 			get { return HistoricalEndOfDayTimer.timeForMarketClose; }
 		}
 
 		/// <summary>
 		/// time for one hour after market closes
 		/// </summary>
-		public static DateTime TimeForOneHourAfterMarketClose {
+		public static Time TimeForOneHourAfterMarketClose {
 			get { return HistoricalEndOfDayTimer.TimeForMarketClose.AddHours( 1 ); }
 		}
 
@@ -132,10 +133,9 @@ namespace QuantProject.Business.Timing
 		/// <returns></returns>
 		public static bool IsMarketOpen( DateTime dateTime )
 		{
-			bool returnValue =
-				ExtendedDateTime.HaveTheSameTime(
-					dateTime , HistoricalEndOfDayTimer.TimeForMarketOpen );
-			return returnValue;
+			Time time = new Time( dateTime );
+			bool isMarketOpen = ( time == HistoricalEndOfDayTimer.TimeForMarketOpen );
+			return isMarketOpen;
 		}
 		
 		/// <summary>
@@ -145,10 +145,9 @@ namespace QuantProject.Business.Timing
 		/// <returns></returns>
 		public static bool IsMarketClose( DateTime dateTime )
 		{
-			bool returnValue =
-				ExtendedDateTime.HaveTheSameTime(
-					dateTime , HistoricalEndOfDayTimer.TimeForMarketClose );
-			return returnValue;
+			Time time = new Time( dateTime );
+			bool isMarketClose = ( time == HistoricalEndOfDayTimer.TimeForMarketClose );
+			return isMarketClose;
 		}
 
 		/// <summary>
@@ -158,11 +157,10 @@ namespace QuantProject.Business.Timing
 		/// <returns></returns>
 		public static bool IsOneHourAfterMarketClose( DateTime dateTime )
 		{
-			bool returnValue =
-				ExtendedDateTime.HaveTheSameTime(
-					dateTime ,
-					HistoricalEndOfDayTimer.TimeForOneHourAfterMarketClose );
-			return returnValue;
+			Time time = new Time( dateTime );
+			bool isOneHourAfterMarketClose =
+				( time == HistoricalEndOfDayTimer.TimeForOneHourAfterMarketClose );
+			return isOneHourAfterMarketClose;
 		}
 		
 		/// <summary>
@@ -209,13 +207,6 @@ namespace QuantProject.Business.Timing
 
 		
 		#region GetNextMarketStatusSwitch
-//		private void getNextMarketStatusSwitch_checkParameters(
-//			DateTime dateTime)
-//		{
-//			if ( !HistoricalEndOfDayTimer.IsMarketOpen( dateTime ) &&
-//			    !HistoricalEndOfDayTimer.IsMarketClose( dateTime ) )
-//				throw new Exception( "dateTime must be a
-//		}
 		/// <summary>
 		/// Returns either the next market close or the next market open,
 		/// whichever is the nearest (all days are considered as market
@@ -227,11 +218,9 @@ namespace QuantProject.Business.Timing
 		public static DateTime GetNextMarketStatusSwitch(
 			DateTime dateTime)
 		{
-//			this.getNextMarketStatusSwitch_checkParameters(
-//				dateTime );
+			Time time = new Time( dateTime );
 			DateTime nextMarketStatusSwitch;
-			if ( ExtendedDateTime.IsFirstTimeLessThenSecondTime(
-				dateTime , HistoricalEndOfDayTimer.TimeForMarketOpen ) )
+			if ( time < HistoricalEndOfDayTimer.TimeForMarketOpen )
 				// dateTime's time is before market open
 				nextMarketStatusSwitch = new DateTime(
 					dateTime.Year , dateTime.Month , dateTime.Day ,
@@ -241,8 +230,7 @@ namespace QuantProject.Business.Timing
 			else
 			{
 				// dateTime's time is equal or after the market open
-				if ( ExtendedDateTime.IsFirstTimeLessThenSecondTime(
-					dateTime , HistoricalEndOfDayTimer.TimeForMarketClose ) )
+				if ( time < HistoricalEndOfDayTimer.TimeForMarketClose )
 					// dateTime's time is equal or after the market open
 					// AND dateTime's time is before market close
 					nextMarketStatusSwitch = new DateTime(
@@ -261,25 +249,7 @@ namespace QuantProject.Business.Timing
 						HistoricalEndOfDayTimer.TimeForMarketOpen.Minute ,
 						HistoricalEndOfDayTimer.TimeForMarketOpen.Second );
 				}
-			}
-			
-//
-//				    if ( this.EndOfDaySpecificTime < EndOfDaySpecificTime.MarketOpen )
-//				    	nextMarketStatusSwitch = new EndOfDayDateTime(
-//				    		this.DateTime , EndOfDaySpecificTime.MarketOpen );
-//				    else
-//				    {
-//				    	// this.EndOfDaySpecificTime >= EndOfDaySpecificTime.MarketOpen
-//				    	if ( this.EndOfDaySpecificTime < EndOfDaySpecificTime.MarketClose )
-//				    		// ( this.EndOfDaySpecificTime >= EndOfDaySpecificTime.MarketOpen )
-//				    		// AND ( this.EndOfDaySpecificTime < EndOfDaySpecificTime.MarketClose )
-//				    		nextMarketStatusSwitch = new EndOfDayDateTime(
-//				    			this.DateTime , EndOfDaySpecificTime.MarketClose );
-//				    	else
-//				    		// ( this.EndOfDaySpecificTime >= EndOfDaySpecificTime.MarketClose )
-//				    		nextMarketStatusSwitch = new EndOfDayDateTime(
-//				    			this.DateTime.AddDays( 1 ) , EndOfDaySpecificTime.MarketOpen );
-//				    }
+			}		
 			return nextMarketStatusSwitch;
 		}
 		#endregion GetNextMarketStatusSwitch
