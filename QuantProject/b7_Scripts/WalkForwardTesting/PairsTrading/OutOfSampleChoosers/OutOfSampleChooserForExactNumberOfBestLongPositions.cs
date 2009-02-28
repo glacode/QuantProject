@@ -18,11 +18,12 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
-*/
+ */
 
 using System;
 
 using QuantProject.ADT.Collections;
+using QuantProject.ADT.Timing;
 using QuantProject.Business.Strategies;
 using QuantProject.Business.Strategies.OutOfSample;
 using QuantProject.Business.Strategies.ReturnsManagement;
@@ -53,15 +54,17 @@ namespace QuantProject.Scripts.WalkForwardTesting.PairsTrading
 		/// <param name="maxThresholdForGoingShort"></param>
 		public OutOfSampleChooserForExactNumberOfBestLongPositions(
 			int exactNumberOfBestLongPositionsToBeReturned ,
+			Time firstTimeToTestInefficiency ,
 			double minThresholdForGoingLong ,
 			double maxThresholdForGoingLong ,
 			double minThresholdForGoingShort ,
 			double maxThresholdForGoingShort ) :
 			base(
-			minThresholdForGoingLong ,
-			maxThresholdForGoingLong ,
-			minThresholdForGoingShort ,
-			maxThresholdForGoingShort )
+				firstTimeToTestInefficiency ,
+				minThresholdForGoingLong ,
+				maxThresholdForGoingLong ,
+				minThresholdForGoingShort ,
+				maxThresholdForGoingShort )
 		{
 			this.exactNumberOfBestLongPositionsToBeReturned =
 				exactNumberOfBestLongPositionsToBeReturned;
@@ -101,7 +104,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.PairsTrading
 			string[] tickers =
 				new String[ this.exactNumberOfBestLongPositionsToBeReturned ];
 			Array.Copy(	longPositionTickers , tickers ,
-				this.exactNumberOfBestLongPositionsToBeReturned );
+			           this.exactNumberOfBestLongPositionsToBeReturned );
 
 			// comment out the following three lines to select only the second best long ticker
 //			weights = new double[ 1 ]; weights[ 0 ] = 1;
@@ -120,7 +123,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.PairsTrading
 			string[] longPositionTickers =
 				this.getLongPositionTickers( inefficientCouples );
 			if ( longPositionTickers.Length >=
-				this.exactNumberOfBestLongPositionsToBeReturned )
+			    this.exactNumberOfBestLongPositionsToBeReturned )
 				// at least a long position has been found in the inefficient couples
 				weightedPositionsToBeOpened =
 					this.getPositionsToBeOpened( longPositionTickers );
