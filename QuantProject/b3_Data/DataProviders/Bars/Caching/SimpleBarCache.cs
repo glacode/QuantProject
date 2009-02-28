@@ -47,7 +47,7 @@ namespace QuantProject.Data.DataProviders.Bars.Caching
 		/// <returns></returns>
 		public double GetMarketValue( string ticker, DateTime dateTime )
 		{
-			double returnValue = double.MinValue;
+			double returnValue = double.NaN;
 			try
 			{
 				returnValue = 
@@ -63,16 +63,19 @@ namespace QuantProject.Data.DataProviders.Bars.Caching
 				
 		public bool WasExchanged( string ticker , DateTime dateTime )
 		{
-			double marketValue = double.NaN;
+			bool wasExchanged = true;
+//			double marketValue = double.NaN;
 			try
 			{
-				marketValue = this.GetMarketValue( ticker , dateTime );
+				this.GetMarketValue( ticker , dateTime );
 			}
 			catch ( MissingBarException missingBarException )
 			{
-				string doNothing = missingBarException.Message; doNothing += "";
+				// the bar is not in the database
+				wasExchanged = false;
+				string toAvoidCompileWarning = missingBarException.Message;
 			}
-			return (marketValue != Double.NaN);
+			return wasExchanged;
 		}
 	}
 }
