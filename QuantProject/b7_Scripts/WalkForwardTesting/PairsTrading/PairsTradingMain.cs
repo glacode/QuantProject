@@ -241,7 +241,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.PairsTrading
 			int inSampleDays = 180;
 			// uncomment the following line for a faster script
 //			inSampleDays = 5;
-			inSampleDays = 60;
+//			inSampleDays = 60;
 			
 			IIntervalsSelector intervalsSelectorForOutOfSample =
 				new OddIntervalsSelector( 1 , 1 , this.benchmark );

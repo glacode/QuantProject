@@ -70,9 +70,9 @@ namespace QuantProject.Scripts.WalkForwardTesting.PairsTrading
 			DateTime yesterdayAtCurrentTime = currentDateTime.AddDays( -1 );
 			DateTime yesterdayAtClose = HistoricalEndOfDayTimer.GetMarketClose(
 				yesterdayAtCurrentTime ).AddMinutes( - 1 );  // I'm subtracting 1 minute
-										// because the bar for 15.59 is there much more often
-										// and I believe that bar open value to be really
-										// next to the official close
+			// because the bar for 15.59 is there much more often
+			// and I believe that bar open value to be really
+			// next to the official close
 			return yesterdayAtClose;
 		}
 		
@@ -116,16 +116,18 @@ namespace QuantProject.Scripts.WalkForwardTesting.PairsTrading
 			ReturnsManager returnsManagerToTestInefficiency ,
 			WeightedPositions candidate )
 		{
-			WeightedPositions weightedPositions = base.getWeightedPositionsIfThereIsInefficiency(
-				currentDateTime , returnsManagerToTestInefficiency , candidate );
-			if ( ( weightedPositions != null ) &&
+			WeightedPositions weightedPositionsToBeReturned = null;
+			WeightedPositions inefficientWeightedPositions =
+				base.getWeightedPositionsIfThereIsInefficiency(
+					currentDateTime , returnsManagerToTestInefficiency , candidate );
+			if ( ( inefficientWeightedPositions != null ) &&
 			    this.inefficiencyCorrectionDetector.IsInefficiencyCorrectionHappening(
 			    	currentDateTime ,
 			    	returnsManagerToTestInefficiency.ReturnIntervals[ 0 ] ,
-			    	weightedPositions ) )
+			    	inefficientWeightedPositions ) )
 				// the candidate is inefficient but the gap is closing
-				weightedPositions = candidate;
-			return weightedPositions;
+				weightedPositionsToBeReturned = inefficientWeightedPositions;
+			return weightedPositionsToBeReturned;
 		}
 		#endregion getWeightedPositionsFromCandidateWithoutAdjustment
 		

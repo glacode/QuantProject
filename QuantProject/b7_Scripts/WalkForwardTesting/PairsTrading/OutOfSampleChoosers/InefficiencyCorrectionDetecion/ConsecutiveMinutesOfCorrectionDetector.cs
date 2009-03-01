@@ -120,17 +120,17 @@ namespace QuantProject.Scripts.WalkForwardTesting.PairsTrading
 		private bool areAllPositiveReturns(
 			ReturnsManager returnsManager , WeightedPositions weightedPositions )
 		{
-			bool areAllNegative = false;
+			bool areAllPositive = false;
 			try
 			{
 				float[] returns = weightedPositions.GetReturns( returnsManager );
-				areAllNegative = this.areAllPositiveReturns( returns );
+				areAllPositive = this.areAllPositiveReturns( returns );
 			}
 			catch( TickerNotExchangedException tickerNotExchangedException )
 			{
 				string toAvoidCompileWarning = tickerNotExchangedException.Message;
 			}
-			return areAllNegative;
+			return areAllPositive;
 		}
 		#endregion areAllPositiveReturns
 		
