@@ -60,13 +60,15 @@ namespace QuantProject.Scripts.CallingReportsForRunScripts
 			}
 		}
     
-    public static void ShowReportFromSerializedAccountReport(string serializedAccountReportFullPath)
+    public static Report ShowReportFromSerializedAccountReport(
+			string serializedAccountReportFullPath )
     {
+    	Report report = null;
       try
       {
         AccountReport accountReport = 
           (AccountReport)ObjectArchiver.Extract(serializedAccountReportFullPath);
-        Report report = new Report(accountReport);
+        report = new Report(accountReport);
         report.Text = 
         	serializedAccountReportFullPath.Substring(serializedAccountReportFullPath.LastIndexOf("\\") + 1);
         report.Show();
@@ -75,6 +77,7 @@ namespace QuantProject.Scripts.CallingReportsForRunScripts
       {
         System.Windows.Forms.MessageBox.Show(ex.ToString());
       }
+      return report;
     }
     
 
