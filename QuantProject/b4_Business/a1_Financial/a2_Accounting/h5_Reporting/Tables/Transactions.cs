@@ -10,6 +10,14 @@ namespace QuantProject.Business.Financial.Accounting.Reporting.Tables
 	[Serializable]
   public class Transactions : ReportTable
 	{
+  	public static string FieldNameForDateTime
+  	{
+  		get{ return "DateTime"; }
+  	}
+  	public static string FieldNameForTicker
+  	{
+  		get{ return "InstrumentKey"; }
+  	}
 		public Transactions( string reportName , DataTable detailedDataTable ) :
       base( reportName + " - Transactions" )
 		{
@@ -18,9 +26,11 @@ namespace QuantProject.Business.Financial.Accounting.Reporting.Tables
     private void getTransactionTable_setColumns( DataTable detailedDataTable ,
       DataTable transactionsDataTable )
     {
-      transactionsDataTable.Columns.Add( "DateTime" , Type.GetType( "System.DateTime" ) );
+      transactionsDataTable.Columns.Add(
+  			Transactions.FieldNameForDateTime , Type.GetType( "System.DateTime" ) );
 //      transactionsDataTable.Columns.Add( "BarComponent" , Type.GetType( "System.String" ) );
-      transactionsDataTable.Columns.Add( "TransactionType"  , Type.GetType( "System.String" ) );
+      transactionsDataTable.Columns.Add(
+	Transactions.FieldNameForTicker  , Type.GetType( "System.String" ) );
       transactionsDataTable.Columns.Add( "InstrumentKey"  , Type.GetType( "System.String" ) );
       transactionsDataTable.Columns.Add( "Quantity"  , Type.GetType( "System.Int32" ) );
       transactionsDataTable.Columns.Add( "Price"  , Type.GetType( "System.Double" ) );
