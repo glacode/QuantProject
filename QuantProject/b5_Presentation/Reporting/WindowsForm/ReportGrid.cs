@@ -27,12 +27,17 @@ using QuantProject.Business.Financial.Accounting.Reporting;
 
 namespace QuantProject.Presentation.Reporting.WindowsForm
 {
+	public delegate void RightClickedTransactionEventHandler(
+		ReportGrid sender , int dataGridRowNumber );
+	
 	/// <summary>
 	/// DataGrid to be displayed within a report TabPage
 	/// </summary>
 	[Serializable]
 	public class ReportGrid : DataGrid
 	{
+		public event RightClickedTransactionEventHandler RightClickedTransaction;
+
 		private ReportTable reportTable;
 		private DataGridTableStyle dataGridStyle;
 		
@@ -41,6 +46,7 @@ namespace QuantProject.Presentation.Reporting.WindowsForm
 			this.reportTable = reportTable;
 			this.DataSource = reportTable.DataTable;
 			this.setFormat();
+			this.MouseDown += new MouseEventHandler( this.mouseDownEventHandler );
 		}
 		
 		#region setFormat
@@ -65,7 +71,7 @@ namespace QuantProject.Presentation.Reporting.WindowsForm
 //			DataGridTextBoxColumn dataGridTextBoxColumn =
 //				( DataGridTextBoxColumn )dataGridTableStyle.GridColumnStyles[
 //					columnIndex ];
-////			dataGridTableStyle.GridColumnStyles.a
+		////			dataGridTableStyle.GridColumnStyles.a
 //			return dataGridTextBoxColumn;
 //		}
 		private DataGridTextBoxColumn addDataGridTextBoxColumn( int columnIndex )
@@ -106,5 +112,29 @@ namespace QuantProject.Presentation.Reporting.WindowsForm
 			this.addDataGridColumnStyles();
 		}
 		#endregion setFormat
+		
+		#region mouseDownEventHandler
+		
+		#region handleRightClick
+		private int getClickedRowIndex( MouseEventArgs mouseEventArgs )
+		{
+			DataGrid.HitTestInfo hitTestInfo = this.HitTest(
+				mouseEventArgs.X , mouseEventArgs.Y );
+			int rowIndex = hitTestInfo.Row;
+			return rowIndex;
+		}
+		private void handleRightClick( object sender , MouseEventArgs mouseEventArgs )
+		{
+			int rowIndex = this.getClickedRowIndex( mouseEventArgs );
+			this.RightClickedTransaction( this , rowIndex );
+		}
+		#endregion handleRightClick
+		
+		private void mouseDownEventHandler( object sender , MouseEventArgs mouseEventArgs )
+		{
+			if ( mouseEventArgs.Button == MouseButtons.Right )
+				this.handleRightClick( sender , mouseEventArgs );
+		}
+		#endregion mouseDownEventHandler
 	}
 }
