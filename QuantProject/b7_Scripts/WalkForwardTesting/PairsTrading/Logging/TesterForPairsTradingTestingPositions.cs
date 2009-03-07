@@ -95,75 +95,80 @@ namespace QuantProject.Scripts.WalkForwardTesting.PairsTrading
 
 		#region Run
 		
-		#region getHistory
+//		#region getHistory
+//
+//		#region addItemsToHistory
+//		private DateTime getFirstDateTime()
+//		{
+//			DateTime firstDateTime =
+//				HistoricalEndOfDayTimer.GetMarketOpen(
+//					this.dateTimeWhenThisObjectWasLogged.AddDays( 1 ) );
+//			return firstDateTime;
+//		}
+//		private DateTime getLastDateTime()
+//		{
+//			DateTime firstDateTime = this.getFirstDateTime();
+//			DateTime lastDateTime =
+//				HistoricalEndOfDayTimer.GetMarketClose( firstDateTime );
+//			return lastDateTime;
+//		}
+//		private void addItemToHistory(
+//			WeightedPosition weightedPosition , DateTime dateTime , History history )
+//		{
+//			try
+//			{
+//			double marketValue = this.historicalMarketValueProvider.GetMarketValue(
+//				weightedPosition.Ticker , dateTime );
+//			history.Add( dateTime , marketValue );
+//			}
+//			catch( TickerNotExchangedException tickerNotExchangedException )
+//			{
+//				string toAvoidWarning = tickerNotExchangedException.Message;
+//			}
+//		}
+//		private void addItemsToHistory( WeightedPosition weightedPosition , History history )
+//		{
+//			DateTime currentDateTime = this.getFirstDateTime();
+//			DateTime lastDateTime = this.getLastDateTime();
+//			while ( currentDateTime <= lastDateTime )
+//			{
+//				this.addItemToHistory( weightedPosition , currentDateTime , history );
+//				currentDateTime = currentDateTime.AddMinutes( 1 );
+//			}
+//		}
+//		#endregion addItemsToHistory
+//
+//		private History getHistory( WeightedPosition weightedPosition )
+//		{
+//			History history = new History();
+//			this.addItemsToHistory( weightedPosition , history );
+//			return history;
+//		}
+//		#endregion getHistory
 		
-		#region addItemsToHistory
-		private DateTime getFirstDateTime()
-		{
-			DateTime firstDateTime =
-				HistoricalEndOfDayTimer.GetMarketOpen(
-					this.dateTimeWhenThisObjectWasLogged.AddDays( 1 ) );
-			return firstDateTime;
-		}
-		private DateTime getLastDateTime()
-		{
-			DateTime firstDateTime = this.getFirstDateTime();
-			DateTime lastDateTime =
-				HistoricalEndOfDayTimer.GetMarketClose( firstDateTime );
-			return lastDateTime;
-		}
-		private void addItemToHistory(
-			WeightedPosition weightedPosition , DateTime dateTime , History history )
-		{
-			try
-			{
-			double marketValue = this.historicalMarketValueProvider.GetMarketValue(
-				weightedPosition.Ticker , dateTime );
-			history.Add( dateTime , marketValue );
-			}
-			catch( TickerNotExchangedException tickerNotExchangedException )
-			{
-				string toAvoidWarning = tickerNotExchangedException.Message;
-			}
-		}
-		private void addItemsToHistory( WeightedPosition weightedPosition , History history )
-		{
-			DateTime currentDateTime = this.getFirstDateTime();
-			DateTime lastDateTime = this.getLastDateTime();
-			while ( currentDateTime <= lastDateTime )
-			{
-				this.addItemToHistory( weightedPosition , currentDateTime , history );
-				currentDateTime = currentDateTime.AddMinutes( 1 );
-			}
-		}
-		#endregion addItemsToHistory
-		
-		private History getHistory( WeightedPosition weightedPosition )
-		{
-			History history = new History();
-			this.addItemsToHistory( weightedPosition , history );
-			return history;
-		}
-		#endregion getHistory
-		
-		private void showHistoriesPlots(
-			History historyForFirstPosition , History historyForSecondPosition )
-		{
-			HistoriesViewer historiesViewer = new HistoriesViewer();
-			historiesViewer.Add( historyForFirstPosition , Color.Green );
-			historiesViewer.Add( historyForSecondPosition , Color.Red );
-			historiesViewer.ShowDialog();
-		}
+//		private void showHistoriesPlots(
+//			History historyForFirstPosition , History historyForSecondPosition )
+//		{
+//			HistoriesViewer historiesViewer = new HistoriesViewer();
+//			historiesViewer.Add( historyForFirstPosition , Color.Green );
+//			historiesViewer.Add( historyForSecondPosition , Color.Red );
+//			historiesViewer.Show();
+//		}
 		
 		public void Run()
 		{
 			this.historicalMarketValueProvider = new HistoricalBarProvider(
 				new SimpleBarCache( 60 ) );
-			History historyForFirstPosition = this.getHistory(
-				this.testingPositions.WeightedPositions[ 0 ] );
-			History historyForSecondPosition = this.getHistory(
-				this.testingPositions.WeightedPositions[ 1 ] );
-			this.showHistoriesPlots( historyForFirstPosition , historyForSecondPosition );
+			new PairsViewer(
+				this.historicalMarketValueProvider ,
+				this.testingPositions.WeightedPositions[ 0 ] ,
+				this.testingPositions.WeightedPositions[ 1 ] ,
+				this.dateTimeWhenThisObjectWasLogged ).Show();
+//			History historyForFirstPosition = this.getHistory(
+//				this.testingPositions.WeightedPositions[ 0 ] );
+//			History historyForSecondPosition = this.getHistory(
+//				this.testingPositions.WeightedPositions[ 1 ] );
+//			this.showHistoriesPlots( historyForFirstPosition , historyForSecondPosition );
 		}
 		#endregion Run
 
