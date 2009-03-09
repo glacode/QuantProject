@@ -126,10 +126,11 @@
     <Compile Include="WalkForwardTesting\PairsTrading\InSample\PairsTradingFitnessEvaluator.cs" />
     <Compile Include="WalkForwardTesting\PairsTrading\Logging\PairsTradingLogItem.cs" />
     <Compile Include="WalkForwardTesting\PairsTrading\Logging\PairsTradingSerializedReportViewer.cs" />
-    <Compile Include="WalkForwardTesting\PairsTrading\Logging\PairsViewer.cs" />
-    <Compile Include="WalkForwardTesting\PairsTrading\Logging\PairsViewer.Designer.cs">
+    <Compile Include="WalkForwardTesting\PairsTrading\Logging\PairsViewer\PairsViewer.cs" />
+    <Compile Include="WalkForwardTesting\PairsTrading\Logging\PairsViewer\PairsViewer.Designer.cs">
       <DependentUpon>PairsViewer.cs</DependentUpon>
     </Compile>
+    <Compile Include="WalkForwardTesting\PairsTrading\Logging\PairsViewer\ReturnsComputer.cs" />
     <Compile Include="WalkForwardTesting\PairsTrading\Logging\TesterForPairsTradingTestingPositionsEndOfDayInSample.cs" />
     <Compile Include="WalkForwardTesting\PairsTrading\Logging\TesterForPairsTradingTestingPositions.cs" />
     <Compile Include="WalkForwardTesting\PairsTrading\OutOfSampleChoosers\InefficiencyCorrectionDetecion\ConsecutiveMinutesOfCorrectionDetector.cs" />
@@ -312,6 +313,7 @@
     <Folder Include="WalkForwardTesting\PairsTrading\InSample\InSampleChoosers\Genetic" />
     <Folder Include="WalkForwardTesting\PairsTrading\Logging" />
     <Folder Include="WalkForwardTesting\PairsTrading\ExitStrategies" />
+    <Folder Include="WalkForwardTesting\PairsTrading\Logging\PairsViewer" />
     <Folder Include="WalkForwardTesting\PairsTrading\OutOfSampleChoosers" />
     <Folder Include="WalkForwardTesting\PairsTrading\OutOfSampleChoosers\InefficiencyCorrectionDetecion" />
     <Folder Include="WalkForwardTesting\PairsTrading\Strategies" />
