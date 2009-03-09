@@ -45,7 +45,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.PairsTrading
 			HistoricalMarketValueProvider historicalMarketValueProvider ,
 			WeightedPosition firstWeightedPosition ,
 			WeightedPosition secondWeightedPosition ,
-			DateTime firstDateTime )
+			DateTime dateTime )
 		{
 			//
 			// The InitializeComponent() call is required for Windows Forms designer support.
@@ -55,30 +55,35 @@ namespace QuantProject.Scripts.WalkForwardTesting.PairsTrading
 			this.historicalMarketValueProvider = historicalMarketValueProvider;
 			this.firstWeightedPosition = firstWeightedPosition;
 			this.secondWeightedPosition = secondWeightedPosition;
-			this.dateTimePicker.Value = firstDateTime;
+			this.dateTimePickerForFirstDateTime.Value =
+				this.initializeFirstDateTime( dateTime );
+			this.textBoxGreenTicker.Text = firstWeightedPosition.Ticker;
+			this.textBoxRedTicker.Text = secondWeightedPosition.Ticker;
+			
+			this.dateTimePickerForLastDateTime.Value = this.initializeLastDateTime();
 		}
 		
+		private DateTime initializeFirstDateTime( DateTime dateTime )
+		{
+			DateTime firstDateTime = dateTime.AddMinutes( -10 );
+//				HistoricalEndOfDayTimer.GetMarketOpen(
+//					this.dateTimePicker.Value.AddDays( 1 ) );
+			return firstDateTime;
+		}
+		private DateTime initializeLastDateTime()
+		{
+			DateTime firstDateTime = this.dateTimePickerForFirstDateTime.Value;
+			DateTime lastDateTime =
+				HistoricalEndOfDayTimer.GetMarketClose( firstDateTime );
+			return lastDateTime;
+		}		
 		
 		#region ButtonShowClick
 		
 		#region getHistory
 		
 		#region addItemsToHistory
-		private DateTime getFirstDateTime()
-		{
-			DateTime firstDateTime =
-				this.dateTimePicker.Value.AddMinutes( -10 );
-//				HistoricalEndOfDayTimer.GetMarketOpen(
-//					this.dateTimePicker.Value.AddDays( 1 ) );
-			return firstDateTime;
-		}
-		private DateTime getLastDateTime()
-		{
-			DateTime firstDateTime = this.getFirstDateTime();
-			DateTime lastDateTime =
-				HistoricalEndOfDayTimer.GetMarketClose( firstDateTime );
-			return lastDateTime;
-		}
+
 		private void addItemToHistory(
 			WeightedPosition weightedPosition , DateTime dateTime , History history )
 		{
@@ -95,8 +100,8 @@ namespace QuantProject.Scripts.WalkForwardTesting.PairsTrading
 		}
 		private void addItemsToHistory( WeightedPosition weightedPosition , History history )
 		{
-			DateTime currentDateTime = this.getFirstDateTime();
-			DateTime lastDateTime = this.getLastDateTime();
+			DateTime currentDateTime = this.dateTimePickerForFirstDateTime.Value;
+			DateTime lastDateTime = this.dateTimePickerForLastDateTime.Value;
 			while ( currentDateTime <= lastDateTime )
 			{
 				this.addItemToHistory( weightedPosition , currentDateTime , history );
