@@ -31,7 +31,7 @@ namespace QuantProject.Business.Financial.Accounting.Reporting.Tables
 //      transactionsDataTable.Columns.Add( "BarComponent" , Type.GetType( "System.String" ) );
       transactionsDataTable.Columns.Add(
 	Transactions.FieldNameForTicker  , Type.GetType( "System.String" ) );
-      transactionsDataTable.Columns.Add( "InstrumentKey"  , Type.GetType( "System.String" ) );
+//      transactionsDataTable.Columns.Add( "InstrumentKey"  , Type.GetType( "System.String" ) );
       transactionsDataTable.Columns.Add( "Quantity"  , Type.GetType( "System.Int32" ) );
       transactionsDataTable.Columns.Add( "Price"  , Type.GetType( "System.Double" ) );
 			transactionsDataTable.Columns.Add( "TransactionAmount"  , Type.GetType( "System.Double" ) );
