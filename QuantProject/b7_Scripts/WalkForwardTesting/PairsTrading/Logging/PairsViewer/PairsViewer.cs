@@ -41,6 +41,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.PairsTrading
 		private	WeightedPosition firstWeightedPosition;
 		private	WeightedPosition secondWeightedPosition;
 		
+		
 		public PairsViewer(
 			HistoricalMarketValueProvider historicalMarketValueProvider ,
 			WeightedPosition firstWeightedPosition ,
@@ -76,7 +77,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.PairsTrading
 			DateTime lastDateTime =
 				HistoricalEndOfDayTimer.GetMarketClose( firstDateTime );
 			return lastDateTime;
-		}		
+		}
 		
 		#region ButtonShowClick
 		
@@ -118,21 +119,50 @@ namespace QuantProject.Scripts.WalkForwardTesting.PairsTrading
 		}
 		#endregion getHistory
 		
-		private void showHistoriesPlots(
-			History historyForFirstPosition , History historyForSecondPosition )
-		{
-			HistoriesViewer historiesViewer = new HistoriesViewer();
-			historiesViewer.Add( historyForFirstPosition , Color.Green );
-			historiesViewer.Add( historyForSecondPosition , Color.Red );
-			historiesViewer.Show();
-		}
 		
+		#region showHistoriesPlots
+		private HistoriesViewer showHistoriesPlots(
+			History firstHistory , History secondHistory , string formTitle ,
+			int xPosition , int yPosition )
+		{
+			HistoriesViewer historiesViewer =
+				new HistoriesViewer( formTitle );
+			historiesViewer.StartPosition = FormStartPosition.Manual;
+			historiesViewer.Location = new Point( xPosition , yPosition );
+			historiesViewer.Add( firstHistory , Color.Green );
+			historiesViewer.Add( secondHistory , Color.Red );
+			historiesViewer.Show();
+			return historiesViewer;
+		}
+		private void showHistoriesPlots(
+			History firstTickerMarketValues , History secondTickerMarketValues ,
+			History firstTickerReturns , History secondTickerReturns )
+		{
+			HistoriesViewer historiesViewer = this.showHistoriesPlots(
+				firstTickerMarketValues , secondTickerMarketValues , "Market Values ($)" ,
+				this.Location.X + this.Size.Width , this.Location.Y );
+			this.showHistoriesPlots(
+				firstTickerReturns , secondTickerReturns , "Returns" ,
+				historiesViewer.Location.X ,
+				historiesViewer.Location.Y + historiesViewer.Size.Height );
+		}
+		#endregion showHistoriesPlots
+		
+
 		
 		void ButtonShowClick(object sender, EventArgs e)
 		{
-			History historyForFirstPosition = this.getHistory( this.firstWeightedPosition );
-			History historyForSecondPosition = this.getHistory(	this.secondWeightedPosition );
-			this.showHistoriesPlots( historyForFirstPosition , historyForSecondPosition );
+			History firstTickerMarketValues = this.getHistory( this.firstWeightedPosition );
+			History secondTickerMarketValues = this.getHistory(	this.secondWeightedPosition );
+			ReturnsComputer returnsComputer =
+				new ReturnsComputer( this.historicalMarketValueProvider );
+			History firstTickerReturns =
+				returnsComputer.GetReturns( this.firstWeightedPosition , firstTickerMarketValues );
+			History secondTickerReturns =
+				returnsComputer.GetReturns( this.secondWeightedPosition , secondTickerMarketValues );
+			this.showHistoriesPlots(
+				firstTickerMarketValues , secondTickerMarketValues ,
+				firstTickerReturns , secondTickerReturns );
 		}
 		#endregion ButtonShowClick
 	}
