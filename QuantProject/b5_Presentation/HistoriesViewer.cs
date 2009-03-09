@@ -39,19 +39,21 @@ namespace QuantProject.Presentation
 	{
 		private Chart chart;
 		
-		public HistoriesViewer()
+		public HistoriesViewer( string formTitle )
 		{
 			//
 			// The InitializeComponent() call is required for Windows Forms designer support.
 			//
 			InitializeComponent();
 			
+			this.Text = formTitle;
 			this.addChart();
 		}
 		
 		private void addChart()
 		{
 			this.chart = new Chart();
+			this.chart.Dock = DockStyle.Fill;
 			this.Controls.Add( chart );
 		}
 		
@@ -59,47 +61,5 @@ namespace QuantProject.Presentation
 		{
 			this.chart.Add( historyToBePlotted , color );
 		}
-		
-//		#region buildTheForm
-//
-//		private void addChart()
-//		{
-//			Chart chart = new Chart();
-//			this.Controls.Add( chart );
-//		}
-//
-//		#region populateChart
-//
-//		#region addChart
-//
-//		#region getHistoryToBePlotted
-//		private History getHistoryToBePlotted( WeightedPosition weightedPosition )
-//		{
-//
-//		}
-//		#endregion getHistoryToBePlotted
-//
-//		private void addHistory( WeightedPosition weightedPosition )
-//		{
-//			History historyToBePlotted =
-//				this.getHistoryToBePlotted( weightedPosition );
-//			this.addHistory( historyToBePlotted );
-//		}
-//		#endregion addChart
-//
-//		private void populateChart()
-//		{
-//			foreach ( WeightedPosition weightedPosition in
-//			         this.pairsTradingTestingPositions.WeightedPositions )
-//				this.addHistory( weightedPosition );
-//		}
-//		#endregion populateChart
-//
-//		private void buildTheForm()
-//		{
-//			this.addChart();
-//			this.populateChart();
-//		}
-//		#endregion buildTheForm
 	}
 }

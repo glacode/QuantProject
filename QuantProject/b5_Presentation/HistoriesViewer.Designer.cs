@@ -1,4 +1,4 @@
-/*
+﻿/*
 QuantProject - Quantitative Finance Library
 
 HistoriesViewer.cs
@@ -52,12 +52,12 @@ namespace QuantProject.Presentation
 		{
 			this.SuspendLayout();
 			// 
-			// PairsTradingStudio
+			// HistoriesViewer
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-			this.ClientSize = new System.Drawing.Size(787, 403);
-			this.Name = "PairsTradingStudio";
+			this.ClientSize = new System.Drawing.Size(333, 309);
+			this.Name = "HistoriesViewer";
 			this.Text = "PairsTradingVisualForm";
 			this.ResumeLayout(false);
 		}
