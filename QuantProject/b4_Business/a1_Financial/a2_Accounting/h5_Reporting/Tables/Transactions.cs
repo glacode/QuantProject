@@ -29,6 +29,7 @@ namespace QuantProject.Business.Financial.Accounting.Reporting.Tables
       transactionsDataTable.Columns.Add(
   			Transactions.FieldNameForDateTime , Type.GetType( "System.DateTime" ) );
 //      transactionsDataTable.Columns.Add( "BarComponent" , Type.GetType( "System.String" ) );
+		transactionsDataTable.Columns.Add( "TransactionType"  , Type.GetType( "System.String" ) );
       transactionsDataTable.Columns.Add(
 	Transactions.FieldNameForTicker  , Type.GetType( "System.String" ) );
 //      transactionsDataTable.Columns.Add( "InstrumentKey"  , Type.GetType( "System.String" ) );
