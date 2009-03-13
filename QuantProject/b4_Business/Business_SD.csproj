@@ -47,6 +47,7 @@
   <ItemGroup>
     <Compile Include="a05_Timing\IndexBasedHistoricalTimer.cs" />
     <Compile Include="a05_Timing\Timer.cs" />
+    <Compile Include="a07_DataProviders\HistoricalBarInterpolatingProvider.cs" />
     <Compile Include="a07_DataProviders\HistoricalMarketValueProviderWithQuoteBackupOnClose.cs" />
     <Compile Include="a07_DataProviders\PriceAdjustmentDetector.cs" />
     <Compile Include="a07_DataProviders\HistoricalBarProvider.cs" />
@@ -73,6 +74,7 @@
     <Compile Include="a2_Strategies\BasicStrategyForBacktester.cs" />
     <Compile Include="a2_Strategies\Benchmark.cs" />
     <Compile Include="a2_Strategies\Eligibles\ByPriceLessVolatileOTCAlwaysQuoted.cs" />
+    <Compile Include="a2_Strategies\Eligibles\ByPriceMostLiquidAlwaysIntradayQuoted.cs" />
     <Compile Include="a2_Strategies\Eligibles\ByPriceMostLiquidLessVolatileCTCAlwaysQuoted.cs" />
     <Compile Include="a2_Strategies\Eligibles\ByPriceMostLiquidLessVolatileCTOAlwaysQuoted.cs" />
     <Compile Include="a2_Strategies\Eligibles\ByPriceMostLiquidLessVolatileOTCAlwaysQuoted.cs" />
@@ -115,6 +117,7 @@
     <Compile Include="a2_Strategies\returnsManagement\time\CloseToOpenIntervals.cs" />
     <Compile Include="a2_Strategies\returnsManagement\time\DailyOpenToCloseIntervals.cs" />
     <Compile Include="a2_Strategies\returnsManagement\time\IntervalsType.cs" />
+    <Compile Include="a2_Strategies\returnsManagement\time\IntradayReturnIntervals.cs" />
     <Compile Include="a2_Strategies\returnsManagement\time\OpenToCloseCloseToOpenIntervals.cs" />
     <Compile Include="a2_Strategies\returnsManagement\time\OpenToOpenIntervals.cs" />
     <Compile Include="a2_Strategies\returnsManagement\time\ReturnInterval.cs" />
@@ -126,6 +129,7 @@
     <Compile Include="a2_Strategies\TickersRelationships\CloseToCloseCorrelationProvider.cs" />
     <Compile Include="a2_Strategies\TickersRelationships\CloseToOpenCorrelationProvider.cs" />
     <Compile Include="a2_Strategies\TickersRelationships\CorrelationProvider.cs" />
+    <Compile Include="a2_Strategies\TickersRelationships\IntradayCorrelationProvider.cs" />
     <Compile Include="a2_Strategies\TickersRelationships\MissingCorrelationException.cs" />
     <Compile Include="a2_Strategies\TickersRelationships\OpenToCloseCloseToOpenCorrelationProvider.cs" />
     <Compile Include="a2_Strategies\TickersRelationships\OpenToCloseCorrelationProvider.cs" />
