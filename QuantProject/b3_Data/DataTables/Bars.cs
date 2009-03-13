@@ -210,6 +210,48 @@ namespace QuantProject.Data.DataTables
 			return marketDateTimes;
 		}
 		
+		/// <summary>
+		/// returns the days when the ticker was exchanged for at least
+		/// the given number of bars of the given interval in seconds,
+		/// within the given date time interval
+		/// </summary>
+		/// <param name="ticker"></param>
+		/// <param name="firstDateTime">begin interval</param>
+		/// <param name="lastDateTime">end interval</param>
+		/// <param name="intervalFrameInSeconds">interval frame in seconds for the ticker's bars</param>
+		/// <param name="minimumNumberOfBarsForEachMarketDay">a day is returned only if 
+		/// the day's bars are equal or greater than the minimumNumberOfBars</param>
+		/// <returns>History of days with minimumNumberOfBars in each</returns>
+		public static History GetMarketDays( string ticker ,
+                                         DateTime firstDateTime ,
+                                         DateTime lastDateTime,
+                                         int intervalFrameInSeconds , 
+                                         int minimumNumberOfBarsForEachMarketDay )
+
+		{
+			History marketDaysToBeReturned = new History();
+			DateTime marketDayToCheck =
+				Time.GetDateTimeFromMerge( firstDateTime, new Time(9,30,0) );
+			DataTable barsForMarketDayToBeReturned;
+			while( marketDayToCheck.CompareTo(lastDateTime) <= 0 )
+			{
+				barsForMarketDayToBeReturned = 
+					QuantProject.DataAccess.Tables.Bars.GetTickerBars(ticker, marketDayToCheck,
+					                                                  Time.GetDateTimeFromMerge(marketDayToCheck, new Time(16,0,0)),
+					                                                  intervalFrameInSeconds);
+				if (barsForMarketDayToBeReturned.Rows.Count >= minimumNumberOfBarsForEachMarketDay)
+				{
+					DateTime dayToAdd = 
+						Time.GetDateTimeFromMerge(marketDayToCheck, new Time(0,0,0));
+					marketDaysToBeReturned.Add(	dayToAdd, dayToAdd	);
+				}
+				marketDayToCheck =
+					marketDayToCheck.AddDays(1);
+			}
+			return marketDaysToBeReturned;
+		}
+		
+		
 		#region GetMarketDateTimes
 		
 //		#region checkIfAreTimes
@@ -487,7 +529,7 @@ namespace QuantProject.Data.DataTables
 				// history has not been set, yet
 			{
 				this.history = new History();
-				this.history.Import( this , Bars.DateTimeForOpen , Bars.Close );
+				this.history.Import( this , Bars.DateTimeForOpen , Bars.DateTimeForOpen );
 			}
 		}
 		/// <summary>
@@ -598,7 +640,7 @@ namespace QuantProject.Data.DataTables
 			{
 				return this.GetBarDateTimeOrFollowing(dateTime);
 			}
-			else
+			else//dateTime > endDateTime
 			{
 				return this.GetBarDateTimeOrPreceding(dateTime);
 			}
@@ -647,14 +689,14 @@ namespace QuantProject.Data.DataTables
 		/// Gets the first valid open at the given dateTime
 		/// </summary>
 		/// <returns></returns>
-		public float GetFirstValidOpen(DateTime dateTime )
+		public double GetFirstValidOpen(DateTime dateTime )
 		{
 			object[] keys = new object[1];
 			keys[0] = this.GetFirstValidBarDateTime(dateTime);
 			DataRow foundRow = this.Rows.Find(keys);
 			if(foundRow==null)
 				throw new Exception("No bar for such a dateTime!");
-			return (float)foundRow[Bars.Open];
+			return (double)foundRow[Bars.Open];
 		}
 	}
 }

@@ -267,11 +267,13 @@ namespace QuantProject.DataAccess.Tables
 		public static DataTable GetTickerBars( string ticker, DateTime firstBarDateTime,
 		                                      DateTime lastBarDateTime, int intervalFrameInSeconds)
 		{
-			string sql = "select * from bars " +
+			string sql = "select " + 
+				Bars.Open + "," + Bars.Low + "," + Bars.High + "," + Bars.Close +   
+				" from bars " +
 				"where " + Bars.TickerFieldName + "='" + ticker + "' and " +
 				Bars.IntervalFrameInSeconds + "='" + intervalFrameInSeconds + "' " +
-				"and " + Bars.DateTimeForOpen + " between " + SQLBuilder.GetDateConstant(firstBarDateTime) + " " +
-				"and " + SQLBuilder.GetDateConstant(lastBarDateTime) + " " +
+				"and " + Bars.DateTimeForOpen + " between " + SQLBuilder.GetDateTimeConstant(firstBarDateTime) + " " +
+				"and " + SQLBuilder.GetDateTimeConstant(lastBarDateTime) + " " +
 				"order by " + Bars.DateTimeForOpen;
 			return SqlExecutor.GetDataTable( sql );
 		}
@@ -381,7 +383,7 @@ namespace QuantProject.DataAccess.Tables
 			int intervalFrameInSeconds )
 		{
 			string sql =
-				"select baDateTimeForOpen from bars " +
+				"select baDateTimeForOpen, baOpen, baHigh, baLow, baClose from bars " +
 				"where (baTicker='" + ticker + "') and " +
 				"(baInterval=" + intervalFrameInSeconds + ") and" +
 				"(baDateTimeForOpen>=" +
