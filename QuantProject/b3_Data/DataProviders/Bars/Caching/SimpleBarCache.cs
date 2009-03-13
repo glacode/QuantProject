@@ -22,20 +22,29 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 using System;
 
+using QuantProject.ADT;
 using QuantProject.DataAccess;
 
 namespace QuantProject.Data.DataProviders.Bars.Caching
 {
 	/// <summary>
-	/// It isn't really a cache: it just access to database
+	/// It isn't really a cache: it just access the database
 	/// </summary>
 	public class SimpleBarCache : IBarCache
 	{
 		private int intervalFrameInSeconds;
+		private BarComponent barComponent;
+		
+		public SimpleBarCache(int intervalFrameInSeconds, BarComponent barComponent)
+		{
+			this.intervalFrameInSeconds = intervalFrameInSeconds;
+			this.barComponent = barComponent;
+		}
 		
 		public SimpleBarCache(int intervalFrameInSeconds)
 		{
 			this.intervalFrameInSeconds = intervalFrameInSeconds;
+			this.barComponent = BarComponent.Open;
 		}
 		
 		/// <summary>
@@ -50,8 +59,25 @@ namespace QuantProject.Data.DataProviders.Bars.Caching
 			double returnValue = double.NaN;
 			try
 			{
-				returnValue = 
-					QuantProject.DataAccess.Tables.Bars.GetOpen( ticker , dateTime , this.intervalFrameInSeconds );
+				switch (this.barComponent)
+    		{
+		  		case BarComponent.Open :
+						returnValue = QuantProject.DataAccess.Tables.Bars.GetOpen( ticker , dateTime , this.intervalFrameInSeconds );
+						break;
+					case BarComponent.Close :
+						returnValue = QuantProject.DataAccess.Tables.Bars.GetClose( ticker , dateTime , this.intervalFrameInSeconds );
+						break;
+					case BarComponent.High :
+						returnValue = QuantProject.DataAccess.Tables.Bars.GetHigh( ticker , dateTime , this.intervalFrameInSeconds );
+						break;
+					case BarComponent.Low :
+						returnValue = QuantProject.DataAccess.Tables.Bars.GetLow( ticker , dateTime , this.intervalFrameInSeconds );
+						break;
+					//this line should never be reached!
+					default:
+						returnValue = QuantProject.DataAccess.Tables.Bars.GetOpen( ticker , dateTime , this.intervalFrameInSeconds );
+						break;
+      	}
 			}
 			catch( EmptyQueryException ex )
 			{

@@ -152,7 +152,7 @@ namespace QuantProject.Business.Strategies.ReturnsManagement.Time
 			this.returnIntervals_initialize(
 				firstDateTime ,	lastDateTime, benchmark, intervalLength );
 		}
-		
+				          
 		/// <summary>
 		/// Use this constructor if you want to create an empty
 		/// collection of intervals. The object will then be populated
