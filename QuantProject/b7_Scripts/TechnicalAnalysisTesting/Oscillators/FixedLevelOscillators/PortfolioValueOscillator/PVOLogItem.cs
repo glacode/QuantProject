@@ -159,7 +159,7 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOs
 			// definition for the Fitness Evaluator (for
 			// objects that use it)
 			int numDaysForOscillatingPeriodForChooser =
-				((PVOPositions)this.BestPVOPositionsInSample[0]).NumDaysForOscillatingPeriod;
+				((PVOPositions)this.BestPVOPositionsInSample[0]).NumOfDaysOrMinutesForOscillatingPeriod;
 			int	numberOfPortfolioPositions =
 				this.BestPVOPositionsInSample[0].WeightedPositions.Count;
 			//cash and portfolio type

@@ -42,7 +42,7 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOs
 	{
 		private double oversoldThreshold;
 		private double overboughtThreshold;
-		private int numDaysForOscillatingPeriod;
+		private int numOfDaysOrMinutesForOscillatingPeriod;
 		private int generation;
 		
 		private static ReturnsManager returnsManager;
@@ -58,9 +58,9 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOs
 			get{return this.overboughtThreshold;}
 			set{this.overboughtThreshold = value;}
 		}
-		public int NumDaysForOscillatingPeriod
+		public int NumOfDaysOrMinutesForOscillatingPeriod
 		{
-			get{return this.numDaysForOscillatingPeriod;}
+			get{return this.numOfDaysOrMinutesForOscillatingPeriod;}
 		}
 		
 		//explicit interface implementation
@@ -77,7 +77,7 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOs
 			return new PVOPositions(this.WeightedPositions,
 			                        this.OversoldThreshold,
 			                        this.overboughtThreshold,
-			                        this.numDaysForOscillatingPeriod);
+			                        this.numOfDaysOrMinutesForOscillatingPeriod);
 		}
 
 		// creates an empty TestingPositions: to be used to give a meaning with
@@ -95,7 +95,7 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOs
 		{
 			this.oversoldThreshold = oversoldThreshold;
 			this.overboughtThreshold = overboughtThreshold;
-			this.numDaysForOscillatingPeriod = numDaysForOscillatingPeriod;
+			this.numOfDaysOrMinutesForOscillatingPeriod = numDaysForOscillatingPeriod;
 			this.generation = -1;
 		}
 		
