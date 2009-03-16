@@ -35,14 +35,18 @@ namespace QuantProject.Scripts.WalkForwardTesting.PairsTrading
 	public class ReturnsComputer
 	{
 		private HistoricalMarketValueProvider historicalMarketValueProvider;
+		private IIntervalBeginFinder intervalBeginFinder;
 		
 		private DateTime lastComputedIntervalBeginDateTime;
 		private string currentTicker;
 		private double marketValueAtTheIntervalBegin;
 		
-		public ReturnsComputer( HistoricalMarketValueProvider historicalMarketValueProvider )
+		public ReturnsComputer(
+			HistoricalMarketValueProvider historicalMarketValueProvider ,
+			IIntervalBeginFinder intervalBeginFinder )
 		{
 			this.historicalMarketValueProvider = historicalMarketValueProvider;
+			this.intervalBeginFinder = intervalBeginFinder;
 			
 			this.lastComputedIntervalBeginDateTime = DateTime.MinValue;
 			this.currentTicker = "undefinedValue_itHasToBeInitialized";
@@ -59,16 +63,18 @@ namespace QuantProject.Scripts.WalkForwardTesting.PairsTrading
 		#region updateCacheValuesForIntervalBeginIfTheCase
 		
 		#region updateCacheValueForIntervalBeginDateTime
-		protected virtual DateTime getIntervalBeginDateTime( DateTime dateTime )
-		{
-			DateTime yesterday = dateTime.AddDays( -1 );
-			DateTime yesterdayAtClose = HistoricalEndOfDayTimer.GetMarketClose( yesterday );
-			DateTime intervalBeginDateTime = yesterdayAtClose.AddMinutes( -1 );
-			return intervalBeginDateTime;
-		}
+//		protected virtual DateTime getIntervalBeginDateTime( DateTime dateTime )
+//		{
+//			DateTime yesterday = dateTime.AddDays( -1 );
+//			DateTime yesterdayAtClose = HistoricalEndOfDayTimer.GetMarketClose( yesterday );
+//			DateTime intervalBeginDateTime = yesterdayAtClose.AddMinutes( -1 );
+//			return intervalBeginDateTime;
+//		}
 		private bool updateLastComputedIntervalBeginDateTime( DateTime dateTime )
 		{
-			DateTime intervalBeginDateTime = this.getIntervalBeginDateTime( dateTime );
+//			DateTime intervalBeginDateTime = this.getIntervalBeginDateTime( dateTime );
+			DateTime intervalBeginDateTime =
+				this.intervalBeginFinder.GetIntervalBeginDateTime( dateTime );
 			bool isUpdated = ( intervalBeginDateTime != this.lastComputedIntervalBeginDateTime );
 			if ( isUpdated )
 				// the interval begin has changed since the last return calculation
@@ -83,9 +89,9 @@ namespace QuantProject.Scripts.WalkForwardTesting.PairsTrading
 			if ( isUpdated )
 				// the ticker has changed since the last return calculation
 				this.currentTicker = weightedPosition.Ticker;
-			return isUpdated;			
+			return isUpdated;
 		}
-		
+
 		private void updateCacheValuesForIntervalBeginIfTheCase(
 			DateTime dateTime , WeightedPosition weightedPosition )
 		{
@@ -101,7 +107,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.PairsTrading
 		}
 		#endregion updateCacheValuesForIntervalBeginIfTheCase
 		
-		protected virtual double getMarketValueAtTheIntervalBegin(
+		private double getMarketValueAtTheIntervalBegin(
 			DateTime dateTime , WeightedPosition weightedPosition )
 		{
 			this.updateCacheValuesForIntervalBeginIfTheCase( dateTime , weightedPosition );
