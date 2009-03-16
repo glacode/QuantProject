@@ -31,6 +31,19 @@ namespace QuantProject.ADT.Timing
 	{
 		DateTime standardDateTime;
 		
+		public int Year
+		{
+			get { return this.standardDateTime.Year; }
+		}
+		public int Month
+		{
+			get { return this.standardDateTime.Month; }
+		}
+		public int Day
+		{
+			get { return this.standardDateTime.Day; }
+		}
+		
 		// Represents a date (for any possible time)
 		public Date( DateTime dateTime )
 		{
@@ -44,6 +57,13 @@ namespace QuantProject.ADT.Timing
 		{
 			this.standardDateTime =
 				new DateTime( year , month , day , 0 , 0 , 0 );
+		}
+		
+		public Date AddDays( int days )
+		{
+			DateTime standardDateTimeForResult = this.standardDateTime.AddDays( days );
+			Date date = new Date( standardDateTimeForResult );
+			return date;
 		}
 
 		
