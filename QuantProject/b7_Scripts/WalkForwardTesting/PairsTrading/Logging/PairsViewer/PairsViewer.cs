@@ -85,7 +85,8 @@ namespace QuantProject.Scripts.WalkForwardTesting.PairsTrading
 		
 		#region addItemsToHistory
 
-		private void addItemToHistory(
+		#region addItemToHistory
+		private void addItemToHistory_actually(
 			WeightedPosition weightedPosition , DateTime dateTime , History history )
 		{
 			try
@@ -99,6 +100,15 @@ namespace QuantProject.Scripts.WalkForwardTesting.PairsTrading
 				string toAvoidWarning = tickerNotExchangedException.Message;
 			}
 		}
+		private void addItemToHistory(
+			WeightedPosition weightedPosition , DateTime dateTime , History history )
+		{
+			if ( HistoricalEndOfDayTimer.IsMarketTime( dateTime ) )
+				this.addItemToHistory_actually(
+					weightedPosition , dateTime , history );
+		}
+		#endregion addItemToHistory
+		
 		private void addItemsToHistory( WeightedPosition weightedPosition , History history )
 		{
 			DateTime currentDateTime = this.dateTimePickerForFirstDateTime.Value;
@@ -148,14 +158,30 @@ namespace QuantProject.Scripts.WalkForwardTesting.PairsTrading
 		}
 		#endregion showHistoriesPlots
 		
-
+		private IIntervalBeginFinder getIntervalBeginFinder( History firstTickerMarketValues )
+		{
+//			IIntervalBeginFinder intervalBeginFinder = new MovingPreviousDateAtClose();
+			
+			DateTime previousDayAtClose =
+				MovingPreviousDateAtClose.GetPreviousDateAtClose(
+					(DateTime)firstTickerMarketValues.GetKey( 0 ) );
+			IIntervalBeginFinder intervalBeginFinder =
+				new FixedPreviousDateAtClose(
+					this.firstWeightedPosition.Ticker , this.secondWeightedPosition.Ticker ,
+					previousDayAtClose , this.historicalMarketValueProvider );
+			return intervalBeginFinder;
+		}
 		
 		void ButtonShowClick(object sender, EventArgs e)
 		{
 			History firstTickerMarketValues = this.getHistory( this.firstWeightedPosition );
 			History secondTickerMarketValues = this.getHistory(	this.secondWeightedPosition );
+			IIntervalBeginFinder intervalBeginFinder = this.getIntervalBeginFinder(
+				firstTickerMarketValues );
 			ReturnsComputer returnsComputer =
-				new ReturnsComputer( this.historicalMarketValueProvider );
+				new ReturnsComputer(
+					this.historicalMarketValueProvider ,
+					intervalBeginFinder );
 			History firstTickerReturns =
 				returnsComputer.GetReturns( this.firstWeightedPosition , firstTickerMarketValues );
 			History secondTickerReturns =
