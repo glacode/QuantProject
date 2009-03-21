@@ -18,6 +18,10 @@ namespace QuantProject.Business.Financial.Accounting.Reporting.Tables
   	{
   		get{ return "InstrumentKey"; }
   	}
+  	public static string FieldNameForTransactionType
+  	{
+  		get{ return "TransactionType"; }
+  	}
 		public Transactions( string reportName , DataTable detailedDataTable ) :
       base( reportName + " - Transactions" )
 		{
