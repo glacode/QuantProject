@@ -68,6 +68,7 @@
     <Compile Include="a1_Financial\a2_Accounting\h5_Reporting\StatisticsSummaryRows\AverageReturnOnTuesdayWithOpenPositions.cs" />
     <Compile Include="a1_Financial\a2_Accounting\h5_Reporting\StatisticsSummaryRows\AverageReturnOnWednesdayWithOpenPositions.cs" />
     <Compile Include="a1_Financial\a2_Accounting\h5_Reporting\SummaryRows\AverageNumberOfTransactionsPerDay.cs" />
+    <Compile Include="a1_Financial\a2_Accounting\h5_Reporting\SummaryRows\AveragePermanenceTimeOnTheMarket.cs" />
     <Compile Include="a1_Financial\a2_Accounting\h5_Reporting\Tables\StatisticsSummary.cs" />
     <Compile Include="a1_Financial\a2_Accounting\Transactions\TimedTransaction.cs" />
     <Compile Include="a1_Financial\a3_Ordering\HistoricalOrderExecutor.cs" />

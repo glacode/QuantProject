@@ -47,6 +47,7 @@ namespace QuantProject.Business.Financial.Accounting.Reporting.Tables
 		private NumberLosingPeriods numberLosingPeriods;
 		private PercentageWinningPeriods percentageWinningPeriods;
 		private AverageNumberOfTransactionsPerDay averageNumberOfTransactionsPerDay;
+		private AveragePermanenceTimeOnTheMarket averagePermanenceTimeOnTheMarket;
 
 		public AccountReport AccountReport
 		{
@@ -171,7 +172,10 @@ namespace QuantProject.Business.Financial.Accounting.Reporting.Tables
 		{
 			get { return this.averageNumberOfTransactionsPerDay; }
 		}
-
+		public AveragePermanenceTimeOnTheMarket AveragePermanenceTimeOnTheMarket
+		{
+			get { return this.averagePermanenceTimeOnTheMarket; }
+		}
 
 		private void summary( AccountReport accountReport )
 		{
@@ -289,6 +293,7 @@ namespace QuantProject.Business.Financial.Accounting.Reporting.Tables
 			this.numberWinningShortTrades = new NumberWinningShortTrades( this );
 			this.totalCommissionAmount = new TotalCommissionAmount( this );
 			this.averageNumberOfTransactionsPerDay = new AverageNumberOfTransactionsPerDay(this);
+			this.averagePermanenceTimeOnTheMarket = new AveragePermanenceTimeOnTheMarket(this);
 			//this.DataTable = getSummaryDataTable();
 		}
 
