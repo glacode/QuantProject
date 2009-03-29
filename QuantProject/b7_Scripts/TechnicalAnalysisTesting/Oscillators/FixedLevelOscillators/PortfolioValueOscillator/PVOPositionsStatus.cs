@@ -34,6 +34,7 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOs
     Oversold,
     InTheMiddle,
     Overbought,
-    OverMaximumThresholds
+    OverMaximumThresholds,
+    NotComputable
   }
 }

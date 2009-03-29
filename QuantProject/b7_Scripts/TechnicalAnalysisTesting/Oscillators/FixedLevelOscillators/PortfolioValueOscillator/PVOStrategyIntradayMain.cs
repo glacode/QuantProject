@@ -65,6 +65,7 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOs
 		private HistoricalMarketValueProvider historicalMarketValueProviderForOutOfSample;
 		private HistoricalMarketValueProvider historicalMarketValueProviderForTheBackTester;
 		private double inefficiencyLengthInMinutes;
+		private int numberOfPreviousEfficientPeriods;
 		private double maxOpeningLengthInMinutes;
 		private double minutesFromLastInefficiencyToWaitBeforeOpening;
 		private double minutesFromLastLossOrProfitToWaitBeforeClosing;
@@ -77,13 +78,14 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOs
 		public PVOStrategyIntradayMain()
 		{
 			this.inefficiencyLengthInMinutes = 30;
-			this.maxOpeningLengthInMinutes = 240;
+			this.numberOfPreviousEfficientPeriods = 1;
+			this.maxOpeningLengthInMinutes = 180;
 			this.minutesFromLastInefficiencyToWaitBeforeOpening = 1;
 			this.minutesFromLastLossOrProfitToWaitBeforeClosing = 0;
 			this.stepInMinutesForTimer = 1;
 			this.intervalFrameInSeconds = 60;
 			
-			this.firstDateTime = new DateTime( 2006 , 2 , 1 );
+			this.firstDateTime = new DateTime( 2006 , 1, 1 );
 			this.lastDateTime = new DateTime( 2006 , 12, 31 );
 			
 			this.benchmark = new Benchmark( "CCE" );
@@ -92,8 +94,8 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOs
 				this.getHistoricalBarProvider();
 			
 			this.historicalMarketValueProviderForInSample =
-//				new HistoricalAdjustedQuoteProvider();
-				new HistoricalBarInterpolatingProvider( this.getBarCache() );
+				new HistoricalAdjustedQuoteProvider();
+//				new HistoricalBarInterpolatingProvider( this.getBarCache() );
 			
 			this.historicalMarketValueProviderForTheBackTester =
 //				new HistoricalBarProvider(
@@ -116,17 +118,18 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOs
 		{
 			
 			int maxNumberOfEligiblesToBeChosen = 100;
-						
+			//int numOfTopRowsToDeleteFromSelectorByLiquidity = 0;
+			
 			string tickersGroupId = "SP500";
 			
 			bool temporizedGroup = true;
 			int numDaysForAverageRawOpenPriceComputation = 10;
-			double minPrice = 30;
+			double minPrice = 25;
 			double maxPrice = 300;
 			
-//			int maxNumberOfMostLiquidTickersToBeChosen = 150;
-//			int numDaysForVolatility = 10;
-			int minimumNumberOfMinutelyBarsForEachDayForInSample = 20;
+			int maxNumberOfMostLiquidTickersToBeChosen = 150;
+			int numDaysForVolatility = 10;
+//			int minimumNumberOfMinutelyBarsForEachDayForInSample = 20;
 						
 //			IEligiblesSelector eligiblesSelector =
 //				new ByPriceMostLiquidQuotedAtEachDateTime(
@@ -136,22 +139,23 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOs
 //			 	minPrice , maxPrice, intervalFrameInSeconds ,
 //			 	this.benchmark.Ticker );
 //		LAST	GOOD
-//			IEligiblesSelector eligiblesSelector =
-//				new ByPriceMostLiquidLessVolatileOTCAlwaysQuoted(
-//				tickersGroupId , temporizedGroup ,
-//				maxNumberOfEligiblesToBeChosen ,
-//				maxNumberOfMostLiquidTickersToBeChosen ,
-//			  numDaysForAverageRawOpenPriceComputation ,
-//				numDaysForVolatility ,
-//			 	minPrice , maxPrice );
-			
 			IEligiblesSelector eligiblesSelector =
-				new ByPriceMostLiquidAlwaysIntradayQuoted(
-				tickersGroupId , this.benchmark, temporizedGroup ,
+				new ByPriceMostLiquidLessVolatileOTCAlwaysQuoted(
+				tickersGroupId , temporizedGroup ,
 				maxNumberOfEligiblesToBeChosen ,
-				numDaysForAverageRawOpenPriceComputation ,
-				minPrice , maxPrice,
-				minimumNumberOfMinutelyBarsForEachDayForInSample  );
+				maxNumberOfMostLiquidTickersToBeChosen ,
+			  numDaysForAverageRawOpenPriceComputation ,
+				numDaysForVolatility ,
+			 	minPrice , maxPrice );
+			
+//			IEligiblesSelector eligiblesSelector =
+//				new ByPriceMostLiquidAlwaysIntradayQuoted(
+//				tickersGroupId , this.benchmark, temporizedGroup ,
+//				maxNumberOfEligiblesToBeChosen ,
+//				numOfTopRowsToDeleteFromSelectorByLiquidity,
+//				numDaysForAverageRawOpenPriceComputation ,
+//				minPrice , maxPrice,
+//				minimumNumberOfMinutelyBarsForEachDayForInSample  );
 			
 //			IEligiblesSelector eligiblesSelector =
 //				new ByPriceMostLiquidAlwaysQuoted(
@@ -186,12 +190,11 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOs
 //				new DecoderForPairsTradingTestingPositionsWithBalancedWeights();
 
 			double maxCorrelationAllowed = 0.96;
-			int numberOfBestTestingPositionsToBeReturned = 50;
-			numberOfBestTestingPositionsToBeReturned = 50;
+			int numberOfBestTestingPositionsToBeReturned = 40;
 			bool balancedWeightsOnVolatilityBase = true;
 			float minimumAbsoluteReturnValue = 0.00005f;
 			float maximumAbsoluteReturnValue = 100000f;
-			int returnIntervalLengthInMinutesForCorrelationProvider = 120;
+			//int returnIntervalLengthInMinutesForCorrelationProvider = 120;
 			//correlation is computed only for returns
 			//between minimum and maximum
 //			IInSampleChooser inSampleChooser = 
@@ -203,13 +206,13 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOs
 //						maxCorrelationAllowed , balancedWeightsOnVolatilityBase,
 //					  minimumAbsoluteReturnValue , maximumAbsoluteReturnValue, this.benchmark.Ticker);
 			IInSampleChooser inSampleChooser = 
-//				new PVO_CTCCorrelationChooser(numberOfBestTestingPositionsToBeReturned, 
-//						1 , maxCorrelationAllowed , balancedWeightsOnVolatilityBase,
-//						minimumAbsoluteReturnValue , maximumAbsoluteReturnValue, this.benchmark.Ticker);
-					new PVOIntradayCorrelationChooser(numberOfBestTestingPositionsToBeReturned, 
-						returnIntervalLengthInMinutesForCorrelationProvider ,
-						maxCorrelationAllowed , balancedWeightsOnVolatilityBase,
+				new PVO_CTCCorrelationChooser(numberOfBestTestingPositionsToBeReturned, 
+						1 , maxCorrelationAllowed , balancedWeightsOnVolatilityBase,
 						minimumAbsoluteReturnValue , maximumAbsoluteReturnValue, this.benchmark.Ticker);
+//					new PVOIntradayCorrelationChooser(numberOfBestTestingPositionsToBeReturned, 
+//						returnIntervalLengthInMinutesForCorrelationProvider ,
+//						maxCorrelationAllowed , balancedWeightsOnVolatilityBase,
+//						minimumAbsoluteReturnValue , maximumAbsoluteReturnValue, this.benchmark.Ticker);
 
 //			//office
 //			inSampleChooser =
@@ -219,7 +222,7 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOs
 			//home
 //			inSampleChooser =
 //				new PVOChooserFromSavedBackTestLog(
-//				@"C:\Utente\MarcoVarie\Vari\qP\LogArchive\2009_02_17_23_17_03_PVOIntraday_from_2006_01_01_to_2007_12_31_annlRtrn_24.44_maxDD_3.05\2009_02_17_23_17_03_PVOIntraday_from_2006_01_01_to_2007_12_31_annlRtrn_24.44_maxDD_3.05.qpL",
+//				@"C:\Utente\MarcoVarie\Vari\qP\LogArchive\2009_03_22_10_29_04_PVOIntraday_from_2006_02_01_to_2006_12_29_annlRtrn_.17_maxDD_5.03\2009_03_22_10_29_04_PVOIntraday_from_2006_02_01_to_2006_12_29_annlRtrn_.17_maxDD_5.03.qpL",
 //				numberOfBestTestingPositionsToBeReturned);
 			return inSampleChooser;
 		}
@@ -227,15 +230,15 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOs
 		protected override IStrategyForBacktester getStrategyForBacktester()
 		{
 			//int inSampleDays = 90;
-			int inSampleDays = 30;
-			int numDaysBetweenEachOptimization = 4;
+			int inSampleDays = 90;
+			int numDaysBetweenEachOptimization = 5;
 			int minNumOfEligiblesForValidOptimization = 20;
-			double oversoldThreshold = 0.005;//0.006
-			double overboughtThreshold = 0.005;//0.006
-			double oversoldThresholdMAX = 0.025;
-			double overboughtThresholdMAX = 0.025;
+			double oversoldThreshold = 0.006;//0.006
+			double overboughtThreshold = 0.006;//0.006
+			double oversoldThresholdMAX = 0.02;
+			double overboughtThresholdMAX = 0.02;
 			double stopLoss = 0.02;
-			double takeProfit = 0.0025;//0.0045
+			double takeProfit = 0.003;//0.0045
 			
 			IStrategyForBacktester strategyForBacktester
 //				 = new PVO_OTCStrategyLessCorrelated(eligiblesSelector ,inSampleChooser ,
@@ -249,8 +252,10 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOs
 				oversoldThresholdMAX , overboughtThresholdMAX ,
 				historicalMarketValueProviderForInSample,
 			  historicalMarketValueProviderForOutOfSample,
-			  inefficiencyLengthInMinutes , minutesFromLastInefficiencyToWaitBeforeOpening,
-			  this.minutesFromLastLossOrProfitToWaitBeforeClosing,
+			  inefficiencyLengthInMinutes ,
+			  numberOfPreviousEfficientPeriods,
+			  minutesFromLastInefficiencyToWaitBeforeOpening,
+			  minutesFromLastLossOrProfitToWaitBeforeClosing,
 			  maxOpeningLengthInMinutes, this.getDailyTimes(),
 			  stopLoss , takeProfit );
 			return strategyForBacktester;
@@ -290,7 +295,7 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOs
 //			accountProvider =
 //				new InteractiveBrokerAccountProvider(fixedPercentageSlippage);
 			double cashToStart = 25000;
-			double maxRunningHours = 15;
+			double maxRunningHours = 240;
 			EndOfDayStrategyBackTester endOfDayStrategyBackTester =
 				new EndOfDayStrategyBackTester(
 				backTestId , this.timerForBackTester, 

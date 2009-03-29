@@ -70,7 +70,7 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOs
 		protected IInSampleChooser inSampleChooser;
 		protected IEligiblesSelector eligiblesSelector;
 		protected Benchmark benchmark;
-		protected HistoricalMarketValueProvider 
+		protected HistoricalMarketValueProvider
 			historicalMarketValueProviderForInSample;
 		protected HistoricalMarketValueProvider
 			historicalMarketValueProviderForOutOfSample;
@@ -101,6 +101,7 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOs
 		protected bool stopLossConditionReached;
 		protected bool takeProfitConditionReached;
 		protected double inefficiencyLengthInMinutes;
+		protected int numberOfPreviousEfficientPeriods;
 		protected double maxOpeningLengthInMinutes;
 		protected double minutesFromLastInefficiencyTimeToWaitBeforeOpening;
 		protected double minutesFromLastLossOrProfitToWaitBeforeClosing;
@@ -112,7 +113,7 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOs
 		protected double previousAccountValue;
 		protected double stopLoss;
 		protected double takeProfit;
-				
+		
 		private string description_GetDescriptionForChooser()
 		{
 			if(this.inSampleChooser == null)
@@ -161,22 +162,23 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOs
 		}
 		
 		private void pvoStrategyIntraday(IEligiblesSelector eligiblesSelector,
-		                             int minimumNumberOfEligiblesForValidOptimization,
-		                             int inSampleDays,
-		                             Benchmark benchmark,
-		                             int numDaysBetweenEachOptimization,
-		                             double oversoldThreshold,
-		                             double overboughtThreshold,
-		                             double oversoldThresholdMAX,
-		                             double overboughtThresholdMAX,
-		                             HistoricalMarketValueProvider historicalMarketValueProviderForInSample,
-		                             HistoricalMarketValueProvider historicalMarketValueProviderForOutOfSample,
-		                             double inefficiencyLengthInMinutes,
-		                             double minutesFromLastInefficiencyTimeToWaitBeforeOpening,
-		                             double minutesFromLastLossOrProfitToWaitBeforeClosing,
-																 double maxOpeningLengthInMinutes,
-																 List<Time> openingTimesForAvailableBars,
-																 double stopLoss, double takeProfit)
+		                                 int minimumNumberOfEligiblesForValidOptimization,
+		                                 int inSampleDays,
+		                                 Benchmark benchmark,
+		                                 int numDaysBetweenEachOptimization,
+		                                 double oversoldThreshold,
+		                                 double overboughtThreshold,
+		                                 double oversoldThresholdMAX,
+		                                 double overboughtThresholdMAX,
+		                                 HistoricalMarketValueProvider historicalMarketValueProviderForInSample,
+		                                 HistoricalMarketValueProvider historicalMarketValueProviderForOutOfSample,
+		                                 double inefficiencyLengthInMinutes,
+		                                 int numberOfPreviousEfficientPeriods,
+		                                 double minutesFromLastInefficiencyTimeToWaitBeforeOpening,
+		                                 double minutesFromLastLossOrProfitToWaitBeforeClosing,
+		                                 double maxOpeningLengthInMinutes,
+		                                 List<Time> openingTimesForAvailableBars,
+		                                 double stopLoss, double takeProfit)
 		{
 			this.eligiblesSelector = eligiblesSelector;
 			this.minimumNumberOfEligiblesForValidOptimization =
@@ -191,9 +193,10 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOs
 			this.historicalMarketValueProviderForInSample = historicalMarketValueProviderForInSample;
 			this.historicalMarketValueProviderForOutOfSample = historicalMarketValueProviderForOutOfSample;
 			this.inefficiencyLengthInMinutes = inefficiencyLengthInMinutes;
-			this.minutesFromLastInefficiencyTimeToWaitBeforeOpening = 
+			this.numberOfPreviousEfficientPeriods = numberOfPreviousEfficientPeriods;
+			this.minutesFromLastInefficiencyTimeToWaitBeforeOpening =
 				minutesFromLastInefficiencyTimeToWaitBeforeOpening;
-			this.minutesFromLastLossOrProfitToWaitBeforeClosing = 
+			this.minutesFromLastLossOrProfitToWaitBeforeClosing =
 				minutesFromLastLossOrProfitToWaitBeforeClosing;
 			this.maxOpeningLengthInMinutes = maxOpeningLengthInMinutes;
 			this.openingTimesForAvailableBars = openingTimesForAvailableBars;
@@ -208,146 +211,154 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOs
 		}
 
 		public PVOStrategyIntraday(IEligiblesSelector eligiblesSelector,
-		                       int minimumNumberOfEligiblesForValidOptimization,
-		                       IInSampleChooser inSampleChooser,
-		                       int inSampleDays,
-		                       Benchmark benchmark,
-		                       int numDaysBetweenEachOptimization,
-		                       double oversoldThreshold,
-		                       double overboughtThreshold,
-		                       double oversoldThresholdMAX,
-		                       double overboughtThresholdMAX,
-		                       HistoricalMarketValueProvider historicalMarketValueProviderForInSample,
-		                       HistoricalMarketValueProvider historicalMarketValueProviderForOutOfSample,
-		                       double inefficiencyLengthInMinutes,
-		                       double minutesFromLastInefficiencyTimeToWaitBeforeOpening,
-		                       double minutesFromLastLossOrProfitToWaitBeforeClosing,
-													 double maxOpeningLengthInMinutes,
-													 List<Time> openingTimesForAvailableBars,
-													 double stopLoss, double takeProfit)
+		                           int minimumNumberOfEligiblesForValidOptimization,
+		                           IInSampleChooser inSampleChooser,
+		                           int inSampleDays,
+		                           Benchmark benchmark,
+		                           int numDaysBetweenEachOptimization,
+		                           double oversoldThreshold,
+		                           double overboughtThreshold,
+		                           double oversoldThresholdMAX,
+		                           double overboughtThresholdMAX,
+		                           HistoricalMarketValueProvider historicalMarketValueProviderForInSample,
+		                           HistoricalMarketValueProvider historicalMarketValueProviderForOutOfSample,
+		                           double inefficiencyLengthInMinutes,
+		                           int numberOfPreviousEfficientPeriods,
+		                           double minutesFromLastInefficiencyTimeToWaitBeforeOpening,
+		                           double minutesFromLastLossOrProfitToWaitBeforeClosing,
+		                           double maxOpeningLengthInMinutes,
+		                           List<Time> openingTimesForAvailableBars,
+		                           double stopLoss, double takeProfit)
 			
 		{
 			this.pvoStrategyIntraday(eligiblesSelector, minimumNumberOfEligiblesForValidOptimization,
-			                     inSampleDays , benchmark , numDaysBetweenEachOptimization ,
-			                     oversoldThreshold, overboughtThreshold,
-			                     oversoldThresholdMAX, overboughtThresholdMAX,
-			                     historicalMarketValueProviderForInSample,
-		                       historicalMarketValueProviderForOutOfSample,
-		                       inefficiencyLengthInMinutes,
-		                       minutesFromLastInefficiencyTimeToWaitBeforeOpening,
-		                       minutesFromLastLossOrProfitToWaitBeforeClosing,
-		                       maxOpeningLengthInMinutes,
-		                       openingTimesForAvailableBars,
-		                       stopLoss, takeProfit);
+			                         inSampleDays , benchmark , numDaysBetweenEachOptimization ,
+			                         oversoldThreshold, overboughtThreshold,
+			                         oversoldThresholdMAX, overboughtThresholdMAX,
+			                         historicalMarketValueProviderForInSample,
+			                         historicalMarketValueProviderForOutOfSample,
+			                         inefficiencyLengthInMinutes,
+			                         numberOfPreviousEfficientPeriods,
+			                         minutesFromLastInefficiencyTimeToWaitBeforeOpening,
+			                         minutesFromLastLossOrProfitToWaitBeforeClosing,
+			                         maxOpeningLengthInMinutes,
+			                         openingTimesForAvailableBars,
+			                         stopLoss, takeProfit);
 			this.inSampleChooser = inSampleChooser;
 		}
 		
 		public PVOStrategyIntraday(IEligiblesSelector eligiblesSelector,
-		                       int minimumNumberOfEligiblesForValidOptimization,
-		                       IInSampleChooser inSampleChooser,
-		                       int inSampleDays,
-		                       Benchmark benchmark,
-		                       int numDaysBetweenEachOptimization,
-		                       double oversoldThreshold,
-		                       double overboughtThreshold,
-		                       HistoricalMarketValueProvider historicalMarketValueProviderForInSample,
-		                       HistoricalMarketValueProvider historicalMarketValueProviderForOutOfSample,
-		                       double inefficiencyLengthInMinutes,
-		                       double minutesFromLastInefficiencyTimeToWaitBeforeOpening,
-		                       double minutesFromLastLossOrProfitToWaitBeforeClosing,
-		                       double maxOpeningLengthInMinutes,
-													 List<Time> openingTimesForAvailableBars,
-													 double stopLoss, double takeProfit)
+		                           int minimumNumberOfEligiblesForValidOptimization,
+		                           IInSampleChooser inSampleChooser,
+		                           int inSampleDays,
+		                           Benchmark benchmark,
+		                           int numDaysBetweenEachOptimization,
+		                           double oversoldThreshold,
+		                           double overboughtThreshold,
+		                           HistoricalMarketValueProvider historicalMarketValueProviderForInSample,
+		                           HistoricalMarketValueProvider historicalMarketValueProviderForOutOfSample,
+		                           double inefficiencyLengthInMinutes,
+		                           int numberOfPreviousEfficientPeriods,
+		                           double minutesFromLastInefficiencyTimeToWaitBeforeOpening,
+		                           double minutesFromLastLossOrProfitToWaitBeforeClosing,
+		                           double maxOpeningLengthInMinutes,
+		                           List<Time> openingTimesForAvailableBars,
+		                           double stopLoss, double takeProfit)
 			
 		{
 			this.pvoStrategyIntraday(eligiblesSelector, minimumNumberOfEligiblesForValidOptimization,
-			                     inSampleDays , benchmark , numDaysBetweenEachOptimization ,
-			                     oversoldThreshold, overboughtThreshold,
-			                     double.MaxValue, double.MaxValue,
-			                     historicalMarketValueProviderForInSample,
-		                       historicalMarketValueProviderForOutOfSample,
-		                       inefficiencyLengthInMinutes,
-		                       minutesFromLastInefficiencyTimeToWaitBeforeOpening,
-		                       minutesFromLastLossOrProfitToWaitBeforeClosing,
-		                       maxOpeningLengthInMinutes,
-		                       openingTimesForAvailableBars,
-		                       stopLoss, takeProfit);
+			                         inSampleDays , benchmark , numDaysBetweenEachOptimization ,
+			                         oversoldThreshold, overboughtThreshold,
+			                         double.MaxValue, double.MaxValue,
+			                         historicalMarketValueProviderForInSample,
+			                         historicalMarketValueProviderForOutOfSample,
+			                         inefficiencyLengthInMinutes,
+			                         numberOfPreviousEfficientPeriods,
+			                         minutesFromLastInefficiencyTimeToWaitBeforeOpening,
+			                         minutesFromLastLossOrProfitToWaitBeforeClosing,
+			                         maxOpeningLengthInMinutes,
+			                         openingTimesForAvailableBars,
+			                         stopLoss, takeProfit);
 			this.inSampleChooser = inSampleChooser;
 		}
 		public PVOStrategyIntraday(IEligiblesSelector eligiblesSelector,
-		                       int minimumNumberOfEligiblesForValidOptimization,
-		                       TestingPositions[] chosenPVOPositions,
-		                       int inSampleDays,
-		                       Benchmark benchmark,
-		                       int numDaysBetweenEachOptimization,
-		                       double oversoldThreshold,
-		                       double overboughtThreshold,
-		                       double oversoldThresholdMAX,
-		                       double overboughtThresholdMAX,
-		                       HistoricalMarketValueProvider historicalMarketValueProviderForInSample,
-		                       HistoricalMarketValueProvider historicalMarketValueProviderForOutOfSample,
-		                       double inefficiencyLengthInMinutes,
-		                       double minutesFromLastInefficiencyTimeToWaitBeforeOpening,
-		                       double minutesFromLastLossOrProfitToWaitBeforeClosing,
-		                       double maxOpeningLengthInMinutes,
-													 List<Time> openingTimesForAvailableBars,
-													 double stopLoss, double takeProfit)
+		                           int minimumNumberOfEligiblesForValidOptimization,
+		                           TestingPositions[] chosenPVOPositions,
+		                           int inSampleDays,
+		                           Benchmark benchmark,
+		                           int numDaysBetweenEachOptimization,
+		                           double oversoldThreshold,
+		                           double overboughtThreshold,
+		                           double oversoldThresholdMAX,
+		                           double overboughtThresholdMAX,
+		                           HistoricalMarketValueProvider historicalMarketValueProviderForInSample,
+		                           HistoricalMarketValueProvider historicalMarketValueProviderForOutOfSample,
+		                           double inefficiencyLengthInMinutes,
+		                           int numberOfPreviousEfficientPeriods,
+		                           double minutesFromLastInefficiencyTimeToWaitBeforeOpening,
+		                           double minutesFromLastLossOrProfitToWaitBeforeClosing,
+		                           double maxOpeningLengthInMinutes,
+		                           List<Time> openingTimesForAvailableBars,
+		                           double stopLoss, double takeProfit)
 			
 		{
 			this.pvoStrategyIntraday(eligiblesSelector, minimumNumberOfEligiblesForValidOptimization,
-			                     inSampleDays , benchmark , numDaysBetweenEachOptimization ,
-			                     oversoldThreshold, overboughtThreshold,
-			                     oversoldThresholdMAX, overboughtThresholdMAX,
-			                     historicalMarketValueProviderForInSample,
-		                       historicalMarketValueProviderForOutOfSample,
-		                       inefficiencyLengthInMinutes,
-		                       minutesFromLastInefficiencyTimeToWaitBeforeOpening,
-		                       minutesFromLastLossOrProfitToWaitBeforeClosing,
-		                       maxOpeningLengthInMinutes,
-		                       openingTimesForAvailableBars,
-		                       stopLoss, takeProfit);
+			                         inSampleDays , benchmark , numDaysBetweenEachOptimization ,
+			                         oversoldThreshold, overboughtThreshold,
+			                         oversoldThresholdMAX, overboughtThresholdMAX,
+			                         historicalMarketValueProviderForInSample,
+			                         historicalMarketValueProviderForOutOfSample,
+			                         inefficiencyLengthInMinutes,
+			                         numberOfPreviousEfficientPeriods,
+			                         minutesFromLastInefficiencyTimeToWaitBeforeOpening,
+			                         minutesFromLastLossOrProfitToWaitBeforeClosing,
+			                         maxOpeningLengthInMinutes,
+			                         openingTimesForAvailableBars,
+			                         stopLoss, takeProfit);
 			this.chosenPVOPositions = chosenPVOPositions;
 		}
 		public PVOStrategyIntraday(IEligiblesSelector eligiblesSelector,
-		                       int minimumNumberOfEligiblesForValidOptimization,
-		                       TestingPositions[] chosenPVOPositions,
-		                       int inSampleDays,
-		                       Benchmark benchmark,
-		                       int numDaysBetweenEachOptimization,
-		                       double oversoldThreshold,
-		                       double overboughtThreshold,
-		                       HistoricalMarketValueProvider historicalMarketValueProviderForInSample,
-		                       HistoricalMarketValueProvider historicalMarketValueProviderForOutOfSample,
-		                       double inefficiencyLengthInMinutes,
-		                       double minutesFromLastInefficiencyTimeToWaitBeforeOpening,
-		                       double minutesFromLastLossOrProfitToWaitBeforeClosing,
-		                       double maxOpeningLengthInMinutes,
-													 List<Time> openingTimesForAvailableBars,
-													 double stopLoss, double takeProfit)
+		                           int minimumNumberOfEligiblesForValidOptimization,
+		                           TestingPositions[] chosenPVOPositions,
+		                           int inSampleDays,
+		                           Benchmark benchmark,
+		                           int numDaysBetweenEachOptimization,
+		                           double oversoldThreshold,
+		                           double overboughtThreshold,
+		                           HistoricalMarketValueProvider historicalMarketValueProviderForInSample,
+		                           HistoricalMarketValueProvider historicalMarketValueProviderForOutOfSample,
+		                           double inefficiencyLengthInMinutes,
+		                           int numberOfPreviousEfficientPeriods,
+		                           double minutesFromLastInefficiencyTimeToWaitBeforeOpening,
+		                           double minutesFromLastLossOrProfitToWaitBeforeClosing,
+		                           double maxOpeningLengthInMinutes,
+		                           List<Time> openingTimesForAvailableBars,
+		                           double stopLoss, double takeProfit)
 		{
 			this.pvoStrategyIntraday(eligiblesSelector, minimumNumberOfEligiblesForValidOptimization,
-			                     inSampleDays , benchmark , numDaysBetweenEachOptimization ,
-			                     oversoldThreshold, overboughtThreshold,
-			                     double.MaxValue, double.MaxValue,
-			                     historicalMarketValueProviderForInSample,
-		                       historicalMarketValueProviderForOutOfSample,
-		                       inefficiencyLengthInMinutes,
-		                       minutesFromLastInefficiencyTimeToWaitBeforeOpening,
-		                       minutesFromLastLossOrProfitToWaitBeforeClosing,
-		                       maxOpeningLengthInMinutes,
-													 openingTimesForAvailableBars,
-													 stopLoss, takeProfit);
+			                         inSampleDays , benchmark , numDaysBetweenEachOptimization ,
+			                         oversoldThreshold, overboughtThreshold,
+			                         double.MaxValue, double.MaxValue,
+			                         historicalMarketValueProviderForInSample,
+			                         historicalMarketValueProviderForOutOfSample,
+			                         inefficiencyLengthInMinutes,
+			                         numberOfPreviousEfficientPeriods,
+			                         minutesFromLastInefficiencyTimeToWaitBeforeOpening,
+			                         minutesFromLastLossOrProfitToWaitBeforeClosing,
+			                         maxOpeningLengthInMinutes,
+			                         openingTimesForAvailableBars,
+			                         stopLoss, takeProfit);
 			this.chosenPVOPositions = chosenPVOPositions;
 		}
 		
 		private bool allTickersAreExchangedBeforeLastAvailableTime(DateTime fromDateTime,
-		                                    											 string[] tickers)
+		                                                           string[] tickers)
 		{
 			bool returnValue = true;
 			try{
 				for( int i = 0; i < tickers.Length; i++ )
 				{
-					Bars currentTickerBars = 
+					Bars currentTickerBars =
 						new Bars(tickers[i], fromDateTime,
 						         Time.GetDateTimeFromMerge(fromDateTime,
 						                                   this.openingTimesForAvailableBars[this.openingTimesForAvailableBars.Count-1]),
@@ -388,25 +399,28 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOs
 			}
 			return returnValue;
 		}
-				
+		
 		#region newDateTimeEventHandler_closePositions
-				
+		
 		private void newDateTimeEventHandler_closePositions(Time currentDailyTime)
 		{
 			bool positionsHaveBeenOpenedEnough =
-					(this.account.Portfolio.Count > 0 &&
-					 this.lastEntryTime.AddMinutes(maxOpeningLengthInMinutes) <= currentDailyTime);
-			bool isTimeToProfitOrToStopALoss = 
-				  this.account.Portfolio.Count > 0 &&
-			   	(this.takeProfitConditionReached  || this.stopLossConditionReached) &&
-			   	(this.lastProfitOrLossTime.AddMinutes(this.minutesFromLastLossOrProfitToWaitBeforeClosing) == currentDailyTime);
+				(this.account.Portfolio.Count > 0 &&
+				 this.lastEntryTime.AddMinutes(maxOpeningLengthInMinutes) <= currentDailyTime);
+			bool isTimeToProfitOrToStopALoss =
+				this.account.Portfolio.Count > 0 &&
+				(this.takeProfitConditionReached  || this.stopLossConditionReached) &&
+				(this.lastProfitOrLossTime.AddMinutes(this.minutesFromLastLossOrProfitToWaitBeforeClosing) == currentDailyTime);
 			
 			if( (positionsHaveBeenOpenedEnough || isTimeToProfitOrToStopALoss ) &&
-			     allTickersAreExchanged( this.now(), AccountManager.GetTickersInOpenedPositions(this.account) ) )
+			   allTickersAreExchanged( this.now(), AccountManager.GetTickersInOpenedPositions(this.account) ) )
 			{
-				  	AccountManager.ClosePositions( this.account );
-				  	this.lastEntryTime = new Time("00:00:00");
-				  	this.lastInefficiencyTime = new Time("00:00:00");
+				AccountManager.ClosePositions( this.account );
+				this.lastEntryTime = new Time("00:00:00");
+				this.lastInefficiencyTime = new Time("00:00:00");
+				this.lastProfitOrLossTime = new Time("00:00:00");
+				this.takeProfitConditionReached = false;
+				this.stopLossConditionReached = false;
 			}
 		}
 		#endregion newDateTimeEventHandler_closePositions
@@ -417,115 +431,149 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOs
 			Time timeForClose = currentDailyTime.AddMinutes(maxOpeningLengthInMinutes);
 			DateTime dateTimeForClose = Time.GetDateTimeFromMerge( this.now(), timeForClose );
 			if(	this.account.Portfolio.Count == 0 &&
-			   	this.positionsForOutOfSample != null &&
-			   	timeForClose <= getLastEventTimeWithCachedBars() &&
-			    this.allTickersAreExchanged( this.now(), this.positionsForOutOfSample.WeightedPositions.SignedTickers.Tickers ) &&
-			    this.allTickersAreExchangedBeforeLastAvailableTime( dateTimeForClose, this.positionsForOutOfSample.WeightedPositions.SignedTickers.Tickers ) )
+			   this.positionsForOutOfSample != null &&
+			   timeForClose <= getLastEventTimeWithCachedBars() &&
+			   this.allTickersAreExchanged( this.now(), this.positionsForOutOfSample.WeightedPositions.SignedTickers.Tickers ) &&
+			   this.allTickersAreExchangedBeforeLastAvailableTime( dateTimeForClose, this.positionsForOutOfSample.WeightedPositions.SignedTickers.Tickers ) )
 			{
 				switch (this.positionsForOutOfSampleStatus)
 				{
 					case PVOPositionsStatus.Overbought:
-					{
-						#region manage Overbought case
-						this.positionsForOutOfSample.WeightedPositions.Reverse();
-						try
 						{
-							AccountManager.OpenPositions( this.positionsForOutOfSample.WeightedPositions,
-							                             	this.account );
-							this.lastEntryTime = currentDailyTime;
-							this.previousAccountValue = this.account.GetMarketValue();
-						}
-						catch(Exception ex)
-						{
-							string forBreakpoint = ex.Message; forBreakpoint = forBreakpoint + "";
-						}
-						finally
-						{
+							#region manage Overbought case
 							this.positionsForOutOfSample.WeightedPositions.Reverse();
+							try
+							{
+								AccountManager.OpenPositions( this.positionsForOutOfSample.WeightedPositions,
+								                             this.account );
+								this.lastEntryTime = currentDailyTime;
+								this.previousAccountValue = this.account.GetMarketValue();
+							}
+							catch(Exception ex)
+							{
+								string forBreakpoint = ex.Message; forBreakpoint = forBreakpoint + "";
+							}
+							finally
+							{
+								this.positionsForOutOfSample.WeightedPositions.Reverse();
+							}
+							#endregion
+							break;
 						}
-						#endregion
-						break;
-					}
 					case PVOPositionsStatus.Oversold:
-					{
-						#region manage Oversold case
-						try
 						{
-							AccountManager.OpenPositions( this.positionsForOutOfSample.WeightedPositions,
-							                             	this.account );
-							this.lastEntryTime = currentDailyTime;
-							this.previousAccountValue = this.account.GetMarketValue();
+							#region manage Oversold case
+							try
+							{
+								AccountManager.OpenPositions( this.positionsForOutOfSample.WeightedPositions,
+								                             this.account );
+								this.lastEntryTime = currentDailyTime;
+								this.previousAccountValue = this.account.GetMarketValue();
+							}
+							catch(Exception ex)
+							{
+								string forBreakpoint = ex.Message; forBreakpoint = forBreakpoint + "";
+							}
+							#endregion oversold case
+							break;
 						}
-						catch(Exception ex)
-						{
-							string forBreakpoint = ex.Message; forBreakpoint = forBreakpoint + "";
-						}
-						#endregion oversold case
-						break;
-					}
 					case PVOPositionsStatus.InTheMiddle://that is
-					{  //pvoPositionsForOutOfSample has not been set
-						
-						break;
-					}
+						{  //pvoPositionsForOutOfSample has not been set
+							
+							break;
+						}
 					default:
-					{
-						//it should never been reached
-						break;
-					}
+						{
+							//it should never been reached
+							break;
+						}
 				}
 			}
 		}
 		#endregion newDateTimeEventHandler_openPositions
+		
+		#region newDateTimeEventHandler_previousPeriodsWereEfficient
+		private PVOPositionsStatus newDateTimeEventHandler_previousPeriodsWereEfficient_getStatus( DateTime beginOfOscillatingPeriod,
+		                                                                                          DateTime endOfOscillatingPeriod )
+		{
+			PVOPositionsStatus returnValue = PVOPositionsStatus.NotComputable;
+			if(this.positionsForOutOfSample != null)
+				try{
+				returnValue =
+					this.positionsForOutOfSample.GetStatus( beginOfOscillatingPeriod, endOfOscillatingPeriod,
+					                                       this.benchmark.Ticker, this.historicalMarketValueProviderForOutOfSample,
+					                                       this.oversoldThreshold,
+					                                       this.oversoldThresholdMAX,
+					                                       this.overboughtThreshold,
+					                                       this.overboughtThresholdMAX );
 				
+			}catch{}
+			return returnValue;
+		}
+		
+		private bool newDateTimeEventHandler_previousPeriodsWereEfficient(Time currentDailyTime)
+		{
+			bool returnValue = true;
+			PVOPositionsStatus statusForCurrentPeriodBeforeInefficiencyTime;
+			for( int i = 1; i <= this.numberOfPreviousEfficientPeriods; i++ )
+			{
+				DateTime beginOfOscillatingPeriod =
+					Time.GetDateTimeFromMerge( this.now() , this.lastInefficiencyTime.AddMinutes( - (i+1)*this.inefficiencyLengthInMinutes ) );
+				DateTime endOfOscillatingPeriod =
+					Time.GetDateTimeFromMerge( this.now() , this.lastInefficiencyTime.AddMinutes( - i*this.inefficiencyLengthInMinutes ) );
+				statusForCurrentPeriodBeforeInefficiencyTime =
+					this.newDateTimeEventHandler_previousPeriodsWereEfficient_getStatus( beginOfOscillatingPeriod,
+					                                                                    endOfOscillatingPeriod );
+				if( statusForCurrentPeriodBeforeInefficiencyTime != PVOPositionsStatus.InTheMiddle )
+				{
+					returnValue = false;
+					i = this.numberOfPreviousEfficientPeriods;
+				}
+			}
+			return returnValue;
+		}
+		#endregion newDateTimeEventHandler_previousPeriodsWereEfficient
+		
 		#region newDateTimeEventHandler_inefficiencyIsMovingBack
 		private bool newDateTimeEventHandler_inefficiencyIsMovingBack(Time currentDailyTime)
 		{
 			bool returnValue = false;
 			DateTime beginOfOscillatingPeriod =
 				Time.GetDateTimeFromMerge( this.now() , this.lastInefficiencyTime );
-			DateTime endOfOscillatingPeriod = 
+			DateTime endOfOscillatingPeriod =
 				Time.GetDateTimeFromMerge( this.now() , currentDailyTime );
 			PVOPositionsStatus currentStatusForCurrentPositions =
 				PVOPositionsStatus.InTheMiddle;
-			double coefficientForThresholdLevelComputationForMovingBackSignal = 
+			double coefficientForThresholdLevelComputationForMovingBackSignal =
 				//(this.overboughtThreshold - this.takeProfit)/this.overboughtThreshold;
 				this.minutesFromLastInefficiencyTimeToWaitBeforeOpening/
 //				this.inefficiencyLengthInMinutes;
-					100000;
+				100000;
 			if(this.positionsForOutOfSample != null)
 				try{
-					currentStatusForCurrentPositions =
-						this.positionsForOutOfSample.GetStatus( beginOfOscillatingPeriod, endOfOscillatingPeriod,
-					                                          this.benchmark.Ticker, this.historicalMarketValueProviderForOutOfSample,
-					                                          this.oversoldThreshold * coefficientForThresholdLevelComputationForMovingBackSignal,
-					                                          this.oversoldThreshold,
-					                                          this.overboughtThreshold * coefficientForThresholdLevelComputationForMovingBackSignal,
-					                                          this.overboughtThreshold );
-							
+				currentStatusForCurrentPositions =
+					this.positionsForOutOfSample.GetStatus( beginOfOscillatingPeriod, endOfOscillatingPeriod,
+					                                       this.benchmark.Ticker, this.historicalMarketValueProviderForOutOfSample,
+					                                       this.oversoldThreshold * coefficientForThresholdLevelComputationForMovingBackSignal,
+					                                       this.oversoldThreshold,
+					                                       this.overboughtThreshold * coefficientForThresholdLevelComputationForMovingBackSignal,
+					                                       this.overboughtThreshold );
+				
 			}catch{}
 			returnValue = ( (currentStatusForCurrentPositions == PVOPositionsStatus.Overbought &&
-			          this.positionsForOutOfSampleStatus == PVOPositionsStatus.Oversold) || 
-			          (currentStatusForCurrentPositions == PVOPositionsStatus.Oversold  &&
-			           this.positionsForOutOfSampleStatus == PVOPositionsStatus.Overbought) );
-			if( (returnValue == false && 
-			     currentDailyTime >= this.lastInefficiencyTime.AddMinutes(this.inefficiencyLengthInMinutes) ) ||
-			     returnValue == true )
-			//positions are not moving back and the same n° of minutes as inefficiency length 
-		  //has elapsed OR positions are moving back (the gap is closing)
-				this.lastInefficiencyTime = new Time(0,0,0); //it forces a new research of an inefficiency
+			                 this.positionsForOutOfSampleStatus == PVOPositionsStatus.Oversold) ||
+			               (currentStatusForCurrentPositions == PVOPositionsStatus.Oversold  &&
+			                this.positionsForOutOfSampleStatus == PVOPositionsStatus.Overbought) );
 			return returnValue;
 		}
-		
-		
 		#endregion newDateTimeEventHandler_inefficiencyIsMovingBack
-				
+		
 		#region newDateTimeEventHandler_updateStatus
 		private void newDateTimeEventHandler_setPositionsAndStatus(Time currentDailyTime)
 		{
-			DateTime beginOfOscillatingPeriod = 
+			DateTime beginOfOscillatingPeriod =
 				Time.GetDateTimeFromMerge(this.now() , currentDailyTime.AddMinutes(-inefficiencyLengthInMinutes) );
-			DateTime endOfOscillatingPeriod = 
+			DateTime endOfOscillatingPeriod =
 				Time.GetDateTimeFromMerge(this.now() , currentDailyTime);
 //			this.positionsForOutOfSample = null;
 			this.positionsForOutOfSampleStatus =
@@ -535,13 +583,13 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOs
 			{
 				if(this.chosenPVOPositions[i] != null)
 					try{
-						this.positionsForOutOfSampleStatus =
-							((PVOPositions)this.chosenPVOPositions[i]).GetStatus(beginOfOscillatingPeriod, endOfOscillatingPeriod,
+					this.positionsForOutOfSampleStatus =
+						((PVOPositions)this.chosenPVOPositions[i]).GetStatus(beginOfOscillatingPeriod, endOfOscillatingPeriod,
 						                                                     this.benchmark.Ticker, this.historicalMarketValueProviderForOutOfSample,
 						                                                     this.oversoldThresholdMAX, this.overboughtThresholdMAX);
-								
-				}catch(Exception ex){string str = ex.ToString();}
 					
+				}catch(Exception ex){string str = ex.ToString();}
+				
 				if(this.positionsForOutOfSampleStatus == PVOPositionsStatus.Oversold ||
 				   this.positionsForOutOfSampleStatus == PVOPositionsStatus.Overbought )
 				{
@@ -557,10 +605,10 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOs
 		protected virtual void newDateTimeEventHandler_updateStopLossAndTakeProfitConditions(Time currentDailyTime)
 		{
 			//this.previousAccountValue has been set at opening positions
-			this.stopLossConditionReached = false;
-			this.takeProfitConditionReached = false;
-			this.lastProfitOrLossTime = new Time("00:00:00");
-			if(this.account.Portfolio.Count > 0)
+			if( this.account.Portfolio.Count > 0 &&
+			   this.takeProfitConditionReached == false &&
+			   this.stopLossConditionReached == false &&
+			   this.lastProfitOrLossTime == new Time("00:00:00") )
 			{
 				try{
 					this.currentAccountValue = this.account.GetMarketValue();
@@ -582,11 +630,21 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOs
 					}
 				}
 				catch(Exception ex)
-					{string forBreakpoint = ex.Message; forBreakpoint = forBreakpoint + "";}
+				{string forBreakpoint = ex.Message; forBreakpoint = forBreakpoint + "";}
 			}
 		}
 		
 		#endregion newDateTimeEventHandler_updateStopLossAndTakeProfitConditions
+		
+		private void newDateTimeEventHandler_resetForNewResearch(bool inefficiencyIsMovingBack,
+		                                                         bool previousPeriodsWereEfficient,
+		                                                         Time currentTime)
+		{
+			if( currentTime > this.lastInefficiencyTime.AddMinutes(this.minutesFromLastInefficiencyTimeToWaitBeforeOpening) ||
+			   (inefficiencyIsMovingBack == true && previousPeriodsWereEfficient == true) )
+				
+			   this.lastInefficiencyTime = new Time(0,0,0); //it forces a new research of an inefficiency
+		}
 		
 		public virtual void NewDateTimeEventHandler(
 			Object sender , DateTime dateTime )
@@ -595,32 +653,37 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOs
 			this.newDateTimeEventHandler_updateStopLossAndTakeProfitConditions(currentTime);
 			this.newDateTimeEventHandler_closePositions(currentTime);
 			if( this.account.Portfolio.Count == 0 &&
-			   	this.chosenPVOPositions != null &&
-			   	this.lastInefficiencyTime == new Time(0,0,0) &&
-			   	currentTime < getLastEventTimeWithCachedBars() &&
-			   	currentTime >=
-			    getFirstEventTimeWithCachedBars().AddMinutes(inefficiencyLengthInMinutes) )
-			//portfolio empty, optimization done, no inefficiency found, time OK	
+			   this.chosenPVOPositions != null &&
+			   this.lastInefficiencyTime == new Time(0,0,0) &&
+			   currentTime < getLastEventTimeWithCachedBars() &&
+			   currentTime >=
+			   getFirstEventTimeWithCachedBars().AddMinutes( inefficiencyLengthInMinutes +
+			                                                inefficiencyLengthInMinutes * this.numberOfPreviousEfficientPeriods ) )
+				//portfolio empty, optimization done, no inefficiency found (or found but not deployed), time OK
 				this.newDateTimeEventHandler_setPositionsAndStatus(currentTime);
 			
+			bool inefficiencyIsMovingBack =
+				this.newDateTimeEventHandler_inefficiencyIsMovingBack(currentTime);
+			bool previousPeriodsWereEfficient = 
+				this.newDateTimeEventHandler_previousPeriodsWereEfficient(currentTime);
 			if( this.account.Portfolio.Count == 0 &&
-			   	currentTime >=
-			    this.lastInefficiencyTime.AddMinutes(this.minutesFromLastInefficiencyTimeToWaitBeforeOpening)
-			    &&
-			    this.newDateTimeEventHandler_inefficiencyIsMovingBack(currentTime) 
-			   )
-			//it's time for starting checking if the last inefficiency found is moving back
+				   this.lastInefficiencyTime != new Time(0, 0, 0) &&
+				   currentTime >=
+				   this.lastInefficiencyTime.AddMinutes(this.minutesFromLastInefficiencyTimeToWaitBeforeOpening)
+				   && inefficiencyIsMovingBack && previousPeriodsWereEfficient 
+				  )
 				this.newDateTimeEventHandler_openPositions(currentTime);
-			
+			this.newDateTimeEventHandler_resetForNewResearch(inefficiencyIsMovingBack,
+			                                                 previousPeriodsWereEfficient,
+			                                                 currentTime);
 			if( currentTime == getLastEventTimeWithCachedBars() )
-			//it's time for new optimization, if the case
+				//it's time for new optimization, if the case
 			{
 				this.newDateTimeEventHandler_updateTestingPositions( dateTime );
 				this.positionsForOutOfSample = null;
 				this.positionsForOutOfSampleStatus = PVOPositionsStatus.InTheMiddle;
 				this.lastInefficiencyTime = new Time(0,0,0);
 			}
-				
 		}
 		
 		#region UpdateTestingPositions
@@ -687,10 +750,10 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOs
 				new DailyOpenToCloseIntervals( firstDateTime, lastDateTime,
 				                              this.benchmark.Ticker );
 			if(this.inSampleChooser is PVOIntradayCorrelationChooser)
-					returnIntervals = 
-						new IntradayIntervals(firstDateTime, lastDateTime,
-						    ((PVOIntradayCorrelationChooser)this.inSampleChooser).ReturnIntervalLengthInMinutes,
-			          this.benchmark.Ticker);
+				returnIntervals =
+					new IntradayIntervals(firstDateTime, lastDateTime,
+					                      ((PVOIntradayCorrelationChooser)this.inSampleChooser).ReturnIntervalLengthInMinutes,
+					                      this.benchmark.Ticker);
 			
 			if( this.inSampleChooser is PVOCorrelationChooser )
 			{
