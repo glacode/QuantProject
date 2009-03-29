@@ -124,8 +124,8 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOs
 			double minPrice = 30;
 			double maxPrice = 300;
 			
-			int maxNumberOfMostLiquidTickersToBeChosen = 150;
-			int numDaysForVolatility = 10;
+//			int maxNumberOfMostLiquidTickersToBeChosen = 150;
+//			int numDaysForVolatility = 10;
 			int minimumNumberOfMinutelyBarsForEachDayForInSample = 20;
 						
 //			IEligiblesSelector eligiblesSelector =
