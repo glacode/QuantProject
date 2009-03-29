@@ -116,7 +116,8 @@ namespace QuantProject.Data.DataTables
                                                   DataTable setOfTickers,
                                                   DateTime firstQuoteDate,
                                                   DateTime lastQuoteDate,
-                                                  long maxNumOfReturnedTickers)
+                                                  long maxNumOfReturnedTickers,
+                                                  long numberOfTopRowsToDelete)
     {
       if(!setOfTickers.Columns.Contains("AverageTradedValue"))
         setOfTickers.Columns.Add("AverageTradedValue", System.Type.GetType("System.Double"));
@@ -128,7 +129,8 @@ namespace QuantProject.Data.DataTables
                                                                         lastQuoteDate);
       }
       DataTable getMostLiquidTicker = ExtendedDataTable.CopyAndSort(setOfTickers,"AverageTradedValue", orderByASC);
-      ExtendedDataTable.DeleteRows(getMostLiquidTicker, maxNumOfReturnedTickers);
+      ExtendedDataTable.DeleteRows(getMostLiquidTicker, maxNumOfReturnedTickers + numberOfTopRowsToDelete);
+      ExtendedDataTable.DeleteRows(getMostLiquidTicker, 0, numberOfTopRowsToDelete - 1);
       return getMostLiquidTicker;
     }
 
@@ -141,7 +143,8 @@ namespace QuantProject.Data.DataTables
                                                   DateTime firstQuoteDate,
                                                   DateTime lastQuoteDate,
                                                   long minVolume,
-                                                  long maxNumOfReturnedTickers)
+                                                  long maxNumOfReturnedTickers,
+                                                  long numberOfTopRowsToDelete)
     {
       if(!setOfTickers.Columns.Contains("AverageTradedValue"))
         setOfTickers.Columns.Add("AverageTradedValue", System.Type.GetType("System.Double"));
@@ -164,7 +167,8 @@ namespace QuantProject.Data.DataTables
                                                                     minVolume.ToString(),
                                                                     "AverageTradedValue",
                                                                     orderByASC);
-      ExtendedDataTable.DeleteRows(getMostLiquidTicker, maxNumOfReturnedTickers);
+      ExtendedDataTable.DeleteRows(getMostLiquidTicker, maxNumOfReturnedTickers + numberOfTopRowsToDelete);
+      ExtendedDataTable.DeleteRows(getMostLiquidTicker, 0, numberOfTopRowsToDelete - 1);
       return getMostLiquidTicker;
     }
 

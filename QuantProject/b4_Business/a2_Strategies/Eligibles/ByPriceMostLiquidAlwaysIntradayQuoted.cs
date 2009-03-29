@@ -52,6 +52,7 @@ namespace QuantProject.Business.Strategies.Eligibles
 		private string tickersGroupID;
 		private Benchmark benchmark;
 		private int maxNumberOfEligibleTickersToBeChosen;
+		private int numberOfTopRowsToDeleteFromLiquidSelector;
 		private int numOfDaysForAverageOpenRawPriceComputation;
 		private double minPrice;
 		private double maxPrice;
@@ -74,6 +75,7 @@ namespace QuantProject.Business.Strategies.Eligibles
 			string tickersGroupID , Benchmark benchmark, 
 			bool temporizedGroup,
 			int maxNumberOfEligibleTickersToBeChosen,
+			int numberOfTopRowsToDeleteFromLiquidSelector,
 		 	int numOfDaysForAverageOpenRawPriceComputation,
 		 	double minPrice, double maxPrice,
 		  int minimumNumberOfBars)
@@ -83,6 +85,8 @@ namespace QuantProject.Business.Strategies.Eligibles
 			this.benchmark = benchmark;
 			this.maxNumberOfEligibleTickersToBeChosen =
 				maxNumberOfEligibleTickersToBeChosen;
+			this.numberOfTopRowsToDeleteFromLiquidSelector = 
+				numberOfTopRowsToDeleteFromLiquidSelector;
 			this.numOfDaysForAverageOpenRawPriceComputation =
 				numOfDaysForAverageOpenRawPriceComputation;
 			this.minPrice = minPrice;
@@ -118,7 +122,8 @@ namespace QuantProject.Business.Strategies.Eligibles
 			SelectorByLiquidity mostLiquidSelector =
 				new SelectorByLiquidity( dataTableByPrice ,
         false, history.FirstDateTime, currentDate,
-        this.maxNumberOfEligibleTickersToBeChosen);
+        this.maxNumberOfEligibleTickersToBeChosen,
+        this.numberOfTopRowsToDeleteFromLiquidSelector);
       DataTable dataTableMostLiquid =
 				mostLiquidSelector.GetTableOfSelectedTickers();
 
