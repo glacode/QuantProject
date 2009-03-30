@@ -42,9 +42,16 @@ namespace QuantProject.Scripts.WalkForwardTesting.PairsTrading
 	{
 		private string fullPathFileNameForSerializedAccountReport;
 		private AccountReport accountReport;
+		private QuantProject.Business.DataProviders.HistoricalMarketValueProvider historicalMarketValueProvider;
 		
 		public PairsTradingSerializedReportViewer()
 		{
+			this.historicalMarketValueProvider =
+				new HistoricalBarProvider( new SimpleBarCache( 60 ) );
+		}
+		public PairsTradingSerializedReportViewer(HistoricalMarketValueProvider historicalMarketValueProvider)
+		{
+			this.historicalMarketValueProvider = historicalMarketValueProvider;
 		}
 		
 		#region Run
@@ -210,7 +217,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.PairsTrading
 			WeightedPosition firstWeightedPosition = new WeightedPosition( 0.5 , firstTicker );
 			WeightedPosition secondWeightedPosition = new WeightedPosition( 0.5 , secondTicker );
 			PairsViewer pairsViewer = new PairsViewer(
-				new HistoricalBarProvider( new SimpleBarCache( 60 ) ) ,
+				this.historicalMarketValueProvider ,
 				firstWeightedPosition , secondWeightedPosition , clickedDateTime );
 			pairsViewer.Show();
 		}
