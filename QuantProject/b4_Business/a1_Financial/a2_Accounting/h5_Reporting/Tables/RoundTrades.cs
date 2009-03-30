@@ -1,5 +1,7 @@
 using System;
 using System.Data;
+
+using QuantProject.ADT;
 using QuantProject.Business.Financial.Accounting.Reporting;
 
 namespace QuantProject.Business.Financial.Accounting.Reporting.Tables
@@ -81,7 +83,10 @@ namespace QuantProject.Business.Financial.Accounting.Reporting.Tables
 				endDateTimeOfTrade.Subtract(startDateTimeOfTrade);
       DataRow roundTrade = roundTradeDataTable.NewRow();
       roundTrade[ fieldNameForTicker ] = currentTicker;
-      roundTrade[ "Trade" ] = currentTradeType;
+      if ( currentTradeType == "BuyLong" )
+      	roundTrade[ "Trade" ] = "Long";
+      else
+      	roundTrade[ "Trade" ] = "Short";
       roundTrade[ "Quantity" ] = instrumentQuantity;
       roundTrade[ "EntryDate" ] = startDateTimeOfTrade;
       roundTrade[ "ExitDate" ] = endDateTimeOfTrade;
@@ -116,7 +121,9 @@ namespace QuantProject.Business.Financial.Accounting.Reporting.Tables
       DataTable roundTradeDataTable = new DataTable();
       getRoundTradeTable_setColumns( roundTradeDataTable );
       getRoundTradeTable_setRows( roundTradeDataTable );
-      return roundTradeDataTable;
+      DataTable roundTradeDataTable_ordered =	
+      	ExtendedDataTable.CopyAndSort(roundTradeDataTable, "EntryDate", true);
+      return roundTradeDataTable_ordered;
     }
     #endregion
 	}
