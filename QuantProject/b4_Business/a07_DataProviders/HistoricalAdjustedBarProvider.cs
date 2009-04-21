@@ -30,6 +30,7 @@ namespace QuantProject.Business.DataProviders
 	/// <summary>
 	/// Returns adjusted historical intraday market values
 	/// </summary>
+	[Serializable]
 	public class HistoricalAdjustedBarProvider : HistoricalMarketValueProvider
 	{
 		private HistoricalBarProvider historicalBarProvider;
