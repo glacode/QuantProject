@@ -37,17 +37,16 @@ namespace QuantProject.Business.DataProviders
 		HistoricalMarketValueProvider
 	{
 		private HistoricalMarketValueProvider historicalMarketValueProvider;
-		
-		private HistoricalRawQuoteProvider historicalRawQuoteProvider;
+
+		private HistoricalQuoteProvider historicalQuoteProvider;
 		
 		public HistoricalMarketValueProviderWithQuoteBackupOnClose(
-			HistoricalMarketValueProvider historicalMarketValueProvider )
+			HistoricalMarketValueProvider historicalMarketValueProvider,
+		  HistoricalQuoteProvider historicalQuoteProviderBackUp)
 		{
 			this.historicalMarketValueProvider = historicalMarketValueProvider;
-			
-			this.historicalRawQuoteProvider = new HistoricalRawQuoteProvider();
+			this.historicalQuoteProvider = historicalQuoteProviderBackUp;
 		}
-		
 		protected override string getDescription()
 		{
 			string description =
@@ -56,12 +55,12 @@ namespace QuantProject.Business.DataProviders
 		}
 
 		#region GetMarketValue
-		private double getRawCloseIfTheCase( string ticker , DateTime dateTime )
+		private double getCloseIfTheCase( string ticker , DateTime dateTime )
 		{
 			double marketValue = double.NaN;
 			if ( HistoricalEndOfDayTimer.IsMarketClose( dateTime ) )
 				// dateTime is at market close
-				marketValue = this.historicalRawQuoteProvider.GetMarketValue(
+				marketValue = this.historicalQuoteProvider.GetMarketValue(
 					ticker , dateTime );
 			else
 				// dateTime is not at market close
@@ -77,7 +76,7 @@ namespace QuantProject.Business.DataProviders
 			else
 				// this.historicalMarketValueProvider doesn't have a market value for
 				// the given ticker, at the given dateTime
-				marketValue = this.getRawCloseIfTheCase( ticker , dateTime );
+				marketValue = this.getCloseIfTheCase( ticker , dateTime );
 			return marketValue;
 		}
 		#endregion GetMarketValue
@@ -85,11 +84,11 @@ namespace QuantProject.Business.DataProviders
 		
 		#region WasExchanged
 		
-		private bool isRawCloseAnAvailableBackup( string ticker , DateTime dateTime )
+		private bool isCloseAnAvailableBackup( string ticker , DateTime dateTime )
 		{
 			bool isBackupAvailable = HistoricalEndOfDayTimer.IsMarketClose( dateTime );
 			isBackupAvailable = isBackupAvailable &&
-				this.historicalRawQuoteProvider.WasExchanged( ticker , dateTime );
+				this.historicalQuoteProvider.WasExchanged( ticker , dateTime );
 			return isBackupAvailable;
 		}
 		public override bool WasExchanged( string ticker , DateTime dateTime )
@@ -97,7 +96,7 @@ namespace QuantProject.Business.DataProviders
 			bool wasExchanged = this.historicalMarketValueProvider.WasExchanged(
 				ticker , dateTime );
 			wasExchanged = wasExchanged ||
-				this.isRawCloseAnAvailableBackup( ticker , dateTime );
+				this.isCloseAnAvailableBackup( ticker , dateTime );
 			return wasExchanged;
 		}
 		#endregion WasExchanged

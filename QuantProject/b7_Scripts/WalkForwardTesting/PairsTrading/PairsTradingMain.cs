@@ -151,7 +151,8 @@ namespace QuantProject.Scripts.WalkForwardTesting.PairsTrading
 			HistoricalMarketValueProviderWithQuoteBackupOnClose
 				historicalMarketValueProviderForTheBacktesterAccount =
 				new HistoricalMarketValueProviderWithQuoteBackupOnClose(
-					this.historicalMarketValueProviderForChosingPositionsOutOfSample );
+					this.historicalMarketValueProviderForChosingPositionsOutOfSample,
+					new HistoricalRawQuoteProvider() );
 			return historicalMarketValueProviderForTheBacktesterAccount;
 		}
 
