@@ -267,7 +267,8 @@ namespace QuantProject.Scripts.WalkForwardTesting.PairsTrading
 //				2 ,	0.006 , 0.99 , 0.006 , 0.99 );
 			IInefficiencyCorrectionDetector inefficiencyCorrectionDetector =
 				new ConsecutiveMinutesOfCorrectionDetector(
-					this.historicalMarketValueProviderForChosingPositionsOutOfSample , 4 );
+					this.historicalMarketValueProviderForChosingPositionsOutOfSample , 2 );
+//					this.historicalMarketValueProviderForChosingPositionsOutOfSample , 4 );
 			outOfSampleChooser =
 				new OutOfSampleChooserForAlreadyClosing(
 					0.006 , 0.03 , 0.006 , 0.03 , inefficiencyCorrectionDetector );
@@ -327,7 +328,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.PairsTrading
 			// uncomment the following two lines for a faster script
 			firstDateTime = new DateTime( 2006 , 1 , 2 );
 //			lastDateTime = new DateTime( 2007 , 12 , 31 );
-			lastDateTime = new DateTime( 2006 , 12 , 31 );
+			lastDateTime = new DateTime( 2006 , 1 , 10 );
 
 			double maxRunningHours = 11;
 			
