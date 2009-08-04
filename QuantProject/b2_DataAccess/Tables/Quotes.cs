@@ -503,7 +503,8 @@ namespace QuantProject.DataAccess.Tables
 		                                                           long maxNumOfReturnedTickers)
 		{
 			string sql = "SELECT TOP " + maxNumOfReturnedTickers + " tickers.tiTicker, tickers.tiCompanyName, " +
-				"StDev(quotes.quAdjustedCloseToCloseRatio) AS AdjCloseToCloseStandDev " +
+				SQLBuilder.GetStandardDeviationFunctionName() +
+				"(quotes.quAdjustedCloseToCloseRatio) AS AdjCloseToCloseStandDev " +
 				"FROM quotes INNER JOIN (tickers INNER JOIN tickers_tickerGroups " +
 				"ON tickers.tiTicker = tickers_tickerGroups.ttTiId) " +
 				"ON quotes.quTicker = tickers_tickerGroups.ttTiId " +
@@ -512,7 +513,9 @@ namespace QuantProject.DataAccess.Tables
 				SQLBuilder.GetDateConstant(firstQuoteDate) + " AND " +
 				SQLBuilder.GetDateConstant(lastQuoteDate) +
 				"GROUP BY tickers.tiTicker, tickers.tiCompanyName " +
-				"ORDER BY StDev(quotes.quAdjustedCloseToCloseRatio)";
+				"ORDER BY " +
+				SQLBuilder.GetStandardDeviationFunctionName() + 
+				"(quotes.quAdjustedCloseToCloseRatio)";
 			string sortDirection = " DESC";
 			if(orderInASCMode)
 				sortDirection = " ASC";
@@ -529,7 +532,8 @@ namespace QuantProject.DataAccess.Tables
 		                                                          long maxNumOfReturnedTickers)
 		{
 			string sql = "SELECT TOP " + maxNumOfReturnedTickers + " tickers.tiTicker, tickers.tiCompanyName, " +
-				"StDev(quotes.quClose/quotes.quOpen - 1) AS OpenToCloseStandDev " +
+				SQLBuilder.GetStandardDeviationFunctionName() +
+				"(quotes.quClose/quotes.quOpen - 1) AS OpenToCloseStandDev " +
 				"FROM quotes INNER JOIN (tickers INNER JOIN tickers_tickerGroups " +
 				"ON tickers.tiTicker = tickers_tickerGroups.ttTiId) " +
 				"ON quotes.quTicker = tickers_tickerGroups.ttTiId " +
@@ -538,7 +542,9 @@ namespace QuantProject.DataAccess.Tables
 				SQLBuilder.GetDateConstant(firstQuoteDate) + " AND " +
 				SQLBuilder.GetDateConstant(lastQuoteDate) +
 				"GROUP BY tickers.tiTicker, tickers.tiCompanyName " +
-				"ORDER BY StDev(quotes.quClose/quotes.quOpen - 1)";
+				"ORDER BY " +
+				SQLBuilder.GetStandardDeviationFunctionName() +
+				"(quotes.quClose/quotes.quOpen - 1)";
 			string sortDirection = " DESC";
 			if(orderInASCMode)
 				sortDirection = " ASC";
@@ -639,7 +645,9 @@ namespace QuantProject.DataAccess.Tables
 		                                                 double maxStdDeviation)
 		{
 			string sql = "SELECT TOP " + maxNumOfReturnedTickers + " quotes.quTicker, tickers.tiCompanyName, " +
-				"Avg(quotes.quOpen) AS AverageRawOpenPrice, StDev(quotes.quOpen) AS StdDevRawOpenPrice " +
+				"Avg(quotes.quOpen) AS AverageRawOpenPrice, " +
+				SQLBuilder.GetStandardDeviationFunctionName() +
+				"(quotes.quOpen) AS StdDevRawOpenPrice " +
 				"FROM (quotes INNER JOIN tickers ON quotes.quTicker=tickers.tiTicker) " +
 				"INNER JOIN tickers_tickerGroups ON tickers.tiTicker=tickers_tickerGroups.ttTiId " +
 				"WHERE quotes.quDate Between " + SQLBuilder.GetDateConstant(firstQuoteDate) + " " +
@@ -647,7 +655,9 @@ namespace QuantProject.DataAccess.Tables
 				"AND " + "tickers_tickerGroups.ttTgId='" + groupID + "' " +
 				"GROUP BY quotes.quTicker, tickers.tiCompanyName " +
 				"HAVING Avg(quotes.quOpen) BETWEEN " + minPrice + " AND " + maxPrice + " " +
-				"AND StDev(quotes.quOpen) BETWEEN " + minStdDeviation + " AND " + maxStdDeviation + " " +
+				"AND " +
+				SQLBuilder.GetStandardDeviationFunctionName() +
+				"(quotes.quOpen) BETWEEN " + minStdDeviation + " AND " + maxStdDeviation + " " +
 				"ORDER BY Avg(quotes.quOpen)";
 			string sortDirection = " DESC";
 			if(orderInASCMode)
@@ -787,7 +797,8 @@ namespace QuantProject.DataAccess.Tables
 			double adjCloseToCloseStdDev = 0.0;
 			DataTable dt;
 			string sql = "SELECT quotes.quTicker, " +
-				"StDev(quotes.quAdjustedCloseToCloseRatio) AS AdjCloseToCloseStandDev " +
+				SQLBuilder.GetStandardDeviationFunctionName() +
+				"(quotes.quAdjustedCloseToCloseRatio) AS AdjCloseToCloseStandDev " +
 				"FROM quotes WHERE quTicker ='" +
 				ticker + "' " +
 				"AND quotes.quDate BETWEEN " + SQLBuilder.GetDateConstant(firstQuoteDate) +
@@ -842,7 +853,8 @@ namespace QuantProject.DataAccess.Tables
 			
 			DataTable dt;
 			string sql = "SELECT quotes.quTicker, " +
-				"StDev(quotes.quClose/quotes.quOpen) AS CloseToOpenStandDev " +
+				SQLBuilder.GetStandardDeviationFunctionName() +
+				"(quotes.quClose/quotes.quOpen) AS CloseToOpenStandDev " +
 				"FROM quotes WHERE quTicker ='" +
 				ticker + "' " +
 				"AND quotes.quDate BETWEEN " + SQLBuilder.GetDateConstant(firstQuoteDate) +
