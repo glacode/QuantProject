@@ -35,10 +35,14 @@ namespace QuantProject.Scripts.WalkForwardTesting.PairsTrading
 	/// <summary>
 	/// BruteForceOptimizableParametersManager to be used by the pairs
 	/// trading strategy.
-	/// Two TestingPositions are considered equivalent as TopBestPositions
-	/// (and only one is kept among them) iif they have the same tickers
-	/// (consider that if two WeightedPosition are highly correlated, the
-	/// two opposite WeightedPosition are highly correlated too)
+	/// Two TestingPositions are considered equivalent as TopBestParameters
+	/// (and only one is kept among them) iif they have the same tickers and
+	/// the same fitness.
+	/// This is a short way to say that, with respect to the
+	/// pairs trading strategy, (a,b) is equivalent to
+	/// (-a,-b), and that (a,-b) is equivalent to (-a,b)
+	/// We use fitness similarity instead of checking for all possible long/short
+	/// combinations
 	/// </summary>
 	[Serializable]
 	public class PairsTradingBruteForceOptimizableParametersManager :
@@ -101,12 +105,14 @@ namespace QuantProject.Scripts.WalkForwardTesting.PairsTrading
 //			return areEquivalentAsTopBestParameters;
 			return haveTheSameFitness;
 		}
-		/// Two TestingPositions are considered equivalent as TopBestPositions
-		/// (and only one is kept among them) iif they have the same tickers
-		/// (consider that if two WeightedPosition are highly correlated, the
-		/// two opposite WeightedPosition are highly correlated too) or
-		/// if they have the same fitness (in this second case, probably
-		/// two tickers represent the same security and thus are equivalent)
+		/// Two TestingPositions are considered equivalent as TopBestParameters
+		/// (and only one is kept among them) iif they have the same tickers and
+		/// the same fitness.
+		/// This is a short way to say that, with respect to the
+		/// pairs trading strategy, (a,b) is equivalent to
+		/// (-a,-b), and that (a,-b) is equivalent to (-a,b)
+		/// We use fitness similarity instead of checking for all possible long/short
+		/// combinations
 		public override bool AreEquivalentAsTopBestParameters(
 			BruteForceOptimizableParameters bruteForceOptimizableParameters1 ,
 			BruteForceOptimizableParameters bruteForceOptimizableParameters2 )
