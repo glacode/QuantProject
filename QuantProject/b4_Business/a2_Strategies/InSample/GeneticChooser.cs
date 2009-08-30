@@ -213,7 +213,7 @@ namespace QuantProject.Business.Strategies.InSample
 			return bestTestingPositions;
 		}
 
-		protected abstract IGenomeManager getGenomeManager(EligibleTickers eligibleTickers ,
+		public abstract IGenomeManager GetGenomeManager(EligibleTickers eligibleTickers ,
 			ReturnsManager returnsManager);
 		//returns a specific IGenomeManager object in inherited classes
 		
@@ -222,7 +222,7 @@ namespace QuantProject.Business.Strategies.InSample
 			ReturnsManager returnsManager
 			)
 		{
-			this.genomeManager = this.getGenomeManager(eligibleTickers, returnsManager);
+			this.genomeManager = this.GetGenomeManager(eligibleTickers, returnsManager);
 			this.geneticOptimizer = new GeneticOptimizer(
 				this.crossoverRate ,
 				this.mutationRate ,
