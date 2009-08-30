@@ -37,7 +37,7 @@ namespace QuantProject.Business.Strategies.Optimizing.Decoding
 	/// can be decoded only tickers
 	/// </summary>
 	[Serializable]
-	public abstract class BasicDecoderForTestingPositions :
+	public class BasicDecoderForTestingPositions :
 		IDecoderForTestingPositions
 	{
 		protected int[] tickerRelatedGeneValues;
@@ -49,8 +49,10 @@ namespace QuantProject.Business.Strategies.Optimizing.Decoding
 		/// short description to be used for the file name
 		/// </summary>
 		/// <returns></returns>
-		protected abstract string getDescription();
-
+		protected virtual string getDescription()
+		{
+			return "BscFrTstngPstns";
+		}
 		public string Description
 		{
 			get
@@ -117,7 +119,10 @@ namespace QuantProject.Business.Strategies.Optimizing.Decoding
 		}
 		#endregion decodeSignedTickers
 
-		protected abstract TestingPositions getMeaningForUndecodable();
+		protected virtual TestingPositions getMeaningForUndecodable()
+		{
+			return new TestingPositions();
+		}
 
 		#region isDecodable
 		private string[] getTickersForPositions()
@@ -149,6 +154,18 @@ namespace QuantProject.Business.Strategies.Optimizing.Decoding
 				else//is Short
 					coefficient = -1.0;
 				weights[i] = coefficient / weights.Length;
+			}
+			return weights;
+		}
+		
+		protected virtual double[] getUnsignedWeights(SignedTickers signedTickers)
+		{
+			//in this implementation encoded doesn't contain
+			//information for weights: so weights are all the same
+			double[] weights = new double[this.tickerRelatedGeneValues.Length];
+			for(int i = 0; i<weights.Length; i++)
+			{	
+				weights[i] = 1.0 / weights.Length;
 			}
 			return weights;
 		}
