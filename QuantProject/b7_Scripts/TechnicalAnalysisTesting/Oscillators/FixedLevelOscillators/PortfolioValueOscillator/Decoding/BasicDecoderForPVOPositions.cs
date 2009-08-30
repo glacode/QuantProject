@@ -35,6 +35,7 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOs
 	/// PVOPositions
 	/// In this implementation, only tickers and thresholds are decoded
 	/// </summary>
+	[Serializable]
 	public class BasicDecoderForPVOPositions : BasicDecoderForTestingPositions
 	{
 		protected int numOfGenesDedicatedToThresholds;
@@ -84,7 +85,7 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOs
 			SignedTickers signedTickers =	this.decodeSignedTickers();
 			this.decodeDecodable_setThresholds();
 			PVOPositions pvoPositions =	new PVOPositions(
-					new WeightedPositions( this.getWeights(signedTickers), signedTickers),
+					new WeightedPositions( this.getUnsignedWeights(signedTickers), signedTickers),
 				  this.oversoldThreshold, this.overboughtThreshold,
 				  this.numDaysForOscillatingPeriod);
 	
