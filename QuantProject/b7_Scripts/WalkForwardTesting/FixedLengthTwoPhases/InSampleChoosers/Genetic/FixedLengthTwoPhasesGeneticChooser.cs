@@ -75,7 +75,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.FixedLengthTwoPhases
 
 
 		
-		protected override IGenomeManager getGenomeManager(
+		public override IGenomeManager GetGenomeManager(
 			EligibleTickers eligibleTickers ,
 			ReturnsManager returnsManager )
 		{

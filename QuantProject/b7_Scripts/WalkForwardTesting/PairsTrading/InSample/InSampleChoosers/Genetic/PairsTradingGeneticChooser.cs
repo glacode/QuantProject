@@ -69,7 +69,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.PairsTrading
 			// TODO: Add constructor logic here
 			//
 		}
-		protected override IGenomeManager getGenomeManager(
+		public override IGenomeManager GetGenomeManager(
 			EligibleTickers eligibleTickers ,
 			ReturnsManager returnsManager )
 		{

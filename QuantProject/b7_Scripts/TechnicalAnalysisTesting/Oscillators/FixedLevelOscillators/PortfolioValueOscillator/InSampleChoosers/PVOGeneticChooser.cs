@@ -91,7 +91,7 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOs
 			return returnValue;
 		}
     
-		protected override IGenomeManager getGenomeManager(EligibleTickers eligibleTickers ,
+		public override IGenomeManager GetGenomeManager(EligibleTickers eligibleTickers ,
 			ReturnsManager returnsManager)
 		{
 			return  
