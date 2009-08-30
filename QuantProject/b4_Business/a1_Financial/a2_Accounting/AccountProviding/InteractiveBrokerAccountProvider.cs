@@ -39,6 +39,7 @@ namespace QuantProject.Business.Financial.Accounting.AccountProviding
 	/// through a fixed percentage amount (on stock-price)
 	/// lost at each stock-transaction
 	/// </summary>
+	[Serializable]
 	public class InteractiveBrokerAccountProvider : IAccountProvider
 	{
 		private double slippageFixedPercentage;
