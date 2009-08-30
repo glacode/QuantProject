@@ -111,6 +111,14 @@ namespace QuantProject.Business.Timing
 //			}
 //		}
 		
+		protected override bool isDone()
+		{
+			bool lastDateHasAlreadyBeenLaunched;
+			lastDateHasAlreadyBeenLaunched = 
+				this.IndexQuotes.Rows.Count - 1 == this.currentDateArrayPosition;
+			return lastDateHasAlreadyBeenLaunched;
+		}
+		
 		#region moveNext
 		private void moveNext_with_currentDateTime_properlyInitialized()
 		{
