@@ -38,6 +38,7 @@ namespace QuantProject.Business.Strategies.OutOfSample
   {
   	private WeightedPositions weightedPositions;
   	private string hashCodeForTickerComposition;
+  	private string hashCode;
   	private double fitnessInSample;
   	  	
 		public WeightedPositions WeightedPositions
@@ -59,13 +60,83 @@ namespace QuantProject.Business.Strategies.OutOfSample
       	//if hashCodeForTickerComposition has not been computed yet and
       	//the current instance is not empty
       	{
-      		ArrayList listOfTickers = 
+      		ArrayList listOfTickers =
       			new ArrayList(this.weightedPositions.SignedTickers.Tickers);
 		      listOfTickers.Sort();
 		      foreach(string tickerCode in listOfTickers)
 		        this.hashCodeForTickerComposition += tickerCode + ";";
       	}
       	return this.hashCodeForTickerComposition;
+			}
+    }
+		/// <summary>
+	  /// Hash code for the current instance
+	  /// Two instances have the same Hash code iif 
+	  /// they have the same tickers with the same signed weights
+	  /// </summary>
+		public string HashCode
+    {
+      get
+      {
+      	if(this.hashCode == null && 
+      	   this.weightedPositions != null)
+      	//if hashCode has not been computed yet and
+      	//the current instance is not empty
+      	{
+      		ArrayList listOfTickers =
+      			new ArrayList(this.weightedPositions.SignedTickers.Tickers);
+		      listOfTickers.Sort();
+		      foreach(string tickerCode in listOfTickers)
+		        this.hashCode += 
+		      		tickerCode + "_" +
+		      		this.weightedPositions.GetWeightedPosition(tickerCode).Weight.ToString() +
+		      		";";
+      	}
+      	return this.hashCode;
+			}
+    }
+		public bool OnlyLongPositions
+    {
+      get
+      {
+      	bool returnValue = false;
+      	int numOfWeightedPositions = this.weightedPositions.Count;
+      	int numOfLongPositions = this.weightedPositions.NumberOfLongPositions;
+      	if(numOfLongPositions == numOfWeightedPositions)
+      	//there are only long positions
+      			returnValue = true;
+      	
+      	return returnValue;
+			}
+    }
+		public bool OnlyShortPositions
+    {
+      get
+      {
+      	bool returnValue = false;
+      	int numOfWeightedPositions = this.weightedPositions.Count;
+      	int numOfShortPositions = this.weightedPositions.NumberOfShortPositions;
+      	if(numOfShortPositions == numOfWeightedPositions)
+      	//there are only short positions
+      			returnValue = true;
+      	
+      	return returnValue;
+			}
+    }
+		public bool BothLongAndShortPositions
+    {
+      get
+      {
+      	bool returnValue = false;
+      	int numOfWeightedPositions = this.weightedPositions.Count;
+      	int numOfShortPositions = this.weightedPositions.NumberOfShortPositions;
+      	int numOfLongPositions = this.weightedPositions.NumberOfLongPositions;
+      	if(numOfShortPositions != numOfWeightedPositions &&
+      	   numOfLongPositions != numOfWeightedPositions)
+      	//there are both long and short positions
+      			returnValue = true;
+      	
+      	return returnValue;
 			}
     }
 		
@@ -88,5 +159,5 @@ namespace QuantProject.Business.Strategies.OutOfSample
  			this.weightedPositions = null;
  			this.fitnessInSample = double.MinValue;
 		}
-  }
+	}
 }
