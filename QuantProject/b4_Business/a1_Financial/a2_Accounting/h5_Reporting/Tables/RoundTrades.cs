@@ -122,7 +122,8 @@ namespace QuantProject.Business.Financial.Accounting.Reporting.Tables
       getRoundTradeTable_setColumns( roundTradeDataTable );
       getRoundTradeTable_setRows( roundTradeDataTable );
       DataTable roundTradeDataTable_ordered =	
-      	ExtendedDataTable.CopyAndSort(roundTradeDataTable, "EntryDate", true);
+      	ExtendedDataTable.CopyAndSort(roundTradeDataTable, "ExitPrice > 0",
+      	                              "EntryDate", true);
       return roundTradeDataTable_ordered;
     }
     #endregion
