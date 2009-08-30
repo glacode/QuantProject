@@ -44,6 +44,7 @@ using QuantProject.Business.Strategies.Eligibles;
 using QuantProject.Business.Strategies.Optimizing.Decoding;
 using QuantProject.Data;
 using QuantProject.Data.DataProviders;
+using QuantProject.Data.DataProviders.Bars.Caching;
 using QuantProject.Data.Selectors;
 using QuantProject.Data.DataTables;
 using QuantProject.ADT.Optimizing.Genetic;
@@ -74,6 +75,7 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOs
 			historicalMarketValueProviderForInSample;
 		protected HistoricalMarketValueProvider
 			historicalMarketValueProviderForOutOfSample;
+		protected HistoricalAdjustedBarProvider historicalAdjBarProvider;
 		protected double oversoldThreshold;
 		protected double overboughtThreshold;
 		protected double oversoldThresholdMAX;
@@ -102,6 +104,8 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOs
 		protected bool takeProfitConditionReached;
 		protected double inefficiencyLengthInMinutes;
 		protected int numberOfPreviousEfficientPeriods;
+		protected int numberOfDaysForPriceRatioAnalysis;
+		protected double numberOfStdDeviationForSignificantPriceRatioMovements;
 		protected double maxOpeningLengthInMinutes;
 		protected double minutesFromLastInefficiencyTimeToWaitBeforeOpening;
 		protected double minutesFromLastLossOrProfitToWaitBeforeClosing;
@@ -113,6 +117,7 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOs
 		protected double previousAccountValue;
 		protected double stopLoss;
 		protected double takeProfit;
+		protected double leverage;
 		
 		private string description_GetDescriptionForChooser()
 		{
@@ -174,11 +179,13 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOs
 		                                 HistoricalMarketValueProvider historicalMarketValueProviderForOutOfSample,
 		                                 double inefficiencyLengthInMinutes,
 		                                 int numberOfPreviousEfficientPeriods,
+		                                 int numberOfDaysForPriceRatioAnalysis,
+																		 double numberOfStdDeviationForSignificantPriceRatioMovements, 
 		                                 double minutesFromLastInefficiencyTimeToWaitBeforeOpening,
 		                                 double minutesFromLastLossOrProfitToWaitBeforeClosing,
 		                                 double maxOpeningLengthInMinutes,
 		                                 List<Time> openingTimesForAvailableBars,
-		                                 double stopLoss, double takeProfit)
+		                                 double stopLoss, double takeProfit, double leverage)
 		{
 			this.eligiblesSelector = eligiblesSelector;
 			this.minimumNumberOfEligiblesForValidOptimization =
@@ -190,10 +197,15 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOs
 			this.overboughtThreshold = overboughtThreshold;
 			this.oversoldThresholdMAX = oversoldThresholdMAX;
 			this.overboughtThresholdMAX = overboughtThresholdMAX;
-			this.historicalMarketValueProviderForInSample = historicalMarketValueProviderForInSample;
-			this.historicalMarketValueProviderForOutOfSample = historicalMarketValueProviderForOutOfSample;
+			this.historicalMarketValueProviderForInSample =
+				historicalMarketValueProviderForInSample;
+			this.historicalMarketValueProviderForOutOfSample = 
+				historicalMarketValueProviderForOutOfSample;
 			this.inefficiencyLengthInMinutes = inefficiencyLengthInMinutes;
 			this.numberOfPreviousEfficientPeriods = numberOfPreviousEfficientPeriods;
+			this.numberOfDaysForPriceRatioAnalysis = numberOfDaysForPriceRatioAnalysis;
+			this.numberOfStdDeviationForSignificantPriceRatioMovements = 
+				numberOfStdDeviationForSignificantPriceRatioMovements;
 			this.minutesFromLastInefficiencyTimeToWaitBeforeOpening =
 				minutesFromLastInefficiencyTimeToWaitBeforeOpening;
 			this.minutesFromLastLossOrProfitToWaitBeforeClosing =
@@ -202,8 +214,13 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOs
 			this.openingTimesForAvailableBars = openingTimesForAvailableBars;
 			this.stopLoss = stopLoss;
 			this.takeProfit = takeProfit;
+			this.leverage = leverage;
 			this.lastOptimizationDateTime = DateTime.MinValue;
 			
+			this.historicalAdjBarProvider = 
+				new HistoricalAdjustedBarProvider( new HistoricalBarProvider( new SimpleBarCache(60) ),
+				                                   new HistoricalRawQuoteProvider(),
+				                                   new HistoricalAdjustedQuoteProvider() );
 			this.pvoStrategyIntraday_checkTimeParameters();
 			this.lastEntryTime = new Time("00:00:00");
 			this.lastInefficiencyTime = new Time("00:00:00");
@@ -224,11 +241,14 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOs
 		                           HistoricalMarketValueProvider historicalMarketValueProviderForOutOfSample,
 		                           double inefficiencyLengthInMinutes,
 		                           int numberOfPreviousEfficientPeriods,
+		                           int numberOfDaysForPriceRatioAnalysis,
+															 double numberOfStdDeviationForSignificantPriceRatioMovements,
 		                           double minutesFromLastInefficiencyTimeToWaitBeforeOpening,
 		                           double minutesFromLastLossOrProfitToWaitBeforeClosing,
 		                           double maxOpeningLengthInMinutes,
 		                           List<Time> openingTimesForAvailableBars,
-		                           double stopLoss, double takeProfit)
+		                           double stopLoss, double takeProfit,
+		                           double leverage)
 			
 		{
 			this.pvoStrategyIntraday(eligiblesSelector, minimumNumberOfEligiblesForValidOptimization,
@@ -239,11 +259,13 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOs
 			                         historicalMarketValueProviderForOutOfSample,
 			                         inefficiencyLengthInMinutes,
 			                         numberOfPreviousEfficientPeriods,
+			                         numberOfDaysForPriceRatioAnalysis,
+															 numberOfStdDeviationForSignificantPriceRatioMovements,
 			                         minutesFromLastInefficiencyTimeToWaitBeforeOpening,
 			                         minutesFromLastLossOrProfitToWaitBeforeClosing,
 			                         maxOpeningLengthInMinutes,
 			                         openingTimesForAvailableBars,
-			                         stopLoss, takeProfit);
+			                         stopLoss, takeProfit, leverage);
 			this.inSampleChooser = inSampleChooser;
 		}
 		
@@ -259,11 +281,13 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOs
 		                           HistoricalMarketValueProvider historicalMarketValueProviderForOutOfSample,
 		                           double inefficiencyLengthInMinutes,
 		                           int numberOfPreviousEfficientPeriods,
+		                           int numberOfDaysForPriceRatioAnalysis,
+															 double numberOfStdDeviationForSignificantPriceRatioMovements,
 		                           double minutesFromLastInefficiencyTimeToWaitBeforeOpening,
 		                           double minutesFromLastLossOrProfitToWaitBeforeClosing,
 		                           double maxOpeningLengthInMinutes,
 		                           List<Time> openingTimesForAvailableBars,
-		                           double stopLoss, double takeProfit)
+		                           double stopLoss, double takeProfit, double leverage)
 			
 		{
 			this.pvoStrategyIntraday(eligiblesSelector, minimumNumberOfEligiblesForValidOptimization,
@@ -274,11 +298,13 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOs
 			                         historicalMarketValueProviderForOutOfSample,
 			                         inefficiencyLengthInMinutes,
 			                         numberOfPreviousEfficientPeriods,
+			                         numberOfDaysForPriceRatioAnalysis,
+															 numberOfStdDeviationForSignificantPriceRatioMovements,
 			                         minutesFromLastInefficiencyTimeToWaitBeforeOpening,
 			                         minutesFromLastLossOrProfitToWaitBeforeClosing,
 			                         maxOpeningLengthInMinutes,
 			                         openingTimesForAvailableBars,
-			                         stopLoss, takeProfit);
+			                         stopLoss, takeProfit, leverage);
 			this.inSampleChooser = inSampleChooser;
 		}
 		public PVOStrategyIntraday(IEligiblesSelector eligiblesSelector,
@@ -295,11 +321,13 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOs
 		                           HistoricalMarketValueProvider historicalMarketValueProviderForOutOfSample,
 		                           double inefficiencyLengthInMinutes,
 		                           int numberOfPreviousEfficientPeriods,
+		                           int numberOfDaysForPriceRatioAnalysis,
+															 double numberOfStdDeviationForSignificantPriceRatioMovements,
 		                           double minutesFromLastInefficiencyTimeToWaitBeforeOpening,
 		                           double minutesFromLastLossOrProfitToWaitBeforeClosing,
 		                           double maxOpeningLengthInMinutes,
 		                           List<Time> openingTimesForAvailableBars,
-		                           double stopLoss, double takeProfit)
+		                           double stopLoss, double takeProfit, double leverage)
 			
 		{
 			this.pvoStrategyIntraday(eligiblesSelector, minimumNumberOfEligiblesForValidOptimization,
@@ -310,11 +338,13 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOs
 			                         historicalMarketValueProviderForOutOfSample,
 			                         inefficiencyLengthInMinutes,
 			                         numberOfPreviousEfficientPeriods,
+			                         numberOfDaysForPriceRatioAnalysis,
+															 numberOfStdDeviationForSignificantPriceRatioMovements,
 			                         minutesFromLastInefficiencyTimeToWaitBeforeOpening,
 			                         minutesFromLastLossOrProfitToWaitBeforeClosing,
 			                         maxOpeningLengthInMinutes,
 			                         openingTimesForAvailableBars,
-			                         stopLoss, takeProfit);
+			                         stopLoss, takeProfit, leverage);
 			this.chosenPVOPositions = chosenPVOPositions;
 		}
 		public PVOStrategyIntraday(IEligiblesSelector eligiblesSelector,
@@ -329,11 +359,13 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOs
 		                           HistoricalMarketValueProvider historicalMarketValueProviderForOutOfSample,
 		                           double inefficiencyLengthInMinutes,
 		                           int numberOfPreviousEfficientPeriods,
+		                           int numberOfDaysForPriceRatioAnalysis,
+															 double numberOfStdDeviationForSignificantPriceRatioMovements,
 		                           double minutesFromLastInefficiencyTimeToWaitBeforeOpening,
 		                           double minutesFromLastLossOrProfitToWaitBeforeClosing,
 		                           double maxOpeningLengthInMinutes,
 		                           List<Time> openingTimesForAvailableBars,
-		                           double stopLoss, double takeProfit)
+		                           double stopLoss, double takeProfit, double leverage)
 		{
 			this.pvoStrategyIntraday(eligiblesSelector, minimumNumberOfEligiblesForValidOptimization,
 			                         inSampleDays , benchmark , numDaysBetweenEachOptimization ,
@@ -343,11 +375,13 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOs
 			                         historicalMarketValueProviderForOutOfSample,
 			                         inefficiencyLengthInMinutes,
 			                         numberOfPreviousEfficientPeriods,
+			                         numberOfDaysForPriceRatioAnalysis,
+															 numberOfStdDeviationForSignificantPriceRatioMovements,
 			                         minutesFromLastInefficiencyTimeToWaitBeforeOpening,
 			                         minutesFromLastLossOrProfitToWaitBeforeClosing,
 			                         maxOpeningLengthInMinutes,
 			                         openingTimesForAvailableBars,
-			                         stopLoss, takeProfit);
+			                         stopLoss, takeProfit, leverage);
 			this.chosenPVOPositions = chosenPVOPositions;
 		}
 		
@@ -416,6 +450,8 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOs
 			   allTickersAreExchanged( this.now(), AccountManager.GetTickersInOpenedPositions(this.account) ) )
 			{
 				AccountManager.ClosePositions( this.account );
+				this.currentAccountValue = 0.0;
+				this.previousAccountValue = 0.0;
 				this.lastEntryTime = new Time("00:00:00");
 				this.lastInefficiencyTime = new Time("00:00:00");
 				this.lastProfitOrLossTime = new Time("00:00:00");
@@ -445,7 +481,7 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOs
 							try
 							{
 								AccountManager.OpenPositions( this.positionsForOutOfSample.WeightedPositions,
-								                             this.account );
+								                             this.account, 10000, this.leverage );
 								this.lastEntryTime = currentDailyTime;
 								this.previousAccountValue = this.account.GetMarketValue();
 							}
@@ -466,7 +502,7 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOs
 							try
 							{
 								AccountManager.OpenPositions( this.positionsForOutOfSample.WeightedPositions,
-								                             this.account );
+								                             this.account, 10000, this.leverage );
 								this.lastEntryTime = currentDailyTime;
 								this.previousAccountValue = this.account.GetMarketValue();
 							}
@@ -533,6 +569,35 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOs
 			return returnValue;
 		}
 		#endregion newDateTimeEventHandler_previousPeriodsWereEfficient
+		
+		#region newDateTimeEventHandler_priceRatioHasMoved
+		private bool newDateTimeEventHandler_priceRatioHasMoved(Time currentDailyTime)
+		{
+			bool returnValue = false;
+			if(this.positionsForOutOfSample != null )
+			{
+				SignedTickers signedTickers =
+					this.positionsForOutOfSample.WeightedPositions.SignedTickers;
+				try{
+					double priceRatioAverage = 
+						PriceRatioProvider.GetPriceRatioAverage(signedTickers[0].Ticker, signedTickers[1].Ticker,
+				                                            this.now().AddDays(-numberOfDaysForPriceRatioAnalysis),
+				                                            this.now().AddDays(-1) );
+					double priceRatioStdDev = 
+						PriceRatioProvider.GetPriceRatioStandardDeviation(signedTickers[0].Ticker, signedTickers[1].Ticker,
+				                                            this.now().AddDays(-numberOfDaysForPriceRatioAnalysis),
+				                                            this.now().AddDays(-1) );
+					double currentPriceRatio =
+						this.historicalAdjBarProvider.GetMarketValue(signedTickers[0].Ticker, this.now() ) /
+						this.historicalAdjBarProvider.GetMarketValue(signedTickers[1].Ticker, this.now() );
+					if(currentPriceRatio > priceRatioAverage + numberOfStdDeviationForSignificantPriceRatioMovements * priceRatioStdDev ||
+				   	currentPriceRatio < priceRatioAverage - numberOfStdDeviationForSignificantPriceRatioMovements * priceRatioStdDev )
+							returnValue = true;
+				}catch{}
+			}	
+			return returnValue;
+		}
+		#endregion newDateTimeEventHandler_priceRatioHasMoved
 		
 		#region newDateTimeEventHandler_inefficiencyIsMovingBack
 		private bool newDateTimeEventHandler_inefficiencyIsMovingBack(Time currentDailyTime)
@@ -664,17 +729,22 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOs
 			
 			bool inefficiencyIsMovingBack =
 				this.newDateTimeEventHandler_inefficiencyIsMovingBack(currentTime);
-			bool previousPeriodsWereEfficient = 
-				this.newDateTimeEventHandler_previousPeriodsWereEfficient(currentTime);
+//			bool previousPeriodsWereEfficient = 
+//				this.newDateTimeEventHandler_previousPeriodsWereEfficient(currentTime);
+			bool priceRatioHasMoved =
+				this.newDateTimeEventHandler_priceRatioHasMoved(currentTime);
 			if( this.account.Portfolio.Count == 0 &&
 				   this.lastInefficiencyTime != new Time(0, 0, 0) &&
 				   currentTime >=
 				   this.lastInefficiencyTime.AddMinutes(this.minutesFromLastInefficiencyTimeToWaitBeforeOpening)
-				   && inefficiencyIsMovingBack && previousPeriodsWereEfficient 
+				   && inefficiencyIsMovingBack && 
+				   priceRatioHasMoved
+//				   previousPeriodsWereEfficient
 				  )
 				this.newDateTimeEventHandler_openPositions(currentTime);
 			this.newDateTimeEventHandler_resetForNewResearch(inefficiencyIsMovingBack,
-			                                                 previousPeriodsWereEfficient,
+			                                                 priceRatioHasMoved,
+//			                                                 previousPeriodsWereEfficient,
 			                                                 currentTime);
 			if( currentTime == getLastEventTimeWithCachedBars() )
 				//it's time for new optimization, if the case
@@ -856,7 +926,8 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOs
 		}
 		private void notifyMessage( EligibleTickers eligibleTickers )
 		{
-			string message = "Number of Eligible tickers: " +
+			string message = "Number of Eligible tickers (eligible selector: " + 
+				this.eligiblesSelector.Description + "): " +
 				eligibleTickers.Count;
 			NewMessageEventArgs newMessageEventArgs =
 				new NewMessageEventArgs( message );
@@ -865,8 +936,11 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOs
 		}
 		private void logOptimizationInfo( EligibleTickers eligibleTickers )
 		{
-			if(eligibleTickers.Count > 0)
+//			if(eligibleTickers.Count > 0)
+			try{
 				this.raiseNewLogItem( eligibleTickers );
+			}
+			catch{}
 			
 			this.notifyMessage( eligibleTickers );
 		}

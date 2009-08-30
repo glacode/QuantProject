@@ -44,6 +44,8 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOs
 		private double overboughtThreshold;
 		private int numOfDaysOrMinutesForOscillatingPeriod;
 		private int generation;
+		private DateTime lastInefficiencyDateTime;
+		private PVOPositionsStatus statusAtLastInefficiencyTime;
 		
 		private static ReturnsManager returnsManager;
 
@@ -61,6 +63,18 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOs
 		public int NumOfDaysOrMinutesForOscillatingPeriod
 		{
 			get{return this.numOfDaysOrMinutesForOscillatingPeriod;}
+		}
+		
+		public DateTime LastInefficiencyDateTime
+		{
+			get{return this.lastInefficiencyDateTime;}
+			set{this.lastInefficiencyDateTime = value;}
+		}
+		
+		public PVOPositionsStatus StatusAtLastInefficiencyTime
+		{
+			get{return this.statusAtLastInefficiencyTime;}
+			set{this.statusAtLastInefficiencyTime = value;}
 		}
 		
 		//explicit interface implementation
@@ -97,8 +111,25 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOs
 			this.overboughtThreshold = overboughtThreshold;
 			this.numOfDaysOrMinutesForOscillatingPeriod = numDaysForOscillatingPeriod;
 			this.generation = -1;
+			this.statusAtLastInefficiencyTime = PVOPositionsStatus.InTheMiddle;
+			this.lastInefficiencyDateTime = new DateTime(1900,1,1,0,0,0);
 		}
 		
+		public PVOPositions(WeightedPositions weightedPositions,
+		                    double oversoldThreshold,
+		                    double overboughtThreshold,
+		                    int numDaysForOscillatingPeriod,
+		                    DateTime lastInefficiencyDateTime) :
+			base(weightedPositions)
+			
+		{
+			this.oversoldThreshold = oversoldThreshold;
+			this.overboughtThreshold = overboughtThreshold;
+			this.numOfDaysOrMinutesForOscillatingPeriod = numDaysForOscillatingPeriod;
+			this.generation = -1;
+			this.lastInefficiencyDateTime = lastInefficiencyDateTime;
+			this.statusAtLastInefficiencyTime = PVOPositionsStatus.InTheMiddle;
+		}
 		private void setReturnsManager(DateTime beginOfPeriod,
 		                               DateTime endOfPeriod,
 		                               string benchmark,
@@ -164,7 +195,16 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOs
 		                        this.oversoldThreshold, maxOversoldThreshold,
 		                        this.overboughtThreshold, maxOverboughtThreshold );
 		}
-		
+		public PVOPositionsStatus GetStatus(DateTime beginOfPeriod,
+		                                    DateTime endOfPeriod,
+		                                    string benchmark,
+		                                    HistoricalMarketValueProvider quoteProvider)
+		{
+			return this.GetStatus(beginOfPeriod, endOfPeriod,
+		                        benchmark, quoteProvider,
+		                        this.oversoldThreshold, double.MaxValue,
+		                        this.overboughtThreshold, double.MaxValue );
+		}
 		public bool AreAllTickersMovingTogetherUpOrDown(DateTime beginOfPeriod,
 		                                                DateTime endOfPeriod,
 		                                                string benchmark,

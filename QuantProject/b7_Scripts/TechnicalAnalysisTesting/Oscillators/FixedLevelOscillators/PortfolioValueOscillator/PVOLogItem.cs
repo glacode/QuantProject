@@ -21,6 +21,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 
 using System;
+using System.Collections.Generic;
 using System.Windows.Forms;
 
 using QuantProject.Business.DataProviders;
@@ -32,6 +33,7 @@ using QuantProject.Business.Strategies.OutOfSample;
 using QuantProject.Business.Strategies.Logging;
 using QuantProject.Business.Strategies.ReturnsManagement.Time;
 using QuantProject.Business.Strategies.ReturnsManagement.Time.IntervalsSelectors;
+using QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOscillators.PortfolioValueOscillator.EntryConditions;
 using QuantProject.Business.Timing;
 using QuantProject.Presentation;
 using QuantProject.Scripts.General.Reporting;
@@ -184,6 +186,14 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOs
 				//			int idx = PVOLogItem.rand.Next(bestPVOPositionsInSample.Length);
 				//positionsToTest[0] = this.bestPVOPositionsInSample[0];
 				positionsToTest = this.BestPVOPositionsInSample;
+			List<IEntryCondition> entryConditions = new List<IEntryCondition>();
+		  IEntryCondition entryCondition = 
+		  	new AlwaysTrueEntryCondition();
+//		  	new PreviousPeriodsWereEfficientEntryCondition(1, historicalQuoteProviderForStrategy,
+//		  	                                               numDaysForOscillatingPeriodForOutOfSample * 24 *60,
+//		  	                                               new MarketDateTimeManager(benchmark, firstDateTime, lastDateTime, 60) );
+		  entryConditions.Add(entryCondition);
+		  bool allEntryConditionsHaveToBeTrue = true;
 			PVOStrategy strategy =
 				new PVOStrategy(eligiblesSelector,
 				                positionsToTest, this.numberOfInSampleDays,
@@ -192,14 +202,16 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOs
 				                int.MaxValue ,
 				                ((PVOPositions)positionsToTest[0]).OversoldThreshold,
 				                ((PVOPositions)positionsToTest[0]).OverboughtThreshold,
+				                0.0, 1.0, false, 1,
 				                historicalQuoteProviderForStrategy ,
-				                maxAcceptableCloseToCloseDrawdown , minimumAcceptableGain );
+				                maxAcceptableCloseToCloseDrawdown , minimumAcceptableGain,
+				               	entryConditions, allEntryConditionsHaveToBeTrue);
 			
 			EndOfDayStrategyBackTester endOfDayStrategyBackTester =
 				new EndOfDayStrategyBackTester(
 					"PVO" ,
 					new QuantProject.Business.Timing.IndexBasedEndOfDayTimer(
-						HistoricalEndOfDayTimer.GetMarketOpen( firstDateTime ) ,
+						HistoricalEndOfDayTimer.GetMarketClose( firstDateTime ) ,
 						benchmark.Ticker ) ,
 					strategy ,
 					historicalQuoteProviderForBackTester ,
