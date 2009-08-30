@@ -36,6 +36,7 @@ namespace QuantProject.Business.Financial.Accounting.Reporting.Tables
 		private LargestLosingTradePercentage largestLosingTradePercentage;
 		private NumberWinningLongTrades numberWinningLongTrades;
 		private AverageLongTradePercentageReturn averageLongTradePercentageReturn;
+		private AverageShortTradePercentageReturn averageShortTradePercentageReturn;
 		private NumberWinningShortTrades numberWinningShortTrades;
 		private TotalNumberOfLongTrades totalNumberOfLongTrades;
 		private TotalNumberOfShortTrades totalNumberOfShortTrades;
@@ -159,6 +160,10 @@ namespace QuantProject.Business.Financial.Accounting.Reporting.Tables
 		public AverageLongTradePercentageReturn AverageLongTradePercentageReturn
 		{
 			get { return this.averageLongTradePercentageReturn; }
+		}
+		public AverageShortTradePercentageReturn AverageShortTradePercentageReturn
+		{
+			get { return this.averageShortTradePercentageReturn; }
 		}
 		public TotalNumberOfShortTrades TotalNumberOfShortTrades
 		{
@@ -289,6 +294,7 @@ namespace QuantProject.Business.Financial.Accounting.Reporting.Tables
 			this.totalNumberOfLongTrades = new TotalNumberOfLongTrades( this );
 			this.numberWinningLongTrades = new NumberWinningLongTrades( this );
 			this.averageLongTradePercentageReturn = new AverageLongTradePercentageReturn( this );
+			this.averageShortTradePercentageReturn = new AverageShortTradePercentageReturn( this );
 			this.totalNumberOfShortTrades = new TotalNumberOfShortTrades( this );
 			this.numberWinningShortTrades = new NumberWinningShortTrades( this );
 			this.totalCommissionAmount = new TotalCommissionAmount( this );
