@@ -34,9 +34,12 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOs
 	/// <summary>
 	/// Evaluates (in sample) the fitness for a given TestingPositions
 	/// </summary>
-	public class PVOFitnessEvaluator : IFitnessEvaluator 
+	[Serializable]
+	public class PVOFitnessEvaluator : IFitnessEvaluator
 	{
 		private IEquityEvaluator strategyEquityEvaluator;
+		private float takeProfit;
+		private float stopLoss;
 		
 		public string Description
 		{
@@ -48,14 +51,17 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOs
 			}
 		}
 		
-		public PVOFitnessEvaluator(IEquityEvaluator strategyEquityEvaluator)
+		public PVOFitnessEvaluator(IEquityEvaluator strategyEquityEvaluator,
+		                           double takeProfit, double stopLoss)
 		{
 			this.strategyEquityEvaluator = strategyEquityEvaluator;
+			this.takeProfit = Convert.ToSingle(takeProfit);
+			this.stopLoss = Convert.ToSingle(stopLoss);
 		}
 		
 		#region GetFitnessValue
 		//returns true if the strategy gets effective positions on
-		//the market for at least half the market days
+		//the market for at least a quarter of the market days
 		private bool getFitnessValue_getFitnessValueActually_strategyGetsSufficientPositions(float[] strategyReturns)
 		{
 			int daysOnTheMarket = 0;
@@ -67,6 +73,21 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOs
 			return daysOnTheMarket >= strategyReturns.Length / 2;
 		}
 
+		private bool getFitnessValue_getFitnessValueActually_itIsTimeToExit(
+			float[] strategyReturns, int currentIndex, int indexOfLastSignal )
+		{
+			bool returnValue = false;
+			float gainOrLoss;
+			float equityValue = 1;
+			if(indexOfLastSignal >= 1 )
+				for(int i = 0; i + indexOfLastSignal < currentIndex; i++)
+					equityValue = equityValue + equityValue * strategyReturns[indexOfLastSignal + 1 + i];
+			gainOrLoss = equityValue - 1;
+			if(gainOrLoss >= this.takeProfit || gainOrLoss <= -this.stopLoss)
+				returnValue = true;
+			return returnValue;
+		}
+		
 		private float getFitnessValue_getFitnessValueActually(
 			TestingPositions testingPositions, ReturnsManager returnsManager )
 		{
@@ -77,20 +98,39 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOs
 			float[] plainWeightedPositionsReturns = 
 				testingPositions.WeightedPositions.GetReturns(returnsManager);
 			float[] strategyReturns = new float[ plainWeightedPositionsReturns.Length ];
-			strategyReturns[0] = 0; //a the very first day the
-			//strategy return is equal to 0 because no position
+			strategyReturns[0] = 0;
+			strategyReturns[1] = 0;//at the two first days the
+			//strategy returns is equal to 0 because no position
 			//has been entered
 			float coefficient = 0;
-			for(int i = 0; i < strategyReturns.Length - 1; i++)
+			int indexOfLastSignal = 0;// the last position where a threshold has been reached
+			for(int i = 1; i < strategyReturns.Length - 1; i++)
 			{
-				if( plainWeightedPositionsReturns[i] >= overboughtThreshold )
-					//portfolio has been overbought
+				if( plainWeightedPositionsReturns[i] >= overboughtThreshold &&
+				    (plainWeightedPositionsReturns[i - 1] > - oversoldThreshold && 
+				    plainWeightedPositionsReturns[i - 1] < overboughtThreshold ) &&
+				    indexOfLastSignal == 0 )
+					//portfolio has been overbought and in the previous period 
+					//it was efficient
+				{
 					coefficient = -1;
-				else if( plainWeightedPositionsReturns[i] <= - oversoldThreshold )
-					//portfolio has been oversold   			
+					indexOfLastSignal = i;
+				}	
+				if( plainWeightedPositionsReturns[i] <= - oversoldThreshold && 
+				         (plainWeightedPositionsReturns[i - 1] > - oversoldThreshold && 
+				    			plainWeightedPositionsReturns[i - 1] < overboughtThreshold ) &&
+				    indexOfLastSignal == 0 )
+					//portfolio has been oversold and in the previous period 
+					//it was efficient 			
+				{
 					coefficient = 1;
-				//else the previous coeff is kept or, if no threshold has been
-				//reached, then no positions will be opened (coefficient = 0) 
+					indexOfLastSignal = i;
+				}	
+				if ( getFitnessValue_getFitnessValueActually_itIsTimeToExit(strategyReturns, i, indexOfLastSignal) )
+				{	
+					coefficient = 0;
+					indexOfLastSignal = 0;
+				}
 				strategyReturns[i + 1] = coefficient * plainWeightedPositionsReturns[i + 1];
 			}
 			if(this.getFitnessValue_getFitnessValueActually_strategyGetsSufficientPositions(strategyReturns))
