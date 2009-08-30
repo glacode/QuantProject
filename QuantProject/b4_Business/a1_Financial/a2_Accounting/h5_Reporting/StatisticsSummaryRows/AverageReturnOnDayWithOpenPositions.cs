@@ -112,8 +112,11 @@ namespace QuantProject.Business.Financial.Accounting.Reporting.StatisticsSummary
 					sumOfReturnsOnDaysWithOpenPositions += this.getReturnForDate(date, previousDate);
 				}
 			}
-			this.rowValue = this.getRowValue(	totalNumberOfDaysWithOpenPositions ,
+			this.rowValue= "-";
+			try{
+				this.rowValue = this.getRowValue(	totalNumberOfDaysWithOpenPositions ,
 			                                  sumOfReturnsOnDaysWithOpenPositions);
+			}catch{};
 		}
 	}
 }

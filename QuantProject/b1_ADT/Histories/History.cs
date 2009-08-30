@@ -470,7 +470,7 @@ namespace QuantProject.ADT.Histories
 			{
 				List<DateTime> dateTimes =
 					new List<DateTime>();
-				foreach ( DateTime dateTime in this.Keys )
+				foreach ( DateTime dateTime in this.Values )
 					dateTimes.Add( dateTime );
 				return dateTimes;
 			}
