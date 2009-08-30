@@ -63,8 +63,8 @@ namespace QuantProject.ADT.Optimizing.Genetic
     private ArrayList cumulativeSpecialFitnessListForRouletteSelection;
 	
     private int generationCounter;
-    private double averageRandomFitness;
-    private double standardDeviationOfRandomFitness;
+//    private double averageRandomFitness;
+//    private double standardDeviationOfRandomFitness;
     
     #endregion
     
@@ -133,22 +133,22 @@ namespace QuantProject.ADT.Optimizing.Genetic
       get{return this.currentGeneration;}
     }
     
-    /// <summary>
-    /// Average fitness of a group of genomes (this.numberOfGenomesForAverageRandomFitness)
-    /// chosen at random
-    /// </summary>
-    public double AverageRandomFitness
-    {
-      get{return this.averageRandomFitness;}
-    }
-    /// <summary>
-    /// Standard deviation of fitness of a group of genomes (this.numberOfGenomesForAverageRandomFitness)
-    /// chosen at random
-    /// </summary>
-    public double StandardDeviationOfRandomFitness
-    {
-      get{return this.standardDeviationOfRandomFitness;}
-    }
+//    /// <summary>
+//    /// Average fitness of a group of genomes (this.numberOfGenomesForAverageRandomFitness)
+//    /// chosen at random
+//    /// </summary>
+//    public double AverageRandomFitness
+//    {
+//      get{return this.averageRandomFitness;}
+//    }
+//    /// <summary>
+//    /// Standard deviation of fitness of a group of genomes (this.numberOfGenomesForAverageRandomFitness)
+//    /// chosen at random
+//    /// </summary>
+//    public double StandardDeviationOfRandomFitness
+//    {
+//      get{return this.standardDeviationOfRandomFitness;}
+//    }
     #endregion
 
 		public event NewGenerationEventHandler NewGeneration;
@@ -219,38 +219,38 @@ namespace QuantProject.ADT.Optimizing.Genetic
       this.generationCounter = 1;
     }
     
-    /// <summary>
-    /// It updates AverageRandomFitness and StandardDeviationOfRandomFitness
-    /// properties with the average and std dev fitness
-    /// of a given group of genomes chosen at random
-    /// </summary>
-    public void CalculateRandomFitness()
-    {
-      this.createFirstGeneration(false);
-      this.averageRandomFitness = this.totalSpecialFitnessForRouletteSelection/this.currentGeneration.Count;
-      this.standardDeviationOfRandomFitness = this.calculateRandomFitness_getStdDevOfRandomFitness();
-    }
-    /// <summary>
-    /// It updates StandardDeviationOfRandomFitness property with the std dev of
-    /// fitness of a given group of genomes chosen at random
-    /// </summary>
-    private double calculateRandomFitness_getStdDevOfRandomFitness()
-    {
-      double[] fitnesses = new double[this.currentGeneration.Count];
-      for(int i = 0; i<this.currentGeneration.Count; i++)
-        fitnesses[i] = ((Genome)this.currentGeneration[i]).Fitness;
-      return QuantProject.ADT.Statistics.BasicFunctions.StdDev(fitnesses);
-    }
+//    /// <summary>
+//    /// It updates AverageRandomFitness and StandardDeviationOfRandomFitness
+//    /// properties with the average and std dev fitness
+//    /// of a given group of genomes chosen at random
+//    /// </summary>
+//    public void CalculateRandomFitness()
+//    {
+//      this.createFirstGeneration(false);
+//      this.averageRandomFitness = this.totalSpecialFitnessForRouletteSelection/this.currentGeneration.Count;
+//      this.standardDeviationOfRandomFitness = this.calculateRandomFitness_getStdDevOfRandomFitness();
+//    }
+//    /// <summary>
+//    /// It updates StandardDeviationOfRandomFitness property with the std dev of
+//    /// fitness of a given group of genomes chosen at random
+//    /// </summary>
+//    private double calculateRandomFitness_getStdDevOfRandomFitness()
+//    {
+//      double[] fitnesses = new double[this.currentGeneration.Count];
+//      for(int i = 0; i<this.currentGeneration.Count; i++)
+//        fitnesses[i] = ((Genome)this.currentGeneration[i]).Fitness;
+//      return QuantProject.ADT.Statistics.BasicFunctions.StdDev(fitnesses);
+//    }
     
-    private void run_calculateRandomFitness()
-    {
-      GeneticOptimizer GOForAverageRandomFitness = 
-        new GeneticOptimizer(this.genomeManager, ConstantsProvider.NumGenomesForRandomFitnessComputation,
-                             0,ConstantsProvider.SeedForRandomGenerator);
-      GOForAverageRandomFitness.CalculateRandomFitness(); 
-      this.averageRandomFitness = GOForAverageRandomFitness.AverageRandomFitness;
-      this.standardDeviationOfRandomFitness = GOForAverageRandomFitness.StandardDeviationOfRandomFitness;
-    }
+//    private void run_calculateRandomFitness()
+//    {
+//      GeneticOptimizer GOForAverageRandomFitness = 
+//        new GeneticOptimizer(this.genomeManager, ConstantsProvider.NumGenomesForRandomFitnessComputation,
+//                             0,ConstantsProvider.SeedForRandomGenerator);
+//      GOForAverageRandomFitness.CalculateRandomFitness(); 
+//      this.averageRandomFitness = GOForAverageRandomFitness.AverageRandomFitness;
+//      this.standardDeviationOfRandomFitness = GOForAverageRandomFitness.StandardDeviationOfRandomFitness;
+//    }
     /// <summary>
     /// Method to start the GeneticOptmizer
     /// </summary>
