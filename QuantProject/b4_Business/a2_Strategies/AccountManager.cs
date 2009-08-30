@@ -92,12 +92,28 @@ namespace QuantProject.Business.Strategies
 		static public void OpenPositions(WeightedPositions weightedPositions,
 																		 Account account, double initialCashIfTheAccountIsEmpty)
 		{
+			OpenPositions(weightedPositions, account, initialCashIfTheAccountIsEmpty, 1);
+		}
+		
+		/// <summary>
+		/// Modifies the state for the given account,
+		/// opening positions provided by the given weightedPositions
+		/// </summary>
+		/// <param name="weightedPositions"></param>
+		/// <param name="account"></param>
+		/// <param name="initialCashForTheAccount">The initial cash for the account
+		/// <param name="leverage">It multiplies initial cash in order to compute
+		/// 											 value to invest in the given weighted positions</param>
+		static public void OpenPositions(WeightedPositions weightedPositions,
+																		 Account account, double initialCashIfTheAccountIsEmpty,
+																		 double leverage)
+		{
 			if(account.Transactions.Count == 0)
 				account.AddCash(initialCashIfTheAccountIsEmpty);
 			if(weightedPositions == null || account == null)
 				throw new Exception("Both parameters have to be set to valid objects!");
 			orders.Clear();
-			double valueToInvestInPositions = account.CashAmount;
+			double valueToInvestInPositions = account.CashAmount * leverage;
 			foreach(WeightedPosition weightedPosition in weightedPositions.Values)
 				addWeightedPositionToOrderList( weightedPosition, account, valueToInvestInPositions );
 			foreach(object item in orders)
