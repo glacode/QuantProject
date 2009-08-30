@@ -25,6 +25,7 @@ using System;
 using QuantProject.ADT;
 using QuantProject.ADT.Messaging;
 using QuantProject.ADT.Optimizing.BruteForce;
+using QuantProject.ADT.Statistics.Combinatorial;
 using QuantProject.Business.DataProviders;
 using QuantProject.Business.Strategies.Eligibles;
 using QuantProject.Business.Strategies.Optimizing;
@@ -73,7 +74,7 @@ namespace QuantProject.Business.Strategies.InSample
 			this.fitnessEvaluator = fitnessEvaluator;
 //			this.historicalQuoteProvider = historicalQuoteProvider;
 		}
-
+		
 		protected abstract IBruteForceOptimizableParametersManager
 			getBruteForceOptimizableParametersManager( EligibleTickers eligibleTickers ,
 			ReturnsManager returnsManager );

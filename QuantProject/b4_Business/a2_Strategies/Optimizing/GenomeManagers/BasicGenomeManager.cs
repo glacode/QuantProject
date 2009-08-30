@@ -28,6 +28,7 @@ using QuantProject.Business.Strategies.ReturnsManagement;
 using QuantProject.Business.Strategies.Optimizing.Decoding;
 using QuantProject.Business.Strategies.Optimizing.FitnessEvaluation;
 
+
 namespace QuantProject.Business.Strategies.Optimizing.GenomeManagers
 {
 	/// <summary>
@@ -100,11 +101,12 @@ namespace QuantProject.Business.Strategies.Optimizing.GenomeManagers
 					break;
 			}
 		}
-        
+		
 		public virtual double GetFitnessValue(Genome genome)
 		{
-			double fitnessValue =
-				this.fitnessEvaluator.GetFitnessValue(genome.Meaning, this.returnsManager);
+			double fitnessValue = 
+					this.fitnessEvaluator.GetFitnessValue(genome.Meaning, this.returnsManager);
+				
 			return fitnessValue;
 		}
     
