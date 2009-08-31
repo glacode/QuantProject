@@ -47,6 +47,9 @@
   <ItemGroup>
     <Compile Include="a05_Timing\IndexBasedHistoricalTimer.cs" />
     <Compile Include="a05_Timing\Timer.cs" />
+    <Compile Include="a05_Timing\TimingManagement\MarketDaysManager.cs" />
+    <Compile Include="a05_Timing\TimingManagement\MarketIntervalsManager.cs" />
+    <Compile Include="a05_Timing\TimingManagement\MarketMinutesManager.cs" />
     <Compile Include="a07_DataProviders\HistoricalAdjustedBarProvider.cs" />
     <Compile Include="a07_DataProviders\HistoricalBarInterpolatingProvider.cs" />
     <Compile Include="a07_DataProviders\HistoricalMarketValueProviderWithQuoteBackupOnClose.cs" />
@@ -59,6 +62,8 @@
     <Compile Include="a1_Financial\a2_Accounting\AccountProviding\IAccountProvider.cs" />
     <Compile Include="a1_Financial\a2_Accounting\AccountProviding\InteractiveBrokerAccountProvider.cs" />
     <Compile Include="a1_Financial\a2_Accounting\AccountProviding\SimpleAccountProvider.cs" />
+    <Compile Include="a1_Financial\a2_Accounting\Commissions\FixedCommission.cs" />
+    <Compile Include="a1_Financial\a2_Accounting\Commissions\FixedCommissionManager.cs" />
     <Compile Include="a1_Financial\a2_Accounting\h5_Reporting\DateTimeSelectorsForEquityLine\IDateTimeSelectorForEquityLine.cs" />
     <Compile Include="a1_Financial\a2_Accounting\h5_Reporting\DateTimeSelectorsForEquityLine\SelectorForMaketClose.cs" />
     <Compile Include="a1_Financial\a2_Accounting\h5_Reporting\StatisticsSummaryRows\AverageReturnOnDayOfWeekWithOpenPositions.cs" />
@@ -75,6 +80,7 @@
     <Compile Include="a1_Financial\a3_Ordering\HistoricalOrderExecutor.cs" />
     <Compile Include="a2_Strategies\BasicStrategyForBacktester.cs" />
     <Compile Include="a2_Strategies\Benchmark.cs" />
+    <Compile Include="a2_Strategies\Eligibles\ByPriceLessLiquidAlwaysIntradayQuoted.cs" />
     <Compile Include="a2_Strategies\Eligibles\ByPriceLessVolatileOTCAlwaysQuoted.cs" />
     <Compile Include="a2_Strategies\Eligibles\ByPriceMostLiquidAlwaysIntradayQuoted.cs" />
     <Compile Include="a2_Strategies\Eligibles\ByPriceMostLiquidLessVolatileCTCAlwaysQuoted.cs" />
@@ -96,6 +102,8 @@
     <Compile Include="a2_Strategies\InSample\BasicChooserFromSavedBackTestLog.cs" />
     <Compile Include="a2_Strategies\InSample\GeneticChooser.cs" />
     <Compile Include="a2_Strategies\InSample\IInSampleChooser.cs" />
+    <Compile Include="a2_Strategies\InSample\InSampleFitnessDistributionEstimation\BasicInSampleFitnessDistributionEstimator.cs" />
+    <Compile Include="a2_Strategies\InSample\InSampleFitnessDistributionEstimation\IInSampleFitnessDistributionEstimator.cs" />
     <Compile Include="a2_Strategies\IStrategy.cs" />
     <Compile Include="a2_Strategies\IStrategyForBacktester.cs" />
     <Compile Include="a2_Strategies\Logging\BackTestLog.cs" />
@@ -136,6 +144,7 @@
     <Compile Include="a2_Strategies\TickersRelationships\OpenToCloseCloseToOpenCorrelationProvider.cs" />
     <Compile Include="a2_Strategies\TickersRelationships\OpenToCloseCorrelationProvider.cs" />
     <Compile Include="a2_Strategies\TickersRelationships\OpenToOpenCorrelationProvider.cs" />
+    <Compile Include="a2_Strategies\TickersRelationships\PriceRatioProvider.cs" />
     <Compile Include="a2_Strategies\TickersRelationships\TickersPearsonCorrelation.cs" />
     <Compile Include="a4_Scripting\IExecutable.cs" />
     <Compile Include="AssemblyInfo.cs" />
@@ -252,10 +261,12 @@
       <Project>{42B091B3-3BDF-45EB-B5E6-9C3CA353117C}</Project>
       <Name>b3_Data</Name>
     </ProjectReference>
+    <Folder Include="a05_Timing\TimingManagement" />
     <Folder Include="a1_Financial\a2_Accounting\AccountProviding" />
     <Folder Include="a1_Financial\a2_Accounting\h5_Reporting\DateTimeSelectorsForEquityLine" />
     <Folder Include="a1_Financial\a2_Accounting\h5_Reporting\StatisticsSummaryRows" />
     <Folder Include="a2_Strategies\EndOfDayStrategies" />
+    <Folder Include="a2_Strategies\InSample\InSampleFitnessDistributionEstimation" />
     <Folder Include="a2_Strategies\Optimizing\BruteForce" />
     <Folder Include="a2_Strategies\Optimizing\FitnessEvaluation" />
     <Folder Include="a2_Strategies\Optimizing\GenomeManagers" />
