@@ -474,10 +474,10 @@ namespace QuantProject.Principale
 //			new WFLagMain().ShowDialog();
 
 //			new FixedLengthTwoPhasesMain().Run();
-			new PairsTradingSerializedReportViewer().Run();
+//			new PairsTradingSerializedReportViewer().Run();
 //			new PairsTradingMain().Run();
 			
-//			new RunOneRank().Run();
+			new RunOneRank().Run();
 			//new RunEfficientCTCPorfolio("Test",400,5,90,10,10000,
 			//	                         	"^SPX",
 			//	                          new DateTime(2004,1,1),
