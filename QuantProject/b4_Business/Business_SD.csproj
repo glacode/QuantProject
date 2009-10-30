@@ -115,6 +115,7 @@
     <Compile Include="a2_Strategies\Optimizing\Decoding\BasicDecoderForTestingPositions.cs" />
     <Compile Include="a2_Strategies\Optimizing\Decoding\DecoderForBalancedWeightedPositions.cs" />
     <Compile Include="a2_Strategies\Optimizing\Decoding\DecoderForTestingPositionsWithBalancedWeights.cs" />
+    <Compile Include="a2_Strategies\Optimizing\Decoding\DecoderForTestingPositionsWithWeights.cs" />
     <Compile Include="a2_Strategies\Optimizing\Decoding\IDecoderForTestingPositions.cs" />
     <Compile Include="a2_Strategies\Optimizing\Decoding\IDecoderForWeightedPositions.cs" />
     <Compile Include="a2_Strategies\Optimizing\FitnessEvaluation\IFitnessEvaluator.cs" />
