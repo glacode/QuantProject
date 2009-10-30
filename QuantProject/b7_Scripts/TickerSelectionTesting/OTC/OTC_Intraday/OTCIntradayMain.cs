@@ -91,14 +91,14 @@ namespace QuantProject.Scripts.TickerSelectionTesting.OTC.OTC_Intraday
 		#region main
 		public OTCIntradayMain()
 		{
-			this.numberOfPortfolioPositions = 2;
+			this.numberOfPortfolioPositions = 3;
 //			this.benchmark = new Benchmark( "CCE" );
 			this.portfolioType = PortfolioType.ShortAndLong;//filter for out of sample
 			this.genomeManagerType = GenomeManagerType.ShortAndLong;//filter for the genetic chooser
 			
 			this.benchmark = new Benchmark( "ENI.MI" );
 			this.firstDateTime = new DateTime( 2000 , 1 , 1 );
-			this.lastDateTime = new DateTime( 2009 , 8, 27 );
+			this.lastDateTime = new DateTime( 2009 , 8, 15 );
 			//this.stepInMinutesForTimer = 1;
 			this.intervalFrameInSeconds = 60;
 //			this.dailyTimes = Time.GetIntermediateTimes(new Time("09:30:00"),
@@ -157,8 +157,8 @@ namespace QuantProject.Scripts.TickerSelectionTesting.OTC.OTC_Intraday
 			string tickersGroupId = "STOCKMI";
 			bool temporizedGroup = true;
 			int numDaysForAverageRawOpenPriceComputation = 10;
-			double minPrice = 0.10;
-			double maxPrice = 2000;
+			double minPrice = 4;
+			double maxPrice = 200;
 			
 //			int maxNumberOfMostLiquidTickersToBeChosen = 150;
 //			int numDaysForVolatility = 10;
@@ -210,15 +210,15 @@ namespace QuantProject.Scripts.TickerSelectionTesting.OTC.OTC_Intraday
 //
 //			int numberOfBestTestingPositionsToBeReturned = 
 //				(int)combinations.TotalNumberOfCombinations;
-			int numberOfBestTestingPositionsToBeReturned = 20;
+			int numberOfBestTestingPositionsToBeReturned = 50;
 			// parameters for the genetic optimizer
-//			double crossoverRate = 0.85;
-//			double mutationRate = 0.02;
-//			double elitismRate = 0.001;
-//			int populationSizeForGeneticOptimizer = 5000;
-//			int generationNumberForGeneticOptimizer = 0;
-//			int seedForRandomGenerator =
-//				QuantProject.ADT.ConstantsProvider.SeedForRandomGenerator;
+			double crossoverRate = 0.85;
+			double mutationRate = 0.02;
+			double elitismRate = 0.001;
+			int populationSizeForGeneticOptimizer = 10000;
+			int generationNumberForGeneticOptimizer = 30;
+			int seedForRandomGenerator =
+				QuantProject.ADT.ConstantsProvider.SeedForRandomGenerator;
 
 			IDecoderForTestingPositions decoderForTestingPositions =
 				new BasicDecoderForOTCPositions();
@@ -232,7 +232,8 @@ namespace QuantProject.Scripts.TickerSelectionTesting.OTC.OTC_Intraday
 //						1 ,  balancedWeightsOnVolatilityBase,
 //						minimumAbsoluteReturnValue , maximumAbsoluteReturnValue, this.benchmark.Ticker);
 			
-//			IInSampleChooser inSampleChooser = 
+			ADT.ConstantsProvider.AmountOfVariableWeightToBeAssignedToTickers = 0.40;
+			IInSampleChooser inSampleChooser = 
 //				new OTCEndOfDayGeneticChooser(this.numberOfPortfolioPositions, numberOfBestTestingPositionsToBeReturned, 
 //						benchmark, decoderForTestingPositions , 
 //						this.genomeManagerType ,
@@ -240,12 +241,20 @@ namespace QuantProject.Scripts.TickerSelectionTesting.OTC.OTC_Intraday
 //						historicalMarketValueProviderForInSample, crossoverRate, 
 //					  mutationRate, elitismRate , populationSizeForGeneticOptimizer, 
 //					  generationNumberForGeneticOptimizer, seedForRandomGenerator);
-			IInSampleChooser inSampleChooser =
-				new OTCEndOfDayBruteForceChooser(this.portfolioType,
-				                                 this.numberOfPortfolioPositions,
-				                                 numberOfBestTestingPositionsToBeReturned,
-				                                 this.benchmark, decoderForTestingPositions , fitnessEvaluator,
-				                                 historicalMarketValueProviderForInSample);
+				new OTCEndOfDayGeneticChooserWithWeights(this.numberOfPortfolioPositions, numberOfBestTestingPositionsToBeReturned, 
+						benchmark, 
+						this.genomeManagerType ,
+						fitnessEvaluator ,
+						historicalMarketValueProviderForInSample, crossoverRate, 
+					  mutationRate, elitismRate , populationSizeForGeneticOptimizer, 
+					  generationNumberForGeneticOptimizer, seedForRandomGenerator);
+			
+//			IInSampleChooser inSampleChooser =
+//				new OTCEndOfDayBruteForceChooser(this.portfolioType,
+//				                                 this.numberOfPortfolioPositions,
+//				                                 numberOfBestTestingPositionsToBeReturned,
+//				                                 this.benchmark, decoderForTestingPositions , fitnessEvaluator,
+//				                                 historicalMarketValueProviderForInSample);
 //			//office
 //			inSampleChooser =
 //				new PVOChooserFromSavedBackTestLog(
@@ -264,25 +273,30 @@ namespace QuantProject.Scripts.TickerSelectionTesting.OTC.OTC_Intraday
 		protected override IStrategyForBacktester getStrategyForBacktester()
 		{
 			//int inSampleDays = 90;
-			int inSampleDays = 45;
-			int numDaysBetweenEachOptimization = 1;
-			int numDaysBeforeCurrentDateForRetrievingInSampleData = 0;
+			int inSampleDays = 90;
+			int numDaysBetweenEachOptimization = 5;
+			int numDaysBeforeCurrentDateForRetrievingInSampleData = 1;
 			int minNumOfEligiblesForValidOptimization = 10;
-			int sampleLengthForFitnessDistributionEstimation = 100;
+			//disabilitato il controllo della fitness
 			double minimumNumberOfStdDevForSignificantFitness = 0.0;
-			double maximumNumberOfStdDevForSignificantFitness = 8.0;
-			IInSampleFitnessDistributionEstimator estimator = 
+			double maximumNumberOfStdDevForSignificantFitness = 0.0;
+			int sampleLengthForFitnessDistributionEstimation = 150;
+			//disabilitato il controllo della fitness
+			
+			IInSampleFitnessDistributionEstimator estimator =
 				new BasicInSampleFitnessDistributionEstimator();
 			GeneticChooser geneticChooserForEstimator = 
-				new OTCEndOfDayGeneticChooser(this.numberOfPortfolioPositions, 50, 
-						this.benchmark, new BasicDecoderForOTCPositions(), 
+				new OTCEndOfDayGeneticChooser(this.numberOfPortfolioPositions, 50,
+				    this.benchmark, new BasicDecoderForOTCPositions(),
 						this.genomeManagerType ,
 						new OTCCTOFitnessEvaluator( new SharpeRatio() ) ,
 						historicalMarketValueProviderForInSample, 0.85, 
 					  0.01, 0.001 , 100, 0, QuantProject.ADT.ConstantsProvider.SeedForRandomGenerator);
 			double stopLoss = 0.015;
 			double takeProfit = 0.03;
-			
+			object[] daysForPlayingTheStrategy = 
+				new object[5]{ DayOfWeek.Monday, DayOfWeek.Tuesday, DayOfWeek.Wednesday,
+											DayOfWeek.Thursday, DayOfWeek.Friday};
 			IStrategyForBacktester strategyForBacktester
 //				 = new PVO_OTCStrategyLessCorrelated(eligiblesSelector ,inSampleChooser ,
 //				inSampleDays , benchmark , numDaysBetweenEachOptimization ,
@@ -303,10 +317,10 @@ namespace QuantProject.Scripts.TickerSelectionTesting.OTC.OTC_Intraday
 			  minimumNumberOfStdDevForSignificantFitness, 
 			  maximumNumberOfStdDevForSignificantFitness, 
 			  estimator,
-			  sampleLengthForFitnessDistributionEstimation);
+			  sampleLengthForFitnessDistributionEstimation, daysForPlayingTheStrategy);
 			
-			((OTCIntradayStrategy)strategyForBacktester).FindPositionsForToday(
-				new DateTime(2009,8,31), new DateTime(2009,8,28) );
+//			((OTCIntradayStrategy)strategyForBacktester).FindPositionsForToday(
+//				new DateTime(2009,9,1), new DateTime(2009,8,28) );
 			
 			return strategyForBacktester;
 		}

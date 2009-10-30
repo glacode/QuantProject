@@ -118,6 +118,7 @@ namespace QuantProject.Scripts.TickerSelectionTesting.OTC.OTC_Intraday
 		protected double previousAccountValue;
 		protected double stopLoss;
 		protected double takeProfit;
+		protected object[] daysForPlayingTheStrategy;
 				
 		private string description_GetDescriptionForChooser()
 		{
@@ -173,7 +174,8 @@ namespace QuantProject.Scripts.TickerSelectionTesting.OTC.OTC_Intraday
 													 double numberOfMinimumStdDeviationForOpeningPositions,
 													 double numberOfMaxStdDeviationForOpeningPositions,
 													 IInSampleFitnessDistributionEstimator estimator, 
-													 int sampleLength)
+													 int sampleLength,
+													 object[] daysForPlayingTheStrategy)
 		{
 			this.eligiblesSelector = eligiblesSelector;
 			this.minimumNumberOfEligiblesForValidOptimization = minimumNumberOfEligiblesForValidOptimization;
@@ -201,6 +203,7 @@ namespace QuantProject.Scripts.TickerSelectionTesting.OTC.OTC_Intraday
 			this.numberOfMaxStdDeviationForOpeningPositions = numberOfMaxStdDeviationForOpeningPositions;
 			this.estimator = estimator;
 			this.sampleLength = sampleLength;
+			this.daysForPlayingTheStrategy = daysForPlayingTheStrategy;
 		}
 		
 		public OTCIntradayStrategy(IEligiblesSelector eligiblesSelector,
@@ -223,7 +226,8 @@ namespace QuantProject.Scripts.TickerSelectionTesting.OTC.OTC_Intraday
 													 double numberOfMinimumStdDeviationForOpeningPositions,
 													 double numberOfMaxStdDeviationForOpeningPositions,
 													 IInSampleFitnessDistributionEstimator estimator,
-													 int sampleLength)
+													 int sampleLength,
+													 object[] daysForPlayingTheStrategy)
 			
 		{
 			this.inSampleChooser = inSampleChooser;
@@ -244,7 +248,8 @@ namespace QuantProject.Scripts.TickerSelectionTesting.OTC.OTC_Intraday
 													 													geneticChooserForFitnessDistributionEstimator,
 																									  numberOfMinimumStdDeviationForOpeningPositions,
 																									  numberOfMaxStdDeviationForOpeningPositions,
-																									  estimator, sampleLength);
+																									  estimator, sampleLength,
+																									  daysForPlayingTheStrategy);
 		}
 		
 		public OTCIntradayStrategy(IEligiblesSelector eligiblesSelector,
@@ -259,7 +264,7 @@ namespace QuantProject.Scripts.TickerSelectionTesting.OTC.OTC_Intraday
 													 double numberOfMinimumStdDeviationForOpeningPositions,
 													 double numberOfMaxStdDeviationForOpeningPositions,
 													 IInSampleFitnessDistributionEstimator estimator,
-													 int sampleLength)
+													 int sampleLength, object[] daysForPlayingTheStrategy)
 			
 		{
 			this.chosenOTCPositions = chosenOTCPositions;
@@ -279,7 +284,7 @@ namespace QuantProject.Scripts.TickerSelectionTesting.OTC.OTC_Intraday
 													 													geneticChooserForFitnessDistributionEstimator,
 																									  numberOfMinimumStdDeviationForOpeningPositions,
 																									  numberOfMaxStdDeviationForOpeningPositions,
-																									  estimator, sampleLength);
+																									  estimator, sampleLength, daysForPlayingTheStrategy);
 		}		
 		private bool allTickersAreExchanged(DateTime dateTime,
 		                                    string[] tickers)
@@ -344,6 +349,20 @@ namespace QuantProject.Scripts.TickerSelectionTesting.OTC.OTC_Intraday
 		#endregion newDateTimeEventHandler_closePositions
 		
 		#region newDateTimeEventHandler_openPositions
+		private bool newDateTimeEventHandler_openPositions_isTheRightDay()
+		{
+			bool returnValue = false;
+			for(int i = 0; i<this.daysForPlayingTheStrategy.Length; i++)
+			{	
+				if(this.daysForPlayingTheStrategy[i] != null &&
+				   this.now().DayOfWeek == (DayOfWeek)this.daysForPlayingTheStrategy[i])
+				{	
+					returnValue = true;
+					i = this.daysForPlayingTheStrategy.Length;
+				}	
+			}
+			return returnValue;
+		}
 		private bool newDateTimeEventHandler_openPositions_bestFitnessIsSignificantlyHigh()
 		{
 			bool returnValue = false;
@@ -370,8 +389,10 @@ namespace QuantProject.Scripts.TickerSelectionTesting.OTC.OTC_Intraday
 		{
 			if(	this.chosenOTCPositions != null &&
 			    this.allTickersAreExchanged( this.now(), this.chosenOTCPositions[idxForBestPositionsCompatibleWithPortfolioType].WeightedPositions.SignedTickers.Tickers) 
-			    &&
-			    this.newDateTimeEventHandler_openPositions_bestFitnessIsSignificantlyHigh() )
+//			    &&
+//			    this.newDateTimeEventHandler_openPositions_bestFitnessIsSignificantlyHigh()
+			    && this.newDateTimeEventHandler_openPositions_isTheRightDay()
+			   )
 //			   &&
 //			   this.allTickersAreExchangedInTheLastFiveMinutelyBars( this.now(), this.chosenOTCPositions[idxForBestPositionsCompatibleWithPortfolioType].WeightedPositions.SignedTickers.Tickers ) 
 //			  )

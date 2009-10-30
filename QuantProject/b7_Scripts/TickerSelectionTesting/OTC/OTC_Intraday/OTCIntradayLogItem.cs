@@ -144,14 +144,18 @@ namespace QuantProject.Scripts.TickerSelectionTesting.OTC.OTC_Intraday
 //		  	new PreviousPeriodsWereEfficientEntryCondition(1, historicalQuoteProviderForStrategy,
 //		  	                                               numDaysForOscillatingPeriodForOutOfSample * 24 *60,
 //		  	                                                new MarketDateTimeManager(benchmark, firstDateTime, lastDateTime, 60) );
+			
+			object[] days = new object[5]{DayOfWeek.Monday, DayOfWeek.Tuesday, DayOfWeek.Wednesday,
+																		DayOfWeek.Thursday, DayOfWeek.Friday};
+			
 			OTCIntradayStrategy strategy =
-				new OTCIntradayStrategy(eligiblesSelector,
+					new OTCIntradayStrategy(eligiblesSelector,
 				                        positionsToTest, benchmark,
 				                historicalQuoteProviderForInSampleChooser,
 				                historicalQuoteProviderForBackTester,
 				                Time.GetIntermediateTimes(new Time("09:30:00"),
 				                                          new Time("16:00:00"), 1 ),
-				                0.5, 0.5, PortfolioType.ShortAndLong, null, 2, 3, null, 100);
+				                0.5, 0.5, PortfolioType.ShortAndLong, null, 2, 3, null, 100, days);
 		
 			QuantProject.Business.Timing.Timer timer = 
 //				new QuantProject.Business.Timing.IndexBasedHistoricalTimer(
