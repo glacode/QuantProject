@@ -116,13 +116,16 @@
     <Compile Include="TickerSelectionTesting\GenomeManagerForEfficientCTOPortfolio.cs" />
     <Compile Include="TickerSelectionTesting\GenomeManagerForEfficientPortfolio.cs" />
     <Compile Include="TickerSelectionTesting\OTC\Decoding\BasicDecoderForOTCPositions.cs" />
+    <Compile Include="TickerSelectionTesting\OTC\Decoding\DecoderForOTCPositionsWithWeights.cs" />
     <Compile Include="TickerSelectionTesting\OTC\InSampleChoosers\BruteForce\OTCEndOfDayBruteForceOptimizableParametersManager.cs" />
     <Compile Include="TickerSelectionTesting\OTC\InSampleChoosers\BruteForce\OTCEndOfDayBruteForceChooser.cs" />
     <Compile Include="TickerSelectionTesting\OTC\InSampleChoosers\BruteForce\OTCOnlyLongEndOfDayBruteForceOptimizableParametersManager.cs" />
     <Compile Include="TickerSelectionTesting\OTC\InSampleChoosers\BruteForce\OTCOnlyShortEndOfDayBruteForceOptimizableParametersManager.cs" />
     <Compile Include="TickerSelectionTesting\OTC\InSampleChoosers\Genetic\GenomeManagerForOTC_EndOfDay.cs" />
+    <Compile Include="TickerSelectionTesting\OTC\InSampleChoosers\Genetic\GenomeManagerForWeightedOTC_EndOfDay.cs" />
     <Compile Include="TickerSelectionTesting\OTC\InSampleChoosers\Genetic\OTCCTOFitnessEvaluator.cs" />
     <Compile Include="TickerSelectionTesting\OTC\InSampleChoosers\Genetic\OTCEndOfDayGeneticChooser.cs" />
+    <Compile Include="TickerSelectionTesting\OTC\InSampleChoosers\Genetic\OTCEndOfDayGeneticChooserWithWeights.cs" />
     <Compile Include="TickerSelectionTesting\OTC\InSampleChoosers\Genetic\OTCFitnessEvaluator.cs" />
     <Compile Include="TickerSelectionTesting\OTC\OTCPositions.cs" />
     <Compile Include="TickerSelectionTesting\OTC\OTC_Intraday\OTCIntradayMain.cs" />
