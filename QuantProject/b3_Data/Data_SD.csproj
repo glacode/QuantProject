@@ -69,6 +69,7 @@
     <Compile Include="Selectors\ITickerReceiver.cs" />
     <Compile Include="Selectors\ITickerRemover.cs" />
     <Compile Include="Selectors\ITickerSelector.cs" />
+    <Compile Include="Selectors\ITickerSelectorByGroup.cs" />
     <Compile Include="Selectors\SelectorByAbsolutePerformance.cs" />
     <Compile Include="Selectors\SelectorByAverageCloseToClosePerformance.cs" />
     <Compile Include="Selectors\SelectorByAverageOpenToClosePerformance.cs" />
@@ -98,6 +99,7 @@
     <Compile Include="Selectors\ByLinearIndipendence\Candidate.cs" />
     <Compile Include="Selectors\ByLinearIndipendence\GenomeManagerForMaxLinearIndipendenceSelector.cs" />
     <Compile Include="Selectors\ByLinearIndipendence\SelectorByMaxLinearIndipendence.cs" />
+    <Compile Include="Selectors\TickerSelectorByGroup.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\b2_DataAccess\DataAccess_SD.csproj">
