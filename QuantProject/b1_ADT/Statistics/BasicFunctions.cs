@@ -171,6 +171,8 @@ namespace QuantProject.ADT.Statistics
 
 		static public double GetVariance( ICollection data ) 
 		{
+			if ( data.Count < 2 )
+				throw new Exception( "Variance requires at least 2 elements!" );
 			double simpleAverage = BasicFunctions.GetSimpleAverage(data);
 			double sum = 0;
 			foreach ( object obj in data )
