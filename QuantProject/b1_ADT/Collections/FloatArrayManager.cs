@@ -56,5 +56,18 @@ namespace QuantProject.ADT.Collections
 			return ratios;
 		}
 		#endregion
+		
+		/// <summary>
+		/// converts the float array to a double array
+		/// </summary>
+		/// <param name="valuesToBeConverted"></param>
+		/// <returns></returns>
+		public static double[] ConvertToDouble( float[] valuesToBeConverted )
+		{
+			double[] convertedValues = new double[ valuesToBeConverted.Length ];
+			for( int i = 0 ; i < valuesToBeConverted.Length ; i++ )
+				convertedValues[ i ] = valuesToBeConverted[ i ];
+			return convertedValues;
+		}
 	}
 }
