@@ -2,7 +2,7 @@
 QuantProject - Quantitative Finance Library
 
 Cache.cs
-Copyright (C) 2003 
+Copyright (C) 2003
 Glauco Siliprandi
 
 This program is free software; you can redistribute it and/or
@@ -18,7 +18,7 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
-*/
+ */
 using System;
 using System.Collections;
 
@@ -88,12 +88,12 @@ namespace QuantProject.Data.DataProviders.Caching
 			return returnValue;
 		}
 		private CachePage getCachePage( string ticker , int year ,
-			QuoteField quoteField )
+		                               QuoteField quoteField )
 		{
 			return (CachePage)( this[ this.getKey( ticker , year , quoteField ) ] );
 		}
 		private CachePage getCachePage( string ticker , DateTime dateTime ,
-			QuoteField quoteField )
+		                               QuoteField quoteField )
 		{
 			return this.getCachePage( ticker , dateTime.Year , quoteField );
 		}
@@ -138,7 +138,11 @@ namespace QuantProject.Data.DataProviders.Caching
 			if ( this.Count + 1 > this.maxNumPages )
 				this.removeUnusedPages();
 			CachePage cachePage = new CachePage( ticker , year , quoteField );
-			cachePage.LoadData();
+			cachePage.LoadData();			
+
+//			this.currentPageRank ++ ;
+			cachePage.Rank = this.currentPageRank++;
+			
 			this.Add( this.getKey( ticker , year , quoteField ) , cachePage );
 			this.currentNumPages ++ ;
 		}
@@ -188,7 +192,7 @@ namespace QuantProject.Data.DataProviders.Caching
 				// date is given for such date
 				string message = ex.Message; // to avoid warning
 				returnValue = this.GetQuote( ticker ,
-					new DateTime( dateTime.Year - 1 , 12 , 31 ) , quoteField );
+				                            new DateTime( dateTime.Year - 1 , 12 , 31 ) , quoteField );
 			}
 			return returnValue;
 		}
@@ -213,7 +217,14 @@ namespace QuantProject.Data.DataProviders.Caching
 			string ticker , DateTime dateTime )
 		{
 			// forces quote caching
-			this.GetQuote( ticker , dateTime , QuoteField.Open );
+			try
+			{
+				this.GetQuote( ticker , dateTime , QuoteField.Open );
+			}
+			catch ( MissingQuoteException missingQuoteException )
+			{
+				string doNothing = missingQuoteException.Message; doNothing += "";
+			}
 			bool wasExchanged = this.wasExchanged_withCachingAlreadyForced(
 				ticker , dateTime );
 			return wasExchanged;
