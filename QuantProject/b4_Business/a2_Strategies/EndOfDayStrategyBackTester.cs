@@ -21,6 +21,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 
 using System;
+using System.IO;
 
 using QuantProject.ADT;
 using QuantProject.ADT.FileManaging;
@@ -232,6 +233,20 @@ namespace QuantProject.Business.Strategies
 		}
 		
 		#region Run
+		
+		private void checkIfAFileStopTxtIsAlreadyInTheExecutionFolder()
+		{
+			bool isAFileStopTxtIsInTheExecutionFolder =
+				this.checkIfAFileStopTxtIsInTheExecutionFolder();
+			if ( isAFileStopTxtIsInTheExecutionFolder )
+				throw new Exception(
+					"The backtester has been asket to run, but a file stop.txt is " +
+					"in the execution folder. A file stop.txt should be put " +
+					"in the execution folder when the user wants to stop the " +
+					"backtest. Such a file should not be in the execution " +
+					"folder when the backtest begins." );
+		}
+		
 		#region run_addEventHandlers
 		private void handlerToAddCashToStart(
 			Object sender , DateTime dateTime )
@@ -311,6 +326,7 @@ namespace QuantProject.Business.Strategies
 		/// </summary>
 		public void Run()
 		{
+			this.checkIfAFileStopTxtIsAlreadyInTheExecutionFolder();
 			this.startingTimeForScript = DateTime.Now;
 
 //			run_initializeEndOfDayTimer();
@@ -327,6 +343,22 @@ namespace QuantProject.Business.Strategies
 		#region newDateTimeEventHandler
 		
 		#region isTimeToStop
+		
+		#region checkIfAFileStopTxtIsInTheExecutionFolder
+		private string getFullPathFileName()
+		{
+			string currentDirectory = Environment.CurrentDirectory;
+			string fullPathFileName = currentDirectory + "\\stop.txt";
+			return fullPathFileName;
+		}
+		private bool checkIfAFileStopTxtIsInTheExecutionFolder()
+		{
+			string fullPathFileName = this.getFullPathFileName();
+			bool isFileStopTxtInTheExecutionFolder = File.Exists( fullPathFileName );
+			return isFileStopTxtInTheExecutionFolder;
+		}
+		#endregion checkIfAFileStopTxtIsInTheExecutionFolder
+		
 		private bool getIsMaxScriptRealTimeElapsed()
 		{
 			DateTime maxEndingDateTimeForScript =
@@ -337,6 +369,8 @@ namespace QuantProject.Business.Strategies
 		}
 		private bool isTimeToStop( DateTime currentTime )
 		{
+			bool isFileStopTxtInTheExecutionFolder =
+				this.checkIfAFileStopTxtIsInTheExecutionFolder();
 			bool isMaxScriptRealTimeElapsed =
 				this.getIsMaxScriptRealTimeElapsed();
 			bool stopBacktestIfMaxRunningHoursHasBeenReached =
@@ -344,6 +378,7 @@ namespace QuantProject.Business.Strategies
 			bool hasTheTimerAlreadyThrownOutAllItsNewDateTime =	this.timer.IsDone;
 			return
 				( ( currentTime > this.lastDateTime ) ||
+				 isFileStopTxtInTheExecutionFolder ||
 				 ( isMaxScriptRealTimeElapsed &&
 				  stopBacktestIfMaxRunningHoursHasBeenReached ) ||
 				 hasTheTimerAlreadyThrownOutAllItsNewDateTime );
