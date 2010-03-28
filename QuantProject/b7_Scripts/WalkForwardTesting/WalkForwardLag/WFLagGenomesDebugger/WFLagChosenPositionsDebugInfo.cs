@@ -147,13 +147,13 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag.WFLagDebugger
 			string[] drivingAndPortfolioTickers = new string[ size ];
 			int i = 0;
 			foreach ( string signedTicker in
-				wFLagWeightedPositions.DrivingWeightedPositions.Keys )
+				wFLagWeightedPositions.DrivingWeightedPositions.SignedTickers.Tickers )
 			{
 				drivingAndPortfolioTickers[ i ] = SignedTicker.GetTicker( signedTicker );
 				i++;
 			}
 			foreach ( string signedTicker in
-				wFLagWeightedPositions.PortfolioWeightedPositions.Keys )
+				wFLagWeightedPositions.PortfolioWeightedPositions.SignedTickers.Tickers )
 			{
 				drivingAndPortfolioTickers[ i ] = SignedTicker.GetTicker( signedTicker );
 				i++;

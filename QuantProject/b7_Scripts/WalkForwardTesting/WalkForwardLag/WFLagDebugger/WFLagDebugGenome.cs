@@ -332,13 +332,13 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag.WFLagDebugger
 		private void setDataGridDrivingPositions()
 		{
 			ArrayList drivingWeightedPositions =
-				new ArrayList( this.wFLagWeightedPositions.DrivingWeightedPositions.Values );
+				new ArrayList( this.wFLagWeightedPositions.DrivingWeightedPositions );
 			this.dataGridDrivingPositions.DataSource = drivingWeightedPositions;
 		}
 		private void setDataGridPortfolioPositions()
 		{
 			ArrayList portfolioWeightedPositions =
-				new ArrayList( this.wFLagWeightedPositions.PortfolioWeightedPositions.Values );
+				new ArrayList( this.wFLagWeightedPositions.PortfolioWeightedPositions );
 			this.dataGridPortfolioPositions.DataSource = portfolioWeightedPositions;
 		}
 		private void WFLagDebugGenome_Load(object sender, System.EventArgs e)

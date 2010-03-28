@@ -63,16 +63,16 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag.WeightedPositio
 				wFLagWeightedPositions = ( WFLagWeightedPositions )meaning;
 				WeightedPositions drivingWeightedPositions =
 					wFLagWeightedPositions.DrivingWeightedPositions;
-				if ( drivingWeightedPositions.ContainsKey( "^OEX" ) &&
+				if ( drivingWeightedPositions.ContainsTicker( "^OEX" ) &&
 					drivingWeightedPositions.GetWeightedPosition( "^OEX" ).IsLong )
 					optimalPositionsContained++;
-				if ( drivingWeightedPositions.ContainsKey( "BDH" ) &&
+				if ( drivingWeightedPositions.ContainsTicker( "BDH" ) &&
 					drivingWeightedPositions.GetWeightedPosition( "BDH" ).IsShort )
 					optimalPositionsContained++;
-				if ( drivingWeightedPositions.ContainsKey( "HHH" ) &&
+				if ( drivingWeightedPositions.ContainsTicker( "HHH" ) &&
 					drivingWeightedPositions.GetWeightedPosition( "HHH" ).IsShort )
 					optimalPositionsContained++;
-				if ( drivingWeightedPositions.ContainsKey( "IIH" ) &&
+				if ( drivingWeightedPositions.ContainsTicker( "IIH" ) &&
 					drivingWeightedPositions.GetWeightedPosition( "IIH" ).IsLong )
 					optimalPositionsContained++;
 										

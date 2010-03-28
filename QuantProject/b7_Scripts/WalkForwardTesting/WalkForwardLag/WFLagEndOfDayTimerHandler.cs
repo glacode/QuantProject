@@ -143,7 +143,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag
 		{
 			double totalReturn = 0;
 			foreach ( WeightedPosition weightedPosition in
-			         this.wFLagWeightedPositionsChooser.WFLagChosenPositions.DrivingWeightedPositions.Values )
+			         this.wFLagWeightedPositionsChooser.WFLagChosenPositions.DrivingWeightedPositions )
 				totalReturn += this.getTodayReturn( weightedPosition );
 			return totalReturn < 0;
 		}
@@ -182,7 +182,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag
 		{
 			bool isToReverse = this.isToReverse();
 			foreach ( WeightedPosition weightedPosition
-			         in this.wFLagWeightedPositionsChooser.WFLagChosenPositions.PortfolioWeightedPositions.Values )
+			         in this.wFLagWeightedPositionsChooser.WFLagChosenPositions.PortfolioWeightedPositions )
 				this.fiveMinutesBeforeMarketCloseEventHandler_openPosition(
 					weightedPosition , isToReverse );
 			this.arePositionsUpToDateWithChosenTickers = true;
@@ -196,7 +196,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag
 		{
 			double totalReturn = 0;
 			foreach ( WeightedPosition weightedPosition in
-			         this.wFLagWeightedPositionsChooser.WFLagChosenPositions.DrivingWeightedPositions.Values )
+			         this.wFLagWeightedPositionsChooser.WFLagChosenPositions.DrivingWeightedPositions )
 				totalReturn += this.getTodayReturn( weightedPosition );
 			return totalReturn;
 		}

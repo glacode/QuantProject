@@ -53,7 +53,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag.WFLagDebugger
 			double todayTotalGain = 0;
 			DateTime today = this.account.Timer.GetCurrentDateTime();
 			foreach ( WeightedPosition weightedPosition in
-			         this.wFLagWeightedPositions.DrivingWeightedPositions.Values )
+			         this.wFLagWeightedPositions.DrivingWeightedPositions )
 				todayTotalGain +=
 					weightedPosition.GetCloseToCloseDailyReturn( today );
 //			todayTotalGain += totalGainForSignedTicker( signedTicker );
@@ -152,7 +152,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardLag.WFLagDebugger
 		{
 			//			this.chosenTickers.SetTickers( this.bestPerformingTickers , this.account );
 			foreach ( WeightedPosition weightedPosition in
-			         this.wFLagWeightedPositions.PortfolioWeightedPositions.Values )
+			         this.wFLagWeightedPositions.PortfolioWeightedPositions )
 				this.marketCloseEventHandler_openPosition(
 					weightedPosition );
 		}
