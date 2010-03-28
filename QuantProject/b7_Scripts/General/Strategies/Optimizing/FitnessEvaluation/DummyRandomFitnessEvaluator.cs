@@ -45,7 +45,7 @@ namespace QuantProject.Scripts.General.Strategies.Optimizing.FitnessEvaluation
 		public DummyRandomFitnessEvaluator()
 		{
 		}
-		public double GetFitnessValue(object meaning , ReturnsManager returnsManager )
+		public double GetFitnessValue(object meaning , IReturnsManager returnsManager )
 		{
 			Random rnd = new Random(59);
 			return rnd.NextDouble();
