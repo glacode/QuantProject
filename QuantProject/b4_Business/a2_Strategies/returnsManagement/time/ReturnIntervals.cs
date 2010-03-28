@@ -30,7 +30,7 @@ using QuantProject.Business.Timing;
 namespace QuantProject.Business.Strategies.ReturnsManagement.Time
 {
 	/// <summary>
-	/// End of day intervals in a timed sequence, i.e. the (n+1)th interval
+	/// Time intervals in a timed sequence, i.e. the (n+1)th interval
 	/// never begins before the (n)th interval ends
 	/// </summary>
 	[Serializable]
@@ -80,6 +80,19 @@ namespace QuantProject.Business.Strategies.ReturnsManagement.Time
 					                    "cannot be used when ReturnIntervals has " +
 					                    "no ReturnInterval added yet!" );
 				ReturnInterval lastInterval = this[ this.Count - 1 ];
+				return lastInterval;
+			}
+		}
+		
+		public ReturnInterval SeconLastInterval
+		{
+			get
+			{
+				if ( this.Count < 2 )
+					throw new Exception(
+						"SeconLastInterval cannot be used when ReturnIntervals has " +
+						"less then two intervals!" );
+				ReturnInterval lastInterval = this[ this.Count - 2 ];
 				return lastInterval;
 			}
 		}
