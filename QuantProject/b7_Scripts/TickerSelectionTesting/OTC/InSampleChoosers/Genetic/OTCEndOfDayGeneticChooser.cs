@@ -80,7 +80,7 @@ namespace QuantProject.Scripts.TickerSelectionTesting.OTC.InSampleChoosers.Genet
 			return new GenomeManagerForOTC_EndOfDay(eligibleTickers, this.numberOfPortfolioPositions,
 			                                        this.decoderForTestingPositions, this.fitnessEvaluator,
 			                                        this.genomeManagerType , returnsManager,
-			                                        this.seedForRandomGenerator);
+			                                        this.seedForRandomGeneratorForTheGeneticOptimizer);
 		}
 	}
 }

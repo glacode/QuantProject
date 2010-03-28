@@ -87,7 +87,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.FixedLengthTwoPhases
 					this.decoderForTestingPositions ,
 					this.fitnessEvaluator ,
 					GenomeManagerType.ShortAndLong ,
-					this.seedForRandomGenerator );
+					this.seedForRandomGeneratorForTheGeneticOptimizer );
 			return genomeManagerWithDuplicateGenes;
 		}
 		

@@ -81,7 +81,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.PairsTrading
 				this.decoderForTestingPositions ,
 				this.fitnessEvaluator ,
 				GenomeManagerType.ShortAndLong ,
-				this.seedForRandomGenerator );
+				this.seedForRandomGeneratorForTheGeneticOptimizer );
 			return genomeManagerWithDuplicateGenes;
 		}
 		protected override string getHashCodeForGenome( Genome genome )
