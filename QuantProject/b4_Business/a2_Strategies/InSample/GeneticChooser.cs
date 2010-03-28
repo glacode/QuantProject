@@ -66,8 +66,9 @@ namespace QuantProject.Business.Strategies.InSample
 		protected double elitismRate;
 		protected int populationSizeForGeneticOptimizer;
 		protected int generationNumberForGeneticOptimizer;
-		protected int seedForRandomGenerator;
+		protected int seedForRandomGeneratorForTheGeneticOptimizer;
 
+		[NonSerialized]
 		protected GeneticOptimizer geneticOptimizer;
 
 
@@ -100,7 +101,7 @@ namespace QuantProject.Business.Strategies.InSample
 			double crossoverRate , double mutationRate , double elitismRate ,
 			int populationSizeForGeneticOptimizer ,
 			int generationNumberForGeneticOptimizer ,
-			int seedForRandomGenerator )
+			int seedForRandomGeneratorForTheGeneticOptimizer )
 		{
 			this.numberOfPortfolioPositions = numberOfPortfolioPositions;
 			this.numberOfBestTestingPositionsToBeReturned = numberOfBestTestingPositionsToBeReturned;
@@ -114,7 +115,8 @@ namespace QuantProject.Business.Strategies.InSample
 			this.populationSizeForGeneticOptimizer = populationSizeForGeneticOptimizer;
 			this.generationNumberForGeneticOptimizer =
 				generationNumberForGeneticOptimizer;
-			this.seedForRandomGenerator = seedForRandomGenerator;
+			this.seedForRandomGeneratorForTheGeneticOptimizer =
+				seedForRandomGeneratorForTheGeneticOptimizer;
 		}
 
 		#region AnalyzeInSample
@@ -230,7 +232,7 @@ namespace QuantProject.Business.Strategies.InSample
 				this.populationSizeForGeneticOptimizer ,
 				this.generationNumberForGeneticOptimizer ,
 				this.genomeManager ,
-				this.seedForRandomGenerator );
+				this.seedForRandomGeneratorForTheGeneticOptimizer );
 			this.geneticOptimizer.NewGeneration +=
 				new NewGenerationEventHandler( this.newGenerationEventHandler );
 			this.geneticOptimizer.Run( false );
@@ -243,7 +245,7 @@ namespace QuantProject.Business.Strategies.InSample
 		/// </summary>
 		/// <param name="eligibleTickers"></param>
 		/// <returns></returns>
-		public object AnalyzeInSample(
+		public virtual object AnalyzeInSample(
 			EligibleTickers eligibleTickers ,
 			ReturnsManager returnsManager )
 		{
