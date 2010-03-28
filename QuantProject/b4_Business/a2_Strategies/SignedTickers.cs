@@ -90,6 +90,11 @@ namespace QuantProject.Business.Strategies
 		{
 			this.addSignedTickers( signedTickers );
 		}
+		public SignedTickers( SignedTicker[] signedTickers )
+		{
+			foreach ( SignedTicker signedTicker in signedTickers )
+				this.Add( signedTicker );
+		}	
 		private void addSignedTickers( string signedTickers )
 		{
 			string[] arrayForSignedTickers = signedTickers.Split( ';' );
