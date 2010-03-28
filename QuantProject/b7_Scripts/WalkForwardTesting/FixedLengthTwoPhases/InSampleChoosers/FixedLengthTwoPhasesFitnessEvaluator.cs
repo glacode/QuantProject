@@ -90,7 +90,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.FixedLengthTwoPhases
 			return strategyReturns;
 		}
 		private double getFitnessValue(
-			WeightedPositions weightedPositions , ReturnsManager returnsManager )
+			WeightedPositions weightedPositions , IReturnsManager returnsManager )
 		{
 			float[] weightedPositionsReturns =
 				weightedPositions.GetReturns( returnsManager );
@@ -101,7 +101,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.FixedLengthTwoPhases
 			return fitnessValue;
 		}
 		private double getFitnessValue( TestingPositions testingPositions ,
-		                               ReturnsManager returnsManager )
+		                               IReturnsManager returnsManager )
 		{
 			double fitnessValue;
 			WeightedPositions weightedPositions = testingPositions.WeightedPositions;
@@ -116,7 +116,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.FixedLengthTwoPhases
 			return fitnessValue;
 		}
 
-		public double GetFitnessValue( object meaning , ReturnsManager returnsManager )
+		public double GetFitnessValue( object meaning , IReturnsManager returnsManager )
 		{
 			this.getFitnessValue_checkParameters( meaning );			
 			double fitnessValue =

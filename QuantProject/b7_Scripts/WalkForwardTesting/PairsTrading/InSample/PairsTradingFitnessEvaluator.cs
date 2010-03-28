@@ -84,7 +84,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.PairsTrading
 		}
 		private double getFitnessValue(
 			WeightedPosition firstPosition , WeightedPosition secondPosition ,
-			ReturnsManager returnsManager )
+			IReturnsManager returnsManager )
 		{
 			float[] firstPositionReturns =
 				returnsManager.GetReturns( firstPosition.Ticker );
@@ -104,7 +104,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.PairsTrading
 		}
 
 		private double getFitnessValue(
-			WeightedPositions weightedPositions , ReturnsManager returnsManager )
+			WeightedPositions weightedPositions , IReturnsManager returnsManager )
 		{
 			this.getFitnessValue_checkWeightedPositions( weightedPositions );
 			WeightedPosition firstPosition = weightedPositions[ 0 ];
@@ -114,7 +114,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.PairsTrading
 			return fitnessValue;
 		}
 		private double getFitnessValue( TestingPositions testingPositions ,
-			ReturnsManager returnsManager )
+			IReturnsManager returnsManager )
 		{
 			double fitnessValue;
 			WeightedPositions weightedPositions = testingPositions.WeightedPositions;
@@ -134,7 +134,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.PairsTrading
 			}
 			return fitnessValue;
 		}
-		public double GetFitnessValue( object meaning , ReturnsManager returnsManager )
+		public double GetFitnessValue( object meaning , IReturnsManager returnsManager )
 		{
 			this.getFitnessValue_checkParameters( meaning );			
 			double fitnessValue =

@@ -56,7 +56,7 @@ namespace QuantProject.Scripts.TickerSelectionTesting.OTC.InSampleChoosers.Genet
 		}
 
 		private float getFitnessValue_getFitnessValueActually(
-			TestingPositions testingPositions, ReturnsManager returnsManager )
+			TestingPositions testingPositions, IReturnsManager returnsManager )
 		{
 			float fitnessValue;
 			//the returnsManager is based on OTCCTO End Of Day intervals -
@@ -75,7 +75,7 @@ namespace QuantProject.Scripts.TickerSelectionTesting.OTC.InSampleChoosers.Genet
 			return fitnessValue;
 		}
 		
-		public double GetFitnessValue(object meaning , ReturnsManager returnsManager )
+		public double GetFitnessValue(object meaning , IReturnsManager returnsManager )
 		{
 			float fitnessValue = -0.5f;
 			TestingPositions testingPositions = (TestingPositions)meaning;
