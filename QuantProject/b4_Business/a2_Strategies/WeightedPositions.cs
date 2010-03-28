@@ -795,7 +795,7 @@ namespace QuantProject.Business.Strategies
 		/// Reverse the sign of each weight for each position in the current instance:
 		/// long positions become then short positions and viceversa
 		/// </summary>
-		public void ReverseSign()
+		public void ReverseSigns()
 		{
 			foreach( WeightedPosition weightedPosition in this )
 				weightedPosition.Weight = - weightedPosition.Weight;
