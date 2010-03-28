@@ -21,6 +21,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
 using System;
+using System.Collections.Generic;
 using System.Data;
 
 namespace QuantProject.Business.Strategies.Eligibles
@@ -44,6 +45,12 @@ namespace QuantProject.Business.Strategies.Eligibles
 				}
 				return this.tickers;
 			}
+		}
+		
+		public EligibleTickers( ICollection<string> tickers )
+		{
+			foreach( string ticker in tickers )
+				this.List.Add( ticker );
 		}
 		
 		/// <summary>
@@ -91,6 +98,12 @@ namespace QuantProject.Business.Strategies.Eligibles
 //						"a ticker that is not a string !!" );
 				this.List[ index ] = value;
 			}
+		}
+		
+		public void AddAdditionalEligibles( EligibleTickers eligibileTickers )
+		{
+			foreach ( string ticker in eligibileTickers.Tickers )
+				this.addTicker_actually( ticker );
 		}
 	}
 }
