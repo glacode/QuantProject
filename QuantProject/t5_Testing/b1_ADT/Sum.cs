@@ -2,7 +2,7 @@
 QuantProject - Quantitative Finance Library
 
 Sum.cs
-Copyright (C) 2003
+Copyright (C) 2010
 Glauco Siliprandi
 
 This program is free software; you can redistribute it and/or
@@ -25,7 +25,7 @@ using NUnit.Framework;
 
 using QuantProject.ADT.Statistics;
 
-namespace QuantProject.Testing.Statistics
+namespace QuantTesting.ADT.Statistics
 {
 	/// <summary>
 	/// This class tests the
@@ -41,7 +41,7 @@ namespace QuantProject.Testing.Statistics
 			double sumValue = BasicFunctions.Sum( values );
 			Assert.AreEqual( 3 , sumValue );		// this is ok
 			// comment out the following statemente if you want to get a successfull test
-			Assert.AreEqual( 3.1 , sumValue );		// this one faults
+//			Assert.AreEqual( 3.1 , sumValue );		// this one faults
 		}
 	}
 }
