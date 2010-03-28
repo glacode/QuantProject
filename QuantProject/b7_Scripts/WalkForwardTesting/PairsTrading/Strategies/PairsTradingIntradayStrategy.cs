@@ -70,7 +70,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.PairsTrading
 				numDaysBeetweenEachOtpimization ,
 				numDaysForInSampleOptimization ,
 				intervalsSelectorForInSample ,
-//			intervalsSelectorForOutOfSample ,
+				intervalsSelectorForInSample ,  // this parameter should be intervalsSelectorForOutOfSample, but it is not going to be used by this strategy
 				eligiblesSelector ,
 				inSampleChooser ,
 				historicalMarketValueProviderForInSample )
