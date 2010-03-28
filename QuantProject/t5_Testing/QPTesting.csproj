@@ -27,7 +27,7 @@
   <ItemGroup>
     <Reference Include="nunit.framework" />
     <Reference Include="nunit.mocks">
-      <HintPath>nunit.mocks.dll</HintPath>
+      <HintPath>..\..\nunit.mocks.dll</HintPath>
       <SpecificVersion>False</SpecificVersion>
     </Reference>
     <Reference Include="System" />
