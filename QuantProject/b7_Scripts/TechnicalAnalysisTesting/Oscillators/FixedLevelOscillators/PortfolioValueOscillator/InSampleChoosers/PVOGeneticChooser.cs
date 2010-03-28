@@ -103,7 +103,7 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOs
 				                     this.fitnessEvaluator, this.symmetricalThresholds,
 				                     this.overboughtMoreThanOversoldForFixedPortfolio,
 				                     GenomeManagerType.ShortAndLong, returnsManager,
-														 this.seedForRandomGenerator);
+														 this.seedForRandomGeneratorForTheGeneticOptimizer);
 		}
 
 	}
