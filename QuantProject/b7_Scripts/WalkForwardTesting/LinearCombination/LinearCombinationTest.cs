@@ -305,7 +305,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.LinearCombination
 		private void run_addEquityLineForEachPositionInWeightedPositions(
 			WeightedPositions weightedPositions , Color color , Report report )
 		{
-			foreach(WeightedPosition position in weightedPositions.Values)
+			foreach(WeightedPosition position in weightedPositions)
 			{
 				WeightedPositions wp = new WeightedPositions(new SignedTickers(
 					position.Ticker));
