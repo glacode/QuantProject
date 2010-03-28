@@ -18,7 +18,7 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
-*/
+ */
 
 using System;
 using System.Data;
@@ -41,13 +41,13 @@ namespace QuantProject.Business.Strategies.Eligibles
 	/// are selected;
 	/// -step 2: from tickers selected by step 1, the most liquid
 	///  are selected (not more than maxNumberOfMostLiquidTickersToBeChosen);
-	/// -step 3: from tickers selected by step 2, the ones that are 
+	/// -step 3: from tickers selected by step 2, the ones that are
 	/// less volatile (OTC returns in the last
 	/// numOfDaysForVolatilityComputation days
-	/// are analyzed) are selected 
+	/// are analyzed) are selected
 	/// (not more than maxNumberOfEligibleTickersToBeChosen);
 	/// -step 4: from tickers selected by step 3, the ones that are
-	/// always quoted at all market days are selected 
+	/// always quoted at all market days are selected
 	/// (not more than maxNumberOfEligibleTickersToBeChosen);
 	/// </summary>
 	[Serializable]
@@ -73,29 +73,29 @@ namespace QuantProject.Business.Strategies.Eligibles
 		
 		private void byPriceMostLiquidLessVolatileOTCAlwaysQuoted_checkParameters()
 		{
-			if(this.maxNumberOfMostLiquidTickersToBeChosen <= 
+			if(this.maxNumberOfMostLiquidTickersToBeChosen <=
 			   this.maxNumberOfEligibleTickersToBeChosen)
 				throw new Exception("The set of the most liquid tickers has to " +
 				                    "be greater than the final set of eligibles tickers!");
 		}
 		
 		public ByPriceMostLiquidLessVolatileOTCAlwaysQuoted(
-			string tickersGroupID , bool temporizedGroup, 
+			string tickersGroupID , bool temporizedGroup,
 			int maxNumberOfEligibleTickersToBeChosen,
 			int maxNumberOfMostLiquidTickersToBeChosen,
-		 	int numOfDaysForAverageOpenRawPriceComputation,
+			int numOfDaysForAverageOpenRawPriceComputation,
 			int numOfDaysForVolatilityComputation,
-		 	double minPrice, double maxPrice)
+			double minPrice, double maxPrice)
 		{
 			this.temporizedGroup = temporizedGroup;
 			this.tickersGroupID = tickersGroupID;
 			this.maxNumberOfEligibleTickersToBeChosen =
 				maxNumberOfEligibleTickersToBeChosen;
-			this.maxNumberOfMostLiquidTickersToBeChosen = 
+			this.maxNumberOfMostLiquidTickersToBeChosen =
 				maxNumberOfMostLiquidTickersToBeChosen;
 			this.numOfDaysForAverageOpenRawPriceComputation =
 				numOfDaysForAverageOpenRawPriceComputation;
-			this.numOfDaysForVolatilityComputation = 
+			this.numOfDaysForVolatilityComputation =
 				numOfDaysForVolatilityComputation;
 			this.minPrice = minPrice;
 			this.maxPrice = maxPrice;
@@ -105,54 +105,54 @@ namespace QuantProject.Business.Strategies.Eligibles
 		private EligibleTickers getEligibleTickers_actually(
 			History history )
 		{
-			DateTime currentDate = history.LastDateTime; 
+			DateTime currentDate = history.LastDateTime;
 
 			SelectorByGroup group;
 			if(this.temporizedGroup)
-			//the group is "temporized": returned set of tickers
-			// depends on time
+				//the group is "temporized": returned set of tickers
+				// depends on time
 				group = new SelectorByGroup(this.tickersGroupID,
 				                            currentDate);
-      else//the group is not temporized
-      	group = new SelectorByGroup(this.tickersGroupID);
-      DataTable tickersFromGroup = group.GetTableOfSelectedTickers();
+			else//the group is not temporized
+				group = new SelectorByGroup(this.tickersGroupID);
+			DataTable tickersFromGroup = group.GetTableOfSelectedTickers();
 
-      int numOfTickersInGroupAtCurrentDate = tickersFromGroup.Rows.Count;
-      SelectorByAverageRawOpenPrice byPrice =
-      		new SelectorByAverageRawOpenPrice(tickersFromGroup,false,
-      	                                  currentDate.AddDays(-this.numOfDaysForAverageOpenRawPriceComputation),
-      	                                  currentDate,
-      	                                  numOfTickersInGroupAtCurrentDate,
-      	                                  this.minPrice,this.maxPrice, 0.00001, double.MaxValue);
-     	DataTable dataTableByPrice =
+			int numOfTickersInGroupAtCurrentDate = tickersFromGroup.Rows.Count;
+			SelectorByAverageRawOpenPrice byPrice =
+				new SelectorByAverageRawOpenPrice(tickersFromGroup,false,
+				                                  currentDate.AddDays(-this.numOfDaysForAverageOpenRawPriceComputation),
+				                                  currentDate,
+				                                  numOfTickersInGroupAtCurrentDate,
+				                                  this.minPrice,this.maxPrice, 0.00001, double.MaxValue);
+			DataTable dataTableByPrice =
 				byPrice.GetTableOfSelectedTickers();
 
 			SelectorByLiquidity mostLiquidSelector =
 				new SelectorByLiquidity( dataTableByPrice ,
-        false, history.FirstDateTime, currentDate,
-        this.maxNumberOfMostLiquidTickersToBeChosen);
-      DataTable dataTableMostLiquid =
+				                        false, history.FirstDateTime, currentDate,
+				                        this.maxNumberOfMostLiquidTickersToBeChosen);
+			DataTable dataTableMostLiquid =
 				mostLiquidSelector.GetTableOfSelectedTickers();
 			
-      SelectorByOpenToCloseVolatility lessVolatileSelector =
+			SelectorByOpenToCloseVolatility lessVolatileSelector =
 				new SelectorByOpenToCloseVolatility( dataTableMostLiquid ,
-        true, currentDate.AddDays(-this.numOfDaysForVolatilityComputation), currentDate,
-        this.maxNumberOfEligibleTickersToBeChosen);
-      
-      DataTable dataTableLessVolatile =
+				                                    true, currentDate.AddDays(-this.numOfDaysForVolatilityComputation), currentDate,
+				                                    this.maxNumberOfEligibleTickersToBeChosen);
+			
+			DataTable dataTableLessVolatile =
 				lessVolatileSelector.GetTableOfSelectedTickers();
 //			DataSet dataSet = new DataSet();
 //			dataSet.Tables.Add( dataTableLessVolatile );
 //			dataSet.WriteXml( "c:\\qpReports\\pairsTrading\\eligiblesCon_ByPriceMostLiquidLessVolatileOTCAlwaysQuoted.xml" );
 
-      SelectorByQuotationAtEachMarketDay quotedAtEachMarketDayFromLastSelection = 
-        new SelectorByQuotationAtEachMarketDay( dataTableLessVolatile ,
-        false, history,
-        this.maxNumberOfEligibleTickersToBeChosen);
-      DataTable dataTableToBeReturned =
+			SelectorByQuotationAtEachMarketDay quotedAtEachMarketDayFromLastSelection =
+				new SelectorByQuotationAtEachMarketDay( dataTableLessVolatile ,
+				                                       false, history,
+				                                       this.maxNumberOfEligibleTickersToBeChosen);
+			DataTable dataTableToBeReturned =
 				quotedAtEachMarketDayFromLastSelection.GetTableOfSelectedTickers();
 			
-      return
+			return
 				new EligibleTickers( dataTableToBeReturned );
 		}
 		
