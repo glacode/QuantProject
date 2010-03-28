@@ -35,6 +35,7 @@ using QuantProject.Scripts.General.Logging;
 using QuantProject.Scripts.SimpleTesting;
 using QuantProject.Scripts.WalkForwardTesting.FixedLengthTwoPhases;
 using QuantProject.Scripts.WalkForwardTesting.LinearCombination;
+using QuantProject.Scripts.WalkForwardTesting.LinearRegression;
 using QuantProject.Scripts.WalkForwardTesting.PairsTrading;
 using QuantProject.Scripts.WalkForwardTesting.WalkForwardOneRank;
 using QuantProject.Scripts.WalkForwardTesting.WalkForwardLag;
@@ -477,7 +478,8 @@ namespace QuantProject.Principale
 //			new PairsTradingSerializedReportViewer().Run();
 //			new PairsTradingMain().Run();
 			
-			new RunOneRank().Run();
+			new LinearRegressionMain().Run();
+//			new RunOneRank().Run();
 			//new RunEfficientCTCPorfolio("Test",400,5,90,10,10000,
 			//	                         	"^SPX",
 			//	                          new DateTime(2004,1,1),
