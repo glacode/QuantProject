@@ -78,10 +78,19 @@ namespace QuantProject.Business.Financial.Accounting.Reporting.StatisticsSummary
 			double averagePercentageReturn;
 			averagePercentageReturn = 100.0 *
 				sumOfReturnsOnSpecificDayOfWeek / (double)totalNumberOfSpecificDayOfWeek;
+			averagePercentageReturn = Math.Round( averagePercentageReturn , 3 );
 			string numOfDays = totalNumberOfSpecificDayOfWeek.ToString();
-			return averagePercentageReturn.ToString().Substring(0,4) +
-				"#" + 
-				numOfDays.Substring(0,Math.Min(numOfDays.Length,4));
+			
+			string rowValue = averagePercentageReturn.ToString();
+			int digits = Math.Min( 4 , rowValue.Length );
+			rowValue = rowValue.Substring(0, digits );
+			rowValue += "#" + numOfDays.Substring(0,Math.Min(numOfDays.Length,4));
+			
+			return rowValue;
+			
+//			return averagePercentageReturn.ToString().Substring(0,4) +
+//				"#" + 
+//				numOfDays.Substring(0,Math.Min(numOfDays.Length,4));
 		}
 
 		public AverageReturnOnDayOfWeekWithOpenPositions( StatisticsSummary statisticsSummary )
