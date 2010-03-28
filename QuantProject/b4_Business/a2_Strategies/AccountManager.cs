@@ -114,7 +114,7 @@ namespace QuantProject.Business.Strategies
 				throw new Exception("Both parameters have to be set to valid objects!");
 			orders.Clear();
 			double valueToInvestInPositions = account.CashAmount * leverage;
-			foreach(WeightedPosition weightedPosition in weightedPositions.Values)
+			foreach(WeightedPosition weightedPosition in weightedPositions)
 				addWeightedPositionToOrderList( weightedPosition, account, valueToInvestInPositions );
 			foreach(object item in orders)
 				account.AddOrder( (Order)item );
@@ -161,7 +161,7 @@ namespace QuantProject.Business.Strategies
     {
       orders.Clear();
 			WeightedPositions currentWeightedPositions = GetWeightedPositions( account );
-			currentWeightedPositions.Reverse();
+			currentWeightedPositions.ReverseSigns();
 			ClosePositions(account);
       OpenPositions( currentWeightedPositions, account );
     }   
