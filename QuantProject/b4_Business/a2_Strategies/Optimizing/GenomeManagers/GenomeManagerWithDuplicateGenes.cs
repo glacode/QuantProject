@@ -40,7 +40,7 @@ namespace QuantProject.Business.Strategies.Optimizing.GenomeManagers
 		public GenomeManagerWithDuplicateGenes(
 			int numberOfPortfolioPositions ,
 			EligibleTickers eligibleTickers ,
-			ReturnsManager returnsManager ,
+			IReturnsManager returnsManager ,
 			IDecoderForTestingPositions decoderForTestingPositions ,
 			IFitnessEvaluator fitnessEvaluator ,
 			GenomeManagerType genomeManagerType ,

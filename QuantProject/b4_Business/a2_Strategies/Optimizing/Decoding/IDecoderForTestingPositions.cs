@@ -43,7 +43,7 @@ namespace QuantProject.Business.Strategies.Optimizing.Decoding
 		/// </summary>
 				
 		TestingPositions Decode( int[] encoded , EligibleTickers eligibleTickers ,
-		             ReturnsManager returnsManager );
+		             IReturnsManager returnsManager );
 	}
 }
 

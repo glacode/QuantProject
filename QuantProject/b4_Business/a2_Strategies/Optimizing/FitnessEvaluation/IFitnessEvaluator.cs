@@ -40,6 +40,6 @@ namespace QuantProject.Business.Strategies.Optimizing.FitnessEvaluation
 		/// <param name="meaning"></param>
 		/// <param name="returnsManager"></param>
 		/// <returns></returns>
-		double GetFitnessValue( object meaning , ReturnsManager returnsManager );
+		double GetFitnessValue( object meaning , IReturnsManager returnsManager );
 	}
 }
