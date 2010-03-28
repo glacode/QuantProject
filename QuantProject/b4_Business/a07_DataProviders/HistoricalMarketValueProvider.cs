@@ -21,6 +21,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 
 using System;
+using System.Collections.Generic;
 
 using QuantProject.ADT.Histories;
 using QuantProject.Business.Strategies.Logging;
@@ -33,7 +34,8 @@ namespace QuantProject.Business.DataProviders
 	/// Abstract base class for historical market values providers
 	/// </summary>
 	[Serializable]
-	public abstract class HistoricalMarketValueProvider : ILogDescriptor
+	public abstract class HistoricalMarketValueProvider :
+		IHistoricalMarketValueProvider , ILogDescriptor
 	{
 		public string Description
 		{
@@ -75,6 +77,26 @@ namespace QuantProject.Business.DataProviders
 		/// <returns></returns>
 		public abstract bool WasExchanged( string ticker , DateTime dateTime );
 		
+		/// <summary>
+		/// True iif all the given tickers were traded at the given DateTime
+		/// </summary>
+		/// <param name="tickers"></param>
+		/// <param name="dateTime"></param>
+		/// <returns></returns>
+		public virtual bool WereAllExchanged( ICollection<string> tickers , DateTime dateTime )
+		{
+			IEnumerator<string>	tickersEnumerator = tickers.GetEnumerator();
+			tickersEnumerator.Reset();
+			bool wereAllExchanged = true;
+			bool isEndOfCollection = !tickersEnumerator.MoveNext();
+			while ( wereAllExchanged && !isEndOfCollection )
+			{
+				wereAllExchanged = this.WasExchanged( tickersEnumerator.Current , dateTime );
+				isEndOfCollection = !tickersEnumerator.MoveNext();
+			}
+			return wereAllExchanged;
+		}
+		
 		#region GetQuotes
 		
 		#region addQuoteActually
@@ -94,7 +116,7 @@ namespace QuantProject.Business.DataProviders
 		#endregion addQuoteActually
 		
 		private void addMarketValue( string ticker , int historyIndex ,
-		                      History	history , History quotes )
+		                            History	history , History quotes )
 		{
 			DateTime currentDateTime =
 				(DateTime)history.GetByIndex( historyIndex );
@@ -108,7 +130,7 @@ namespace QuantProject.Business.DataProviders
 					ticker , currentDateTime );
 		}
 		public History GetMarketValues( string ticker ,
-		                         History history )
+		                               History history )
 		{
 			History quotes = new History();
 			for ( int i = 0 ; i < history.Count ; i++ )
@@ -116,5 +138,22 @@ namespace QuantProject.Business.DataProviders
 			return quotes;
 		}
 		#endregion GetQuotes
+		
+		#region GetDateTimesWithMarketValues
+		/// <summary>
+		/// returns the subset of DateTimes when ticker is exchanged
+		/// </summary>
+		/// <param name="ticker"></param>
+		/// <param name="history">DateTimes returned are a subset of this parameter</param>
+		/// <returns></returns>
+		public History GetDateTimesWithMarketValues( string ticker , History history )
+		{
+			History dateTimesWithMarketValues = new History();
+			foreach( DateTime dateTime in history.Keys )
+				if ( this.WasExchanged( ticker , dateTime ) )
+					dateTimesWithMarketValues.Add( dateTime , dateTime );
+			return dateTimesWithMarketValues;
+		}
+		#endregion GetDateTimesWithMarketValues
 	}
 }
