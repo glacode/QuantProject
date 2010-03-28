@@ -404,7 +404,7 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOs
 			if(this.openOnlyLongPositions)
 			{
 				SignedTickers signedTickers = new SignedTickers();
-				foreach(WeightedPosition position in this.pvoPositionsForOutOfSample.WeightedPositions.GetValueList())
+				foreach(WeightedPosition position in this.pvoPositionsForOutOfSample.WeightedPositions)
 					if(position.IsLong)
 					{
 						signedTickers.Add(new SignedTicker(position.Ticker));
@@ -431,7 +431,7 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOs
 						try{
 							if( this.areEntryConditionsSatisfied() )
 							{
-								this.pvoPositionsForOutOfSample.WeightedPositions.Reverse();
+								this.pvoPositionsForOutOfSample.WeightedPositions.ReverseSigns();
 								AccountManager.OpenPositions( marketCloseEventHandler_openPositionsIfTheCase_getWeightedPositionsToInvest(),
 							                             		this.account, 10000.0, this.leverage );
 							}
@@ -443,7 +443,7 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOs
 						}
 
 						finally{
-							this.pvoPositionsForOutOfSample.WeightedPositions.Reverse();
+							this.pvoPositionsForOutOfSample.WeightedPositions.ReverseSigns();
 						}
 						#endregion
 						break;

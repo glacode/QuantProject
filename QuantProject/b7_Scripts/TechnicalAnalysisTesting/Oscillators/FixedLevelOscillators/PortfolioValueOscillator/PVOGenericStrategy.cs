@@ -489,7 +489,7 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOs
 					case PVOPositionsStatus.Overbought:
 					{
 						#region manage Overbought case
-						this.positionsForOutOfSample.WeightedPositions.Reverse();
+						this.positionsForOutOfSample.WeightedPositions.ReverseSigns();
 						try
 						{
 							AccountManager.OpenPositions( this.positionsForOutOfSample.WeightedPositions,
@@ -503,7 +503,7 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOs
 						}
 						finally
 						{
-							this.positionsForOutOfSample.WeightedPositions.Reverse();
+							this.positionsForOutOfSample.WeightedPositions.ReverseSigns();
 						}
 						#endregion
 						break;
