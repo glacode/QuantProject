@@ -39,16 +39,22 @@ namespace QuantProject.Business.Strategies.ReturnsManagement
 	/// by in sample optimizations)
 	/// </summary>
 	[Serializable]
-	public class ReturnsManager
+	public class ReturnsManager : IReturnsManager
 	{
 		private ReturnIntervals returnIntervals; // a return for each interval
-		private HistoricalMarketValueProvider historicalMarketValueProvider; 
+		private IHistoricalMarketValueProvider historicalMarketValueProvider; 
 		
 		private Set tickersMissingQuotes;
 
 		private Hashtable tickersReturns;
 		private Hashtable tickersReturnsStandardDeviations;
 
+		
+		public IHistoricalMarketValueProvider HistoricalMarketValueProvider
+		{
+			get { return this.historicalMarketValueProvider; }
+		}
+		
 		/// <summary>
 		/// End of day intervals on which returns are computed
 		/// </summary>
@@ -78,7 +84,7 @@ namespace QuantProject.Business.Strategies.ReturnsManagement
 		/// for the benchmark, each array of returns will have exactly
 		/// n-1 elements</param>
 		public ReturnsManager( ReturnIntervals returnIntervals ,
-			HistoricalMarketValueProvider historicalMarketValueProvider )
+			IHistoricalMarketValueProvider historicalMarketValueProvider )
 		{
 			// TO DO: let WFLagEligibleTickers use this class also!!!
 			this.returnIntervals = returnIntervals;
