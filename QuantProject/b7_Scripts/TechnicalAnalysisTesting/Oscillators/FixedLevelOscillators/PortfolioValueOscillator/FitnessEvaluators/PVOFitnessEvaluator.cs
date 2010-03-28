@@ -89,7 +89,7 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOs
 		}
 		
 		private float getFitnessValue_getFitnessValueActually(
-			TestingPositions testingPositions, ReturnsManager returnsManager )
+			TestingPositions testingPositions, IReturnsManager returnsManager )
 		{
 			float fitnessValue = -0.5f;
 			PVOPositions pvoPositions = (PVOPositions)testingPositions;
@@ -138,7 +138,7 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOs
 			return fitnessValue;
 		}
 		
-		public double GetFitnessValue(object meaning , ReturnsManager returnsManager )
+		public double GetFitnessValue(object meaning , IReturnsManager returnsManager )
 		{
 			float fitnessValue = -0.5f;
 			TestingPositions testingPositions = (TestingPositions)meaning;
