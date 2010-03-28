@@ -46,6 +46,7 @@ namespace QuantProject.Business.Financial.Accounting.Reporting
 	public class AccountReport : ISerializable
 	{
 		private Account account;
+		
 		private HistoricalMarketValueProvider historicalMarketValueProvider;
 		private IDateTimeSelectorForEquityLine dateTimeSelectorForEquityLine;
 		
@@ -381,13 +382,10 @@ namespace QuantProject.Business.Financial.Accounting.Reporting
 			this.benchmark = benchmark;
 			this.setDetailedDataTable( numDaysForInterval );
 			this.transactionTable = new Tables.Transactions( reportName , detailedDataTable );
-			//      this.transactionTable = getTransactionTable( reportName , detailedDataTable );
 			this.roundTrades = new Tables.RoundTrades( reportName , this.transactionTable );
 			this.equity = new Tables.Equity( reportName , detailedDataTable );
 			if ( benchmark != "" )
 				this.setBenchmarkEquityLine();
-			//this.equity = getEquity( reportName , detailedDataTable );
-			//this.summary = getSummary( reportName );
 			this.summary = new Tables.Summary( this , historicalMarketValueProvider );
 			this.statisticsSummary = new Tables.StatisticsSummary( this, historicalMarketValueProvider );
 			return this;
