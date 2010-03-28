@@ -2,7 +2,7 @@
 QuantProject - Quantitative Finance Library
 
 WeightedPositions.cs
-Copyright (C) 2003 
+Copyright (C) 2003
 Glauco Siliprandi
 
 This program is free software; you can redistribute it and/or
@@ -18,10 +18,11 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
-*/
+ */
 
 using System;
 using System.Collections;
+using System.Collections.Generic;
 
 using QuantProject.ADT.Statistics;
 using QuantProject.Business.DataProviders;
@@ -39,7 +40,7 @@ namespace QuantProject.Business.Strategies
 	/// Consistent group of weighted positions: weights are
 	/// checked to sum up to 1.
 	/// </summary>
-	public class WeightedPositions : SortedList
+	public class WeightedPositions : List<WeightedPosition> , IReturnsCalculator
 	{
 		/// <summary>
 		/// returns the type for this class
@@ -60,12 +61,12 @@ namespace QuantProject.Business.Strategies
 		public int NumberOfLongPositions {
 			get {
 				if(this.numberOfLongPositions == int.MaxValue)
-				//that is private field has not been assigned yet
+					//that is private field has not been assigned yet
 				{
 					this.numberOfLongPositions = 0;
-					foreach(WeightedPosition weightedPosition in this.Values)
+					foreach(WeightedPosition weightedPosition in this)
 						if(weightedPosition.IsLong)
-							this.numberOfLongPositions++;
+						this.numberOfLongPositions++;
 				}
 				return this.numberOfLongPositions;
 			}
@@ -74,12 +75,12 @@ namespace QuantProject.Business.Strategies
 		public int NumberOfShortPositions {
 			get {
 				if(this.numberOfShortPositions == int.MaxValue)
-				//that is private field has not been assigned yet
+					//that is private field has not been assigned yet
 				{
 					this.numberOfShortPositions = 0;
-					foreach(WeightedPosition weightedPosition in this.Values)
+					foreach(WeightedPosition weightedPosition in this)
 						if(weightedPosition.IsShort)
-							this.numberOfShortPositions++;
+						this.numberOfShortPositions++;
 				}
 				return this.numberOfShortPositions;
 			}
@@ -106,7 +107,7 @@ namespace QuantProject.Business.Strategies
 				double[] weights = {1.0};
 				string[] tickers = {"DUMMY"};
 				WeightedPositions testInstance = new WeightedPositions( weights , tickers );
-				return testInstance;				
+				return testInstance;
 			}
 		}
 		
@@ -141,39 +142,40 @@ namespace QuantProject.Business.Strategies
 		}
 
 		private void weightedPositions_default( double[] normalizedWeightValues ,
-			string[] tickers )
+		                                       string[] tickers )
 		{
 			this.checkParameters( normalizedWeightValues , tickers );
 			for ( int i=0 ; i < tickers.Length ; i++ )
 			{
 				string ticker = tickers[ i ];
 				double weight = normalizedWeightValues[ i ];
-				if ( !this.ContainsKey( ticker ) )
-					this.Add( ticker , new WeightedPosition( weight , ticker ) );
+				this.Add( new WeightedPosition( weight , ticker ) );
+//				if ( !this.ContainsKey( ticker ) )
+//					this.Add( ticker , new WeightedPosition( weight , ticker ) );
 			}
 		}
 
 		public WeightedPositions( double[] normalizedWeightValues ,
-			string[] tickers )
+		                         string[] tickers )
 		{
 			this.weightedPositions_default( normalizedWeightValues,
-																		 tickers );
+			                               tickers );
 		}
 		
 		public WeightedPositions( double[] normalizedUnsignedWeightValues,
-		                          SignedTickers signedTickers )
+		                         SignedTickers signedTickers )
 		{
 			string[] unsignedTickers = new string [ signedTickers.Count ];
-			double[] normalizedSignedWeightValues = 
+			double[] normalizedSignedWeightValues =
 				new double[ normalizedUnsignedWeightValues.Length ];
 			for(int i = 0; i < signedTickers.Count; i++)
 			{
 				unsignedTickers[i] = signedTickers[i].Ticker;
-				normalizedSignedWeightValues[i] = 
-					 signedTickers[i].Multiplier * normalizedUnsignedWeightValues[i];
+				normalizedSignedWeightValues[i] =
+					signedTickers[i].Multiplier * normalizedUnsignedWeightValues[i];
 			}
 			this.weightedPositions_default(normalizedSignedWeightValues,
-																		 unsignedTickers);
+			                               unsignedTickers);
 		}
 		
 		/// <summary>
@@ -183,16 +185,16 @@ namespace QuantProject.Business.Strategies
 		public WeightedPositions( SignedTickers signedTickers )
 		{
 			string[] unsignedTickers = new string [ signedTickers.Count ];
-			double[] allEqualSignedWeights = 
+			double[] allEqualSignedWeights =
 				new double[ signedTickers.Count ];
 			for(int i = 0; i < signedTickers.Count; i++)
 			{
 				unsignedTickers[i] = signedTickers[i].Ticker;
-				allEqualSignedWeights[i] = 
+				allEqualSignedWeights[i] =
 					signedTickers[i].Multiplier / (double)signedTickers.Count;
 			}
 			this.weightedPositions_default( allEqualSignedWeights,
-																			unsignedTickers );
+			                               unsignedTickers );
 		}
 
 		#region checkParameters
@@ -201,47 +203,80 @@ namespace QuantProject.Business.Strategies
 			SortedList sortedTicker = new SortedList();
 			foreach ( string ticker in tickers )
 				if ( !sortedTicker.ContainsKey( ticker ) )
-					sortedTicker.Add( ticker , ticker );
-				else
-					throw new Exception( "The WeightedPositions constructur " +
-						"has received a tickers parameter with the ticker '" +
-						ticker + "' that is contained twice! This is not allowed." );
+				sortedTicker.Add( ticker , ticker );
+			else
+				throw new Exception( "The WeightedPositions constructur " +
+				                    "has received a tickers parameter with the ticker '" +
+				                    ticker + "' that is contained twice! This is not allowed." );
 		}
 		private void checkParameters( double[] normalizedWeightValues ,
-			string[] tickers )
+		                             string[] tickers )
 		{
 			if ( normalizedWeightValues.Length != tickers.Length )
 				throw new Exception( "The number of normalized weights is " +
-					"different from the number of tickers. They should be the same " +
-					"number!" );
+				                    "different from the number of tickers. They should be the same " +
+				                    "number!" );
 			double totalWeight =
 				ADT.Statistics.BasicFunctions.SumOfAbs( normalizedWeightValues );
 			if ( ( totalWeight < 0.999 ) || ( totalWeight > 1.001 ) )
 				throw new Exception( "The total of (absolute) weights " +
-					"should sum up to 1, " +
-					"but it sums up to " + totalWeight.ToString() );
+				                    "should sum up to 1, " +
+				                    "but it sums up to " + totalWeight.ToString() );
 			this.checkParameters_checkDoubleTickers( tickers );
 		}
 		#endregion
+		
+		/// <summary>
+		/// if a position with the given ticker has been found, then its index
+		/// is returned; if it is not found, then -1 is returned
+		/// </summary>
+		/// <param name="ticker"></param>
+		/// <returns></returns>
+		public int GetIndexOfTicker( string ticker )
+		{
+			int indexOfTicker = -1;
+			int indexCandidate = 0;
+			while ( indexCandidate < this.Count &&
+			       this[ indexCandidate ].Ticker != ticker )
+				indexCandidate++;
+			if ( this[ indexCandidate ].Ticker == ticker )
+				indexOfTicker = indexCandidate;
+			return indexOfTicker;
+		}
+		
+		public bool ContainsTicker( string ticker )
+		{
+			int indexOfTicker = this.GetIndexOfTicker( ticker );
+			bool containsTicker = ( indexOfTicker == -1 );
+			return containsTicker;
+		}
+		
 		public WeightedPosition GetWeightedPosition( string ticker )
 		{
-			return (WeightedPosition)this[ ticker ];
+			WeightedPosition weightedPosition = null;
+			int indexOfTicker = this.GetIndexOfTicker( ticker );
+			if ( indexOfTicker >= 0 )
+				// a position with the given ticker has been found
+				weightedPosition = this[ indexOfTicker ];
+			return weightedPosition;
 		}
+		
 		public WeightedPosition GetWeightedPosition( int i )
 		{
-			return (WeightedPosition)this.GetByIndex( i );
+			return this[ i ];
 		}
-		public WeightedPosition this[ int index ]  
-		{
-			get  
-			{
-				return (WeightedPosition)this.GetByIndex( index );
-			}
-			set  
-			{
-				this.SetByIndex( index, value );
-			}
-		}
+		
+//		public WeightedPosition this[ int index ]
+//		{
+//			get
+//			{
+//				return (WeightedPosition)this.GetByIndex( index );
+//			}
+//			set
+//			{
+//				this.SetByIndex( index, value );
+//			}
+//		}
 
 		#region GetEquityLine
 		/// <summary>
@@ -257,7 +292,7 @@ namespace QuantProject.Business.Strategies
 				new HistoricalAdjustedQuoteProvider();
 //			EndOfDayDateTime endOfDayDateTime =
 //				new EndOfDayDateTime( dateTime , EndOfDaySpecificTime.MarketClose );
-			foreach( WeightedPosition weightedPosition in	this.Values )
+			foreach( WeightedPosition weightedPosition in this )
 			{
 				string ticker = weightedPosition.Ticker;
 				double valueForThisPosition =
@@ -275,7 +310,7 @@ namespace QuantProject.Business.Strategies
 		private double getCash( double beginningCash , Hashtable virtualQuantities )
 		{
 			double cash = beginningCash;
-			foreach ( WeightedPosition weightedPosition in this.Values )
+			foreach ( WeightedPosition weightedPosition in this )
 			{
 				double thisVirtualQuantity =
 					(double)virtualQuantities[ weightedPosition.Ticker ];
@@ -291,7 +326,7 @@ namespace QuantProject.Business.Strategies
 			return cash;
 		}
 		private double getVirtualPortfolioValue( DateTime dateTime ,
-			Hashtable tickerVirtualQuantities )
+		                                        Hashtable tickerVirtualQuantities )
 		{
 			HistoricalAdjustedQuoteProvider historicalAdjustedQuoteProvider =
 				new HistoricalAdjustedQuoteProvider();
@@ -323,13 +358,13 @@ namespace QuantProject.Business.Strategies
 				new EquityLine();
 			Hashtable virtualQuantities =
 				this.getVirtualQuantities( beginningCash , firstDate );
-			double cash = this.getCash( beginningCash , virtualQuantities ); 
+			double cash = this.getCash( beginningCash , virtualQuantities );
 			for( int i = 0 ; i < equityDates.Count ; i++ )
 			{
 				DateTime dateTime = (DateTime)equityDates.GetKey( i );
 				equityLine.Add( dateTime ,
-					cash + this.getVirtualPortfolioValue( dateTime ,
-					virtualQuantities ) );
+				               cash + this.getVirtualPortfolioValue( dateTime ,
+				                                                    virtualQuantities ) );
 			}
 			return equityLine;
 		}
@@ -342,7 +377,7 @@ namespace QuantProject.Business.Strategies
 				(DateTime)datesForReturnComputation.GetByIndex( i + 1 );
 			double dailyReturn = 0.0;
 			foreach ( WeightedPosition weightedPosition in
-				this.Values )
+			         this )
 				dailyReturn +=
 					weightedPosition.GetCloseToCloseDailyReturn( dateTime );
 			return dailyReturn;
@@ -357,7 +392,7 @@ namespace QuantProject.Business.Strategies
 			for ( int i=0 ; i < closeToClosePortfolioReturns.Length ; i++ )
 				closeToClosePortfolioReturns[ i ] =
 					this.getCloseToClosePortfolioReturn(
-					datesForReturnComputation , i );
+						datesForReturnComputation , i );
 			return closeToClosePortfolioReturns;
 		}
 		/// <summary>
@@ -402,7 +437,7 @@ namespace QuantProject.Business.Strategies
 			return normalizingFactor;
 		}
 		private static double[] getNormalizedWeights( double[] nonNormalizedWeights ,
-			double normalizingFactor )
+		                                             double normalizingFactor )
 		{
 			double[] normalizedWeights = new double[ nonNormalizedWeights.Length ];
 			for ( int i = 0 ; i < nonNormalizedWeights.Length ; i ++ )
@@ -436,8 +471,8 @@ namespace QuantProject.Business.Strategies
 //			}
 //			return tickerReturns;
 //		}
-		private static float getTickerReturnsStandardDeviations( int tickerIndex ,
-			SignedTickers signedTickers , ReturnsManager returnsManager )
+		private static float getTickerReturnsStandardDeviations(
+			int tickerIndex , SignedTickers signedTickers , IReturnsManager returnsManager )
 		{
 			string ticker = signedTickers[ tickerIndex ].Ticker;
 			float returnsStandardDeviation =
@@ -445,14 +480,14 @@ namespace QuantProject.Business.Strategies
 			return returnsStandardDeviation;
 		}
 		private static float[] getTickersReturnsStandardDeviations(
-			SignedTickers signedTickers , ReturnsManager returnsManager )
+			SignedTickers signedTickers , IReturnsManager returnsManager )
 		{
 			float[] tickersReturnsStandardDeviations =
 				new float[ signedTickers.Count ];
 			for ( int i = 0 ; i < signedTickers.Count ; i++ )
 				tickersReturnsStandardDeviations[ i ] =
 					getTickerReturnsStandardDeviations( i ,
-					signedTickers , returnsManager );
+					                                   signedTickers , returnsManager );
 			return tickersReturnsStandardDeviations;
 		}
 		private static double getNonNormalizedWeightsButBalancedForVolatility(
@@ -468,7 +503,7 @@ namespace QuantProject.Business.Strategies
 			for ( int i = 0 ; i < standardDeviations.Length ; i++ )
 				nonNormalizedWeightsButBalancedForVolatility[ i ] =
 					getNonNormalizedWeightsButBalancedForVolatility(
-					standardDeviations , maxStandardDeviation , i );
+						standardDeviations , maxStandardDeviation , i );
 			return nonNormalizedWeightsButBalancedForVolatility;
 		}
 		private static double[] getNonNormalizedWeightsButBalancedForVolatility(
@@ -480,11 +515,11 @@ namespace QuantProject.Business.Strategies
 				standardDeviations , maxStandardDeviation );
 		}
 		private static double[] getUnsignedNormalizedBalancedWeights(
-			SignedTickers signedTickers , ReturnsManager returnManager )
+			SignedTickers signedTickers , IReturnsManager returnManager )
 		{
 			float[] standardDeviations =
 				getTickersReturnsStandardDeviations( signedTickers ,
-				returnManager );
+				                                    returnManager );
 			double[] nonNormalizedButBalancedWeights =
 				getNonNormalizedWeightsButBalancedForVolatility( standardDeviations );
 			double[] normalizedBalancedWeights =
@@ -510,7 +545,7 @@ namespace QuantProject.Business.Strategies
 				signedTickers.Multipliers;
 			double[] signedNormalizedBalancedWeights =
 				getSignedNormalizedBalancedWeights( multipliers ,
-				unsignedNormalizedBalancedWeights );
+				                                   unsignedNormalizedBalancedWeights );
 			return signedNormalizedBalancedWeights;
 		}
 		/// <summary>
@@ -521,43 +556,43 @@ namespace QuantProject.Business.Strategies
 		/// <param name="signedTickers"></param>
 		/// <returns></returns>
 		public static double[] GetBalancedWeights(
-			SignedTickers signedTickers , ReturnsManager returnManager )
+			SignedTickers signedTickers , IReturnsManager returnManager )
 		{
 			double[] unsignedNormalizedBalancedWeights =
 				getUnsignedNormalizedBalancedWeights(
-				signedTickers , returnManager );
+					signedTickers , returnManager );
 			double[] balancedWeights =
 				getSignedNormalizedBalancedWeights(
-				signedTickers , unsignedNormalizedBalancedWeights );
+					signedTickers , unsignedNormalizedBalancedWeights );
 			return balancedWeights;
 		}
 		#endregion //GetBalancedWeights
 		#region GetReturn
 		private void getReturnCheckParameters( int i ,
-			ReturnsManager returnsManager )
+		                                      IReturnsManager returnsManager )
 		{
 			if ( ( i < 0 ) || ( i > returnsManager.ReturnIntervals.Count - 1 ) )
 				throw new Exception( "i is larger than the max return index" );
 		}
 		private float getTickerReturn( string ticker , int i ,
-			ReturnsManager returnsManager )
+		                              IReturnsManager returnsManager )
 		{
 			return returnsManager.GetReturn( ticker , i );
 		}
 		private float getReturnActually( WeightedPosition weightedPosition ,
-			int i , ReturnsManager returnsManager )
+		                                int i , IReturnsManager returnsManager )
 		{
 			float tickerReturn = this.getTickerReturn( weightedPosition.Ticker ,
-				i , returnsManager );
+			                                          i , returnsManager );
 			return tickerReturn * Convert.ToSingle( weightedPosition.Weight );
 
 		}
-		private float getReturnActually( int i , ReturnsManager returnsManager )
+		private float getReturnActually( int i , IReturnsManager returnsManager )
 		{
 			float linearCombinationReturn = 0;
-			foreach ( WeightedPosition weightedPosition in this.Values )
+			foreach ( WeightedPosition weightedPosition in this )
 				linearCombinationReturn += this.getReturnActually( weightedPosition ,
-					i , returnsManager );
+				                                                  i , returnsManager );
 			return linearCombinationReturn;
 		}
 		/// <summary>
@@ -567,20 +602,21 @@ namespace QuantProject.Business.Strategies
 		/// <param name="returnsManager">used to efficiently store
 		/// ticker returns</param>
 		/// <returns></returns>
-		public float GetReturn( int i , ReturnsManager returnsManager )
+		public float GetReturn( int i , IReturnsManager returnsManager )
 		{
 			this.getReturnCheckParameters( i , returnsManager );
 			float currentReturn = this.getReturnActually( i , returnsManager );
 			return currentReturn;
 		}
 		#endregion GetReturn
+
 		/// <summary>
 		/// Computes an array of floats representing the returns
 		/// of all weighted position
 		/// </summary>
 		/// <param name="returnsManager"></param>
 		/// <returns></returns>
-		public float[] GetReturns( ReturnsManager returnsManager )
+		public float[] GetReturns( IReturnsManager returnsManager )
 		{
 			float[] returns = new float[
 				returnsManager.ReturnIntervals.Count ];
@@ -598,36 +634,79 @@ namespace QuantProject.Business.Strategies
 			}
 
 			for ( int intervalIndex = 0 ;
-				intervalIndex < returnsManager.NumberOfReturns ; intervalIndex++ )
+			     intervalIndex < returnsManager.NumberOfReturns ; intervalIndex++ )
 			{
 				returns[ intervalIndex ] = 0;
 				for ( int positionIndex = 0 ; positionIndex < this.Count ;
-					positionIndex++ )
+				     positionIndex++ )
 					returns[ intervalIndex ] +=
 						tickersReturns[ positionIndex ][ intervalIndex ] *
 						weights[ positionIndex ];
 			}
 			return returns;
 		}
-		/// <summary>
-    /// Gets the Open To Close return for the current instance of WeightedPositions
-    /// </summary>
-    /// <param name="marketDate">Market date for which return has to be computed</param>
-    public double GetOpenToCloseReturn(DateTime marketDate)
-    {
-      Quotes[] tickersQuotes = new Quotes[this.Count];
-      for(int i = 0; i<this.Count; i++)
-				tickersQuotes[i] = new Quotes( this[i].Ticker,marketDate,marketDate );
-      double openToCloseReturn = 0.0;
-      for(int i = 0; i < this.Count ; i++)
-        	openToCloseReturn += 
-        		        		( (float)tickersQuotes[i].Rows[0]["quClose"] /
-        	  						(float)tickersQuotes[i].Rows[0]["quOpen"] - 1.0f ) *
-        	  						(float)this[i].Weight;
-      return openToCloseReturn;
-    }
 		
-//    private double getLastNightReturn( float[] weightedPositionsLastNightReturns )
+		/// <summary>
+		/// Computes an array of floats representing the returns
+		/// of all weighted position
+		/// </summary>
+		/// <param name="returnsManager">intervals on which returns are to
+		/// be computed</param>
+		/// <param name="firstInterval">0-base index of the first interval to
+		/// be considered</param>
+		/// <param name="lastInterval">0-base index of the last interval to
+		/// be considered</param>
+		/// <returns></returns>
+		public float[] GetReturns(
+			IReturnsManager returnsManager , int firstInterval , int lastInterval )
+		{
+			float[] returns = new float[
+				returnsManager.ReturnIntervals.Count ];
+
+
+			// weights[] is set to avoid several double to float conversions
+			float[] weights = new float[ this.Count ];
+			float[][] tickersReturns = new float[ this.Count ][];
+			for ( int positionIndex = 0 ; positionIndex < this.Count ; positionIndex++ )
+			{
+				weights[ positionIndex ] =
+					Convert.ToSingle( ((WeightedPosition)(this[ positionIndex ])).Weight );
+				tickersReturns[ positionIndex ] = returnsManager.GetReturns(
+					((WeightedPosition)(this[ positionIndex ])).Ticker );
+			}
+
+			for ( int intervalIndex = firstInterval ;
+			     intervalIndex <= lastInterval ; intervalIndex++ )
+			{
+				returns[ intervalIndex ] = 0;
+				for ( int positionIndex = 0 ; positionIndex < this.Count ;
+				     positionIndex++ )
+					returns[ intervalIndex ] +=
+						tickersReturns[ positionIndex ][ intervalIndex ] *
+						weights[ positionIndex ];
+			}
+			return returns;
+		}
+		
+		/// <summary>
+		/// Gets the Open To Close return for the current instance of WeightedPositions
+		/// </summary>
+		/// <param name="marketDate">Market date for which return has to be computed</param>
+		public double GetOpenToCloseReturn(DateTime marketDate)
+		{
+			Quotes[] tickersQuotes = new Quotes[this.Count];
+			for(int i = 0; i<this.Count; i++)
+				tickersQuotes[i] = new Quotes( this[i].Ticker,marketDate,marketDate );
+			double openToCloseReturn = 0.0;
+			for(int i = 0; i < this.Count ; i++)
+				openToCloseReturn +=
+					( (float)tickersQuotes[i].Rows[0]["quClose"] /
+					 (float)tickersQuotes[i].Rows[0]["quOpen"] - 1.0f ) *
+					(float)this[i].Weight;
+			return openToCloseReturn;
+		}
+		
+		//    private double getLastNightReturn( float[] weightedPositionsLastNightReturns )
 //		{
 //			double returnValue = 0.0;
 //			for(int i = 0; i<weightedPositionsLastNightReturns.Length; i++)
@@ -644,81 +723,81 @@ namespace QuantProject.Business.Strategies
 //								(float)tickerQuotes.Rows[0]["quAdjustedClose"]  - 1     );
 //		}
 		
-  	
-  	/// <summary>
+		
+		/// <summary>
 		/// Gets the last night return for the current instance
 		/// </summary>
 		/// <param name="lastMarketDay">The last market date before today</param>
-		/// <param name="today">today</param> 
+		/// <param name="today">today</param>
 //		public double GetLastNightReturn( DateTime lastMarketDay , DateTime today )
 //		{
 //			float[] weightedPositionsLastNightReturns = new float[this.Count];
 //			for(int i = 0; i<this.Count; i++)
-//				weightedPositionsLastNightReturns[i] = 
+//				weightedPositionsLastNightReturns[i] =
 //					this.getLastNightReturn_getLastNightReturnForTicker(
 //						this[i].Ticker, lastMarketDay, today );
 //			return getLastNightReturn( weightedPositionsLastNightReturns );
 //		}
-				
+		
 		private double getCloseToCloseReturn_setReturns_getReturn(
 			int returnDayIndex, Quotes[] tickersQuotes )
-    {
-      double returnValue = 0.0;
-      for(int indexForTicker = 0; indexForTicker<this.Count; indexForTicker++)
-      	returnValue +=
-          ((float)tickersQuotes[indexForTicker].Rows[returnDayIndex][Quotes.AdjustedCloseToCloseRatio] - 1.0f)*
-        	(float)this[indexForTicker].Weight;
-      return returnValue;
-    }
-    private void getCloseToCloseReturn_setReturns( double[] returnsToSet,
-                                                   Quotes[] tickersQuotes )
-    {
-      for(int i = 0; i < returnsToSet.Length; i++)
-      {
-        returnsToSet[i] =
-          getCloseToCloseReturn_setReturns_getReturn(i,tickersQuotes);
-      }
-    }
-    /// <summary>
-    /// Gets portfolio's return for a given period, for the current instance
-    /// of weighted positions
-    /// </summary>
-    /// <param name="startDate">Start date for the period for which return has to be computed</param>
-    /// <param name="endDate">End date for the period for which return has to be computed</param>
-    public double GetCloseToCloseReturn(DateTime startDate,DateTime endDate )
-    {
-      const double initialEquity = 1.0;
-      double equityValue = initialEquity;
-      Quotes[] tickersQuotes = new Quotes[this.Count];
-      int numberOfQuotesOfPreviousTicker = 0;
-      for(int i = 0; i < this.Count; i++)
-      {
-      	tickersQuotes[i] = new Quotes( this[i].Ticker,startDate, endDate );
-      	if( i == 0 )
-      		numberOfQuotesOfPreviousTicker = tickersQuotes[i].Rows.Count;
-      	else if ( (i > 0 && ( tickersQuotes[i].Rows.Count > numberOfQuotesOfPreviousTicker)) ||
-									 tickersQuotes[i].Rows.Count == 0)
-      	// not all the tickers have the same available n. of quotes
-      	// for the given period or a ticker has no quotes
-          throw new MissingQuotesException(this.SignedTickers.Tickers,
-        	       													 startDate, endDate);
-      }
-      double[] returns = new double[tickersQuotes[0].Rows.Count];
-      getCloseToCloseReturn_setReturns(returns,tickersQuotes);
-      for(int i = 0; i < returns.Length; i++)
-        equityValue = 
-          equityValue + equityValue * returns[i];
+		{
+			double returnValue = 0.0;
+			for(int indexForTicker = 0; indexForTicker<this.Count; indexForTicker++)
+				returnValue +=
+					((float)tickersQuotes[indexForTicker].Rows[returnDayIndex][Quotes.AdjustedCloseToCloseRatio] - 1.0f)*
+					(float)this[indexForTicker].Weight;
+			return returnValue;
+		}
+		private void getCloseToCloseReturn_setReturns( double[] returnsToSet,
+		                                              Quotes[] tickersQuotes )
+		{
+			for(int i = 0; i < returnsToSet.Length; i++)
+			{
+				returnsToSet[i] =
+					getCloseToCloseReturn_setReturns_getReturn(i,tickersQuotes);
+			}
+		}
+		/// <summary>
+		/// Gets portfolio's return for a given period, for the current instance
+		/// of weighted positions
+		/// </summary>
+		/// <param name="startDate">Start date for the period for which return has to be computed</param>
+		/// <param name="endDate">End date for the period for which return has to be computed</param>
+		public double GetCloseToCloseReturn(DateTime startDate,DateTime endDate )
+		{
+			const double initialEquity = 1.0;
+			double equityValue = initialEquity;
+			Quotes[] tickersQuotes = new Quotes[this.Count];
+			int numberOfQuotesOfPreviousTicker = 0;
+			for(int i = 0; i < this.Count; i++)
+			{
+				tickersQuotes[i] = new Quotes( this[i].Ticker,startDate, endDate );
+				if( i == 0 )
+					numberOfQuotesOfPreviousTicker = tickersQuotes[i].Rows.Count;
+				else if ( (i > 0 && ( tickersQuotes[i].Rows.Count > numberOfQuotesOfPreviousTicker)) ||
+				         tickersQuotes[i].Rows.Count == 0)
+					// not all the tickers have the same available n. of quotes
+					// for the given period or a ticker has no quotes
+					throw new MissingQuotesException(this.SignedTickers.Tickers,
+					                                 startDate, endDate);
+			}
+			double[] returns = new double[tickersQuotes[0].Rows.Count];
+			getCloseToCloseReturn_setReturns(returns,tickersQuotes);
+			for(int i = 0; i < returns.Length; i++)
+				equityValue =
+					equityValue + equityValue * returns[i];
 
-      return (equityValue - initialEquity)/initialEquity;
-    }
+			return (equityValue - initialEquity)/initialEquity;
+		}
 		
 		/// <summary>
 		/// Reverse the sign of each weight for each position in the current instance:
 		/// long positions become then short positions and viceversa
 		/// </summary>
-		public void Reverse()
+		public void ReverseSign()
 		{
-			foreach(WeightedPosition weightedPosition in this.Values)
+			foreach( WeightedPosition weightedPosition in this )
 				weightedPosition.Weight = - weightedPosition.Weight;
 		}
 		public override string ToString()
@@ -729,7 +808,7 @@ namespace QuantProject.Business.Strategies
 			return toString;
 		}
 
-		public bool HasTheSameSignedTickersAs(WeightedPositions weightedPositions) 
+		public bool HasTheSameSignedTickersAs(WeightedPositions weightedPositions)
 		{
 			//Check for null and compare run-time types and compare length of the weightedPositions
 			if (weightedPositions.Count != this.Count)
@@ -743,12 +822,12 @@ namespace QuantProject.Business.Strategies
 			for (int i = 0; i<this.Count; i++)
 				for (int j = 0; j<this.Count; j++)
 				if ( this[i].HasTheSameSignedTickerAs(weightedPositions[j]) )
-						numOfEquals++;
-					
+				numOfEquals++;
+			
 			return numOfEquals == this.Count;
 		}
 
-		public bool HasTheOppositeSignedTickersAs(WeightedPositions weightedPositions) 
+		public bool HasTheOppositeSignedTickersAs(WeightedPositions weightedPositions)
 		{
 			//Check for null and compare run-time types and compare length of the weightedPositions
 			if (weightedPositions.Count != this.Count)
@@ -763,8 +842,8 @@ namespace QuantProject.Business.Strategies
 			for (int i = 0; i<this.Count; i++)
 				for (int j = 0; j<this.Count; j++)
 				if ( this[i].HasTheOppositeSignedTickerAs(weightedPositions[j]) )
-						numOfEqualsWithOppositeSign++;
-					
+				numOfEqualsWithOppositeSign++;
+			
 			return numOfEqualsWithOppositeSign == this.Count;
 		}
 		
