@@ -380,7 +380,7 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOs
 				if(this.currentWeightedPositionsGainOrLoss >= currentOverboughtThreshold[this.currentGenomeIndex] &&
 				   (this.portfolioType == PortfolioType.ShortAndLong || this.portfolioType == PortfolioType.OnlyMixed) )
 				{
-					this.weightedPositionsToEvaluateOutOfSample[this.currentGenomeIndex].Reverse();
+					this.weightedPositionsToEvaluateOutOfSample[this.currentGenomeIndex].ReverseSigns();
 					try{
 						this.openPositions_open(weightedPositionsToEvaluateOutOfSample[this.currentGenomeIndex],true);
 					}
@@ -389,7 +389,7 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOs
 						string forBreakpoint = ex.Message; forBreakpoint = forBreakpoint + "";
 					}
 					finally{
-						this.weightedPositionsToEvaluateOutOfSample[this.currentGenomeIndex].Reverse();
+						this.weightedPositionsToEvaluateOutOfSample[this.currentGenomeIndex].ReverseSigns();
 					}
 				}
 				else if (this.currentWeightedPositionsGainOrLoss <= - currentOversoldThreshold[this.currentGenomeIndex])

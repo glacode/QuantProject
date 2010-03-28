@@ -198,7 +198,7 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOs
 				if(currentChosenWeightedPositionsReturn >= currentOverboughtThreshold &&
 				   this.portfolioType == PortfolioType.ShortAndLong)
 				{
-					this.chosenWeightedPositions.Reverse();
+					this.chosenWeightedPositions.ReverseSigns();
 					try
 					{
 						AccountManager.OpenPositions( this.chosenWeightedPositions,
@@ -213,7 +213,7 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOs
 					}
 					finally
 					{
-						this.chosenWeightedPositions.Reverse();
+						this.chosenWeightedPositions.ReverseSigns();
 					}
 				}
 				else if (currentChosenWeightedPositionsReturn <= - currentOversoldThreshold)

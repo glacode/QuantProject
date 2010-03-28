@@ -104,7 +104,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.LinearCombination
 				else if (lastHalfPeriodGain > 0.0)
 					//if gain of the last half period is positive
 				{
-					this.weightedPositions.Reverse();
+					this.weightedPositions.ReverseSigns();
 					//short the portfolio (short --> long; long --> short)
 					try{
 						AccountManager.OpenPositions(this.weightedPositions,this.account);
@@ -114,7 +114,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.LinearCombination
 						string forBreakpoint = ex.Message; forBreakpoint = forBreakpoint + "";
 					}
 					finally{
-						this.weightedPositions.Reverse();
+						this.weightedPositions.ReverseSigns();
 					}
 				}
 			}

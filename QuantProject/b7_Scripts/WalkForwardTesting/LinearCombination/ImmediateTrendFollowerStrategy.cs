@@ -102,14 +102,14 @@ namespace QuantProject.Scripts.WalkForwardTesting.LinearCombination
 					this.openPositions();
 				else//the portfolio had a loss for the last half period
 				{
-					this.chosenWeightedPositions.Reverse();
+					this.chosenWeightedPositions.ReverseSigns();
 					//short the portfolio
 					try{this.openPositions();}
 					catch(Exception ex)
 					{
 						string forBreakpoint = ex.Message; forBreakpoint = forBreakpoint + "";
 					}
-					finally{this.chosenWeightedPositions.Reverse();}
+					finally{this.chosenWeightedPositions.ReverseSigns();}
 				}
 			}
 		}

@@ -88,14 +88,14 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
 			//   this.numDaysBetweenEachOptimization)
 			AccountManager.ClosePositions(this.account);
 			try{
-				this.chosenWeightedPositions.Reverse();
+				this.chosenWeightedPositions.ReverseSigns();
 				this.openPositions();
 			}
 			catch(Exception ex)
 			{
 				string forBreakpoint = ex.Message; forBreakpoint = forBreakpoint + "";
 			}
-			this.chosenWeightedPositions.Reverse();
+			this.chosenWeightedPositions.ReverseSigns();
 		}
 		
 		

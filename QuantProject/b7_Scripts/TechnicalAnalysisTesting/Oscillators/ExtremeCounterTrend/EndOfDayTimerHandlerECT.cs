@@ -148,7 +148,7 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.ExtremeCount
 				else if (lastHalfPeriodGain > 0.0 &&
 				         this.portfolioType == PortfolioType.ShortAndLong)
 				{
-					this.chosenWeightedPositions.Reverse();
+					this.chosenWeightedPositions.ReverseSigns();
 					//short the portfolio
 					try{
 						AccountManager.OpenPositions(this.chosenWeightedPositions,
@@ -159,7 +159,7 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.ExtremeCount
 						string forBreakpoint = ex.Message; forBreakpoint = forBreakpoint + "";
 					}
 					finally{
-						this.chosenWeightedPositions.Reverse();
+						this.chosenWeightedPositions.ReverseSigns();
 					}
 				}
 			}
