@@ -50,12 +50,13 @@ namespace QuantProject.Business.Strategies
 		protected int numDaysBeetweenEachOtpimization;
 		protected int numDaysForInSampleOptimization;
 		protected IIntervalsSelector intervalsSelectorForInSample;
-//		protected IIntervalsSelector intervalsSelectorForOutOfSample;
+		protected IIntervalsSelector intervalsSelectorForOutOfSample;
 		protected IEligiblesSelector eligiblesSelector;
 		protected IInSampleChooser inSampleChooser;
 		protected HistoricalMarketValueProvider historicalMarketValueProviderForInSample;
 		
 		protected DateTime lastOptimizationDateTime;
+		protected ReturnIntervals outOfSampleReturnIntervals;
 		private Account account;
 		
 		protected ReturnsManager inSampleReturnsManager;
@@ -123,7 +124,7 @@ namespace QuantProject.Business.Strategies
 			int numDaysBeetweenEachOtpimization ,
 			int numDaysForInSampleOptimization ,
 			IIntervalsSelector intervalsSelectorForInSample ,
-//			IIntervalsSelector intervalsSelectorForOutOfSample ,
+			IIntervalsSelector intervalsSelectorForOutOfSample ,
 			IEligiblesSelector eligiblesSelector ,
 			IInSampleChooser inSampleChooser ,
 			HistoricalMarketValueProvider historicalMarketValueProviderForInSample
@@ -132,18 +133,32 @@ namespace QuantProject.Business.Strategies
 			this.numDaysBeetweenEachOtpimization = numDaysBeetweenEachOtpimization;
 			this.numDaysForInSampleOptimization = numDaysForInSampleOptimization;
 			this.intervalsSelectorForInSample = intervalsSelectorForInSample;
-//			this.intervalsSelectorForOutOfSample = intervalsSelectorForOutOfSample;
+			this.intervalsSelectorForOutOfSample = intervalsSelectorForOutOfSample;
 			this.eligiblesSelector = eligiblesSelector;
 			this.inSampleChooser = inSampleChooser;
 			this.historicalMarketValueProviderForInSample =
 				historicalMarketValueProviderForInSample;
 			
-//			this.returnIntervals =
-//				new ReturnIntervals( this.intervalsSelectorForOutOfSample );
+			this.outOfSampleReturnIntervals =
+				new ReturnIntervals( this.intervalsSelectorForOutOfSample );
 		}
 		
 		#region NewDateTimeEventHandler
 		
+		private void updateReturnIntervals()
+		{
+			DateTime currentDateTime = this.now();
+			if ( this.outOfSampleReturnIntervals.Count == 0 )
+				// no interval has been added yet
+				this.outOfSampleReturnIntervals.AppendFirstInterval(
+					currentDateTime );
+			else
+				// at least one interval has already been added
+				if ( this.outOfSampleReturnIntervals.LastDateTime <= currentDateTime )
+				this.outOfSampleReturnIntervals.AppendIntervalsToGoJustBeyond(
+					currentDateTime );
+		}
+
 		#region updateOptimalTestingPositions
 		
 		#region updateOptimalTestingPositions_actually
@@ -240,17 +255,32 @@ namespace QuantProject.Business.Strategies
 		#endregion updateOptimalTestingPositions
 		
 		protected abstract bool arePositionsToBeClosed();
-		protected abstract bool arePositionsToBeOpened();
+		
+		#region arePositionsToBeOpened
+		protected ReturnInterval lastIntervalAppended()
+		{
+			ReturnInterval lastInterval =
+				this.outOfSampleReturnIntervals[ this.outOfSampleReturnIntervals.Count - 1 ];
+			return lastInterval;
+		}
+		protected virtual bool arePositionsToBeOpened()
+		{
+			bool beginsTheLastInterval =
+				( this.now() ==
+				 this.lastIntervalAppended().Begin );
+			bool areToBeOpened =
+				( beginsTheLastInterval && this.bestTestingPositionsInSample != null );
+			return ( beginsTheLastInterval );
+		}
+		#endregion arePositionsToBeOpened
+		
 		protected abstract WeightedPositions getPositionsToBeOpened();
 		
 		public void NewDateTimeEventHandler( Object sender , DateTime dateTime )
 		{
+			this.updateReturnIntervals();
 			if ( this.areOptimalWeightedPositionsToBeUpdated() )
 				this.updateOptimalTestingPositions();
-			if ( ( dateTime.Month == 3 ) && ( dateTime.Day == 15 ) )
-			{
-				;
-			}
 			if ( this.arePositionsToBeClosed() )
 				AccountManager.ClosePositions( this.account );
 			if ( this.arePositionsToBeOpened() )
