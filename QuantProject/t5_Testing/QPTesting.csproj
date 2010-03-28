@@ -26,18 +26,65 @@
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.Targets" />
   <ItemGroup>
     <Reference Include="nunit.framework" />
+    <Reference Include="nunit.mocks">
+      <HintPath>nunit.mocks.dll</HintPath>
+      <SpecificVersion>False</SpecificVersion>
+    </Reference>
     <Reference Include="System" />
+    <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="a5_FakeImplementations\FakeGenomeManager.cs" />
+    <Compile Include="a5_FakeImplementations\FakeHistoricalMarketValueProvider.cs" />
     <Compile Include="AssemblyInfo.cs" />
+    <Compile Include="b1_ADT\Econometrics\TestLinearRegression.cs" />
+    <Compile Include="b1_ADT\LinearAlgebra\TestLinearSystemSolver.cs" />
     <Compile Include="b1_ADT\Sum.cs" />
+    <Compile Include="b3_data\Selectors\TestTickerSelector.cs" />
+    <Compile Include="b4_Business\a2_Strategies\Eligibles\TestOftenExchanged.cs" />
+    <Compile Include="b4_Business\a2_Strategies\Optimizing\Decoding\TestBasicDecoderForTestingPositions.cs" />
+    <Compile Include="b4_Business\a2_Strategies\ReturnsManagment\Time\TestReturnIntervals.cs" />
+    <Compile Include="b7_scripts\linearRegression\TestDecoderForLinearRegressionTestingPositions.cs" />
+    <Compile Include="b7_scripts\linearRegression\TestLinearRegressionFitnessEvaluator.cs" />
+    <Compile Include="b7_scripts\linearRegression\TestLinearRegressionSetUpManager.cs" />
+    <Compile Include="b7_scripts\linearRegression\TestDecoderFirstTradingTickerInEachSignalingPortfolio.cs" />
+    <Compile Include="b7_scripts\linearRegression\TestGenomeManagerForLinearRegression.cs" />
+    <Compile Include="b7_scripts\linearRegression\TestEntryStrategyBasedOnForecastedReturn.cs" />
+    <Compile Include="b7_scripts\linearRegression\TestReturnIntervalsBuilderForTradingAndForSignaling.cs" />
+    <Compile Include="b7_scripts\linearRegression\TestSingleDayIntervalsSelector.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\b1_ADT\ADT_SD.csproj">
       <Project>{6A426DC3-013E-4D38-A1AE-7BE128BF2DD7}</Project>
       <Name>ADT_SD</Name>
     </ProjectReference>
+    <ProjectReference Include="..\b3_Data\Data_SD.csproj">
+      <Project>{1A0B0C1A-DBC5-4AE6-BE2E-2298135DD60C}</Project>
+      <Name>Data_SD</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\b4_Business\Business_SD.csproj">
+      <Project>{91CAD8B7-D505-40BE-8FAF-0597E62FF71D}</Project>
+      <Name>Business_SD</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\b7_Scripts\Scripts_SD.csproj">
+      <Project>{B5AAC5AA-DCC1-4698-A362-D399AB9A90C4}</Project>
+      <Name>Scripts_SD</Name>
+    </ProjectReference>
     <Folder Include="b1_ADT" />
+    <Folder Include="b1_ADT\LinearAlgebra" />
+    <Folder Include="b1_ADT\Econometrics" />
+    <Folder Include="b3_data\Selectors" />
+    <Folder Include="b4_Business\a2_Strategies" />
+    <Folder Include="b4_Business\a2_Strategies\Eligibles" />
+    <Folder Include="b4_Business\a2_Strategies\Optimizing" />
+    <Folder Include="b4_Business\a2_Strategies\Optimizing\Decoding" />
+    <Folder Include="b4_Business\a2_Strategies\ReturnsManagment" />
+    <Folder Include="b4_Business\a2_Strategies\ReturnsManagment\Time" />
+    <Folder Include="b7_scripts" />
+    <Folder Include="b7_scripts\linearRegression" />
+    <Folder Include="b4_Business" />
+    <Folder Include="b3_data" />
+    <Folder Include="a5_FakeImplementations" />
   </ItemGroup>
 </Project>
