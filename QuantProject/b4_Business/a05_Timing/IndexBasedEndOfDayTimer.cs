@@ -42,6 +42,7 @@ namespace QuantProject.Business.Timing
 			get	{	return this.marketIndex;	}
 		}
 		
+		[NonSerialized]
 		private Quotes indexQuotes;
 		public Quotes IndexQuotes
 		{
