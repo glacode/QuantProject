@@ -43,7 +43,7 @@ namespace QuantProject.Business.Strategies.Optimizing.Decoding
 		protected int[] tickerRelatedGeneValues;
 		protected int[] encoded;
 		protected EligibleTickers eligibleTickers;
-		protected ReturnsManager returnsManager;
+		protected IReturnsManager returnsManager;
 
 		/// <summary>
 		/// short description to be used for the file name
@@ -121,7 +121,7 @@ namespace QuantProject.Business.Strategies.Optimizing.Decoding
 
 		protected virtual TestingPositions getMeaningForUndecodable()
 		{
-			return new TestingPositions();
+			return new TestingPositionsForUndecodableEncoded();
 		}
 
 		#region isDecodable
@@ -200,7 +200,7 @@ namespace QuantProject.Business.Strategies.Optimizing.Decoding
 		}
 
 		private void decode_updateProtectedMembers(int[] encoded , EligibleTickers eligibleTickers ,
-			                   ReturnsManager returnsManager)
+			                   IReturnsManager returnsManager)
 		{
 			this.encoded = encoded;
 			this.eligibleTickers = eligibleTickers;
@@ -217,7 +217,7 @@ namespace QuantProject.Business.Strategies.Optimizing.Decoding
 		/// <param name="encoded"></param>
 		/// <returns></returns>
 		public TestingPositions Decode(int[] encoded , EligibleTickers eligibleTickers ,
-		             ReturnsManager returnsManager)
+		             IReturnsManager returnsManager)
 		{
 			this.decode_updateProtectedMembers(encoded , eligibleTickers ,
 			                   								 returnsManager);

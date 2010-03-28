@@ -43,7 +43,7 @@ namespace QuantProject.Business.Strategies.Optimizing.GenomeManagers
 		protected int maxValueForGenes;
 		protected GenomeManagerType genomeManagerType;
 		protected EligibleTickers eligibleTickers;
-		protected ReturnsManager returnsManager;
+		protected IReturnsManager returnsManager;
 		protected IDecoderForTestingPositions decoderForTestingPositions;
 		protected IFitnessEvaluator fitnessEvaluator;
     
@@ -65,7 +65,7 @@ namespace QuantProject.Business.Strategies.Optimizing.GenomeManagers
 		                          IDecoderForTestingPositions decoderForTestingPositions,
 		                          IFitnessEvaluator fitnessEvaluator,
 		                          GenomeManagerType genomeManagerType,
-		                          ReturnsManager returnsManager ,
+		                          IReturnsManager returnsManager ,
 		                          int seedForRandomGenerator )
 			
 		{
