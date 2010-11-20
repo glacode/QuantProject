@@ -46,7 +46,18 @@ namespace QuantProject.Business.Strategies.Eligibles
 				return this.tickers;
 			}
 		}
-		
+		private DataTable sourceDataTable;
+		/// <summary>
+		/// Returns the dataTable that has been used for
+		/// the construction of the given instance
+		/// </summary>
+		public DataTable SourceDataTable
+		{
+			get  
+			{
+				return this.sourceDataTable;
+			}
+		}
 		public EligibleTickers( ICollection<string> tickers )
 		{
 			foreach( string ticker in tickers )
@@ -60,6 +71,7 @@ namespace QuantProject.Business.Strategies.Eligibles
 		/// a ticker selector</param>
 		public EligibleTickers( DataTable dtTickers )
 		{
+			this.sourceDataTable = dtTickers;
 			this.addTickers( dtTickers );
 		}
 		#region addTickers
