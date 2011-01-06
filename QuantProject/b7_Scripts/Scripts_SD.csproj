@@ -164,6 +164,9 @@
     <Compile Include="WalkForwardTesting\LinearRegression\LinearRegressionTestingPositions.cs" />
     <Compile Include="WalkForwardTesting\LinearRegression\Logging\AnalyzerForLinearRegressionTestingPositions.cs" />
     <Compile Include="WalkForwardTesting\LinearRegression\Logging\LinearRegressionLogItem.cs" />
+    <Compile Include="WalkForwardTesting\LinearRegression\Logging\VirtualReturns\IVirtualReturnComputer.cs" />
+    <Compile Include="WalkForwardTesting\LinearRegression\Logging\VirtualReturns\ReturnPredictor.cs" />
+    <Compile Include="WalkForwardTesting\LinearRegression\Logging\VirtualReturns\PortfolioReturnComputer.cs" />
     <Compile Include="WalkForwardTesting\LinearRegression\ReturnIntervals\ShiftedTimeIntervalSelectorForSignaling.cs" />
     <Compile Include="WalkForwardTesting\LinearRegression\ReturnIntervals\SingleDayIntervalsSelector.cs" />
     <Compile Include="WalkForwardTesting\LinearRegression\Strategies\LinearRegressionStrategy.cs" />
@@ -377,6 +380,7 @@
     <Folder Include="WalkForwardTesting\LinearRegression\ExitStrategies" />
     <Folder Include="WalkForwardTesting\LinearRegression\InSampleChoosers\FitnessEvaluation" />
     <Folder Include="WalkForwardTesting\LinearRegression\Logging" />
+    <Folder Include="WalkForwardTesting\LinearRegression\Logging\VirtualReturns" />
     <Folder Include="WalkForwardTesting\LinearRegression\ReturnIntervals" />
     <Folder Include="WalkForwardTesting\LinearRegression\Strategies" />
     <Folder Include="WalkForwardTesting\PairsTrading" />
