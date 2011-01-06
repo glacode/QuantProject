@@ -38,8 +38,13 @@
     <Compile Include="a5_FakeImplementations\FakeGenomeManager.cs" />
     <Compile Include="a5_FakeImplementations\FakeHistoricalMarketValueProvider.cs" />
     <Compile Include="AssemblyInfo.cs" />
+    <Compile Include="b1_ADT\Econometrics\LinearRegressionWithoutCovarianceMatrix.cs" />
     <Compile Include="b1_ADT\Econometrics\TestLinearRegression.cs" />
+    <Compile Include="b1_ADT\LinearAlgebra\TestCholeskyDecomposition.cs" />
     <Compile Include="b1_ADT\LinearAlgebra\TestLinearSystemSolver.cs" />
+    <Compile Include="b1_ADT\LinearAlgebra\TestLowerTriangular.cs" />
+    <Compile Include="b1_ADT\LinearAlgebra\TestMatrix.cs" />
+    <Compile Include="b1_ADT\LinearAlgebra\TestPositiveDefiniteMatrix.cs" />
     <Compile Include="b1_ADT\Sum.cs" />
     <Compile Include="b3_data\Selectors\TestTickerSelector.cs" />
     <Compile Include="b4_Business\a2_Strategies\Eligibles\TestOftenExchanged.cs" />
