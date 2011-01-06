@@ -53,7 +53,7 @@ namespace QuantTesting.Scripts.WalkForwardTesting.LinearRegression
 						new DateTime( 2008 , 1 , 1 ) , new DateTime( 2008 , 1 , 2 ) ) ) ,
 				new FakeHistoricalMarketValueProvider() );
 			DecoderForLinearRegressionTestingPositions decoderForLinearRegressionTestingPositions =
-				new DecoderForLinearRegressionTestingPositions( 4 );
+				new DecoderForLinearRegressionTestingPositions( 2 , new int[] { 1 , 1 , 1 , 1 } );
 			LinearRegressionFitnessEvaluator fitnessEvaluator =
 				new LinearRegressionFitnessEvaluator(
 					new LinearRegressionSetupManager() );
