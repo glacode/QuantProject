@@ -37,7 +37,7 @@ namespace QuantProject.Scripts.General.Logging
 	[Serializable]
 	public abstract class AnalyzableLogItem : LogItem
 	{
-		private List<IExecutable> analizersForTestingPositions;
+		protected List<IExecutable> analizersForTestingPositions;
 		protected TestingPositions[] bestTestingPositionsInSample;
 		
 		public AnalyzableLogItem(
