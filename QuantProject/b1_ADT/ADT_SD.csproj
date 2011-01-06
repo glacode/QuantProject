@@ -49,11 +49,16 @@
     <Compile Include="BarComponent.cs" />
     <Compile Include="ConstantsProvider.cs" />
     <Compile Include="Econometrics\ILinearRegression.cs" />
+    <Compile Include="Econometrics\LinearRegressionWithoutCovarianceMatrix.cs" />
     <Compile Include="Econometrics\LinearRegression.cs" />
     <Compile Include="ExtendedDataTable.cs" />
     <Compile Include="ExtendedDateTime.cs" />
     <Compile Include="HashProvider.cs" />
+    <Compile Include="LinearAlgebra\CholeskyDecomposition.cs" />
     <Compile Include="LinearAlgebra\LinearSystemSolver.cs" />
+    <Compile Include="LinearAlgebra\LowerTriangular.cs" />
+    <Compile Include="LinearAlgebra\Matrix.cs" />
+    <Compile Include="LinearAlgebra\PositiveDefiniteMatrix.cs" />
     <Compile Include="Optimizing\BruteForce\BestParametersManager.cs" />
     <Compile Include="Optimizing\BruteForce\ParametersManagers\BruteForceOptimizableParametersManagerWithoutEquivalentsAsTopBestParameters.cs" />
     <Compile Include="Optimizing\BruteForce\ParametersManagers\CombinationBasedBruteForceOptimizableParametersManager.cs" />
