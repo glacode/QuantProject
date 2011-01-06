@@ -33,8 +33,10 @@ namespace QuantProject.Scripts.WalkForwardTesting.LinearRegression
 {
 	/// <summary>
 	/// Simple decoder for the Linear Regression strategy.
-	/// The genome is decoded as follows: the first two tickers are used to decode
+	/// The genome is decoded as follows: a given number of tickers is used to decode
 	/// a trading portfolio.
+	/// Then, a given number of signaling portfolios are created, each with its number
+	/// of contained tickers.
 	/// For each of the other tickers is created a portfolio with that single ticker and
 	/// such portfolio is used as a signaling portfolio.
 	/// The first two tickers are decoded using the eligible tickers
@@ -44,36 +46,48 @@ namespace QuantProject.Scripts.WalkForwardTesting.LinearRegression
 	[Serializable]
 	public class DecoderForLinearRegressionTestingPositions // : IDecoderForTestingPositions
 	{
-//		private int numberOfTickersForTrading;
-//
+		private int numberOfTickersForTrading;
+
+		private int[] numberOfTickersInEachSignalingPortfolio;
+		
 		public int NumberOfTickersForTrading {
-//			get { return this.numberOfTickersForTrading; }
-			get { return 2; }
+			get { return this.numberOfTickersForTrading; }
 		}
 //
-		private int numberOfSignalingPortfolios;
 //
 		public int NumberOfSignalingPortfolios {
-			get { return this.numberOfSignalingPortfolios; }
+			get { return this.numberOfTickersInEachSignalingPortfolio.Length; }
 		}
-		private BasicDecoderForTestingPositions basicDecoderForTestingPositions;
 		
-		public DecoderForLinearRegressionTestingPositions( int numberOfSignalingPortfolios )
-//			int numberOfTickersForTrading , int numberOfTickersForSignaling )
+		private BasicDecoderForTestingPositions basicDecoderForTestingPositions;
+		protected int expectedNumberOfGeneValues;
+		
+		public DecoderForLinearRegressionTestingPositions(
+			int numberOfTickersForTrading , int[] numberOfTickersInEachSignalingPortfolio )
 		{
-//			this.numberOfTickersForTrading = numberOfTickersForTrading;
-			this.numberOfSignalingPortfolios = numberOfSignalingPortfolios;
+			this.numberOfTickersForTrading = numberOfTickersForTrading;
+			this.numberOfTickersInEachSignalingPortfolio =
+				numberOfTickersInEachSignalingPortfolio;
+			
 			this.basicDecoderForTestingPositions = new BasicDecoderForTestingPositions();
+			this.setExpectedNumberOfGeneValues();
+		}
+		
+		private void setExpectedNumberOfGeneValues()
+		{
+			this.expectedNumberOfGeneValues = this.numberOfTickersForTrading;
+			for( int i = 0 ; i < this.NumberOfSignalingPortfolios ; i++ )
+				this.expectedNumberOfGeneValues +=
+					this.numberOfTickersInEachSignalingPortfolio[ i ];
 		}
 		
 		#region Decode
-		private void decode_checkParameters( int[] genome )
+		virtual protected void decode_checkParameters( int[] genome )
 		{
-			int numberOfExpectedGenes = this.numberOfSignalingPortfolios + 2;
-			if ( genome.Length != numberOfExpectedGenes )
+			if ( genome.Length != this.expectedNumberOfGeneValues )
 				throw new Exception(
-					"The given genom contains " + genome.Length + " genes, but " +
-					numberOfExpectedGenes + " where expected!" );
+					"The given genome contains " + genome.Length + " genes, but " +
+					this.expectedNumberOfGeneValues + " where expected!" );
 		}
 		private int[] getSubGenome( int[] genome , int startingPosition , int length )
 		{
@@ -89,7 +103,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.LinearRegression
 		{
 			int[] encodedForTradingTickers =
 //				this.getSubGenome( encoded , 0 , this.numberOfTickersForTrading );
-				this.getSubGenome( encoded , 0 , 2 );
+				this.getSubGenome( encoded , 0 , this.numberOfTickersForTrading );
 			WeightedPositions weightedPositionsForTrading =
 				this.basicDecoderForTestingPositions.Decode(
 					encodedForTradingTickers ,
@@ -104,7 +118,8 @@ namespace QuantProject.Scripts.WalkForwardTesting.LinearRegression
 			int[] encodedForSignalingTickers =
 				this.getSubGenome(
 //					encoded , this.numberOfTickersForTrading , this.numberOfTickersForSignaling );
-					encoded , 2 , encoded.Length - 2 );
+					encoded , this.numberOfTickersForTrading ,
+					encoded.Length - this.numberOfTickersForTrading );
 			WeightedPositions weightedPositionsForSignaling =
 				this.basicDecoderForTestingPositions.Decode(
 					encodedForSignalingTickers ,
@@ -129,16 +144,29 @@ namespace QuantProject.Scripts.WalkForwardTesting.LinearRegression
 		}
 		
 		#region getTradingPortfolio
+		
+		#region getSignedTickersForTradingPortfolio
+		private SignedTicker[] getSignedTickersArray(
+			WeightedPositions weightedPositionsForTrading )
+		{
+			SignedTicker[] signedTickersArray = new SignedTicker[ weightedPositionsForTrading.Count ];
+			for( int i = 0 ; i < weightedPositionsForTrading.Count ; i++ )
+				signedTickersArray[ i ] = weightedPositionsForTrading.SignedTickers[ i ];
+			return signedTickersArray;
+		}
 		protected virtual SignedTickers getSignedTickersForTradingPortfolio(
 			WeightedPositions weightedPositionsForTrading ,
 			IReturnsManager returnsManager )
 		{
 			SignedTickers signedTickersForTradingPortfolio = new SignedTickers(
-				new SignedTicker[] {
-					weightedPositionsForTrading.SignedTickers[ 0 ] ,
-					weightedPositionsForTrading.SignedTickers[ 1 ] } );
+				this.getSignedTickersArray( weightedPositionsForTrading ) );
+//				new SignedTicker[] {
+//					weightedPositionsForTrading.SignedTickers[ 0 ] ,
+//					weightedPositionsForTrading.SignedTickers[ 1 ] } );
 			return signedTickersForTradingPortfolio;
 		}
+		#endregion getSignedTickersForTradingPortfolio
+		
 		private WeightedPositions getTradingPortfolio(
 			WeightedPositions weightedPositionsForTrading ,
 			IReturnsManager returnsManager )
@@ -223,8 +251,11 @@ namespace QuantProject.Scripts.WalkForwardTesting.LinearRegression
 		#endregion getTestingPositions
 		
 		/// <summary>
-		/// The genome is decoded as follows: the first two tickers are used to decode
+		/// Simple decoder for the Linear Regression strategy.
+		/// The genome is decoded as follows: a given number of tickers is used to decode
 		/// a trading portfolio.
+		/// Then, a given number of signaling portfolios are created, each with its number
+		/// of contained tickers.
 		/// For each of the other tickers is created a portfolio with that single ticker and
 		/// such portfolio is used as a signaling portfolio.
 		/// The first two tickers are decoded using the eligible tickers
