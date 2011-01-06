@@ -96,15 +96,15 @@ namespace QuantProject.Scripts.WalkForwardTesting.LinearRegression
 			string groupIdForAdditionalSignalingTickers = "usIndxs";
 			ITickerSelectorByGroup tickerSelectorByGroup = new TickerSelectorByGroup();
 //			double minPercentageOfAvailableValues = 0.8;
-			double minPercentageOfAvailableValues = 0.9;
+			double minPercentageOfAvailableValues = 1;
 			double minPriceForTradingTicker = 1;
 			double maxPriceForTradingTicker = 9000;
 			int maxNumberOfEligiblesForTrading = 150;
 			
-			// uncomment the followings line for a faster script
-//			groupIdForTradingTickers = "fastTest";
-//			groupIdForAdditionalSignalingTickers = "fastTest";
-//			maxNumberOfEligiblesForTrading = 8;
+			// uncomment the followings lines for a faster script
+			groupIdForTradingTickers = "fastTest";
+			groupIdForAdditionalSignalingTickers = "fastTest";
+			maxNumberOfEligiblesForTrading = 8;
 
 			IEligiblesSelector eligiblesSelector =
 				new EligiblesSelectorForLinearRegression(
@@ -132,15 +132,15 @@ namespace QuantProject.Scripts.WalkForwardTesting.LinearRegression
 			int numberOfBestTestingPositionsToBeReturned = 50;
 			// uncomment the following line for a faster script
 //			numberOfBestTestingPositionsToBeReturned = 20;
-//			numberOfBestTestingPositionsToBeReturned = 5;
+			numberOfBestTestingPositionsToBeReturned = 3;
 			
-//			int numberOfTickersForTrading = 2;
-			int numberOfSignalingPortfolios = 4;
+			int numberOfTickersForTrading = 1;
+			int[] numberOfTickersInEachSignalingPortfolio =
+				new int[] { 1 , 1 , 1 };
 			
 			DecoderForLinearRegressionTestingPositions decoderForWeightedPositions =
 				new DecoderForLinearRegressionTestingPositions(
-					numberOfSignalingPortfolios );
-//					numberOfTickersForTrading , numberOfTickersForSignaling );
+					numberOfTickersForTrading , numberOfTickersInEachSignalingPortfolio );
 
 //			double maxCorrelationAllowed = 0.96; copypasted
 //			IReturnIntervalFilter returnIntervalFilterForTrading =
@@ -163,15 +163,15 @@ namespace QuantProject.Scripts.WalkForwardTesting.LinearRegression
 				new LinearRegressionFitnessEvaluator( new LinearRegressionSetupManager() );
 			
 			// parameters for the genetic optimizer
-			double crossoverRate = 0.85;
+			double crossoverRate = 0.5;
 			double mutationRate = 0.02;
-			double elitismRate = 0.001;
+			double elitismRate = 0.00001;
 			int populationSizeForGeneticOptimizer = 60000;
 			int generationNumberForGeneticOptimizer = 15;
 			
 			// uncomment the followings line for a faster script
-//			populationSizeForGeneticOptimizer = 300;
-//			generationNumberForGeneticOptimizer = 4;
+			populationSizeForGeneticOptimizer = 300;
+			generationNumberForGeneticOptimizer = 4;
 			
 			int seedForRandomGeneratorForTheGeneticOptimizer =
 				QuantProject.ADT.ConstantsProvider.SeedForRandomGenerator;
@@ -209,10 +209,10 @@ namespace QuantProject.Scripts.WalkForwardTesting.LinearRegression
 		protected override IStrategyForBacktester getStrategyForBacktester()
 		{
 			int inSampleDays = 180;
-			inSampleDays = 360;
+//			inSampleDays = 360;
 			// uncomment the following line for a faster script
-//			inSampleDays = 5;
-//			inSampleDays = 60;
+//			inSampleDays = 20;
+			inSampleDays = 60;
 			
 //			IIntervalsSelector intervalsSelectorForOutOfSample =
 //				new OddIntervalsSelector( 1 , 1 , this.benchmark );
@@ -236,7 +236,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.LinearRegression
 					acceptableDaysOfTheWeekForTheEndOfEachInterval ,
 					maxTimeSpanToLookAhead );
 
-			double minForecastedReturn = 0.01F;
+			double minForecastedReturn = 0.002F;
 			IEntryStrategy longAndShortBasedOnAverageExpectedReturn =
 				new EntryStrategyBasedOnForecastedReturn(
 					minForecastedReturn , this.fitnessEvaluator ,
@@ -249,6 +249,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.LinearRegression
 				new LinearRegressionStrategy(
 					7 , inSampleDays ,
 					intervalsSelectorForInSample , intervalsSelectorForOutOfSample ,
+					this.returnIntervalSelectorForSignaling ,
 					eligiblesSelector ,		// eligible selector for trading tickers
 //					this.eligiblesSelectorForSignalingTickers ,
 					this.inSampleChooser ,
@@ -286,8 +287,10 @@ namespace QuantProject.Scripts.WalkForwardTesting.LinearRegression
 			lastDateTime = new DateTime( 2006 , 1 , 1 );
 
 			// uncomment the following two lines for a faster script
-//			firstDateTime = new DateTime( 2006 , 1 , 2 );
-//			lastDateTime = new DateTime( 2006 , 1 , 10 );
+			firstDateTime = new DateTime( 2006 , 2 , 26 );
+			lastDateTime = new DateTime( 2006 , 4 , 5 );
+//			firstDateTime = new DateTime( 2005 , 2 , 26 );
+//			lastDateTime = new DateTime( 2006 , 12 , 5 );
 
 			double maxRunningHours = 12;
 			
