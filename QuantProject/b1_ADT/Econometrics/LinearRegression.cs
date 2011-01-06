@@ -2,7 +2,7 @@
 QuantProject - Quantitative Finance Library
 
 LinearRegression.cs
-Copyright (C) 2010
+Copyright (C) 2011
 Glauco Siliprandi
 
 This program is free software; you can redistribute it and/or
@@ -27,11 +27,13 @@ using QuantProject.ADT.LinearAlgebra;
 namespace QuantProject.ADT.Econometrics
 {
 	/// <summary>
-	/// Computes a Linear Regression
+	/// Computes a Linear Regression with covariance matrix
+	/// and ANOVA (ANalysis Of VAriance)
 	/// </summary>
 	[Serializable]
 	public class LinearRegression : ILinearRegression
 	{
+		private double[,] covarianceMatrix;		// (XTransposeX)^-1
 		private double sumOfSquareResiduals;
 		private double centeredTotalSumOfSquares;
 
@@ -80,19 +82,19 @@ namespace QuantProject.ADT.Econometrics
 			}
 			return xTransposeX;
 		}
-		private double[] getXtransposeY( double[] y , double[,] X )
-		{
-			int n = y.Length;
-			int k = X.GetLength( 1 );
-			double[] xTransposeY = new double[ k ];
-			for( int j = 0 ; j < k ; j++ )
-			{
-				xTransposeY[ j ] = 0;
-				for( int t = 0 ; t < n ; t++ )
-					xTransposeY[ j ] += X[ t , j ] * y[ t ];
-			}
-			return xTransposeY;
-		}
+//		private double[] getXtransposeY( double[] y , double[,] X )
+//		{
+//			int n = y.Length;
+//			int k = X.GetLength( 1 );
+//			double[] xTransposeY = new double[ k ];
+//			for( int j = 0 ; j < k ; j++ )
+//			{
+//				xTransposeY[ j ] = 0;
+//				for( int t = 0 ; t < n ; t++ )
+//					xTransposeY[ j ] += X[ t , j ] * y[ t ];
+//			}
+//			return xTransposeY;
+//		}
 		
 		#region computeRSquare
 		private double getYBar( double[] regressand )
@@ -157,9 +159,11 @@ namespace QuantProject.ADT.Econometrics
 		{
 			this.runRegression_checkParameters( regressand , regressors );
 			double[,] xTransposeX = this.getXtransposeX( regressors );
-			double[] xTransposeY = this.getXtransposeY( regressand , regressors );
-			this.estimatedCoefficients = LinearSystemSolver.FindSolution(
-				xTransposeX , xTransposeY );
+			this.covarianceMatrix = PositiveDefiniteMatrix.GetInverse( xTransposeX );
+			double[,] xTransposeXInverseXTranspose =
+				Matrix.TransposeTheSecondMatrixAndMultiply( this.covarianceMatrix , regressors );
+//			double[] xTransposeY = this.getXtransposeY( regressand , regressors );
+			this.estimatedCoefficients = Matrix.Multiply( xTransposeXInverseXTranspose , regressand );
 			this.computeCenteredRSquare( regressand , regressors );
 		}
 		#endregion RunRegression
