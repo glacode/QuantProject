@@ -145,7 +145,7 @@ namespace QuantTesting.Scripts.WalkForwardTesting.LinearRegression
 		{
 			DecoderForLinearRegressionTestingPositions
 				decoderForLinearRegressionTestingPositions =
-				new DecoderFirstTradingTickerInEachSignalingPortfolio( 3 );
+				new DecoderFirstTradingTickerInEachSignalingPortfolio( 2 , 3 );
 			
 			Assert.AreEqual(
 				2 , decoderForLinearRegressionTestingPositions.NumberOfTickersForTrading );
@@ -220,7 +220,7 @@ namespace QuantTesting.Scripts.WalkForwardTesting.LinearRegression
 					new string[] { "SA" , "SB" , "SC" , "SD" , "TA" } );
 			DecoderForLinearRegressionTestingPositions
 				decoderForLinearRegressionTestingPositions =
-				new DecoderFirstTradingTickerInEachSignalingPortfolio( 3 );
+				new DecoderFirstTradingTickerInEachSignalingPortfolio( 2 , 3 );
 			
 			DynamicMock dynamicMockForReturnsManager = new DynamicMock( typeof(IReturnsManager) );
 			IReturnsManager returnsManager = (IReturnsManager)dynamicMockForReturnsManager.MockInstance;
