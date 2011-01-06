@@ -91,7 +91,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.LinearRegression
 //				false;
 		}
 		
-		public QuantProject.ADT.Econometrics.LinearRegression SetUpAndRunLinearRegression(
+		public QuantProject.ADT.Econometrics.ILinearRegression SetUpAndRunLinearRegression(
 			LinearRegressionTestingPositions testingPositions )
 		{
 			ILinearRegressionValues linearRegressionValues =
@@ -99,6 +99,8 @@ namespace QuantProject.Scripts.WalkForwardTesting.LinearRegression
 					testingPositions.TradingPortfolio , testingPositions.SignalingPortfolios ,
 					this.returnsManagerForTradingTickers ,
 					this.returnsManagerForSignalingTickers );
+//			QuantProject.ADT.Econometrics.LinearRegression linearRegression =
+//				new QuantProject.ADT.Econometrics.LinearRegressionWithoutCovarianceMatrix();
 			QuantProject.ADT.Econometrics.LinearRegression linearRegression =
 				new QuantProject.ADT.Econometrics.LinearRegression();
 			linearRegression.RunRegression(
@@ -127,31 +129,9 @@ namespace QuantProject.Scripts.WalkForwardTesting.LinearRegression
 
 		#region getFitnessValue
 
-		private double getFitnessValue(
-			WeightedPositions tradingPortfolio ,
-			WeightedPositions[] signalingPortfolios )
-		{
-			ILinearRegressionValues linearRegressionValues =
-				this.linearRegressionSetupManger.SetUpTheLinearRegressionValues(
-					tradingPortfolio , signalingPortfolios ,
-					this.returnsManagerForTradingTickers ,
-					this.returnsManagerForSignalingTickers );
-//			this.getFitnessValue_checkWeightedPositions( weightedPositions );
-//			QuantProject.ADT.Econometrics.LinearRegression linearRegression =
-//				this.setupAndRunTheLinearRegression(
-//					tradingPortfolio , signalingPortfolios , returnsManager );
-			QuantProject.ADT.Econometrics.LinearRegression linearRegression =
-				new QuantProject.ADT.Econometrics.LinearRegression();
-			linearRegression.RunRegression(
-				linearRegressionValues.Regressand ,
-				linearRegressionValues.Regressors );
-//				linearRegressionValues.RegressorWeights );
-			double fitnessValue = linearRegression.CenteredRSquare;
-			return fitnessValue;
-		}
 		private double getFitnessValue( LinearRegressionTestingPositions testingPositions )
 		{
-			QuantProject.ADT.Econometrics.LinearRegression linearRegression =
+			QuantProject.ADT.Econometrics.ILinearRegression linearRegression =
 				this.SetUpAndRunLinearRegression( testingPositions );
 			double fitnessValue = linearRegression.CenteredRSquare;
 			return fitnessValue;
@@ -176,10 +156,10 @@ namespace QuantProject.Scripts.WalkForwardTesting.LinearRegression
 				// this.returnsManagerForTradingTickers and this.returnsMangerForSignalingTickers instead
 				fitnessValue =
 					this.getFitnessValue( (LinearRegressionTestingPositions)meaning );
-//			this.hasReturnsManagerForTradingTickersBeenSetSinceLastGetFitnessValueRequest =
-//				false;
-//			this.hasReturnsManagerForSignalingTickersBeenSetSinceLastGetFitnessValueRequest =
-//				false;
+			if ( fitnessValue < -0.03 && fitnessValue > -2 )
+			{
+				string forBreakpoint;  // for breakpoint
+			}
 			return fitnessValue;
 		}
 		#endregion GetFitnessValue
