@@ -36,7 +36,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.LinearRegression
 	/// as follows: assume that the genome has n elements. Then it is decoded in an array
 	/// of n-1 WeightedPositions: the i_th WeightedPositions contains the balanced portfolio
 	/// with two positions: one for the ticker of the first gene and one for the ticker
-	/// of the i+1_th gene; the first two ticker are decoded using the eligible tickers
+	/// of the i+1_th gene; the first two tickers are decoded using the eligible tickers
 	/// for trading, while the other tickers are decoded using the eligible tickers
 	/// for signaling
 	/// </summary>
@@ -44,118 +44,32 @@ namespace QuantProject.Scripts.WalkForwardTesting.LinearRegression
 	public class DecoderFirstTradingTickerInEachSignalingPortfolio :
 		DecoderForLinearRegressionTestingPositions
 	{
-		////		private int numberOfTickersForTrading;
-		////
-//		public int NumberOfTickersForTrading {
-		////			get { return this.numberOfTickersForTrading; }
-//			get { return 2; }
-//		}
-		////
-//		private int numberOfTickersForSignaling;
-		////
-//		public int NumberOfTickersForSignaling {
-//			get { return this.numberOfTickersForSignaling; }
-//		}
-//		private BasicDecoderForTestingPositions basicDecoderForTestingPositions;
-//
-		public DecoderFirstTradingTickerInEachSignalingPortfolio( int numberOfTickersForSignaling ) :
-			base( numberOfTickersForSignaling )
+
+		public DecoderFirstTradingTickerInEachSignalingPortfolio(
+			int numberOfTickersForTrading , int numberOfSignalingPortfolios ) :
+			base( 2 , getNumberOfTickersForTrading( numberOfSignalingPortfolios ) )
 		{
-			
+			this.expectedNumberOfGeneValues = 2 + numberOfSignalingPortfolios;
 		}
-//			int numberOfTickersForTrading , int numberOfTickersForSignaling )
-//		{
-//			this.numberOfTickersForTrading = numberOfTickersForTrading;
-//			this.numberOfTickersForSignaling = numberOfTickersForSignaling;
-//			this.basicDecoderForTestingPositions = new BasicDecoderForTestingPositions();
-//		}
-//
-//		#region Decode
-//		private void decode_checkParameters( int[] genome )
-//		{
-//			int numberOfExpectedGenes = this.numberOfTickersForSignaling + 2;
-//			if ( genome.Length != numberOfExpectedGenes )
-//				throw new Exception(
-//					"The given genom contains " + genome.Length + " genes, but " +
-//					numberOfExpectedGenes + " where expected!" );
-//		}
-//		private int[] getSubGenome( int[] genome , int startingPosition , int length )
-//		{
-//			int[] subGenome = new int[ length ];
-//			for( int i = startingPosition ; i < startingPosition + length ; i++ )
-//				subGenome[ i - startingPosition ] = genome[ i ];
-//			return subGenome;
-//		}
-//		private WeightedPositions decodeWeightedPositionsForTrading(
-//			int[] encoded ,
-//			EligibleTickers eligibleTickersForTrading ,
-//			IReturnsManager returnsManager )
-//		{
-//			int[] encodedForTradingTickers =
-			////				this.getSubGenome( encoded , 0 , this.numberOfTickersForTrading );
-//				this.getSubGenome( encoded , 0 , 2 );
-//			WeightedPositions weightedPositionsForTrading =
-//				this.basicDecoderForTestingPositions.Decode(
-//					encodedForTradingTickers ,
-//					eligibleTickersForTrading , returnsManager ).WeightedPositions;
-//			return weightedPositionsForTrading;
-//		}
-//		private WeightedPositions decodeWeightedPositionsForSignaling(
-//			int[] encoded ,
-//			EligibleTickers eligibleTickersForSignaling ,
-//			IReturnsManager returnsManager )
-//		{
-//			int[] encodedForSignalingTickers =
-//				this.getSubGenome(
-			////					encoded , this.numberOfTickersForTrading , this.numberOfTickersForSignaling );
-//					encoded , 2 , encoded.Length - 2 );
-//			WeightedPositions weightedPositionsForSignaling =
-//				this.basicDecoderForTestingPositions.Decode(
-//					encodedForSignalingTickers ,
-//					eligibleTickersForSignaling , returnsManager ).WeightedPositions;
-//			return weightedPositionsForSignaling;
-//		}
-//
-//		#region getTestingPositions
-//		protected virtual WeightedPositions getBalancedPortfolio(
-//			SignedTickers signedTickers ,
-//			IReturnsManager returnsManager )
-//		{
-//			WeightedPositions balancedPortfolio = null;
-//			if ( !CollectionManager.ContainsDuplicates( signedTickers.Tickers ) )
-//			{
-//				double[] balancedWeights = WeightedPositions.GetBalancedWeights(
-//					signedTickers , returnsManager );
-//				balancedPortfolio =
-//					new WeightedPositions( balancedWeights , signedTickers.Tickers );
-//			}
-//			return balancedPortfolio;
-//		}
-//
-//		#region getTradingPortfolio
-//		protected virtual SignedTickers getSignedTickersForTradingPortfolio(
-//			WeightedPositions weightedPositionsForTrading ,
-//			IReturnsManager returnsManager )
-//		{
-//			SignedTickers signedTickersForTradingPortfolio = new SignedTickers(
-//				new SignedTicker[] {
-//					weightedPositionsForTrading.SignedTickers[ 0 ] ,
-//					weightedPositionsForTrading.SignedTickers[ 1 ] } );
-//			return signedTickersForTradingPortfolio;
-//		}
-//		private WeightedPositions getTradingPortfolio(
-//			WeightedPositions weightedPositionsForTrading ,
-//			IReturnsManager returnsManager )
-//		{
-//			SignedTickers signedTickers = this.getSignedTickersForTradingPortfolio(
-//				weightedPositionsForTrading , returnsManager );
-//			WeightedPositions tradingPortfolio = this.getBalancedPortfolio(
-//				signedTickers , returnsManager );
-//			return tradingPortfolio;
-//		}
-//		#endregion getTradingPortfolio
-//
-//		#region getSignalingPortfolios
+		
+		private static int[] getNumberOfTickersForTrading( int numberOfSignalingPortfolios )
+		{
+			int[] numberOfTickersInEachSignalingPortfolio =
+				new int[ numberOfSignalingPortfolios ];
+			for ( int i = 0 ; i < numberOfSignalingPortfolios ; i++ )
+				numberOfTickersInEachSignalingPortfolio[ i ] = 2;
+			return numberOfTickersInEachSignalingPortfolio;
+		}
+
+		protected override void decode_checkParameters( int[] genome )
+		{
+			if ( genome.Length != this.expectedNumberOfGeneValues )
+				throw new Exception(
+					"The given genome contains " + genome.Length + " genes, but " +
+					this.expectedNumberOfGeneValues + " where expected!" );
+		}
+
+
 		protected override SignedTickers getSignedTickersForSignalingPortfolio(
 			int portfolioIndex ,
 			WeightedPositions weightedPositionsForTrading ,
@@ -168,86 +82,9 @@ namespace QuantProject.Scripts.WalkForwardTesting.LinearRegression
 					weightedPositionsForSignaling.SignedTickers[ portfolioIndex ] } );
 			return signedTickersForSignalingPortfolio;
 		}
-//		private WeightedPositions getSignalingPortfolio(
-//			int portfolioIndex ,
-//			WeightedPositions weightedPositionsForTrading ,
-//			WeightedPositions weightedPositionsForSignaling ,
-//			IReturnsManager returnsManager )
-//		{
-//			SignedTickers signedTickers = this.getSignedTickersForSignalingPortfolio(
-//				portfolioIndex , weightedPositionsForTrading , weightedPositionsForSignaling ,
-//				returnsManager );
-//			WeightedPositions signalingPortfolio = this.getBalancedPortfolio(
-//				signedTickers , returnsManager );
-//			return signalingPortfolio;
-//		}
-//		private WeightedPositions[] getSignalingPortfolios(
-//			WeightedPositions weightedPositionsForTrading ,
-//			WeightedPositions weightedPositionsForSignaling ,
-//			IReturnsManager returnsManager )
-//		{
-//			bool containsSignalingPortfolioWithDuplicateTickers = false;
-//				WeightedPositions[] signalingPortfolios = new WeightedPositions[
-//					weightedPositionsForSignaling.Count ];
-//			for ( int j=0 ; j < weightedPositionsForSignaling.Count ; j++ )
-//			{
-//				signalingPortfolios[ j ] = this.getSignalingPortfolio(
-//					j , weightedPositionsForTrading , weightedPositionsForSignaling ,
-//					returnsManager );
-//				if ( signalingPortfolios[ j ] == null )
-//					containsSignalingPortfolioWithDuplicateTickers = true;
-//			}
-//			if ( containsSignalingPortfolioWithDuplicateTickers )
-//				signalingPortfolios = null;
-//			return signalingPortfolios;
-//		}
-//		#endregion getSignalingPortfolios
-//
-//
-//
-//		private TestingPositions getTestingPositions(
-//			WeightedPositions weightedPositionsForTrading ,
-//			WeightedPositions weightedPositionsForSignaling ,
-//			IReturnsManager returnsManagerForTradingTickers ,
-//			IReturnsManager returnsManagerForSignalingTickers )
-//		{
-//			TestingPositions testingPositions = new TestingPositionsForUndecodableEncoded();
-//			WeightedPositions tradingPortfolio = this.getTradingPortfolio(
-//				weightedPositionsForTrading , returnsManagerForTradingTickers );
-//			WeightedPositions[] signalingPortfolios = this.getSignalingPortfolios(
-//				weightedPositionsForTrading , weightedPositionsForSignaling ,
-//				returnsManagerForSignalingTickers );
-//			if ( tradingPortfolio != null && signalingPortfolios != null )
-//				// all portfolios are valid, because none of them contained
-//				// duplicated tickers
-//				testingPositions = new LinearRegressionTestingPositions(
-//						signalingPortfolios , tradingPortfolio );
-//			return testingPositions;
-//		}
-//		#endregion getTestingPositions
-//
-//		public TestingPositions Decode(
-//			int[] encoded ,
-//			EligibleTickers eligibleTickersForTrading ,
-//			EligibleTickers eligibleTickersForSignaling ,
-//			IReturnsManager returnsManagerForTradingTickers ,
-//			IReturnsManager returnsManagerForSignalingTickers )
-//		{
-//			this.decode_checkParameters( encoded );
-//			WeightedPositions weightedPositionsForTrading =
-//				this.decodeWeightedPositionsForTrading(
-//					encoded , eligibleTickersForTrading , returnsManagerForTradingTickers );
-//			WeightedPositions weightedPositionsForSignaling =
-//				this.decodeWeightedPositionsForSignaling(
-//					encoded , eligibleTickersForSignaling , returnsManagerForSignalingTickers );
-//			TestingPositions meaning = new TestingPositionsForUndecodableEncoded();
-//			if ( weightedPositionsForTrading != null && weightedPositionsForSignaling != null )
-//				// there were not duplicated tickers in the encoded
-//				meaning = this.getTestingPositions(
-//					weightedPositionsForTrading , weightedPositionsForSignaling ,
-//					returnsManagerForTradingTickers , returnsManagerForSignalingTickers );
-//			return meaning;
-//		}
-//		#endregion Decode
+
+
+
+
 		}
 	}
