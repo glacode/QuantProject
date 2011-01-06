@@ -25,6 +25,8 @@ using System;
 using QuantProject.Business.Scripting;
 using QuantProject.Business.Strategies.Logging;
 using QuantProject.Business.Strategies.OutOfSample;
+using QuantProject.Business.Strategies.ReturnsManagement.Time;
+using QuantProject.Business.Strategies.ReturnsManagement.Time.IntervalsSelectors;
 using QuantProject.Presentation;
 using QuantProject.Scripts.General.Logging;
 
@@ -37,12 +39,27 @@ namespace QuantProject.Scripts.WalkForwardTesting.LinearRegression
 	public class LinearRegressionLogItem : AnalyzableLogItem
 	{
 //		private LinearRegressionTestingPositions[] bestTestingPositionsInSample;
+		DateTime firstDateTimeInSample;
+		private IIntervalsSelector intervalsSelector;
+		private IReturnIntervalSelectorForSignaling returnIntervalSelectorForSignaling;
 		
 		public LinearRegressionLogItem(
 			DateTime now ,
-			TestingPositions[] bestTestingPositionsInSample ) :
+			TestingPositions[] bestTestingPositionsInSample ,
+			DateTime firstDateTimeInSample ,
+			IIntervalsSelector intervalsSelector ,
+			IReturnIntervalSelectorForSignaling returnIntervalSelectorForSignaling ) :
 			base( now , bestTestingPositionsInSample )
 		{
+			this.intervalsSelector = intervalsSelector;
+			this.returnIntervalSelectorForSignaling = returnIntervalSelectorForSignaling;
+			this.firstDateTimeInSample = firstDateTimeInSample;
+			
+			foreach( AnalyzerForLinearRegressionTestingPositions analizer in
+			        this.analizersForTestingPositions )
+				analizer.SetOtherMembers(
+					firstDateTimeInSample ,
+					intervalsSelector , returnIntervalSelectorForSignaling );
 //			this.bestTestingPositionsInSample = bestTestingPositionsInSample;
 		}
 		
