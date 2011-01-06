@@ -96,9 +96,10 @@ namespace QuantProject.Scripts.WalkForwardTesting.LinearRegression
 					GenomeManagerType.ShortAndLong ,
 					seedForRandomGeneratorForSignalingTickers );
 			this.decoderForLinearRegressionTestingPositions =
-				new DecoderForLinearRegressionTestingPositions(
-//					decoderForLinearRegressionTestingPositions.NumberOfTickersForTrading ,
-					decoderForLinearRegressionTestingPositions.NumberOfSignalingPortfolios );
+				decoderForLinearRegressionTestingPositions;
+//				new DecoderForLinearRegressionTestingPositions(
+////					decoderForLinearRegressionTestingPositions.NumberOfTickersForTrading ,
+//					decoderForLinearRegressionTestingPositions.NumberOfSignalingPortfolios );
 			this.genomeSize =
 				decoderForLinearRegressionTestingPositions.NumberOfTickersForTrading +
 				decoderForLinearRegressionTestingPositions.NumberOfSignalingPortfolios;
