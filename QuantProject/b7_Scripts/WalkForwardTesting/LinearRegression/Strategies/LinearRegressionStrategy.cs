@@ -40,6 +40,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.LinearRegression
 	[Serializable]
 	public class LinearRegressionStrategy : BasicStrategyForBacktester
 	{
+		private IReturnIntervalSelectorForSignaling returnIntervalSelectorForSignaling;
 		private IEntryStrategy entryStrategy;
 		private IExitStrategy exitStrategy;
 
@@ -48,6 +49,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.LinearRegression
 			int numDaysForInSampleOptimization ,
 			IIntervalsSelector intervalsSelectorForInSample ,
 			IIntervalsSelector intervalsSelectorForOutOfSample ,
+			IReturnIntervalSelectorForSignaling returnIntervalSelectorForSignaling ,
 			IEligiblesSelector eligiblesSelectorForTradingTickers ,
 //			IEligiblesSelector eligiblesSelectorForSignalingTickers ,
 			IInSampleChooser inSampleChooser ,
@@ -67,6 +69,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.LinearRegression
 				historicalMarketValueProviderForInSample )
 		{
 			this.intervalsSelectorForOutOfSample = intervalsSelectorForOutOfSample;
+			this.returnIntervalSelectorForSignaling = returnIntervalSelectorForSignaling;
 			this.entryStrategy = entryStrategy;
 			this.exitStrategy = exitStrategy;
 		}
@@ -81,7 +84,10 @@ namespace QuantProject.Scripts.WalkForwardTesting.LinearRegression
 			LinearRegressionLogItem logItem =
 				new LinearRegressionLogItem(
 					this.now() ,
-					this.bestTestingPositionsInSample );
+					this.bestTestingPositionsInSample ,
+					(DateTime)this.inSampleReturnsManager.ReturnIntervals.BordersHistory.GetByIndex( 0 ) ,
+					this.intervalsSelectorForInSample ,
+					this.returnIntervalSelectorForSignaling );
 //					this.numDaysForInSampleOptimization ,
 //					eligibleTickers.Count );
 			return logItem;
@@ -103,7 +109,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.LinearRegression
 		{
 			bool areToBeOpened = false;
 			if ( this.outOfSampleReturnIntervals.Count >= 1 &&
-			   this.bestTestingPositionsInSample != null )
+			    this.bestTestingPositionsInSample != null )
 			{
 //				ReturnInterval seconLastInterval =
 //					this.outOfSampleReturnIntervals.SeconLastInterval;
