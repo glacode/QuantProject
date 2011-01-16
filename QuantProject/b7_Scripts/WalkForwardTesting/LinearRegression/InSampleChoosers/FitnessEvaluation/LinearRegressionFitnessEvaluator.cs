@@ -158,7 +158,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.LinearRegression
 					this.getFitnessValue( (LinearRegressionTestingPositions)meaning );
 			if ( fitnessValue < -0.03 && fitnessValue > -2 )
 			{
-				string forBreakpoint;  // for breakpoint
+				;  // for breakpoint
 			}
 			return fitnessValue;
 		}
