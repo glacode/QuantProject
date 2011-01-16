@@ -670,6 +670,14 @@ namespace QuantProject.Data.DataTables
       Quotes tickerQuotes = new Quotes(ticker, firstQuoteDate, lastQuoteDate);
       return ExtendedDataTable.GetArrayOfFloatFromColumn(tickerQuotes,"quAdjustedClose");
     }
+    public static double[] GetDoubleArrayOfAdjustedCloseQuotes(string ticker,
+                                                        DateTime firstQuoteDate,
+                                                        DateTime lastQuoteDate)
+    {
+      Quotes tickerQuotes = new Quotes(ticker, firstQuoteDate, lastQuoteDate);
+      return ExtendedDataTable.GetArrayOfDoubleFromColumn(tickerQuotes,"quAdjustedClose");
+    }
+    
 		#region GetAdjustedCloseHistory
 		private static History getAdjustedCloseHistory( Quotes tickerQuotes )
 		{
