@@ -108,6 +108,31 @@ namespace QuantProject.ADT
       
     }
     /// <summary>
+    /// Get an array of double corresponding to a column compatible with the double type in a given data table
+    /// </summary>
+    public static double[] GetArrayOfDoubleFromColumn(DataTable table,
+                                                      string columnName)
+    {
+      int numRows = table.Rows.Count;
+      double[] arrayOfDouble = new double[numRows];
+      int index = 0;
+      try
+      {
+        for(; index!= numRows; index++)
+        {
+          arrayOfDouble[index] = (double) table.Rows[index][columnName];
+        }
+
+      }
+      catch(Exception ex)
+      {
+      	string s = ex.ToString();
+      	index = numRows;
+      }
+      return arrayOfDouble;
+    }
+    
+    /// <summary>
     /// Get an array of string corresponding to a column compatible with the string type in a given data table
     /// </summary>
     public static string[] GetArrayOfStringFromColumn(DataTable table,
