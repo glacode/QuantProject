@@ -484,7 +484,7 @@ namespace QuantProject.Applications.Downloader
     {
       foreach(DataRow row in this.downloadedValuesFromSource.Rows)
       {
-        Quotes.UpdateAdjustedClose(this.currentTicker, (DateTime)row[Quotes.Date], (float)row[Quotes.AdjustedClose]);
+        Quotes.UpdateAdjustedClose(this.currentTicker, (DateTime)row[Quotes.Date], (double)row[Quotes.AdjustedClose]);
       }
       this.updateCurrentStatusAdjustedClose("Updated");
     }
