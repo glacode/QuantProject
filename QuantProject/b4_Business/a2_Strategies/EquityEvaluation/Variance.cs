@@ -46,9 +46,13 @@ namespace QuantProject.Business.Strategies.EquityEvaluation
 			// TODO: Add constructor logic here
 			//
 		}
+		
 		public float GetReturnsEvaluation( float[] returns )
 		{
-			return Convert.ToSingle( BasicFunctions.Variance( returns ) );
+			float returnsEvaluationByVariance = 
+				1.0f / Convert.ToSingle( BasicFunctions.Variance( returns ) );
+			
+			return returnsEvaluationByVariance ;
 		}
 	}
 }
