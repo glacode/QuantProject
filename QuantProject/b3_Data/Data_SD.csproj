@@ -77,6 +77,7 @@
     <Compile Include="Selectors\SelectorByCloseToCloseVolatility.cs" />
     <Compile Include="Selectors\SelectorByIntradayQuotationAtEachMarketDay.cs" />
     <Compile Include="Selectors\SelectorByLiquidity.cs" />
+    <Compile Include="Selectors\SelectorByNumOfMinGrowingIncomesInARow.cs" />
     <Compile Include="Selectors\SelectorByOpenToCloseLinearCorrelation.cs" />
     <Compile Include="Selectors\SelectorByOpenToCloseVolatility.cs" />
     <Compile Include="Selectors\SelectorByQuotationAtAGivenPercentageOfDateTimes.cs" />

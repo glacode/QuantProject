@@ -60,6 +60,7 @@
     <Compile Include="a07_DataProviders\HistoricalMarketValueProvider.cs" />
     <Compile Include="a07_DataProviders\HistoricalQuoteProvider.cs" />
     <Compile Include="a07_DataProviders\TickerNotExchangedException.cs" />
+    <Compile Include="a1_Financial\a2_Accounting\AccountProviding\FixedCommissionsAndSlippageAccountProvider.cs" />
     <Compile Include="a1_Financial\a2_Accounting\AccountProviding\IAccountProvider.cs" />
     <Compile Include="a1_Financial\a2_Accounting\AccountProviding\InteractiveBrokerAccountProvider.cs" />
     <Compile Include="a1_Financial\a2_Accounting\AccountProviding\SimpleAccountProvider.cs" />
@@ -79,8 +80,19 @@
     <Compile Include="a1_Financial\a2_Accounting\h5_Reporting\Tables\StatisticsSummary.cs" />
     <Compile Include="a1_Financial\a2_Accounting\Transactions\TimedTransaction.cs" />
     <Compile Include="a1_Financial\a3_Ordering\HistoricalOrderExecutor.cs" />
+    <Compile Include="a1_Financial\a4_Fundamentals\FairValueProviders\IFairValueProvider.cs" />
+    <Compile Include="a1_Financial\a4_Fundamentals\FairValueProviders\PEGRatioFairValueProvider.cs" />
+    <Compile Include="a1_Financial\a4_Fundamentals\FundamentalDataProvider.cs" />
+    <Compile Include="a1_Financial\a4_Fundamentals\RatioProviders\AverageAndDebtAdjustedGrowthRateProvider.cs" />
+    <Compile Include="a1_Financial\a4_Fundamentals\RatioProviders\IGrowthRateProvider.cs" />
+    <Compile Include="a1_Financial\a4_Fundamentals\RatioProviders\IRatioProvider_PE.cs" />
+    <Compile Include="a1_Financial\a4_Fundamentals\RatioProviders\LastAvailableGrowthRateProvider.cs" />
+    <Compile Include="a1_Financial\a4_Fundamentals\RatioProviders\LastAvailablePEProvider.cs" />
     <Compile Include="a2_Strategies\BasicStrategyForBacktester.cs" />
     <Compile Include="a2_Strategies\Benchmark.cs" />
+    <Compile Include="a2_Strategies\Eligibles\ByGroup.cs" />
+    <Compile Include="a2_Strategies\Eligibles\ByLiquidity.cs" />
+    <Compile Include="a2_Strategies\Eligibles\ByMostDiscountedPrices.cs" />
     <Compile Include="a2_Strategies\Eligibles\ByPriceLessLiquidAlwaysIntradayQuoted.cs" />
     <Compile Include="a2_Strategies\Eligibles\ByPriceLessVolatileOTCAlwaysQuoted.cs" />
     <Compile Include="a2_Strategies\Eligibles\ByPriceMostLiquidAlwaysIntradayQuoted.cs" />
@@ -98,6 +110,7 @@
     <Compile Include="a2_Strategies\EndOfDayStrategies\EndOfDayTimerHandler.cs" />
     <Compile Include="a2_Strategies\EndOfDayStrategies\SymmetricEndOfDayStrategyForBacktester.cs" />
     <Compile Include="a2_Strategies\EndOfDayStrategyBackTester.cs" />
+    <Compile Include="a2_Strategies\EquityEvaluation\Variance.cs" />
     <Compile Include="a2_Strategies\InSample\BruteForceChooser.cs" />
     <Compile Include="a2_Strategies\InSample\ConstantWeightedPositionsChooser.cs" />
     <Compile Include="a2_Strategies\InSample\DummyInSampleChooser.cs" />
@@ -106,6 +119,7 @@
     <Compile Include="a2_Strategies\InSample\IInSampleChooser.cs" />
     <Compile Include="a2_Strategies\InSample\InSampleFitnessDistributionEstimation\BasicInSampleFitnessDistributionEstimator.cs" />
     <Compile Include="a2_Strategies\InSample\InSampleFitnessDistributionEstimation\IInSampleFitnessDistributionEstimator.cs" />
+    <Compile Include="a2_Strategies\InSample\SelectTopEligiblesInSampleChooser.cs" />
     <Compile Include="a2_Strategies\IStrategy.cs" />
     <Compile Include="a2_Strategies\IStrategyForBacktester.cs" />
     <Compile Include="a2_Strategies\Logging\BackTestLog.cs" />
@@ -114,6 +128,7 @@
     <Compile Include="a2_Strategies\Logging\LogItem.cs" />
     <Compile Include="a2_Strategies\Logging\NewLogItemEventArgs.cs" />
     <Compile Include="a2_Strategies\Optimizing\BruteForce\BruteForceOptimizableParametersManagerForBalancedVolatility.cs" />
+    <Compile Include="a2_Strategies\Optimizing\Decoding\BasicDecoderForGeneticallyOptimizableTestingPositions.cs" />
     <Compile Include="a2_Strategies\Optimizing\Decoding\BasicDecoderForTestingPositions.cs" />
     <Compile Include="a2_Strategies\Optimizing\Decoding\DecoderForBalancedWeightedPositions.cs" />
     <Compile Include="a2_Strategies\Optimizing\Decoding\DecoderForTestingPositionsWithBalancedWeights.cs" />
@@ -121,10 +136,12 @@
     <Compile Include="a2_Strategies\Optimizing\Decoding\DummyDecoderForTestingPositions.cs" />
     <Compile Include="a2_Strategies\Optimizing\Decoding\IDecoderForTestingPositions.cs" />
     <Compile Include="a2_Strategies\Optimizing\Decoding\IDecoderForWeightedPositions.cs" />
+    <Compile Include="a2_Strategies\Optimizing\FitnessEvaluation\BuyAndHoldFitnessEvaluator.cs" />
     <Compile Include="a2_Strategies\Optimizing\FitnessEvaluation\IFitnessEvaluator.cs" />
     <Compile Include="a2_Strategies\Optimizing\GenomeManagers\BasicGenomeManager.cs" />
     <Compile Include="a2_Strategies\Optimizing\GenomeManagers\GenomeManagerWithDuplicateGenes.cs" />
     <Compile Include="a2_Strategies\Optimizing\GenomeManagers\GenomeManagerType.cs" />
+    <Compile Include="a2_Strategies\OutOfSample\GeneticallyOptimizableTestingPositions.cs" />
     <Compile Include="a2_Strategies\OutOfSample\IEntryStrategy.cs" />
     <Compile Include="a2_Strategies\OutOfSample\IExitStrategy.cs" />
     <Compile Include="a2_Strategies\OutOfSample\IGeneticallyOptimizable.cs" />
@@ -276,6 +293,9 @@
     <Folder Include="a1_Financial\a2_Accounting\AccountProviding" />
     <Folder Include="a1_Financial\a2_Accounting\h5_Reporting\DateTimeSelectorsForEquityLine" />
     <Folder Include="a1_Financial\a2_Accounting\h5_Reporting\StatisticsSummaryRows" />
+    <Folder Include="a1_Financial\a4_Fundamentals" />
+    <Folder Include="a1_Financial\a4_Fundamentals\FairValueProviders" />
+    <Folder Include="a1_Financial\a4_Fundamentals\RatioProviders" />
     <Folder Include="a2_Strategies\EndOfDayStrategies" />
     <Folder Include="a2_Strategies\InSample\InSampleFitnessDistributionEstimation" />
     <Folder Include="a2_Strategies\Optimizing\BruteForce" />

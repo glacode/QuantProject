@@ -70,6 +70,7 @@
     <Compile Include="SqlComparisonOperator.cs" />
     <Compile Include="SqlExecutor.cs" />
     <Compile Include="Tables\Bars.cs" />
+    <Compile Include="Tables\FinancialValues.cs" />
     <Compile Include="ValidationTypes.cs" />
     <Compile Include="Tables\FaultyTickers.cs" />
     <Compile Include="Tables\Quotes.cs" />
