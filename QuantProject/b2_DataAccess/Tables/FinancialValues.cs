@@ -48,7 +48,7 @@ namespace QuantProject.DataAccess.Tables
 		{
 			this.financialValues = FinancialValues.GetTickerFinancialValues( ticker, periodLengthInMonths );
 		}
-		
+				
 		/// <summary>
 		/// It provides addition of the given financial values into table "financial values"
 		/// </summary>
@@ -72,7 +72,75 @@ namespace QuantProject.DataAccess.Tables
 				string notUsed = ex.ToString();
 			}
 		}
-				
+		
+		/// <summary>
+		/// Returns last available financial value for the given ticker
+		/// </summary>
+		/// <param name="ticker"></param>
+		/// <param name="financialDataCode">Code for the financial value
+		/// - stored in DB table </param>
+		/// <param name="atDate">Last financial value at the first immediate
+		/// date previous than param atDate will be returned</param>
+		/// <returns></returns>
+		public static double GetLastFinancialValueForTicker( string ticker, int financialDataCode, 
+		                                                     int periodLengthInMonths, 
+		                                                     DateTime atDate )
+		{
+			string sqlString = "select * from financialValues where fvTiTicker='" + ticker + "' " +
+				"AND fvFdId=" + financialDataCode + " " +
+				"AND fvPeriodLengthInMonths=" + periodLengthInMonths + " " +
+				"AND fvEndingPeriodDate<" + SQLBuilder.GetDateConstant(atDate) + " " +
+				"order by fvEndingPeriodDate";
+			DataTable dataTable = SqlExecutor.GetDataTable(sqlString);
+			int numOfRows = dataTable.Rows.Count;
+						
+			return (double)(dataTable.Rows[ numOfRows - 1 ][ "fvValue" ]);
+		}
+		/// <summary>
+		/// Returns last available financial values for the given ticker
+		/// </summary>
+		/// <param name="ticker"></param>
+		/// <param name="financialDataCode">Code for the financial value
+		/// - stored in DB table </param>
+		/// <param name="atDate">Last financial values with endingPeriodDate
+		/// previous than param atDate will be returned</param>
+		/// <returns></returns>
+		public static DataTable GetLastFinancialValuesForTicker( string ticker, int financialDataCode, 
+		                                                     int periodLengthInMonths, 
+		                                                     DateTime atDate )
+		{
+			string sqlString = "select * from financialValues where fvTiTicker='" + ticker + "' " +
+				"AND fvFdId=" + financialDataCode + " " +
+				"AND fvPeriodLengthInMonths=" + periodLengthInMonths + " " +
+				"AND fvEndingPeriodDate<" + SQLBuilder.GetDateConstant(atDate) + " " + 
+				"order by fvEndingPeriodDate";
+			
+			DataTable dataTable = SqlExecutor.GetDataTable(sqlString);
+						
+			return dataTable;
+		}
+		/// <summary>
+		/// Returns last available financial values for all tickers
+		/// </summary>
+		/// <param name="financialDataCode">Code for the financial value
+		/// - stored in DB table </param>
+		/// <param name="atDate">Last financial values with endingPeriodDate
+		/// previous than param atDate will be returned</param>
+		/// <returns></returns>
+		public static DataTable GetLastFinancialValues(int financialDataCode, 
+		                                               int periodLengthInMonths, 
+		                                               DateTime atDate )
+		{
+			string sqlString = "select * from financialValues where fvFdId=" + financialDataCode + " " +
+				"AND fvPeriodLengthInMonths=" + periodLengthInMonths + " " +
+				"AND fvEndingPeriodDate<" + SQLBuilder.GetDateConstant(atDate) + " " + 
+				"order by fvEndingPeriodDate";
+			
+			DataTable dataTable = SqlExecutor.GetDataTable(sqlString);
+						
+			return dataTable;
+		}
+		
 		/// <summary>
 		/// returns the financial values DataTable for the given ticker
 		/// </summary>
