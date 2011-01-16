@@ -72,10 +72,16 @@ namespace QuantProject.Business.Strategies.Optimizing.FitnessEvaluation
 		
 		public double GetFitnessValue(object meaning , IReturnsManager returnsManager )
 		{
-			float fitnessValue = -0.5f;
+			float fitnessValue = -10.0f;
 			TestingPositions testingPositions = (TestingPositions)meaning;
-			if(testingPositions.WeightedPositions != null)
-				fitnessValue = this.getFitnessValue_getFitnessValueActually( testingPositions, returnsManager );
+			try{
+				if(testingPositions.WeightedPositions != null)
+					fitnessValue = this.getFitnessValue_getFitnessValueActually( testingPositions, returnsManager );
+			}
+			catch(Exception ex){
+				string s = ex.ToString();
+			}
+							
 			return fitnessValue;
 		}
 	}
