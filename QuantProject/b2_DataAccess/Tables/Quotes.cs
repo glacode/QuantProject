@@ -297,13 +297,13 @@ namespace QuantProject.DataAccess.Tables
 			bool isAdjustedCloseChanged = false;
 			try
 			{
-				float adjustedCloseInDatabase;
+				double adjustedCloseInDatabase;
 				double absoluteDifference;
 				DataTable tableOfSingleRow =
 					SqlExecutor.GetDataTable("SELECT * FROM quotes WHERE quTicker='" +
 					                         ticker + "' AND quDate=" +
 					                         SQLBuilder.GetDateConstant(dateToCheck));
-				adjustedCloseInDatabase = (float)(tableOfSingleRow.Rows[0]["quAdjustedClose"]);
+				adjustedCloseInDatabase = (double)(tableOfSingleRow.Rows[0]["quAdjustedClose"]);
 				absoluteDifference = Math.Abs(currentAdjustedValueFromSource - adjustedCloseInDatabase);
 				if(absoluteDifference>ConstantsProvider.MaxDifferenceForAdjustedValues)
 					isAdjustedCloseChanged = true;
