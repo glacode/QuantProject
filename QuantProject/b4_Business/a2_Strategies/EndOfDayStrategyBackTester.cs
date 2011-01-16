@@ -439,7 +439,8 @@ namespace QuantProject.Business.Strategies
 				this.stopTheScript( dateTime );
 			else
 				this.newDateTime( sender , dateTime );
-			if ( HistoricalEndOfDayTimer.IsMarketClose( dateTime ) )
+			if ( HistoricalEndOfDayTimer.IsMarketClose( dateTime ) &&
+			     !((Timer)sender).IsDone )
 				this.notifyProgress( ( Timer )sender );
 		}
 		#endregion newDateTimeEventHandler
