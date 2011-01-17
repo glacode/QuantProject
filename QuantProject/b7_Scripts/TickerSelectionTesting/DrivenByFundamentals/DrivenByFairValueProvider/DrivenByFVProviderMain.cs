@@ -188,6 +188,9 @@ namespace QuantProject.Scripts.TickerSelectionTesting.DrivenByFundamentals.Drive
 //				new BuyAndHoldFitnessEvaluator( new Variance() );
 				new BuyAndHoldFitnessEvaluator( new SharpeRatio() );
 			
+			bool mixPastReturnsEvaluationWithFundamentalEvaluation =
+				false;
+			
 			BasicDecoderForGeneticallyOptimizableTestingPositions basicGenOptDecoder = 
 				new BasicDecoderForGeneticallyOptimizableTestingPositions();
 			
@@ -195,7 +198,8 @@ namespace QuantProject.Scripts.TickerSelectionTesting.DrivenByFundamentals.Drive
 				new DrivenByFVProviderInSampleChooser(this.numberOfPortfolioPositions,
 				                                      numberOfBestTestingPositionsToBeReturned,
 						benchmark, basicGenOptDecoder, this.genomeManagerType ,
-						fitnessEvaluator , historicalMarketValueProviderForInSample,
+						fitnessEvaluator , mixPastReturnsEvaluationWithFundamentalEvaluation,
+						historicalMarketValueProviderForInSample,	this.timerForBackTester, 
 						crossoverRate, mutationRate, elitismRate ,
 						populationSizeForGeneticOptimizer, generationNumberForGeneticOptimizer,
 						seedForRandomGenerator);
