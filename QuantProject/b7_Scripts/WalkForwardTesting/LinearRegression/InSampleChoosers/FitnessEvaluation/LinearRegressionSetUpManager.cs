@@ -60,7 +60,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.LinearRegression
 		#region getRegressors
 		private void addConstantRegressor( double[,] regressors )
 		{
-			for( int j = 0 ; j < regressors.GetLength( 1 ) ; j++ )
+			for( int j = 0 ; j < regressors.GetLength( 0 ) ; j++ )
 				regressors[ j , 0 ] = 1;
 		}
 		
