@@ -28,6 +28,7 @@ using QuantProject.ADT.Histories;
 using QuantProject.ADT.Statistics;
 using QuantProject.Business.DataProviders;
 using QuantProject.Business.Scripting;
+using QuantProject.Business.Strategies;
 using QuantProject.Business.Strategies.ReturnsManagement.Time;
 using QuantProject.Business.Strategies.ReturnsManagement.Time.IntervalsSelectors;
 using QuantProject.Presentation;
@@ -62,6 +63,22 @@ namespace QuantProject.Scripts.WalkForwardTesting.LinearRegression
 		{
 			get { return this.linearRegressionTestingPositions.FitnessInSample; }
 		}
+		
+		#region ShortDescription
+		private string getShortDescription()
+		{
+			string shortDescription =
+				this.linearRegressionTestingPositions.TradingPortfolio.Description;
+			foreach( WeightedPositions weightedPositions in
+			        this.linearRegressionTestingPositions.SignalingPortfolios )
+				shortDescription += " -- " + weightedPositions.Description;
+			return shortDescription;
+		}
+		public string ShortDescription
+		{
+			get { return this.getShortDescription(); }
+		}
+		#endregion ShortDescription
 
 		public AnalyzerForLinearRegressionTestingPositions(
 			LinearRegressionTestingPositions linearRegressionTestingPositions ,
@@ -209,7 +226,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.LinearRegression
 			double[] arrayValues = new double[ history.Count ];
 			for( int i = 0 ; i < arrayValues.Length ; i++ )
 				arrayValues[ i ] = (double)history.GetValueList()[ i ];
-			return arrayValues;			
+			return arrayValues;
 		}
 
 		private void showCorrelation(
