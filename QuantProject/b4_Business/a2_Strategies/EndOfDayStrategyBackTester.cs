@@ -240,7 +240,7 @@ namespace QuantProject.Business.Strategies
 				this.checkIfAFileStopTxtIsInTheExecutionFolder();
 			if ( isAFileStopTxtIsInTheExecutionFolder )
 				throw new Exception(
-					"The backtester has been asket to run, but a file stop.txt is " +
+					"The backtester has been asked to run, but a file stop.txt is " +
 					"in the execution folder. A file stop.txt should be put " +
 					"in the execution folder when the user wants to stop the " +
 					"backtest. Such a file should not be in the execution " +
