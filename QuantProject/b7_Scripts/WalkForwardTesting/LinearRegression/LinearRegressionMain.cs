@@ -21,8 +21,10 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 
 using System;
+using System.Collections;
 using System.Collections.Generic;
 
+using QuantProject.ADT.Optimizing.Genetic;
 using QuantProject.ADT.Timing;
 using QuantProject.Data.Selectors;
 using QuantProject.Business.DataProviders;
@@ -165,13 +167,14 @@ namespace QuantProject.Scripts.WalkForwardTesting.LinearRegression
 			// parameters for the genetic optimizer
 			double crossoverRate = 0.5;
 			double mutationRate = 0.02;
-			double elitismRate = 0.00001;
+//			double elitismRate = 0.00001;
+			double elitismRate = 0.2;
 			int populationSizeForGeneticOptimizer = 60000;
 			int generationNumberForGeneticOptimizer = 15;
 			
 			// uncomment the followings line for a faster script
 			populationSizeForGeneticOptimizer = 300;
-			generationNumberForGeneticOptimizer = 4;
+			generationNumberForGeneticOptimizer = 2;
 			
 			int seedForRandomGeneratorForTheGeneticOptimizer =
 				QuantProject.ADT.ConstantsProvider.SeedForRandomGenerator;
@@ -179,6 +182,22 @@ namespace QuantProject.Scripts.WalkForwardTesting.LinearRegression
 				seedForRandomGeneratorForTheGeneticOptimizer + 1;
 			int seedForRandomGeneratorForGenomeManagerForSignalingTickers =
 				seedForRandomGeneratorForTheGeneticOptimizer + 2;
+			
+//			seedForRandomGeneratorForGenomeManagerForTradingTickers += 1234;
+//			
+//			seedForRandomGeneratorForGenomeManagerForSignalingTickers += 97134;
+			
+			ArrayList currentGeneration = new GenerationWithoutDuplicatedFitness(
+				populationSizeForGeneticOptimizer , new FitnessApproximator( 9 ) );
+			ArrayList nextGeneration = new GenerationWithoutDuplicatedFitness(
+				populationSizeForGeneticOptimizer , new FitnessApproximator( 9 ) );
+			
+			// comment the following two lines to use GenerationWithoutDuplicatedFitness
+//			currentGeneration = new GenerationWithDuplicatedGenomes(
+//				populationSizeForGeneticOptimizer );
+//			nextGeneration = new GenerationWithDuplicatedGenomes(
+//				populationSizeForGeneticOptimizer );
+			
 			IInSampleChooser inSampleChooser =
 				new LinearRegressionGeneticChooser(
 					numberOfBestTestingPositionsToBeReturned ,
@@ -194,7 +213,9 @@ namespace QuantProject.Scripts.WalkForwardTesting.LinearRegression
 					generationNumberForGeneticOptimizer ,
 					seedForRandomGeneratorForTheGeneticOptimizer ,
 					seedForRandomGeneratorForGenomeManagerForTradingTickers ,
-					seedForRandomGeneratorForGenomeManagerForSignalingTickers );
+					seedForRandomGeneratorForGenomeManagerForSignalingTickers ,
+					currentGeneration ,
+					nextGeneration );
 			
 //			uncomment the following line for a (logbased) log based in sample chooser
 //			inSampleChooser =
@@ -285,14 +306,13 @@ namespace QuantProject.Scripts.WalkForwardTesting.LinearRegression
 			firstDateTime = new DateTime( 2004 , 1 , 1 );
 			DateTime lastDateTime = new DateTime( 2005 , 1 , 1 );
 			lastDateTime = new DateTime( 2006 , 1 , 1 );
+			lastDateTime = new DateTime( 2004 , 1 , 7 );	// to test a single optimization with different seeds
 
 			// uncomment the following two lines for a faster script
 			firstDateTime = new DateTime( 2006 , 2 , 26 );
 			lastDateTime = new DateTime( 2006 , 4 , 5 );
-//			firstDateTime = new DateTime( 2005 , 2 , 26 );
-//			lastDateTime = new DateTime( 2006 , 12 , 5 );
 
-			double maxRunningHours = 12;
+			double maxRunningHours = 2;
 			
 			EndOfDayStrategyBackTester endOfDayStrategyBackTester =
 				new EndOfDayStrategyBackTester(
