@@ -84,7 +84,8 @@ namespace QuantProject.Business.Strategies.Eligibles
 		}
 		private void addTicker_actually( string ticker )
 		{
-			this.List.Add( ticker );
+			if ( !this.List.Contains( ticker ) )
+				this.List.Add( ticker );
 		}
 		private void addTicker( DataRow dataRow )
 		{
