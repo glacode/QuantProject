@@ -21,6 +21,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 
 using System;
+using System.Collections;
 
 using QuantProject.ADT.Optimizing.Genetic;
 using QuantProject.Business.DataProviders;
@@ -66,7 +67,9 @@ namespace QuantProject.Scripts.WalkForwardTesting.LinearRegression
 			int generationNumberForGeneticOptimizer ,
 			int seedForRandomGeneratorForTheGeneticOptimizer ,
 			int	seedForRandomGeneratorForGenomeManagerForTradingTickers ,
-			int seedForRandomGeneratorForGenomeManagerForSignalingTickers ) :
+			int seedForRandomGeneratorForGenomeManagerForSignalingTickers ,
+			ArrayList currentGeneration ,
+			ArrayList nextGeneration	) :
 			base(
 				2 ,
 				numberOfBestTestingPositionsToBeReturned ,
@@ -79,7 +82,9 @@ namespace QuantProject.Scripts.WalkForwardTesting.LinearRegression
 				elitismRate ,
 				populationSizeForGeneticOptimizer ,
 				generationNumberForGeneticOptimizer ,
-				seedForRandomGeneratorForTheGeneticOptimizer
+				seedForRandomGeneratorForTheGeneticOptimizer ,
+				currentGeneration ,
+				nextGeneration
 			)
 		{
 			this.decoderForLinearRegressionTestingPositions =
