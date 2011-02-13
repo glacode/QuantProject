@@ -40,29 +40,29 @@ namespace QuantProject.ADT.Optimizing.Genetic
 	public class GeneticOptimizer
 	{
     #region fields  
-    private Random random;
+    protected Random random;
     
     private double mutationRate;
     private double crossoverRate;
-    private double elitismRate;
+    protected double elitismRate;
     private double minConvergenceRate;
     private bool keepOnRunningUntilConvergenceIsReached;
-    private int populationSize;
+    protected int populationSize;
     private int generationNumber;
     private int genomeSize;
-    private double totalSpecialFitnessForRouletteSelection;
+    protected double totalSpecialFitnessForRouletteSelection;
     private double totalFitness;
-    private Genome bestGenome;
-    private Genome worstGenome;
+    protected Genome bestGenome;
+    protected Genome worstGenome;
     private IGenomeManager genomeManager;
-    private GenomeComparer genomeComparer;
+    protected GenomeComparer genomeComparer;
 	
-    private ArrayList currentGeneration;
-    private ArrayList currentEliteToTransmitToNextGeneration;
-    private ArrayList nextGeneration;
-    private ArrayList cumulativeSpecialFitnessListForRouletteSelection;
+    protected ArrayList currentGeneration;
+    protected ArrayList currentEliteToTransmitToNextGeneration;
+    protected ArrayList nextGeneration;
+    protected ArrayList cumulativeSpecialFitnessListForRouletteSelection;
 	
-    private int generationCounter;
+    protected int generationCounter;
 //    private double averageRandomFitness;
 //    private double standardDeviationOfRandomFitness;
     
@@ -98,7 +98,7 @@ namespace QuantProject.ADT.Optimizing.Genetic
       set{this.keepOnRunningUntilConvergenceIsReached = value;}
     }
 
-    public int PopulationSize
+    public virtual int PopulationSize
     {
       get{return populationSize;}
       set{populationSize = value;}
@@ -273,7 +273,7 @@ namespace QuantProject.ADT.Optimizing.Genetic
       }
     }
     
-    private void generateNewPopulation(bool showOutputToConsole)
+    protected virtual void generateNewPopulation(bool showOutputToConsole)
     {
     	this.createNextGeneration();
       this.generationCounter++;
@@ -316,6 +316,7 @@ namespace QuantProject.ADT.Optimizing.Genetic
 
     private void createFirstGeneration(bool showOutputToConsole)
     {
+			this.currentGeneration.Clear();
       this.createGenomes();
       this.sortCurrentGenerationAndFireNewGenerationEvent();
       this.setInitialBestAndWorstGenomes();
@@ -324,7 +325,7 @@ namespace QuantProject.ADT.Optimizing.Genetic
         this.showOutputToConsole();
     }
     
-    private void showOutputToConsole()
+    protected void showOutputToConsole()
     {
       string genes = "";
       //System.Console.WriteLine("\n*_*_*_*_*_*_*_*_*_*_*\n\nGeneration " + this.generationCounter +"\n");
@@ -361,7 +362,7 @@ namespace QuantProject.ADT.Optimizing.Genetic
     /// The probability for a genome to be selected depends
     /// proportionally on the level of fitness.
     /// </summary>
-    private int rouletteSelection()
+    protected virtual int rouletteSelection()
     {
       double randomFitness = this.totalSpecialFitnessForRouletteSelection *(double)this.random.Next(1,1001)/1000;
       int idx = -1;
@@ -408,7 +409,7 @@ namespace QuantProject.ADT.Optimizing.Genetic
             
     }
         
-    private void updateCumulativeSpecialFitnessListForRouletteSelection()
+    protected virtual void updateCumulativeSpecialFitnessListForRouletteSelection()
     {
       double cumulativeSpecialFitness = 0.0;
       this.cumulativeSpecialFitnessListForRouletteSelection.Clear();
@@ -430,7 +431,7 @@ namespace QuantProject.ADT.Optimizing.Genetic
       }
     }
 
-    private void createNextGeneration_transmitEliteToNextGeneration()
+    protected virtual void createNextGeneration_transmitEliteToNextGeneration()
     {
       this.currentEliteToTransmitToNextGeneration.Clear();
       
@@ -477,7 +478,7 @@ namespace QuantProject.ADT.Optimizing.Genetic
       }
     }
 
-    private void createNextGeneration()
+    protected void createNextGeneration()
     {
       this.nextGeneration.Clear();
       this.createNextGeneration_addChildsWithRouletteSelection();
@@ -500,7 +501,7 @@ namespace QuantProject.ADT.Optimizing.Genetic
       }
     }
  
-    private void updateCurrentGeneration()
+    protected virtual void updateCurrentGeneration()
     {
       this.nextGeneration.Sort(this.genomeComparer);
       this.currentGeneration.Clear();
@@ -511,17 +512,17 @@ namespace QuantProject.ADT.Optimizing.Genetic
         this.currentGeneration.Add(this.nextGeneration[numOfNextGeneration - i]);
     }
 
-    private void updateBestGenomeFoundInRunning(Genome genomeValue)
+    protected void updateBestGenomeFoundInRunning(Genome genomeValue)
     {
       if(genomeValue.Fitness > this.bestGenome.Fitness)
         this.bestGenome = genomeValue.Clone();
     }
-    private void updateWorstGenomeFoundInRunning(Genome genomeValue)
+    protected void updateWorstGenomeFoundInRunning(Genome genomeValue)
     {
       if(genomeValue.Fitness < this.worstGenome.Fitness)
         this.worstGenome = genomeValue.Clone();
     }
-    private void setInitialBestAndWorstGenomes()
+    protected virtual void setInitialBestAndWorstGenomes()
     {
       this.bestGenome = ((Genome)this.currentGeneration[this.populationSize-1]).Clone();
       this.worstGenome = ((Genome)this.currentGeneration[0]).Clone();
