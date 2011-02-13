@@ -18,7 +18,7 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
-*/
+ */
 
 using System;
 using System.Collections;
@@ -67,9 +67,16 @@ namespace QuantProject.Business.Strategies.InSample
 		protected int populationSizeForGeneticOptimizer;
 		protected int generationNumberForGeneticOptimizer;
 		protected int seedForRandomGeneratorForTheGeneticOptimizer;
+		
+		[NonSerialized]
+		protected ArrayList currentGeneration;
+		[NonSerialized]
+		protected ArrayList nextGeneration;
 
 		[NonSerialized]
 		protected GeneticOptimizer geneticOptimizer;
+		
+		private bool useClassicGeneticOptimizer;
 
 
 		public string Description
@@ -103,6 +110,30 @@ namespace QuantProject.Business.Strategies.InSample
 			int generationNumberForGeneticOptimizer ,
 			int seedForRandomGeneratorForTheGeneticOptimizer )
 		{
+			this.commonInitialization(
+				numberOfPortfolioPositions , numberOfBestTestingPositionsToBeReturned ,
+				benchmark ,
+				decoderForTestingPositions ,
+				fitnessEvaluator ,
+				historicalMarketValueProvider ,
+				crossoverRate , mutationRate , elitismRate ,
+				populationSizeForGeneticOptimizer ,
+				generationNumberForGeneticOptimizer ,
+				seedForRandomGeneratorForTheGeneticOptimizer );
+			this.useClassicGeneticOptimizer = true;
+		}
+		
+		private void commonInitialization(
+			int numberOfPortfolioPositions , int numberOfBestTestingPositionsToBeReturned ,
+			Benchmark benchmark ,
+			IDecoderForTestingPositions decoderForTestingPositions ,
+			IFitnessEvaluator fitnessEvaluator ,
+			HistoricalMarketValueProvider historicalMarketValueProvider ,
+			double crossoverRate , double mutationRate , double elitismRate ,
+			int populationSizeForGeneticOptimizer ,
+			int generationNumberForGeneticOptimizer ,
+			int seedForRandomGeneratorForTheGeneticOptimizer )
+		{
 			this.numberOfPortfolioPositions = numberOfPortfolioPositions;
 			this.numberOfBestTestingPositionsToBeReturned = numberOfBestTestingPositionsToBeReturned;
 			this.benchmark = benchmark;
@@ -118,6 +149,35 @@ namespace QuantProject.Business.Strategies.InSample
 			this.seedForRandomGeneratorForTheGeneticOptimizer =
 				seedForRandomGeneratorForTheGeneticOptimizer;
 		}
+		
+		public GeneticChooser(
+			int numberOfPortfolioPositions , int numberOfBestTestingPositionsToBeReturned ,
+			Benchmark benchmark ,
+			IDecoderForTestingPositions decoderForTestingPositions ,
+			IFitnessEvaluator fitnessEvaluator ,
+			HistoricalMarketValueProvider historicalMarketValueProvider ,
+			double crossoverRate , double mutationRate , double elitismRate ,
+			int populationSizeForGeneticOptimizer ,
+			int generationNumberForGeneticOptimizer ,
+			int seedForRandomGeneratorForTheGeneticOptimizer ,
+			ArrayList currentGeneration ,
+			ArrayList nextGeneration	)
+		{
+			this.commonInitialization(
+				numberOfPortfolioPositions , numberOfBestTestingPositionsToBeReturned ,
+				benchmark ,
+				decoderForTestingPositions ,
+				fitnessEvaluator ,
+				historicalMarketValueProvider ,
+				crossoverRate , mutationRate , elitismRate ,
+				populationSizeForGeneticOptimizer ,
+				generationNumberForGeneticOptimizer ,
+				seedForRandomGeneratorForTheGeneticOptimizer );
+			this.currentGeneration = currentGeneration;
+			this.nextGeneration = nextGeneration;
+			this.useClassicGeneticOptimizer = false;
+		}
+
 
 		#region AnalyzeInSample
 		private void analyzeInSample_checkParameters(
@@ -126,15 +186,15 @@ namespace QuantProject.Business.Strategies.InSample
 		{
 			if ( eligibleTickers.Count <	this.numberOfPortfolioPositions )
 				throw new Exception( "Eligible tickers for driving positions contains " +
-					"only " + eligibleTickers.Count +
-					" elements, while number of portfolio positions is " +
-					this.numberOfPortfolioPositions );
-			if ( this.numberOfBestTestingPositionsToBeReturned > 
+				                    "only " + eligibleTickers.Count +
+				                    " elements, while number of portfolio positions is " +
+				                    this.numberOfPortfolioPositions );
+			if ( this.numberOfBestTestingPositionsToBeReturned >
 			    this.populationSizeForGeneticOptimizer )
 				throw new Exception( "Number of BestTestingPositions for " +
-				                     "out of sample testing is too high with " +
-				                     "respect to the population size of the " + 
-				                     "genetic optimizer" );
+				                    "out of sample testing is too high with " +
+				                    "respect to the population size of the " +
+				                    "genetic optimizer" );
 		}
 		
 		#region newGenerationEventHandler
@@ -142,7 +202,7 @@ namespace QuantProject.Business.Strategies.InSample
 		{
 			if ( this.NewProgress != null )
 				this.NewProgress( this ,
-					new NewProgressEventArgs( e.GenerationCounter , e.GenerationNumber ) );
+				                 new NewProgressEventArgs( e.GenerationCounter , e.GenerationNumber ) );
 		}
 		#region sendNewMessage
 		private string getProgressMessage(
@@ -178,9 +238,9 @@ namespace QuantProject.Business.Strategies.InSample
 		protected abstract string getHashCodeForGenome(Genome genome);
 //		{
 //			string returnValue = genome.Meaning.GetHashCode().ToString();
-////			if (this.choosePositionsWithAtLeastOneDifferentTicker)
-////				returnValue = ((TestingPositions)genome.Meaning).HashCodeForTickerComposition;
-////			else
+		////			if (this.choosePositionsWithAtLeastOneDifferentTicker)
+		////				returnValue = ((TestingPositions)genome.Meaning).HashCodeForTickerComposition;
+		////			else
 //			return returnValue;
 //		}
 
@@ -190,18 +250,18 @@ namespace QuantProject.Business.Strategies.InSample
 			TestingPositions[] bestTestingPositions = new TestingPositions[numberOfBestTestingPositionsToBeReturned];
 			GeneticOptimizer GO = this.geneticOptimizer;
 			int addedTestingPositions = 0;
-      int counter = 0;
-      Genome currentGenome = null;
-      string currentGenomeHashcode;
-      Hashtable genomesCollector = new Hashtable();
-      while(addedTestingPositions < this.numberOfBestTestingPositionsToBeReturned && 
-            counter < GO.PopulationSize)
-      {
-      	currentGenome = (Genome)GO.CurrentGeneration[GO.PopulationSize - 1 - counter];
-      	currentGenomeHashcode = this.getHashCodeForGenome(currentGenome);
-      	if( counter == 0 || !genomesCollector.ContainsKey(currentGenomeHashcode) )
-      	{
-					bestTestingPositions[addedTestingPositions] = 
+			int counter = 0;
+			Genome currentGenome = null;
+			string currentGenomeHashcode;
+			Hashtable genomesCollector = new Hashtable();
+			while(addedTestingPositions < this.numberOfBestTestingPositionsToBeReturned &&
+			      counter < GO.PopulationSize)
+			{
+				currentGenome = (Genome)GO.CurrentGeneration[GO.PopulationSize - 1 - counter];
+				currentGenomeHashcode = this.getHashCodeForGenome(currentGenome);
+				if( counter == 0 || !genomesCollector.ContainsKey(currentGenomeHashcode) )
+				{
+					bestTestingPositions[addedTestingPositions] =
 						(TestingPositions)currentGenome.Meaning;
 					((TestingPositions)bestTestingPositions[addedTestingPositions]).FitnessInSample =
 						currentGenome.Fitness;
@@ -209,30 +269,45 @@ namespace QuantProject.Business.Strategies.InSample
 						currentGenome.Generation;
 					genomesCollector.Add(currentGenomeHashcode, null);
 					addedTestingPositions++;
-      	}
-      	counter ++ ;
-      } 
+				}
+				counter ++ ;
+			}
 			return bestTestingPositions;
 		}
 
 		public abstract IGenomeManager GetGenomeManager(EligibleTickers eligibleTickers ,
-			ReturnsManager returnsManager);
+		                                                ReturnsManager returnsManager);
 		//returns a specific IGenomeManager object in inherited classes
 		
 		private TestingPositions[] getBestTestingPositionsInSample(
 			EligibleTickers eligibleTickers ,
 			ReturnsManager returnsManager
-			)
+		)
 		{
 			this.genomeManager = this.GetGenomeManager(eligibleTickers, returnsManager);
-			this.geneticOptimizer = new GeneticOptimizer(
-				this.crossoverRate ,
-				this.mutationRate ,
-				this.elitismRate ,
-				this.populationSizeForGeneticOptimizer ,
-				this.generationNumberForGeneticOptimizer ,
-				this.genomeManager ,
-				this.seedForRandomGeneratorForTheGeneticOptimizer );
+			if ( this.useClassicGeneticOptimizer )
+				// the user has not provided custom generations
+				this.geneticOptimizer = new GeneticOptimizer(
+					this.crossoverRate ,
+					this.mutationRate ,
+					this.elitismRate ,
+					this.populationSizeForGeneticOptimizer ,
+					this.generationNumberForGeneticOptimizer ,
+					this.genomeManager ,
+					this.seedForRandomGeneratorForTheGeneticOptimizer );
+			else
+				// the user has provided custom generations
+				this.geneticOptimizer = new AlternativeGeneticOptimizer(
+					this.crossoverRate ,
+					this.mutationRate ,
+					this.elitismRate ,
+					this.populationSizeForGeneticOptimizer ,
+					this.generationNumberForGeneticOptimizer ,
+					this.genomeManager ,
+					this.seedForRandomGeneratorForTheGeneticOptimizer ,
+					this.currentGeneration ,
+					this.nextGeneration );
+			
 			this.geneticOptimizer.NewGeneration +=
 				new NewGenerationEventHandler( this.newGenerationEventHandler );
 			this.geneticOptimizer.Run( false );
@@ -250,10 +325,10 @@ namespace QuantProject.Business.Strategies.InSample
 			ReturnsManager returnsManager )
 		{
 			this.analyzeInSample_checkParameters( eligibleTickers ,
-				returnsManager );
+			                                     returnsManager );
 			TestingPositions[] bestTestingPositionsInSample =
 				this.getBestTestingPositionsInSample( eligibleTickers ,
-				returnsManager );
+				                                     returnsManager );
 			return bestTestingPositionsInSample;
 		}
 		#endregion AnalyzeInSample
