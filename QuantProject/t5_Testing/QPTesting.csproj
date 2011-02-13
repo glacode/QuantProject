@@ -45,6 +45,8 @@
     <Compile Include="b1_ADT\LinearAlgebra\TestLowerTriangular.cs" />
     <Compile Include="b1_ADT\LinearAlgebra\TestMatrix.cs" />
     <Compile Include="b1_ADT\LinearAlgebra\TestPositiveDefiniteMatrix.cs" />
+    <Compile Include="b1_ADT\Optimization\Genetic\TestFitnessApproximator.cs" />
+    <Compile Include="b1_ADT\Optimization\Genetic\TestGenerationGenerationWithoutDuplicatedFitness.cs" />
     <Compile Include="b1_ADT\Sum.cs" />
     <Compile Include="b3_data\Selectors\TestTickerSelector.cs" />
     <Compile Include="b4_Business\a2_Strategies\Eligibles\TestOftenExchanged.cs" />
@@ -79,6 +81,8 @@
     <Folder Include="b1_ADT" />
     <Folder Include="b1_ADT\LinearAlgebra" />
     <Folder Include="b1_ADT\Econometrics" />
+    <Folder Include="b1_ADT\Optimization" />
+    <Folder Include="b1_ADT\Optimization\Genetic" />
     <Folder Include="b3_data\Selectors" />
     <Folder Include="b4_Business\a2_Strategies" />
     <Folder Include="b4_Business\a2_Strategies\Eligibles" />
