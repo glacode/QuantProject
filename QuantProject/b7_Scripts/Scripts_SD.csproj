@@ -156,6 +156,7 @@
     <Compile Include="WalkForwardTesting\FixedLengthTwoPhases\Logging\FLTPSimpleStrategy.cs" />
     <Compile Include="WalkForwardTesting\FixedLengthTwoPhases\Logging\TesterForFLTPTestingPositions.cs" />
     <Compile Include="WalkForwardTesting\FixedLengthTwoPhases\OutOfSampleChoosers\RankBasedOutOfSampleChooser.cs" />
+    <Compile Include="WalkForwardTesting\LinearCombination\MainForm.cs" />
     <Compile Include="WalkForwardTesting\LinearRegression\eligibles\EligiblesSelectorForLinearRegression.cs" />
     <Compile Include="WalkForwardTesting\LinearRegression\EntryStrategies\IEntryStrategy.cs" />
     <Compile Include="WalkForwardTesting\LinearRegression\EntryStrategies\EntryStrategyBasedOnForecastedReturn.cs" />
@@ -239,7 +240,6 @@
     <Compile Include="WalkForwardTesting\LinearCombination\GenomeRepresentation.cs" />
     <Compile Include="TickerSelectionTesting\CandidateProperties.cs" />
     <Compile Include="WalkForwardTesting\LinearCombination\LinearCombinationTest.cs" />
-    <Compile Include="WalkForwardTesting\LinearCombination\MainForm.cs" />
     <Compile Include="WalkForwardTesting\LinearCombination\OptimizationOutput.cs" />
     <Compile Include="WalkForwardTesting\LinearCombination\RunBestLinearCombination.cs" />
     <Compile Include="WalkForwardTesting\LinearCombination\TestDisplayer.cs" />
