@@ -65,6 +65,13 @@
     <Compile Include="Optimizing\BruteForce\ParametersManagers\IBruteForceOptimizableParametersManager.cs" />
     <Compile Include="Optimizing\Fitness\FitnessComparer.cs" />
     <Compile Include="Optimizing\Fitness\IWithFitness.cs" />
+    <Compile Include="Optimizing\Genetic\GenerationBased\FitnessApproximator.cs" />
+    <Compile Include="Optimizing\Genetic\GenerationBased\GenerationWithoutDuplicatedFitness.cs" />
+    <Compile Include="Optimizing\Genetic\GenerationBased\IFitnessDiscretizer.cs" />
+    <Compile Include="Optimizing\Genetic\GenerationBased\AlternativeGeneticOptimizer.cs" />
+    <Compile Include="Optimizing\Genetic\GeneticOptimizer.cs" />
+    <Compile Include="Optimizing\Genetic\Genome.cs" />
+    <Compile Include="Optimizing\Genetic\NewGenerationEventArgs.cs" />
     <Compile Include="OutOfRangeException.cs" />
     <Compile Include="IProgressNotifier.cs" />
     <Compile Include="Keyed.cs" />
@@ -79,8 +86,6 @@
     <Compile Include="Optimizing\Optimizable.cs" />
     <Compile Include="Optimizing\Parameter.cs" />
     <Compile Include="Optimizing\Parameters.cs" />
-    <Compile Include="Optimizing\Genetic\GeneticOptimizer.cs" />
-    <Compile Include="Optimizing\Genetic\Genome.cs" />
     <Compile Include="Optimizing\Genetic\GenomeComparer.cs" />
     <Compile Include="Optimizing\Genetic\GenomeManagement.cs" />
     <Compile Include="Optimizing\Genetic\GenomeManagerTest.cs" />
@@ -95,7 +100,6 @@
     <Compile Include="IndexOfKeyOrPreviousException.cs" />
     <Compile Include="Statistics\AdvancedFunctions.cs" />
     <Compile Include="EstimatedObject.cs" />
-    <Compile Include="Optimizing\Genetic\NewGenerationEventArgs.cs" />
     <Compile Include="Optimizing\Genetic\GenomeCounter.cs" />
     <Compile Include="Collections\QPHashtable.cs" />
     <Compile Include="Optimizing\BruteForce\BruteForceOptimizableParameters.cs" />
@@ -112,6 +116,7 @@
     <Folder Include="Messaging" />
     <Folder Include="Econometrics" />
     <Folder Include="LinearAlgebra" />
+    <Folder Include="Optimizing\Genetic\GenerationBased" />
     <Folder Include="Timing" />
     <Folder Include="Optimizing\BruteForce" />
     <Folder Include="Optimizing\BruteForce\ParametersManagers" />
