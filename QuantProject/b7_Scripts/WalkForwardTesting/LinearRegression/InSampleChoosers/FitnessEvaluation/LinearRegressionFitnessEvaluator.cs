@@ -148,7 +148,8 @@ namespace QuantProject.Scripts.WalkForwardTesting.LinearRegression
 		public double GetFitnessValue( object meaning , IReturnsManager returnsManager )
 		{
 			this.getFitnessValue_checkParameters( meaning );
-			double fitnessValue = -3;  // value if the encoded was not properly decodable
+//			double fitnessValue = -3;  // value if the encoded was not properly decodable
+			double fitnessValue = 0;  // value if the encoded was not properly decodable
 			if ( !(meaning is TestingPositionsForUndecodableEncoded ) )
 				// the encoded was actually decodable; meaning is a LinearRegressionTestingPositions
 				
@@ -156,10 +157,10 @@ namespace QuantProject.Scripts.WalkForwardTesting.LinearRegression
 				// this.returnsManagerForTradingTickers and this.returnsMangerForSignalingTickers instead
 				fitnessValue =
 					this.getFitnessValue( (LinearRegressionTestingPositions)meaning );
-			if ( fitnessValue < -0.03 && fitnessValue > -2 )
-			{
-				;  // for breakpoint
-			}
+//			if ( fitnessValue < -0.03 && fitnessValue > -2 )
+//			{
+//				;  // for breakpoint
+//			}
 			return fitnessValue;
 		}
 		#endregion GetFitnessValue
