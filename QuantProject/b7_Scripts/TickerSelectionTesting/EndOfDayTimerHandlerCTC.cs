@@ -37,7 +37,7 @@ namespace QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios
 {
 	
 	/// <summary>
-	/// Implements MarketOpenEventHandler and MarketCloseEventHandler
+	/// Implements MarketOpenEventHandler and MarketCloseEventHandler //
 	/// These handlers contain the core strategy for the efficient close to close
 	/// portfolio (with a given days of life)!
 	/// </summary>
