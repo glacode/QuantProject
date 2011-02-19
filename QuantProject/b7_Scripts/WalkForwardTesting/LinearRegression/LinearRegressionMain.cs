@@ -104,9 +104,9 @@ namespace QuantProject.Scripts.WalkForwardTesting.LinearRegression
 			int maxNumberOfEligiblesForTrading = 150;
 			
 			// uncomment the followings lines for a faster script
-			groupIdForTradingTickers = "fastTest";
-			groupIdForAdditionalSignalingTickers = "fastTest";
-			maxNumberOfEligiblesForTrading = 8;
+//			groupIdForTradingTickers = "fastTest";
+//			groupIdForAdditionalSignalingTickers = "fastTest";
+//			maxNumberOfEligiblesForTrading = 8;
 
 			IEligiblesSelector eligiblesSelector =
 				new EligiblesSelectorForLinearRegression(
@@ -134,11 +134,13 @@ namespace QuantProject.Scripts.WalkForwardTesting.LinearRegression
 			int numberOfBestTestingPositionsToBeReturned = 50;
 			// uncomment the following line for a faster script
 //			numberOfBestTestingPositionsToBeReturned = 20;
-			numberOfBestTestingPositionsToBeReturned = 3;
+//			numberOfBestTestingPositionsToBeReturned = 3;
 			
-			int numberOfTickersForTrading = 1;
+//			int numberOfTickersForTrading = 1;
+			int numberOfTickersForTrading = 4;
 			int[] numberOfTickersInEachSignalingPortfolio =
-				new int[] { 1 , 1 , 1 };
+//				new int[] { 1 , 1 , 1 };
+				new int[] { 4 };
 			
 			DecoderForLinearRegressionTestingPositions decoderForWeightedPositions =
 				new DecoderForLinearRegressionTestingPositions(
@@ -173,8 +175,8 @@ namespace QuantProject.Scripts.WalkForwardTesting.LinearRegression
 			int generationNumberForGeneticOptimizer = 15;
 			
 			// uncomment the followings line for a faster script
-			populationSizeForGeneticOptimizer = 300;
-			generationNumberForGeneticOptimizer = 2;
+//			populationSizeForGeneticOptimizer = 300;
+//			generationNumberForGeneticOptimizer = 2;
 			
 			int seedForRandomGeneratorForTheGeneticOptimizer =
 				QuantProject.ADT.ConstantsProvider.SeedForRandomGenerator;
@@ -233,7 +235,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.LinearRegression
 //			inSampleDays = 360;
 			// uncomment the following line for a faster script
 //			inSampleDays = 20;
-			inSampleDays = 60;
+//			inSampleDays = 60;
 			
 //			IIntervalsSelector intervalsSelectorForOutOfSample =
 //				new OddIntervalsSelector( 1 , 1 , this.benchmark );
@@ -306,13 +308,13 @@ namespace QuantProject.Scripts.WalkForwardTesting.LinearRegression
 			firstDateTime = new DateTime( 2004 , 1 , 1 );
 			DateTime lastDateTime = new DateTime( 2005 , 1 , 1 );
 			lastDateTime = new DateTime( 2006 , 1 , 1 );
-			lastDateTime = new DateTime( 2004 , 1 , 7 );	// to test a single optimization with different seeds
 
 			// uncomment the following two lines for a faster script
-			firstDateTime = new DateTime( 2006 , 2 , 26 );
-			lastDateTime = new DateTime( 2006 , 4 , 5 );
+//			lastDateTime = new DateTime( 2004 , 1 , 7 );	// to test a single optimization with different seeds
+//			firstDateTime = new DateTime( 2006 , 2 , 26 );
+//			lastDateTime = new DateTime( 2006 , 4 , 5 );
 
-			double maxRunningHours = 2;
+			double maxRunningHours = 12;
 			
 			EndOfDayStrategyBackTester endOfDayStrategyBackTester =
 				new EndOfDayStrategyBackTester(
