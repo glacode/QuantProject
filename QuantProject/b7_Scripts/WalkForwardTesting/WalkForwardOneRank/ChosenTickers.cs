@@ -26,7 +26,7 @@ using QuantProject.Business.DataProviders;
 using QuantProject.Business.Financial.Accounting;
 using QuantProject.Business.Timing;
 using QuantProject.Data;
-using QuantProject.Data.DataProviders;
+using QuantProject.Data.DataProviders; 
 
 namespace QuantProject.Scripts.WalkForwardTesting.WalkForwardOneRank
 {
