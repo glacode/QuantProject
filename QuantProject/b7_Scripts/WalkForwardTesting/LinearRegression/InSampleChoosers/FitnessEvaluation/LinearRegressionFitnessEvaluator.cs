@@ -186,15 +186,17 @@ namespace QuantProject.Scripts.WalkForwardTesting.LinearRegression
 		{
 			double[] independentVariablesValues =
 //				new double[ weightedPositions.Count - 2 + 1 ];  // one is added for the constant
-				new double[ linearRegressionTestingPositions.SignalingPortfolios.Length + 1 ]; // one is added for the constant
-			independentVariablesValues[ 0 ] = 0; // regressors include the constant and the constant's return is zero
+//				new double[ linearRegressionTestingPositions.SignalingPortfolios.Length + 1 ]; // one is added for the constant
+				new double[ linearRegressionTestingPositions.SignalingPortfolios.Length ];
+//			independentVariablesValues[ 0 ] = 0; // regressors include the constant and the constant's return is zero
 			ReturnsManager returnsManager = new ReturnsManager(
 				new ReturnIntervals( returnInterval ) , historicalMarketValueProvider );
 			for( int j = 0 ; j < linearRegressionTestingPositions.SignalingPortfolios.Length ; j++ )
 			{
 				WeightedPositions portfolioForCurrentIndependentVariable =
 					linearRegressionTestingPositions.SignalingPortfolios[ j ];
-				independentVariablesValues[ j + 1 ] =
+//				independentVariablesValues[ j + 1 ] =
+				independentVariablesValues[ j ] =
 					portfolioForCurrentIndependentVariable.GetReturn( 0 , returnsManager );
 			}
 			return independentVariablesValues;
