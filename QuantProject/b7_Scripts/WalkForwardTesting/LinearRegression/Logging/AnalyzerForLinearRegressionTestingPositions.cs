@@ -144,6 +144,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.LinearRegression
 				ReturnInterval nextInterval = this.getNextInterval( returnIntervals );
 				returnIntervals.Add( nextInterval );
 			}
+			returnIntervals.RemoveAt( returnIntervals.Count - 1 );
 			return returnIntervals;
 		}
 		private ReturnIntervals getReturnIntervals()
