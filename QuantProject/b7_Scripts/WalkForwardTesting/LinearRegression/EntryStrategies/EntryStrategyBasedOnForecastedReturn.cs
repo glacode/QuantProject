@@ -108,21 +108,22 @@ namespace QuantProject.Scripts.WalkForwardTesting.LinearRegression
 			LinearRegressionTestingPositions candidate ,
 			double[] outOfSampleValuesForSignalingPortfolios )
 		{
-			double forecastedReturn = 0;		// the first coefficient is for the constant regressor
-												// and it has no return
+			// the first coefficient is for the constant regressor
+			double forecastedReturn = candidate.LinearRegression.EstimatedCoefficients[ 0 ];
+			
 			for ( int i = 1;
 			     i < candidate.LinearRegression.EstimatedCoefficients.Length ;
 			     i++ )
 				forecastedReturn +=
 					candidate.LinearRegression.EstimatedCoefficients[ i ] *
-					outOfSampleValuesForSignalingPortfolios[ i ];
+					outOfSampleValuesForSignalingPortfolios[ i - 1 ];
 			return forecastedReturn;
 		}
 		private double computeForecastedReturn(
 			LinearRegressionTestingPositions candidate ,
 			ReturnInterval outOfSampleReturnIntervalForSignaling )
 		{
-			double forecastedReturn = double.MinValue;;
+			double forecastedReturn = double.MinValue;
 			double[] outOfSampleValuesForSignalingPortfolios =
 				this.getOutOfSampleValuesForSignalingPortfolios(
 					candidate , outOfSampleReturnIntervalForSignaling );
