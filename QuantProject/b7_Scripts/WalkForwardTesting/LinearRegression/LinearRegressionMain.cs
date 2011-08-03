@@ -64,6 +64,11 @@ namespace QuantProject.Scripts.WalkForwardTesting.LinearRegression
 			this.benchmark = new Benchmark( "CCE" );
 			this.historicalMarketValueProviderForInSample =
 				new HistoricalAdjustedQuoteProvider();
+			// uncomment the following instruction in order to test the strategy
+			// using CSCO as a perfect predictor for MSFT
+			this.historicalMarketValueProviderForInSample =
+				new LookingAtTheFutureQuoteProvider(
+					this.historicalMarketValueProviderForInSample , "MSFT" , "CSCO" );
 			this.historicalMarketValueProviderForChosingPositionsOutOfSample =
 				this.historicalMarketValueProviderForInSample;
 			this.historicalMarketValueProviderForTheBacktesterAccount =
@@ -103,10 +108,13 @@ namespace QuantProject.Scripts.WalkForwardTesting.LinearRegression
 			double maxPriceForTradingTicker = 9000;
 			int maxNumberOfEligiblesForTrading = 150;
 			
-			// uncomment the followings lines for a faster script
-//			groupIdForTradingTickers = "fastTest";
-//			groupIdForAdditionalSignalingTickers = "fastTest";
-//			maxNumberOfEligiblesForTrading = 8;
+			// uncomment the followings three lines for a faster script
+			groupIdForTradingTickers = "fastTest";
+			groupIdForAdditionalSignalingTickers = "fastTest";
+			maxNumberOfEligiblesForTrading = 13;
+//			groupIdForTradingTickers = "win_leg";
+//			groupIdForAdditionalSignalingTickers = "win_leg";
+//			maxNumberOfEligiblesForTrading = 2;
 
 			IEligiblesSelector eligiblesSelector =
 				new EligiblesSelectorForLinearRegression(
@@ -134,13 +142,14 @@ namespace QuantProject.Scripts.WalkForwardTesting.LinearRegression
 			int numberOfBestTestingPositionsToBeReturned = 50;
 			// uncomment the following line for a faster script
 //			numberOfBestTestingPositionsToBeReturned = 20;
-//			numberOfBestTestingPositionsToBeReturned = 3;
+//			numberOfBestTestingPositionsToBeReturned = 6;
+			numberOfBestTestingPositionsToBeReturned = 1;
+
 			
-//			int numberOfTickersForTrading = 1;
-			int numberOfTickersForTrading = 4;
+			int numberOfTickersForTrading = 1;
 			int[] numberOfTickersInEachSignalingPortfolio =
 //				new int[] { 1 , 1 , 1 };
-				new int[] { 4 };
+				new int[] { 1 };
 			
 			DecoderForLinearRegressionTestingPositions decoderForWeightedPositions =
 				new DecoderForLinearRegressionTestingPositions(
@@ -170,13 +179,16 @@ namespace QuantProject.Scripts.WalkForwardTesting.LinearRegression
 			double crossoverRate = 0.5;
 			double mutationRate = 0.02;
 //			double elitismRate = 0.00001;
-			double elitismRate = 0.2;
+			double elitismRate = 0.01;
 			int populationSizeForGeneticOptimizer = 60000;
 			int generationNumberForGeneticOptimizer = 15;
 			
 			// uncomment the followings line for a faster script
-//			populationSizeForGeneticOptimizer = 300;
-//			generationNumberForGeneticOptimizer = 2;
+			populationSizeForGeneticOptimizer = 300;
+			generationNumberForGeneticOptimizer = 2;
+			populationSizeForGeneticOptimizer = 1000;
+			generationNumberForGeneticOptimizer = 3;
+
 			
 			int seedForRandomGeneratorForTheGeneticOptimizer =
 				QuantProject.ADT.ConstantsProvider.SeedForRandomGenerator;
@@ -235,7 +247,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.LinearRegression
 //			inSampleDays = 360;
 			// uncomment the following line for a faster script
 //			inSampleDays = 20;
-//			inSampleDays = 60;
+			inSampleDays = 60;
 			
 //			IIntervalsSelector intervalsSelectorForOutOfSample =
 //				new OddIntervalsSelector( 1 , 1 , this.benchmark );
@@ -313,8 +325,10 @@ namespace QuantProject.Scripts.WalkForwardTesting.LinearRegression
 //			lastDateTime = new DateTime( 2004 , 1 , 7 );	// to test a single optimization with different seeds
 //			firstDateTime = new DateTime( 2006 , 2 , 26 );
 //			lastDateTime = new DateTime( 2006 , 4 , 5 );
+			firstDateTime = new DateTime( 2004 , 5 , 1 );
+			lastDateTime = new DateTime( 2004 , 6 , 30 );
 
-			double maxRunningHours = 12;
+			double maxRunningHours = 1.5;
 			
 			EndOfDayStrategyBackTester endOfDayStrategyBackTester =
 				new EndOfDayStrategyBackTester(
