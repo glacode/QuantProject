@@ -23,6 +23,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 using System;
 
 using QuantProject.ADT.Optimizing.Genetic;
+using QuantProject.ADT.Statistics;
 using QuantProject.Business.Strategies.Eligibles;
 using QuantProject.Business.Strategies.Optimizing.Decoding;
 using QuantProject.Business.Strategies.Optimizing.FitnessEvaluation;
@@ -102,7 +103,9 @@ namespace QuantProject.Scripts.WalkForwardTesting.LinearRegression
 //					decoderForLinearRegressionTestingPositions.NumberOfSignalingPortfolios );
 			this.genomeSize =
 				decoderForLinearRegressionTestingPositions.NumberOfTickersForTrading +
-				decoderForLinearRegressionTestingPositions.NumberOfSignalingPortfolios;
+				Convert.ToInt32( BasicFunctions.GetSum(
+					decoderForLinearRegressionTestingPositions.NumberOfTickersInEachSignalingPortfolio ) );
+//				decoderForLinearRegressionTestingPositions.NumberOfSignalingPortfolios;
 		}
 		
 		public override int GetMaxValueForGenes( int genePosition )
