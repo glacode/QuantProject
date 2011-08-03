@@ -99,7 +99,7 @@ namespace QuantTesting.Scripts.WalkForwardTesting.LinearRegression
 
 			LinearRegressionTestingPositions mockLinearRegressionTestingPositions2 =
 				this.getMockLinearRegressionTestingPositions(
-					new double[] { 1 , 0 , 2 } ,
+					new double[] { 0.3 , 0 , -2 } ,
 					new WeightedPositions(
 						new double[] { 0.4 , -0.6 } , new string[] { "TA2" , "TB2" } ) );
 
@@ -119,22 +119,22 @@ namespace QuantTesting.Scripts.WalkForwardTesting.LinearRegression
 				new DynamicMock( typeof( ILinearRegressionFitnessEvaluator ) );
 			
 			dynamicMockLinearRegressionFitnessEvaluator.ExpectAndReturn(
-				"GetIndependentVariablesValues" , new double[] { 2 , 1 , 2 } , // forecasted
-				// return should be 1*2+2*1-3*2=-2 (not selected)
+				"GetIndependentVariablesValues" , new double[] { 1 , 2 } , // forecasted
+				// return should be 1+2*1-3*2=-3 (not selected)
 				new object[] {
 					mockLinearRegressionTestingPositions1 ,
 					outOfSampleReturnIntervalForSignaling ,
 					historicalMarketValueProvider } );
 			dynamicMockLinearRegressionFitnessEvaluator.ExpectAndReturn(
-				"GetIndependentVariablesValues" , new double[] { 0.1 , 3 , 0.2 } , // forecasted
-				// return should be 1*0.1+0*3+2*0.2=0.5 (selected!!)
+				"GetIndependentVariablesValues" , new double[] { 3 , -0.1 } , // forecasted
+				// return should be 0.3+0*3-2*(-0.1)=0.5 (selected!!)
 				new object[] {
 					mockLinearRegressionTestingPositions2 ,
 					outOfSampleReturnIntervalForSignaling ,
 					historicalMarketValueProvider } );
 			dynamicMockLinearRegressionFitnessEvaluator.ExpectAndReturn(
-				"GetIndependentVariablesValues" , new double[] { 2 , 1 , 2 } ,	// forecasted
-				// return should be 0.5*2-1*2+3*2=5 (not selected, because the previous one is selected)
+				"GetIndependentVariablesValues" , new double[] { 2 , 1 } ,	// forecasted
+				// return should be 0.5-1*2+3*1=1.5 (not selected, because the previous one is selected)
 				new object[] {
 					mockLinearRegressionTestingPositions3 ,
 					outOfSampleReturnIntervalForSignaling ,
@@ -157,7 +157,9 @@ namespace QuantTesting.Scripts.WalkForwardTesting.LinearRegression
 					mockBestTestingPositionsInSample , fakeOutOfSampleReturnIntervals );
 			
 			Assert.AreEqual( "TA2" , positionsToBeOpened[ 0 ].Ticker );
+			Assert.AreEqual( 0.4 , positionsToBeOpened[ 0 ].Weight );
 			Assert.AreEqual( "TB2" , positionsToBeOpened[ 1 ].Ticker );
+			Assert.AreEqual( -0.6 , positionsToBeOpened[ 1 ].Weight );
 		}
 		#endregion Test_GetPositionsToBeOpened
 	}

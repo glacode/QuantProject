@@ -46,7 +46,7 @@ namespace QuantTesting.Scripts.WalkForwardTesting.LinearRegression
 			signalingPortfolios[ 0 ] = new WeightedPositions(
 				new double[] { 0.5 , 0.5 } , new string[] { "SA1" , "SB1" } );
 			signalingPortfolios[ 1 ] = new WeightedPositions(
-				new double[] { 0.75 , 0.25 } , new string[] { "SA2" , "SB2" } );
+				new double[] { 0.75 , -0.25 } , new string[] { "SA2" , "SB2" } );
 			LinearRegressionTestingPositions linearRegressionTestingPositions =
 				new LinearRegressionTestingPositions(
 					signalingPortfolios , new WeightedPositions(
@@ -119,9 +119,10 @@ namespace QuantTesting.Scripts.WalkForwardTesting.LinearRegression
 				linearRegressionFitnessEvaluator.GetIndependentVariablesValues(
 					linearRegressionTestingPositions , returnInterval ,
 					fakeHistoricalMarketValueProvider );
-			Assert.AreEqual( 0 , independentVariableValues[ 0 ] );
-			Assert.AreEqual( 0.005 , independentVariableValues[ 1 ] , 0.0000001 );
-			Assert.AreEqual( -0.017 , independentVariableValues[ 2 ] , 0.0000001 );
+//			Assert.AreEqual( 0 , independentVariableValues[ 0 ] );
+			Assert.AreEqual( 0.005 , independentVariableValues[ 0 ] , 0.0000001 );
+			Assert.AreEqual( -0.019 , independentVariableValues[ 1 ] , 0.0000001 );
+			Assert.AreEqual( 2 , independentVariableValues.Length );
 			
 			LinearRegressionTestingPositions linearRegressionTestingPositionsToTestNull =
 				this.getLinearRegressionTestingPositionsToTestNull();
