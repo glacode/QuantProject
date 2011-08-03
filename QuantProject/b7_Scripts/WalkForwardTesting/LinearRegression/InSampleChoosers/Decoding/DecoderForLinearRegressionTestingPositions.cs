@@ -59,6 +59,10 @@ namespace QuantProject.Scripts.WalkForwardTesting.LinearRegression
 			get { return this.numberOfTickersInEachSignalingPortfolio.Length; }
 		}
 		
+		public int[] NumberOfTickersInEachSignalingPortfolio{
+			get { return this.numberOfTickersInEachSignalingPortfolio; }
+		}
+		
 		private BasicDecoderForTestingPositions basicDecoderForTestingPositions;
 		protected int expectedNumberOfGeneValues;
 		
