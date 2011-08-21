@@ -169,5 +169,42 @@ namespace QuantProject.ADT
 				( time1 < time2 );
 			return isFirstTimeLessThenSecondTime;
 		}
+		
+		/// <summary>
+		/// Returns the last date of the last quarter
+		/// </summary>
+		/// <param name="dateTime"></param>
+		/// <returns></returns>
+		public static DateTime GetLastDateOfTheLastQuarter( DateTime dateTime )
+		{
+			DateTime lastDateOfLastQuarter;
+			int currentMonth = dateTime.Month;
+			int year_lastDateOfLastQuarter = dateTime.Year;
+			int month_lastDateOfLastQuarter = 12;
+			int day_lastDateOfLastQuarter = 31;
+			
+			if ( currentMonth >= 1 && currentMonth <=3 )
+			{
+					year_lastDateOfLastQuarter = dateTime.Year - 1;
+			}
+			else if ( currentMonth >= 4 && currentMonth <=6 )
+			{
+					month_lastDateOfLastQuarter = 3;
+			}
+			else if ( currentMonth >= 7 && currentMonth <=9 )
+			{
+					month_lastDateOfLastQuarter = 6;
+					day_lastDateOfLastQuarter = 30;	
+			}
+			else if ( currentMonth >= 10 && currentMonth <=12 )
+			{
+					month_lastDateOfLastQuarter = 9;
+					day_lastDateOfLastQuarter = 30;			
+			}
+			lastDateOfLastQuarter = 
+				new DateTime(year_lastDateOfLastQuarter, month_lastDateOfLastQuarter,
+			               day_lastDateOfLastQuarter, 16, 0, 0);
+			return lastDateOfLastQuarter;
+		}
 	}
 }
