@@ -415,14 +415,33 @@ namespace QuantProject.Business.Strategies
 //		}
 		#endregion stopTheScriptIfTheCase
 		
+		private string notifyProgress_getPositions()
+		{
+			string returnValue = null;
+			foreach(Position pos in this.strategyForBacktester.Account.Portfolio.Positions)
+				returnValue += pos.Instrument.Key + "; ";
+			return returnValue;
+		}
+		
 		private void notifyProgress(
 			Timer timer )
 		{
-			string progressMessage = "Current out of sample date:" +
-				this.timer.GetCurrentDateTime().ToString() + " - " +
-				"First date:" + this.firstDateTime.ToString() + " - " +
-				"Last date:" + this.lastDateTime.ToString() + " - " +
-				"Real time:" + DateTime.Now;
+			string progressMessage;
+			try
+			{
+				progressMessage = "Curr. out of s. date:" +
+					this.timer.GetCurrentDateTime().ToString() + " - " +
+					"Acc.Value: " + this.strategyForBacktester.Account.GetMarketValue().ToString() + " - " +
+					"positions: " + this.notifyProgress_getPositions() + " - " +
+					"First date:" + this.firstDateTime.ToString() + " - " +
+					"Last date:" + this.lastDateTime.ToString() + " - " +
+					"Real time:" + DateTime.Now;
+			}
+			catch(Exception ex)
+			{
+				progressMessage = "Error occured during building progressMessage: " +
+													ex.Message;
+			}
 			NewMessageEventArgs newMessageEventArgs =
 				new NewMessageEventArgs( progressMessage );
 			if(this.NewMessage != null)
