@@ -165,5 +165,33 @@ namespace QuantProject.Business.Strategies.OutOfSample
 			this.weightedPositions = null;
 			this.fitnessInSample = double.MinValue;
 		}
+		
+		public TestingPositions Copy()
+		{
+			return new TestingPositions(this.weightedPositions, this.fitnessInSample);
+		}
+		
+		private void AddWeightedPosition_adjustPreviousWeights(double weightOfNewPositionToAdd )
+		{
+			double weightToBeRedistributedToThePrevious = 1.0 - weightOfNewPositionToAdd;
+			double previousWeight;
+			for(int i = 0; i < this.WeightedPositions.Count; i ++)
+			{
+				previousWeight = this.WeightedPositions[i].Weight;
+				this.WeightedPositions[i].Weight = 
+					previousWeight * weightToBeRedistributedToThePrevious;
+			}
+		}
+		
+		/// <summary>
+		/// Adds a WeightedPosition to the current instance of testing positions
+		/// the previous weights are adjusted according to the amount
+		/// of weight of the added WeightedPosition
+		/// </summary>
+		public void AddWeightedPosition(WeightedPosition positionToAdd )
+		{
+			this.AddWeightedPosition_adjustPreviousWeights(positionToAdd.Weight);
+			this.weightedPositions.Add(positionToAdd);
+		}
 	}
 }
