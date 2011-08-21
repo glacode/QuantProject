@@ -35,7 +35,7 @@ namespace QuantProject.Business.Strategies.Optimizing.Decoding
 	/// </summary>
 	[Serializable]
 	public abstract class DecoderForTestingPositionsWithWeights :
-		BasicDecoderForTestingPositions
+		BasicDecoderForGeneticallyOptimizableTestingPositions
 	{
 		protected int[] weightsRelatedGeneValues;
 		
