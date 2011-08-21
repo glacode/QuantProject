@@ -32,10 +32,12 @@ namespace QuantProject.Data.Selectors
 	/// <summary>
 	/// Class for selection on tickers by groupId only or groupId and date
 	/// </summary>
-	public class SelectorByGroup : ITickerSelector
+	[Serializable]
+	public class SelectorByGroup : ITickerSelector, ITickerSelectorByDate
 	{
 		private string groupID;
 		private DateTime date = new DateTime(1900,1,1);
+		private bool temporizedGroup = false;
 		
 		/// <summary>
 		/// Creates an new instance of SelectorByGroup, in order
@@ -45,6 +47,19 @@ namespace QuantProject.Data.Selectors
 		public SelectorByGroup( string groupID )
 		{
 			this.groupID = groupID;
+		}
+		
+		/// <summary>
+		/// Creates an new instance of SelectorByGroup, in order
+		/// to get tickers contained in the given group
+		/// </summary>
+		/// <param name="groupID">Group's code for which tickers are to be selected</param>
+		/// <param name="temporizedGroup">If true, the selection depends on
+		/// the time of request</param>
+		public SelectorByGroup( string groupID, bool temporizedGroup )
+		{
+			this.groupID = groupID;
+			this.temporizedGroup = temporizedGroup;
 		}
 		
 		/// <summary>
@@ -68,9 +83,21 @@ namespace QuantProject.Data.Selectors
 			else
 				return QuantProject.DataAccess.Tables.Tickers_tickerGroups.GetTickers( this.groupID, this.date );
 		}
+		
+		public DataTable GetTableOfSelectedTickers(DateTime dateTime)
+		{
+			if(this.temporizedGroup)
+				//date has not be set by the user because it is still equal to default value
+				return QuantProject.DataAccess.Tables.Tickers_tickerGroups.GetTickers( this.groupID, dateTime );
+			else//if not temporized, the selection depends only on groupID
+				return QuantProject.DataAccess.Tables.Tickers_tickerGroups.GetTickers( this.groupID );
+		}
+
 		public void SelectAllTickers()
 		{
 			;
 		}
+		
+		
 	}
 }
