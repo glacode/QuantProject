@@ -115,19 +115,15 @@ namespace QuantProject.ADT
     {
       int numRows = table.Rows.Count;
       double[] arrayOfDouble = new double[numRows];
-      int index = 0;
-      try
+      for(int index = 0; index < numRows; index++)
       {
-        for(; index!= numRows; index++)
-        {
-          arrayOfDouble[index] = (double) table.Rows[index][columnName];
+        arrayOfDouble[index] = double.NaN;
+        try{
+        	arrayOfDouble[index] = (double)table.Rows[index][columnName];
         }
-
-      }
-      catch(Exception ex)
-      {
-      	string s = ex.ToString();
-      	index = numRows;
+        catch(Exception ex){
+	      	string s = ex.ToString();
+	      }
       }
       return arrayOfDouble;
     }
@@ -276,12 +272,84 @@ namespace QuantProject.ADT
         {
           j = 0;
         }
-
       }
       return hashTable;
-
     }
     
-
+    #region GetArrayOfStringFromRows
+    private static string getArrayOfStringFromRows_getColumnNames(DataTable table)
+    {
+    	string returnValue = null;
+    	foreach(DataColumn dataColumn in table.Columns)
+    		returnValue = returnValue + dataColumn.ColumnName + "; ";
+    	return returnValue;
+    }
+    
+    private static string getArrayOfStringFromRows_getRowValues(DataTable table,
+                                                               	int currentRowIndex)
+    {
+    	string returnValue = null;
+    	int numOfColumns = table.Columns.Count;
+    	for(int i = 0; i < numOfColumns; i++)
+    		returnValue = returnValue + table.Rows[currentRowIndex][i].ToString() + "; ";
+    	return returnValue; 	
+    }
+    
+    /// <summary>
+    /// Get an array of string (for debugging purposes):
+    /// the string with index 0 contains the name of the columns of the
+    /// data table;
+    /// the other strings contain all the table's rows
+    /// </summary>
+    public static string[] GetArrayOfStringFromRows(DataTable table)
+    {
+      int numRows = table.Rows.Count;
+      string[] arrayOfString = new string[numRows];
+      int index = 0;
+      try
+      {
+        for(; index!= numRows; index++)
+        {
+        	if(index == 0)
+        		arrayOfString[index] = getArrayOfStringFromRows_getColumnNames(table);
+        	else
+        		arrayOfString[index] = getArrayOfStringFromRows_getRowValues(table, index);
+        }
+      }
+      catch(Exception ex)
+      {
+        MessageBox.Show(ex.ToString());
+        index = numRows;
+      }
+      return arrayOfString;
+    }
+    #endregion GetArrayOfStringFromRows
+    
+    /// <summary>
+    /// Import in destinationTable all the rows in 
+    /// sourceTable.
+    /// Destination and source tables have to share
+    /// the same data - structure
+    /// </summary>
+    public static void ImportRowsFromFirstRowOfSource(DataTable sourceTable, 
+                                  				 				 DataTable destinationTable)
+    {
+      DataRow[] sourceRows = sourceTable.Select();
+			for(int i = 0; i < sourceRows.Length; i++)
+      	destinationTable.ImportRow(sourceRows[i]);
+    }
+    /// <summary>
+    /// Import in destinationTable all the rows in 
+    /// sourceTable.
+    /// Destination and source tables have to share
+    /// the same data - structure
+    /// </summary>
+    public static void ImportRowsFromLastRowOfSource(DataTable sourceTable, 
+                                  				 				 DataTable destinationTable)
+    {
+      DataRow[] sourceRows = sourceTable.Select();
+			for(int i = sourceRows.Length - 1; i >= 0; i--)
+      	destinationTable.ImportRow(sourceRows[i]);
+    }
 	}
 }
