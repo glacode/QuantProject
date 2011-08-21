@@ -51,7 +51,7 @@ namespace QuantProject.Business.Financial.Fundamentals.FairValueProviders
 			this.historicalMarketValueProvider = historicalMarketValueProvider;
 		}
 		
-		private double getPEGRatio(string ticker , DateTime firstDateForFundamentals,
+		private double getPEGRatio(string ticker ,
 		                           DateTime dateOfFairValueComputation)
 		{
 			double returnValue;
@@ -67,7 +67,20 @@ namespace QuantProject.Business.Financial.Fundamentals.FairValueProviders
 			return returnValue;
 		}
 		
-		public double GetFairValue( string ticker , DateTime firstDateForFundamentals,
+		public void Run(DateTime dateTime)
+		{
+			;
+		}
+		
+		public string Description
+		{
+			get
+			{
+				return "PEGRatioFairValueProvider";	
+			}
+		}
+		
+		public double GetFairValue( string ticker ,
 		                     				DateTime dateOfFairValueComputation )
 		{
 			double returnValue;
@@ -75,8 +88,7 @@ namespace QuantProject.Business.Financial.Fundamentals.FairValueProviders
 				this.historicalMarketValueProvider.GetMarketValue(ticker,
 				                                            dateOfFairValueComputation);
 			returnValue = priceAtDateOfFairValueComputation * this.fairPEGRatioLevel /
-				            this.getPEGRatio(ticker, 
-				                             firstDateForFundamentals,
+				            this.getPEGRatio(ticker,
 				                             dateOfFairValueComputation);
 			
 			return returnValue;
