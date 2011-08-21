@@ -21,40 +21,21 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 using System;
 using System.Data;
-using System.Collections;
-using System.Collections.Generic;
 using System.IO;
 
-using QuantProject.ADT;
-using QuantProject.ADT.Statistics;
 using QuantProject.ADT.Histories;
 using QuantProject.ADT.Messaging;
-using QuantProject.ADT.Timing;
-using QuantProject.Business.Financial.Accounting;
-using QuantProject.Business.Financial.Instruments;
-using QuantProject.Business.Financial.Ordering;
-using QuantProject.Business.Timing;
-using QuantProject.Business.Strategies;
-using QuantProject.Business.Strategies.InSample;
-using QuantProject.Business.Strategies.InSample.InSampleFitnessDistributionEstimation;
-using QuantProject.Business.Strategies.OutOfSample;
-using QuantProject.Business.Strategies.Logging;
-using QuantProject.Business.Strategies.ReturnsManagement;
-//using QuantProject.Business.Strategies.ReturnsManagement.Time.IntervalsSelectors
-using QuantProject.Business.Strategies.ReturnsManagement.Time;
 using QuantProject.Business.DataProviders;
-using QuantProject.Business.Strategies.TickersRelationships;
+using QuantProject.Business.Financial.Accounting;
+using QuantProject.Business.Strategies;
 using QuantProject.Business.Strategies.Eligibles;
-using QuantProject.Business.Strategies.Optimizing.Decoding;
-using QuantProject.Data;
-using QuantProject.Data.DataProviders;
-using QuantProject.Data.Selectors;
-using QuantProject.Data.DataTables;
-using QuantProject.ADT.Optimizing.Genetic;
-using QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOscillators.PortfolioValueOscillator.InSampleChoosers;
-using QuantProject.Scripts.TickerSelectionTesting.OTC;
+using QuantProject.Business.Strategies.InSample;
+using QuantProject.Business.Strategies.Logging;
+using QuantProject.Business.Strategies.OutOfSample;
+using QuantProject.Business.Strategies.ReturnsManagement;
+using QuantProject.Business.Strategies.ReturnsManagement.Time;
+using QuantProject.Business.Timing;
 using QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios;
-using QuantProject.Scripts.WalkForwardTesting.LinearCombination;
 
 namespace QuantProject.Scripts.TickerSelectionTesting.DrivenByFundamentals.DrivenByFairValueProvider
 {
@@ -67,8 +48,10 @@ namespace QuantProject.Scripts.TickerSelectionTesting.DrivenByFundamentals.Drive
 	{
 		public event NewLogItemEventHandler NewLogItem;
 		public event NewMessageEventHandler NewMessage;
-
-		protected int numDaysForFundamentalAnalysis;
+		
+		protected int numDaysForFundamentalDataAvailability;
+//		protected int numDaysForFundamentalAnalysis;
+		protected int numOfMaximumConsecutiveDaysWithSomeMissingQuotes;
 		protected int inSamplePeriodLengthInDays;
 		protected int numDaysBetweenEachOptimization;
 		protected IInSampleChooser inSampleChooser;
@@ -82,6 +65,7 @@ namespace QuantProject.Scripts.TickerSelectionTesting.DrivenByFundamentals.Drive
 		protected int numDaysElapsedSinceLastOptimization;
 		protected ReturnsManager returnsManager;
 		protected TestingPositions[] chosenPositions;
+		protected TestingPositions positionsToOpen;
 		//chosen in sample by the chooser or passed
 		//directly by the user using a form:
 		//these are the positions to test out of sample
@@ -110,6 +94,8 @@ namespace QuantProject.Scripts.TickerSelectionTesting.DrivenByFundamentals.Drive
 		//if current profit of the portfolio crosses this level,
 		//the portfolio is sold, no matter what the current value
 		//of percentageOfTheoreticalProfit is
+		protected string hedgingTicker;
+		protected double hedgingTickerWeight = 0.0;
 		
 		private string description_GetDescriptionForChooser()
 		{
@@ -139,17 +125,19 @@ namespace QuantProject.Scripts.TickerSelectionTesting.DrivenByFundamentals.Drive
 		
 		public DrivenByFVProviderStrategy(IEligiblesSelector eligiblesSelector ,
 				int minNumOfEligiblesForValidOptimization, IInSampleChooser inSampleChooser ,
-				int numDaysForFundamentalAnalysis , int numDaysForPortfolioVolatilityAnalysis ,
+				int numDaysForFundamentalDataAvailability, int numDaysForPortfolioVolatilityAnalysis ,
 				Benchmark benchmark , int numDaysBetweenEachOptimization ,
 				HistoricalMarketValueProvider historicalMarketValueProviderForInSample ,
 			  HistoricalMarketValueProvider historicalMarketValueProviderForOutOfSample ,
 			  PortfolioType portfolioType,  double stopLoss, double percentageOfTheoreticalProfit,
-			  double takeProfitLevelInAnyCase)
+			  double takeProfitLevelInAnyCase,
+			  string hedgingTicker, double hedgingTickerWeight)
 		{
 			this.eligiblesSelector = eligiblesSelector;
 			this.minimumNumberOfEligiblesForValidOptimization = minNumOfEligiblesForValidOptimization;
 			this.inSampleChooser = inSampleChooser;
-			this.numDaysForFundamentalAnalysis = numDaysForFundamentalAnalysis;
+			this.numDaysForFundamentalDataAvailability = numDaysForFundamentalDataAvailability;
+//			this.numDaysForFundamentalAnalysis = numDaysForFundamentalAnalysis;
 			this.inSamplePeriodLengthInDays = numDaysForPortfolioVolatilityAnalysis;
 			this.benchmark = benchmark;
 			this.numDaysBetweenEachOptimization = numDaysBetweenEachOptimization;
@@ -159,6 +147,48 @@ namespace QuantProject.Scripts.TickerSelectionTesting.DrivenByFundamentals.Drive
 			this.stopLoss = stopLoss;
 			this.percentageOfTheoreticalProfit = percentageOfTheoreticalProfit;
 			this.takeProfitLevelInAnyCase = takeProfitLevelInAnyCase;
+			this.numOfMaximumConsecutiveDaysWithSomeMissingQuotes = 10;
+			this.hedgingTicker = hedgingTicker;
+			this.hedgingTickerWeight = hedgingTickerWeight;
+		}
+		
+		private bool someTickersHaveNotBeenTradedForTooManyDays(DateTime dateTime,
+		                                    string[] tickers)
+		{
+			bool returnValue = false;
+			DateTime firstDateToCheck =
+				dateTime.AddDays(-this.numOfMaximumConsecutiveDaysWithSomeMissingQuotes);
+			DateTime currentDateToCheck;
+			double currentQuote;
+			for( int i = 0; i < tickers.Length; i++ )
+			{
+				if(returnValue == true)
+					return returnValue;
+				else
+					returnValue = true;
+				for(int idxDay = 0;
+		    		idxDay < this.numOfMaximumConsecutiveDaysWithSomeMissingQuotes;
+		    		idxDay++)
+				{
+					currentDateToCheck = firstDateToCheck.AddDays(idxDay);
+					currentQuote = double.MinValue;
+					try{
+					currentQuote =
+						QuantProject.DataAccess.Tables.Quotes.GetAdjustedClose( tickers[i], currentDateToCheck );
+					}
+					catch(Exception ex){
+						string forBreakpoint = ex.Message;
+						forBreakpoint = forBreakpoint + "";
+					}
+					if( currentQuote != double.MinValue )
+					{
+						returnValue = false;
+						idxDay = this.numOfMaximumConsecutiveDaysWithSomeMissingQuotes;
+					}
+				}
+			}
+			
+			return returnValue;	
 		}
 		
 		private bool allTickersAreExchanged(DateTime dateTime,
@@ -183,12 +213,39 @@ namespace QuantProject.Scripts.TickerSelectionTesting.DrivenByFundamentals.Drive
 			return returnValue;
 		}
 		
+		private bool allTickersHaveAtLeastOneQuoteInTheLastPeriod(DateTime lastPeriodDay,
+		                                                          int periodLengthInDays,
+		                                    											string[] tickers)
+		{
+			bool returnValue = true;
+			int currentNumberOfQuotes;
+			DateTime firstPeriodDay = lastPeriodDay.AddDays(-periodLengthInDays);
+			try{
+				for( int i = 0; i < tickers.Length; i++ )
+				{
+					currentNumberOfQuotes = 
+						QuantProject.DataAccess.Tables.Quotes.GetNumberOfDaysWithQuotes(tickers[i], firstPeriodDay, lastPeriodDay);
+					if( currentNumberOfQuotes == 0 )
+					{
+						returnValue = false;
+						i = tickers.Length; //exit from for
+					}
+				}
+			}
+			catch(Exception ex){
+				string forBreakpoint = ex.Message;
+				forBreakpoint = forBreakpoint + "";
+				returnValue = false;
+			}
+			return returnValue;
+		}
+		
 		#region newDateTimeEventHandler_closePositions
 				
 		private void newDateTimeEventHandler_closePositions()
 		{
 			DateTime currentDateTime = this.now();
-			if( allTickersAreExchanged( currentDateTime, AccountManager.GetTickersInOpenedPositions(this.account) ) )
+			if( allTickersHaveAtLeastOneQuoteInTheLastPeriod( currentDateTime, 180, AccountManager.GetTickersInOpenedPositions(this.account) ) )
 			{
 		  	AccountManager.ClosePositions( this.account );
 		  	this.lastEntryTime = new DateTime(1900,1,1);
@@ -197,17 +254,73 @@ namespace QuantProject.Scripts.TickerSelectionTesting.DrivenByFundamentals.Drive
 		#endregion newDateTimeEventHandler_closePositions
 		
 		#region newDateTimeEventHandler_openPositions
-	
+		
+		private WeightedPositions newDateTimeEventHandler_openPositions_getPositions()
+		{
+			WeightedPositions returnValue = 
+				new WeightedPositions(this.positionsToOpen.WeightedPositions.SignedTickers);
+			returnValue.Clear();
+			for(int i = 0;
+				  i < this.positionsToOpen.WeightedPositions.Count;
+				  i++)
+			{
+				if(this.portfolioType == PortfolioType.ShortAndLong)
+					returnValue.Add(this.positionsToOpen.WeightedPositions[i]);
+				else if( this.positionsToOpen.WeightedPositions[i].IsLong &&
+				   			 this.portfolioType == PortfolioType.OnlyLong )
+					returnValue.Add(this.positionsToOpen.WeightedPositions[i]);
+				else if( this.positionsToOpen.WeightedPositions[i].IsShort &&
+				   			 this.portfolioType == PortfolioType.OnlyShort )
+					returnValue.Add(this.positionsToOpen.WeightedPositions[i]);
+			}
+			return returnValue;
+		}
+		
+		private TestingPositions newDateTimeEventHandler_openPositions_setPositionsToOpen_addHedging(int currentIdxOfTestingPosition)
+		{
+			TestingPositions returnValue = this.chosenPositions[currentIdxOfTestingPosition].Copy();
+			returnValue.AddWeightedPosition(new WeightedPosition(
+				this.hedgingTickerWeight, this.hedgingTicker));
+			
+			return returnValue;
+		}
+		
+		private void newDateTimeEventHandler_openPositions_setPositionsToOpen()
+		{
+			if( this.chosenPositions != null )
+			{
+				//the first positions with all tickers exchanged are set
+				for(int i = 0; i < this.chosenPositions.Length; i++)
+				{
+					if(this.allTickersAreExchanged( this.now(), this.chosenPositions[i].WeightedPositions.SignedTickers.Tickers))
+					{
+						if( this.hedgingTicker != null &&
+						    this.historicalMarketValueProviderForOutOfSample.WasExchanged( this.hedgingTicker, this.now() ) )
+						{
+							this.positionsToOpen = 
+								this.newDateTimeEventHandler_openPositions_setPositionsToOpen_addHedging( i );
+							i = this.chosenPositions.Length;
+						}
+						else // no hedging ticker provided or hedging ticker not exchanged
+						{
+							this.positionsToOpen = this.chosenPositions[i];
+							i = this.chosenPositions.Length;
+						}
+					}
+				}
+			}
+		}
+		
 		private void newDateTimeEventHandler_openPositions()
 		{
-			if(	this.chosenPositions != null &&
-			    this.allTickersAreExchanged( this.now(), this.chosenPositions[0].WeightedPositions.SignedTickers.Tickers) 
-			   )
+			this.newDateTimeEventHandler_openPositions_setPositionsToOpen();
+			if(	this.positionsToOpen != null )
 			{
 				try
 				{
-					AccountManager.OpenPositions( this.chosenPositions[0].WeightedPositions,
-					                             	this.account );
+					WeightedPositions weightedPositionsToOpen =
+						this.newDateTimeEventHandler_openPositions_getPositions();
+					AccountManager.OpenPositions( weightedPositionsToOpen, this.account );
 					this.lastEntryTime = this.now();
 					this.previousAccountValue = this.account.GetMarketValue();
 				}
@@ -255,18 +368,23 @@ namespace QuantProject.Scripts.TickerSelectionTesting.DrivenByFundamentals.Drive
 		public virtual void NewDateTimeEventHandler(
 			Object sender , DateTime dateTime )
 		{
-			this.newDateTimeEventHandler_updateStopLossAndTakeProfitConditions();
-			bool timeToProfitOrToStopLoss = this.takeProfitConditionReached ||
-																	this.stopLossConditionReached;
+			if(HistoricalEndOfDayTimer.IsMarketClose( dateTime ) ||
+			   HistoricalEndOfDayTimer.IsMarketOpen( dateTime ) )
+			{
+				this.newDateTimeEventHandler_updateStopLossAndTakeProfitConditions();
+				bool timeToProfitOrToStopLoss = this.takeProfitConditionReached ||
+																		this.stopLossConditionReached;
+				
+				if( this.account.Portfolio.Count == 0 )
+					this.newDateTimeEventHandler_openPositions();
+				
+				if( (this.account.Portfolio.Count > 0 && timeToProfitOrToStopLoss) ||
+				    this.optimalTestingPositionsAreToBeUpdated() ||
+				    this.someTickersHaveNotBeenTradedForTooManyDays(this.now(), AccountManager.GetTickersInOpenedPositions(this.account) ) )
+					this.newDateTimeEventHandler_closePositions();
 			
-			if( this.account.Portfolio.Count == 0 )
-				this.newDateTimeEventHandler_openPositions();
-			
-			if( (this.account.Portfolio.Count > 0 && timeToProfitOrToStopLoss) ||
-			    this.optimalTestingPositionsAreToBeUpdated() )
-				this.newDateTimeEventHandler_closePositions();
-		
-			this.newDateTimeEventHandler_updateTestingPositions( dateTime );
+				this.newDateTimeEventHandler_updateTestingPositions( dateTime );
+			}
 		}
 				
 		private void findPositionsForToday_writePositionsToLogFile(DateTime today, EligibleTickers eligibles,
@@ -279,7 +397,6 @@ namespace QuantProject.Scripts.TickerSelectionTesting.DrivenByFundamentals.Drive
 			StreamWriter w = File.AppendText(pathFile);
 			w.WriteLine ("\n----------------------------------------------\r\n");
 			w.Write("\r\nPositions for PositionsForDrivenByFVProviderStrategy on date: {0}\r", today.ToLongDateString() );
-			w.Write("\r\nNum days for fundamental analysis {0}\r", this.numDaysForFundamentalAnalysis.ToString());
 			w.Write("\r\nNum days for portofolio analysis for volatility {0}\r", this.inSamplePeriodLengthInDays.ToString());
 			w.Write("\r\nEligibles: {0}\r", eligibles.Count.ToString() );
 			w.WriteLine ("\n----------------------------------------------");
@@ -334,14 +451,14 @@ namespace QuantProject.Scripts.TickerSelectionTesting.DrivenByFundamentals.Drive
 		
 		protected void updateTestingPositions(DateTime currentDateTime)
 		{
-			History historyForEligiblesSelector =
-				this.benchmark.GetEndOfDayHistory(
-					HistoricalEndOfDayTimer.GetMarketClose(
-						currentDateTime.AddDays( -this.numDaysForFundamentalAnalysis ) ) ,
-					HistoricalEndOfDayTimer.GetMarketClose(
-						currentDateTime.AddDays(-1) ) );
+//			History historyForEligiblesSelector =
+//				this.benchmark.GetEndOfDayHistory(
+//					HistoricalEndOfDayTimer.GetMarketClose(
+//						currentDateTime.AddDays( -this.numDaysForFundamentalAnalysis ) ) ,
+//					HistoricalEndOfDayTimer.GetMarketClose(
+//						currentDateTime.AddDays(-1) ) );
 			
-			History historyForReturnsManager =
+			History history =
 				this.benchmark.GetEndOfDayHistory(
 					HistoricalEndOfDayTimer.GetMarketClose(
 						currentDateTime.AddDays( -this.inSamplePeriodLengthInDays ) ) ,
@@ -349,10 +466,10 @@ namespace QuantProject.Scripts.TickerSelectionTesting.DrivenByFundamentals.Drive
 						currentDateTime.AddDays(-1) ) );
 			
 			this.currentEligibles =
-				this.eligiblesSelector.GetEligibleTickers(historyForEligiblesSelector);
+				this.eligiblesSelector.GetEligibleTickers(history);
 			
-			this.updateReturnsManager(historyForReturnsManager.FirstDateTime,
-			                          historyForReturnsManager.LastDateTime);
+			this.updateReturnsManager(history.FirstDateTime,
+			                          history.LastDateTime);
 			
 			if( (  this.eligiblesSelector is DummyEligibleSelector &&
 			     this.inSampleChooser != null )    ||
@@ -383,7 +500,8 @@ namespace QuantProject.Scripts.TickerSelectionTesting.DrivenByFundamentals.Drive
 		private void newDateTimeEventHandler_updateTestingPositions(
 			DateTime dateTime )
 		{
-			if ( this.optimalTestingPositionsAreToBeUpdated() )
+			if ( this.account.Portfolio.Count == 0 ||
+			     this.optimalTestingPositionsAreToBeUpdated() )
 			{
 				this.chosenPositions = null;
 				this.updateTestingPositions( dateTime );
@@ -415,8 +533,10 @@ namespace QuantProject.Scripts.TickerSelectionTesting.DrivenByFundamentals.Drive
 		private DrivenByFVProviderLogItem getLogItem( EligibleTickers eligibleTickers )
 		{
 			DrivenByFVProviderLogItem logItem =	
-				new DrivenByFVProviderLogItem( this.now(), this.numDaysForFundamentalAnalysis,
-				                               this.inSamplePeriodLengthInDays);
+				new DrivenByFVProviderLogItem( this.now(),
+				                               this.inSamplePeriodLengthInDays,
+				                               this.historicalMarketValueProviderForInSample,
+				                               this.benchmark);
 			logItem.BestPositionsInSample =
 				this.chosenPositions;
 			logItem.NumberOfEligibleTickers =

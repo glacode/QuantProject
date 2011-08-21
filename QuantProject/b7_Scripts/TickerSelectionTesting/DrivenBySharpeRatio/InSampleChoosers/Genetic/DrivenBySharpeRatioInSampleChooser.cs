@@ -45,6 +45,8 @@ namespace QuantProject.Scripts.TickerSelectionTesting.DrivenBySharpeRatio.InSamp
 	public class DrivenBySharpeRatioInSampleChooser : GeneticChooser
 	{
     protected GenomeManagerType genomeManagerType;
+    protected bool keepOnRunningUntilConvergenceHasReached;
+		protected double minConvergenceRate;
     	
 		public DrivenBySharpeRatioInSampleChooser(
 			int numberOfPortfolioPositions , int numberOfBestTestingPositionsToBeReturned ,
@@ -56,7 +58,9 @@ namespace QuantProject.Scripts.TickerSelectionTesting.DrivenBySharpeRatio.InSamp
 			double crossoverRate , double mutationRate , double elitismRate ,
 			int populationSizeForGeneticOptimizer ,
 			int generationNumberForGeneticOptimizer ,
-			int seedForRandomGenerator)
+			int seedForRandomGenerator,
+			bool keepOnRunningUntilConvergenceHasReached,
+			double minConvergenceRate)
 	    :
 			base(numberOfPortfolioPositions, numberOfBestTestingPositionsToBeReturned,
 			benchmark ,	decoderForTestingPositions ,
@@ -67,8 +71,11 @@ namespace QuantProject.Scripts.TickerSelectionTesting.DrivenBySharpeRatio.InSamp
 			seedForRandomGenerator )
 		{
     	this.genomeManagerType = genomeManagerType;
+    	this.keepOnRunningUntilConvergenceHasReached =
+    		keepOnRunningUntilConvergenceHasReached;
+    	this.minConvergenceRate = minConvergenceRate;
 		}
-
+		
 		protected override string getHashCodeForGenome(QuantProject.ADT.Optimizing.Genetic.Genome genome)
 		{
 			string returnValue = ((TestingPositions)genome.Meaning).HashCodeForTickerComposition;
@@ -83,5 +90,21 @@ namespace QuantProject.Scripts.TickerSelectionTesting.DrivenBySharpeRatio.InSamp
 			                                        this.genomeManagerType , returnsManager,
 			                                        this.seedForRandomGeneratorForTheGeneticOptimizer);
 		}
+		
+//		public DrivenBySharpeRatioInSampleChooser GetCopy(int numOfPortfolioPositions , int numOfBestTestingPositionsToBeReturned ,
+//			IDecoderForTestingPositions decoder, int populationSizeForGO,
+//			int generationNumberForGO)
+//		{
+//			DrivenBySharpeRatioInSampleChooser returnValue =
+//				new DrivenBySharpeRatioInSampleChooser(numOfPortfolioPositions,
+//				    	numOfBestTestingPositionsToBeReturned, this.benchmark,
+//				    	decoder, this.genomeManagerType, fitnessEvaluator,
+//				    	this.historicalMarketValueProvider, this.crossoverRate, this.mutationRate,
+//				    	this.elitismRate, populationSizeForGO, generationNumberForGO,
+//				    	this.seedForRandomGeneratorForTheGeneticOptimizer, this.keepOnRunningUntilConvergenceHasReached,
+//				    	this.minConvergenceRate);
+//			
+//			return returnValue;
+//		}
 	}
 }

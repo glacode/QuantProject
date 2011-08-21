@@ -46,15 +46,15 @@ using QuantProject.Business.DataProviders;
 using QuantProject.Business.Strategies.TickersRelationships;
 using QuantProject.Business.Strategies.Eligibles;
 using QuantProject.Business.Strategies.Optimizing.Decoding;
+using QuantProject.Business.Strategies.Optimizing.FitnessEvaluation;
+using QuantProject.Business.Strategies.Optimizing.GenomeManagers;
 using QuantProject.Data;
 using QuantProject.Data.DataProviders;
 using QuantProject.Data.Selectors;
 using QuantProject.Data.DataTables;
 using QuantProject.ADT.Optimizing.Genetic;
-using QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOscillators.PortfolioValueOscillator.InSampleChoosers;
-using QuantProject.Scripts.TickerSelectionTesting.OTC;
+using QuantProject.Scripts.TickerSelectionTesting.DrivenBySharpeRatio.InSampleChoosers.Genetic;
 using QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios;
-using QuantProject.Scripts.WalkForwardTesting.LinearCombination;
 
 namespace QuantProject.Scripts.TickerSelectionTesting.DrivenBySharpeRatio
 {
@@ -102,6 +102,11 @@ namespace QuantProject.Scripts.TickerSelectionTesting.DrivenBySharpeRatio
 		protected double previousAccountValue;
 		protected double stopLoss;
 		protected double takeProfit;
+		protected string hedgingTicker;
+		protected double hedgingTickerWeight;
+		protected int popSizeForGeneticHedgingOptimization;
+		protected int genNumForGeneticHedgingOptimization;
+		protected IFitnessEvaluator fitnessEvaluatorForGeneticHedgingOptimization;
 		
 		private string description_GetDescriptionForChooser()
 		{
@@ -154,12 +159,20 @@ namespace QuantProject.Scripts.TickerSelectionTesting.DrivenBySharpeRatio
 		public DrivenBySharpeRatioStrategy(IEligiblesSelector eligiblesSelector ,
 				int minNumOfEligiblesForValidOptimization, IInSampleChooser inSampleChooser ,
 				int inSamplePeriodLengthInDays ,
-				Benchmark benchmark , int numDaysBetweenEachOptimization ,
+				Benchmark benchmark , string hedgingTicker , double hedgingTickerWeight, 
+				int numDaysBetweenEachOptimization ,
 				HistoricalMarketValueProvider historicalMarketValueProviderForInSample ,
 			  HistoricalMarketValueProvider historicalMarketValueProviderForOutOfSample ,
+			  int popSizeForGeneticHedgingOptimization, int genNumForGeneticHedgingOptimization,
+			  IFitnessEvaluator fitnessEvaluatorForGeneticHedgingOptimization,
 			  PortfolioType portfolioType,  double stopLoss,
 			  double takeProfit)
 		{
+			this.hedgingTicker = hedgingTicker;
+			this.hedgingTickerWeight = hedgingTickerWeight;
+			this.popSizeForGeneticHedgingOptimization = popSizeForGeneticHedgingOptimization;
+			this.genNumForGeneticHedgingOptimization = genNumForGeneticHedgingOptimization;
+			this.fitnessEvaluatorForGeneticHedgingOptimization = fitnessEvaluatorForGeneticHedgingOptimization;
 			this.drivenBySharpeRatioStrategy_commonInitialization(eligiblesSelector ,
 				minNumOfEligiblesForValidOptimization, inSampleChooser ,
 				inSamplePeriodLengthInDays ,
@@ -214,11 +227,11 @@ namespace QuantProject.Scripts.TickerSelectionTesting.DrivenBySharpeRatio
 		private void newDateTimeEventHandler_closePositions()
 		{
 			DateTime currentDateTime = this.now();
-			if( allTickersAreExchanged( currentDateTime, AccountManager.GetTickersInOpenedPositions(this.account) ) )
-			{
-		  	AccountManager.ClosePositions( this.account );
-		  	this.lastEntryTime = new DateTime(1900,1,1);
-			}
+//			if( allTickersAreExchanged( currentDateTime, AccountManager.GetTickersInOpenedPositions(this.account) ) )
+//			{
+	  	AccountManager.ClosePositions( this.account );
+	  	this.lastEntryTime = new DateTime(1900,1,1);
+//			}
 		}
 		#endregion newDateTimeEventHandler_closePositions
 		
@@ -320,7 +333,77 @@ namespace QuantProject.Scripts.TickerSelectionTesting.DrivenBySharpeRatio
 		}
 		
 		#region UpdateTestingPositions
-						
+		
+		#region updateTestingPositions_getPositionsHedgedOrNot
+		protected EligibleTickers updateTestingPositions_getPositionsHedgedOrNot_getHedgedPositions_getEligibles(TestingPositions[] positionsToHedge)
+		{
+			EligibleTickers returnValue;
+			ICollection<string> tickersNotHedged = new List<string>();
+			foreach(WeightedPosition weightedPosition in positionsToHedge[0].WeightedPositions)
+				tickersNotHedged.Add(weightedPosition.Ticker);
+			returnValue = new EligibleTickers(tickersNotHedged);
+			returnValue.AddAdditionalTicker(this.hedgingTicker);
+			
+			return returnValue;
+		}
+		protected IInSampleChooser updateTestingPositions_getPositionsHedgedOrNot_getChooserForHedgedPositions(int numOfPositionsToHedge)
+		{
+			IInSampleChooser returnValue;
+			IDecoderForTestingPositions decoderWithWeights =
+				new BasicDecoderForTestingPositionsWithWeights();
+			returnValue = 
+				new DrivenBySharpeRatioInSampleChooserWithWeights(numOfPositionsToHedge + 1, 10 ,
+			       this.benchmark, decoderWithWeights, GenomeManagerType.OnlyLong, this.fitnessEvaluatorForGeneticHedgingOptimization,
+			       this.historicalMarketValueProviderForInSample, 0.90, 0.10, 0.001,
+			              this.popSizeForGeneticHedgingOptimization,
+			              this.genNumForGeneticHedgingOptimization, 30, false, 0.9);
+			
+			return returnValue;
+		}
+		private void updateTestingPositions_getPositionsHedgedOrNot_getHedgedPositions_setWeights(TestingPositions[] returnValue)
+		{
+			int numOfPositions = returnValue[0].WeightedPositions.Count;
+			for(int i = 0; i < numOfPositions; i++)
+			{
+				if( returnValue[0].WeightedPositions[i].Ticker == this.hedgingTicker )
+					returnValue[0].WeightedPositions[i].Weight = this.hedgingTickerWeight;
+				else
+					returnValue[0].WeightedPositions[i].Weight = 
+						(1.0-this.hedgingTickerWeight)/(numOfPositions - 1);
+			}
+		}
+		
+		protected TestingPositions[] updateTestingPositions_getPositionsHedgedOrNot_getHedgedPositions()
+		{
+			TestingPositions[] returnValue;
+			TestingPositions[] positionsNotHedged =
+				(TestingPositions[])inSampleChooser.AnalyzeInSample(this.currentEligibles, this.returnsManager);
+			EligibleTickers chosenTickersWithHedgingTicker = 
+				this.updateTestingPositions_getPositionsHedgedOrNot_getHedgedPositions_getEligibles(positionsNotHedged);
+			//set new insample chooser, with a decoder with weights 
+			IInSampleChooser chooserForHedgedPositions =
+				this.updateTestingPositions_getPositionsHedgedOrNot_getChooserForHedgedPositions(positionsNotHedged[0].WeightedPositions.Count);
+			returnValue = 
+				(TestingPositions[])chooserForHedgedPositions.AnalyzeInSample(chosenTickersWithHedgingTicker, this.returnsManager);
+			//hedgingTickerWeight is directly determined
+			// the other positions are given their weight consequently
+			if(this.hedgingTickerWeight != 0.0)
+				this.updateTestingPositions_getPositionsHedgedOrNot_getHedgedPositions_setWeights(returnValue);
+			return returnValue;
+		}
+		
+		protected TestingPositions[] updateTestingPositions_getPositionsHedgedOrNot()
+		{
+			TestingPositions[] returnValue; 
+			if(this.hedgingTicker == null)
+				returnValue = (TestingPositions[])inSampleChooser.AnalyzeInSample(this.currentEligibles, this.returnsManager);
+			else
+				returnValue = this.updateTestingPositions_getPositionsHedgedOrNot_getHedgedPositions();
+			
+			return returnValue;
+		}
+		#endregion updateTestingPositions_getPositionsHedgedOrNot	
+		
 		protected void updateTestingPositions(DateTime currentDateTime)
 		{
 			History historyForInSample =
@@ -341,7 +424,7 @@ namespace QuantProject.Scripts.TickerSelectionTesting.DrivenBySharpeRatio
 			   (  this.currentEligibles.Count > this.minimumNumberOfEligiblesForValidOptimization &&
 			    this.inSampleChooser != null )  )
 			{
-				this.chosenPositions = (TestingPositions[])inSampleChooser.AnalyzeInSample(this.currentEligibles, this.returnsManager);
+				this.chosenPositions = this.updateTestingPositions_getPositionsHedgedOrNot();
 				this.logOptimizationInfo(this.currentEligibles);
 			}
 		}
@@ -394,7 +477,9 @@ namespace QuantProject.Scripts.TickerSelectionTesting.DrivenBySharpeRatio
 		{
 			DrivenBySharpeRatioLogItem logItem =	
 				new DrivenBySharpeRatioLogItem( this.now(), 
-				                                this.inSamplePeriodLengthInDays);
+				                                this.inSamplePeriodLengthInDays,
+				                                this.benchmark,
+				                                this.historicalMarketValueProviderForInSample);
 			logItem.BestPositionsInSample =
 				this.chosenPositions;
 			logItem.NumberOfEligibleTickers =

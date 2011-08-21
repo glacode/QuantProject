@@ -88,6 +88,11 @@ namespace QuantProject.Scripts.TickerSelectionTesting.DrivenByFundamentals.Drive
   		this.timer = timer;
   		this.mixPastReturnsEvaluationWithFundamentalEvaluation = 
   			mixPastReturnsEvaluationWithFundamentalEvaluation;
+			//the range is the same as if it was OnlyLong:
+			//the sign of tickers depend on the fair value level
+			//with respect to the market price
+  		this.minValueForGenes = 0;
+			this.maxValueForGenes = this.eligibleTickers.Count - 1;
     }
   	
   	#region getFitnessByFundamentals
@@ -95,9 +100,12 @@ namespace QuantProject.Scripts.TickerSelectionTesting.DrivenByFundamentals.Drive
   	private double getFitnessValue_getFundamentalFitness_getBuyPrice(WeightedPosition position)
 		{
 			double returnValue;
-			returnValue = 
-				this.historicalMarketValueProvider.GetMarketValue(position.Ticker,
-				                                                  this.timer.GetCurrentDateTime() );
+			object[] keys = new object[1];
+			keys[0] = position.Ticker;
+			DataRow foundRow = 
+				this.eligibleTickers.SourceDataTable.Rows.Find(keys);
+			returnValue = (double)foundRow["AverageMarketPrice"];
+			
 			return returnValue;
 		}
 		

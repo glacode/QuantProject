@@ -30,6 +30,7 @@ using QuantProject.ADT.Statistics.Combinatorial;
 using QuantProject.ADT.FileManaging;
 using QuantProject.ADT.Timing;
 using QuantProject.Business.DataProviders;
+using QuantProject.Business.DataProviders.VirtualQuotesProviding;
 //using QuantProject.Data.DataProviders.Bars.Caching;
 using QuantProject.Business.Strategies;
 using QuantProject.Business.Financial.Accounting.AccountProviding;
@@ -52,6 +53,7 @@ using QuantProject.Scripts.General.Logging;
 using QuantProject.Scripts.General.Reporting;
 using QuantProject.Scripts.General.Strategies.Optimizing.FitnessEvaluation;
 using QuantProject.Scripts.TickerSelectionTesting.DrivenBySharpeRatio.InSampleChoosers.Genetic;
+using QuantProject.Scripts.TickerSelectionTesting.DrivenBySharpeRatio.InSampleChoosers.BruteForce;
 using QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios;
 //using QuantProject.Scripts.TickerSelectionTesting.OTC.InSampleChoosers.Genetic;
 //using QuantProject.Scripts.TickerSelectionTesting.OTC.InSampleChoosers.BruteForce;
@@ -74,27 +76,46 @@ namespace QuantProject.Scripts.TickerSelectionTesting.DrivenBySharpeRatio
 		private Benchmark benchmark;
 		private DateTime firstDateTime;
 		private DateTime lastDateTime;
+		private int numDaysBetweenEachOptimization;
 		private HistoricalMarketValueProvider historicalMarketValueProviderForInSample;
 		private HistoricalMarketValueProvider historicalMarketValueProviderForOutOfSample;
 		private HistoricalMarketValueProvider historicalMarketValueProviderForTheBackTester;
 		private Timer timerForBackTester;
 		private GenomeManagerType genomeManagerType;
+		private string hedgingTicker;
 		
 		#region main
 		public DrivenBySharpeRatioMain()
 		{
-			this.numberOfPortfolioPositions = 4;
-			this.benchmark = new Benchmark( "^MIBTEL" );
-//			this.benchmark = new Benchmark( "^GSPC" );
-			this.portfolioType = PortfolioType.OnlyLong;//filter for out of sample
-			this.genomeManagerType = GenomeManagerType.OnlyLong;//filter for the genetic chooser
+			this.numberOfPortfolioPositions = 6;
+//			this.benchmark = new Benchmark( "FTSEMIB.MI" );
+			this.benchmark = new Benchmark( "^GSPC" );
+//			this.hedgingTicker = "SH(FTSEMIB)";
+			this.hedgingTicker = null;
+			this.portfolioType = PortfolioType.ShortAndLong;//filter for out of sample
+			this.genomeManagerType = GenomeManagerType.ShortAndLong;//filter for the genetic chooser
 //			this.benchmark = new Benchmark( "ENI.MI" );
-			this.firstDateTime = new DateTime( 2001 , 1 , 1 );
-			this.lastDateTime =  new DateTime( 2005 , 12 , 31 );
+			this.firstDateTime = new DateTime( 2003 , 1 , 1 );
+			this.lastDateTime =  new DateTime( 2009 , 12 , 31 );
+			this.numDaysBetweenEachOptimization = 180;
 			
+			HistoricalAdjustedQuoteProvider historicalAdjustedQuoteProvider =
+				new HistoricalAdjustedQuoteProvider();
+			List<DerivedVirtualTicker> virtualTickerList = 
+				new List<DerivedVirtualTicker>();
+			DerivedVirtualTicker virtualTicker1 = 
+				new DerivedVirtualTicker(this.hedgingTicker, this.benchmark.Ticker, 100);
+			virtualTickerList.Add(virtualTicker1);
+			ShortVirtualQuoteProvider shortVirtualQuoteProvider =
+//				new ShortVirtualQuoteProvider(virtualTickerList, historicalAdjustedQuoteProvider,
+//				                              2 * this.numDaysBetweenEachOptimization);
+				new ShortVirtualQuoteProvider(virtualTickerList, historicalAdjustedQuoteProvider,
+				                              new DateTime(2003,6,1,16,0,0) );
 			this.historicalMarketValueProviderForInSample =
 //				new HistoricalRawQuoteProvider();
 			  new HistoricalAdjustedQuoteProvider();
+//				new VirtualAndHistoricalAdjustedQuoteProvider(shortVirtualQuoteProvider);
+			
 			this.historicalMarketValueProviderForOutOfSample =
 				this.historicalMarketValueProviderForInSample;
 			this.historicalMarketValueProviderForTheBackTester =
@@ -116,20 +137,64 @@ namespace QuantProject.Scripts.TickerSelectionTesting.DrivenBySharpeRatio
 		#region eligiblesSelector
 		protected override IEligiblesSelector getEligiblesSelector()
 		{
-			this.maxNumberOfEligiblesToBeChosen = 200;
-//			string tickersGroupId = "ticUSFin";
+			this.maxNumberOfEligiblesToBeChosen = 1000;
+			string tickersGroupId = "ticUSFin";
 //			string tickersGroupId = "USFunds";
 //			string tickersGroupId = "SP500";
-			string tickersGroupId = "STOCKMI";
+//			string tickersGroupId = "BLUECHIX";
+//			string tickersGroupId = "ETFMI";
 			
 			bool temporizedGroup = false;//Attenzione!
+			// by most discounted prices parameters
+			int numDaysForFundamentalDataAvailability = 60;
+//			int numDaysForFundamentalAnalysis = 365;
+//			double optimalDebtEquityRatioLevel = 0.1;
+//			int maxNumOfGrowthRatesToTakeIntoAccount = 4;
+			IGrowthRateProvider growthProvider =
+//				new AverageAndDebtAdjustedGrowthRateProvider(numDaysForFundamentalDataAvailability,
+//				                                             maxNumOfGrowthRatesToTakeIntoAccount,
+//				                                             optimalDebtEquityRatioLevel);
+				new LastAvailableGrowthRateProvider(numDaysForFundamentalDataAvailability);
+			
+			IRatioProvider_PE PEProvider =
+				new LastAvailablePEProvider(this.historicalMarketValueProviderForInSample,
+				                            numDaysForFundamentalDataAvailability);
+			double fairPEGRatioLevel = 1.0;
+			IFairValueProvider fairValueProvider = 
+				new PEGRatioFairValueProvider(fairPEGRatioLevel,PEProvider,
+				                              growthProvider,this.historicalMarketValueProviderForInSample);
+//			double minimumIncome = 1000000;
+//			int numOfMinIncomeInARow = 2;
+//			double minimumRelativeDifferenceBetweenFairAndAverageMarketPrice = 0.05;
+//			int numDaysForAveragePriceComputation = 90;
+			
+			//end of by most discounted prices parameters
 			
 			IEligiblesSelector eligiblesSelector =
 //				new ByGroup( tickersGroupId , temporizedGroup);
 				
-				new ByLiquidity ( tickersGroupId , temporizedGroup ,
-				maxNumberOfEligiblesToBeChosen);
-//			eligiblesSelector = 
+//				new ByLiquidity ( tickersGroupId , temporizedGroup ,
+//				maxNumberOfEligiblesToBeChosen);
+				
+			    new ByPriceMostLiquidAlwaysQuoted(tickersGroupId,
+									temporizedGroup, maxNumberOfEligiblesToBeChosen,
+									6, 1.0, 5000.0);
+					
+//					new ByPriceLiquidityLowestPEQuotedAtAGivenPercentage(				
+//							tickersGroupId , temporizedGroup ,
+//							maxNumberOfEligiblesToBeChosen , 
+//							maxNumberOfEligiblesToBeChosen * 2,
+//							numDaysForAveragePriceComputation,
+//							1, 1000, 10, 50, 0.9);
+//					new ByMostDiscountedPrices( fairValueProvider ,
+//							tickersGroupId , temporizedGroup ,
+//							maxNumberOfEligiblesToBeChosen , numDaysForFundamentalAnalysis,
+//							numDaysForFundamentalDataAvailability,
+//							minimumIncome, numOfMinIncomeInARow,
+//							minimumRelativeDifferenceBetweenFairAndAverageMarketPrice,
+//							numDaysForAveragePriceComputation);
+
+//			eligiblesSelector =
 //				new DummyEligibleSelector();
 //			
 			return eligiblesSelector;
@@ -139,15 +204,17 @@ namespace QuantProject.Scripts.TickerSelectionTesting.DrivenBySharpeRatio
 		#region inSampleChooser
 		protected override IInSampleChooser getInSampleChooser()
 		{
-			int numberOfBestTestingPositionsToBeReturned = 5;
+			int numberOfBestTestingPositionsToBeReturned = 10;
 			// parameters for the genetic optimizer
-			double crossoverRate = 0.85;
-			double mutationRate = 0.02;
-			double elitismRate = 0.001;
-			int populationSizeForGeneticOptimizer = 25000;
-			int generationNumberForGeneticOptimizer = 25;
+			double crossoverRate = 0.99;
+			double mutationRate = 0.1;
+			double elitismRate = 0.0;
+			int populationSizeForGeneticOptimizer = 20000;
+			int generationNumberForGeneticOptimizer = 35;
 			int seedForRandomGenerator =
 				QuantProject.ADT.ConstantsProvider.SeedForRandomGenerator;
+			bool keepOnRunningUntilConvergence = false;
+			double minConvergenceRate = 0.50;
 			
 			BuyAndHoldFitnessEvaluator fitnessEvaluator = 
 				new BuyAndHoldFitnessEvaluator( new SharpeRatio() );
@@ -162,7 +229,12 @@ namespace QuantProject.Scripts.TickerSelectionTesting.DrivenBySharpeRatio
 						fitnessEvaluator , historicalMarketValueProviderForInSample,
 						crossoverRate, mutationRate, elitismRate ,
 						populationSizeForGeneticOptimizer, generationNumberForGeneticOptimizer,
-						seedForRandomGenerator);
+						seedForRandomGenerator, keepOnRunningUntilConvergence,
+						minConvergenceRate);
+//					new DrivenBySharpeRatioBruteForceChooser(PortfolioType.OnlyLong,
+//									this.numberOfPortfolioPositions, numberOfBestTestingPositionsToBeReturned,
+//									this.benchmark, basicGenOptDecoder, fitnessEvaluator, 
+//									this.historicalMarketValueProviderForInSample);
 			
 			return inSampleChooser;
 		}
@@ -171,16 +243,25 @@ namespace QuantProject.Scripts.TickerSelectionTesting.DrivenBySharpeRatio
 		#region strategy
 		protected override IStrategyForBacktester getStrategyForBacktester()
 		{
-			int numDaysBetweenEachOptimization = 60;
-			int minNumOfEligiblesForValidOptimization = 15;
+//			ConstantsProvider.AmountOfVariableWeightToBeAssignedToTickers = 0.5;
+			int minNumOfEligiblesForValidOptimization = 10;
+			int popSizeForGeneticHedgingOptimization = 10;
+			int genNumForGeneticHedgingOptimization = 1;
+			double weightForHedgingTicker = 0.40; //set 0.0 if you want
+			//this weight be set by the genetic optimizer
+			IFitnessEvaluator fitnessEvaluatorForGeneticHedgingOptimization =
+				new BuyAndHoldFitnessEvaluator( new SharpeRatio() );
 			
 			IStrategyForBacktester strategyForBacktester
 				= new DrivenBySharpeRatioStrategy(eligiblesSelector ,
 				minNumOfEligiblesForValidOptimization, inSampleChooser ,
 				numDaysForInSample ,
-				benchmark , numDaysBetweenEachOptimization ,
+				benchmark , this.hedgingTicker, weightForHedgingTicker, numDaysBetweenEachOptimization ,
 				historicalMarketValueProviderForInSample ,
 			  historicalMarketValueProviderForOutOfSample ,
+			  popSizeForGeneticHedgingOptimization,
+			  genNumForGeneticHedgingOptimization,
+			  fitnessEvaluatorForGeneticHedgingOptimization,
 			  this.portfolioType, this.stopLoss,
 			  this.takeProfit);
 			

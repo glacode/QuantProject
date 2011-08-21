@@ -21,27 +21,32 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 
 using System;
-using System.Collections.Generic;
 using System.Windows.Forms;
-
+using System.Collections.Generic;
 using QuantProject.ADT;
 using QuantProject.ADT.Timing;
 using QuantProject.Data.DataProviders.Bars.Caching;
-using QuantProject.Business.DataProviders;
 using QuantProject.Business.Strategies;
 using QuantProject.Business.Financial.Accounting.AccountProviding;
 using QuantProject.Business.Strategies.Eligibles;
-using QuantProject.Business.Strategies.InSample;
-using QuantProject.Business.Strategies.OutOfSample;
+using QuantProject.Business.DataProviders;
 using QuantProject.Business.Strategies.Logging;
-using QuantProject.Business.Strategies.ReturnsManagement.Time;
-using QuantProject.Business.Strategies.ReturnsManagement.Time.IntervalsSelectors;
-using QuantProject.Scripts.TickerSelectionTesting.OTC.OTC_Intraday;
+using QuantProject.Business.Strategies.OutOfSample;
 using QuantProject.Business.Timing;
 using QuantProject.Presentation;
-using QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios;
-using QuantProject.Scripts.General.Reporting;
+using QuantProject.Scripts.General;
 using QuantProject.Scripts.General.Logging;
+using QuantProject.Scripts.General.Reporting;
+//
+//
+//using QuantProject.Business.Strategies.InSample;
+//using QuantProject.Business.Strategies.Logging;
+//using QuantProject.Business.Strategies.ReturnsManagement.Time;
+//using QuantProject.Business.Strategies.ReturnsManagement.Time.IntervalsSelectors;
+//
+//using QuantProject.Presentation;
+//using QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios;
+//
 
 namespace QuantProject.Scripts.TickerSelectionTesting.DrivenByFundamentals.DrivenByFairValueProvider
 {
@@ -51,14 +56,15 @@ namespace QuantProject.Scripts.TickerSelectionTesting.DrivenByFundamentals.Drive
 	[Serializable]
 	public class DrivenByFVProviderLogItem : LogItem
 	{
-		protected DummyTesterForTestingPositions[]
-			dummyTestersForBestTestingPositionsInSample;
+		protected BuyAndHoldTesterForTestingPositions[]
+			buyAndHoldTestersForBestTestingPositionsInSample;
 		protected TestingPositions[] bestPositionsInSample;
+		protected HistoricalMarketValueProvider historicalMarketValueProvider;
+		protected Benchmark benchmark;
 		protected int numberOfEligibleTickers;
 		protected double fitness;
 		protected int generation;
 		protected string tickers;
-		protected int numberOfDaysForFundamentalAnalysis;
 		protected int numberOfDaysForVolatilityAnalysis;
 		
 		public TestingPositions[] BestPositionsInSample
@@ -108,17 +114,19 @@ namespace QuantProject.Scripts.TickerSelectionTesting.DrivenByFundamentals.Drive
 			set{this.tickers = value;}
 		}
 		public DrivenByFVProviderLogItem(DateTime dateTime,
-		                  				int numberOfDaysForFundamentalAnalysis,
-		                  			  int numberOfDaysForVolatilityAnalysis)
+		                  			  int numberOfDaysForVolatilityAnalysis,
+		                  			  HistoricalMarketValueProvider historicalMarketValueProvider,
+		                  			  Benchmark benchmark)
 			: base( dateTime )
 		{
-			this.numberOfDaysForFundamentalAnalysis = numberOfDaysForFundamentalAnalysis;
 			this.numberOfDaysForVolatilityAnalysis = numberOfDaysForVolatilityAnalysis;
+			this.benchmark = benchmark;
+			this.historicalMarketValueProvider = historicalMarketValueProvider;
 			this.numberOfEligibleTickers = int.MinValue;
 			this.fitness = double.MinValue;
 		}
 		
-		#region runStrategyClickEventHandler
+		#region runStrategyClickEventHandler OLD
 		protected virtual void runStrategyClickEventHandler(object sender, System.EventArgs e)
 		{
 			;
@@ -185,24 +193,143 @@ namespace QuantProject.Scripts.TickerSelectionTesting.DrivenByFundamentals.Drive
 		}
 		#endregion runStrategyClickEventHandler
 		
-		private void showTestingPositionsClickEventHandler_setDummyTesters_setTester(
+		#region runStrategyClickEventHandlerInAndOutOfSample
+		protected virtual void runStrategyClickEventHandlerInAndOutOfSample(object sender, System.EventArgs e)
+		{
+			DateTime firstDateTime = this.SimulatedCreationDateTime.AddDays(-this.numberOfDaysForVolatilityAnalysis);
+			DateTime lastDateTime = this.SimulatedCreationDateTime;
+			double maxRunningHours = 1;
+			int	numberOfPortfolioPositions = this.bestPositionsInSample[0].WeightedPositions.Count;
+			//cash and portfolio type
+			double cashToStart = 10000;
+			HistoricalMarketValueProvider historicalQuoteProviderForBackTester,
+				historicalQuoteProviderForInSampleChooser,
+				historicalQuoteProviderForStrategy;
+			historicalQuoteProviderForBackTester = this.historicalMarketValueProvider;
+			historicalQuoteProviderForInSampleChooser = historicalQuoteProviderForBackTester;
+			historicalQuoteProviderForStrategy = historicalQuoteProviderForInSampleChooser;
+			//strategyParameters
+			TestingPositions positionsToTest = this.BestPositionsInSample[0];
+			
+			BuyAndHoldStrategy strategy = new BuyAndHoldStrategy(positionsToTest);
+		
+			QuantProject.Business.Timing.Timer timer = 
+				new IndexBasedEndOfDayTimer( firstDateTime,
+				                             lastDateTime.AddDays(this.numberOfDaysForVolatilityAnalysis),
+				                             this.benchmark.Ticker);
+			
+			EndOfDayStrategyBackTester endOfDayStrategyBackTester =
+				new EndOfDayStrategyBackTester(
+					"BuyAndHold" , timer	 , strategy, 
+					historicalQuoteProviderForBackTester ,
+					new SimpleAccountProvider(), firstDateTime ,
+					lastDateTime.AddDays(this.numberOfDaysForVolatilityAnalysis) ,
+					this.benchmark , cashToStart , maxRunningHours );
+			
+			endOfDayStrategyBackTester.Run();
+			BackTesterReportViewer.ShowReport( lastDateTime.AddDays(this.numberOfDaysForVolatilityAnalysis) ,
+			                                  endOfDayStrategyBackTester );
+			                               
+		}
+		#endregion runStrategyClickEventHandlerInAndOutOfSample
+		
+		#region runStrategyClickEventHandlerOnlyInSample
+		protected virtual void runStrategyClickEventHandlerOnlyInSample(object sender, System.EventArgs e)
+		{
+			DateTime firstDateTime = this.SimulatedCreationDateTime.AddDays(-this.numberOfDaysForVolatilityAnalysis);
+			DateTime lastDateTime = this.SimulatedCreationDateTime;
+			double maxRunningHours = 1;
+			int	numberOfPortfolioPositions = this.bestPositionsInSample[0].WeightedPositions.Count;
+			//cash and portfolio type
+			double cashToStart = 10000;
+			HistoricalMarketValueProvider historicalQuoteProviderForBackTester,
+				historicalQuoteProviderForInSampleChooser,
+				historicalQuoteProviderForStrategy;
+			historicalQuoteProviderForBackTester = this.historicalMarketValueProvider;
+			historicalQuoteProviderForInSampleChooser = historicalQuoteProviderForBackTester;
+			historicalQuoteProviderForStrategy = historicalQuoteProviderForInSampleChooser;
+			//strategyParameters
+			TestingPositions positionsToTest = this.BestPositionsInSample[0];
+			
+			BuyAndHoldStrategy strategy = new BuyAndHoldStrategy(positionsToTest);		
+			QuantProject.Business.Timing.Timer timer = 
+				new IndexBasedEndOfDayTimer( firstDateTime,
+				                             lastDateTime,
+				                             this.benchmark.Ticker);
+			
+			EndOfDayStrategyBackTester endOfDayStrategyBackTester =
+				new EndOfDayStrategyBackTester(
+					"BuyAndHold" , timer	 , strategy, 
+					historicalQuoteProviderForBackTester ,
+					new SimpleAccountProvider(), firstDateTime ,
+					lastDateTime ,
+					this.benchmark , cashToStart , maxRunningHours );
+			
+			endOfDayStrategyBackTester.Run();
+			BackTesterReportViewer.ShowReport( lastDateTime ,
+			                                  endOfDayStrategyBackTester );
+		}
+		#endregion runStrategyClickEventHandlerOnlyInSample
+		
+		#region runStrategyClickEventHandlerOnlyOutOfSample
+		protected virtual void runStrategyClickEventHandlerOnlyOutOfSample(object sender, System.EventArgs e)
+		{
+			DateTime firstDateTime = this.SimulatedCreationDateTime;
+			DateTime lastDateTime = this.SimulatedCreationDateTime.AddDays(this.numberOfDaysForVolatilityAnalysis);
+			double maxRunningHours = 1;
+			int	numberOfPortfolioPositions = this.bestPositionsInSample[0].WeightedPositions.Count;
+			//cash and portfolio type
+			double cashToStart = 10000;
+			HistoricalMarketValueProvider historicalQuoteProviderForBackTester,
+				historicalQuoteProviderForInSampleChooser,
+				historicalQuoteProviderForStrategy;
+			historicalQuoteProviderForBackTester = this.historicalMarketValueProvider;
+			historicalQuoteProviderForInSampleChooser = historicalQuoteProviderForBackTester;
+			historicalQuoteProviderForStrategy = historicalQuoteProviderForInSampleChooser;
+			//strategyParameters
+			TestingPositions positionsToTest = this.BestPositionsInSample[0];
+			
+			BuyAndHoldStrategy strategy =	new BuyAndHoldStrategy(positionsToTest);
+		
+			QuantProject.Business.Timing.Timer timer = 
+				new IndexBasedEndOfDayTimer( firstDateTime,
+				                             lastDateTime,
+				                             this.benchmark.Ticker);
+			
+			EndOfDayStrategyBackTester endOfDayStrategyBackTester =
+				new EndOfDayStrategyBackTester(
+					"BuyAndHold" , timer	 , strategy, 
+					historicalQuoteProviderForBackTester ,
+					new SimpleAccountProvider(), firstDateTime ,
+					lastDateTime ,
+					this.benchmark , cashToStart , maxRunningHours );
+			
+			endOfDayStrategyBackTester.Run();
+			BackTesterReportViewer.ShowReport( lastDateTime ,
+			                                  endOfDayStrategyBackTester );
+			                               
+		}
+		#endregion runStrategyClickEventHandlerOnlyOutOfSample
+		
+		private void showTestingPositionsClickEventHandler_setTesters_setTester(
 			int currentIndex ,
 			TestingPositions testingPositions ,
 			DateTime simulatedCreationDateTime )
 		{
-			this.dummyTestersForBestTestingPositionsInSample[ currentIndex ] =
-				new DummyTesterForTestingPositions(
+			this.buyAndHoldTestersForBestTestingPositionsInSample[ currentIndex ] =
+				new BuyAndHoldTesterForTestingPositions(this.historicalMarketValueProvider,
+				  this.benchmark,
 					testingPositions ,
 					this.numberOfDaysForVolatilityAnalysis ,
 					simulatedCreationDateTime );
 		}
 		
-		private void showTestingPositionsClickEventHandler_setDummyTesters()
+		private void showTestingPositionsClickEventHandler_setTesters()
 		{
-			this.dummyTestersForBestTestingPositionsInSample =
-				new DummyTesterForTestingPositions[this.BestPositionsInSample.Length];
+			this.buyAndHoldTestersForBestTestingPositionsInSample =
+				new BuyAndHoldTesterForTestingPositions[this.BestPositionsInSample.Length];
 			for ( int i = 0 ; i < BestPositionsInSample.Length; i++ )
-				this.showTestingPositionsClickEventHandler_setDummyTesters_setTester(
+				this.showTestingPositionsClickEventHandler_setTesters_setTester(
 					i ,
 					BestPositionsInSample[ i ] ,
 					this.SimulatedCreationDateTime );
@@ -210,21 +337,40 @@ namespace QuantProject.Scripts.TickerSelectionTesting.DrivenByFundamentals.Drive
 		
 		protected virtual void showTestingPositionsClickEventHandler(object sender, System.EventArgs e)
 		{
-			this.showTestingPositionsClickEventHandler_setDummyTesters();
+			this.showTestingPositionsClickEventHandler_setTesters();
 			QuantProject.Presentation.ExecutablesListViewer executablesListViewer =
 				new ExecutablesListViewer(
-					this.dummyTestersForBestTestingPositionsInSample );
+					this.buyAndHoldTestersForBestTestingPositionsInSample );
 			executablesListViewer.Show();
 		}
 		
+//OLD		protected virtual void createAndShowContextMenu()
+//		{
+//			MenuItem[] menuItems = new MenuItem[2];
+//			menuItems[0] = new MenuItem("Run Strategy");
+//			menuItems[1] = new MenuItem("Show TestingPositions");
+//			menuItems[0].Click +=
+//				new System.EventHandler(this.runStrategyClickEventHandler);
+//			menuItems[1].Click +=
+//				new System.EventHandler(this.showTestingPositionsClickEventHandler);
+//			ContextMenu contextMenu = new ContextMenu(menuItems);
+//			contextMenu.Show(Form.ActiveForm, Form.MousePosition);
+//		}
+		
 		protected virtual void createAndShowContextMenu()
 		{
-			MenuItem[] menuItems = new MenuItem[2];
-			menuItems[0] = new MenuItem("Run Strategy");
-			menuItems[1] = new MenuItem("Show TestingPositions");
+			MenuItem[] menuItems = new MenuItem[4];
+			menuItems[0] = new MenuItem("Run Strategy In Sample And Out of S.");
+			menuItems[1] = new MenuItem("Run Strategy Only In Sample");
+			menuItems[2] = new MenuItem("Run Strategy Only Out of S.");
+			menuItems[3] = new MenuItem("Show TestingPositions");
 			menuItems[0].Click +=
-				new System.EventHandler(this.runStrategyClickEventHandler);
+				new System.EventHandler(this.runStrategyClickEventHandlerInAndOutOfSample);
 			menuItems[1].Click +=
+				new System.EventHandler(this.runStrategyClickEventHandlerOnlyInSample);
+			menuItems[2].Click +=
+				new System.EventHandler(this.runStrategyClickEventHandlerOnlyOutOfSample);
+			menuItems[3].Click +=
 				new System.EventHandler(this.showTestingPositionsClickEventHandler);
 			ContextMenu contextMenu = new ContextMenu(menuItems);
 			contextMenu.Show(Form.ActiveForm, Form.MousePosition);

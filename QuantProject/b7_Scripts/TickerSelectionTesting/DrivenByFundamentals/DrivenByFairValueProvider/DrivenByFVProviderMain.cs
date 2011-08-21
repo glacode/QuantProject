@@ -21,40 +21,27 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
 using System;
-using System.Collections;
-using System.Collections.Generic;
 using System.IO;
-
-using QuantProject.ADT;
-using QuantProject.ADT.Statistics.Combinatorial;
-using QuantProject.ADT.FileManaging;
 using QuantProject.ADT.Timing;
 using QuantProject.Business.DataProviders;
-//using QuantProject.Data.DataProviders.Bars.Caching;
-using QuantProject.Business.Strategies;
 using QuantProject.Business.Financial.Accounting.AccountProviding;
+using QuantProject.Business.Financial.Fundamentals;
 using QuantProject.Business.Financial.Fundamentals.FairValueProviders;
+using QuantProject.Business.Financial.Fundamentals.FairValueProviders.LinearRegression;
 using QuantProject.Business.Financial.Fundamentals.RatioProviders;
+using QuantProject.Business.Strategies;
 using QuantProject.Business.Strategies.Eligibles;
 using QuantProject.Business.Strategies.EquityEvaluation;
 using QuantProject.Business.Strategies.InSample;
-using QuantProject.Business.Strategies.Logging;
 using QuantProject.Business.Strategies.Optimizing.Decoding;
-using QuantProject.Business.Strategies.Optimizing.GenomeManagers;
 using QuantProject.Business.Strategies.Optimizing.FitnessEvaluation;
-using QuantProject.Business.Strategies.ReturnsManagement;
-using QuantProject.Business.Strategies.ReturnsManagement.Time;
-using QuantProject.Business.Strategies.ReturnsManagement.Time.IntervalsSelectors;
+using QuantProject.Business.Strategies.Optimizing.GenomeManagers;
 using QuantProject.Business.Timing;
-using QuantProject.Presentation;
+using QuantProject.Data.Selectors;
 using QuantProject.Scripts.General;
-using QuantProject.Scripts.General.Logging;
-using QuantProject.Scripts.General.Reporting;
-using QuantProject.Scripts.General.Strategies.Optimizing.FitnessEvaluation;
 using QuantProject.Scripts.TickerSelectionTesting.DrivenByFundamentals.DrivenByFairValueProvider.InSampleChoosers.Genetic;
 using QuantProject.Scripts.TickerSelectionTesting.EfficientPortfolios;
-//using QuantProject.Scripts.TickerSelectionTesting.OTC.InSampleChoosers.Genetic;
-//using QuantProject.Scripts.TickerSelectionTesting.OTC.InSampleChoosers.BruteForce;
+using QuantProject.Scripts.TickerSelectionTesting.DrivenByFundamentals.DrivenByFairValueProvider.InSampleChoosers;
 
 namespace QuantProject.Scripts.TickerSelectionTesting.DrivenByFundamentals.DrivenByFairValueProvider
 {
@@ -63,6 +50,7 @@ namespace QuantProject.Scripts.TickerSelectionTesting.DrivenByFundamentals.Drive
 	/// parameter had to be changed, this is the place where it should
 	/// be done
 	/// </summary>
+	[Serializable]
 	public class DrivenByFVProviderMain : BasicScriptForBacktesting
 	{
 		private int numberOfPortfolioPositions;
@@ -72,9 +60,9 @@ namespace QuantProject.Scripts.TickerSelectionTesting.DrivenByFundamentals.Drive
 		private PortfolioType portfolioType;
 		private int maxNumberOfEligiblesToBeChosen;
 		private IFairValueProvider fairValueProvider;
-		private int numDaysForFundamentalAnalysis;
 		private int numDaysForPortfolioVolatilityAnalysis;
 		private int numDaysForFundamentalDataAvailability;
+		private string tickersGroupId;
 		private Benchmark benchmark;
 		private DateTime firstDateTime;
 		private DateTime lastDateTime;
@@ -82,18 +70,57 @@ namespace QuantProject.Scripts.TickerSelectionTesting.DrivenByFundamentals.Drive
 		private HistoricalMarketValueProvider historicalMarketValueProviderForOutOfSample;
 		private HistoricalMarketValueProvider historicalMarketValueProviderForTheBackTester;
 		private Timer timerForBackTester;
-		private GenomeManagerType genomeManagerType;
+//		private GenomeManagerType genomeManagerType;
+		private ITickerSelectorByDate tickerSelectorByDate;
+		private bool temporizedGroup;
+//		private int numDayForAveragePriceComputation;
+		private string hedgingTicker;
+		private double hedgingTickerWeight;
 		
 		#region main
 		public DrivenByFVProviderMain()
 		{
-			this.numberOfPortfolioPositions = 4;
+			this.numberOfPortfolioPositions = 6;
+			this.hedgingTicker = "SH";
+//			this.hedgingTicker ="MYY";
+//			this.hedgingTicker = null;
+			this.hedgingTickerWeight = 0.5;
 			this.benchmark = new Benchmark( "^GSPC" );
-			this.portfolioType = PortfolioType.OnlyLong;//filter for out of sample
-			this.genomeManagerType = GenomeManagerType.OnlyLong;//filter for the genetic chooser
+//			this.benchmark = new Benchmark( "FTSEMIB.MI" );
+			this.tickersGroupId = "SP500";
+//			this.tickersGroupId = "ticUSFin";
+//			this.tickersGroupId = "STOCKMI";
+			this.temporizedGroup = true;
+			this.numDaysForPortfolioVolatilityAnalysis = 90;
+			this.maxNumberOfEligiblesToBeChosen = 500;
+//			int numOfTopRowsToDelete = 500;
+//			this.numDayForAveragePriceComputation = 10;
+//			double minPriceForTickersToBeSelected = 0.5;
+//			string benchmarkForCorrelation = "C"; //citigroup
+			int numOfDaysForCorrelation = this.numDaysForPortfolioVolatilityAnalysis;
+			this.tickerSelectorByDate =
+//				new SelectorByGroupLiquidityAndPrice(this.tickersGroupId, temporizedGroup,
+//				                                     false, this.numDaysForPortfolioVolatilityAnalysis,
+//				                                     this.maxNumberOfEligiblesToBeChosen,
+//				                                     numOfTopRowsToDelete,
+//																						 numDayForAveragePriceComputation,
+//																						 minPriceForTickersToBeSelected);
+				new SelectorByGroup(this.tickersGroupId, temporizedGroup);
+//			new SelectorByCloseToCloseCorrelationToBenchmark(
+//					new SelectorByGroupLiquidityAndPrice(this.tickersGroupId, temporizedGroup,
+//                                              false, numOfDaysForCorrelation,
+//                                              3000, numDayForAveragePriceComputation,
+//                                              minPriceForTickersToBeSelected),
+//					new SelectorByGroup(this.tickersGroupId, temporizedGroup),
+//					numOfDaysForCorrelation,
+//					benchmarkForCorrelation, false,
+//					this.maxNumberOfEligiblesToBeChosen, false);
+			
+			this.portfolioType = PortfolioType.ShortAndLong;//filter for out of sample
+//			this.genomeManagerType = GenomeManagerType.ShortAndLong;//filter for the genetic chooser
 //			this.benchmark = new Benchmark( "ENI.MI" );
-			this.firstDateTime = new DateTime( 2002 , 4 , 1 );
-			this.lastDateTime = new DateTime( 2009 , 3, 31 );
+			this.firstDateTime = new DateTime( 2003 , 1 , 1 );
+			this.lastDateTime = new DateTime( 2009 , 12, 31 );
 			
 			this.historicalMarketValueProviderForInSample =
 //				new HistoricalRawQuoteProvider();
@@ -104,24 +131,36 @@ namespace QuantProject.Scripts.TickerSelectionTesting.DrivenByFundamentals.Drive
 				this.historicalMarketValueProviderForOutOfSample;
 				//ricordarsi di togliere - mettere
 				//commento nel gestore evento tempo
-			this.numDaysForFundamentalDataAvailability = 30;
+			this.numDaysForFundamentalDataAvailability = 60;
 //			double optimalDebtEquityRatioLevel = 0.1;
 //			int maxNumOfGrowthRatesToTakeIntoAccount = 4;
-			IGrowthRateProvider growthProvider =
+//			IGrowthRateProvider growthProvider =
 //				new AverageAndDebtAdjustedGrowthRateProvider(numDaysForFundamentalDataAvailability,
 //				                                             maxNumOfGrowthRatesToTakeIntoAccount,
 //				                                             optimalDebtEquityRatioLevel);
-				new LastAvailableGrowthRateProvider(numDaysForFundamentalDataAvailability);
+//				new LastAvailableGrowthRateProvider(numDaysForFundamentalDataAvailability);
+			FundamentalDataProvider[] fundamentalDataProviders =
+				new FundamentalDataProvider[1]{
+					new BookValueProvider(numDaysForFundamentalDataAvailability)
+				};
+				
+			ILinearRegressionValuesProvider linearRegressionValuesProvider =
+				new BasicLinearRegressionValuesProvider(this.tickerSelectorByDate,
+				                                        fundamentalDataProviders,
+				                                        new DayOfMonth(12, 31) );
 			
-			IRatioProvider_PE PEProvider =
-				new LastAvailablePEProvider(this.historicalMarketValueProviderForInSample,
-				                            numDaysForFundamentalDataAvailability);
-			double fairPEGRatioLevel = 1.0;
+			IIndipendentValuesProvider indipendentValuesProvider = 
+				new BasicIndipendentValuesProvider(fundamentalDataProviders);
+//			IRatioProvider_PE PEProvider =
+//				new LastAvailablePEProvider(this.historicalMarketValueProviderForInSample,
+//				                            numDaysForFundamentalDataAvailability);
+//			double fairPEGRatioLevel = 1.0;
 			this.fairValueProvider = 
-				new PEGRatioFairValueProvider(fairPEGRatioLevel,PEProvider,
-				                              growthProvider,this.historicalMarketValueProviderForInSample);
-			this.numDaysForFundamentalAnalysis = 365;
-			this.numDaysForPortfolioVolatilityAnalysis = 90;
+//				new PEGRatioFairValueProvider(fairPEGRatioLevel,PEProvider,
+//				                              growthProvider,this.historicalMarketValueProviderForInSample);
+				new LinearRegressionFairValueProvider(linearRegressionValuesProvider,
+				                                      indipendentValuesProvider);
+//			this.genomeManagerType = GenomeManagerType.ShortAndLong;
 
 			this.timerForBackTester =
 				new IndexBasedEndOfDayTimer( this.firstDateTime,
@@ -140,28 +179,25 @@ namespace QuantProject.Scripts.TickerSelectionTesting.DrivenByFundamentals.Drive
 		#region eligiblesSelector
 		protected override IEligiblesSelector getEligiblesSelector()
 		{
-			this.maxNumberOfEligiblesToBeChosen = 800;
-			string tickersGroupId = "ticUSFin";
-//			string tickersGroupId = "SP500";
-//			string tickersGroupId = "STOCKMI";
-			
-			bool temporizedGroup = true;//Attenzione!
-			double minimumIncome = 10000000.0;//10 mln
-			int numOfMinIncomeInARow = 4;
-			double minimumRelativeDifferenceBetweenFairAndAverageMarketPrice = 0.05;
-			int numDaysForAveragePriceComputation = 10;
+//			double minimumIncome = 10000000.0;//10 mln
+//			int numOfMinIncomeInARow = 3;
+//			double minimumRelativeDifferenceBetweenFairAndAverageMarketPrice = 0.01;
+			int numDaysForAveragePriceComputation = 5;
+			int firstPercentileOfMostDiscountedToExclude = 0;
+			int firstPercentileOfMostExpensiveToExclude = 100;
+			//the strategy is only long: over-valued tickers are discarded
 			
 			IEligiblesSelector eligiblesSelector =
-				new ByMostDiscountedPrices( this.fairValueProvider ,
-				tickersGroupId , temporizedGroup ,
-				maxNumberOfEligiblesToBeChosen , this.numDaysForFundamentalAnalysis,
-				this.numDaysForFundamentalDataAvailability,
-				minimumIncome, numOfMinIncomeInARow,
-				minimumRelativeDifferenceBetweenFairAndAverageMarketPrice,
-				numDaysForAveragePriceComputation);
-//				new ByLiquidity ( tickersGroupId , temporizedGroup ,
-//					maxNumberOfEligiblesToBeChosen );
-			
+					new ByRelativeDifferenceBetweenPriceAndFairValue( this.fairValueProvider,
+				             this.tickerSelectorByDate , 
+										 maxNumberOfEligiblesToBeChosen ,
+										 firstPercentileOfMostDiscountedToExclude ,
+										 firstPercentileOfMostExpensiveToExclude ,
+										 numDaysForAveragePriceComputation );                                    
+					
+//					new ByPriceMostLiquidAlwaysQuoted(tickersGroupId,
+//									temporizedGroup, maxNumberOfEligiblesToBeChosen,
+//									numDaysForAveragePriceComputation, 1.0, 5000.0);
 			
 //			eligiblesSelector = 
 //				new DummyEligibleSelector();
@@ -173,39 +209,41 @@ namespace QuantProject.Scripts.TickerSelectionTesting.DrivenByFundamentals.Drive
 		#region inSampleChooser
 		protected override IInSampleChooser getInSampleChooser()
 		{
-			int numberOfBestTestingPositionsToBeReturned = 1;
+			int numberOfBestTestingPositionsToBeReturned = 5;
 			
 			// parameters for the genetic optimizer
-			double crossoverRate = 0.85;
-			double mutationRate = 0.02;
-			double elitismRate = 0.001;
-			int populationSizeForGeneticOptimizer = 40000;
-			int generationNumberForGeneticOptimizer = 50;
-			int seedForRandomGenerator =
-				QuantProject.ADT.ConstantsProvider.SeedForRandomGenerator;
+//			double crossoverRate = 0.85;
+//			double mutationRate = 0.02;
+//			double elitismRate = 0.001;
+//			int populationSizeForGeneticOptimizer = 1000;
+//			int generationNumberForGeneticOptimizer = 10;
+//			int seedForRandomGenerator =
+//				QuantProject.ADT.ConstantsProvider.SeedForRandomGenerator;
 			
-			BuyAndHoldFitnessEvaluator fitnessEvaluator = 
+//			BuyAndHoldFitnessEvaluator fitnessEvaluator = 
 //				new BuyAndHoldFitnessEvaluator( new Variance() );
-				new BuyAndHoldFitnessEvaluator( new SharpeRatio() );
+//				new BuyAndHoldFitnessEvaluator( new SharpeRatio() );
 			
-			bool mixPastReturnsEvaluationWithFundamentalEvaluation =
-				false;
+//			bool mixPastReturnsEvaluationWithFundamentalEvaluation = true;
 			
-			BasicDecoderForGeneticallyOptimizableTestingPositions basicGenOptDecoder = 
-				new BasicDecoderForGeneticallyOptimizableTestingPositions();
+			BasicDecoderForGeneticallyOptimizableTestingPositions decoderForFVProvider = 
+				new DecoderForFVProviderStrategy();
 			
 			IInSampleChooser inSampleChooser = 
-				new DrivenByFVProviderInSampleChooser(this.numberOfPortfolioPositions,
-				                                      numberOfBestTestingPositionsToBeReturned,
-						benchmark, basicGenOptDecoder, this.genomeManagerType ,
-						fitnessEvaluator , mixPastReturnsEvaluationWithFundamentalEvaluation,
-						historicalMarketValueProviderForInSample,	this.timerForBackTester, 
-						crossoverRate, mutationRate, elitismRate ,
-						populationSizeForGeneticOptimizer, generationNumberForGeneticOptimizer,
-						seedForRandomGenerator);
+//				new DrivenByFVProviderInSampleChooser(this.numberOfPortfolioPositions,
+//				                                      numberOfBestTestingPositionsToBeReturned,
+//						benchmark, decoderForFVProvider, this.genomeManagerType ,
+//						fitnessEvaluator , mixPastReturnsEvaluationWithFundamentalEvaluation,
+//						historicalMarketValueProviderForInSample,	this.timerForBackTester, 
+//						crossoverRate, mutationRate, elitismRate ,
+//						populationSizeForGeneticOptimizer, generationNumberForGeneticOptimizer,
+//						seedForRandomGenerator);
 			
-//				new SelectTopEligiblesInSampleChooser( this.numberOfPortfolioPositions,
-//			                                         numberOfBestTestingPositionsToBeReturned);
+				new SelectTopBottomEligiblesWithSignInSampleChooser( this.numberOfPortfolioPositions,
+			                                         numberOfBestTestingPositionsToBeReturned,
+			                                         this.historicalMarketValueProviderForInSample,
+			                                         this.timerForBackTester);
+			
 			
 			return inSampleChooser;
 		}
@@ -214,18 +252,18 @@ namespace QuantProject.Scripts.TickerSelectionTesting.DrivenByFundamentals.Drive
 		#region strategy
 		protected override IStrategyForBacktester getStrategyForBacktester()
 		{
-			int numDaysBetweenEachOptimization = 60;
-			int minNumOfEligiblesForValidOptimization = 10;
+			int numDaysBetweenEachOptimization = 180;
+			int minNumOfEligiblesForValidOptimization = 20;
 			
 			IStrategyForBacktester strategyForBacktester
 				= new DrivenByFVProviderStrategy(eligiblesSelector ,
 				minNumOfEligiblesForValidOptimization, inSampleChooser ,
-				numDaysForFundamentalAnalysis , numDaysForPortfolioVolatilityAnalysis ,
+				this.numDaysForFundamentalDataAvailability, numDaysForPortfolioVolatilityAnalysis ,
 				benchmark , numDaysBetweenEachOptimization ,
 				historicalMarketValueProviderForInSample ,
 			  historicalMarketValueProviderForOutOfSample ,
 			  this.portfolioType, this.stopLoss, this.percentageOfTheoreticalProfitForExit,
-			  this.takeProfitLevelInAnyCase);
+			  this.takeProfitLevelInAnyCase, this.hedgingTicker, this.hedgingTickerWeight);
 			
 			return strategyForBacktester;
 		}
