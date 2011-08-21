@@ -31,89 +31,59 @@ namespace QuantProject.Data.Selectors
   /// Class for selection on tickers by close to close absolute correlation to 
   /// a given benchmark
   /// </summary>
-   public class SelectorByCloseToCloseCorrelationToBenchmark : TickerSelector, ITickerSelector
+  [Serializable] 
+  public class SelectorByCloseToCloseCorrelationToBenchmark : ITickerSelectorByDate
+   																														 
   {
     private string benchmark;
+    private bool orderInASCMode;
+    private int maxNumOfReturnedTickers;
+    private ITickerSelectorByDate tickerSelectorByDateForInitialTable;
+    private int lengthInDaysOfCorrelationPeriod;
     private bool addBenchmarkToTheGivenSetOfTickers;
+    private DateTime dateTimeOfCurrentSelection;
+    private DataTable currentSelection;
+
+    
     /// <summary>
-    /// Creates a new instance of the selector
+    /// Creates a new instance of the class
     /// </summary>
     /// <param name="setOfTickersToBeSelected">The data table containing
     /// in the first column the tickers that have to be ordered by pearson correlation
     /// coefficient to a given benchmark</param>
     /// <param name="benchmark">Benchmark code</param>
     /// <param name="orderInASCmode">Ordering mode</param>
-    /// <param name="firstQuoteDate">The first date for the interval</param>
-    /// <param name="lastQuoteDate">The last date for the interval</param>
     /// <param name="maxNumOfReturnedTickers">Max number of tickers to be returned</param>
-    public SelectorByCloseToCloseCorrelationToBenchmark(DataTable setOfTickersToBeSelected,
+    public SelectorByCloseToCloseCorrelationToBenchmark(ITickerSelectorByDate tickerSelectorByDateForInitialTable,
+                                                        int lengthInDaysOfCorrelationPeriod,
                                                         string benchmark,
-                                                        bool orderInASCmode,
-                                                        DateTime firstQuoteDate,
-                                                        DateTime lastQuoteDate,
-                                                        long maxNumOfReturnedTickers,
-                                                        bool addBenchmarkToTheGivenSetOfTickers):
-                                                        base(setOfTickersToBeSelected, 
-                                                            orderInASCmode,
-                                                            firstQuoteDate,
-                                                            lastQuoteDate,
-                                                            maxNumOfReturnedTickers)
+                                                        bool orderInASCMode,
+                                                        int maxNumOfReturnedTickers,
+                                                        bool addBenchmarkToTheGivenSetOfTickers)
     {
-      this.benchmark = benchmark;
+      this.tickerSelectorByDateForInitialTable = tickerSelectorByDateForInitialTable;
+      this.lengthInDaysOfCorrelationPeriod = lengthInDaysOfCorrelationPeriod;
+    	this.benchmark = benchmark;
+    	this.orderInASCMode = orderInASCMode;
+    	this.maxNumOfReturnedTickers = maxNumOfReturnedTickers;
       this.addBenchmarkToTheGivenSetOfTickers = addBenchmarkToTheGivenSetOfTickers;
-    }
-     
-     /// <summary>
-     /// Creates a new instance of the selector
-     /// </summary>
-     /// <param name="groupID">The group ID containing the tickers that have to be ordered by Pearson
-     /// 												correlation coefficient to a given benchmark</param>
-     /// <param name="benchmark">Benchmark to be used for computation of correlation coefficient</param>
-     /// <param name="orderInASCmode">Ordering mode</param>
-     /// <param name="firstQuoteDate">The first date for the interval</param>
-     /// <param name="lastQuoteDate">The last date for the interval</param>
-     /// <param name="maxNumOfReturnedTickers">Max number of tickers to be returned</param>
-     /// <param name="addBenchmarkToTheGivenSetOfTickers">If TRUE, the benchmark is added to
-     /// 																									output table (with correlation
-     /// 																									equal to 1) </param>
-     public SelectorByCloseToCloseCorrelationToBenchmark(string groupID, 
-                                                        string benchmark,
-                                                        bool orderInASCmode,
-                                                        DateTime firstQuoteDate,
-                                                        DateTime lastQuoteDate,
-                                                        long maxNumOfReturnedTickers,
-                                                        bool addBenchmarkToTheGivenSetOfTickers):
-                                                        base(groupID, 
-                                                            orderInASCmode,
-                                                            firstQuoteDate,
-                                                            lastQuoteDate,
-                                                            maxNumOfReturnedTickers)
-     {
-        this.benchmark = benchmark;
-        this.addBenchmarkToTheGivenSetOfTickers = addBenchmarkToTheGivenSetOfTickers;
-     }
-
-
-    public DataTable GetTableOfSelectedTickers()
-    {
-      if(this.setOfTickersToBeSelected == null)
-        return this.getTickersByCloseToCloseCorrelationToBenchmark(this.isOrderedInASCMode,
-                                    this.groupID,this.benchmark,
-                                    this.firstQuoteDate, this.lastQuoteDate,
-                                    this.maxNumOfReturnedTickers);        
-
-      else
-        return this.getTickersByCloseToCloseCorrelationToBenchmark(this.isOrderedInASCMode,
-          this.setOfTickersToBeSelected,this.benchmark,
-          this.firstQuoteDate, this.lastQuoteDate,
-          this.maxNumOfReturnedTickers);      
-    }
-    public void SelectAllTickers()
-    {
-      ;
+      this.dateTimeOfCurrentSelection = new DateTime(1900,1,1,16,0,0);
     }
     
-    private DataTable getTickersByCloseToCloseCorrelationToBenchmark( bool orderByASC,
+    public DataTable GetTableOfSelectedTickers(DateTime dateTime)
+    {
+      if(dateTime != this.dateTimeOfCurrentSelection ||
+    	   this.currentSelection == null)
+    		this.getTableOfSelectedTickers_updateCurrentSelection(this.orderInASCMode,
+    	    this.tickerSelectorByDateForInitialTable.GetTableOfSelectedTickers(dateTime),
+    	    this.benchmark,
+    	    dateTime.AddDays(-this.lengthInDaysOfCorrelationPeriod), dateTime,
+          this.maxNumOfReturnedTickers);
+    	
+    	return this.currentSelection;
+    }
+    
+    private void getTableOfSelectedTickers_updateCurrentSelection( bool orderByASC,
                                                 DataTable setOfTickers, string benchmark,
                                                 DateTime firstQuoteDate,
                                                 DateTime lastQuoteDate,
@@ -121,16 +91,21 @@ namespace QuantProject.Data.Selectors
     {
       if(!setOfTickers.Columns.Contains("CloseToCloseCorrelationToBenchmark"))
         setOfTickers.Columns.Add("CloseToCloseCorrelationToBenchmark", System.Type.GetType("System.Double"));
-      float[] benchmarkQuotes = QuantProject.Data.DataTables.Quotes.GetArrayOfAdjustedCloseQuotes(benchmark, firstQuoteDate, lastQuoteDate);
+      double[] benchmarkQuotes = QuantProject.Data.DataTables.Quotes.GetDoubleArrayOfAdjustedCloseQuotes(benchmark, firstQuoteDate, lastQuoteDate);
+      double correlation;
       foreach(DataRow row in setOfTickers.Rows)
       {
-        float[] tickerQuotes = QuantProject.Data.DataTables.Quotes.GetArrayOfAdjustedCloseQuotes((string)row[0], 
+        double[] tickerQuotes = QuantProject.Data.DataTables.Quotes.GetDoubleArrayOfAdjustedCloseQuotes((string)row[0], 
                                 firstQuoteDate, lastQuoteDate);
-        row["CloseToCloseCorrelationToBenchmark"] =
-              BasicFunctions.PearsonCorrelationCoefficient(benchmarkQuotes, tickerQuotes);
+        correlation = 0.0;
+        if(benchmarkQuotes.Length == tickerQuotes.Length)
+        	correlation = 
+        		BasicFunctions.PearsonCorrelationCoefficient(benchmarkQuotes, tickerQuotes);
+
+      	row["CloseToCloseCorrelationToBenchmark"] = correlation;
       }
       DataTable tableToReturn = ExtendedDataTable.CopyAndSort(setOfTickers,
-                                                              "CloseToCloseCorrelationToBenchmark>=0.0 OR " +
+                                                              "CloseToCloseCorrelationToBenchmark>0.0 OR " +
                                                               "CloseToCloseCorrelationToBenchmark<0.0",
                                                               "CloseToCloseCorrelationToBenchmark",
                                                               orderByASC);
@@ -141,23 +116,24 @@ namespace QuantProject.Data.Selectors
         newRow[0] = benchmark;
         tableToReturn.Rows.Add(newRow);
       }
-      return tableToReturn;
+      this.currentSelection = tableToReturn;
+      this.dateTimeOfCurrentSelection = lastQuoteDate;
+			string[] currentSelectionForDebugging = 
+				ExtendedDataTable.GetArrayOfStringFromRows(this.currentSelection);
     }
     
-    private DataTable getTickersByCloseToCloseCorrelationToBenchmark( bool orderByASC,
-																					      string groupID, string benchmark,
-																					      DateTime firstQuoteDate,
-																					      DateTime lastQuoteDate,
-																					      long maxNumOfReturnedTickers)
-    {
-      DataTable tickersOfGroup = Tickers_tickerGroups.GetTickers(groupID);
-      return this.getTickersByCloseToCloseCorrelationToBenchmark(orderByASC,
-																					      tickersOfGroup, benchmark,
-																					      firstQuoteDate,
-																					      lastQuoteDate,
-																					      maxNumOfReturnedTickers);
-    }
-    
-	
+//    private DataTable getTickersByCloseToCloseCorrelationToBenchmark( bool orderByASC,
+//																					      string groupID, string benchmark,
+//																					      DateTime firstQuoteDate,
+//																					      DateTime lastQuoteDate,
+//																					      long maxNumOfReturnedTickers)
+//    {
+//      DataTable tickersOfGroup = Tickers_tickerGroups.GetTickers(groupID);
+//      return this.getTableOfSelectedTickers_updateCurrentSelection(orderByASC,
+//																					      tickersOfGroup, benchmark,
+//																					      firstQuoteDate,
+//																					      lastQuoteDate,
+//																					      maxNumOfReturnedTickers);
+//    }
 	}
 }
