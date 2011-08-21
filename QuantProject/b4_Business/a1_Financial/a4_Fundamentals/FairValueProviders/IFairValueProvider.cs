@@ -20,6 +20,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.*/
 
 using System;
+using QuantProject.Business.Strategies.Logging;
 
 namespace QuantProject.Business.Financial.Fundamentals.FairValueProviders
 {
@@ -28,9 +29,14 @@ namespace QuantProject.Business.Financial.Fundamentals.FairValueProviders
 	/// the fair value for a given ticker at a given date, using 
 	/// available fundamental data since another previous date
 	/// </summary>
-	public interface IFairValueProvider
+	public interface IFairValueProvider : ILogDescriptor
 	{
-		double GetFairValue( string ticker , DateTime firstDateForFundamentals,
+		void Run(DateTime dateOfFairValueComputation);
+		//for IFairValueProvider objects of some complexity,
+		//a run method may be required before
+		//calling GetFairValue, for providing
+		//the actual computation of the fair value
+		double GetFairValue( string ticker ,
 		                     DateTime dateOfFairValueComputation );
 	}
 }
