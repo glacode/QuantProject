@@ -96,26 +96,53 @@ namespace QuantProject.Data.Selectors
 		 #region GetTableOfSelectedTickers
 		 private DataTable getTableOfSelectedTickers_givenDateTimes()
 		 {
-			 DataTable dataTable =
-				 QuantProject.Data.DataTables.TickerDataTable.GetTickersQuotedAtAGivenPercentageOfDateTimes(
-				 this.marketDateTimes , this.percentageOfDateTimes , this.setOfTickersToBeSelected , this.firstQuoteDate ,
-				 this.lastQuoteDate , this.intervalFrameInSeconds , this.maxNumOfReturnedTickers );
+			 DataTable dataTable;
+			 if( this.intervalFrameInSeconds == 0 )
+			 // EOD data, then quotes is needed
+			 	 dataTable = QuantProject.Data.DataTables.TickerDataTable.GetTickersQuotedAtAGivenPercentageOfDateTimes(
+										 this.marketDateTimes , this.percentageOfDateTimes , this.setOfTickersToBeSelected , this.firstQuoteDate ,
+										 this.lastQuoteDate , this.maxNumOfReturnedTickers );
+			 else //bars is needed
+				 dataTable = QuantProject.Data.DataTables.TickerDataTable.GetTickersQuotedAtAGivenPercentageOfDateTimes(
+										 this.marketDateTimes , this.percentageOfDateTimes , this.setOfTickersToBeSelected , this.firstQuoteDate ,
+										 this.lastQuoteDate , this.intervalFrameInSeconds , this.maxNumOfReturnedTickers );
+			 
 			 return dataTable;
 		 }
 		 private DataTable getTableOfSelectedTickers_givenMarketIndex()
 		 {
 			 if(this.marketIndex == "")
 				 throw new Exception("You first need to set TickerSelector's property <<MarketIndex>>!");
-           
+       DataTable returnValue;    
 			 if(this.setOfTickersToBeSelected == null)
-				 return QuantProject.Data.DataTables.TickerDataTable.GetTickersQuotedAtAGivenPercentageOfDateTimes(
-					 this.marketIndex, this.percentageOfDateTimes , this.groupID, this.firstQuoteDate, this.lastQuoteDate,
-					 this.intervalFrameInSeconds, this.maxNumOfReturnedTickers);        
-
-			 else
-				 return QuantProject.Data.DataTables.TickerDataTable.GetTickersQuotedAtAGivenPercentageOfDateTimes(
-					 this.marketIndex, this.percentageOfDateTimes , this.setOfTickersToBeSelected, this.firstQuoteDate, this.lastQuoteDate,
-					 this.intervalFrameInSeconds, this.maxNumOfReturnedTickers);
+			 {
+				 	if( this.intervalFrameInSeconds == 0 )
+				 	// EOD data, then quotes is needed
+				 	{
+				 		DataTable setOfTickers =
+				 			QuantProject.DataAccess.Tables.Tickers_tickerGroups.GetTickers(this.groupID);
+				 		returnValue = QuantProject.Data.DataTables.TickerDataTable.GetTickersQuotedAtAGivenPercentageOfDateTimes(
+						 this.marketIndex, this.percentageOfDateTimes , setOfTickers , this.firstQuoteDate, this.lastQuoteDate,
+						 this.maxNumOfReturnedTickers);
+				 	}
+				 	else//this.setOfTickersToBeSelected is null AND quotes is used
+				 		returnValue = QuantProject.Data.DataTables.TickerDataTable.GetTickersQuotedAtAGivenPercentageOfDateTimes(
+						 this.marketIndex, this.percentageOfDateTimes , this.groupID, this.firstQuoteDate, this.lastQuoteDate,
+						 this.intervalFrameInSeconds, this.maxNumOfReturnedTickers);
+			 }
+			 else//this.setOfTickersToBeSelected is not null
+			 {
+			 		if( this.intervalFrameInSeconds == 0 )
+					// EOD data, then quotes is needed
+			 			returnValue = QuantProject.Data.DataTables.TickerDataTable.GetTickersQuotedAtAGivenPercentageOfDateTimes(
+						 	this.marketIndex, this.percentageOfDateTimes , this.setOfTickersToBeSelected , this.firstQuoteDate, this.lastQuoteDate,
+						 	this.maxNumOfReturnedTickers);	
+					else//this.setOfTickersToBeSelected is not null and bars is used		 	
+			 			returnValue = QuantProject.Data.DataTables.TickerDataTable.GetTickersQuotedAtAGivenPercentageOfDateTimes(
+					 		this.marketIndex, this.percentageOfDateTimes , this.setOfTickersToBeSelected, this.firstQuoteDate, this.lastQuoteDate,
+					 		this.intervalFrameInSeconds, this.maxNumOfReturnedTickers);
+			 }
+			 return returnValue;
 		 }
 		 public DataTable GetTableOfSelectedTickers()
 		 {
