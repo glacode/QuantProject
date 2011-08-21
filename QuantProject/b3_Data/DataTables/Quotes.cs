@@ -167,8 +167,14 @@ namespace QuantProject.Data.DataTables
                                                                     minVolume.ToString(),
                                                                     "AverageTradedValue",
                                                                     orderByASC);
+      string[] tableForDebugging = 
+      	ExtendedDataTable.GetArrayOfStringFromRows(getMostLiquidTicker);
       ExtendedDataTable.DeleteRows(getMostLiquidTicker, maxNumOfReturnedTickers + numberOfTopRowsToDelete);
+      tableForDebugging = 
+      	ExtendedDataTable.GetArrayOfStringFromRows(getMostLiquidTicker);
       ExtendedDataTable.DeleteRows(getMostLiquidTicker, 0, numberOfTopRowsToDelete - 1);
+      tableForDebugging = 
+      	ExtendedDataTable.GetArrayOfStringFromRows(getMostLiquidTicker);
       return getMostLiquidTicker;
     }
 
@@ -726,7 +732,8 @@ namespace QuantProject.Data.DataTables
 		#endregion
     
 		/// <summary>
-		/// returns dates when the ticker was exchanged, within a given
+		/// returns dateTimes at openTime and at closeTime for
+		/// each date the ticker was exchanged on, within a given
 		/// date interval
 		/// </summary>
 		/// <param name="ticker"></param>
@@ -737,14 +744,18 @@ namespace QuantProject.Data.DataTables
 			DateTime firstDate , DateTime lastDate )
 		{
 			Quotes quotes = new Quotes( ticker , firstDate , lastDate );
-//			DateTime[] marketDays = new DateTime[ quotes.Rows.Count ];
 			History marketDays = new History();
-			int i = 0;
 			foreach ( DataRow dataRow in quotes.Rows )
 			{
-//				marketDays[ i ] = (DateTime)dataRow[ Quotes.Date ];
-				marketDays.Add( (DateTime)dataRow[ Quotes.Date ] , (DateTime)dataRow[ Quotes.Date ] );
-				i++;
+				marketDays.Add( (DateTime)dataRow[ Quotes.Date ], (DateTime)dataRow[ Quotes.Date ] );
+//New version - to be tested
+//				DateTime dateTime = (DateTime)dataRow[ Quotes.Date ];
+//				DateTime dateTimeOpenOrClose = new DateTime(dateTime.Year, dateTime.Month,
+//				                                            dateTime.Day, 9, 30, 0);
+//				marketDays.Add( dateTimeOpenOrClose , dateTimeOpenOrClose );
+//				dateTimeOpenOrClose = new DateTime(dateTime.Year, dateTime.Month,
+//				                                            dateTime.Day, 16, 0, 0);
+//				marketDays.Add( dateTimeOpenOrClose , dateTimeOpenOrClose );
 			}
 			return marketDays;
 		}
@@ -1127,15 +1138,15 @@ namespace QuantProject.Data.DataTables
     
     #region RecalculateCloseToCloseRatios
 
-    private float recalculateCloseToCloseRatios_getAdjCloseJustBeforeCurrentFirstClose()
+    private double recalculateCloseToCloseRatios_getAdjCloseJustBeforeCurrentFirstClose()
     {
-      float returnValue = float.MinValue;
+      double returnValue = double.MinValue;
       DateTime firstCurrentDate = (DateTime)this.Rows[0][Quotes.Date];
       int daysBeforeCurrent = 1;
       if(firstCurrentDate > DataAccess.Tables.Quotes.GetFirstQuoteDate(this.Ticker) )
       //there exist other quotes in the database that precede first current quote
       {
-        while(returnValue == float.MinValue)
+        while(returnValue == double.MinValue)
         {
           try{
             returnValue = 
@@ -1164,19 +1175,19 @@ namespace QuantProject.Data.DataTables
     /// <returns></returns>
      	public void RecalculateCloseToCloseRatios()
     {
-      float adjustedCloseJustBeforeTheCurrentFirstClose =
+      double adjustedCloseJustBeforeTheCurrentFirstClose =
         this.recalculateCloseToCloseRatios_getAdjCloseJustBeforeCurrentFirstClose();
       for(int i = 0; i<this.Rows.Count; i++)
       {
-        if(i == 0 && adjustedCloseJustBeforeTheCurrentFirstClose > float.MinValue)
+        if(i == 0 && adjustedCloseJustBeforeTheCurrentFirstClose > double.MinValue)
         //there exists a valid quote just before the first current close
           this.Rows[i][Quotes.AdjustedCloseToCloseRatio] =
-            (float)this.Rows[i][Quotes.AdjustedClose] / 
+            (double)this.Rows[i][Quotes.AdjustedClose] / 
              adjustedCloseJustBeforeTheCurrentFirstClose;
         else if(i>0)
           this.Rows[i][Quotes.AdjustedCloseToCloseRatio] =
-            (float)this.Rows[i][Quotes.AdjustedClose] / 
-            (float)this.Rows[i - 1][Quotes.AdjustedClose];
+            (double)this.Rows[i][Quotes.AdjustedClose] / 
+            (double)this.Rows[i - 1][Quotes.AdjustedClose];
       }
     }
     #endregion
