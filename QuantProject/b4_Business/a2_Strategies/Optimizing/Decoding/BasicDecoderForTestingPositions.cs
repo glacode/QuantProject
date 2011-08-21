@@ -86,7 +86,7 @@ namespace QuantProject.Business.Strategies.Optimizing.Decoding
 				throw new Exception( "geneValue is too (negative) large for eligibleTickers  !!" );
 		}
 		
-		private SignedTicker decodeSignedTickers( int i )
+		protected virtual SignedTicker decodeSignedTickers( int i )
 		{
 			int signedTickerCode = this.tickerRelatedGeneValues[ i ];
 			SignedTicker signedTicker;
