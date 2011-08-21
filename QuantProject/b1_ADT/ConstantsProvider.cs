@@ -1,4 +1,5 @@
 using System;
+using QuantProject.ADT.Timing;
 
 namespace QuantProject.ADT
 {
@@ -46,5 +47,9 @@ namespace QuantProject.ADT
     //separator for tickers in GenomeRepresentation class
     public static string SeparatorForWeights = ">";
     //separator for separating ticker by its weight in GenomeRepresentation class 
+    public static Time OpenTime = new Time(9, 30, 0);
+    //conventional open time (in reality, it depends on the market);
+    public static Time CloseTime = new Time(16, 0, 0);
+    //conventional close time (in reality, it depends on the market);
 	}
 }
