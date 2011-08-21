@@ -26,6 +26,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Windows.Forms;
 using QuantProject.DataAccess.Tables;
+using QuantProject.Data.Selectors;
 using QuantProject.Data.DataTables;
 
 namespace QuantProject.Data.Selectors
@@ -36,6 +37,7 @@ namespace QuantProject.Data.Selectors
 	public class TickerSelector
 	{
 		protected DataTable setOfTickersToBeSelected = null;
+		protected ITickerSelectorByDate tickerSelectorByDate = null;
 		protected string groupID = "";
 		protected DateTime firstQuoteDate = QuantProject.ADT.ConstantsProvider.InitialDateTimeForDownload;
 		protected DateTime lastQuoteDate = DateTime.Now;
@@ -96,6 +98,16 @@ namespace QuantProject.Data.Selectors
 			                          lastQuoteDate, maxNumOfReturnedTickers);
 		}
 		
+		public TickerSelector(ITickerSelectorByDate tickerSelectorByDate,
+		                      bool orderInASCmode,
+		                      DateTime firstQuoteDate,
+		                      DateTime lastQuoteDate,
+		                      long maxNumOfReturnedTickers)
+		{
+			this.tickerSelectorByDate = tickerSelectorByDate;
+			this.commonInitialization(orderInASCmode, firstQuoteDate,
+			                          lastQuoteDate, maxNumOfReturnedTickers);
+		}
 		public TickerSelector(string groupID,
 		                      bool orderInASCmode,
 		                      DateTime firstQuoteDate,
