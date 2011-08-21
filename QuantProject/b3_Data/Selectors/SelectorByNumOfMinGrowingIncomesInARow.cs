@@ -94,7 +94,7 @@ namespace QuantProject.Data.Selectors
 			 			(string)this.setOfTickersToBeSelected.Rows[i][0];
 			 		incomesForCurrentTicker =
 			 			FinancialValues.GetLastFinancialValuesForTicker(currentTicker,
-			 			  40, 12, this.lastQuoteDate.AddDays(-this.numDaysForFundamentalDataAvailability));
+			 			  FinancialValueType.NetIncome, 12, this.lastQuoteDate.AddDays(-this.numDaysForFundamentalDataAvailability));
 			 		if( this.getTableOfSelectedTickers_areIncomesAllGreaterThanMinimum(incomesForCurrentTicker) )
 			 		{
 			 			values[0] = currentTicker;
