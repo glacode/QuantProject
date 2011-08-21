@@ -163,6 +163,11 @@ namespace QuantProject.ADT.Optimizing.Genetic
 			this.fitness = this.genomeManager.GetFitnessValue(this);
 		}
 		
+		private void clone_copyValuesInGenes(int[] valuesToBeCopied)
+		{
+			for (int i = 0 ; i < this.size ; i++)
+				this.genes[i] = valuesToBeCopied[i];
+		}
 		
 		/// <summary>
 		/// It creates an new genome, identical to the current instance
@@ -170,7 +175,7 @@ namespace QuantProject.ADT.Optimizing.Genetic
 		public Genome Clone()
 		{
 			Genome returnValue = new Genome(this.genomeManager, this.geneticOptimizer);
-			returnValue.CopyValuesInGenes(this.genes);
+			returnValue.clone_copyValuesInGenes(this.genes);
 			returnValue.setFitnessValue(this.fitness);
 			returnValue.meaning = this.meaning;
 			returnValue.generation = this.Generation;
@@ -184,14 +189,36 @@ namespace QuantProject.ADT.Optimizing.Genetic
 			return this.genes;
 		}
 
-		public void CopyValuesInGenes(int[] valuesToBeCopied)
-		{
-			for (int i = 0 ; i < this.size ; i++)
-				this.genes[i] = valuesToBeCopied[i];
-			//whenever at least one gene has been written,
-			//the current generation number is stored
-			this.generation = this.geneticOptimizer.GenerationCounter;
-		}
+//		//old implementation
+//		public void CopyValuesInGenes(int[] valuesToBeCopied)
+//		{
+//			for (int i = 0 ; i < this.size ; i++)
+//				this.genes[i] = valuesToBeCopied[i];
+//			//whenever at least one gene has been written,
+//			//the current generation number is stored
+//			this.generation = this.geneticOptimizer.GenerationCounter;
+//		}
+
+//		//old implementation
+//		public void SetGeneValue(int geneValue, int genePosition)
+//		{
+//			if(geneValue < this.GetMinValueForGenes(genePosition) ||
+//			   geneValue > this.GetMaxValueForGenes(genePosition) )
+//				throw new IndexOutOfRangeException("Gene value not valid for the gene at" +
+//				                                   " the given position!");
+//			if( geneValue != this.GetGeneValue(genePosition) )
+//				// if a new value is stored in the given position, then
+//				// fitness has to be calculated again, and so meaning
+//			{
+//				this.hasFitnessBeenAssigned = false;
+//				this.meaning = null;
+//			}
+//			
+//			this.genes[genePosition] = geneValue;
+//			//whenever at least one gene has been written,
+//			//the current generation number is stored
+//			this.generation = this.geneticOptimizer.GenerationCounter;
+//		}
 		
 		public void SetGeneValue(int geneValue, int genePosition)
 		{
@@ -205,12 +232,11 @@ namespace QuantProject.ADT.Optimizing.Genetic
 			{
 				this.hasFitnessBeenAssigned = false;
 				this.meaning = null;
+				//only if a new gene value is written,
+			  //the current generation number is stored
+				this.generation = this.geneticOptimizer.GenerationCounter;
 			}
-			
 			this.genes[genePosition] = geneValue;
-			//whenever at least one gene has been written,
-			//the current generation number is stored
-			this.generation = this.geneticOptimizer.GenerationCounter;
 		}
 		
 		public int GetGeneValue(int genePosition)
@@ -303,6 +329,5 @@ namespace QuantProject.ADT.Optimizing.Genetic
 			}
 			return returnValue;
 		}
-		
 	}
 }

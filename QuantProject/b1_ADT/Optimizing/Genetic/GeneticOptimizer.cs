@@ -304,7 +304,7 @@ namespace QuantProject.ADT.Optimizing.Genetic
 
       this.currentGeneration.Sort(this.genomeComparer);
       if(this.NewGeneration != null)
-        this.NewGeneration( this , new NewGenerationEventArgs(
+        this.NewGeneration( this , new NewGenerationEventArgs( this,
           this.currentGeneration , this.generationCounter , this.generationNumber ) );
     }
 

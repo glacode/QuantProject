@@ -34,6 +34,7 @@ namespace QuantProject.ADT.Optimizing.Genetic
 		private ArrayList generation;
 		private int generationNumber;
 		private int generationCounter;
+		private GeneticOptimizer currentGeneticOptimizer;
 
 		/// <summary>
 		/// Current generation
@@ -56,14 +57,25 @@ namespace QuantProject.ADT.Optimizing.Genetic
 		{
 			get { return this.generationCounter; }
 		}
-
+		/// <summary>
+		/// Genetic optimizer that
+		/// has created the current generation 
+		/// </summary>
+		public GeneticOptimizer CurrentGeneticOptimizer
+		{
+			get { return this.currentGeneticOptimizer; }
+		}
+		
 		public NewGenerationEventArgs( ArrayList generation )
 		{
 			this.generation = generation;
 		}
-		public NewGenerationEventArgs( ArrayList generation ,
-			int generationCounter , int generationNumber )
+		public NewGenerationEventArgs( GeneticOptimizer currentGeneticOptimizer,
+		                               ArrayList generation ,
+																	 int generationCounter , 
+																	 int generationNumber )
 		{
+			this.currentGeneticOptimizer = currentGeneticOptimizer;
 			this.generation = generation;
 			this.generationCounter = generationCounter;
 			this.generationNumber = generationNumber;
