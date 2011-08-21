@@ -105,20 +105,36 @@ namespace QuantProject.DataAccess.Tables
 				" AND " + SQLBuilder.GetDateConstant(lastDate));
 			return dataTable.Rows.Count;
 		}
-
+		
+		/// <summary>
+		/// Returns the number of days at which the given ticker has quotes in the db
+		/// </summary>
+		/// <param name="ticker">ticker for which the number of days has to be returned</param>
+		/// <returns></returns>
+		public static int GetNumberOfDaysWithQuotes( string ticker, DateTime firstDate,
+		                                                     DateTime lastDate)
+		{
+			DataTable dataTable = SqlExecutor.GetDataTable(
+				"select * from quotes WHERE quTicker='" + ticker + "'" +
+				" AND quDate BETWEEN " + SQLBuilder.GetDateConstant(firstDate) +
+				" AND " + SQLBuilder.GetDateConstant(lastDate));
+			return dataTable.Rows.Count;
+		}
+		
 		/// <summary>
 		/// Returns the adjusted close value for the given ticker at the specified date
 		/// is returned
 		/// </summary>
 		/// <param name="ticker">ticker for which the adj close has to be returned</param>
 		/// <returns></returns>
-		public static float GetAdjustedClose( string ticker, DateTime date )
+		public static double GetAdjustedClose( string ticker, DateTime date )
 		{
-			DataTable dataTable = SqlExecutor.GetDataTable(
-				"select quAdjustedClose from quotes where quTicker='" + ticker + "' " +
-				"and quDate=" + SQLBuilder.GetDateConstant(date) );
-			return (float)dataTable.Rows[0][0];
+			string strSQL = "select quAdjustedClose from quotes where quTicker='" + ticker + "' " +
+				"and quDate=" + SQLBuilder.GetDateConstant(date);
+			DataTable dataTable = SqlExecutor.GetDataTable(strSQL);
+			return (double)dataTable.Rows[0][0];
 		}
+		
 		/// <summary>
 		/// Returns the raw (not adjusted) close for the given ticker at the specified date
 		/// is returned
@@ -727,7 +743,7 @@ namespace QuantProject.DataAccess.Tables
 		{
 			DataTable dt;
 			string sql = "SELECT quotes.quTicker, " +
-				"Avg([quVolume]) AS AverageTradedVolume " +
+				"Avg(quVolume) AS AverageTradedVolume " +
 				"FROM quotes WHERE quTicker ='" +
 				ticker + "' " +
 				"AND quotes.quDate BETWEEN " + SQLBuilder.GetDateConstant(firstQuoteDate) +
@@ -735,9 +751,9 @@ namespace QuantProject.DataAccess.Tables
 				" GROUP BY quotes.quTicker";
 			dt = SqlExecutor.GetDataTable( sql );
 			if(dt.Rows.Count==0)
-				return 0;
+				return 0.0;
 			else
-				return (double)dt.Rows[0]["AverageTradedVolume"];
+				return Convert.ToDouble(dt.Rows[0]["AverageTradedVolume"]);
 		}
 
 		/// <summary>
@@ -900,6 +916,34 @@ namespace QuantProject.DataAccess.Tables
 			
 		}
 
+		/// <summary>
+		/// returns the average adjusted close price for the given ticker,
+		/// at the specified time interval
+		/// </summary>
+		public static double GetAverageAdjustedClosePrice( string ticker,
+		                                            DateTime firstQuoteDate,
+		                                            DateTime lastQuoteDate)
+			
+		{
+			double returnValue = double.MinValue;
+			DataTable dt;
+			string sql = "SELECT quotes.quTicker, " +
+				"Avg(quotes.quAdjustedClose) AS AverageAdjClosePrice " +
+				"FROM quotes " +
+				"WHERE quotes.quTicker ='" + ticker +
+				"' AND quotes.quDate Between " + SQLBuilder.GetDateConstant(firstQuoteDate) + " " +
+				"AND " + SQLBuilder.GetDateConstant(lastQuoteDate) + " " +
+				"GROUP BY quotes.quTicker";
+			dt = SqlExecutor.GetDataTable( sql );
+			if(dt.Rows.Count > 0)
+			{
+				if( dt.Rows[0]["AverageAdjClosePrice"] is double )
+					//cast is possible
+					returnValue = (double)dt.Rows[0]["AverageAdjClosePrice"];
+			}
+			return returnValue;
+		}
+		
 		/// <summary>
 		/// returns raw open price's standard deviation for the given ticker,
 		/// at the specified time interval
