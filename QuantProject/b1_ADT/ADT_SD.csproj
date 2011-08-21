@@ -47,6 +47,7 @@
     <Compile Include="AdvancedSortedList.cs" />
     <Compile Include="AssemblyInfo.cs" />
     <Compile Include="BarComponent.cs" />
+    <Compile Include="Collections\DoubleArrayManager.cs" />
     <Compile Include="ConstantsProvider.cs" />
     <Compile Include="Econometrics\ILinearRegression.cs" />
     <Compile Include="Econometrics\LinearRegressionWithoutCovarianceMatrix.cs" />
@@ -110,6 +111,7 @@
     <Compile Include="Collections\FloatArrayManager.cs" />
     <Compile Include="Collections\Set.cs" />
     <Compile Include="Timing\Date.cs" />
+    <Compile Include="Timing\DayOfMonth.cs" />
     <Compile Include="Timing\Time.cs" />
   </ItemGroup>
   <ItemGroup>
