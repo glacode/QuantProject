@@ -49,7 +49,7 @@ namespace QuantProject.Scripts.TickerSelectionTesting.OTC
 			set{this.generation = value;}
 		}
 		
-		public OTCPositions Copy()
+		public new OTCPositions Copy()
 		{
 			return new OTCPositions( this.WeightedPositions,
 			                         this.generation );

@@ -86,7 +86,7 @@ namespace QuantProject.Scripts.TechnicalAnalysisTesting.Oscillators.FixedLevelOs
 			set{this.generation = value;}
 		}
 		
-		public PVOPositions Copy()
+		public new PVOPositions Copy()
 		{
 			return new PVOPositions(this.WeightedPositions,
 			                        this.OversoldThreshold,

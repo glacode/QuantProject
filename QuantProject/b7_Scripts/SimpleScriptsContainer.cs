@@ -40,16 +40,16 @@ namespace QuantProject.Scripts
 		
 		public static void Execute()
     {
-      QuantProject.Data.Selectors.ByLinearIndipendence.SelectorByMaxLinearIndipendence selector = 
-        new QuantProject.Data.Selectors.ByLinearIndipendence.SelectorByMaxLinearIndipendence(
-        "SP500",new DateTime(2004,1,1),new DateTime(2004,5,31),5,3,2000,"^GSPC");
-
-      DataTable indipendentTickers = selector.GetTableOfSelectedTickers();
-      SelectorByCloseToCloseCorrelationToBenchmark selector2 = 
-          new SelectorByCloseToCloseCorrelationToBenchmark("SP500",(string)indipendentTickers.Rows[0][0],
-                                                           false,new DateTime(2004,1,1),new DateTime(2004,5,31),
-                                                           20,false);
-      DataTable correlatedTickers = selector2.GetTableOfSelectedTickers();
+//      QuantProject.Data.Selectors.ByLinearIndipendence.SelectorByMaxLinearIndipendence selector = 
+//        new QuantProject.Data.Selectors.ByLinearIndipendence.SelectorByMaxLinearIndipendence(
+//        "SP500",new DateTime(2004,1,1),new DateTime(2004,5,31),5,3,2000,"^GSPC");
+//
+//      DataTable indipendentTickers = selector.GetTableOfSelectedTickers();
+//      SelectorByCloseToCloseCorrelationToBenchmark selector2 = 
+//          new SelectorByCloseToCloseCorrelationToBenchmark("SP500",(string)indipendentTickers.Rows[0][0],
+//                                                           false,new DateTime(2004,1,1),new DateTime(2004,5,31),
+//                                                           20,false);
+//      DataTable correlatedTickers = selector2.GetTableOfSelectedTickers();
     }
   	#endregion Execute
 		
