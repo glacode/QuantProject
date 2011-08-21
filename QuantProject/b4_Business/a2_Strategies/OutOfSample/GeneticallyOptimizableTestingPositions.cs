@@ -46,7 +46,7 @@ namespace QuantProject.Business.Strategies.OutOfSample
 			set{this.generation = value;}
 		}
 		
-		public GeneticallyOptimizableTestingPositions Copy()
+		public new GeneticallyOptimizableTestingPositions Copy()
 		{
 			return new GeneticallyOptimizableTestingPositions( this.WeightedPositions,
 			                         this.generation );
