@@ -39,8 +39,8 @@ namespace QuantProject.Business.Strategies.InSample
 	{
 		public event NewMessageEventHandler NewMessage;
 		public event NewProgressEventHandler NewProgress;
-		private int maxNumOfTestingPositionsToBeReturned;
-		private int numOfTickersInEachTestingPosition;
+		protected int maxNumOfTestingPositionsToBeReturned;
+		protected int numOfTickersInEachTestingPosition;
 		
 		public string Description
 		{
@@ -56,7 +56,17 @@ namespace QuantProject.Business.Strategies.InSample
 				maxNumOfTestingPositionsToBeReturned;
 		}
 		
-		private GeneticallyOptimizableTestingPositions[] analyzeInSample_getTestingPositionsArray(EligibleTickers eligibleTickers)
+		protected virtual string analyzeInSample_getTestingPositionsArray_getTicker(EligibleTickers eligibleTickers,
+		                                                                            int idxOfTicker)
+		{
+			string returnValue =
+				eligibleTickers.Tickers[idxOfTicker];
+			
+			return returnValue;
+		}
+		
+		
+		protected GeneticallyOptimizableTestingPositions[] analyzeInSample_getTestingPositionsArray(EligibleTickers eligibleTickers)
 		{
 			if( eligibleTickers.Count < 
 			    (this.maxNumOfTestingPositionsToBeReturned *
@@ -72,7 +82,9 @@ namespace QuantProject.Business.Strategies.InSample
 				for ( int j = 0;
 				      idxEligible < eligibleTickers.Count && j < numOfTickersInEachTestingPosition;
 				      j++ )
-					signedTickers[j] = eligibleTickers.Tickers[idxEligible + j];
+					signedTickers[j] = 
+						this.analyzeInSample_getTestingPositionsArray_getTicker(
+							eligibleTickers, idxEligible + j);
 				
 				returnValue[i] =
 						new GeneticallyOptimizableTestingPositions(new WeightedPositions(new SignedTickers(signedTickers)));
