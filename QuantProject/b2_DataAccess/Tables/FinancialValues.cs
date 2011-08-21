@@ -73,23 +73,33 @@ namespace QuantProject.DataAccess.Tables
 			}
 		}
 		
+		private static int getInternalCode(FinancialValueType financialValueType)
+		{
+			int returnValue = 0;
+			string financialValueTypeString = 
+				Enum.GetName(financialValueType.GetType(), financialValueType);
+			returnValue = (int)Enum.Parse(financialValueType.GetType(), financialValueTypeString);
+			
+			return returnValue;
+		}
+		
 		/// <summary>
 		/// Returns last available financial value for the given ticker
 		/// </summary>
 		/// <param name="ticker"></param>
-		/// <param name="financialDataCode">Code for the financial value
-		/// - stored in DB table </param>
+		/// <param name="financialValueType"></param>
 		/// <param name="atDate">Last financial value at the first immediate
 		/// date previous than param atDate will be returned</param>
 		/// <returns></returns>
-		public static double GetLastFinancialValueForTicker( string ticker, int financialDataCode, 
+		public static double GetLastFinancialValueForTicker( string ticker, FinancialValueType financialValueType, 
 		                                                     int periodLengthInMonths, 
 		                                                     DateTime atDate )
 		{
-			string sqlString = "select * from financialValues where fvTiTicker='" + ticker + "' " +
-				"AND fvFdId=" + financialDataCode + " " +
-				"AND fvPeriodLengthInMonths=" + periodLengthInMonths + " " +
-				"AND fvEndingPeriodDate<" + SQLBuilder.GetDateConstant(atDate) + " " +
+			int financialDataCode = getInternalCode(financialValueType);
+			string sqlString = "select * from financialValues where fvTiTicker = '" + ticker + "' " +
+				"AND fvFdId = " + financialDataCode + " " +
+				"AND fvPeriodLengthInMonths = " + periodLengthInMonths + " " +
+				"AND fvEndingPeriodDate <= " + SQLBuilder.GetDateConstant(atDate) + " " +
 				"order by fvEndingPeriodDate";
 			DataTable dataTable = SqlExecutor.GetDataTable(sqlString);
 			int numOfRows = dataTable.Rows.Count;
@@ -100,19 +110,19 @@ namespace QuantProject.DataAccess.Tables
 		/// Returns last available financial values for the given ticker
 		/// </summary>
 		/// <param name="ticker"></param>
-		/// <param name="financialDataCode">Code for the financial value
-		/// - stored in DB table </param>
+		/// <param name="financialValueType"></param>
 		/// <param name="atDate">Last financial values with endingPeriodDate
 		/// previous than param atDate will be returned</param>
 		/// <returns></returns>
-		public static DataTable GetLastFinancialValuesForTicker( string ticker, int financialDataCode, 
+		public static DataTable GetLastFinancialValuesForTicker( string ticker, FinancialValueType financialValueType, 
 		                                                     int periodLengthInMonths, 
 		                                                     DateTime atDate )
 		{
-			string sqlString = "select * from financialValues where fvTiTicker='" + ticker + "' " +
-				"AND fvFdId=" + financialDataCode + " " +
-				"AND fvPeriodLengthInMonths=" + periodLengthInMonths + " " +
-				"AND fvEndingPeriodDate<" + SQLBuilder.GetDateConstant(atDate) + " " + 
+			int financialDataCode = getInternalCode(financialValueType);
+			string sqlString = "select * from financialValues where fvTiTicker = '" + ticker + "' " +
+				"AND fvFdId = " + financialDataCode + " " +
+				"AND fvPeriodLengthInMonths = " + periodLengthInMonths + " " +
+				"AND fvEndingPeriodDate <= " + SQLBuilder.GetDateConstant(atDate) + " " + 
 				"order by fvEndingPeriodDate";
 			
 			DataTable dataTable = SqlExecutor.GetDataTable(sqlString);
@@ -122,18 +132,18 @@ namespace QuantProject.DataAccess.Tables
 		/// <summary>
 		/// Returns last available financial values for all tickers
 		/// </summary>
-		/// <param name="financialDataCode">Code for the financial value
-		/// - stored in DB table </param>
+		/// <param name="financialValueType"></param>
 		/// <param name="atDate">Last financial values with endingPeriodDate
 		/// previous than param atDate will be returned</param>
 		/// <returns></returns>
-		public static DataTable GetLastFinancialValues(int financialDataCode, 
+		public static DataTable GetLastFinancialValues(FinancialValueType financialValueType, 
 		                                               int periodLengthInMonths, 
 		                                               DateTime atDate )
 		{
-			string sqlString = "select * from financialValues where fvFdId=" + financialDataCode + " " +
-				"AND fvPeriodLengthInMonths=" + periodLengthInMonths + " " +
-				"AND fvEndingPeriodDate<" + SQLBuilder.GetDateConstant(atDate) + " " + 
+			int financialDataCode = getInternalCode(financialValueType);
+			string sqlString = "select * from financialValues where fvFdId = " + financialDataCode + " " +
+				"AND fvPeriodLengthInMonths = " + periodLengthInMonths + " " +
+				"AND fvEndingPeriodDate <= " + SQLBuilder.GetDateConstant(atDate) + " " + 
 				"order by fvEndingPeriodDate";
 			
 			DataTable dataTable = SqlExecutor.GetDataTable(sqlString);
@@ -147,47 +157,29 @@ namespace QuantProject.DataAccess.Tables
 		public static DataTable GetTickerFinancialValues( string instrumentKey,
 		                                                  int periodLengthInMonths )
 		{
-			string sql = "select * from financialValues where fvTiTicker='" + instrumentKey + "' " +
-				"and fvPeriodLengthInMonths= " + periodLengthInMonths + " order by fvEndingPeriodDate";
+			string sql = "select * from financialValues where fvTiTicker = '" + instrumentKey + "' " +
+				"and fvPeriodLengthInMonths = " + periodLengthInMonths + " order by fvEndingPeriodDate";
 			return SqlExecutor.GetDataTable( sql );
 		}
-
-		#region SetDataTable for tickerList
-//		private static string setDataTable_getTickerListWhereClause_getSingleTickerWhereClause(
-//			string ticker )
-//		{
-//			return "(" + FinancialValues.TickerFieldName + "='" + ticker + "')";
-//		}
-//		private static string setDataTable_getTickerListWhereClause( ICollection tickerCollection )
-//		{
-//			string returnValue = "";
-//			foreach (string ticker in tickerCollection)
-//				if ( returnValue == "" )
-//				// this is the first ticker to handle
-//				returnValue += setDataTable_getTickerListWhereClause_getSingleTickerWhereClause( ticker );
-//			else
-//				// this is not the first ticker to handle
-//				returnValue += " or " +
-//					setDataTable_getTickerListWhereClause_getSingleTickerWhereClause( ticker );
-//			return "( " + returnValue + " )";
-//		}
-//		/// <summary>
-//		/// Builds a Quotes data table containing a row for each ticker in the
-//		/// collection, with the quotes for the given DateTime
-//		/// </summary>
-//		/// <param name="tickerCollection">Tickers whose quotes are to be fetched</param>
-//		/// <param name="dateTime">Date for the quotes to be fetched</param>
-//		/// <param name="dataTable">Output parameter</param>
-//		public static void SetDataTable( ICollection tickerCollection , DateTime dateTime , DataTable dataTable)
-//		{
-//			string sql;
-//			sql =	"select * from quotes " +
-//				"where " + setDataTable_getTickerListWhereClause( tickerCollection ) +
-//				" and " + FinancialValues.Date + "=" + SQLBuilder.GetDateConstant( dateTime ) + " " +
-//				"order by " + FinancialValues.TickerFieldName;
-//			
-//			SqlExecutor.SetDataTable( sql , dataTable );
-//		}
-		#endregion
+		/// <summary>
+		/// Returns financial value for the given ticker at the given date (exact match!)
+		/// </summary>
+		/// <param name="ticker"></param>
+		/// <param name="financialValueType"></param>
+		/// <param name="atDate">Financial value at the given date</param>
+		/// <returns></returns>
+		public static double GetFinancialValue( string ticker, FinancialValueType financialValueType, 
+		                                        int periodLengthInMonths, DateTime atDate )
+		{
+			int financialDataCode = getInternalCode(financialValueType);
+			string sqlString = "select * from financialValues where fvTiTicker = '" + ticker + "' " +
+				"AND fvFdId = " + financialDataCode + " " +
+				"AND fvPeriodLengthInMonths = " + periodLengthInMonths + " " +
+				"AND fvEndingPeriodDate = " + SQLBuilder.GetDateConstant(atDate);
+			DataTable dataTable = SqlExecutor.GetDataTable(sqlString);
+						
+			return (double)(dataTable.Rows[ 0 ][ "fvValue" ]);
+		}
+		
 	}
 }
