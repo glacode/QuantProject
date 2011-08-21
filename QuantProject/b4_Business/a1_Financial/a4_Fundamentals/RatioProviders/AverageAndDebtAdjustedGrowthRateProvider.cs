@@ -63,7 +63,7 @@ namespace QuantProject.Business.Financial.Fundamentals.RatioProviders
 				atDate.AddDays(- this.daysForAvailabilityOfData);
 		  DataTable tableOfDebtEquityRatios =
 				FinancialValues.GetLastFinancialValuesForTicker(
-					ticker, 64, 12, limitDateForEndingPeriodDate);//64 CODE FOR DEBT EQUITY RATIO
+					ticker, FinancialValueType.DebtEquityRatio, 12, limitDateForEndingPeriodDate);
 			int numOfRows = tableOfDebtEquityRatios.Rows.Count;
 			if( numOfRows > 0)
 				returnValue = 
@@ -111,10 +111,9 @@ namespace QuantProject.Business.Financial.Fundamentals.RatioProviders
 			double returnValue;
 			DateTime limitDateForEndingPeriodDate = 
 				atDate.AddDays(- this.daysForAvailabilityOfData);
-			//40 financial code for "net income"
 			DataTable tableOfEarnings =
 				FinancialValues.GetLastFinancialValuesForTicker(
-					ticker, 40, 12, limitDateForEndingPeriodDate);
+					ticker, FinancialValueType.NetIncome, 12, limitDateForEndingPeriodDate);
 			double averageGrowthRate = 
 				this.getGrowthRate_getAverageGrowthRate(tableOfEarnings);
 			double lastAvailableDebtEquityRatio =
@@ -124,6 +123,10 @@ namespace QuantProject.Business.Financial.Fundamentals.RatioProviders
 									 	Math.Min(1.0,	(this.optimalDebtEquityRatio /
 				               			       lastAvailableDebtEquityRatio ) );
 			return returnValue;
+		}
+		public override double GetValue( string ticker , DateTime atDate )
+		{
+			return this.GetGrowthRate(ticker, atDate);
 		}
 	}
 }

@@ -21,6 +21,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.*/
 
 using System;
 using System.Data;
+using QuantProject.ADT;
 using QuantProject.DataAccess.Tables;
 using QuantProject.Business.DataProviders;
 using QuantProject.Business.Financial.Fundamentals;
@@ -51,15 +52,20 @@ namespace QuantProject.Business.Financial.Fundamentals.RatioProviders
 			double previousEarnings;
 			DateTime limitDateForEndingPeriodDate = 
 				atDate.AddDays(- this.daysForAvailabilityOfData);
-			//40 financial code for "net income"
 			DataTable tableOfEarnings =
 				FinancialValues.GetLastFinancialValuesForTicker(
-					ticker, 40, 12, limitDateForEndingPeriodDate);
+					ticker, FinancialValueType.NetIncome, 12, limitDateForEndingPeriodDate);
+			string[] tableOfEarningsForDebugging = 
+				ExtendedDataTable.GetArrayOfStringFromRows(tableOfEarnings);
 			int numOfRows = tableOfEarnings.Rows.Count;
 			previousEarnings = (double)tableOfEarnings.Rows[numOfRows - 2]["fvValue"];
 			lastEarnings = (double)tableOfEarnings.Rows[numOfRows - 1]["fvValue"];
 			returnValue = (lastEarnings - previousEarnings)/previousEarnings;
 			return returnValue;
+		}
+		public override double GetValue( string ticker , DateTime atDate )
+		{
+			return this.GetGrowthRate(ticker, atDate);
 		}
 	}
 }

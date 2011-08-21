@@ -54,9 +54,8 @@ namespace QuantProject.Business.Financial.Fundamentals.RatioProviders
 			double returnValue;
 			DateTime limitDateForEndingPeriodDate = 
 				atDate.AddDays(- this.daysForAvailabilityOfData);
-			//56 code for EPS; 12 months = length of period financial value refers to
 			returnValue = 
-				FinancialValues.GetLastFinancialValueForTicker(ticker, 56, 12,
+				FinancialValues.GetLastFinancialValueForTicker(ticker, FinancialValueType.EarningsPerShare, 12,
 			                                    limitDateForEndingPeriodDate);
 			return returnValue;
 		}
@@ -73,6 +72,10 @@ namespace QuantProject.Business.Financial.Fundamentals.RatioProviders
 			returnValue = priceAtDate / earningsPerShareAtDate;
 			
 			return returnValue;
+		}
+		public override double GetValue( string ticker , DateTime atDate )
+		{
+			return this.GetPERatio(ticker, atDate);
 		}
 	}
 }
