@@ -2,7 +2,7 @@
 QuantProject - Quantitative Finance Library
 
 DrivenByFVProviderPositions.cs
-Copyright (C) 2010
+Copyright (C) 2011
 Marco Milletti
 
 This program is free software; you can redistribute it and/or
@@ -40,9 +40,6 @@ namespace QuantProject.Scripts.TickerSelectionTesting.DrivenByFundamentals.Drive
 	{
 		private int generation;
 		private double[] buyPricesForWeightedPositions;
-		
-		
-		
 		//explicit interface implementation
 		//the property can be used only by a interface
 		//instance or through a cast to the interface
@@ -51,7 +48,7 @@ namespace QuantProject.Scripts.TickerSelectionTesting.DrivenByFundamentals.Drive
 			get{return this.generation;}
 			set{this.generation = value;}
 		}
-		
+	
 		public DrivenByFVProviderPositions Copy()
 		{
 			return new DrivenByFVProviderPositions( this.WeightedPositions,
