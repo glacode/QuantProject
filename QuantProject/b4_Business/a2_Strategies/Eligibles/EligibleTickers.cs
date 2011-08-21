@@ -58,10 +58,25 @@ namespace QuantProject.Business.Strategies.Eligibles
 				return this.sourceDataTable;
 			}
 		}
+		private DateTime dateAtWhichTickersAreEligible;
+		/// <summary>
+		/// Returns the dateTime at which tickers
+		/// are eligible
+		/// </summary>
+		public DateTime DateAtWhichTickersAreEligible
+		{
+			get  
+			{
+				return this.dateAtWhichTickersAreEligible;
+			}
+		}
+		
 		public EligibleTickers( ICollection<string> tickers )
 		{
 			foreach( string ticker in tickers )
 				this.List.Add( ticker );
+			this.dateAtWhichTickersAreEligible = 
+				new DateTime(1900,1,1);
 		}
 		
 		/// <summary>
@@ -73,6 +88,20 @@ namespace QuantProject.Business.Strategies.Eligibles
 		{
 			this.sourceDataTable = dtTickers;
 			this.addTickers( dtTickers );
+			this.dateAtWhichTickersAreEligible = 
+				new DateTime(1900,1,1);
+		}
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="dtTickers">DataTable in the form returned by
+		/// a ticker selector</param>
+		public EligibleTickers( DataTable dtTickers,
+		                        DateTime dateAtWhichTickersAreEligible )
+		{
+			this.sourceDataTable = dtTickers;
+			this.addTickers( dtTickers );
+			this.dateAtWhichTickersAreEligible = dateAtWhichTickersAreEligible;
 		}
 		#region addTickers
 		private void checkParameter( DataRow dataRow )
@@ -117,6 +146,10 @@ namespace QuantProject.Business.Strategies.Eligibles
 		{
 			foreach ( string ticker in eligibileTickers.Tickers )
 				this.addTicker_actually( ticker );
+		}
+		public void AddAdditionalTicker( string ticker )
+		{
+			this.List.Add( ticker );
 		}
 	}
 }

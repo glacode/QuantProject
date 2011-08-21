@@ -117,15 +117,21 @@ namespace QuantProject.Business.Strategies.Eligibles
 //			dataSet.Tables.Add( dataTableMostLiquid );
 //			dataSet.WriteXml( "c:\\qpReports\\pairsTrading\\eligiblesCon_ByPriceMostLiquidAlwaysQuoted.xml" );
 
-      SelectorByQuotationAtEachMarketDay quotedAtEachMarketDayFromLastSelection = 
-        new SelectorByQuotationAtEachMarketDay( dataTableMostLiquid ,
-        false, history,
-        this.maxNumberOfEligibleTickersToBeChosen);
+//      SelectorByQuotationAtEachMarketDay quotedAtEachMarketDayFromLastSelection = 
+//        new SelectorByQuotationAtEachMarketDay( dataTableMostLiquid ,
+//        false, history,
+//        this.maxNumberOfEligibleTickersToBeChosen);
+      
+      SelectorByQuotationAtAGivenPercentageOfDateTimes quotedAtEachMarketDayFromLastSelection = 
+        new SelectorByQuotationAtAGivenPercentageOfDateTimes( dataTableMostLiquid ,
+        false, history, 0,
+        this.maxNumberOfEligibleTickersToBeChosen, 0.9);
+      
       DataTable dataTableToBeReturned =
 				quotedAtEachMarketDayFromLastSelection.GetTableOfSelectedTickers();
 			
       return
-				new EligibleTickers( dataTableToBeReturned );
+				new EligibleTickers( dataTableToBeReturned, currentDate );
 		}
 		
 		private void getEligibleTickers_sendNewMessage(

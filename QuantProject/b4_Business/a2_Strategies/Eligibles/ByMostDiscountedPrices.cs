@@ -111,11 +111,12 @@ namespace QuantProject.Business.Strategies.Eligibles
         initialTableFromWhichToChooseTheMostDiscountedTickers.Columns.Add("AverageMarketPrice", System.Type.GetType("System.Double"));
 			if(!initialTableFromWhichToChooseTheMostDiscountedTickers.Columns.Contains("RelativeDifferenceBetweenFairAndMarketPrice"))
         initialTableFromWhichToChooseTheMostDiscountedTickers.Columns.Add("RelativeDifferenceBetweenFairAndMarketPrice", System.Type.GetType("System.Double"));
-      foreach(DataRow row in initialTableFromWhichToChooseTheMostDiscountedTickers.Rows)
+			this.fairValueProvider.Run(date);
+			foreach(DataRow row in initialTableFromWhichToChooseTheMostDiscountedTickers.Rows)
       {
       	try{
 	      	currentFairPrice = this.fairValueProvider.GetFairValue( (string)row[0],
-	      	                                       date.AddDays(-this.numOfDaysForFundamentalAnalysis),
+	      	                                       //date.AddDays(-this.numOfDaysForFundamentalAnalysis),
 	      	                                       date );
 	      	row["FairPrice"] = currentFairPrice;
 	      	double[] quotesForAveragePriceComputation = 
@@ -149,6 +150,9 @@ namespace QuantProject.Business.Strategies.Eligibles
 			columnPrimaryKeys[0] = tableOfEligibleTickers.Columns[0];
 			tableOfEligibleTickers.PrimaryKey = columnPrimaryKeys;
       
+			string[] tableOfEligibleTickersForDebugging =
+				ExtendedDataTable.GetArrayOfStringFromRows(tableOfEligibleTickers);
+			
       return new EligibleTickers(tableOfEligibleTickers);
 		}
 		
@@ -166,6 +170,8 @@ namespace QuantProject.Business.Strategies.Eligibles
       else//the group is not temporized
       	group = new SelectorByGroup(this.tickersGroupID);
       DataTable tickersFromGroup = group.GetTableOfSelectedTickers();
+      string[] tickersFromGroupForDebugging =
+      	ExtendedDataTable.GetArrayOfStringFromRows(tickersFromGroup);
       SelectorByNumOfMinGrowingIncomesInARow selectorByMinimumGrowingIncomes =
       	new SelectorByNumOfMinGrowingIncomesInARow(tickersFromGroup, history.FirstDateTime,
       	                                            history.LastDateTime, 
@@ -173,6 +179,9 @@ namespace QuantProject.Business.Strategies.Eligibles
       	                                            12, this.numDaysForFundamentalDataAvailability);
       DataTable tickersWithPositiveGrowingIncomes = 
       	selectorByMinimumGrowingIncomes.GetTableOfSelectedTickers();
+      
+      string[] tickersWithPositiveGrowingIncomesForDebugging =
+      	ExtendedDataTable.GetArrayOfStringFromRows(tickersWithPositiveGrowingIncomes);
       
       return this.getEligibleTickers_actually_getTableOfMostDiscountedTickers(tickersWithPositiveGrowingIncomes, currentDate);
       
