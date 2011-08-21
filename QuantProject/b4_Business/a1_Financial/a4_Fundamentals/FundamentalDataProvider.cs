@@ -24,12 +24,19 @@ using System;
 namespace QuantProject.Business.Financial.Fundamentals
 {
 	/// <summary>
-	/// Base class for fundamental data providers
+	/// Base abstract class for fundamental data providers
 	/// </summary>
 	[Serializable]
-	public class FundamentalDataProvider
+	public abstract class FundamentalDataProvider
 	{
 		protected int daysForAvailabilityOfData;
+		public int DaysForAvailabilityOfData
+		{
+			get
+			{
+				return daysForAvailabilityOfData;
+			}
+		}
 		/// <summary>
 		/// FundamentalDataProvider's constructor
 		/// </summary>
@@ -45,5 +52,9 @@ namespace QuantProject.Business.Financial.Fundamentals
 		{
 			this.daysForAvailabilityOfData = daysForAvailabilityOfData;
 		}
+		public abstract double GetValue(string ticker , DateTime atDate);
+//		{
+//			return 0.0;
+//		}
 	}
 }
