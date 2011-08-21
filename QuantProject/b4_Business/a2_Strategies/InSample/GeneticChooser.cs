@@ -185,6 +185,14 @@ namespace QuantProject.Business.Strategies.InSample
 			ReturnsManager returnsManager )
 		{
 			if ( eligibleTickers.Count <	this.numberOfPortfolioPositions )
+				throw new Exception( "Eligible tickers at date " +
+				  eligibleTickers.DateAtWhichTickersAreEligible.ToString() + " " +
+				  "for driving positions contains only " +
+					eligibleTickers.Count + " " +
+					"elements, while number of portfolio positions is " +
+					this.numberOfPortfolioPositions );
+			if ( this.numberOfBestTestingPositionsToBeReturned > 
+						this.populationSizeForGeneticOptimizer )
 				throw new Exception( "Eligible tickers for driving positions contains " +
 				                    "only " + eligibleTickers.Count +
 				                    " elements, while number of portfolio positions is " +
@@ -205,20 +213,37 @@ namespace QuantProject.Business.Strategies.InSample
 				                 new NewProgressEventArgs( e.GenerationCounter , e.GenerationNumber ) );
 		}
 		#region sendNewMessage
-		private string getProgressMessage(
-			int generationCounter , int generationNumber )
+		private double getProgressMessage_getAverageFitness(NewGenerationEventArgs e)
 		{
+			double totalFitness = 0.0;
+			int populationSize = e.CurrentGeneticOptimizer.PopulationSize;
+			for(int i = 0; i < populationSize; i++)
+				totalFitness += ((Genome)e.Generation[i]).Fitness;
+			
+			return totalFitness / populationSize;
+		}
+		private string getProgressMessage(NewGenerationEventArgs e)
+		{
+			Genome bestGenome = (Genome)e.Generation[e.Generation.Count - 1];
+			if( e.CurrentGeneticOptimizer.BestGenome != null )
+				bestGenome = e.CurrentGeneticOptimizer.BestGenome;
+			double worstFitness = ((Genome)e.Generation[0]).Fitness;
+			if( e.CurrentGeneticOptimizer.WorstGenome != null)
+				worstFitness = e.CurrentGeneticOptimizer.WorstGenome.Fitness;
+			double averageFitness = this.getProgressMessage_getAverageFitness(e);
 			string progressMessage =
-				generationCounter.ToString() + " / " +
-				generationNumber.ToString() +
-				" - " +
-				DateTime.Now.ToString();
+				e.GenerationCounter.ToString() + " / " +
+				e.GenerationNumber.ToString() +
+				" ; Abs Best: " + bestGenome.Fitness.ToString("0.00000000") +
+				" (gen: " + bestGenome.Generation.ToString() + ")" +
+				" ; Abs Worst: " + worstFitness.ToString("0.000000") + 
+				" ; Avg of gen : " + averageFitness.ToString("0.0000") +
+				" - " + DateTime.Now.ToString();
 			return progressMessage;
 		}
 		private void sendNewMessage( NewGenerationEventArgs e )
 		{
-			string message = this.getProgressMessage(
-				e.GenerationCounter , e.GenerationNumber );
+			string message = this.getProgressMessage( e );
 			NewMessageEventArgs newMessageEventArgs =
 				new NewMessageEventArgs( message );
 			if( this.NewMessage != null )
