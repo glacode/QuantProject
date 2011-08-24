@@ -97,6 +97,7 @@
     <Compile Include="a1_Financial\a4_Fundamentals\RatioProviders\AverageAndDebtAdjustedGrowthRateProvider.cs" />
     <Compile Include="a1_Financial\a4_Fundamentals\RatioProviders\IGrowthRateProvider.cs" />
     <Compile Include="a1_Financial\a4_Fundamentals\RatioProviders\IRatioProvider_PE.cs" />
+    <Compile Include="a1_Financial\a4_Fundamentals\RatioProviders\LastAvailableBookValueGrowthRateProvider.cs" />
     <Compile Include="a1_Financial\a4_Fundamentals\RatioProviders\LastAvailableGrowthRateProvider.cs" />
     <Compile Include="a1_Financial\a4_Fundamentals\RatioProviders\LastAvailablePEProvider.cs" />
     <Compile Include="a1_Financial\a4_Fundamentals\ReturnOnAssetsProvider.cs" />
