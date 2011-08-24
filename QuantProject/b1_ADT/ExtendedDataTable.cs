@@ -304,22 +304,22 @@ namespace QuantProject.ADT
     public static string[] GetArrayOfStringFromRows(DataTable table)
     {
       int numRows = table.Rows.Count;
-      string[] arrayOfString = new string[numRows];
+      string[] arrayOfString = new string[numRows + 1];
       int index = 0;
       try
       {
-        for(; index!= numRows; index++)
+        for(; index < arrayOfString.Length; index++)
         {
         	if(index == 0)
         		arrayOfString[index] = getArrayOfStringFromRows_getColumnNames(table);
         	else
-        		arrayOfString[index] = getArrayOfStringFromRows_getRowValues(table, index);
+        		arrayOfString[index] = getArrayOfStringFromRows_getRowValues(table, index - 1);
         }
       }
       catch(Exception ex)
       {
         MessageBox.Show(ex.ToString());
-        index = numRows;
+        index = arrayOfString.Length;
       }
       return arrayOfString;
     }
