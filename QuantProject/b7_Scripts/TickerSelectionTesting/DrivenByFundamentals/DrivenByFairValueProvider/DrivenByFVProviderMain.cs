@@ -91,7 +91,7 @@ namespace QuantProject.Scripts.TickerSelectionTesting.DrivenByFundamentals.Drive
 //			this.tickersGroupId = "ticUSFin";
 //			this.tickersGroupId = "STOCKMI";
 			this.temporizedGroup = true;
-			this.numDaysForPortfolioVolatilityAnalysis = 90;
+			this.numDaysForPortfolioVolatilityAnalysis = 180;
 			this.maxNumberOfEligiblesToBeChosen = 500;
 //			int numOfTopRowsToDelete = 500;
 //			this.numDayForAveragePriceComputation = 10;
@@ -140,8 +140,11 @@ namespace QuantProject.Scripts.TickerSelectionTesting.DrivenByFundamentals.Drive
 //				                                             optimalDebtEquityRatioLevel);
 //				new LastAvailableGrowthRateProvider(numDaysForFundamentalDataAvailability);
 			FundamentalDataProvider[] fundamentalDataProviders =
-				new FundamentalDataProvider[1]{
+				new FundamentalDataProvider[2]{
 					new BookValueProvider(numDaysForFundamentalDataAvailability)
+					,
+					new LastAvailablePEProvider(this.historicalMarketValueProviderForInSample,
+					                            numDaysForFundamentalDataAvailability)
 				};
 				
 			ILinearRegressionValuesProvider linearRegressionValuesProvider =
