@@ -70,6 +70,11 @@ namespace QuantProject.Business.Financial.Fundamentals.RatioProviders
 				this.getPERatio_getLastAvailableEarningsPerShare(ticker , atDate);
 			
 			returnValue = priceAtDate / earningsPerShareAtDate;
+			if(returnValue > 1000.0)
+			//if earnings is zero or near to zero ...
+				returnValue = 1000.0;
+			else if(returnValue < -1000.0)
+				returnValue = -1000.0;
 			
 			return returnValue;
 		}
