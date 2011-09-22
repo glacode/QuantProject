@@ -165,6 +165,7 @@
     <Compile Include="WalkForwardTesting\FixedLengthTwoPhases\OutOfSampleChoosers\RankBasedOutOfSampleChooser.cs" />
     <Compile Include="WalkForwardTesting\LinearCombination\MainForm.cs" />
     <Compile Include="WalkForwardTesting\LinearRegression\eligibles\EligiblesSelectorForLinearRegression.cs" />
+    <Compile Include="WalkForwardTesting\LinearRegression\EntryStrategies\EntryStrategyBasedOnForecastedReturnInBothDirections.cs" />
     <Compile Include="WalkForwardTesting\LinearRegression\EntryStrategies\IEntryStrategy.cs" />
     <Compile Include="WalkForwardTesting\LinearRegression\EntryStrategies\EntryStrategyBasedOnForecastedReturn.cs" />
     <Compile Include="WalkForwardTesting\LinearRegression\ExitStrategies\ExitOnIntervalEnd.cs" />
