@@ -36,7 +36,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.LinearRegression
 	[Serializable]
 	public class EntryStrategyBasedOnForecastedReturn : IEntryStrategy
 	{
-		private double minAverageExpectedReturn;
+		protected double minAverageExpectedReturn;
 		private ILinearRegressionFitnessEvaluator fitnessEvaluator;
 		private IReturnIntervalSelectorForSignaling returnIntervalSelectorForSignaling;
 		private HistoricalMarketValueProvider historicalMarketValueProvider;
@@ -84,8 +84,8 @@ namespace QuantProject.Scripts.WalkForwardTesting.LinearRegression
 			bool wereExchanged =
 				( this.historicalMarketValueProvider.WereAllExchanged(
 					candidate.SignalingTickers , outOfSampleReturnIntervalForSignaling.Begin )
-				&& this.historicalMarketValueProvider.WereAllExchanged(
-						candidate.SignalingTickers , outOfSampleReturnIntervalForSignaling.End ) );
+				 && this.historicalMarketValueProvider.WereAllExchanged(
+				 	candidate.SignalingTickers , outOfSampleReturnIntervalForSignaling.End ) );
 			return wereExchanged;
 		}
 		
@@ -136,6 +136,15 @@ namespace QuantProject.Scripts.WalkForwardTesting.LinearRegression
 		}
 		#endregion computeForecastedReturn
 		
+		protected virtual WeightedPositions tryThisCandidate(
+			LinearRegressionTestingPositions candidate , double expectedReturn )
+		{
+			WeightedPositions weightedPositionsToBeOpened = null;
+			if ( expectedReturn >= this.minAverageExpectedReturn )
+				weightedPositionsToBeOpened = candidate.WeightedPositions;
+			return weightedPositionsToBeOpened;
+		}
+		
 		private WeightedPositions tryThisCandidate(
 			LinearRegressionTestingPositions candidate ,
 			ReturnInterval outOfSampleReturnIntervalForSignaling )
@@ -146,8 +155,9 @@ namespace QuantProject.Scripts.WalkForwardTesting.LinearRegression
 			{
 				double expectedReturn = this.computeForecastedReturn(
 					candidate , outOfSampleReturnIntervalForSignaling );
-				if ( expectedReturn >= this.minAverageExpectedReturn )
-					weightedPositionsToBeOpened = candidate.WeightedPositions;
+				weightedPositionsToBeOpened = this.tryThisCandidate( candidate , expectedReturn );
+//				if ( expectedReturn >= this.minAverageExpectedReturn )
+//					weightedPositionsToBeOpened = candidate.WeightedPositions;
 			}
 			return weightedPositionsToBeOpened;
 		}
