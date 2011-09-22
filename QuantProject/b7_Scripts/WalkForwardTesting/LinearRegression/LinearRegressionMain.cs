@@ -111,7 +111,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.LinearRegression
 			// uncomment the followings three lines for a faster script
 			groupIdForTradingTickers = "fastTest";
 			groupIdForAdditionalSignalingTickers = "fastTest";
-			maxNumberOfEligiblesForTrading = 13;
+			maxNumberOfEligiblesForTrading = 14;
 //			groupIdForTradingTickers = "win_leg";
 //			groupIdForAdditionalSignalingTickers = "win_leg";
 //			maxNumberOfEligiblesForTrading = 2;
@@ -271,9 +271,14 @@ namespace QuantProject.Scripts.WalkForwardTesting.LinearRegression
 					acceptableDaysOfTheWeekForTheEndOfEachInterval ,
 					maxTimeSpanToLookAhead );
 
-			double minForecastedReturn = 0.002F;
+			double minForecastedReturn = 0.00002F;			
 			IEntryStrategy longAndShortBasedOnAverageExpectedReturn =
 				new EntryStrategyBasedOnForecastedReturn(
+					minForecastedReturn , this.fitnessEvaluator ,
+					this.returnIntervalSelectorForSignaling ,
+					this.historicalMarketValueProviderForChosingPositionsOutOfSample );
+			longAndShortBasedOnAverageExpectedReturn =
+				new EntryStrategyBasedOnForecastedReturnInBothDirections(
 					minForecastedReturn , this.fitnessEvaluator ,
 					this.returnIntervalSelectorForSignaling ,
 					this.historicalMarketValueProviderForChosingPositionsOutOfSample );
