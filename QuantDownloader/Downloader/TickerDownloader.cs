@@ -381,10 +381,10 @@ namespace QuantProject.Applications.Downloader
       
       QuantProject.Data.DataTables.Quotes tickerQuotes =
 				new QuantProject.Data.DataTables.Quotes(this.currentTicker);
-//      for(
+      for(
       	int i = 1;
-//          i < this.numberOfQuotesInDatabase && response == false;
-//          i += this.numberOfQuotesInDatabase/numberOfRepeatedChecks)
+          i < this.numberOfQuotesInDatabase && response == false;
+          i += this.numberOfQuotesInDatabase/numberOfRepeatedChecks)
       {
         DateTime dateToCheck = tickerQuotes.GetPrecedingDate(this.startDate, i);
         float adjustedCloseFromSource = float.MaxValue;

@@ -321,7 +321,8 @@ namespace QuantProject.DataAccess.Tables
 					                         SQLBuilder.GetDateConstant(dateToCheck));
 				adjustedCloseInDatabase = (double)(tableOfSingleRow.Rows[0]["quAdjustedClose"]);
 				absoluteDifference = Math.Abs(currentAdjustedValueFromSource - adjustedCloseInDatabase);
-				if(absoluteDifference>ConstantsProvider.MaxDifferenceForAdjustedValues)
+				if(currentAdjustedValueFromSource != float.MaxValue &&
+					absoluteDifference>ConstantsProvider.MaxDifferenceForAdjustedValues)
 					isAdjustedCloseChanged = true;
 				return isAdjustedCloseChanged;
 			}
