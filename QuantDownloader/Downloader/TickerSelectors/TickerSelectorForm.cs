@@ -749,16 +749,16 @@ namespace QuantProject.Applications.Downloader.TickerSelectors
       } 
       else if (this.comboBoxAvailableSelectionRules.Text == "CloseToCloseCorrelationToBenchmark")
       { 
-        if(this.textBoxGroupID.Text != "")
-          returnValue = new SelectorByCloseToCloseCorrelationToBenchmark(this.textBoxGroupID.Text, this.textBoxMarketIndex.Text,
-            this.checkBoxASCMode.Checked, this.dateTimePickerFirstDate.Value,
-            this.dateTimePickerLastDate.Value, Int32.Parse(this.textBoxMaxNumOfReturnedTickers.Text),
-            false);
-        else
-          returnValue = new SelectorByCloseToCloseCorrelationToBenchmark(this.tableOfSelectedTickers, this.textBoxMarketIndex.Text,
-            this.checkBoxASCMode.Checked, this.dateTimePickerFirstDate.Value,
-            this.dateTimePickerLastDate.Value, Int32.Parse(this.textBoxMaxNumOfReturnedTickers.Text),
-            false);
+//        if(this.textBoxGroupID.Text != "")
+//          returnValue = new SelectorByCloseToCloseCorrelationToBenchmark(this.textBoxGroupID.Text, this.textBoxMarketIndex.Text,
+//            this.checkBoxASCMode.Checked, this.dateTimePickerFirstDate.Value,
+//            this.dateTimePickerLastDate.Value, Int32.Parse(this.textBoxMaxNumOfReturnedTickers.Text),
+//            false);
+//        else
+//          returnValue = new SelectorByCloseToCloseCorrelationToBenchmark(this.tableOfSelectedTickers, this.textBoxMarketIndex.Text,
+//            this.checkBoxASCMode.Checked, this.dateTimePickerFirstDate.Value,
+//            this.dateTimePickerLastDate.Value, Int32.Parse(this.textBoxMaxNumOfReturnedTickers.Text),
+//            false);
       } 
       else if (this.comboBoxAvailableSelectionRules.Text == "MaxLinearIndipendence")
       { 
