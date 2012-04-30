@@ -50,7 +50,6 @@
     <Compile Include="Collections\DoubleArrayManager.cs" />
     <Compile Include="ConstantsProvider.cs" />
     <Compile Include="Econometrics\ILinearRegression.cs" />
-    <Compile Include="Econometrics\LinearRegressionWithoutCovarianceMatrix.cs" />
     <Compile Include="Econometrics\LinearRegression.cs" />
     <Compile Include="ExtendedDataTable.cs" />
     <Compile Include="ExtendedDateTime.cs" />
