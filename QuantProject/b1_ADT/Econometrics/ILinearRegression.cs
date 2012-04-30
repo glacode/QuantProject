@@ -19,6 +19,7 @@ namespace QuantProject.ADT.Econometrics
 	{
 		double[] EstimatedCoefficients{ get; }
 		double CenteredRSquare{ get; }
+		double CenteredPSquare{ get; }
 		void RunRegression( double[] regressand , double[,] regressors );
 	}
 }
