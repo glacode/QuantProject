@@ -33,6 +33,8 @@ namespace QuantProject.ADT.Econometrics
 	[Serializable]
 	public class LinearRegression : ILinearRegression
 	{
+		private double[] regressand;
+		private double[,] regressors;
 		private double[,] covarianceMatrix;		// (XTransposeX)^-1
 		private double sumOfSquareResiduals;
 		private double centeredTotalSumOfSquares;
@@ -50,14 +52,211 @@ namespace QuantProject.ADT.Econometrics
 			}
 		}
 		
+		#region HatMatrixDiagonal
+		private double[] hatMatrixDiagonal;
+		
+		#region setHatMatrixDiagonal
+		
+		#region getHatMatrixDiagonal
+		
+		#region get_i_th_row_of_X_XtransposeX_inverse
+		private double get_i_th_row_of_X_XtransposeX_inverse( int i , int j )
+		{
+			double partialSum = 0;
+			for( int q = 0 ; q < this.regressors.GetLength( 1 ) ; q++ )
+				partialSum += this.regressors[ i , q ] *
+					this.covarianceMatrix[ q , j ];
+			return partialSum;
+		}
+
+		private double[] get_i_th_row_of_X_XtransposeX_inverse( int i )
+		{
+			double[] i_th_row_of_X_XtransposeX_inverse = new double[ this.regressors.GetLength( 1 ) ];
+			for( int j = 0 ; j < this.regressors.GetLength( 1 ) ; j++ )
+				i_th_row_of_X_XtransposeX_inverse[ j ] =
+					this.get_i_th_row_of_X_XtransposeX_inverse( i , j );
+			return i_th_row_of_X_XtransposeX_inverse;
+		}
+		#endregion get_i_th_row_of_X_XtransposeX_inverse
+		
+		private double getHatMatrixDiagonal( int i )
+		{
+			double[] i_th_row_of_X_XtransposeX_inverse =
+				this.get_i_th_row_of_X_XtransposeX_inverse( i );
+			double partialSum = 0;
+			for( int j = 0 ; j < this.regressors.GetLength( 1 ) ; j++ )
+				partialSum += i_th_row_of_X_XtransposeX_inverse[ j ] *
+					this.regressors[ i , j ];
+			return partialSum;
+		}
+		#endregion getHatMatrixDiagonal
+		
+		private void setHatMatrixDiagonal()
+		{
+			this.hatMatrixDiagonal = new double[ this.regressand.Length ];
+			for( int i = 0 ; i < hatMatrixDiagonal.Length ; i++ )
+				this.hatMatrixDiagonal[ i ] = this.getHatMatrixDiagonal( i );
+		}
+		#endregion setHatMatrixDiagonal
+		
+		/// <summary>
+		/// returns the diagonal of the hat matrix
+		/// </summary>
+		public double[] HatMatrixDiagonal
+		{
+			get{
+				if ( this.hatMatrixDiagonal == null )
+					this.setHatMatrixDiagonal();
+				return this.hatMatrixDiagonal;
+			}
+		}
+		#endregion HatMatrixDiagonal
+		
 		private double centeredRSquare;
 		
 		public double CenteredRSquare {
 			get { return this.centeredRSquare; }
 		}
 		
+		#region Residuals
+		
+		private double[] residuals;
+		
+		#region setResiduals
+		
+		#region setResidual
+		
+		private double getPredictedValue( int i )
+		{
+			double predictedValue = 0;
+			for ( int j = 0 ; j < this.EstimatedCoefficients.Length ; j++ )
+				predictedValue +=
+					this.estimatedCoefficients[ j ] * this.regressors[ i , j ];
+			return predictedValue;
+		}
+		
+		private void setResidual( int i )
+		{
+			double predictedValue = this.getPredictedValue( i );
+			this.residuals[ i ] = this.regressand[ i ] - predictedValue;
+		}
+		#endregion setResidual
+		
+		private void setResiduals()
+		{
+			this.residuals = new double[ this.regressand.Length ];
+			for( int i = 0 ; i < this.regressand.Length ; i++ )
+				this.setResidual( i );
+		}
+		#endregion setResiduals
+		
+		public double[] Residuals {
+			get {
+				if ( this.residuals == null )
+					this.setResiduals();
+				return this.residuals; }
+		}
+		#endregion Residuals
+
+		
+		#region CenteredTotalSumOfSquares
+		
+		#region setCenteredTotalSumOfSquares
+		private double getYBar()
+		{
+			double partialSum = 0;
+			for( int i = 0 ; i < this.regressand.Length ; i++ )
+				partialSum += this.regressand[ i ];
+			
+			double yBar = partialSum / this.regressand.Length;
+			return yBar;
+		}
+		private void setCenteredTotalSumOfSquares()
+		{
+			double partialSum = 0;
+			double yBar = this.getYBar();
+			for( int i = 0 ; i < this.regressand.Length ; i++ )
+				partialSum += Math.Pow( this.regressand[ i ] - yBar , 2 );
+			this.centeredTotalSumOfSquares = partialSum;
+		}
+		#endregion setCenteredTotalSumOfSquares
+		
+		public double CenteredTotalSumOfSquares
+		{
+			get
+			{
+				if ( this.centeredTotalSumOfSquares == double.MinValue )
+					this.setCenteredTotalSumOfSquares();
+				return this.centeredTotalSumOfSquares;	
+			}
+		}
+		#endregion CenteredTotalSumOfSquares
+		
+		#region PredictedResidualsSumOfSquares
+		
+		private double predictedResidualsSumOfSquares;
+
+		#region setPredictedResidualsSumOfSquares
+		private double getExternalResidual( int i )
+		{
+			double externalResidual = this.Residuals[ i ] / ( 1 - this.HatMatrixDiagonal[ i ] );
+			return externalResidual;
+		}
+		private void setPredictedResidualsSumOfSquares()
+		{
+			double partialSum = 0;
+			for( int i = 0 ; i < this.regressand.Length ; i++ )
+				partialSum += Math.Pow( this.getExternalResidual( i ) , 2 );
+			this.predictedResidualsSumOfSquares = partialSum;
+		}
+		#endregion setPredictedResidualsSumOfSquares
+		
+		/// <summary>
+		///  the PRESS statistic, a statistic based on the leave-one-out technique
+		/// </summary>
+		public double PredictedResidualsSumOfSquares {
+			get {
+				if ( this.predictedResidualsSumOfSquares == Double.MinValue )
+					// the PRESS statistic has not been set yet
+					this.setPredictedResidualsSumOfSquares();
+				return this.predictedResidualsSumOfSquares; }
+		}
+		#endregion PredictedResidualsSumOfSquares
+		
+		
+		/// <summary>
+		/// similar to the Total Sum of Squares, but each observation is subtracted
+		/// the mean of the other observations: in other words, the current observation
+		/// does not partecipate to the computationo of the current mean. It has been
+		/// proven that the Prodicted Total Sum Of Squares (defined as above) is equal to
+		/// the (usual) Centered Total Sum of Squares times (n/(n-1))^2
+		/// </summary>
+		public double PredictedCenteredTotalSumOfSquares
+		{
+			get
+			{
+				double n = Convert.ToDouble( this.regressand.Length );
+				double predictedTotalSumOfSquares =
+					this.CenteredTotalSumOfSquares * Math.Pow(  n / ( n - 1 ) , 2 );
+				return predictedTotalSumOfSquares;
+			}
+		}
+
+		/// <summary>
+		/// a normalized version of the the PRESS statistics
+		/// </summary>
+		public double CenteredPSquare {
+			get
+			{
+				double centerdPSquare = 1 - this.PredictedResidualsSumOfSquares /
+					this.PredictedCenteredTotalSumOfSquares;
+				return centerdPSquare;
+			}
+		}
+		
 		public LinearRegression()
 		{
+			this.predictedResidualsSumOfSquares = double.MinValue;
 		}
 		
 		#region RunRegression
@@ -158,6 +357,8 @@ namespace QuantProject.ADT.Econometrics
 		public void RunRegression( double[] regressand , double[,] regressors )
 		{
 			this.runRegression_checkParameters( regressand , regressors );
+			this.regressand = regressand;
+			this.regressors = regressors;
 			double[,] xTransposeX = this.getXtransposeX( regressors );
 			this.covarianceMatrix = PositiveDefiniteMatrix.GetInverse( xTransposeX );
 			double[,] xTransposeXInverseXTranspose =
