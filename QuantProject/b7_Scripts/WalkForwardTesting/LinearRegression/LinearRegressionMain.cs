@@ -66,9 +66,9 @@ namespace QuantProject.Scripts.WalkForwardTesting.LinearRegression
 				new HistoricalAdjustedQuoteProvider();
 			// uncomment the following instruction in order to test the strategy
 			// using CSCO as a perfect predictor for MSFT
-			this.historicalMarketValueProviderForInSample =
-				new LookingAtTheFutureQuoteProvider(
-					this.historicalMarketValueProviderForInSample , "MSFT" , "CSCO" );
+//			this.historicalMarketValueProviderForInSample =
+//				new LookingAtTheFutureQuoteProvider(
+//					this.historicalMarketValueProviderForInSample , "MSFT" , "CSCO" );
 			this.historicalMarketValueProviderForChosingPositionsOutOfSample =
 				this.historicalMarketValueProviderForInSample;
 			this.historicalMarketValueProviderForTheBacktesterAccount =
@@ -139,17 +139,17 @@ namespace QuantProject.Scripts.WalkForwardTesting.LinearRegression
 		
 		protected override IInSampleChooser getInSampleChooser()
 		{
-			int numberOfBestTestingPositionsToBeReturned = 50;
+			int numberOfBestTestingPositionsToBeReturned = 3;
 			// uncomment the following line for a faster script
 //			numberOfBestTestingPositionsToBeReturned = 20;
 //			numberOfBestTestingPositionsToBeReturned = 6;
-			numberOfBestTestingPositionsToBeReturned = 1;
+//			numberOfBestTestingPositionsToBeReturned = 1;
 
 			
 			int numberOfTickersForTrading = 1;
 			int[] numberOfTickersInEachSignalingPortfolio =
-//				new int[] { 1 , 1 , 1 };
-				new int[] { 1 };
+				new int[] { 1 , 1 , 1 };
+//				new int[] { 1 };
 			
 			DecoderForLinearRegressionTestingPositions decoderForWeightedPositions =
 				new DecoderForLinearRegressionTestingPositions(
@@ -174,6 +174,8 @@ namespace QuantProject.Scripts.WalkForwardTesting.LinearRegression
 			
 			this.fitnessEvaluator =
 				new LinearRegressionFitnessEvaluator( new LinearRegressionSetupManager() );
+			this.fitnessEvaluator =
+				new PRESSBasedFitnessEvaluator( new LinearRegressionSetupManager() );
 			
 			// parameters for the genetic optimizer
 			double crossoverRate = 0.5;
@@ -186,8 +188,8 @@ namespace QuantProject.Scripts.WalkForwardTesting.LinearRegression
 			// uncomment the followings line for a faster script
 			populationSizeForGeneticOptimizer = 300;
 			generationNumberForGeneticOptimizer = 2;
-			populationSizeForGeneticOptimizer = 1000;
-			generationNumberForGeneticOptimizer = 3;
+//			populationSizeForGeneticOptimizer = 10000;
+			generationNumberForGeneticOptimizer = 6;
 
 			
 			int seedForRandomGeneratorForTheGeneticOptimizer =
@@ -271,7 +273,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.LinearRegression
 					acceptableDaysOfTheWeekForTheEndOfEachInterval ,
 					maxTimeSpanToLookAhead );
 
-			double minForecastedReturn = 0.00002F;			
+			double minForecastedReturn = 0.003F;			
 			IEntryStrategy longAndShortBasedOnAverageExpectedReturn =
 				new EntryStrategyBasedOnForecastedReturn(
 					minForecastedReturn , this.fitnessEvaluator ,
@@ -331,9 +333,9 @@ namespace QuantProject.Scripts.WalkForwardTesting.LinearRegression
 //			firstDateTime = new DateTime( 2006 , 2 , 26 );
 //			lastDateTime = new DateTime( 2006 , 4 , 5 );
 			firstDateTime = new DateTime( 2004 , 5 , 1 );
-			lastDateTime = new DateTime( 2004 , 6 , 30 );
+			lastDateTime = new DateTime( 2004 , 5 , 31 );
 
-			double maxRunningHours = 1.5;
+			double maxRunningHours = 2;
 			
 			EndOfDayStrategyBackTester endOfDayStrategyBackTester =
 				new EndOfDayStrategyBackTester(
