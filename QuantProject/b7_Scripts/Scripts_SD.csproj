@@ -178,6 +178,7 @@
     <Compile Include="WalkForwardTesting\LinearRegression\InSampleChoosers\FitnessEvaluation\LinearRegressionFitnessEvaluator.cs" />
     <Compile Include="WalkForwardTesting\LinearRegression\InSampleChoosers\FitnessEvaluation\LinearRegressionSetUpManager.cs" />
     <Compile Include="WalkForwardTesting\LinearRegression\InSampleChoosers\FitnessEvaluation\LinearRegressionValues.cs" />
+    <Compile Include="WalkForwardTesting\LinearRegression\InSampleChoosers\FitnessEvaluation\PRESSBasedFitnessEvaluator.cs" />
     <Compile Include="WalkForwardTesting\LinearRegression\InSampleChoosers\FitnessEvaluation\ReturnIntervalsBuilderForTradingAndForSignaling.cs" />
     <Compile Include="WalkForwardTesting\LinearRegression\InSampleChoosers\Genetic\GenomeManagerForLinearRegression.cs" />
     <Compile Include="WalkForwardTesting\LinearRegression\InSampleChoosers\Genetic\LinearRegressionGeneticChooser.cs" />
