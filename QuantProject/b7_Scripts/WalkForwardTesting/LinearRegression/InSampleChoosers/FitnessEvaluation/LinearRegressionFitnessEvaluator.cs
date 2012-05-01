@@ -73,7 +73,7 @@ namespace QuantProject.Scripts.WalkForwardTesting.LinearRegression
 			}
 		}
 		
-		public string Description
+		public virtual string Description
 		{
 			get
 			{
@@ -128,19 +128,20 @@ namespace QuantProject.Scripts.WalkForwardTesting.LinearRegression
 		}
 
 		#region getFitnessValue
+		
+		protected virtual double getFitnessValue( ILinearRegression linearRegression )
+		{
+			double fitnessValue = linearRegression.CenteredRSquare;
+			return fitnessValue;
+		}
 
 		private double getFitnessValue( LinearRegressionTestingPositions testingPositions )
 		{
 			QuantProject.ADT.Econometrics.ILinearRegression linearRegression =
 				this.SetUpAndRunLinearRegression( testingPositions );
-			double fitnessValue = linearRegression.CenteredRSquare;
+//			double fitnessValue = linearRegression.CenteredRSquare;
+			double fitnessValue = this.getFitnessValue( linearRegression );
 			return fitnessValue;
-//
-//			double fitnessValue;
-//			fitnessValue = this.getFitnessValue(
-//				testingPositions.TradingPortfolio ,
-//				testingPositions.SignalingPortfolios );
-//			return fitnessValue;
 		}
 		#endregion getFitnessValue
 		
