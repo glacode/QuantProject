@@ -59,6 +59,14 @@ namespace QuantTesting.ADT.Econometrics
 			Assert.AreEqual( 3.58452381 , linearRegression.EstimatedCoefficients[ 2 ] , 0.00000001 );
 			
 			Assert.AreEqual( 0.999876323 , linearRegression.CenteredRSquare , 0.0000000001 );
+			
+			Assert.AreEqual( 0.033928571 , linearRegression.Residuals[ 0 ] , 0.000000001 );
+			Assert.AreEqual( -0.079166667 , linearRegression.Residuals[ 2 ] , 0.000000001 );
+			
+			Assert.AreEqual( 86.871875 , linearRegression.CenteredTotalSumOfSquares , 0.0000000000001 );
+			
+			Assert.AreEqual( 0.892857143 , linearRegression.HatMatrixDiagonal[ 0 ] , 0.000000001 );
+			Assert.AreEqual( 0.702380952 , linearRegression.HatMatrixDiagonal[ 3 ] , 0.000000001 );
 		}
 	}
 }
