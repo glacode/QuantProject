@@ -63,6 +63,10 @@ namespace QuantProject.Scripts.WalkForwardTesting.LinearRegression
 		{
 			get { return this.linearRegressionTestingPositions.FitnessInSample; }
 		}
+		public double CenteredRSquare
+		{
+			get { return this.linearRegressionTestingPositions.LinearRegression.CenteredRSquare; }
+		}
 		
 		#region ShortDescription
 		private string getShortDescription()
