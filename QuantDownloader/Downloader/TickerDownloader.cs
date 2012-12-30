@@ -2,6 +2,7 @@ using System;
 using System.Threading;
 using System.Data;
 using System.Data.Common;
+using System.Globalization;
 using System.IO;
 using System.Net;
 using System.Windows.Forms;
@@ -254,13 +255,13 @@ namespace QuantProject.Applications.Downloader
         DataRow myRow =this.downloadedValuesFromSource.NewRow();
 
         myRow[ "quTicker" ] = this.currentTicker;
-        myRow[ "quDate" ]=DateTime.Parse( LineIn[0] );
-        myRow[ "quOpen" ]=Double.Parse( LineIn[1] );
-        myRow[ "quHigh" ]=Double.Parse( LineIn[2] );
-        myRow[ "quLow" ]=Double.Parse( LineIn[3] );
-        myRow[ "quClose" ]=Double.Parse( LineIn[4] );
-        myRow[ "quVolume" ]=Math.Min(Double.Parse( LineIn[5]),Convert.ToDouble(Int32.MaxValue));
-        myRow[ "quAdjustedClose" ]=Double.Parse( LineIn[6] );
+        myRow[ "quDate" ]= DateTime.Parse( LineIn[0] );
+        myRow[ "quOpen" ]= doubleParseFromEnglishString( LineIn[1] );
+        myRow[ "quHigh" ]= doubleParseFromEnglishString( LineIn[2] );
+        myRow[ "quLow" ]= doubleParseFromEnglishString( LineIn[3] );
+        myRow[ "quClose" ]= doubleParseFromEnglishString( LineIn[4] );
+        myRow[ "quVolume" ]= Math.Min(doubleParseFromEnglishString( LineIn[5]),Convert.ToDouble(Int32.MaxValue));
+        myRow[ "quAdjustedClose" ]= doubleParseFromEnglishString( LineIn[6] );
 			  
         this.downloadedValuesFromSource.Rows.Add(myRow);
 
@@ -519,7 +520,7 @@ namespace QuantProject.Applications.Downloader
       {
         LineIn=Line.Split(',');
       }
-      return Single.Parse(LineIn[6]);
+      return singleParseFromEnglishString(LineIn[6]);
     }
     
     private void commitDownloadedValuesToDatabase()
@@ -790,5 +791,19 @@ namespace QuantProject.Applications.Downloader
         }
       }
     }
+   	private double doubleParseFromEnglishString(string stringToParse)
+   	{
+      double returnValue;
+      CultureInfo culture = new CultureInfo("en-US");
+      returnValue = Double.Parse(stringToParse, culture.NumberFormat);
+      return returnValue;
+   	}
+   	private float singleParseFromEnglishString(string stringToParse)
+   	{
+      float returnValue;
+      CultureInfo culture = new CultureInfo("en-US");
+      returnValue = Single.Parse(stringToParse, culture.NumberFormat);
+      return returnValue;
+   	} 
   }
 }
