@@ -1,5 +1,5 @@
 /*
-QuantProject - Quantitative Finance Library
+QuantProject - Quantitative Finance Library 
 
 Set.cs
 Copyright (C) 2006
