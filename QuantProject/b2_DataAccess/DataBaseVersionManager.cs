@@ -37,7 +37,7 @@ namespace QuantProject.DataAccess
 	/// <summary>
 	/// This object updates database's structure in order to
 	/// assure complete compatibility in case the user still uses an 
-	/// old database version
+	/// old database version - [test for commit]
 	/// </summary>
 	/// <remarks>
 	/// The changes to database's structure are controlled by
