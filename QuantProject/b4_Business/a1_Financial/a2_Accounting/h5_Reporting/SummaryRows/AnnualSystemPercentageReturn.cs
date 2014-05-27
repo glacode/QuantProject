@@ -5,7 +5,7 @@ using QuantProject.Business.Financial.Accounting.Reporting.Tables;
 using QuantProject.Business.Financial.Instruments;
 
 namespace QuantProject.Business.Financial.Accounting.Reporting.SummaryRows
-{
+{ 
 	/// <summary>
 	/// Summary description for TotalNumberOfTrades.
 	/// </summary>
